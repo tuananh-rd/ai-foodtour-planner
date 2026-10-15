@@ -13,8 +13,9 @@
 | QA-01 + FE real-API integration | Antigravity | DONE, accepted (F1-F6 closure pending Codex verification) | 7d7afed (merged 1c6dba0) | Claude; Codex REVIEW-FE-2 | 28/28 E2E pass (re-run by Claude on synthetic); DEF-01 backend: GET /v1/venues empty |
 | FIX-01 + REVIEW-FE-2 | Codex | DONE, accepted | bd30c74 (merged bed3bc6) | Claude | scripts/test.ps1 re-run by Claude: 81 tests OK (1 explicit skip), drift, build, 12 mock; DEF-01 closed; FE F2/F3/F4/F6 still open |
 | FE-FIX-01 | Antigravity | DONE (worker_done succeeded, 4b8991a, merged); final gate pending | 4b8991a | Claude; Codex REVIEW-FE-3 | Claude re-ran: scripts/test.ps1 81 OK (1 skip), API E2E 36/36, components 11/11. Monitor alert (spinner 15 min) was a false alarm: dispatch already completed, terminal showed residual output |
-| REVIEW-FE-3 | Codex | In progress (DOM gate reported F8 map sizing + F9 modal focus open; all else closed) | - | Claude | dispatch ctx_9efcb27a50de |
-| FE-FIX-02 | Antigravity | BLOCKED at launch | - | Claude + Codex | task_905af9ec4011; ctx_8439a2f1a0e9 and ctx_aff23d1f411b both failed at agent_readiness (timeout): Antigravity CLI stuck at "Signing in..." in term_6184ece1; effective model shown by CLI: Gemini 3.8 Flash (High). 2 of 3 failures used; no more retries until sign-in is resolved |
+| REVIEW-FE-3 | Codex | DONE, accepted (MERGE-AFTER-FIXES: only F8 map sizing + F9 modal focus; F4/F7 residual, QA logs token prefix) | 472a7a0 (merged) | Claude | 81 backend + 36 API + 11 render re-run by Codex |
+| FE-FIX-02 | Antigravity -> reassigned to Claude | c8452d7 | Codex REVIEW-FE-4 | Antigravity CLI stuck at sign-in (2 failed dispatches at agent_readiness; breaker not used further). Scope reassigned by coordinator under AGENTS.md coordination clause: only MapView.jsx + ReplaceDiffModal.jsx. Author Claude, verifier Codex (no self-approval) |
+| REVIEW-FE-4 | Codex | In progress | - | Claude | dispatch ctx_9505c3d6eccb; real-browser CDP verification of F8/F9 (draft unsent, Enter sent, Working observed) |
 | OPS-01 | Codex | DONE, accepted | 8ed069b (merged f183788) | Claude | scripts/test.ps1 passes on coordinator tree: 77 backend + 1 explicit legacy skip + OpenAPI drift + frontend build; npm test EXPECTED-SKIP; Linux/remote CI untested |
 | INT-01 | Claude | Pending | - | Codex | merge FE-01 after F1-F6 closure, combined checks, docs/RUNNING.md |
 
