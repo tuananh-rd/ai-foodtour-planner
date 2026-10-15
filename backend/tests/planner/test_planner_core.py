@@ -210,5 +210,16 @@ class PoolTruncation(unittest.TestCase):
         self.assertTrue(ok.assumptions["pool_truncated"])
 
 
+class BudgetPruneBeforeCap(unittest.TestCase):
+    def test_cheap_venue_beyond_pool_cap_is_found(self):
+        vs = [Venue(id=f"TEST-{i:02d}", name="t", lat=21.03, lon=105.85, price_min_vnd=10000,
+                    price_max_vnd=200000 if i < 14 else 20000, synthetic=True) for i in range(15)]
+        p = Preferences(origin=(21.03, 105.85), duration_min=60, budget_vnd=50000, budget_scope="per_person",
+                        max_stops=1)
+        t = plan_tour(vs, p)
+        self.assertEqual(t.status, "conditional")
+        self.assertEqual(t.stops[0].venue_id, "TEST-14")
+
+
 if __name__ == "__main__":
     unittest.main()

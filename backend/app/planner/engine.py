@@ -50,6 +50,17 @@ def _open_at(v: Venue, weekday: int, start: int, end: int) -> bool:
     return any(s <= start and end <= e for s, e in v.hours.get(weekday, []))
 
 
+def _possible_alone(v: Venue, prefs: Preferences) -> bool:
+    """Necessary conditions any single stop must meet; safe to prune before the search pool cap."""
+    if prefs.duration_min is not None and prefs.visit_minutes > prefs.duration_min:
+        return False
+    if prefs.budget_vnd is not None and v.price_max_vnd is not None:
+        spend = v.price_max_vnd * (prefs.party_size or 1) if prefs.budget_scope == "group" else v.price_max_vnd
+        if spend > prefs.budget_vnd:
+            return False
+    return True
+
+
 def _evaluate(seq: list, prefs: Preferences, routes: RouteMatrixProvider) -> tuple:
     """Return (Tour, None) or (None, violation)."""
     if prefs.origin is None or prefs.duration_min is None:
@@ -148,7 +159,7 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
     if missing:
         return Tour("insufficient_evidence", reasons=(f"Thiếu thông tin bắt buộc: {', '.join(missing)}",),
                     proposed_changes=("Bổ sung thông tin còn thiếu.",), unknowns=tuple(missing))
-    ranked = sorted((v for v in venues if eligible(v, prefs)),
+    ranked = sorted((v for v in venues if eligible(v, prefs) and _possible_alone(v, prefs)),
                     key=lambda v: (routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))
     pool = ranked[:pool_cap]
     truncated = len(ranked) > len(pool)
