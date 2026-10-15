@@ -9,8 +9,9 @@
 | DATA-01 | Codex | DONE, accepted | 4d3fa1b | Claude | 38 tests; ds-1 aggregates verified |
 | BE-01 | Codex | DONE, accepted | 6ab3632 | Claude | 72 tests pass (re-run by Claude); OpenAPI drift passes; live smoke on ds-1 passed (chat->tour->replace, 409, 403, injection) |
 | FE-01 | Antigravity | DONE, accepted; NOT merged | 9ebe3b4 | Claude; Codex REVIEW-FE | build OK, 12 mock tests |
-| REVIEW-FE | Codex | In progress | - | Claude | dispatch ctx_83cbcef21782 (turn_started observed after manual submit of unsent draft) |
+| REVIEW-FE | Codex | DONE, accepted | ad815c9 (merged) | Claude | merge FE after fixes; F1-F6 blocking, F7-F10 medium; forwarded to Antigravity |
 | QA-01 + FE real-API integration | Antigravity | In progress | - | Claude + Codex | dispatch ctx_aaa3db20bd9d |
-| INT-01 | Claude | Pending | - | Codex | merge FE-01 after REVIEW-FE, combined checks, docs/RUNNING.md |
+| OPS-01 | Codex | In progress | - | Claude | dispatch ctx_ee0253397a49 (ready, turn started): scripts, CI file, drift |
+| INT-01 | Claude | Pending | - | Codex | merge FE-01 after F1-F6 closure, combined checks, docs/RUNNING.md |
 
 Known limitations: single-process volatile sessions; bounded search pool (disclosed); estimated straight-line routing; hours unknown for all venues; price is venue range; no live LLM/routing provider (BE-02 not started, needs approved credentials).
