@@ -11,7 +11,7 @@
 | FE-01 | Antigravity | DONE, accepted; NOT merged | 9ebe3b4 | Claude; Codex REVIEW-FE | build OK, 12 mock tests |
 | REVIEW-FE | Codex | DONE, accepted | ad815c9 (merged) | Claude | merge FE after fixes; F1-F6 blocking, F7-F10 medium; forwarded to Antigravity |
 | QA-01 + FE real-API integration | Antigravity | In progress | - | Claude + Codex | dispatch ctx_aaa3db20bd9d |
-| OPS-01 | Codex | In progress | - | Claude | dispatch ctx_ee0253397a49 (ready, turn started): scripts, CI file, drift |
+| OPS-01 | Codex | DONE, accepted | 8ed069b (merged f183788) | Claude | scripts/test.ps1 passes on coordinator tree: 77 backend + 1 explicit legacy skip + OpenAPI drift + frontend build; npm test EXPECTED-SKIP; Linux/remote CI untested |
 | INT-01 | Claude | Pending | - | Codex | merge FE-01 after F1-F6 closure, combined checks, docs/RUNNING.md |
 
 Known limitations: single-process volatile sessions; bounded search pool (disclosed); estimated straight-line routing; hours unknown for all venues; price is venue range; no live LLM/routing provider (BE-02 not started, needs approved credentials).
