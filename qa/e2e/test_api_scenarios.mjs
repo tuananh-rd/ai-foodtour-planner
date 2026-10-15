@@ -79,7 +79,7 @@ async function runTestSuite() {
     typeof session.token === 'string' &&
     session.token.length >= 10 &&
     session.revision === 0,
-    `session_id: ${session.session_id}, token: ${session.token.substring(0, 8)}..., revision: ${session.revision}`
+    `session_id: <redacted>, token: <redacted ${session.token.length} chars>, revision: ${session.revision}`
   );
 
   // -------------------------------------------------------------
