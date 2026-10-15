@@ -30,6 +30,8 @@ Sao chép `backend/.env.example` thành `backend/.env` rồi bỏ ghi chú các 
 
 Kiểm tra cấu hình: `curl http://127.0.0.1:8000/health` → `llm_provider`, `llm_model`, `explanation_provider`, `routing_provider`, `routing` (`provider_route` chỉ sau khi provider thật sự trả lời), `routing_last_error`.
 
+**Vị trí hiện tại**: ứng dụng chỉ xin vị trí khi bạn bấm nút; tuỳ trình duyệt, chính trình duyệt có thể dùng dịch vụ vị trí của hãng trình duyệt (ngoài tầm kiểm soát của ứng dụng). Toạ độ này trở thành điểm xuất phát, được giữ trong phiên (có TTL) và gửi tới máy chủ và, khi lập tuyến, tới Google Routes.
+
 **Dữ liệu được gửi ra ngoài khi bật provider**: Gemini nhận tin nhắn chat của người dùng và sở thích trước đó (tránh nhập thông tin cá nhân); lời giải thích chỉ gửi dữ kiện số/nhãn, không gửi danh tính quán. Định tuyến gửi **toạ độ** điểm xuất phát và các quán ứng viên (≤ 15 điểm mỗi lần lập tour, ≤ 45 khi thay quán) tới nhà cung cấp định tuyến — toạ độ quán là một phần của bộ dữ liệu riêng, nên chỉ bật khi bạn chấp nhận điều này.
 
 ## Dữ liệu

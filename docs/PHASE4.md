@@ -26,7 +26,7 @@ The browser key is by nature visible to the browser; it is protected by referrer
 |---|---|---|
 | Map tiles / markers | Browser requests tiles; marker coordinates are drawn client-side | The app never uploads the venue list to Google |
 | Place Autocomplete / manual address | Characters typed in the address box (+ session token) | Only after the user types there; manual lat/lon entry sends nothing |
-| Current location | Nothing by itself (browser Geolocation stays in the browser) | Used as origin → origin coordinates are then sent to Routes API |
+| Current location | The app sends nothing to Google by itself. **The browser's own Geolocation implementation may contact its vendor's location service (browser-dependent); this is outside the app's control.** | The app asks only on an explicit click; the coordinates become the origin, are held in the session (TTL) and are then sent to the server and, when planning a route, to Routes API |
 | Walking routes | Origin + candidate/stop coordinates (≤ 16 points per plan, ≤ 45 when replacing) via the **server** key | Venue coordinates come from the private dataset; user must accept this to enable Routes |
 | Gemini | Chat text and prior preferences; explanation facts contain no venue identity | Unchanged from phase 3 |
 
