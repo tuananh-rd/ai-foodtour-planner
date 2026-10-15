@@ -8,6 +8,6 @@
 | PLAN-01/02 | Claude | DONE (module level) | a35741e | Codex | 22 unit tests pass; exact-baseline comparison; replace with locks |
 | AI-01 | Claude | DONE (mock extractor) | a35741e | Codex | Rule-based Vietnamese; live LLM adapter pending BE-02 |
 | DATA-01 | Codex | DONE, accepted | 4d3fa1b (merged) | Claude | 38 tests pass (re-run by Claude); ds-1 aggregates verified by Codex; hours None, price estimate |
-| FE-01 | Antigravity | In progress | - | Claude + Codex | dispatch ctx_ce9c33709837 |
+| FE-01 | Antigravity | DONE, accepted (UX pending integration); NOT merged | 9ebe3b4 | Claude; Codex REVIEW-FE required before merge | build OK, 12 mock contract tests pass; finding: mock session revision starts at 1 but contract says 0; mock tests prove only client/mock, re-run vs real API in INT-01 |
 | BE-01 | Codex | In progress | - | Claude | dispatch ctx_4e1639c9fd30 (turn start unverified, same as DATA-01 which then proceeded); includes review of planner/llm |
 | REVIEW-FE | Codex | Queued | - | - | independent review of frontend/ (3ca3fc9) |
