@@ -1,0 +1,33 @@
+{
+  "_label": "SYNTHETIC evidence for SYNTHETIC test venues only. These sources and attestations are invented test inputs, not real-world verification. Never apply to real venues.",
+  "schema": 1,
+  "entries": [
+    {
+      "venue_id": "SYN-001",
+      "hours": {"0": [["08:00", "22:00"]], "1": [["08:00", "22:00"]], "2": [["08:00", "22:00"]], "3": [["08:00", "22:00"]], "4": [["08:00", "22:00"]], "5": [["08:00", "22:00"]], "6": []},
+      "hours_source": "SYNTHETIC https://example.invalid/evidence/hours/1",
+      "hours_verified_at": "2026-01-01",
+      "price_per_person_vnd": {"min": 10000, "max": 20000},
+      "price_source": "SYNTHETIC https://example.invalid/evidence/price/1",
+      "price_verified_at": "2026-01-01"
+    },
+    {
+      "venue_id": "SYN-002",
+      "hours": {"0": [["08:00", "22:00"]], "1": [["08:00", "22:00"]], "2": [["08:00", "22:00"]], "3": [["08:00", "22:00"]], "4": [["08:00", "22:00"]], "5": [["08:00", "22:00"]], "6": []},
+      "hours_source": "SYNTHETIC https://example.invalid/evidence/hours/2",
+      "hours_verified_at": "2026-01-01",
+      "price_per_person_vnd": {"min": 10000, "max": 20000},
+      "price_source": "SYNTHETIC https://example.invalid/evidence/price/2",
+      "price_verified_at": "2026-01-01"
+    },
+    {
+      "venue_id": "SYN-003",
+      "hours": {"0": [["08:00", "22:00"]], "1": [["08:00", "22:00"]], "2": [["08:00", "22:00"]], "3": [["08:00", "22:00"]], "4": [["08:00", "22:00"]], "5": [["08:00", "22:00"]], "6": []},
+      "hours_source": "SYNTHETIC https://example.invalid/evidence/hours/3",
+      "hours_verified_at": "2026-01-01",
+      "price_per_person_vnd": {"min": 10000, "max": 20000},
+      "price_source": "SYNTHETIC https://example.invalid/evidence/price/3",
+      "price_verified_at": "2026-01-01"
+    }
+  ]
+}
