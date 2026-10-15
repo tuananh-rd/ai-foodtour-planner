@@ -77,10 +77,24 @@
             "title": "Llm",
             "type": "string"
           },
+          "llm_configured": {
+            "default": true,
+            "title": "Llm Configured",
+            "type": "boolean"
+          },
           "routing": {
-            "const": "straight_line_estimate",
+            "enum": [
+              "straight_line_estimate",
+              "provider_route",
+              "unknown"
+            ],
             "title": "Routing",
             "type": "string"
+          },
+          "routing_configured": {
+            "default": true,
+            "title": "Routing Configured",
+            "type": "boolean"
           },
           "status": {
             "title": "Status",
