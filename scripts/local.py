@@ -126,8 +126,26 @@ def test(env):
                     run(npm_command() + args, cwd=front, env=env)
                 except subprocess.CalledProcessError:
                     failed.append(label)
+            node = shutil.which("node")
+            if node and (ROOT / "qa/e2e/test_components.mjs").exists():
+                try:
+                    run([node, ROOT / "qa/e2e/test_components.mjs"], cwd=ROOT, env=env)
+                except subprocess.CalledProcessError:
+                    failed.append("frontend component tests")
     else:
         print("SKIP: frontend directory absent", flush=True)
+    # Quality gate without network: rule extractor on the labelled synthetic fixture only.
+    eval_env = {k: v for k, v in env.items() if k not in ("FOODTOUR_DATA_PATH", "FOODTOUR_LLM", "FOODTOUR_EXPLAIN")}
+    eval_env["PYTHONPATH"] = str(ROOT / "backend")
+    # An absent absolute path makes the loader fall back to the labelled synthetic fixture.
+    eval_env["FOODTOUR_DATA_PATH"] = str(ROOT / ".ci-no-private-data" / "absent.json")
+    for label, script, extra in (("quality eval (rules, synthetic)", "qa/eval/run_eval.py", ["--repeat", "1"]),
+                                 ("geo plausibility audit (synthetic)", "qa/eval/geo_audit.py", [])):
+        if (ROOT / script).exists():
+            try:
+                run([PYTHON, ROOT / script, *extra], cwd=ROOT, env=eval_env)
+            except subprocess.CalledProcessError:
+                failed.append(label)
     if failed:
         print("FAILED CHECKS:", ", ".join(failed), flush=True)
         return 1
