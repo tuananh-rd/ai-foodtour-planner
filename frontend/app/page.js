@@ -511,6 +511,7 @@ export default function Home() {
       <RevisionConflictAlert
         conflictError={conflictError}
         onReloadSession={initSession}
+        onReplan={() => { setConflictError(null); handlePlanTour(); }}
         onDismiss={() => setConflictError(null)}
       />
 

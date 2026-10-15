@@ -1,7 +1,9 @@
 'use client';
 
-export default function RevisionConflictAlert({ conflictError, onReloadSession, onDismiss }) {
+export default function RevisionConflictAlert({ conflictError, onReloadSession, onReplan, onDismiss }) {
   if (!conflictError) return null;
+  // dataset_changed: stored tour was built on older data; preferences are kept, so re-plan instead of resetting.
+  const datasetChanged = conflictError.code === 'dataset_changed';
 
   return (
     <div
@@ -19,7 +21,7 @@ export default function RevisionConflictAlert({ conflictError, onReloadSession, 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <div>
           <strong style={{ color: '#cf1322', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>⚠️</span> Xung đột phiên bản (409 Revision Conflict)
+            <span>⚠️</span> {datasetChanged ? 'Dữ liệu đã thay đổi (409 dataset_changed)' : 'Xung đột phiên bản (409 Revision Conflict)'}
           </strong>
           <p style={{ fontSize: 13, color: '#434343', marginTop: 4, lineHeight: 1.45 }}>
             {conflictError.message || 'Phiên làm việc đã bị thay đổi bởi thao tác khác. Vui lòng tải lại dữ liệu mới nhất từ máy chủ.'}
@@ -27,10 +29,10 @@ export default function RevisionConflictAlert({ conflictError, onReloadSession, 
         </div>
 
         <div style={{ display: 'flex', gap: 8 }}>
-          {onReloadSession && (
+          {(datasetChanged ? (onReplan || onReloadSession) : onReloadSession) && (
             <button
               type="button"
-              onClick={onReloadSession}
+              onClick={datasetChanged ? (onReplan || onReloadSession) : onReloadSession}
               style={{
                 minHeight: 38,
                 padding: '6px 14px',
@@ -43,7 +45,7 @@ export default function RevisionConflictAlert({ conflictError, onReloadSession, 
                 cursor: 'pointer'
               }}
             >
-              Đồng bộ lại
+              {datasetChanged ? 'Lập lại lịch trình' : 'Đồng bộ lại'}
             </button>
           )}
           {onDismiss && (
