@@ -12,6 +12,15 @@ function project(lat, lon, zoom) {
   return { x, y };
 }
 
+// Inverse Web Mercator (world pixels at zoom -> lat/lon)
+function unproject(x, y, zoom) {
+  const scale = 256 * Math.pow(2, zoom);
+  const lon = (x / scale) * 360 - 180;
+  const n = Math.PI * (1 - (2 * y) / scale);
+  const lat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  return { lat, lon };
+}
+
 export default function MapView({
   origin,
   stops = [],
@@ -72,31 +81,34 @@ export default function MapView({
   }, [origin, stops]);
 
   const { centerLat, centerLon, baseZoom } = useMemo(() => {
-    if (points.length === 0) {
+    // Fit by projected PIXELS (not degree spans): every marker and any provider route geometry
+    // must lie inside the measured viewport with padding.
+    const all = points.map((pt) => ({ lat: pt.lat, lon: pt.lon }));
+    stops.forEach((st) => {
+      const g = st.leg_from_previous && st.leg_from_previous.source === 'provider_route' ? st.leg_from_previous.geometry : null;
+      if (Array.isArray(g)) g.forEach((pt) => { if (Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1])) all.push({ lat: pt[0], lon: pt[1] }); });
+    });
+    if (all.length === 0) {
       return { centerLat: 21.033, centerLon: 105.850, baseZoom: 15 };
     }
-    const lats = points.map((p) => p.lat);
-    const lons = points.map((p) => p.lon);
-    const minLat = Math.min(...lats);
-    const maxLat = Math.max(...lats);
-    const minLon = Math.min(...lons);
-    const maxLon = Math.max(...lons);
-
-    const cLat = (minLat + maxLat) / 2;
-    const cLon = (minLon + maxLon) / 2;
-    const latSpan = maxLat - minLat;
-    const lonSpan = maxLon - minLon;
-    const maxSpan = Math.max(latSpan, lonSpan);
-
-    let z = 15;
-    if (maxSpan > 0.1) z = 12;
-    else if (maxSpan > 0.05) z = 13;
-    else if (maxSpan > 0.02) z = 14;
-    else if (maxSpan > 0.01) z = 15;
-    else z = 16;
-
-    return { centerLat: cLat, centerLon: cLon, baseZoom: z };
-  }, [points]);
+    const pad = 44;
+    let z = 11;
+    let box = null;
+    for (let cand = 17; cand >= 11; cand--) {
+      const ps = all.map((pt) => project(pt.lat, pt.lon, cand));
+      const minX = Math.min(...ps.map((q) => q.x)), maxX = Math.max(...ps.map((q) => q.x));
+      const minY = Math.min(...ps.map((q) => q.y)), maxY = Math.max(...ps.map((q) => q.y));
+      box = { minX, maxX, minY, maxY, z: cand };
+      if (maxX - minX <= viewWidth - 2 * pad && maxY - minY <= viewHeight - 2 * pad) { z = cand; break; }
+    }
+    if (box.z !== z) {
+      const ps = all.map((pt) => project(pt.lat, pt.lon, z));
+      box = { minX: Math.min(...ps.map((q) => q.x)), maxX: Math.max(...ps.map((q) => q.x)),
+              minY: Math.min(...ps.map((q) => q.y)), maxY: Math.max(...ps.map((q) => q.y)), z };
+    }
+    const c = unproject((box.minX + box.maxX) / 2, (box.minY + box.maxY) / 2, z);
+    return { centerLat: c.lat, centerLon: c.lon, baseZoom: z };
+  }, [points, stops, viewWidth, viewHeight]);
 
   const currentZoom = Math.min(18, Math.max(11, baseZoom + zoomOffset));
 

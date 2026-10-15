@@ -108,6 +108,10 @@ async function flow(width, height, label) {
   await sleep(500);
   const dims = await ev(`(() => { const svg=document.querySelector('[aria-label="Bản đồ tuyến đường OpenStreetMap"] svg, svg[viewBox]'); const c=svg&&svg.parentElement; if(!svg) return null; const vb=svg.viewBox.baseVal; return {vb:vb.width, w:c.clientWidth} })()`);
   rec(`${label} map viewBox matches container${mapTab ? ' (after tab switch)' : ''}`, !!dims && Math.abs(dims.vb - dims.w) <= 1, JSON.stringify(dims));
+  const inFrame = await ev(`(() => { const svg=document.querySelector('svg[viewBox]'); if(!svg) return null; const vb=svg.viewBox.baseVal;
+    return [...svg.querySelectorAll('g[role="button"]')].map(g => { const m=/translate\\(([-\\d.]+),([-\\d.]+)\\)/.exec(g.getAttribute('transform')); return m ? [+m[1], +m[2]] : null; })
+      .every(p => p && p[0] >= 0 && p[0] <= vb.width && p[1] >= 0 && p[1] <= vb.height); })()`);
+  rec(`${label} every map marker (origin + stops) is inside the visible map`, inFrame === true);
   if (mapTab) await ev(`[...document.querySelectorAll('nav button')].find(x=>x.innerText.includes('Lịch trình')).click()`);
   await sleep(300);
 
