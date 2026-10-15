@@ -81,3 +81,8 @@ Errors: `{error: {code, message, details?}}`. Codes: `validation_error`, `unauth
 ## v1.2 additions (additive, 2026-10-15)
 - `GET /v1/sessions/{id}` (header `X-Session-Token`) returns the same SessionView wrapper as mutating endpoints, rebuilt from the current dataset. If the stored tour's `dataset_version` differs from the loaded one, or any stored venue is no longer valid, `tour` is `null` and `notes` explains that data changed; preferences are preserved.
 - Planner rebuild uses the public `planner.engine.build_tour(venues, prefs, venue_ids)`; stored tours are never trusted without recomputation.
+
+## v1.3 additions (additive, 2026-10-15; verified-evidence overlay)
+- `Price.semantics` and `VenueListItem.price_semantics` enum is `venue_range | per_person`. `per_person` is emitted ONLY for prices that come from an accepted verified overlay entry (with source and verified_at); every other price stays `venue_range` with evidence `estimate`.
+- `dataset_version` is the combined hash of input and overlay content when an overlay is configured (unchanged otherwise), so stored sessions are invalidated correctly.
+- `/health.evidence_overlay` carries counts only: `{entries_loaded, entries_rejected, hours_verified, prices_verified}`. A configured but missing/malformed overlay fails closed (redacted 503), never silently serves unverified data as verified.
