@@ -1,5 +1,6 @@
 """Contract-v1 endpoints. All session mutations are atomic and checked."""
 from dataclasses import asdict
+import os
 
 from fastapi import APIRouter, Header, Query, Request
 from pydantic import ValidationError
@@ -31,7 +32,8 @@ def snapshot(request):
 
 
 def price(v):
-    return Price(min_vnd=v.price_min_vnd, max_vnd=v.price_max_vnd, evidence=v.price_evidence)
+    return Price(min_vnd=v.price_min_vnd, max_vnd=v.price_max_vnd, evidence=v.price_evidence,
+                 semantics="per_person" if v.price_evidence == "verified" else "venue_range")
 
 
 def public_source(data):
@@ -101,7 +103,7 @@ def health(request: Request):
                   llm=llm_mode, llm_configured=llm_mode != "unavailable",
                   routing=route_mode, routing_configured=getattr(routing, "configured", True),
                   dataset_source=public_source(data),
-                  dataset_version=data.dataset_version)
+                  dataset_version=data.dataset_version, evidence_overlay=data.evidence_overlay)
 
 
 def venue_view(v, data):
@@ -109,7 +111,7 @@ def venue_view(v, data):
         id=v.id, name=v.name, city=v.city, address=v.address, district=v.district,
         lat=v.lat, lon=v.lon, source_url=v.source_url, dish_tags=list(v.dish_tags),
         online_only=v.online_only, geo_ok=v.geo_ok, synthetic=v.synthetic,
-        price=price(v), hours=Hours(status="unknown", display=v.hours_display),
+        price=price(v), hours=Hours(status="verified" if v.hours is not None else "unknown", display=v.hours_display),
         dataset_source=public_source(data), dataset_version=data.dataset_version,
     )
 
@@ -126,6 +128,8 @@ def venues(request: Request, city: str = Query(default="Hà Nội", max_length=1
         price_max_vnd_norm=v.price_max_vnd,
         price_status="ok" if v.price_min_vnd is not None and v.price_max_vnd is not None else "unknown",
         hours_displayed=v.hours_display,
+        price_semantics="per_person" if v.price_evidence == "verified" else "venue_range",
+        hours_status="verified" if v.hours is not None else "unknown",
     ) for v in selected[offset:offset + limit]]
     return VenueList(items=items, total=len(selected), limit=limit, offset=offset,
                      dataset_source=public_source(data), dataset_version=data.dataset_version)
@@ -214,6 +218,12 @@ def replace(session_id: str, body: ReplaceRequest, request: Request,
         if session.tour is None or not session.tour.stops:
             raise APIError(409, "no_candidates", "Phiên chưa có điểm dừng để thay thế.")
         data = session.snapshot
+        if (os.getenv("FOODTOUR_EVIDENCE_PATH", "").strip()
+                or data.evidence_overlay["hours_verified"] or data.evidence_overlay["prices_verified"]):
+            current = snapshot(request)
+            if current.dataset_version != data.dataset_version:
+                raise APIError(409, "no_candidates", "Dữ liệu đã đổi; hãy lập lại lịch trình trước khi thay quán.")
+            data = current
         result = engine.replace_stop(data.venues, session.preferences, session.tour,
                                      body.venue_id, request.app.state.routing)
         if not result.ok:

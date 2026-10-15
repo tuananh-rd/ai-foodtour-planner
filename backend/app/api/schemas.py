@@ -86,7 +86,7 @@ class SessionCreated(Model):
 class Price(Model):
     min_vnd: int | None
     max_vnd: int | None
-    semantics: Literal["venue_range"] = "venue_range"
+    semantics: Literal["venue_range", "per_person"] = "venue_range"
     evidence: Evidence
 
 
@@ -125,9 +125,9 @@ class VenueListItem(VenueView):
     price_min_vnd_norm: int | None
     price_max_vnd_norm: int | None
     price_status: Literal["ok", "unknown"]
-    price_semantics: Literal["venue_range"] = "venue_range"
+    price_semantics: Literal["venue_range", "per_person"] = "venue_range"
     hours_displayed: str | None
-    hours_status: Literal["unknown"] = "unknown"
+    hours_status: Literal["unknown", "verified"] = "unknown"
 
 
 class VenueList(Model):
@@ -192,6 +192,13 @@ class SessionView(Model):
     dataset_version: str
 
 
+class EvidenceOverlayCounts(Model):
+    entries_loaded: int = Field(default=0, ge=0)
+    entries_rejected: int = Field(default=0, ge=0)
+    hours_verified: int = Field(default=0, ge=0)
+    prices_verified: int = Field(default=0, ge=0)
+
+
 class Health(Model):
     status: str
     dataset_loaded: bool
@@ -201,6 +208,7 @@ class Health(Model):
     routing_configured: bool = True
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
+    evidence_overlay: EvidenceOverlayCounts = Field(default_factory=EvidenceOverlayCounts)
 
 
 class ErrorDetail(Model):

@@ -49,6 +49,37 @@
         "title": "ErrorResponse",
         "type": "object"
       },
+      "EvidenceOverlayCounts": {
+        "additionalProperties": false,
+        "properties": {
+          "entries_loaded": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Entries Loaded",
+            "type": "integer"
+          },
+          "entries_rejected": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Entries Rejected",
+            "type": "integer"
+          },
+          "hours_verified": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Hours Verified",
+            "type": "integer"
+          },
+          "prices_verified": {
+            "default": 0,
+            "minimum": 0.0,
+            "title": "Prices Verified",
+            "type": "integer"
+          }
+        },
+        "title": "EvidenceOverlayCounts",
+        "type": "object"
+      },
       "Health": {
         "additionalProperties": false,
         "properties": {
@@ -67,6 +98,9 @@
           "dataset_version": {
             "title": "Dataset Version",
             "type": "string"
+          },
+          "evidence_overlay": {
+            "$ref": "#/components/schemas/EvidenceOverlayCounts"
           },
           "llm": {
             "enum": [
@@ -482,8 +516,11 @@
             "title": "Min Vnd"
           },
           "semantics": {
-            "const": "venue_range",
             "default": "venue_range",
+            "enum": [
+              "venue_range",
+              "per_person"
+            ],
             "title": "Semantics",
             "type": "string"
           }
@@ -955,8 +992,11 @@
             "title": "Hours Displayed"
           },
           "hours_status": {
-            "const": "unknown",
             "default": "unknown",
+            "enum": [
+              "unknown",
+              "verified"
+            ],
             "title": "Hours Status",
             "type": "string"
           },
@@ -1006,8 +1046,11 @@
             "title": "Price Min Vnd Norm"
           },
           "price_semantics": {
-            "const": "venue_range",
             "default": "venue_range",
+            "enum": [
+              "venue_range",
+              "per_person"
+            ],
             "title": "Price Semantics",
             "type": "string"
           },

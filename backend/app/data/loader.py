@@ -12,11 +12,12 @@ import json
 import math
 import os
 from collections import Counter
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
 from pathlib import Path
 
 from app.planner.types import Venue
+from .evidence import EvidenceLoadError, apply_overlay, empty_counts
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_PATH = ROOT / "data" / "venues.json"
@@ -31,6 +32,8 @@ class Dataset:
     input_rows: int
     rejected: dict[str, int]
     flags: dict[str, int]
+    evidence_overlay: dict[str, int] = field(default_factory=empty_counts)
+    evidence_rejections: dict[str, int] = field(default_factory=dict)
 
 
 def aggregate_report(dataset: Dataset) -> dict:
@@ -41,6 +44,8 @@ def aggregate_report(dataset: Dataset) -> dict:
         "rejected_rows": sum(dataset.rejected.values()),
         "rejections_by_reason": dict(sorted(dataset.rejected.items())),
         "flags_by_reason": dict(sorted(dataset.flags.items())),
+        "evidence_overlay": dict(dataset.evidence_overlay),
+        "evidence_rejections_by_reason": dict(dataset.evidence_rejections),
     }
 
 
@@ -201,5 +206,15 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
             hours_display=_text(row.get("hours_display" if synthetic else "hours_displayed")) or None,
             synthetic=synthetic,
         ))
-    return Dataset(tuple(venues), hashlib.sha256(blob).hexdigest(),
-                   "synthetic" if synthetic else suffix[1:], len(rows), dict(rejected), dict(flags))
+    try:
+        merged, version, evidence_counts, evidence_rejections = apply_overlay(
+            tuple(venues), hashlib.sha256(blob).hexdigest())
+    except EvidenceLoadError as error:
+        raise DatasetLoadError(str(error)) from None
+    if evidence_counts['hours_verified']:
+        flags['unknown_hours'] -= evidence_counts['hours_verified']
+    for before, after in zip(venues, merged):
+        if before.price_min_vnd is None and after.price_evidence == 'verified':
+            flags['unknown_price'] -= 1
+    return Dataset(merged, version, "synthetic" if synthetic else suffix[1:], len(rows),
+                   dict(rejected), dict(flags), evidence_counts, evidence_rejections)
