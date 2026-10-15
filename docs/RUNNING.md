@@ -60,8 +60,16 @@ Kiểm thử trình duyệt thật:
 ```powershell
 # 1) API: từ backend/, PYTHONPATH=.  $env:WEB_ORIGIN='http://127.0.0.1:13000'; python -m uvicorn app.main:app --port 18000
 # 2) Web: cd frontend; $env:NEXT_PUBLIC_API_URL='http://127.0.0.1:18000'; npm run build; npx next start -p 13000
-node qa/e2e/browser_flow.mjs   # 18 kiểm tra ở 390px và 1280px (Edge/Chrome headless qua CDP)
+node qa/e2e/browser_flow.mjs   # 28 kiểm tra ở 390px và 1280px (Edge/Chrome headless qua CDP)
 ```
+
+Kiểm thử khởi động nguội Google Maps (chạy mã sản phẩm thật, **không cần key thật**): chạy API với key giả trong môi trường tiến trình để `/v1/client-config` ở trạng thái `ready`, build frontend trỏ tới API đó, rồi:
+```powershell
+# API:  $env:GOOGLE_MAPS_BROWSER_KEY='fake-test-key'; $env:GOOGLE_MAPS_MAP_ID='fake-map'; python -m uvicorn app.main:app --port 18000  (từ backend/, PYTHONPATH=.)
+node qa/e2e/test_cold_bootstrap.mjs   # chặn request tới maps.googleapis.com và trả bootstrap script giả đúng cơ chế importLibrary
+python qa/integration/test_ph4_api.py   # (python) kiểm thử hộp đen API phase 4: client-config, venues/map, geocode, origin metadata, rò rỉ khoá
+```
+Các test này dùng bản giả của Google chỉ trong trình duyệt kiểm thử; chúng **không** thay thế việc kiểm với key thật (xem `qa/live/google_smoke.py`).
 
 ## Thử bằng tay (luồng chính)
 1. "Muốn ăn bún và chè quanh Hồ Gươm" → hệ thống hỏi thời lượng.
