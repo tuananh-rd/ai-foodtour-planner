@@ -56,9 +56,14 @@ export default function ReplaceDiffModal({
   }, [isOpen, busy, onCancel]);
 
   useEffect(() => {
-    if (isOpen && busy && dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
-      dialogRef.current.focus();
-    }
+    // The focused action becomes disabled when busy starts, which drops focus to BODY after this
+    // effect; move focus to the dialog now and again on the next frame.
+    if (!isOpen || !busy || !dialogRef.current) return undefined;
+    dialogRef.current.focus();
+    const raf = requestAnimationFrame(() => {
+      if (dialogRef.current && document.activeElement !== dialogRef.current) dialogRef.current.focus();
+    });
+    return () => cancelAnimationFrame(raf);
   }, [isOpen, busy]);
 
   // Restore focus to the invoking control when the dialog closes.
@@ -240,7 +245,7 @@ export default function ReplaceDiffModal({
               <button
                 ref={confirmBtnRef}
                 type="button"
-                onClick={onConfirm}
+                onClick={(e) => { dialogRef.current?.focus(); onConfirm(e); }}
                 disabled={busy}
                 style={{
                   padding: '10px 18px',

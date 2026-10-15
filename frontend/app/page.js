@@ -878,6 +878,8 @@ export default function Home() {
               />
             )}
 
+            {/* Focus fallback target when a replaced stop's control disappears (keyboard users keep context). */}
+            <div data-focus-fallback tabIndex={-1} aria-label="Lịch trình" style={{ outline: 'none' }}>
             <TourTimeline
               tour={tour}
               highlightedStopId={highlightedStopId}
@@ -885,6 +887,7 @@ export default function Home() {
               onInitiateReplace={handleInitiateReplace}
               busy={busy}
             />
+            </div>
 
             {!tour && (
               <div
