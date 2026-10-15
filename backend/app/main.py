@@ -1,5 +1,7 @@
 """FastAPI composition with backward-compatible legacy imports."""
 import os
+import logging
+from urllib.parse import urlsplit
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -8,24 +10,53 @@ from starlette.exceptions import HTTPException
 from app.api.errors import APIError
 from app.api.legacy import PlanRequest, load, plan
 from app.api.routes import router
+from app.api.security import SecurityMiddleware, configure_access_logging, setting
 from app.llm.extract import MockExtractor, UnavailableExtractor
 from app.planner.interfaces import StraightLineEstimator
-from app.repositories.sessions import SessionStore
+from app.repositories.sessions import SessionStore, SessionStoreInterface
+from app.repositories.sqlite_sessions import SQLiteSessionStore
 from app.repositories.venues import VenueRepository
 
 
-def create_app(*, data_path=None, sessions=None, extractor=None):
+def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None):
+    configure_access_logging()
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
     app.state.venues = VenueRepository(data_path)
-    app.state.sessions = sessions if sessions is not None else SessionStore()
     app.state.extractor = extractor if extractor is not None else (
         UnavailableExtractor() if os.getenv("FOODTOUR_LLM", "mock").casefold() == "off" else MockExtractor()
     )
     app.state.routing = StraightLineEstimator()
-    app.add_middleware(
-        CORSMiddleware, allow_origins=[os.getenv("WEB_ORIGIN", "http://localhost:3000")],
-        allow_methods=["GET", "POST", "PUT"], allow_headers=["Content-Type", "X-Session-Token"],
+    web_origins = []
+    for configured in os.getenv("WEB_ORIGIN", "http://localhost:3000").split(","):
+        origin = configured.strip()
+        try:
+            parts = urlsplit(origin)
+            valid = (parts.scheme in ("http", "https") and parts.hostname
+                     and not parts.username and not parts.password
+                     and not parts.path and not parts.query and not parts.fragment and "*" not in origin)
+        except ValueError:
+            valid = False
+        if valid and origin not in web_origins:
+            web_origins.append(origin)
+    db_path = os.getenv("FOODTOUR_SESSION_DB", "").strip() or None
+    rate_limit = setting("FOODTOUR_RATE_LIMIT_TOKEN", 60)
+    rate_window = setting("FOODTOUR_RATE_WINDOW_SECONDS", 60)
+    app.state.sessions = sessions if sessions is not None else (
+        SQLiteSessionStore(db_path, app.state.venues, app.state.routing,
+                           rate_limit=rate_limit, rate_window=rate_window) if db_path else
+        SessionStore(rate_limit=rate_limit, rate_window=rate_window)
     )
+    app.add_middleware(
+        CORSMiddleware, allow_origins=web_origins,
+        allow_methods=["GET", "POST", "PUT"],
+        allow_headers=["Content-Type", "X-Session-Token", "X-Request-ID"], expose_headers=["X-Request-ID"],
+    )
+    app.add_middleware(SecurityMiddleware,
+        body_limit=setting("FOODTOUR_BODY_LIMIT_BYTES", 8192), token_limit=rate_limit,
+        ip_limit=setting("FOODTOUR_RATE_LIMIT_IP", 240), window=rate_window,
+        web_origins=web_origins)
+    # Uvicorn's default access formatter includes raw URLs; only allowlisted JSON access logs remain.
+    logging.getLogger("uvicorn.access").disabled = True
 
     @app.exception_handler(APIError)
     async def api_error(request: Request, exc: APIError):
@@ -33,9 +64,8 @@ def create_app(*, data_path=None, sessions=None, extractor=None):
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError):
-        details = [{"loc": list(e["loc"]), "type": e["type"]} for e in exc.errors()]
         return JSONResponse(status_code=422, content=APIError(
-            422, "validation_error", "Yêu cầu không hợp lệ.", details
+            422, "validation_error", "Yêu cầu không hợp lệ."
         ).body())
 
     @app.exception_handler(HTTPException)
