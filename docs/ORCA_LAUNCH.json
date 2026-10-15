@@ -24,7 +24,7 @@
         "effort": "medium",
         "evidence": "first launch receipt for terminal process incarnation 3b8d4cc5 (same process reused); retry receipt launch.* is null because --terminal reuse cannot restate model/effort"
       },
-      "outcome": "ready_turn_started",
+      "outcome": "succeeded (DATA-BE-00, report 078226d, merged dc9c363)",
       "detail": "Human accepted Codex trust prompt and ran the retry; same worktree and terminal reused, no duplicate worktree.",
       "failedAttempt": {
         "dispatchId": "ctx_75cf0e331a18",
@@ -50,8 +50,28 @@
         "model": null,
         "effort": null
       },
-      "outcome": "ready_turn_started",
+      "outcome": "succeeded (FE-QA-00, commit 3ca3fc9, terminal released)",
       "detail": "Model/effort omitted to inherit configured default; runtime did not report the effective model, so 3.8 Flash high is NOT verified."
+    }
+  ],
+  "wave2": [
+    {
+      "task": "DATA-01",
+      "taskId": "task_27d84c380b68",
+      "dispatchId": "ctx_d30d06fc3af7",
+      "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
+      "worktree": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend",
+      "launch": "reused terminal; requested/effective model not restated (--terminal)",
+      "state": "outcome_unknown (turn start unverified)"
+    },
+    {
+      "task": "FE-01",
+      "taskId": "task_076becd4d47b",
+      "dispatchId": "ctx_ce9c33709837",
+      "terminal": "term_8ff8e175-04b3-4151-9e70-42d6cf27b4a9",
+      "worktree": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web",
+      "launch": "antigravity, model/effort omitted (configured default; effective not reported)",
+      "state": "ready"
     }
   ]
 }
