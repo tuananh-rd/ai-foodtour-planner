@@ -1,26 +1,78 @@
-"""Bounded local HTTP transport. No DNS, proxy, redirect or vendor defaults."""
+"""Bounded provider HTTP transport. No proxy, no redirects, size and deadline caps.
+
+Allowed destinations:
+- loopback IP literals over http/https with an explicit port (local fakes and self-hosted services);
+- HTTPS to hostnames on the explicit allowlist: FOODTOUR_PROVIDER_HOSTS (comma-separated, exact,
+  case-insensitive) plus the official host of a provider the operator explicitly enabled
+  (registered by that adapter via allow_host()).
+Anything else is refused before any socket is opened. Error messages never contain URLs or keys.
+"""
 import ipaddress
 from http.client import HTTPException
 import math
+import os
 import socket
+import ssl
 import time
+from threading import RLock
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlsplit
-from urllib.request import HTTPRedirectHandler, ProxyHandler, Request, build_opener
+from urllib.request import HTTPRedirectHandler, HTTPSHandler, ProxyHandler, Request, build_opener
 
 from app.llm.provider import ProviderError
 
+_REGISTERED = set()
+_LOCK = RLock()
 
-def local_endpoint(url):
+
+def allow_host(host):
+    """Called by an adapter only when its provider has been explicitly enabled by configuration."""
+    with _LOCK:
+        _REGISTERED.add(host.strip().casefold())
+
+
+def allowed_hosts():
+    configured = {h.strip().casefold() for h in os.getenv('FOODTOUR_PROVIDER_HOSTS', '').split(',') if h.strip()}
+    with _LOCK:
+        return configured | set(_REGISTERED)
+
+
+def _loopback(host):
+    try:
+        return ipaddress.ip_address(host or '').is_loopback
+    except ValueError:
+        return False
+
+
+def destination_allowed(url):
+    """True when url may be contacted. Path and query are built by adapters, never by users."""
     try:
         parts = urlsplit(url)
-        address = ipaddress.ip_address(parts.hostname or '')
-        if (parts.scheme not in ('http', 'https') or not address.is_loopback or parts.username
-                or parts.password or parts.query or parts.fragment or not parts.port):
+        host = (parts.hostname or '').casefold()
+        if parts.username or parts.password or parts.fragment or not host:
+            return False
+        if _loopback(host):
+            return parts.scheme in ('http', 'https') and parts.port is not None
+        return parts.scheme == 'https' and host in allowed_hosts() and parts.port in (None, 443)
+    except (ValueError, TypeError, AttributeError):
+        return False
+
+
+def provider_endpoint(url):
+    """Normalize a configured base URL (no query) or return None when it is not allowed."""
+    try:
+        parts = urlsplit(url or '')
+        if parts.query or not destination_allowed(url):
             return None
         return url.rstrip('/')
     except (ValueError, TypeError, AttributeError):
         return None
+
+
+def local_endpoint(url):
+    """Backward-compatible: loopback-only base URL."""
+    endpoint = provider_endpoint(url)
+    return endpoint if endpoint and _loopback(urlsplit(endpoint).hostname) else None
 
 
 class NoRedirect(HTTPRedirectHandler):
@@ -31,20 +83,13 @@ class NoRedirect(HTTPRedirectHandler):
 
 def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=8192):
     # Validate every final URL before opener/socket construction, including direct adapter calls.
-    if local_endpoint(url) is None:
-        # OSRM's fixed query is allowed by its adapter; no arbitrary query is accepted here.
-        try:
-            parts = urlsplit(url)
-            allowed = parts.query == 'overview=false' and local_endpoint(url.split('?', 1)[0])
-        except (ValueError, TypeError, AttributeError):
-            allowed = False
-        if not allowed:
-            raise ProviderError('unavailable')
+    if not destination_allowed(url):
+        raise ProviderError('unavailable')
     try:
         if not math.isfinite(deadline_s) or deadline_s <= 0:
             raise ProviderError('timeout')
         end = time.monotonic() + min(deadline_s, 30.0)
-        opener = build_opener(ProxyHandler({}), NoRedirect())
+        opener = build_opener(ProxyHandler({}), NoRedirect(), HTTPSHandler(context=ssl.create_default_context()))
         req = Request(url, data=body, headers=headers or {}, method='POST' if body is not None else 'GET')
         with opener.open(req, timeout=min(deadline_s, 30.0)) as response:
             if response.status != 200:

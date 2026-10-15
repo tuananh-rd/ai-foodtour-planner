@@ -157,3 +157,20 @@ class LLMExtractor:
         miss = tuple(missing_slots(merged))
         return ExtractionResult("ok", "live", merged, tuple(sorted(updates)), miss,
                                 tuple(QUESTIONS[m] for m in miss if m in QUESTIONS), tuple(notes), tuple(sorted(set(rejected))))
+
+
+class FallbackExtractor:
+    """Use the LLM; if it is unavailable, use the rule-based extractor and SAY so (source='mock')."""
+
+    def __init__(self, primary, fallback):
+        self.primary, self.fallback = primary, fallback
+
+    def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
+        first = self.primary.extract(text, prior)
+        if first.status == "ok":
+            return first
+        second = self.fallback.extract(text, prior)
+        if second.status != "ok":
+            return first
+        note = "Mô hình ngôn ngữ chưa phản hồi được; đã dùng bộ luật trích xuất cục bộ."
+        return replace(second, notes=tuple(second.notes) + (note,))

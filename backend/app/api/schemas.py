@@ -143,6 +143,8 @@ class LegView(Model):
     minutes: int | None
     km: float
     source: LegSource
+    # Route polyline [[lat, lon], ...] from the routing provider; present only for provider_route legs.
+    geometry: list[list[float]] | None = None
 
 
 class StopView(Model):
@@ -177,6 +179,7 @@ class TourView(Model):
     unknowns: list[str]
     totals: Totals
     explanation: str | None
+    explanation_source: Literal["template", "llm"] = "template"
     locks: list[str]
     assumptions: dict = Field(default_factory=dict)
 
@@ -190,6 +193,7 @@ class SessionView(Model):
     revision: int
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
+    extraction_source: Literal["rules", "llm"] | None = None
 
 
 class EvidenceOverlayCounts(Model):
@@ -206,6 +210,11 @@ class Health(Model):
     routing: Literal["straight_line_estimate", "provider_route", "unknown"]
     llm_configured: bool = True
     routing_configured: bool = True
+    llm_provider: Literal["rules", "gemini", "http", "off"] = "rules"
+    llm_model: str | None = None
+    explanation_provider: Literal["template", "gemini"] = "template"
+    routing_provider: Literal["estimate", "ors", "osrm"] = "estimate"
+    routing_last_error: str | None = None
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
     evidence_overlay: EvidenceOverlayCounts = Field(default_factory=EvidenceOverlayCounts)

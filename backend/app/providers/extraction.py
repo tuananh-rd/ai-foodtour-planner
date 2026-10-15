@@ -3,12 +3,12 @@ import json
 import os
 
 from app.llm.provider import ProviderError
-from .http_transport import local_endpoint, request_bytes
+from .http_transport import provider_endpoint, request_bytes
 
 
 class HttpExtractionProvider:
     def __init__(self, endpoint=None, api_key_env='FOODTOUR_LLM_API_KEY', max_bytes=8192):
-        self.endpoint = local_endpoint(endpoint)
+        self.endpoint = provider_endpoint(endpoint)
         self.configured = self.endpoint is not None
         self.api_key_env, self.max_bytes = api_key_env, max_bytes
 

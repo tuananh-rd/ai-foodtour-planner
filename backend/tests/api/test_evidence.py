@@ -124,7 +124,7 @@ class EvidenceAPI(unittest.TestCase):
             self.overlay.write_text(json.dumps(self.example) + '\n', encoding='utf-8')
             conflict = client.post(url + '/tour/replace', headers=headers, json=body)
             self.assertEqual(conflict.status_code, 409)
-            self.assertEqual(conflict.json()['error']['code'], 'no_candidates')
+            self.assertEqual(conflict.json()['error']['code'], 'dataset_changed')
             self.assertNotIn('stops', conflict.text)
             with patch.dict(os.environ, {'FOODTOUR_EVIDENCE_PATH': ''}):
                 self.assertEqual(client.post(url + '/tour/replace', headers=headers, json=body).status_code, 409)

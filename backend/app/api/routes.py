@@ -15,8 +15,9 @@ from app.api.schemas import (
 from app.data import DatasetLoadError
 from app.llm.explain import explain
 from app.llm.extract import QUESTIONS, UnavailableExtractor
-from app.llm.provider import LLMExtractor
+from app.llm.provider import FallbackExtractor, LLMExtractor
 from app.providers.routing import HttpRouteProvider
+from app.providers.walking import WalkingRouteProvider
 from app.planner import engine
 
 router = APIRouter(responses={
@@ -40,7 +41,7 @@ def public_source(data):
     return "synthetic" if data.dataset_source == "synthetic" else "private"
 
 
-def render_tour(tour, data, prefs, revision, routes):
+def render_tour(tour, data, prefs, revision, routes, explainer=None):
     if tour is None:
         return None
     if any(value is not None and not 0 <= value < 1440
@@ -49,42 +50,51 @@ def render_tour(tour, data, prefs, revision, routes):
     if engine.validate_tour(tour, data.venues, prefs, routes):
         raise APIError(500, "internal_validation_failed", "Lịch trình không vượt qua kiểm tra; chưa trả điểm dừng.")
     by_id = {v.id: v for v in data.venues}
+    lines = None
+    if tour.stops and tour.leg_source == "provider_route" and hasattr(routes, "geometry"):
+        # Display-only polylines from the same provider; never drawn for estimated legs.
+        lines = routes.geometry([prefs.origin] + [(by_id[s.venue_id].lat, by_id[s.venue_id].lon)
+                                                  for s in tour.stops])
     stops = []
-    for stop in tour.stops:
+    for index, stop in enumerate(tour.stops):
         venue = by_id[stop.venue_id]
+        leg = asdict(stop.leg_from_previous)
+        if lines is not None and stop.leg_from_previous.source == "provider_route":
+            leg["geometry"] = [[round(lat, 6), round(lon, 6)] for lat, lon in lines[index]]
         stops.append(StopView(
             venue_id=venue.id, name=venue.name, address=venue.address,
             district=venue.district, lat=venue.lat, lon=venue.lon,
             source_url=venue.source_url, order=stop.order,
             arrive=clock(stop.arrive_min), depart=clock(stop.depart_min),
-            leg_from_previous=LegView(**asdict(stop.leg_from_previous)),
+            leg_from_previous=LegView(**leg),
             price=price(venue), hours=Hours(status=stop.hours_evidence,
                 display=venue.hours_display, open_at_arrival=stop.open_at_arrival),
             synthetic=venue.synthetic,
         ))
+    text, text_source = explainer.explain(tour, data.venues) if explainer else (explain(tour, data.venues), "template")
     return TourView(
         revision=revision, status=tour.status, stops=stops, reasons=list(tour.reasons),
         proposed_changes=list(tour.proposed_changes), unknowns=list(tour.unknowns),
         totals=Totals(venue_range_upper_sum_vnd=tour.venue_range_upper_sum_vnd,
                       walk_minutes=tour.walk_minutes, leg_source=tour.leg_source),
-        explanation=explain(tour, data.venues), locks=list(tour.locks),
+        explanation=text, explanation_source=text_source, locks=list(tour.locks),
         assumptions=dict(tour.assumptions),
     )
 
 
-def state_view(prefs, tour, data, revision, routes):
+def state_view(prefs, tour, data, revision, routes, explainer=None):
     missing = engine.missing_slots(prefs)
     return SessionView(
         preferences=PreferencesSchema.from_domain(prefs), missing_slots=missing,
         questions=[QUESTIONS[m] for m in missing if m in QUESTIONS],
-        tour=render_tour(tour, data, prefs, revision, routes), revision=revision,
+        tour=render_tour(tour, data, prefs, revision, routes, explainer), revision=revision,
         dataset_source=public_source(data), dataset_version=data.dataset_version,
     )
 
 
 def commit(session, prefs, tour, data, request, notes=()):
     revision = session.revision + 1
-    view = state_view(prefs, tour, data, revision, request.app.state.routing)
+    view = state_view(prefs, tour, data, revision, request.app.state.routing, request.app.state.explainer)
     view.notes = list(dict.fromkeys((*session.notes, *notes)))
     session.preferences, session.tour, session.snapshot = prefs, tour, data
     session.revision = revision
@@ -98,12 +108,16 @@ def health(request: Request):
     llm_mode = "unavailable" if isinstance(extractor, UnavailableExtractor) else (
         "live" if isinstance(extractor, LLMExtractor) else "mock")
     route_mode = ("provider_route" if routing.configured and routing.reachable else "unknown"
-                  ) if isinstance(routing, HttpRouteProvider) else "straight_line_estimate"
+                  ) if isinstance(routing, (HttpRouteProvider, WalkingRouteProvider)) else "straight_line_estimate"
+    info = request.app.state.provider_info
     return Health(status="ok", dataset_loaded=bool(data.venues),
                   llm=llm_mode, llm_configured=llm_mode != "unavailable",
                   routing=route_mode, routing_configured=getattr(routing, "configured", True),
                   dataset_source=public_source(data),
-                  dataset_version=data.dataset_version, evidence_overlay=data.evidence_overlay)
+                  dataset_version=data.dataset_version, evidence_overlay=data.evidence_overlay,
+                  llm_provider=info["llm_provider"], llm_model=info["llm_model"],
+                  explanation_provider=info["explanation_provider"], routing_provider=info["routing_provider"],
+                  routing_last_error=getattr(routing, "last_error", None))
 
 
 def venue_view(v, data):
@@ -171,7 +185,8 @@ def read_session(session_id: str, request: Request,
                 tour = rebuilt.with_locks(tour.locks) if rebuilt is not None and not why else None
                 if tour is None:
                     notes = (CHANGED,)
-        view = state_view(session.preferences, tour, data, session.revision, request.app.state.routing)
+        view = state_view(session.preferences, tour, data, session.revision, request.app.state.routing,
+                          request.app.state.explainer)
         view.notes = list(notes)
         return view
 
@@ -189,7 +204,9 @@ def message(session_id: str, body: MessageRequest, request: Request,
             raise APIError(422, "validation_error", "Thông tin trích xuất không hợp lệ; hãy dùng biểu mẫu.") from None
         data = snapshot(request)
         tour = None if engine.missing_slots(prefs) or result.rejected_fields else engine.plan_tour(data.venues, prefs, request.app.state.routing)
-        return commit(session, prefs, tour, data, request, result.notes)
+        view = commit(session, prefs, tour, data, request, result.notes)
+        view.extraction_source = "llm" if result.source == "live" else "rules"
+        return view
 
 
 @router.put("/v1/sessions/{session_id}/preferences", response_model=SessionView)
@@ -222,7 +239,7 @@ def replace(session_id: str, body: ReplaceRequest, request: Request,
                 or data.evidence_overlay["hours_verified"] or data.evidence_overlay["prices_verified"]):
             current = snapshot(request)
             if current.dataset_version != data.dataset_version:
-                raise APIError(409, "no_candidates", "Dữ liệu đã đổi; hãy lập lại lịch trình trước khi thay quán.")
+                raise APIError(409, "dataset_changed", "Dữ liệu đã đổi; hãy lập lại lịch trình trước khi thay quán.")
             data = current
         result = engine.replace_stop(data.venues, session.preferences, session.tour,
                                      body.venue_id, request.app.state.routing)

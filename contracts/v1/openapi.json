@@ -102,6 +102,15 @@
           "evidence_overlay": {
             "$ref": "#/components/schemas/EvidenceOverlayCounts"
           },
+          "explanation_provider": {
+            "default": "template",
+            "enum": [
+              "template",
+              "gemini"
+            ],
+            "title": "Explanation Provider",
+            "type": "string"
+          },
           "llm": {
             "enum": [
               "mock",
@@ -116,6 +125,28 @@
             "title": "Llm Configured",
             "type": "boolean"
           },
+          "llm_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Model"
+          },
+          "llm_provider": {
+            "default": "rules",
+            "enum": [
+              "rules",
+              "gemini",
+              "http",
+              "off"
+            ],
+            "title": "Llm Provider",
+            "type": "string"
+          },
           "routing": {
             "enum": [
               "straight_line_estimate",
@@ -129,6 +160,27 @@
             "default": true,
             "title": "Routing Configured",
             "type": "boolean"
+          },
+          "routing_last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Routing Last Error"
+          },
+          "routing_provider": {
+            "default": "estimate",
+            "enum": [
+              "estimate",
+              "ors",
+              "osrm"
+            ],
+            "title": "Routing Provider",
+            "type": "string"
           },
           "status": {
             "title": "Status",
@@ -191,6 +243,23 @@
       "LegView": {
         "additionalProperties": false,
         "properties": {
+          "geometry": {
+            "anyOf": [
+              {
+                "items": {
+                  "items": {
+                    "type": "number"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
           "km": {
             "title": "Km",
             "type": "number"
@@ -609,6 +678,21 @@
             "title": "Dataset Version",
             "type": "string"
           },
+          "extraction_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "rules",
+                  "llm"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraction Source"
+          },
           "missing_slots": {
             "items": {
               "type": "string"
@@ -804,6 +888,15 @@
               }
             ],
             "title": "Explanation"
+          },
+          "explanation_source": {
+            "default": "template",
+            "enum": [
+              "template",
+              "llm"
+            ],
+            "title": "Explanation Source",
+            "type": "string"
           },
           "locks": {
             "items": {

@@ -199,7 +199,7 @@ def dev(args, env):
             env["FOODTOUR_DATA_PATH"] = str(Path(fallback) / "absent.json")
             print("FOODTOUR_DATA_PATH unset: requesting LABELED SYNTHETIC fallback", flush=True)
         try:
-            api = start([PYTHON, "-m", "uvicorn", "app.main:app", "--host", "127.0.0.1", "--port", args.port], ROOT / "backend", env)
+            api = start([PYTHON, "-m", "uvicorn", "app.server:app", "--host", "127.0.0.1", "--port", args.port], ROOT / "backend", env)
             children.append(api)
             health = wait_http(f"http://127.0.0.1:{args.port}/health", api, health=True)
             print("HEALTH:", json.dumps(health, ensure_ascii=True, sort_keys=True), flush=True)

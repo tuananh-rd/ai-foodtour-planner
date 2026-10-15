@@ -20,6 +20,24 @@ from app.providers.extraction import HttpExtractionProvider
 from app.providers.routing import HttpRouteProvider
 
 
+def osrm_fake_body(path, single_route_payload):
+    """Local OSRM-compatible fake: table/route answers derived from the single-pair payload."""
+    base = json.loads(single_route_payload.decode())['routes'][0]
+    coords = [tuple(map(float, c.split(','))) for c in path.split('/')[4].split('?')[0].split(';')]
+    n = len(coords)
+    if path.startswith('/table/v1/'):
+        return json.dumps({'code': 'Ok',
+            'durations': [[0 if i == j else base['duration'] for j in range(n)] for i in range(n)],
+            'distances': [[0 if i == j else base['distance'] for j in range(n)] for i in range(n)]}).encode()
+    legs = []
+    for (lon1, lat1), (lon2, lat2) in zip(coords, coords[1:]):
+        mid = [(lon1 + lon2) / 2, (lat1 + lat2) / 2 + 0.0001]
+        legs.append({'duration': base['duration'], 'distance': base['distance'], 'steps': [
+            {'geometry': {'coordinates': [[lon1, lat1], mid]}},
+            {'geometry': {'coordinates': [mid, [lon2, lat2]]}}]})
+    return json.dumps({'code': 'Ok', 'routes': [{'legs': legs}]}).encode()
+
+
 class Handler(BaseHTTPRequestHandler):
     def log_message(self, *args):
         pass
@@ -44,6 +62,9 @@ class Handler(BaseHTTPRequestHandler):
             self.end_headers()
             return
         raw = self.server.output
+        if mode == 'ok' and (self.path.startswith('/table/v1/') or
+                             (self.path.startswith('/route/v1/') and 'steps=true' in self.path)):
+            raw = osrm_fake_body(self.path, raw)
         if mode == 'malformed':
             raw = b'not json'
         if mode in ('oversize', 'chunked_oversize'):

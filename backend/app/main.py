@@ -12,9 +12,12 @@ from app.api.legacy import PlanRequest, load, plan
 from app.api.routes import router
 from app.api.security import SecurityMiddleware, configure_access_logging, setting
 from app.llm.extract import MockExtractor, UnavailableExtractor
-from app.llm.provider import LLMExtractor
+from app.llm.explain import CheckedExplainer
+from app.llm.provider import FallbackExtractor, LLMExtractor
 from app.providers.extraction import HttpExtractionProvider
 from app.providers.routing import HttpRouteProvider
+from app.providers.gemini import GeminiClient, GeminiExplanationProvider, GeminiExtractionProvider
+from app.providers.walking import ORSWalkingProvider, OSRMWalkingProvider
 from app.planner.interfaces import StraightLineEstimator
 from app.repositories.sessions import SessionStore, SessionStoreInterface
 from app.repositories.sqlite_sessions import SQLiteSessionStore
@@ -26,19 +29,48 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
     app.state.venues = VenueRepository(data_path)
     llm_mode = os.getenv("FOODTOUR_LLM", "mock").strip().casefold()
+    info = {"llm_provider": "rules", "llm_model": None, "explanation_provider": "template",
+            "routing_provider": "estimate"}
+    gemini = None
     if extractor is not None:
         app.state.extractor = extractor
     elif llm_mode == "mock":
         app.state.extractor = MockExtractor()
+    elif llm_mode == "gemini":
+        gemini = GeminiClient()
+        info.update(llm_provider="gemini", llm_model=gemini.model)
+        # Gemini first; if it fails the rule extractor answers and the response says so.
+        app.state.extractor = (FallbackExtractor(LLMExtractor(GeminiExtractionProvider(gemini), deadline_s=15.0),
+                                                 MockExtractor())
+                               if gemini.configured else UnavailableExtractor())
     elif llm_mode == "live":
         provider = HttpExtractionProvider(os.getenv("FOODTOUR_LLM_ENDPOINT"))
+        info["llm_provider"] = "http"
         app.state.extractor = LLMExtractor(provider) if provider.configured else UnavailableExtractor()
     else:
+        info["llm_provider"] = "off"
         app.state.extractor = UnavailableExtractor()
-    app.state.routing = (StraightLineEstimator()
-        if os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold() == "estimate"
-        else HttpRouteProvider(os.getenv("FOODTOUR_ROUTING_ENDPOINT")
-            if os.getenv("FOODTOUR_ROUTING", "").strip().casefold() == "osrm" else None))
+    explain_mode = os.getenv("FOODTOUR_EXPLAIN", "template").strip().casefold()
+    if explain_mode == "gemini":
+        gemini = gemini or GeminiClient()
+        info["explanation_provider"] = "gemini"
+        info["llm_model"] = info["llm_model"] or gemini.model
+        app.state.explainer = CheckedExplainer(GeminiExplanationProvider(gemini) if gemini.configured else None)
+    else:
+        app.state.explainer = CheckedExplainer(None)
+    routing_mode = os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold()
+    if routing_mode == "ors":
+        app.state.routing = ORSWalkingProvider()
+    elif routing_mode == "osrm" and os.getenv("FOODTOUR_OSRM_LEGACY", "").strip() == "1":
+        app.state.routing = HttpRouteProvider(os.getenv("FOODTOUR_ROUTING_ENDPOINT"))
+    elif routing_mode == "osrm":
+        app.state.routing = OSRMWalkingProvider(os.getenv("FOODTOUR_ROUTING_ENDPOINT"))
+    elif routing_mode == "estimate":
+        app.state.routing = StraightLineEstimator()
+    else:
+        app.state.routing = HttpRouteProvider(None)  # unknown mode: unconfigured, never estimated
+    info["routing_provider"] = routing_mode if routing_mode in ("ors", "osrm") else "estimate"
+    app.state.provider_info = info
     web_origins = []
     for configured in os.getenv("WEB_ORIGIN", "http://localhost:3000").split(","):
         origin = configured.strip()

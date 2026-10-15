@@ -5,7 +5,7 @@ from collections import OrderedDict
 from threading import RLock
 
 from app.planner.types import Leg
-from .http_transport import local_endpoint, request_bytes
+from .http_transport import provider_endpoint, request_bytes
 
 UNKNOWN = Leg(minutes=None, km=0.0, source='unknown')
 
@@ -20,7 +20,7 @@ def coordinates(point):
 
 class HttpRouteProvider:
     def __init__(self, endpoint=None, *, timeout_s=2.0, cache_size=512, call_budget=256):
-        self.endpoint = local_endpoint(endpoint)
+        self.endpoint = provider_endpoint(endpoint)
         self.configured = self.endpoint is not None
         self.timeout_s = timeout_s
         self.cache_size, self.call_budget = max(1, cache_size), max(0, call_budget)

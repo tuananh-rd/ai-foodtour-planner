@@ -6,11 +6,22 @@ from __future__ import annotations
 
 from typing import Optional
 
-from .interfaces import RouteMatrixProvider, StraightLineEstimator
+from .interfaces import RouteMatrixProvider, StraightLineEstimator, haversine_km
 from .relevance import excluded, interest_score
 from .types import Leg, Preferences, ReplaceResult, Stop, Tour, Venue
 
 POOL_CAP = 14
+REPLACE_CAP = 40
+
+
+def _prepare(routes, points) -> None:
+    """Let a real routing provider fetch one matrix for these points instead of one call per leg."""
+    prepare = getattr(routes, "prepare", None)
+    if prepare is not None:
+        try:
+            prepare([p for p in points if p is not None])
+        except Exception:
+            pass  # legs that stay unknown are treated as unreachable, never estimated
 MIN_PREFERRED_STOPS = 3
 
 
@@ -135,8 +146,14 @@ def _diagnose(venues, prefs, routes) -> tuple:
     if prefs.duration_min is not None and prefs.duration_min < prefs.visit_minutes:
         reasons.append("Thời lượng ngắn hơn thời gian ghé một quán.")
         changes.append(f"Tăng thời lượng lên ít nhất {prefs.visit_minutes} phút.")
-    near = [v for v in pool if prefs.origin and routes.leg(prefs.origin, (v.lat, v.lon)).minutes is not None
-            and routes.leg(prefs.origin, (v.lat, v.lon)).minutes <= prefs.max_leg_min]
+    # Only the nearest candidates are probed so a real provider is not called once per venue.
+    probe = sorted(pool, key=lambda v: (haversine_km(prefs.origin, (v.lat, v.lon)), v.id))[:POOL_CAP]         if prefs.origin else []
+    _prepare(routes, [prefs.origin] + [(v.lat, v.lon) for v in probe])
+    near = []
+    for v in probe:
+        leg = routes.leg(prefs.origin, (v.lat, v.lon))
+        if leg.minutes is not None and leg.minutes <= prefs.max_leg_min:
+            near.append(v)
     if not near:
         reasons.append(f"Không quán nào trong {prefs.max_leg_min} phút đi bộ từ điểm xuất phát.")
         changes.append("Chọn điểm xuất phát gần khu ăn uống hơn hoặc tăng giới hạn đi bộ.")
@@ -162,8 +179,9 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
     # Relevance first so the pool cap keeps the best category fits, then proximity, then id.
     ranked = sorted((v for v in venues if eligible(v, prefs) and _possible_alone(v, prefs)),
                     key=lambda v: (-interest_score(v, prefs.interests),
-                                   routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))
+                                   haversine_km(prefs.origin, (v.lat, v.lon)), v.id))
     pool = ranked[:pool_cap]
+    _prepare(routes, [prefs.origin] + [(v.lat, v.lon) for v in pool])
     truncated = len(ranked) > len(pool)
     best = {"key": None, "tour": None}
     limit = max(1, min(prefs.max_stops, 5))
@@ -232,9 +250,12 @@ def replace_stop(venues: list, prefs: Preferences, tour: Tour, venue_id: str,
     locks = tuple(i for i in ids if i != venue_id)
     base = [by_id[i] for i in ids]
     best_key, best_tour = None, None
-    for c in venues:
-        if c.id in ids or not eligible(c, prefs):
-            continue
+    old = by_id[venue_id]
+    candidates = sorted((c for c in venues if c.id not in ids and eligible(c, prefs)),
+                        key=lambda c: (-interest_score(c, prefs.interests),
+                                       haversine_km((old.lat, old.lon), (c.lat, c.lon)), c.id))[:REPLACE_CAP]
+    _prepare(routes, [prefs.origin] + [(v.lat, v.lon) for v in base] + [(c.lat, c.lon) for c in candidates])
+    for c in candidates:
         seq = base[:pos] + [c] + base[pos + 1:]
         t, _ = _evaluate(seq, prefs, routes)
         if t is None or (prefs.mode == "strict" and not _strict_ok(t)):
@@ -318,6 +339,7 @@ def build_tour(venues: list, prefs: Preferences, venue_ids: list,
     if len(venue_ids) > prefs.max_stops:
         return None, "more stops than max_stops"
     seq = [by_id[i] for i in venue_ids]
+    _prepare(routes, [prefs.origin] + [(v.lat, v.lon) for v in seq])
     if any(not eligible(v, prefs) for v in seq):
         return None, "a stored venue is no longer eligible for these preferences"
     tour, why = _evaluate(seq, prefs, routes)
