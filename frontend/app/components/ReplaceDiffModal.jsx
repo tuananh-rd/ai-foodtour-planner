@@ -23,6 +23,12 @@ export default function ReplaceDiffModal({
         return;
       }
       if (e.key !== 'Tab' || !dialogRef.current) return;
+      if (busy) {
+        // Controls are disabled while busy: keep focus on the dialog itself, never on BODY/background.
+        e.preventDefault();
+        dialogRef.current.focus();
+        return;
+      }
       // Focus trap: Tab / Shift+Tab cycle inside the dialog only.
       const focusable = Array.from(
         dialogRef.current.querySelectorAll(
@@ -49,6 +55,12 @@ export default function ReplaceDiffModal({
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, busy, onCancel]);
 
+  useEffect(() => {
+    if (isOpen && busy && dialogRef.current && !dialogRef.current.contains(document.activeElement)) {
+      dialogRef.current.focus();
+    }
+  }, [isOpen, busy]);
+
   // Restore focus to the invoking control when the dialog closes.
   useEffect(() => {
     if (!isOpen) return undefined;
@@ -56,6 +68,13 @@ export default function ReplaceDiffModal({
     return () => {
       if (invoker && typeof invoker.focus === 'function' && document.contains(invoker)) {
         invoker.focus();
+        return;
+      }
+      // Invoker is gone (the stop was replaced): land on the tour region so keyboard users keep context.
+      const fallback = document.querySelector('[data-focus-fallback], main, [role="main"]');
+      if (fallback) {
+        if (!fallback.hasAttribute('tabindex')) fallback.setAttribute('tabindex', '-1');
+        fallback.focus();
       }
     };
   }, [isOpen]);
@@ -89,6 +108,7 @@ export default function ReplaceDiffModal({
   return (
     <div
       ref={dialogRef}
+      tabIndex={-1}
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"

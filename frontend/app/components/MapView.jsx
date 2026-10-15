@@ -43,8 +43,11 @@ export default function MapView({
     }
     window.addEventListener('resize', updateDims);
     window.addEventListener('orientationchange', updateDims);
+    // Without ResizeObserver a hidden->visible tab change fires no event: poll cheaply.
+    const poll = observer ? null : setInterval(updateDims, 400);
     return () => {
       if (observer) observer.disconnect();
+      if (poll) clearInterval(poll);
       window.removeEventListener('resize', updateDims);
       window.removeEventListener('orientationchange', updateDims);
     };
