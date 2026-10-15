@@ -189,5 +189,15 @@ class ValidateRecompute(unittest.TestCase):
         self.assertTrue(validate_tour(self.t, self.venues, replace(self.p, mode="strict")))
 
 
+class Midnight(unittest.TestCase):
+    def test_cross_midnight_is_rejected_not_wrapped(self):
+        vs = load_fixture()
+        late = plan_tour(vs, prefs(start_time_min=23 * 60 + 30, weekday=0))
+        self.assertEqual(late.status, "no_solution")
+        early = plan_tour(vs, prefs(start_time_min=20 * 60, weekday=0))
+        for s in early.stops:
+            self.assertLessEqual(s.depart_min, 1440)
+
+
 if __name__ == "__main__":
     unittest.main()
