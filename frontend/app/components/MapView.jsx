@@ -1,211 +1,487 @@
 'use client';
 
-import { useState, useMemo, useRef, useEffect } from 'react';
-
-// Web Mercator projection formulas
-function project(lat, lon, zoom) {
-  const siny = Math.sin((lat * Math.PI) / 180);
-  const clampedSiny = Math.min(Math.max(siny, -0.9999), 0.9999);
-  const scale = 256 * Math.pow(2, zoom);
-  const x = scale * (0.5 + lon / 360);
-  const y = scale * (0.5 - Math.log((1 + clampedSiny) / (1 - clampedSiny)) / (4 * Math.PI));
-  return { x, y };
-}
-
-// Inverse Web Mercator (world pixels at zoom -> lat/lon)
-function unproject(x, y, zoom) {
-  const scale = 256 * Math.pow(2, zoom);
-  const lon = (x / scale) * 360 - 180;
-  const n = Math.PI * (1 - (2 * y) / scale);
-  const lat = (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
-  return { lat, lon };
-}
+import { useState, useEffect, useRef, useMemo } from 'react';
+import { loadGoogleMaps, isAuthFailed } from '../../lib/googleMapsLoader';
+import { getVenuesMap } from '../../lib/api';
+import { clusterVenues } from '../../lib/clusterer';
 
 export default function MapView({
   origin,
+  originLabel,
   stops = [],
   highlightedStopId,
   onSelectStop,
   legSource = 'straight_line_estimate',
-  routingProvider = 'estimate'
+  routingProvider = 'estimate',
+  routeWarnings = [],
+  clientConfig = null
 }) {
-  const [zoomOffset, setZoomOffset] = useState(0);
   const containerRef = useRef(null);
-  const [viewportDims, setViewportDims] = useState({ width: 600, height: 380 });
+  const mapInstanceRef = useRef(null);
+  const markersRef = useRef([]);
+  const polylinesRef = useRef([]);
+  const venueMarkersRef = useRef([]);
 
-  // Responsive container measurement. A hidden tab has clientWidth 0, so observe the element
-  // itself: ResizeObserver fires when the tab becomes visible, keeping SVG viewBox, markers
-  // and tiles in one coordinate system.
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return undefined;
-    const updateDims = () => {
-      const w = el.clientWidth;
-      if (w > 0) {
-        setViewportDims((prev) => (prev.width === w ? prev : { width: w, height: 380 }));
-      }
-    };
-    updateDims();
-    let observer = null;
-    if (typeof ResizeObserver !== 'undefined') {
-      observer = new ResizeObserver(updateDims);
-      observer.observe(el);
-    }
-    window.addEventListener('resize', updateDims);
-    window.addEventListener('orientationchange', updateDims);
-    // Without ResizeObserver a hidden->visible tab change fires no event: poll cheaply.
-    const poll = observer ? null : setInterval(updateDims, 400);
-    return () => {
-      if (observer) observer.disconnect();
-      if (poll) clearInterval(poll);
-      window.removeEventListener('resize', updateDims);
-      window.removeEventListener('orientationchange', updateDims);
-    };
-  }, []);
+  // Map state: 'loading' | 'ready' | 'unavailable' | 'key_rejected' | 'blocked'
+  const [mapState, setMapState] = useState('loading');
+  const [unavailableReason, setUnavailableReason] = useState(null);
 
-  const viewWidth = viewportDims.width;
-  const viewHeight = viewportDims.height;
+  // Restaurant venues toggle & state
+  const [showVenues, setShowVenues] = useState(false);
+  const [venues, setVenues] = useState([]);
+  const [isVenuesLoading, setIsVenuesLoading] = useState(false);
+  const [isVenuesTruncated, setIsVenuesTruncated] = useState(false);
+  const [selectedVenue, setSelectedVenue] = useState(null);
+  const [currentZoom, setCurrentZoom] = useState(15);
 
-  // Compute map center and default zoom based on all points
-  const points = useMemo(() => {
-    const pts = [];
-    if (origin && typeof origin.lat === 'number' && typeof origin.lon === 'number') {
-      pts.push({ id: 'origin', lat: origin.lat, lon: origin.lon, isOrigin: true });
-    }
-    stops.forEach((s) => {
-      if (typeof s.lat === 'number' && typeof s.lon === 'number') {
-        pts.push({ id: s.venue_id, lat: s.lat, lon: s.lon, order: s.order, name: s.name });
-      }
-    });
-    return pts;
-  }, [origin, stops]);
+  // Determine provider display name
+  const providerName = routingProvider === 'google_routes' || routingProvider === 'google'
+    ? 'Google Routes'
+    : routingProvider === 'ors'
+    ? 'openrouteservice'
+    : routingProvider === 'osrm'
+    ? 'máy chủ OSRM'
+    : 'nhà cung cấp định tuyến';
 
-  const { centerLat, centerLon, baseZoom } = useMemo(() => {
-    // Fit by projected PIXELS (not degree spans): every marker and any provider route geometry
-    // must lie inside the measured viewport with padding.
-    const all = points.map((pt) => ({ lat: pt.lat, lon: pt.lon }));
-    stops.forEach((st) => {
-      const g = st.leg_from_previous && st.leg_from_previous.source === 'provider_route' ? st.leg_from_previous.geometry : null;
-      if (Array.isArray(g)) g.forEach((pt) => { if (Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1])) all.push({ lat: pt[0], lon: pt[1] }); });
-    });
-    if (all.length === 0) {
-      return { centerLat: 21.033, centerLon: 105.850, baseZoom: 15 };
-    }
-    const pad = 44;
-    let z = 11;
-    let box = null;
-    for (let cand = 17; cand >= 11; cand--) {
-      const ps = all.map((pt) => project(pt.lat, pt.lon, cand));
-      const minX = Math.min(...ps.map((q) => q.x)), maxX = Math.max(...ps.map((q) => q.x));
-      const minY = Math.min(...ps.map((q) => q.y)), maxY = Math.max(...ps.map((q) => q.y));
-      box = { minX, maxX, minY, maxY, z: cand };
-      if (maxX - minX <= viewWidth - 2 * pad && maxY - minY <= viewHeight - 2 * pad) { z = cand; break; }
-    }
-    if (box.z !== z) {
-      const ps = all.map((pt) => project(pt.lat, pt.lon, z));
-      box = { minX: Math.min(...ps.map((q) => q.x)), maxX: Math.max(...ps.map((q) => q.x)),
-              minY: Math.min(...ps.map((q) => q.y)), maxY: Math.max(...ps.map((q) => q.y)), z };
-    }
-    const c = unproject((box.minX + box.maxX) / 2, (box.minY + box.maxY) / 2, z);
-    return { centerLat: c.lat, centerLon: c.lon, baseZoom: z };
-  }, [points, stops, viewWidth, viewHeight]);
-
-  const currentZoom = Math.min(18, Math.max(11, baseZoom + zoomOffset));
-
-  // Center point in world pixels
-  const centerWorld = project(centerLat, centerLon, currentZoom);
-
-  // Project any point to container coordinates
-  const toLocalPx = (lat, lon) => {
-    const wp = project(lat, lon, currentZoom);
-    return {
-      x: wp.x - centerWorld.x + viewWidth / 2,
-      y: wp.y - centerWorld.y + viewHeight / 2
-    };
-  };
-
-  // Determine tiles to render
-  const tiles = useMemo(() => {
-    const leftWorld = centerWorld.x - viewWidth / 2;
-    const rightWorld = centerWorld.x + viewWidth / 2;
-    const topWorld = centerWorld.y - viewHeight / 2;
-    const bottomWorld = centerWorld.y + viewHeight / 2;
-
-    const minTileX = Math.floor(leftWorld / 256);
-    const maxTileX = Math.floor(rightWorld / 256);
-    const minTileY = Math.floor(topWorld / 256);
-    const maxTileY = Math.floor(bottomWorld / 256);
-
-    const tileList = [];
-    for (let tx = minTileX; tx <= maxTileX; tx++) {
-      for (let ty = minTileY; ty <= maxTileY; ty++) {
-        const left = tx * 256 - centerWorld.x + viewWidth / 2;
-        const top = ty * 256 - centerWorld.y + viewHeight / 2;
-        tileList.push({
-          key: `${currentZoom}-${tx}-${ty}`,
-          url: `https://tile.openstreetmap.org/${currentZoom}/${tx}/${ty}.png`,
-          left,
-          top
-        });
-      }
-    }
-    return tileList;
-  }, [centerWorld, currentZoom, viewWidth, viewHeight]);
-
-  // Projected points
-  const projectedPoints = points.map((p) => ({
-    ...p,
-    ...toLocalPx(p.lat, p.lon)
-  }));
-
-  const osmUrl = `https://www.openstreetmap.org/?mlat=${centerLat}&mlon=${centerLon}#map=${currentZoom}/${centerLat.toFixed(4)}/${centerLon.toFixed(4)}`;
-
-  // Real walking geometry comes only from the routing provider (contract v1.4: leg_from_previous.geometry,
-  // present only for provider_route legs). Straight-line estimates get a captioned dashed hint instead.
-  const isStraightLine = legSource === 'straight_line_estimate';
-  const routeLines = stops
-    .filter((st) => st.leg_from_previous && st.leg_from_previous.source === 'provider_route'
-      && Array.isArray(st.leg_from_previous.geometry) && st.leg_from_previous.geometry.length >= 2)
-    .map((st) => ({
-      id: st.venue_id,
-      points: st.leg_from_previous.geometry
-        .filter((pt) => Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1]))
-        .map(([lat, lon]) => { const q = toLocalPx(lat, lon); return `${q.x},${q.y}`; })
-        .join(' ')
-    }));
-  const providerName = routingProvider === 'ors' ? 'openrouteservice' : routingProvider === 'osrm' ? 'máy chủ OSRM' : 'nhà cung cấp định tuyến';
-  const polylinePoints = projectedPoints.map((p) => `${p.x},${p.y}`).join(' ');
-
-  // List each leg with minutes, km and its source label
+  // Legs detail data
   const legs = useMemo(() => {
     if (!stops || stops.length === 0) return [];
     return stops.map((stop, idx) => {
-      const fromName = idx === 0 ? 'Điểm xuất phát (S)' : stops[idx - 1].name;
+      const fromName = idx === 0 ? (originLabel || 'Điểm xuất phát (S)') : stops[idx - 1].name;
       const toName = stop.name;
       const leg = stop.leg_from_previous || {};
       const src = leg.source || legSource || 'unknown';
       let srcLabel = 'Chưa rõ';
+      let routeDrawn = false;
+
       if (src === 'provider_route') {
-        srcLabel = 'Tuyến đi bộ từ nhà cung cấp';
+        srcLabel = `Tuyến đi bộ từ ${providerName}`;
+        routeDrawn = Array.isArray(leg.geometry) && leg.geometry.length >= 2;
       } else if (src === 'straight_line_estimate') {
-        srcLabel = 'Ước tính đường chim bay';
+        srcLabel = 'Ước tính đường chim bay, không phải tuyến đi (không vẽ trên bản đồ)';
+        routeDrawn = false;
       }
+
       return {
+        order: stop.order || idx + 1,
         fromName,
         toName,
-        order: stop.order,
         minutes: leg.minutes,
         km: leg.km,
         source: src,
-        srcLabel
+        srcLabel,
+        routeDrawn,
+        geometry: leg.geometry || null
       };
     });
-  }, [stops, legSource]);
+  }, [stops, legSource, providerName, originLabel]);
+
+  // Check auth failure listener
+  useEffect(() => {
+    const handleAuthFailure = () => {
+      setMapState('key_rejected');
+      setUnavailableReason('key_rejected');
+    };
+    if (typeof window !== 'undefined') {
+      window.addEventListener('google-maps-auth-failure', handleAuthFailure);
+      return () => window.removeEventListener('google-maps-auth-failure', handleAuthFailure);
+    }
+  }, []);
+
+  // Initialize Google Maps
+  useEffect(() => {
+    let active = true;
+
+    async function initMap() {
+      // 1. Check if fake google.maps is already injected by test harness
+      if (typeof window !== 'undefined' && window.google?.maps?.importLibrary) {
+        try {
+          const { Map } = await window.google.maps.importLibrary('maps');
+          await window.google.maps.importLibrary('marker');
+          if (!active) return;
+          if (containerRef.current && !mapInstanceRef.current) {
+            const defaultCenter = clientConfig?.maps?.default_center || { lat: 21.0285, lon: 105.8522 };
+            mapInstanceRef.current = new Map(containerRef.current, {
+              center: { lat: defaultCenter.lat, lng: defaultCenter.lon },
+              zoom: clientConfig?.maps?.default_zoom || 15,
+              mapId: clientConfig?.maps?.map_id || 'DEMO_MAP_ID'
+            });
+            if (mapInstanceRef.current.addListener) {
+              mapInstanceRef.current.addListener('zoom_changed', () => {
+                if (active && mapInstanceRef.current) {
+                  const z = typeof mapInstanceRef.current.getZoom === 'function' ? mapInstanceRef.current.getZoom() : 15;
+                  setCurrentZoom(z);
+                }
+              });
+            }
+          }
+          setMapState('ready');
+          return;
+        } catch (e) {
+          if (!active) return;
+        }
+      }
+
+      // 2. Check clientConfig
+      const mapsConfig = clientConfig?.maps;
+      if (!mapsConfig || mapsConfig.status !== 'ready' || !mapsConfig.js_api_key) {
+        if (!active) return;
+        setMapState('unavailable');
+        setUnavailableReason(mapsConfig?.reason || 'not_configured');
+        return;
+      }
+
+      if (isAuthFailed()) {
+        if (!active) return;
+        setMapState('key_rejected');
+        setUnavailableReason('key_rejected');
+        return;
+      }
+
+      try {
+        const { Map } = await loadGoogleMaps({
+          apiKey: mapsConfig.js_api_key,
+          language: mapsConfig.language || 'vi',
+          region: mapsConfig.region || 'VN'
+        });
+
+        if (!active) return;
+
+        if (containerRef.current && !mapInstanceRef.current) {
+          const defaultCenter = mapsConfig.default_center || { lat: 21.0285, lon: 105.8522 };
+          const map = new Map(containerRef.current, {
+            center: { lat: defaultCenter.lat, lng: defaultCenter.lon },
+            zoom: mapsConfig.default_zoom || 15,
+            mapId: mapsConfig.map_id || 'DEMO_MAP_ID',
+            mapTypeControl: false,
+            streetViewControl: false,
+            fullscreenControl: true
+          });
+          mapInstanceRef.current = map;
+
+          map.addListener('zoom_changed', () => {
+            if (active && mapInstanceRef.current) {
+              const z = typeof mapInstanceRef.current.getZoom === 'function' ? mapInstanceRef.current.getZoom() : 15;
+              setCurrentZoom(z);
+            }
+          });
+        }
+
+        setMapState('ready');
+      } catch (err) {
+        if (!active) return;
+        if (err.code === 'KEY_REJECTED' || isAuthFailed()) {
+          setMapState('key_rejected');
+          setUnavailableReason('key_rejected');
+        } else if (err.code === 'SCRIPT_BLOCKED') {
+          setMapState('blocked');
+          setUnavailableReason('blocked');
+        } else {
+          setMapState('unavailable');
+          setUnavailableReason(err.code || 'error');
+        }
+      }
+    }
+
+    initMap();
+
+    const handleTestInit = () => initMap();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
+    }
+
+    return () => {
+      active = false;
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
+      }
+    };
+  }, [clientConfig]);
+
+  // Update Tour Markers & Route Polylines
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (mapState !== 'ready' || !map || typeof window === 'undefined') return;
+
+    let isSubscribed = true;
+
+    async function renderTourObjects() {
+      try {
+        const { AdvancedMarkerElement } = await window.google.maps.importLibrary('marker');
+        const { LatLngBounds, Polyline } = await window.google.maps.importLibrary('maps');
+
+        if (!isSubscribed) return;
+
+        // Clean previous tour markers
+        markersRef.current.forEach((m) => {
+          if (m && typeof m.setMap === 'function') m.setMap(null);
+          else if (m) m.map = null;
+        });
+        markersRef.current = [];
+
+        // Clean previous route polylines
+        polylinesRef.current.forEach((p) => {
+          if (p && typeof p.setMap === 'function') p.setMap(null);
+          else if (p) p.map = null;
+        });
+        polylinesRef.current = [];
+
+        const bounds = new LatLngBounds();
+        let hasBounds = false;
+
+        // 1. Origin Marker
+        if (origin && typeof origin.lat === 'number' && typeof origin.lon === 'number') {
+          const originPin = document.createElement('div');
+          originPin.className = 'gmp-origin-marker';
+          originPin.setAttribute('role', 'button');
+          originPin.setAttribute('tabindex', '0');
+          originPin.setAttribute('aria-label', `Điểm xuất phát: ${originLabel || 'Vị trí bắt đầu'}`);
+          originPin.innerHTML = `
+            <div style="background:#10b981;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.35);border:2px solid #fff;">
+              S
+            </div>
+          `;
+
+          const originMarker = new AdvancedMarkerElement({
+            map,
+            position: { lat: origin.lat, lng: origin.lon },
+            title: `Điểm xuất phát: ${originLabel || 'Vị trí bắt đầu'}`,
+            content: originPin
+          });
+          markersRef.current.push(originMarker);
+          bounds.extend({ lat: origin.lat, lng: origin.lon });
+          hasBounds = true;
+        }
+
+        // 2. Tour Stop Markers
+        stops.forEach((stop, idx) => {
+          if (typeof stop.lat !== 'number' || typeof stop.lon !== 'number') return;
+          const isHighlighted = highlightedStopId === stop.venue_id;
+
+          const stopPin = document.createElement('div');
+          stopPin.className = 'gmp-stop-marker';
+          stopPin.setAttribute('role', 'button');
+          stopPin.setAttribute('tabindex', '0');
+          stopPin.setAttribute('aria-label', `Điểm dừng ${stop.order || idx + 1}: ${stop.name}`);
+          const bg = isHighlighted ? '#c2410c' : '#e05315';
+          const scale = isHighlighted ? 'scale(1.15)' : 'scale(1)';
+          stopPin.innerHTML = `
+            <div style="background:${bg};transform:${scale};transition:transform 0.15s ease;color:#fff;border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;box-shadow:0 2px 6px rgba(0,0,0,0.35);border:2px solid #fff;">
+              ${stop.order || idx + 1}
+            </div>
+          `;
+
+          const stopMarker = new AdvancedMarkerElement({
+            map,
+            position: { lat: stop.lat, lng: stop.lon },
+            title: `${stop.order || idx + 1}. ${stop.name}`,
+            content: stopPin
+          });
+
+          const onSelect = () => onSelectStop && onSelectStop(stop.venue_id);
+          stopPin.addEventListener('click', onSelect);
+          stopPin.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              onSelect();
+            }
+          });
+
+          markersRef.current.push(stopMarker);
+          bounds.extend({ lat: stop.lat, lng: stop.lon });
+          hasBounds = true;
+        });
+
+        // 3. Draw Route Polylines: ONLY for provider_route legs with geometry
+        // Estimated legs are NEVER drawn as routes.
+        stops.forEach((stop) => {
+          const leg = stop.leg_from_previous;
+          if (leg && leg.source === 'provider_route' && Array.isArray(leg.geometry) && leg.geometry.length >= 2) {
+            const path = leg.geometry.map(([lat, lon]) => ({ lat, lng: lon }));
+            const polyline = new Polyline({
+              path,
+              geodesic: true,
+              strokeColor: '#e05315',
+              strokeOpacity: 0.85,
+              strokeWeight: 5,
+              map
+            });
+            polylinesRef.current.push(polyline);
+            path.forEach((pt) => bounds.extend(pt));
+            hasBounds = true;
+          }
+        });
+
+        // Fit map bounds to encompass origin, stops and route geometry
+        if (hasBounds && !bounds.isEmpty()) {
+          map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
+        }
+      } catch (err) {
+        console.warn('Error rendering tour objects:', err);
+      }
+    }
+
+    renderTourObjects();
+
+    return () => {
+      isSubscribed = false;
+    };
+  }, [mapState, origin, originLabel, stops, highlightedStopId, onSelectStop]);
+
+  // Load restaurant venues when toggle is turned ON
+  useEffect(() => {
+    let active = true;
+
+    if (!showVenues) {
+      setVenues([]);
+      setIsVenuesTruncated(false);
+      return;
+    }
+
+    async function loadVenues() {
+      setIsVenuesLoading(true);
+      try {
+        const res = await getVenuesMap({ limit: 500 });
+        if (!active) return;
+        setVenues(res.items || []);
+        setIsVenuesTruncated(Boolean(res.truncated));
+      } catch (err) {
+        console.warn('Could not fetch venues for map:', err);
+      } finally {
+        if (active) setIsVenuesLoading(false);
+      }
+    }
+
+    loadVenues();
+
+    return () => {
+      active = false;
+    };
+  }, [showVenues]);
+
+  // Render Clustered Restaurant Markers
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (mapState !== 'ready' || !map || typeof window === 'undefined') return;
+
+    // Remove existing venue markers
+    venueMarkersRef.current.forEach((m) => {
+      if (m && typeof m.setMap === 'function') m.setMap(null);
+      else if (m) m.map = null;
+    });
+    venueMarkersRef.current = [];
+
+    if (!showVenues || venues.length === 0) return;
+
+    let active = true;
+
+    async function renderClusteredVenues() {
+      try {
+        const { AdvancedMarkerElement } = await window.google.maps.importLibrary('marker');
+        const { LatLngBounds } = await window.google.maps.importLibrary('maps');
+        if (!active) return;
+
+        // Apply spatial clustering
+        const clustered = clusterVenues(venues, currentZoom);
+
+        clustered.forEach((clusterItem) => {
+          if (clusterItem.isCluster) {
+            // Cluster Marker: circular badge showing count
+            const clusterPin = document.createElement('div');
+            clusterPin.className = 'gmp-venue-cluster';
+            clusterPin.setAttribute('role', 'button');
+            clusterPin.setAttribute('tabindex', '0');
+            clusterPin.setAttribute('aria-label', `Cụm ${clusterItem.count} quán ăn`);
+            clusterPin.innerHTML = `
+              <div style="background:#2563eb;color:#fff;border-radius:50%;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;box-shadow:0 2px 6px rgba(0,0,0,0.35);border:2px solid #fff;cursor:pointer;">
+                ${clusterItem.count}
+              </div>
+            `;
+
+            const onZoomCluster = () => {
+              if (clusterItem.bounds) {
+                const b = new LatLngBounds(
+                  { lat: clusterItem.bounds.minLat, lng: clusterItem.bounds.minLon },
+                  { lat: clusterItem.bounds.maxLat, lng: clusterItem.bounds.maxLon }
+                );
+                map.fitBounds(b);
+              } else {
+                const nextZoom = (typeof map.getZoom === 'function' ? map.getZoom() : currentZoom) + 2;
+                if (typeof map.setCenter === 'function') map.setCenter({ lat: clusterItem.lat, lng: clusterItem.lon });
+                if (typeof map.setZoom === 'function') map.setZoom(nextZoom);
+              }
+            };
+
+            clusterPin.addEventListener('click', onZoomCluster);
+            clusterPin.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onZoomCluster();
+              }
+            });
+
+            const marker = new AdvancedMarkerElement({
+              map,
+              position: { lat: clusterItem.lat, lng: clusterItem.lon },
+              title: `Cụm ${clusterItem.count} quán ăn`,
+              content: clusterPin
+            });
+            venueMarkersRef.current.push(marker);
+          } else {
+            // Individual Restaurant Marker: visually distinct from tour stops (blue/teal with food icon)
+            const venue = clusterItem.item;
+            const venuePin = document.createElement('div');
+            venuePin.className = 'gmp-venue-marker';
+            venuePin.setAttribute('role', 'button');
+            venuePin.setAttribute('tabindex', '0');
+            venuePin.setAttribute('aria-label', `Quán ăn: ${venue.name}`);
+            venuePin.innerHTML = `
+              <div style="background:#0284c7;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,0.3);border:2px solid #fff;cursor:pointer;">
+                🍜
+              </div>
+            `;
+
+            const onSelect = () => {
+              setSelectedVenue(venue);
+            };
+
+            venuePin.addEventListener('click', onSelect);
+            venuePin.addEventListener('keydown', (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onSelect();
+              }
+            });
+
+            const marker = new AdvancedMarkerElement({
+              map,
+              position: { lat: venue.lat, lng: venue.lon },
+              title: venue.name,
+              content: venuePin
+            });
+            venueMarkersRef.current.push(marker);
+          }
+        });
+      } catch (err) {
+        console.warn('Error rendering venue markers:', err);
+      }
+    }
+
+    renderClusteredVenues();
+
+    return () => {
+      active = false;
+    };
+  }, [mapState, showVenues, venues, currentZoom]);
+
+  const handleToggleVenues = () => {
+    setShowVenues((prev) => !prev);
+  };
 
   return (
     <div
       role="region"
-      aria-label="Bản đồ tuyến đường OpenStreetMap"
+      aria-label="Bản đồ Google Maps tuyến đường ẩm thực"
       style={{
         background: '#fff',
         borderRadius: 16,
@@ -214,300 +490,272 @@ export default function MapView({
         marginBottom: 20
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+      {/* Header with Title and Restaurant Toggle */}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: 12,
+          marginBottom: 12
+        }}
+      >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 20 }}>🗺️</span>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            Bản Đồ Điểm Dừng (Hà Nội)
+            Bản Đồ Tuyến Đường (Google Maps)
           </h3>
         </div>
-        <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-          <a
-            href={osmUrl}
-            target="_blank"
-            rel="noreferrer"
+
+        {/* Restaurant Markers Toggle */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <button
+            type="button"
+            onClick={handleToggleVenues}
+            aria-pressed={showVenues ? 'true' : 'false'}
+            data-testid="venue-toggle"
             style={{
-              fontSize: 12,
-              color: 'var(--accent-primary)',
-              textDecoration: 'none',
-              fontWeight: 600
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 6,
+              padding: '6px 12px',
+              fontSize: 13,
+              fontWeight: 600,
+              borderRadius: 8,
+              border: showVenues ? '1px solid #0284c7' : '1px solid var(--border-color)',
+              background: showVenues ? '#e0f2fe' : '#fff',
+              color: showVenues ? '#0369a1' : 'var(--text-secondary)',
+              cursor: 'pointer',
+              transition: 'all 0.15s ease'
             }}
           >
-            Mở trên OpenStreetMap ↗
-          </a>
+            <span>🍜</span>
+            <span>{showVenues ? 'Đang hiện quán ăn' : 'Hiện quán ăn trên bản đồ'}</span>
+          </button>
         </div>
       </div>
 
-      {/* Map Viewport */}
+      {/* Truncated Venues Notice */}
+      {showVenues && isVenuesTruncated && (
+        <div
+          role="status"
+          style={{
+            background: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: 8,
+            padding: '8px 12px',
+            fontSize: 12,
+            color: '#92400e',
+            marginBottom: 12,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}
+        >
+          <span>🔍</span>
+          <span>Khu vực có quá nhiều quán ăn (đã đạt giới hạn 500 quán); hãy phóng to bản đồ để xem chi tiết hơn.</span>
+        </div>
+      )}
+
+      {/* Map Viewport or Unavailable View */}
       <div
-        ref={containerRef}
         style={{
           position: 'relative',
           width: '100%',
-          height: 380,
-          background: '#e5e3df',
+          minHeight: 380,
+          background: '#f1f5f9',
           borderRadius: 12,
           overflow: 'hidden',
           border: '1px solid var(--border-color)'
         }}
       >
-        {/* OpenStreetMap Tile Images */}
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}>
-          {tiles.map((t) => (
-            <img
-              key={t.key}
-              src={t.url}
-              alt=""
-              loading="lazy"
-              style={{
-                position: 'absolute',
-                left: t.left,
-                top: t.top,
-                width: 256,
-                height: 256,
-                userSelect: 'none',
-                opacity: 0.95
-              }}
-            />
-          ))}
-        </div>
-
-        {/* SVG Overlay for markers and dashed straight-line hint */}
-        <svg
-          viewBox={`0 0 ${viewWidth} ${viewHeight}`}
+        {/* Real Google Map container element */}
+        <div
+          ref={containerRef}
+          data-testid="google-map-container"
           style={{
-            position: 'absolute',
-            inset: 0,
             width: '100%',
-            height: '100%'
+            height: 380,
+            display: mapState === 'ready' ? 'block' : 'none'
           }}
-        >
-          {/* Real walking routes from the provider (solid). */}
-          {routeLines.map((line) => (
-            <polyline
-              key={'route-' + line.id}
-              points={line.points}
-              fill="none"
-              stroke="#1565c0"
-              strokeWidth={4}
-              strokeOpacity={0.85}
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              data-route-geometry="provider"
-            />
-          ))}
-          {/* Visual Hint: ONLY dashed line for straight_line_estimate legs. NEVER for provider_route! */}
-          {isStraightLine && projectedPoints.length > 1 && (
-            <polyline
-              points={polylinePoints}
-              fill="none"
-              stroke="#888"
-              strokeWidth={2}
-              strokeDasharray="5,5"
-              strokeOpacity={0.75}
-            />
-          )}
+        />
 
-          {/* Markers */}
-          {projectedPoints.map((p) => {
-            const isHighlight = highlightedStopId === p.id;
-            return (
-              <g
-                key={p.id}
-                transform={`translate(${p.x},${p.y})`}
-                onClick={() => onSelectStop && onSelectStop(p.id)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' || e.key === ' ') {
-                    e.preventDefault();
-                    onSelectStop && onSelectStop(p.id);
-                  }
-                }}
-                tabIndex={0}
-                style={{ cursor: 'pointer', outline: 'none' }}
-                role="button"
-                aria-label={p.isOrigin ? 'Điểm xuất phát' : `Điểm dừng ${p.order}: ${p.name}`}
-              >
-                {p.isOrigin ? (
-                  <>
-                    <circle r="12" fill="#1565c0" stroke="#fff" strokeWidth="2.5" />
-                    <text y="4" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="bold">
-                      S
-                    </text>
-                  </>
-                ) : (
-                  <>
-                    <circle
-                      r={isHighlight ? 15 : 12}
-                      fill={isHighlight ? '#b84020' : 'var(--accent-primary)'}
-                      stroke="#fff"
-                      strokeWidth={isHighlight ? 3 : 2}
-                    />
-                    <text y="4" textAnchor="middle" fill="#fff" fontSize="11" fontWeight="bold">
-                      {p.order}
-                    </text>
-                  </>
-                )}
-              </g>
-            );
-          })}
-        </svg>
-
-        {/* Dashed line caption banner overlay on map for straight-line hint */}
-        {isStraightLine && projectedPoints.length > 1 && (
+        {/* Unavailable state view (Labelled Vietnamese, no fake map, no OSM tiles) */}
+        {mapState !== 'ready' && (
           <div
+            data-testid="map-unavailable-banner"
+            role="alert"
             style={{
-              position: 'absolute',
-              top: 10,
-              left: 10,
-              background: 'rgba(255, 255, 255, 0.92)',
-              border: '1px solid #d9d9d9',
-              borderRadius: 6,
-              padding: '4px 8px',
-              fontSize: 11,
-              color: '#555',
-              fontWeight: 600,
-              zIndex: 10,
-              pointerEvents: 'none'
+              padding: 24,
+              minHeight: 380,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              textAlign: 'center',
+              background: '#f8fafc',
+              color: 'var(--text-primary)'
             }}
           >
-            - - - khoảng cách đường chim bay, không phải tuyến đi
+            <span style={{ fontSize: 40, marginBottom: 12 }}>📍</span>
+            <h4 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 8px 0', color: 'var(--text-primary)' }}>
+              Bản đồ Google Maps chưa khả dụng
+            </h4>
+            <p style={{ fontSize: 13, color: 'var(--text-secondary)', maxWidth: 460, margin: '0 0 16px 0', lineHeight: 1.5 }}>
+              {unavailableReason === 'key_rejected'
+                ? 'Khoá Google Maps bị từ chối hoặc hết hạn. Vui lòng kiểm tra lại cấu hình khoá API.'
+                : unavailableReason === 'blocked'
+                ? 'Không thể tải Google Maps (kết nối mạng bị chặn hoặc tiện ích mở rộng trình duyệt đang chặn script).'
+                : 'Google Maps chưa được cấu hình trên hệ thống. Tuyến đường và các điểm dừng vẫn được liệt kê chi tiết bên dưới. Bạn có thể tự nhập toạ độ hoặc địa chỉ để tiếp tục lập lịch trình.'}
+            </p>
+            <div
+              style={{
+                fontSize: 12,
+                background: '#e2e8f0',
+                color: '#475569',
+                padding: '6px 12px',
+                borderRadius: 6,
+                fontWeight: 600
+              }}
+            >
+              Chế độ toạ độ thủ công vẫn hoạt động bình thường
+            </div>
           </div>
         )}
-
-        {/* Zoom Controls */}
-        <div
-          style={{
-            position: 'absolute',
-            top: 12,
-            right: 12,
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 4,
-            zIndex: 10
-          }}
-        >
-          <button
-            type="button"
-            onClick={() => setZoomOffset((prev) => Math.min(prev + 1, 3))}
-            aria-label="Phóng to bản đồ"
-            style={{
-              width: 36,
-              height: 36,
-              background: '#fff',
-              border: '1px solid #ccc',
-              borderRadius: 6,
-              fontSize: 18,
-              fontWeight: 700,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            +
-          </button>
-          <button
-            type="button"
-            onClick={() => setZoomOffset((prev) => Math.max(prev - 1, -3))}
-            aria-label="Thu nhỏ bản đồ"
-            style={{
-              width: 36,
-              height: 36,
-              background: '#fff',
-              border: '1px solid #ccc',
-              borderRadius: 6,
-              fontSize: 18,
-              fontWeight: 700,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer'
-            }}
-          >
-            −
-          </button>
-        </div>
-
-        {/* Attribution Notice */}
-        <div
-          style={{
-            position: 'absolute',
-            bottom: 4,
-            right: 6,
-            background: 'rgba(255, 255, 255, 0.85)',
-            padding: '2px 8px',
-            borderRadius: 4,
-            fontSize: 11,
-            color: '#333',
-            zIndex: 10
-          }}
-        >
-          © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer" style={{ color: '#0078A8', textDecoration: 'none' }}>OpenStreetMap contributors</a>
-        </div>
       </div>
 
-      {/* Geometry disclaimer */}
-      <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
-        {legSource === 'provider_route' ? (
-          <span style={{ color: '#2e7d32', fontWeight: 600 }}>
-            {routeLines.length > 0
-              ? `✓ Đường xanh là tuyến đi bộ do ${providerName} tính (hồ sơ đi bộ). Thời gian và cự ly từng chặng cũng từ nhà cung cấp này.`
-              : `Thời gian và cự ly đi bộ do ${providerName} tính; chưa nhận được hình học tuyến nên bản đồ không vẽ đường.`}
-            {routingProvider === 'ors' && (
-              <> Dữ liệu định tuyến: <a href="https://openrouteservice.org/" target="_blank" rel="noreferrer">openrouteservice.org</a> / © OpenStreetMap contributors.</>
-            )}
-          </span>
-        ) : (
-          <span style={{ color: '#e65100', fontWeight: 600 }}>
-            * Chưa có dữ liệu định tuyến thực tế (đang dùng cự ly đường chim bay ước tính). Đường nét đứt trên bản đồ chỉ thể hiện khoảng cách đường chim bay, không phải tuyến đi.
-          </span>
-        )}
-      </div>
+      {/* Selected Restaurant Detail Card */}
+      {selectedVenue && (
+        <div
+          role="dialog"
+          aria-label={`Thông tin quán ăn ${selectedVenue.name}`}
+          style={{
+            marginTop: 14,
+            padding: 14,
+            background: '#f8fafc',
+            border: '1px solid #cbd5e1',
+            borderRadius: 10,
+            position: 'relative'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div>
+              <h4 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 4px 0', color: 'var(--text-primary)' }}>
+                🍜 {selectedVenue.name}
+              </h4>
+              <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
+                Khu vực: {selectedVenue.district || 'Hà Nội'}
+              </div>
+              {selectedVenue.dish_tags && selectedVenue.dish_tags.length > 0 && (
+                <div style={{ fontSize: 12, color: 'var(--accent-primary)', marginBottom: 6, fontWeight: 600 }}>
+                  Món ăn: {selectedVenue.dish_tags.join(', ')}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={() => setSelectedVenue(null)}
+              aria-label="Đóng thông tin quán ăn"
+              style={{
+                background: 'transparent',
+                border: 'none',
+                fontSize: 16,
+                cursor: 'pointer',
+                color: 'var(--text-muted)',
+                padding: 4
+              }}
+            >
+              ✕
+            </button>
+          </div>
 
-      {/* Leg listing with minutes, km and source label */}
+          {/* Evidence Caveat (strictly required: no opening claims, no per-person claims) */}
+          <div
+            role="note"
+            style={{
+              background: '#fef3c7',
+              border: '1px solid #fde68a',
+              borderRadius: 6,
+              padding: '6px 10px',
+              fontSize: 11,
+              color: '#92400e',
+              lineHeight: 1.4
+            }}
+          >
+            ⚠️ Lưu ý bằng chứng: Giờ mở cửa theo ngày chưa được xác minh (không khẳng định quán đang mở cửa).
+            Khoảng giá quán (nếu có) là khoảng giá tham khảo, không bảo đảm chi phí cho mỗi người.
+          </div>
+        </div>
+      )}
+
+      {/* Mandatory Google Walking Route Warnings (Google Routes Platform Requirement) */}
+      {routeWarnings && routeWarnings.length > 0 && (
+        <div
+          data-testid="route-warnings"
+          role="alert"
+          style={{
+            marginTop: 14,
+            background: '#fff7ed',
+            border: '1px solid #fed7aa',
+            borderRadius: 8,
+            padding: '10px 14px',
+            fontSize: 12,
+            color: '#9a3412',
+            lineHeight: 1.5
+          }}
+        >
+          <div style={{ fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span>⚠️</span>
+            <span>Cảnh báo tuyến đi bộ (Google Routes):</span>
+          </div>
+          <ul style={{ margin: 0, paddingLeft: 18 }}>
+            {routeWarnings.map((warning, idx) => (
+              <li key={idx}>{warning}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Legs Detail Listing */}
       {legs.length > 0 && (
-        <div style={{ marginTop: 14, borderTop: '1px solid #f0f0f0', paddingTop: 12 }}>
-          <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', color: 'var(--text-primary)' }}>
-            🚶 Chi tiết các chặng di chuyển ({legs.length} chặng):
+        <div style={{ marginTop: 16 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 8 }}>
+            Chi tiết các chặng di chuyển ({legs.length} chặng)
           </h4>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {legs.map((leg, idx) => (
+          <div style={{ display: 'grid', gap: 8 }}>
+            {legs.map((leg) => (
               <div
-                key={idx}
+                key={leg.order}
                 style={{
-                  background: '#fafafa',
-                  borderRadius: 8,
-                  padding: '8px 12px',
-                  fontSize: 12,
                   display: 'flex',
                   justifyContent: 'space-between',
                   alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: 6
+                  background: '#f8fafc',
+                  padding: '8px 12px',
+                  borderRadius: 8,
+                  fontSize: 12,
+                  border: '1px solid var(--border-color)'
                 }}
               >
                 <div>
-                  <strong>Chặng {idx + 1}:</strong> {leg.fromName} ➔ {leg.toName}
-                </div>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center', color: '#555' }}>
-                  <span>{leg.minutes != null ? `${leg.minutes} phút` : 'Chưa rõ'}</span>
-                  <span>·</span>
-                  <span>{leg.km != null ? `${leg.km} km` : 'Chưa rõ'}</span>
-                  <span>·</span>
-                  <span
-                    style={{
-                      padding: '2px 6px',
-                      borderRadius: 4,
-                      fontSize: 11,
-                      fontWeight: 600,
-                      background: leg.source === 'provider_route' ? '#e8f5e9' : '#fff3e0',
-                      color: leg.source === 'provider_route' ? '#2e7d32' : '#e65100'
-                    }}
-                  >
-                    {leg.source}
+                  <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                    Chặng {leg.order}:
+                  </span>{' '}
+                  <span style={{ color: 'var(--text-secondary)' }}>
+                    {leg.fromName} → {leg.toName}
                   </span>
+                  <div style={{ fontSize: 11, color: leg.routeDrawn ? '#0369a1' : 'var(--text-muted)', marginTop: 2 }}>
+                    Nguồn: {leg.srcLabel}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'right', whiteSpace: 'nowrap' }}>
+                  <div style={{ fontWeight: 700, color: 'var(--text-primary)' }}>
+                    {leg.minutes != null ? `${leg.minutes} phút` : 'Chưa rõ tg'}
+                  </div>
+                  <div style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                    {leg.km != null ? `${leg.km} km` : ''}
+                  </div>
                 </div>
               </div>
             ))}

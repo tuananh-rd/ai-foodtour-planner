@@ -104,15 +104,127 @@ async function flow(width, height, label) {
   const conditional = await ev(`/có điều kiện|chưa được xác minh|chưa xác minh/i.test(document.body.innerText)`);
   rec(`${label} conditional/unverified state visible`, conditional);
 
-  // 3) map sizing after revealing the (mobile) map tab
+  // 3) Map probe & Phase 4 Google Maps platform verification
   const mapTab = await ev(`(() => { const b=[...document.querySelectorAll('button')].find(x=>x.innerText.includes('Bản đồ') && x.closest('nav')); if(b){b.click();return true} return false })()`);
-  await sleep(500);
-  const dims = await ev(`(() => { const svg=document.querySelector('[aria-label="Bản đồ tuyến đường OpenStreetMap"] svg, svg[viewBox]'); const c=svg&&svg.parentElement; if(!svg) return null; const vb=svg.viewBox.baseVal; return {vb:vb.width, w:c.clientWidth} })()`);
-  rec(`${label} map viewBox matches container${mapTab ? ' (after tab switch)' : ''}`, !!dims && Math.abs(dims.vb - dims.w) <= 1, JSON.stringify(dims));
-  const inFrame = await ev(`(() => { const svg=document.querySelector('svg[viewBox]'); if(!svg) return null; const vb=svg.viewBox.baseVal;
-    return [...svg.querySelectorAll('g[role="button"]')].map(g => { const m=/translate\\(([-\\d.]+),([-\\d.]+)\\)/.exec(g.getAttribute('transform')); return m ? [+m[1], +m[2]] : null; })
-      .every(p => p && p[0] >= 0 && p[0] <= vb.width && p[1] >= 0 && p[1] <= vb.height); })()`);
-  rec(`${label} every map marker (origin + stops) is inside the visible map`, inFrame === true);
+  await sleep(400);
+
+  // Assert NO OSM tile requests or elements
+  const osmCount = await ev(`document.querySelectorAll('img[src*="tile.openstreetmap.org"], img[src*="openstreetmap"]').length`);
+  rec(`${label} zero OSM tile requests or elements on map`, osmCount === 0);
+
+  // Assert unconfigured / unavailable map state
+  const unavailableBanner = await ev(`!!document.querySelector('[data-testid="map-unavailable-banner"]') && document.body.innerText.includes('Bản đồ Google Maps chưa khả dụng')`);
+  rec(`${label} unavailable Google Maps state properly labelled in Vietnamese without fake map`, unavailableBanner);
+
+  // 3b) Permission-denied message path & manual coordinates
+  // Switch to preferences tab to test geolocation permission-denied
+  const prefTab = await ev(`(() => { const b=[...document.querySelectorAll('button')].find(x=>x.innerText.includes('Tùy chọn') && x.closest('nav')); if(b){b.click();return true} return false })()`);
+  await sleep(300);
+
+  // Stub navigator.geolocation.getCurrentPosition to trigger PERMISSION_DENIED (code 1)
+  await ev(`(() => {
+    window.navigator.geolocation.getCurrentPosition = (success, error) => {
+      error({ code: 1, message: 'User denied Geolocation' });
+    };
+  })()`);
+
+  // Click explicit button 'Dùng vị trí hiện tại'
+  await ev(`document.querySelector('[data-testid="use-current-location-btn"]')?.click()`);
+  await sleep(200);
+
+  const geoDeniedMsg = await ev(`document.body.innerText.includes('từ chối quyền truy cập vị trí')`);
+  rec(`${label} geolocation permission-denied specific message path verified`, geoDeniedMsg);
+
+  // Verify manual coordinates entry remains active and editable
+  const manualInputsWorking = await ev(`(() => {
+    const lat = document.querySelector('#pref-custom-lat');
+    const lon = document.querySelector('#pref-custom-lon');
+    return !!lat && !lat.disabled && !!lon && !lon.disabled;
+  })()`);
+  rec(`${label} manual coordinate fields remain active and editable`, manualInputsWorking);
+
+  // 3c) Toggle ON/OFF changes marker count using clearly named injected fake google.maps
+  // Switch back to Map
+  if (mapTab) await ev(`[...document.querySelectorAll('nav button')].find(x=>x.innerText.includes('Bản đồ'))?.click()`);
+  await sleep(300);
+
+  // Inject __TEST_FAKE_GOOGLE_MAPS__
+  await ev(`(() => {
+    window.__TEST_FAKE_GOOGLE_MAPS__ = true;
+    const markers = [];
+    class FakeMap {
+      constructor(div, opts) {
+        this.div = div;
+        this.opts = opts;
+        this._zoom = opts.zoom || 15;
+        this.listeners = {};
+      }
+      addListener(ev, cb) { this.listeners[ev] = cb; }
+      getZoom() { return this._zoom; }
+      setZoom(z) { this._zoom = z; if (this.listeners['zoom_changed']) this.listeners['zoom_changed'](); }
+      getCenter() { return { lat: 21.0285, lng: 105.8522 }; }
+      setCenter() {}
+      fitBounds() {}
+    }
+    class FakeAdvancedMarkerElement {
+      constructor(opts) {
+        this.opts = opts;
+        this.map = opts.map;
+        this.content = opts.content;
+        this.position = opts.position;
+        markers.push(this);
+        if (opts.content && opts.map && opts.map.div) {
+          opts.map.div.appendChild(opts.content);
+        }
+      }
+      setMap(m) {
+        this.map = m;
+        if (!m && this.content && this.content.parentElement) {
+          this.content.parentElement.removeChild(this.content);
+        }
+      }
+    }
+    class FakeLatLngBounds {
+      constructor() {}
+      extend() {}
+      isEmpty() { return false; }
+    }
+    class FakePolyline {
+      constructor(opts) { this.opts = opts; }
+      setMap(m) {}
+    }
+    window.google = window.google || {};
+    window.google.maps = {
+      importLibrary: async (lib) => {
+        if (lib === 'maps') return { Map: FakeMap, LatLngBounds: FakeLatLngBounds, Polyline: FakePolyline };
+        if (lib === 'marker') return { AdvancedMarkerElement: FakeAdvancedMarkerElement };
+        if (lib === 'places') return {};
+        return {};
+      }
+    };
+    window.dispatchEvent(new CustomEvent('__TEST_INIT_FAKE_MAPS__'));
+  })()`);
+  await sleep(400);
+
+  // Check toggle state default is OFF
+  const initialTogglePressed = await ev(`document.querySelector('[data-testid="venue-toggle"]')?.getAttribute('aria-pressed') === 'false'`);
+  const initialVenueMarkers = await ev(`document.querySelectorAll('.gmp-venue-marker, .gmp-venue-cluster').length`);
+  rec(`${label} restaurant markers toggle default is OFF (count 0)`, initialTogglePressed && initialVenueMarkers === 0);
+
+  // Click toggle to turn ON
+  await ev(`document.querySelector('[data-testid="venue-toggle"]').click()`);
+  await waitFor(`document.querySelectorAll('.gmp-venue-marker, .gmp-venue-cluster').length > 0`, 8000, 'venue markers appear');
+  const countOn = await ev(`document.querySelectorAll('.gmp-venue-marker, .gmp-venue-cluster').length`);
+  const toggleOnPressed = await ev(`document.querySelector('[data-testid="venue-toggle"]')?.getAttribute('aria-pressed') === 'true'`);
+  rec(`${label} toggle ON changes marker count (markers visible)`, toggleOnPressed && countOn > 0, `markers: ${countOn}`);
+
+  // Click toggle to turn OFF
+  await ev(`document.querySelector('[data-testid="venue-toggle"]').click()`);
+  await waitFor(`document.querySelectorAll('.gmp-venue-marker, .gmp-venue-cluster').length === 0`, 5000, 'venue markers removed');
+  const countOff = await ev(`document.querySelectorAll('.gmp-venue-marker, .gmp-venue-cluster').length`);
+  rec(`${label} toggle OFF removes all venue markers from map`, countOff === 0);
+
+  // Switch back to timeline for replace stop test
   if (mapTab) await ev(`[...document.querySelectorAll('nav button')].find(x=>x.innerText.includes('Lịch trình')).click()`);
   await sleep(300);
 

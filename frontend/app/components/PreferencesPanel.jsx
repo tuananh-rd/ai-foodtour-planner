@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
+import { geocodeAddress } from '../../lib/api';
 
 const PRESET_LOCATIONS = [
   { id: 'hoankiem', name: 'Hồ Hoàn Kiếm / Phố Cổ', lat: 21.033, lon: 105.850 },
@@ -19,11 +20,30 @@ export default function PreferencesPanel({
   onUpdatePreferences,
   onPlanTour,
   busy,
-  isMock
+  isMock,
+  clientConfig,
+  sessionToken = ''
 }) {
   const [originPreset, setOriginPreset] = useState('hoankiem');
   const [customLat, setCustomLat] = useState(21.033);
   const [customLon, setCustomLon] = useState(105.850);
+  const [originLabel, setOriginLabel] = useState(preferences.origin_label || null);
+  const [originSource, setOriginSource] = useState(preferences.origin_source || null);
+
+  // Geolocation state
+  const [geoError, setGeoError] = useState(null);
+  const [geoLoading, setGeoLoading] = useState(false);
+
+  // Manual Geocoding fallback state
+  const [addressQuery, setAddressQuery] = useState('');
+  const [geocodingLoading, setGeocodingLoading] = useState(false);
+  const [geocodingResults, setGeocodingResults] = useState([]);
+  const [geocodingStatusMsg, setGeocodingStatusMsg] = useState(null);
+
+  // Place Autocomplete container
+  const autocompleteContainerRef = useRef(null);
+  const [placesAvailable, setPlacesAvailable] = useState(false);
+
   const [startTime, setStartTime] = useState(preferences.start_time || '08:30');
   const [weekday, setWeekday] = useState(preferences.weekday ?? 0);
   const [durationMin, setDurationMin] = useState(preferences.duration_min || 120);
@@ -35,8 +55,7 @@ export default function PreferencesPanel({
   const [maxStops, setMaxStops] = useState(preferences.max_stops || 3);
   const [mode, setMode] = useState(preferences.mode || 'explore');
 
-  // Sync state if preferences change from chat extraction or server reset.
-  // Properly handle null/empty server resets so UI form fields reflect authoritative state.
+  // Sync state when preferences change from external source
   useEffect(() => {
     setStartTime(preferences.start_time || '');
     setWeekday(preferences.weekday ?? 0);
@@ -52,7 +71,147 @@ export default function PreferencesPanel({
       setCustomLat(preferences.origin.lat);
       setCustomLon(preferences.origin.lon);
     }
+    setOriginLabel(preferences.origin_label || null);
+    setOriginSource(preferences.origin_source || null);
   }, [preferences]);
+
+  // Setup Google Maps PlaceAutocompleteElement if available
+  useEffect(() => {
+    let active = true;
+    if (typeof window === 'undefined') return;
+
+    async function initPlacesAutocomplete() {
+      if (!window.google?.maps?.importLibrary) return;
+
+      try {
+        const { PlaceAutocompleteElement } = await window.google.maps.importLibrary('places');
+        if (!active || !PlaceAutocompleteElement || !autocompleteContainerRef.current) return;
+
+        autocompleteContainerRef.current.innerHTML = '';
+        const autocomplete = new PlaceAutocompleteElement();
+        autocomplete.setAttribute('aria-label', 'Tìm kiếm địa điểm với Google Maps');
+
+        autocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
+          if (!placePrediction) return;
+          try {
+            const place = placePrediction.toPlace();
+            await place.fetchFields({
+              fields: ['displayName', 'formattedAddress', 'location']
+            });
+            const loc = place.location;
+            if (loc) {
+              const lat = typeof loc.lat === 'function' ? loc.lat() : loc.lat;
+              const lon = typeof loc.lng === 'function' ? loc.lng() : (loc.lon || loc.lng);
+              const label = place.displayName || place.formattedAddress || 'Địa điểm Google Maps';
+              setCustomLat(Math.round(lat * 1e6) / 1e6);
+              setCustomLon(Math.round(lon * 1e6) / 1e6);
+              setOriginLabel(label.slice(0, 120));
+              setOriginSource('place');
+              setOriginPreset('custom');
+            }
+          } catch (err) {
+            console.warn('Place fetchFields error:', err);
+          }
+        });
+
+        autocompleteContainerRef.current.appendChild(autocomplete);
+        setPlacesAvailable(true);
+      } catch (_) {
+        setPlacesAvailable(false);
+      }
+    }
+
+    initPlacesAutocomplete();
+
+    return () => {
+      active = false;
+    };
+  }, [clientConfig]);
+
+  // Explicit Click: Dùng vị trí hiện tại
+  const handleGetCurrentPosition = (e) => {
+    e.preventDefault();
+    setGeoError(null);
+
+    if (typeof window === 'undefined' || !navigator.geolocation) {
+      setGeoError('Trình duyệt của bạn không hỗ trợ định vị (Geolocation API).');
+      return;
+    }
+
+    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      setGeoError('Định vị yêu cầu kết nối bảo mật HTTPS hoặc môi trường localhost.');
+      return;
+    }
+
+    setGeoLoading(true);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setGeoLoading(false);
+        const lat = Math.round(position.coords.latitude * 1e6) / 1e6;
+        const lon = Math.round(position.coords.longitude * 1e6) / 1e6;
+        setCustomLat(lat);
+        setCustomLon(lon);
+        setOriginLabel('Vị trí hiện tại');
+        setOriginSource('current_location');
+        setOriginPreset('custom');
+      },
+      (error) => {
+        setGeoLoading(false);
+        if (error.code === 1) { // PERMISSION_DENIED
+          setGeoError('Bạn đã từ chối quyền truy cập vị trí. Hãy bật lại quyền trong cài đặt trình duyệt hoặc chọn địa điểm thủ công.');
+        } else if (error.code === 2) { // POSITION_UNAVAILABLE
+          setGeoError('Không thể xác định được vị trí hiện tại của thiết bị. Vui lòng nhập địa chỉ hoặc toạ độ thủ công.');
+        } else if (error.code === 3) { // TIMEOUT
+          setGeoError('Quá thời gian xác định vị trí GPS. Vui lòng thử lại hoặc nhập toạ độ thủ công.');
+        } else {
+          setGeoError(`Lỗi định vị: ${error.message || 'Không rõ nguyên nhân'}`);
+        }
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 30000
+      }
+    );
+  };
+
+  // Manual Geocode Address search fallback
+  const handleGeocodeSearch = async (e) => {
+    e.preventDefault();
+    if (!addressQuery.trim()) return;
+
+    setGeocodingLoading(true);
+    setGeocodingStatusMsg(null);
+    setGeocodingResults([]);
+
+    try {
+      const res = await geocodeAddress(addressQuery, sessionToken);
+      if (res.status === 'ok' && Array.isArray(res.results) && res.results.length > 0) {
+        setGeocodingResults(res.results);
+      } else if (res.status === 'zero_results') {
+        setGeocodingStatusMsg('Không tìm thấy toạ độ cho địa chỉ này. Hãy thử địa chỉ khác hoặc nhập toạ độ.');
+      } else if (res.status === 'quota') {
+        setGeocodingStatusMsg('Dịch vụ tìm toạ độ tạm thời vượt hạn ngạch (quota). Vui lòng nhập toạ độ thủ công.');
+      } else {
+        setGeocodingStatusMsg('Dịch vụ tìm toạ độ hiện không khả dụng. Vui lòng nhập toạ độ thủ công.');
+      }
+    } catch (err) {
+      setGeocodingStatusMsg(err.message || 'Lỗi khi tìm toạ độ địa chỉ.');
+    } finally {
+      setGeocodingLoading(false);
+    }
+  };
+
+  const handleSelectGeocodeResult = (result) => {
+    setCustomLat(Math.round(result.lat * 1e6) / 1e6);
+    setCustomLon(Math.round(result.lon * 1e6) / 1e6);
+    setOriginLabel(result.label.slice(0, 120));
+    setOriginSource('geocoded');
+    setOriginPreset('custom');
+    setGeocodingResults([]);
+    setAddressQuery('');
+  };
 
   const handlePresetChange = (presetId) => {
     setOriginPreset(presetId);
@@ -60,18 +219,20 @@ export default function PreferencesPanel({
     if (loc && presetId !== 'custom') {
       setCustomLat(loc.lat);
       setCustomLon(loc.lon);
+      setOriginLabel(loc.name);
+      setOriginSource('landmark');
     }
   };
 
   const handleAddInterest = (item) => {
-    const list = interestsStr.split(',').map(s => s.trim()).filter(Boolean);
+    const list = interestsStr.split(',').map((s) => s.trim()).filter(Boolean);
     if (!list.includes(item)) {
       setInterestsStr([...list, item].join(', '));
     }
   };
 
   const handleAddExclusion = (item) => {
-    const list = exclusionsStr.split(',').map(s => s.trim()).filter(Boolean);
+    const list = exclusionsStr.split(',').map((s) => s.trim()).filter(Boolean);
     if (!list.includes(item)) {
       setExclusionsStr([...list, item].join(', '));
     }
@@ -81,6 +242,8 @@ export default function PreferencesPanel({
     return {
       city: 'Hà Nội',
       origin: customLat != null && customLon != null ? { lat: Number(customLat), lon: Number(customLon) } : null,
+      origin_label: originLabel || null,
+      origin_source: originSource || null,
       start_time: startTime || null,
       weekday: weekday !== '' && weekday != null ? Number(weekday) : null,
       duration_min: durationMin !== '' && durationMin != null ? Number(durationMin) : null,
@@ -142,60 +305,278 @@ export default function PreferencesPanel({
       </div>
 
       <form onSubmit={handlePlanNow} style={{ display: 'grid', gap: 14 }}>
-        {/* Điểm xuất phát Preset */}
-        <div>
-          <label htmlFor="pref-origin-preset" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
-            Điểm xuất phát (Hà Nội)
-          </label>
-          <select
-            id="pref-origin-preset"
-            value={originPreset}
-            onChange={(e) => handlePresetChange(e.target.value)}
-            disabled={busy}
-            style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)', background: '#fff' }}
-          >
-            {PRESET_LOCATIONS.map((p) => (
-              <option key={p.id} value={p.id}>{p.name}</option>
-            ))}
-          </select>
-          {!preferences.origin && (
-            <div role="note" style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
-              Chưa xác nhận điểm xuất phát với máy chủ; đang đề xuất vị trí hiển thị phía trên. Bấm lập lịch trình để xác nhận.
+        {/* Origin Selection Section */}
+        <div style={{ background: '#fafafa', border: '1px solid var(--border-color)', borderRadius: 12, padding: 14 }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+            <label
+              htmlFor="pref-origin-preset"
+              style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-primary)' }}
+            >
+              Điểm xuất phát (Hà Nội)
+            </label>
+
+            {/* Current Location Button */}
+            <button
+              type="button"
+              onClick={handleGetCurrentPosition}
+              disabled={busy || geoLoading}
+              data-testid="use-current-location-btn"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 4,
+                padding: '6px 10px',
+                fontSize: 12,
+                fontWeight: 600,
+                color: '#065f46',
+                background: '#d1fae5',
+                border: '1px solid #a7f3d0',
+                borderRadius: 8,
+                cursor: busy || geoLoading ? 'not-allowed' : 'pointer'
+              }}
+            >
+              <span>📍</span>
+              <span>{geoLoading ? 'Đang định vị…' : 'Dùng vị trí hiện tại'}</span>
+            </button>
+          </div>
+
+          {/* Geolocation Error Alert */}
+          {geoError && (
+            <div
+              role="alert"
+              data-testid="geo-error-alert"
+              style={{
+                background: '#fef2f2',
+                border: '1px solid #fecaca',
+                color: '#991b1b',
+                padding: '8px 10px',
+                borderRadius: 8,
+                fontSize: 12,
+                marginBottom: 10,
+                lineHeight: 1.4
+              }}
+            >
+              ⚠️ {geoError}
             </div>
           )}
-        </div>
 
-        {/* Custom Coordinates */}
-        {originPreset === 'custom' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#f5f4ef', padding: 10, borderRadius: 8 }}>
+          {/* Selected Origin Tag */}
+          {customLat != null && customLon != null && (
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 6,
+                padding: '6px 10px',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: 6,
+                fontSize: 12,
+                color: '#166534',
+                marginBottom: 10
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>Đã chọn:</span>
+              <span>{originLabel || 'Toạ độ'} ({customLat.toFixed(4)}, {customLon.toFixed(4)})</span>
+              {originSource && (
+                <span
+                  style={{
+                    background: '#dcfce7',
+                    padding: '2px 6px',
+                    borderRadius: 4,
+                    fontSize: 10,
+                    fontWeight: 600
+                  }}
+                >
+                  [{originSource}]
+                </span>
+              )}
+            </div>
+          )}
+
+          {/* Google Place Autocomplete Container */}
+          <div
+            ref={autocompleteContainerRef}
+            data-testid="place-autocomplete-container"
+            style={{ marginBottom: 10, minHeight: placesAvailable ? 40 : 0 }}
+          />
+
+          {/* Manual Address Search Fallback (Server Geocoding) */}
+          <div style={{ marginBottom: 10 }}>
+            <div style={{ display: 'flex', gap: 6 }}>
+              <input
+                id="pref-address-query"
+                type="text"
+                placeholder="Tìm địa chỉ tại Hà Nội (hoặc phố, ngõ)…"
+                value={addressQuery}
+                onChange={(e) => setAddressQuery(e.target.value)}
+                disabled={busy || geocodingLoading}
+                style={{
+                  flex: 1,
+                  minHeight: 38,
+                  padding: '6px 10px',
+                  borderRadius: 6,
+                  border: '1px solid var(--border-color)',
+                  fontSize: 12
+                }}
+              />
+              <button
+                type="button"
+                onClick={handleGeocodeSearch}
+                disabled={busy || geocodingLoading || !addressQuery.trim()}
+                style={{
+                  padding: '6px 12px',
+                  fontSize: 12,
+                  fontWeight: 600,
+                  background: '#f1f5f9',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: 6,
+                  cursor: busy || geocodingLoading ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {geocodingLoading ? 'Đang tìm…' : 'Tìm toạ độ'}
+              </button>
+            </div>
+
+            {/* Geocoding Status Message */}
+            {geocodingStatusMsg && (
+              <div role="status" style={{ fontSize: 11, color: '#b45309', marginTop: 4 }}>
+                {geocodingStatusMsg}
+              </div>
+            )}
+
+            {/* Geocoding Results Dropdown */}
+            {geocodingResults.length > 0 && (
+              <div
+                style={{
+                  marginTop: 6,
+                  background: '#fff',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: 6,
+                  maxHeight: 140,
+                  overflowY: 'auto'
+                }}
+              >
+                {geocodingResults.map((r, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    onClick={() => handleSelectGeocodeResult(r)}
+                    style={{
+                      width: '100%',
+                      textAlign: 'left',
+                      padding: '8px 10px',
+                      fontSize: 12,
+                      background: 'none',
+                      border: 'none',
+                      borderBottom: '1px solid #f1f5f9',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    📍 {r.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Quick Landmark Preset Dropdown */}
+          <div style={{ marginBottom: 10 }}>
+            <label
+              htmlFor="pref-origin-preset"
+              style={{ display: 'block', fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}
+            >
+              Chọn nhanh địa danh hoặc nhập toạ độ
+            </label>
+            <select
+              id="pref-origin-preset"
+              value={originPreset}
+              onChange={(e) => handlePresetChange(e.target.value)}
+              disabled={busy}
+              style={{
+                width: '100%',
+                minHeight: 40,
+                padding: '8px 12px',
+                borderRadius: 8,
+                border: '1px solid var(--border-color)',
+                background: '#fff',
+                fontSize: 13
+              }}
+            >
+              {PRESET_LOCATIONS.map((p) => (
+                <option key={p.id} value={p.id}>{p.name}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Custom Coordinates Inputs (Always accessible for manual entry) */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: 10,
+              background: '#f8fafc',
+              padding: 10,
+              borderRadius: 8,
+              border: '1px solid #e2e8f0'
+            }}
+          >
             <div>
-              <label htmlFor="pref-custom-lat" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Vĩ độ (Lat)</label>
+              <label htmlFor="pref-custom-lat" style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>
+                Vĩ độ (Lat)
+              </label>
               <input
                 id="pref-custom-lat"
                 type="number"
                 step="any"
                 value={customLat}
-                onChange={(e) => setCustomLat(Number(e.target.value))}
+                onChange={(e) => {
+                  setCustomLat(Number(e.target.value));
+                  setOriginSource('manual_coordinates');
+                  setOriginPreset('custom');
+                }}
                 disabled={busy}
                 required
-                style={{ width: '100%', minHeight: 38, padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border-color)' }}
+                style={{ width: '100%', minHeight: 36, padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border-color)', fontSize: 12 }}
               />
             </div>
             <div>
-              <label htmlFor="pref-custom-lon" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Kinh độ (Lon)</label>
+              <label htmlFor="pref-custom-lon" style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>
+                Kinh độ (Lon)
+              </label>
               <input
                 id="pref-custom-lon"
                 type="number"
                 step="any"
                 value={customLon}
-                onChange={(e) => setCustomLon(Number(e.target.value))}
+                onChange={(e) => {
+                  setCustomLon(Number(e.target.value));
+                  setOriginSource('manual_coordinates');
+                  setOriginPreset('custom');
+                }}
                 disabled={busy}
                 required
-                style={{ width: '100%', minHeight: 38, padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border-color)' }}
+                style={{ width: '100%', minHeight: 36, padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border-color)', fontSize: 12 }}
               />
             </div>
           </div>
-        )}
+
+          {/* Privacy Note (Mandatory per docs/PHASE4.md 'Data sent to Google') */}
+          <div
+            role="note"
+            style={{
+              marginTop: 10,
+              padding: '6px 10px',
+              background: '#f1f5f9',
+              borderRadius: 6,
+              fontSize: 11,
+              color: 'var(--text-secondary)',
+              lineHeight: 1.4
+            }}
+          >
+            🔒 <strong>Dữ liệu gửi tới Google:</strong> (1) Ô tìm kiếm địa điểm: từ khoá gửi khi bạn nhập; (2) Bản đồ: tải ô bản đồ theo toạ độ xem; (3) Định vị hiện tại chỉ lưu trên trình duyệt của bạn; toạ độ xuất phát chỉ gửi tới dịch vụ tính tuyến đi bộ khi bạn bấm lập lịch trình. Danh sách địa điểm nội bộ không bao giờ được gửi.
+          </div>
+        </div>
 
         {/* Giờ xuất phát & Thứ trong tuần */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>

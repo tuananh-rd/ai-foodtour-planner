@@ -164,9 +164,9 @@ async function runComponentTests() {
   );
 
   // -------------------------------------------------------------
-  // Test 3: MapView Geometry Gate & Leg Listing (F6, F8, F9)
+  // Test 3: MapView Google Maps Platform & Geometry Gate (Phase 4)
   // -------------------------------------------------------------
-  console.log('\n--- Test 3: MapView Geometry Gate & Legs Listing (F6) ---');
+  console.log('\n--- Test 3: MapView Google Maps Platform & Geometry Gate (Phase 4) ---');
   const origin = { lat: 21.0285, lon: 105.8522 };
   const stops = [
     {
@@ -199,10 +199,11 @@ async function runComponentTests() {
 
   record(
     'TC-DOM-05',
-    'MapView straight_line_estimate renders dashed line with mandatory caption',
-    htmlMapEstimate.includes('stroke-dasharray="5,5"') &&
-    htmlMapEstimate.includes('khoảng cách đường chim bay, không phải tuyến đi'),
-    'Dashed connector with required disclaimer rendered'
+    'MapView straight_line_estimate renders mandatory caption without drawing route',
+    htmlMapEstimate.includes('không phải tuyến đi') &&
+    htmlMapEstimate.includes('không vẽ trên bản đồ') &&
+    !htmlMapEstimate.includes('tile.openstreetmap.org'),
+    'Caption rendered, estimated legs never drawn as routes, no OSM tiles'
   );
 
   record(
@@ -211,63 +212,80 @@ async function runComponentTests() {
     htmlMapEstimate.includes('Chi tiết các chặng di chuyển (2 chặng)') &&
     htmlMapEstimate.includes('Chặng 1:') &&
     htmlMapEstimate.includes('5 phút') &&
-    htmlMapEstimate.includes('0.35 km') &&
-    htmlMapEstimate.includes('straight_line_estimate'),
+    htmlMapEstimate.includes('0.35 km'),
     'Legs detail list confirmed'
   );
 
   record(
     'TC-DOM-07',
-    'MapView markers have keyboard accessibility (role=button, tabIndex=0, aria-label)',
-    htmlMapEstimate.includes('role="button"') &&
-    htmlMapEstimate.includes('tabindex="0"') &&
-    htmlMapEstimate.includes('aria-label="Điểm xuất phát"') &&
-    htmlMapEstimate.includes('aria-label="Điểm dừng 1: Bún chả Phố Cổ"'),
-    'Marker keyboard attributes confirmed'
-  );
-
-  // Probe B: provider_route mode MUST NOT render polyline
-  const htmlMapProvider = renderToStaticMarkup(
-    React.createElement(MapView, {
-      origin,
-      stops: [
-        { ...stops[0], leg_from_previous: { ...stops[0].leg_from_previous, source: 'provider_route' } },
-        { ...stops[1], leg_from_previous: { ...stops[1].leg_from_previous, source: 'provider_route' } }
-      ],
-      legSource: 'provider_route'
-    })
+    'MapView renders restaurant toggle button with aria-pressed="false" and keyboard support',
+    htmlMapEstimate.includes('aria-pressed="false"') &&
+    htmlMapEstimate.includes('Hiện quán ăn trên bản đồ') &&
+    htmlMapEstimate.includes('data-testid="venue-toggle"'),
+    'Restaurant markers toggle button confirmed'
   );
 
   record(
     'TC-DOM-08',
-    'MapView provider_route WITHOUT geometry draws no route line and says so (v1.4)',
-    !htmlMapProvider.includes('<polyline') &&
-    htmlMapProvider.includes('chưa nhận được hình học tuyến'),
-    'No geometry -> no line'
+    'MapView unconfigured state renders labelled Vietnamese explanation with manual coordinate reassurance',
+    htmlMapEstimate.includes('Bản đồ Google Maps chưa khả dụng') &&
+    htmlMapEstimate.includes('Google Maps chưa được cấu hình') &&
+    htmlMapEstimate.includes('Chế độ toạ độ thủ công vẫn hoạt động bình thường'),
+    'Unavailable map state properly labelled in Vietnamese without fake map'
   );
 
-  // Probe C: provider_route WITH provider geometry draws solid route polylines (v1.4)
-  const geomStops = [
-    { ...stops[0], leg_from_previous: { ...stops[0].leg_from_previous, source: 'provider_route',
-      geometry: [[origin.lat, origin.lon], [stops[0].lat + 0.0002, stops[0].lon], [stops[0].lat, stops[0].lon]] } },
-    { ...stops[1], leg_from_previous: { ...stops[1].leg_from_previous, source: 'provider_route',
-      geometry: [[stops[0].lat, stops[0].lon], [stops[1].lat, stops[1].lon]] } }
-  ];
-  const htmlMapGeom = renderToStaticMarkup(
-    React.createElement(MapView, { origin, stops: geomStops, legSource: 'provider_route', routingProvider: 'ors' })
+  // Probe B: provider_route WITH route warnings renders Google walking warning alert
+  const htmlMapWarnings = renderToStaticMarkup(
+    React.createElement(MapView, {
+      origin,
+      stops: [
+        { ...stops[0], leg_from_previous: { ...stops[0].leg_from_previous, source: 'provider_route',
+          geometry: [[origin.lat, origin.lon], [stops[0].lat, stops[0].lon]] } }
+      ],
+      legSource: 'provider_route',
+      routingProvider: 'google_routes',
+      routeWarnings: [
+        'Chỉ đường đi bộ đang trong giai đoạn thử nghiệm. Hãy cẩn thận – tuyến đường này có thể không có vỉa hè hoặc lối dành riêng cho người đi bộ.'
+      ]
+    })
   );
-  const htmlMixed = renderToStaticMarkup(
-    React.createElement(MapView, { origin, legSource: 'straight_line_estimate', stops: [
-      { ...stops[0], leg_from_previous: { ...stops[0].leg_from_previous, source: 'straight_line_estimate',
-        geometry: [[origin.lat, origin.lon], [stops[0].lat, stops[0].lon]] } }] })
-  );
+
   record(
     'TC-DOM-08b',
-    'Provider geometry is drawn as solid route with attribution; estimated legs never get a solid route even if geometry is present',
-    (htmlMapGeom.match(/data-route-geometry="provider"/g) || []).length === 2 &&
-    htmlMapGeom.includes('openrouteservice') &&
-    !htmlMixed.includes('data-route-geometry="provider"'),
-    'route lines only for provider_route legs'
+    'MapView renders mandatory Google walking route warning when present (contract v1.5)',
+    htmlMapWarnings.includes('data-testid="route-warnings"') &&
+    htmlMapWarnings.includes('Cảnh báo tuyến đi bộ (Google Routes)') &&
+    htmlMapWarnings.includes('giai đoạn thử nghiệm'),
+    'Google walking route warnings properly rendered'
+  );
+
+  // Probe C: PreferencesPanel origin controls and privacy text
+  const htmlPrefsOrigin = renderToStaticMarkup(
+    React.createElement(PreferencesPanel, {
+      preferences: {
+        city: 'Hà Nội',
+        origin: { lat: 21.0285, lon: 105.8522 },
+        origin_label: 'Hồ Gươm',
+        origin_source: 'landmark'
+      },
+      revision: 1,
+      onUpdatePreferences: () => {},
+      onPlanTour: () => {},
+      busy: false,
+      isMock: true
+    })
+  );
+
+  record(
+    'TC-DOM-08c',
+    'PreferencesPanel renders "Dùng vị trí hiện tại" button, geocoding fallback, and Google privacy disclosure',
+    htmlPrefsOrigin.includes('Dùng vị trí hiện tại') &&
+    htmlPrefsOrigin.includes('data-testid="use-current-location-btn"') &&
+    htmlPrefsOrigin.includes('Tìm toạ độ') &&
+    htmlPrefsOrigin.includes('Dữ liệu gửi tới Google:') &&
+    htmlPrefsOrigin.includes('id="pref-custom-lat"') &&
+    htmlPrefsOrigin.includes('id="pref-custom-lon"'),
+    'Origin selection controls and privacy disclosure verified'
   );
 
   // -------------------------------------------------------------
