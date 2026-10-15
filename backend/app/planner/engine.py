@@ -50,6 +50,17 @@ def _open_at(v: Venue, weekday: int, start: int, end: int) -> bool:
     return any(s <= start and end <= e for s, e in v.hours.get(weekday, []))
 
 
+def _possible_alone(v: Venue, prefs: Preferences) -> bool:
+    """Necessary conditions any single stop must meet; safe to prune before the search pool cap."""
+    if prefs.duration_min is not None and prefs.visit_minutes > prefs.duration_min:
+        return False
+    if prefs.budget_vnd is not None and v.price_max_vnd is not None:
+        spend = v.price_max_vnd * (prefs.party_size or 1) if prefs.budget_scope == "group" else v.price_max_vnd
+        if spend > prefs.budget_vnd:
+            return False
+    return True
+
+
 def _evaluate(seq: list, prefs: Preferences, routes: RouteMatrixProvider) -> tuple:
     """Return (Tour, None) or (None, violation)."""
     if prefs.origin is None or prefs.duration_min is None:
@@ -66,6 +77,8 @@ def _evaluate(seq: list, prefs: Preferences, routes: RouteMatrixProvider) -> tup
         walk_total += leg.minutes
         arrive = clock + leg.minutes if clock is not None else None
         depart = arrive + prefs.visit_minutes if arrive is not None else None
+        if depart is not None and depart >= 1440:
+            return None, f"{v.id} visit would cross midnight (no day-offset in contract v1)"
         h_ev, open_now = "unknown", None
         if v.hours is not None and arrive is not None and prefs.weekday is not None:
             open_now = _open_at(v, prefs.weekday, arrive, depart)
@@ -146,8 +159,10 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
     if missing:
         return Tour("insufficient_evidence", reasons=(f"Thiếu thông tin bắt buộc: {', '.join(missing)}",),
                     proposed_changes=("Bổ sung thông tin còn thiếu.",), unknowns=tuple(missing))
-    pool = sorted((v for v in venues if eligible(v, prefs)),
-                  key=lambda v: (routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))[:pool_cap]
+    ranked = sorted((v for v in venues if eligible(v, prefs) and _possible_alone(v, prefs)),
+                    key=lambda v: (routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))
+    pool = ranked[:pool_cap]
+    truncated = len(ranked) > len(pool)
     best = {"key": None, "tour": None}
     limit = max(1, min(prefs.max_stops, 5))
 
@@ -184,7 +199,15 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
             reasons = ("Chế độ nghiêm ngặt cần giờ mở cửa, giá theo người và tuyến đường đã xác minh; "
                        "chưa có đủ bằng chứng.",) + reasons
             changes = ("Dùng chế độ khám phá để xem gợi ý có điều kiện.",) + changes
-        return Tour(status, reasons=reasons, proposed_changes=changes)
+        if truncated:
+            reasons = reasons + (f"Chỉ tìm trong {len(pool)} quán gần nhất trong {len(ranked)} quán phù hợp; "
+                                 "có thể còn lựa chọn xa hơn chưa được xét.",)
+        return Tour(status, reasons=reasons, proposed_changes=changes,
+                    assumptions={"search_pool": len(pool), "eligible_total": len(ranked), "pool_truncated": truncated})
+    if truncated:
+        t = Tour(t.status, t.stops, t.reasons, t.proposed_changes, t.unknowns, t.venue_range_upper_sum_vnd,
+                 t.walk_minutes, t.leg_source, t.locks,
+                 {**t.assumptions, "search_pool": len(pool), "eligible_total": len(ranked), "pool_truncated": True})
     if len(t.stops) < MIN_PREFERRED_STOPS and limit >= MIN_PREFERRED_STOPS:
         t = Tour(t.status, t.stops, t.reasons + (f"Chỉ tìm được {len(t.stops)} điểm dừng thoả ràng buộc.",),
                  ("Tăng thời lượng hoặc ngân sách để có thêm điểm dừng.",), t.unknowns,
@@ -241,11 +264,34 @@ def validate_tour(tour: Tour, venues: list, prefs: Preferences,
         return out + [f"unknown venue ids: {missing}"]
     seq = [by_id[i] for i in ids]
     for v in seq:
-        if v.online_only or not v.geo_ok:
-            out.append(f"{v.id} is not a physical venue with valid geo")
+        if not eligible(v, prefs):
+            out.append(f"{v.id} is not eligible for these preferences")
+    if len(seq) > 1 and out:
+        return out
     t, why = _evaluate(seq, prefs, routes)
     if t is None:
-        out.append(why)
-    elif tour.status == "verified_feasible" and t.status != "verified_feasible":
-        out.append("claims verified_feasible without verified evidence")
+        return out + [why]
+    # Compare every returned claim with an independent recomputation (no trust in the payload).
+    if tour.status != t.status:
+        out.append(f"status {tour.status} != recomputed {t.status}")
+    if prefs.mode == "strict" and t.status != "verified_feasible":
+        out.append("strict mode requires verified_feasible")
+    if tour.venue_range_upper_sum_vnd != t.venue_range_upper_sum_vnd:
+        out.append("venue_range_upper_sum_vnd mismatch")
+    if tour.walk_minutes != t.walk_minutes:
+        out.append("walk_minutes mismatch")
+    if tour.leg_source != t.leg_source:
+        out.append("leg_source mismatch")
+    if set(tour.unknowns) != set(t.unknowns):
+        out.append("unknowns mismatch")
+    for got, want in zip(tour.stops, t.stops):
+        if (got.venue_id, got.order) != (want.venue_id, want.order):
+            out.append(f"stop order mismatch at {want.order}")
+        if got.leg_from_previous != want.leg_from_previous:
+            out.append(f"leg mismatch at {want.venue_id}")
+        if (got.arrive_min, got.depart_min) != (want.arrive_min, want.depart_min):
+            out.append(f"timeline mismatch at {want.venue_id}")
+        if (got.hours_evidence, got.open_at_arrival, got.price_evidence) != (
+                want.hours_evidence, want.open_at_arrival, want.price_evidence):
+            out.append(f"evidence mismatch at {want.venue_id}")
     return out

@@ -161,5 +161,65 @@ class PlannerCore(unittest.TestCase):
         self.assertEqual(tuple(s.venue_id for s in got.stops), best[3])
 
 
+class ValidateRecompute(unittest.TestCase):
+    def setUp(self):
+        self.venues = load_fixture()
+        self.p = prefs()
+        self.t = plan_tour(self.venues, self.p)
+
+    def test_ineligible_venue_fails(self):
+        vs = [replace(v, online_only=True) if v.id == self.t.stops[0].venue_id else v for v in self.venues]
+        self.assertTrue(validate_tour(self.t, vs, self.p))
+
+    def test_tampered_leg_totals_and_timeline_fail(self):
+        s0 = self.t.stops[0]
+        bad_leg = replace(self.t, stops=(replace(s0, leg_from_previous=Leg(1, 0.0, "provider_route")),) + self.t.stops[1:])
+        self.assertTrue(validate_tour(bad_leg, self.venues, self.p))
+        self.assertTrue(validate_tour(replace(self.t, walk_minutes=1), self.venues, self.p))
+        self.assertTrue(validate_tour(replace(self.t, venue_range_upper_sum_vnd=1), self.venues, self.p))
+        bad_tl = replace(self.t, stops=(replace(s0, arrive_min=5),) + self.t.stops[1:])
+        self.assertTrue(validate_tour(bad_tl, self.venues, self.p))
+
+    def test_order_swap_fails_and_clean_passes(self):
+        sw = replace(self.t, stops=tuple(reversed(self.t.stops)))
+        self.assertTrue(validate_tour(sw, self.venues, self.p))
+        self.assertEqual(validate_tour(self.t, self.venues, self.p), [])
+
+    def test_strict_pref_rejects_conditional_tour(self):
+        self.assertTrue(validate_tour(self.t, self.venues, replace(self.p, mode="strict")))
+
+
+class Midnight(unittest.TestCase):
+    def test_cross_midnight_is_rejected_not_wrapped(self):
+        vs = load_fixture()
+        late = plan_tour(vs, prefs(start_time_min=23 * 60 + 30, weekday=0))
+        self.assertEqual(late.status, "no_solution")
+        early = plan_tour(vs, prefs(start_time_min=20 * 60, weekday=0))
+        for s in early.stops:
+            self.assertLessEqual(s.depart_min, 1440)
+
+
+class PoolTruncation(unittest.TestCase):
+    def test_truncation_is_disclosed(self):
+        vs = load_fixture()
+        t = plan_tour(vs, prefs(max_leg_min=0), pool_cap=3)
+        self.assertEqual(t.status, "no_solution")
+        self.assertTrue(t.assumptions["pool_truncated"])
+        self.assertTrue(any("gần nhất" in r for r in t.reasons))
+        ok = plan_tour(vs, prefs(), pool_cap=5)
+        self.assertTrue(ok.assumptions["pool_truncated"])
+
+
+class BudgetPruneBeforeCap(unittest.TestCase):
+    def test_cheap_venue_beyond_pool_cap_is_found(self):
+        vs = [Venue(id=f"TEST-{i:02d}", name="t", lat=21.03, lon=105.85, price_min_vnd=10000,
+                    price_max_vnd=200000 if i < 14 else 20000, synthetic=True) for i in range(15)]
+        p = Preferences(origin=(21.03, 105.85), duration_min=60, budget_vnd=50000, budget_scope="per_person",
+                        max_stops=1)
+        t = plan_tour(vs, p)
+        self.assertEqual(t.status, "conditional")
+        self.assertEqual(t.stops[0].venue_id, "TEST-14")
+
+
 if __name__ == "__main__":
     unittest.main()
