@@ -1,8 +1,8 @@
 """Contract-v1 endpoints. All session mutations are atomic and checked."""
-from dataclasses import asdict
+from dataclasses import asdict, replace as domain_replace
 import os
 
-from fastapi import APIRouter, Header, Query, Request
+from fastapi import APIRouter, Header, Query, Request, Response
 from pydantic import ValidationError
 
 from app.api import legacy
@@ -11,6 +11,7 @@ from app.api.schemas import (
     ErrorResponse, Health, Hours, LegView, MessageRequest, PreferencesRequest,
     PreferencesSchema, Price, ReplaceRequest, RevisionRequest, SessionCreated,
     SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
+    GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig,
 )
 from app.data import DatasetLoadError
 from app.llm.explain import explain
@@ -50,11 +51,11 @@ def render_tour(tour, data, prefs, revision, routes, explainer=None):
     if engine.validate_tour(tour, data.venues, prefs, routes):
         raise APIError(500, "internal_validation_failed", "Lịch trình không vượt qua kiểm tra; chưa trả điểm dừng.")
     by_id = {v.id: v for v in data.venues}
-    lines = None
+    lines, points = None, []
     if tour.stops and tour.leg_source == "provider_route" and hasattr(routes, "geometry"):
         # Display-only polylines from the same provider; never drawn for estimated legs.
-        lines = routes.geometry([prefs.origin] + [(by_id[s.venue_id].lat, by_id[s.venue_id].lon)
-                                                  for s in tour.stops])
+        points = [prefs.origin] + [(by_id[s.venue_id].lat, by_id[s.venue_id].lon) for s in tour.stops]
+        lines = routes.geometry(points)
     stops = []
     for index, stop in enumerate(tour.stops):
         venue = by_id[stop.venue_id]
@@ -76,9 +77,13 @@ def render_tour(tour, data, prefs, revision, routes, explainer=None):
         revision=revision, status=tour.status, stops=stops, reasons=list(tour.reasons),
         proposed_changes=list(tour.proposed_changes), unknowns=list(tour.unknowns),
         totals=Totals(venue_range_upper_sum_vnd=tour.venue_range_upper_sum_vnd,
-                      walk_minutes=tour.walk_minutes, leg_source=tour.leg_source),
+                      walk_minutes=tour.walk_minutes, leg_source=tour.leg_source,
+                      route_provider=(getattr(routes, 'name', None)
+                          if tour.leg_source == 'provider_route' and getattr(routes, 'name', None)
+                          in ('google_routes', 'ors', 'osrm') else None)),
         explanation=text, explanation_source=text_source, locks=list(tour.locks),
         assumptions=dict(tour.assumptions),
+        route_warnings=(routes.warnings(points) if points and getattr(routes, 'name', '') == 'google_routes' else []),
     )
 
 
@@ -117,7 +122,48 @@ def health(request: Request):
                   dataset_version=data.dataset_version, evidence_overlay=data.evidence_overlay,
                   llm_provider=info["llm_provider"], llm_model=info["llm_model"],
                   explanation_provider=info["explanation_provider"], routing_provider=info["routing_provider"],
-                  routing_last_error=getattr(routing, "last_error", None))
+                  routing_last_error=getattr(routing, "last_error", None),
+                  geocoding={'status': 'ready' if request.app.state.geocoder.configured else 'unavailable',
+                             'last_error': request.app.state.geocoder.last_error})
+
+
+@router.get('/v1/client-config', response_model=ClientConfig)
+def client_config(request: Request, response: Response):
+    response.headers['Cache-Control'] = 'no-store'
+    key = os.getenv('GOOGLE_MAPS_BROWSER_KEY', '').strip()
+    map_id = os.getenv('GOOGLE_MAPS_MAP_ID', '').strip()
+    secrets = [os.getenv(name, '').strip() for name in ('GOOGLE_MAPS_SERVER_KEY', 'GEMINI_API_KEY', 'ORS_API_KEY')]
+    ready = bool(key and map_id and not any(secret and (secret in key or secret in map_id) for secret in secrets))
+    return {'maps': {'provider': 'google', 'status': 'ready' if ready else 'unavailable',
+        'reason': None if ready else 'not_configured', 'js_api_key': key if ready else None,
+        'map_id': map_id if ready else None, 'language': 'vi', 'region': 'VN',
+        'default_center': {'lat': 21.0285, 'lon': 105.8522}, 'default_zoom': 15},
+        'geocoding': {'status': 'ready' if request.app.state.geocoder.configured else 'unavailable'},
+        'routing': {'provider': request.app.state.provider_info['routing_provider'],
+                    'status': 'ready' if getattr(request.app.state.routing, 'configured', False) else 'unavailable'},
+        'privacy': {'sent_to_google': ['map_tiles', 'autocomplete_text', 'route_coordinates'], 'doc': 'docs/PHASE4.md'}}
+
+
+@router.post('/v1/geocode', response_model=GeocodeResponse)
+def geocode(body: GeocodeRequest, request: Request, x_session_token: str | None = Header(default=None)):
+    request.app.state.sessions.authorize_token(x_session_token)
+    return request.app.state.geocoder.geocode(body.query)
+
+
+@router.get('/v1/venues/map', response_model=MapVenues)
+def map_venues(request: Request, min_lat: float = Query(ge=-90, le=90), min_lon: float = Query(ge=-180, le=180),
+               max_lat: float = Query(ge=-90, le=90), max_lon: float = Query(ge=-180, le=180),
+               limit: int = Query(default=200, ge=1, le=500), q: str | None = Query(default=None, max_length=200)):
+    if min_lat > max_lat or min_lon > max_lon:
+        raise APIError(422, 'validation_error', 'Giới hạn bản đồ không hợp lệ.')
+    data = snapshot(request)
+    selected = sorted((v for v in data.venues if not v.online_only and v.geo_ok
+        and min_lat <= v.lat <= max_lat and min_lon <= v.lon <= max_lon
+        and (not q or q.strip().casefold() in (' '.join((v.name, v.district, *v.dish_tags))).casefold())), key=lambda v: v.id)
+    return MapVenues(items=[MapVenue(id=v.id, name=v.name, lat=v.lat, lon=v.lon, district=v.district,
+        dish_tags=list(v.dish_tags), price_max_vnd=v.price_max_vnd, synthetic=v.synthetic)
+        for v in selected[:limit]], total_in_view=len(selected), truncated=len(selected) > limit,
+        dataset_source=public_source(data), dataset_version=data.dataset_version)
 
 
 def venue_view(v, data):
@@ -202,9 +248,22 @@ def message(session_id: str, body: MessageRequest, request: Request,
             prefs = PreferencesSchema.from_domain(result.preferences).domain()
         except (ValidationError, TypeError, ValueError, IndexError):
             raise APIError(422, "validation_error", "Thông tin trích xuất không hợp lệ; hãy dùng biểu mẫu.") from None
+        notes = list(result.notes)
+        if result.origin_text:
+            prefs = domain_replace(prefs, origin=None, origin_label=None, origin_source=None)
+            found = (request.app.state.geocoder.geocode(result.origin_text)
+                if request.app.state.geocoder.configured else {'status': 'unavailable', 'results': []})
+            if found['status'] == 'ok' and found['results']:
+                chosen = found['results'][0]
+                prefs = domain_replace(prefs, origin=(chosen['lat'], chosen['lon']),
+                    origin_label=chosen['label'][:120], origin_source='geocoded')
+                notes.append('Điểm xuất phát lấy theo kết quả tìm kiếm Google: ' + chosen['label'][:120] + '; bạn có thể sửa.')
+            else:
+                notes.append('Chưa xác định được điểm xuất phát qua Google (' + found['status'] + '); hãy chọn hoặc nhập tọa độ.')
+        prefs = PreferencesSchema.from_domain(prefs).domain()
         data = snapshot(request)
         tour = None if engine.missing_slots(prefs) or result.rejected_fields else engine.plan_tour(data.venues, prefs, request.app.state.routing)
-        view = commit(session, prefs, tour, data, request, result.notes)
+        view = commit(session, prefs, tour, data, request, notes)
         view.extraction_source = "llm" if result.source == "live" else "rules"
         return view
 

@@ -1,6 +1,31 @@
 {
   "components": {
     "schemas": {
+      "ClientConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "geocoding": {
+            "$ref": "#/components/schemas/ServiceConfig"
+          },
+          "maps": {
+            "$ref": "#/components/schemas/MapsConfig"
+          },
+          "privacy": {
+            "$ref": "#/components/schemas/PrivacyConfig"
+          },
+          "routing": {
+            "$ref": "#/components/schemas/RoutingConfig"
+          }
+        },
+        "required": [
+          "maps",
+          "geocoding",
+          "routing",
+          "privacy"
+        ],
+        "title": "ClientConfig",
+        "type": "object"
+      },
       "ErrorDetail": {
         "additionalProperties": false,
         "properties": {
@@ -80,6 +105,124 @@
         "title": "EvidenceOverlayCounts",
         "type": "object"
       },
+      "GeocodeRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "query": {
+            "maxLength": 200,
+            "minLength": 1,
+            "title": "Query",
+            "type": "string"
+          }
+        },
+        "required": [
+          "query"
+        ],
+        "title": "GeocodeRequest",
+        "type": "object"
+      },
+      "GeocodeResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "const": "google_geocoding",
+            "default": "google_geocoding",
+            "title": "Provider",
+            "type": "string"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/GeocodeResult"
+            },
+            "maxItems": 5,
+            "title": "Results",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "zero_results",
+              "unavailable",
+              "quota"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "GeocodeResponse",
+        "type": "object"
+      },
+      "GeocodeResult": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "place_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Place Id"
+          }
+        },
+        "required": [
+          "label",
+          "lat",
+          "lon"
+        ],
+        "title": "GeocodeResult",
+        "type": "object"
+      },
+      "GeocodingHealth": {
+        "additionalProperties": false,
+        "properties": {
+          "last_error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Error"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "GeocodingHealth",
+        "type": "object"
+      },
       "Health": {
         "additionalProperties": false,
         "properties": {
@@ -110,6 +253,9 @@
             ],
             "title": "Explanation Provider",
             "type": "string"
+          },
+          "geocoding": {
+            "$ref": "#/components/schemas/GeocodingHealth"
           },
           "llm": {
             "enum": [
@@ -177,7 +323,8 @@
             "enum": [
               "estimate",
               "ors",
-              "osrm"
+              "osrm",
+              "google_routes"
             ],
             "title": "Routing Provider",
             "type": "string"
@@ -291,6 +438,188 @@
           "source"
         ],
         "title": "LegView",
+        "type": "object"
+      },
+      "MapVenue": {
+        "additionalProperties": false,
+        "properties": {
+          "dish_tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dish Tags",
+            "type": "array"
+          },
+          "district": {
+            "title": "District",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price_max_vnd": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Max Vnd"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lat",
+          "lon",
+          "district",
+          "dish_tags",
+          "price_max_vnd",
+          "synthetic"
+        ],
+        "title": "MapVenue",
+        "type": "object"
+      },
+      "MapVenues": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_source": {
+            "enum": [
+              "private",
+              "synthetic"
+            ],
+            "title": "Dataset Source",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/MapVenue"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "total_in_view": {
+            "title": "Total In View",
+            "type": "integer"
+          },
+          "truncated": {
+            "title": "Truncated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "items",
+          "total_in_view",
+          "truncated",
+          "dataset_source",
+          "dataset_version"
+        ],
+        "title": "MapVenues",
+        "type": "object"
+      },
+      "MapsConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "default_center": {
+            "$ref": "#/components/schemas/Origin"
+          },
+          "default_zoom": {
+            "default": 15,
+            "title": "Default Zoom",
+            "type": "integer"
+          },
+          "js_api_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Js Api Key"
+          },
+          "language": {
+            "const": "vi",
+            "default": "vi",
+            "title": "Language",
+            "type": "string"
+          },
+          "map_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Map Id"
+          },
+          "provider": {
+            "const": "google",
+            "default": "google",
+            "title": "Provider",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "const": "not_configured",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "region": {
+            "const": "VN",
+            "default": "VN",
+            "title": "Region",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "reason",
+          "js_api_key",
+          "map_id",
+          "default_center"
+        ],
+        "title": "MapsConfig",
         "type": "object"
       },
       "MessageRequest": {
@@ -508,6 +837,36 @@
               }
             ]
           },
+          "origin_label": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Label"
+          },
+          "origin_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "current_location",
+                  "place",
+                  "manual_coordinates",
+                  "landmark",
+                  "geocoded"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Origin Source"
+          },
           "party_size": {
             "anyOf": [
               {
@@ -602,6 +961,34 @@
         "title": "Price",
         "type": "object"
       },
+      "PrivacyConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "doc": {
+            "const": "docs/PHASE4.md",
+            "default": "docs/PHASE4.md",
+            "title": "Doc",
+            "type": "string"
+          },
+          "sent_to_google": {
+            "items": {
+              "enum": [
+                "map_tiles",
+                "autocomplete_text",
+                "route_coordinates"
+              ],
+              "type": "string"
+            },
+            "title": "Sent To Google",
+            "type": "array"
+          }
+        },
+        "required": [
+          "sent_to_google"
+        ],
+        "title": "PrivacyConfig",
+        "type": "object"
+      },
       "ReplaceRequest": {
         "additionalProperties": false,
         "properties": {
@@ -637,6 +1024,53 @@
           "base_revision"
         ],
         "title": "RevisionRequest",
+        "type": "object"
+      },
+      "RoutingConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "provider": {
+            "enum": [
+              "google_routes",
+              "ors",
+              "osrm",
+              "estimate"
+            ],
+            "title": "Provider",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ready",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "provider"
+        ],
+        "title": "RoutingConfig",
+        "type": "object"
+      },
+      "ServiceConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "status": {
+            "enum": [
+              "ready",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "ServiceConfig",
         "type": "object"
       },
       "SessionCreated": {
@@ -846,6 +1280,22 @@
             "title": "Leg Source",
             "type": "string"
           },
+          "route_provider": {
+            "anyOf": [
+              {
+                "enum": [
+                  "google_routes",
+                  "ors",
+                  "osrm"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Provider"
+          },
           "venue_range_upper_sum_vnd": {
             "title": "Venue Range Upper Sum Vnd",
             "type": "integer"
@@ -922,6 +1372,13 @@
           "revision": {
             "title": "Revision",
             "type": "integer"
+          },
+          "route_warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Route Warnings",
+            "type": "array"
           },
           "status": {
             "enum": [
@@ -1433,6 +1890,290 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/v1/client-config": {
+      "get": {
+        "operationId": "client_config_v1_client_config_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ClientConfig"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Method Not Allowed"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Client Config"
+      }
+    },
+    "/v1/geocode": {
+      "post": {
+        "operationId": "geocode_v1_geocode_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "x-session-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/GeocodeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GeocodeResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Method Not Allowed"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Geocode"
       }
     },
     "/v1/plans": {
@@ -2676,6 +3417,209 @@
           }
         },
         "summary": "Venues"
+      }
+    },
+    "/v1/venues/map": {
+      "get": {
+        "operationId": "map_venues_v1_venues_map_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "min_lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Min Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "min_lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Min Lon",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Max Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "max_lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Max Lon",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 200,
+              "maximum": 500,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "q",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 200,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Q"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapVenues"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Method Not Allowed"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Map Venues"
       }
     },
     "/v1/venues/{venue_id}": {

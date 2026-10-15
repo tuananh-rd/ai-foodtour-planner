@@ -18,6 +18,7 @@ from app.providers.extraction import HttpExtractionProvider
 from app.providers.routing import HttpRouteProvider
 from app.providers.gemini import GeminiClient, GeminiExplanationProvider, GeminiExtractionProvider
 from app.providers.walking import ORSWalkingProvider, OSRMWalkingProvider
+from app.providers.google_maps import GoogleRoutesProvider, GoogleGeocoder
 from app.planner.interfaces import StraightLineEstimator
 from app.repositories.sessions import SessionStore, SessionStoreInterface
 from app.repositories.sqlite_sessions import SQLiteSessionStore
@@ -59,7 +60,9 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     else:
         app.state.explainer = CheckedExplainer(None)
     routing_mode = os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold()
-    if routing_mode == "ors":
+    if routing_mode == "google":
+        app.state.routing = GoogleRoutesProvider()
+    elif routing_mode == "ors":
         app.state.routing = ORSWalkingProvider()
     elif routing_mode == "osrm" and os.getenv("FOODTOUR_OSRM_LEGACY", "").strip() == "1":
         app.state.routing = HttpRouteProvider(os.getenv("FOODTOUR_ROUTING_ENDPOINT"))
@@ -69,7 +72,10 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
         app.state.routing = StraightLineEstimator()
     else:
         app.state.routing = HttpRouteProvider(None)  # unknown mode: unconfigured, never estimated
-    info["routing_provider"] = routing_mode if routing_mode in ("ors", "osrm") else "estimate"
+    info["routing_provider"] = 'google_routes' if routing_mode == 'google' else (
+        routing_mode if routing_mode in ("ors", "osrm") else "estimate")
+    app.state.geocoder = (GoogleGeocoder() if os.getenv('FOODTOUR_GEOCODER', '').strip().casefold() == 'google'
+                           else GoogleGeocoder(base_url=None))
     app.state.provider_info = info
     web_origins = []
     for configured in os.getenv("WEB_ORIGIN", "http://localhost:3000").split(","):

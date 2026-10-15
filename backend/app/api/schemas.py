@@ -1,7 +1,8 @@
 """Contract-v1 HTTP models; domain time is converted only at the boundary."""
 from typing import Literal
+import unicodedata
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from app.planner.types import Preferences
 
@@ -21,6 +22,9 @@ class Origin(Model):
 class PreferencesSchema(Model):
     city: str = Field(default="Hà Nội", max_length=100)
     origin: Origin | None = None
+    origin_label: str | None = Field(default=None, max_length=120)
+    origin_source: Literal['current_location', 'place', 'manual_coordinates', 'landmark', 'geocoded'] | None = None
+
     start_time: str | None = Field(default=None, pattern=r"^(?:[01]\d|2[0-3]):[0-5]\d$")
     weekday: int | None = Field(default=None, ge=0, le=6, strict=True)
     duration_min: int | None = Field(default=None, ge=30, le=720, strict=True)
@@ -31,6 +35,13 @@ class PreferencesSchema(Model):
     exclusions: list[str] = Field(default_factory=list, max_length=10)
     max_stops: int = Field(default=3, ge=1, le=5, strict=True)
     mode: Literal["explore", "strict"] = "explore"
+
+    @field_validator('origin_label')
+    @classmethod
+    def safe_label(cls, value):
+        if value is not None and any(unicodedata.category(c) in ('Cc', 'Cf', 'Cs') for c in value):
+            raise ValueError('invalid label')
+        return value
 
     def domain(self):
         values = self.model_dump(exclude={"start_time", "origin"})
@@ -47,6 +58,7 @@ class PreferencesSchema(Model):
         return cls(
             city=prefs.city,
             origin=Origin(lat=prefs.origin[0], lon=prefs.origin[1]) if prefs.origin else None,
+            origin_label=prefs.origin_label, origin_source=prefs.origin_source,
             start_time=clock(prefs.start_time_min), weekday=prefs.weekday,
             duration_min=prefs.duration_min, budget_vnd=prefs.budget_vnd,
             budget_scope=prefs.budget_scope, party_size=prefs.party_size,
@@ -168,6 +180,7 @@ class Totals(Model):
     venue_range_upper_sum_vnd: int
     walk_minutes: int | None
     leg_source: LegSource
+    route_provider: Literal['google_routes', 'ors', 'osrm'] | None = None
 
 
 class TourView(Model):
@@ -182,6 +195,7 @@ class TourView(Model):
     explanation_source: Literal["template", "llm"] = "template"
     locks: list[str]
     assumptions: dict = Field(default_factory=dict)
+    route_warnings: list[str] = Field(default_factory=list)
 
 
 class SessionView(Model):
@@ -203,6 +217,11 @@ class EvidenceOverlayCounts(Model):
     prices_verified: int = Field(default=0, ge=0)
 
 
+class GeocodingHealth(Model):
+    status: Literal['ready', 'unavailable']
+    last_error: str | None = None
+
+
 class Health(Model):
     status: str
     dataset_loaded: bool
@@ -213,11 +232,87 @@ class Health(Model):
     llm_provider: Literal["rules", "gemini", "http", "off"] = "rules"
     llm_model: str | None = None
     explanation_provider: Literal["template", "gemini"] = "template"
-    routing_provider: Literal["estimate", "ors", "osrm"] = "estimate"
+    routing_provider: Literal["estimate", "ors", "osrm", "google_routes"] = "estimate"
     routing_last_error: str | None = None
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
     evidence_overlay: EvidenceOverlayCounts = Field(default_factory=EvidenceOverlayCounts)
+    geocoding: GeocodingHealth = Field(default_factory=lambda: GeocodingHealth(status='unavailable'))
+
+
+class GeocodeRequest(Model):
+    query: str = Field(min_length=1, max_length=200)
+
+    @field_validator('query')
+    @classmethod
+    def nonblank(cls, value):
+        if not value.strip() or any(ord(c) < 32 or ord(c) == 127 for c in value):
+            raise ValueError('invalid query')
+        return value.strip()
+
+
+class GeocodeResult(Model):
+    label: str
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    place_id: str | None = None
+
+
+class GeocodeResponse(Model):
+    status: Literal['ok', 'zero_results', 'unavailable', 'quota']
+    provider: Literal['google_geocoding'] = 'google_geocoding'
+    results: list[GeocodeResult] = Field(default_factory=list, max_length=5)
+
+
+class MapVenue(Model):
+    id: str
+    name: str
+    lat: float
+    lon: float
+    district: str
+    dish_tags: list[str]
+    price_max_vnd: int | None
+    synthetic: bool
+
+
+class MapVenues(Model):
+    items: list[MapVenue]
+    total_in_view: int
+    truncated: bool
+    dataset_source: Literal['private', 'synthetic']
+    dataset_version: str
+
+
+class MapsConfig(Model):
+    provider: Literal['google'] = 'google'
+    status: Literal['ready', 'unavailable']
+    reason: Literal['not_configured'] | None
+    js_api_key: str | None
+    map_id: str | None
+    language: Literal['vi'] = 'vi'
+    region: Literal['VN'] = 'VN'
+    default_center: Origin
+    default_zoom: int = 15
+
+
+class ServiceConfig(Model):
+    status: Literal['ready', 'unavailable']
+
+
+class RoutingConfig(ServiceConfig):
+    provider: Literal['google_routes', 'ors', 'osrm', 'estimate']
+
+
+class PrivacyConfig(Model):
+    sent_to_google: list[Literal['map_tiles', 'autocomplete_text', 'route_coordinates']]
+    doc: Literal['docs/PHASE4.md'] = 'docs/PHASE4.md'
+
+
+class ClientConfig(Model):
+    maps: MapsConfig
+    geocoding: ServiceConfig
+    routing: RoutingConfig
+    privacy: PrivacyConfig
 
 
 class ErrorDetail(Model):
