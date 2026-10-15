@@ -66,7 +66,7 @@ def _evaluate(seq: list, prefs: Preferences, routes: RouteMatrixProvider) -> tup
         walk_total += leg.minutes
         arrive = clock + leg.minutes if clock is not None else None
         depart = arrive + prefs.visit_minutes if arrive is not None else None
-        if depart is not None and depart > 1440:
+        if depart is not None and depart >= 1440:
             return None, f"{v.id} visit would cross midnight (no day-offset in contract v1)"
         h_ev, open_now = "unknown", None
         if v.hours is not None and arrive is not None and prefs.weekday is not None:

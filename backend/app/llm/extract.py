@@ -36,6 +36,7 @@ class ExtractionResult:
     missing_slots: tuple = ()
     questions: tuple = ()
     notes: tuple = ()
+    rejected_fields: tuple = ()  # values seen but out of range; never silently clamped
 
 
 class PreferenceExtractor(Protocol):
@@ -93,14 +94,26 @@ class MockExtractor:
             upd["duration_min"] = int(float(dur.group(1).replace(",", ".")) * 60)
         elif mins:
             upd["duration_min"] = int(mins.group(1))
-        if "duration_min" in upd:
-            upd["duration_min"] = max(30, min(720, upd["duration_min"]))
+        rejected = []
+        if "duration_min" in upd and not 30 <= upd["duration_min"] <= 720:
+            rejected.append("duration_min")
+            notes.append("Thời lượng ngoài khoảng 30–720 phút nên không được áp dụng; vui lòng nhập lại.")
+            del upd["duration_min"]
         st = re.search(r"(?:lúc|vào|từ|bắt đầu)\s*(\d{1,2})(?::|\s*giờ\s*|h)(\d{2})?", t)
-        if st and int(st.group(1)) < 24:
-            upd["start_time_min"] = int(st.group(1)) * 60 + int(st.group(2) or 0)
+        if st:
+            hh, mm = int(st.group(1)), int(st.group(2) or 0)
+            if hh < 24 and mm < 60:
+                upd["start_time_min"] = hh * 60 + mm
+            else:
+                rejected.append("start_time_min")
+                notes.append("Giờ bắt đầu không hợp lệ nên không được áp dụng.")
         stops = re.search(r"(\d)\s*(quán|điểm|chỗ)", t)
         if stops:
-            upd["max_stops"] = max(1, min(5, int(stops.group(1))))
+            if 1 <= int(stops.group(1)) <= 5:
+                upd["max_stops"] = int(stops.group(1))
+            else:
+                rejected.append("max_stops")
+                notes.append("Số điểm dừng phải từ 1 đến 5; không được áp dụng.")
         party = re.search(r"(?:nhóm|đi|cho)\s*(\d+)\s*người", t)
         if party and 1 <= int(party.group(1)) <= 20:
             upd["party_size"] = int(party.group(1))
@@ -130,4 +143,4 @@ class MockExtractor:
         merged = replace(p, **upd)  # unspecified slots keep their prior values
         miss = tuple(missing_slots(merged))
         return ExtractionResult("ok", "mock", merged, tuple(sorted(upd)), miss,
-                                tuple(QUESTIONS[m] for m in miss if m in QUESTIONS), tuple(notes))
+                                tuple(QUESTIONS[m] for m in miss if m in QUESTIONS), tuple(notes), tuple(rejected))

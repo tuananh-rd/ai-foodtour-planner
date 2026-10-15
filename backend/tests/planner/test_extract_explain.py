@@ -77,5 +77,15 @@ class InjectionHardening(unittest.TestCase):
         self.assertIn("phở", r.preferences.interests)
 
 
+class NoSilentClamp(unittest.TestCase):
+    def test_out_of_range_values_are_rejected_not_clamped(self):
+        r = MockExtractor().extract("đi 5 phút, lúc 23:99, 9 quán")
+        self.assertIsNone(r.preferences.duration_min)
+        self.assertIsNone(r.preferences.start_time_min)
+        self.assertEqual(r.preferences.max_stops, 3)
+        self.assertEqual(set(r.rejected_fields), {"duration_min", "start_time_min", "max_stops"})
+        self.assertIn("duration_min", r.missing_slots)
+
+
 if __name__ == "__main__":
     unittest.main()
