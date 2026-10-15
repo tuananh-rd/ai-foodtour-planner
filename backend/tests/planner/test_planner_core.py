@@ -202,7 +202,7 @@ class Midnight(unittest.TestCase):
 class PoolTruncation(unittest.TestCase):
     def test_truncation_is_disclosed(self):
         vs = load_fixture()
-        t = plan_tour(vs, prefs(budget_vnd=1000), pool_cap=3)
+        t = plan_tour(vs, prefs(max_leg_min=0), pool_cap=3)
         self.assertEqual(t.status, "no_solution")
         self.assertTrue(t.assumptions["pool_truncated"])
         self.assertTrue(any("gần nhất" in r for r in t.reasons))
