@@ -196,7 +196,9 @@ class Health(Model):
     status: str
     dataset_loaded: bool
     llm: Literal["mock", "live", "unavailable"]
-    routing: Literal["straight_line_estimate"]
+    routing: Literal["straight_line_estimate", "provider_route", "unknown"]
+    llm_configured: bool = True
+    routing_configured: bool = True
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
 

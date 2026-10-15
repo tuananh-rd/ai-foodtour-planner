@@ -12,6 +12,9 @@ from app.api.legacy import PlanRequest, load, plan
 from app.api.routes import router
 from app.api.security import SecurityMiddleware, configure_access_logging, setting
 from app.llm.extract import MockExtractor, UnavailableExtractor
+from app.llm.provider import LLMExtractor
+from app.providers.extraction import HttpExtractionProvider
+from app.providers.routing import HttpRouteProvider
 from app.planner.interfaces import StraightLineEstimator
 from app.repositories.sessions import SessionStore, SessionStoreInterface
 from app.repositories.sqlite_sessions import SQLiteSessionStore
@@ -22,10 +25,20 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     configure_access_logging()
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
     app.state.venues = VenueRepository(data_path)
-    app.state.extractor = extractor if extractor is not None else (
-        UnavailableExtractor() if os.getenv("FOODTOUR_LLM", "mock").casefold() == "off" else MockExtractor()
-    )
-    app.state.routing = StraightLineEstimator()
+    llm_mode = os.getenv("FOODTOUR_LLM", "mock").strip().casefold()
+    if extractor is not None:
+        app.state.extractor = extractor
+    elif llm_mode == "mock":
+        app.state.extractor = MockExtractor()
+    elif llm_mode == "live":
+        provider = HttpExtractionProvider(os.getenv("FOODTOUR_LLM_ENDPOINT"))
+        app.state.extractor = LLMExtractor(provider) if provider.configured else UnavailableExtractor()
+    else:
+        app.state.extractor = UnavailableExtractor()
+    app.state.routing = (StraightLineEstimator()
+        if os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold() == "estimate"
+        else HttpRouteProvider(os.getenv("FOODTOUR_ROUTING_ENDPOINT")
+            if os.getenv("FOODTOUR_ROUTING", "").strip().casefold() == "osrm" else None))
     web_origins = []
     for configured in os.getenv("WEB_ORIGIN", "http://localhost:3000").split(","):
         origin = configured.strip()

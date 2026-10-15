@@ -14,6 +14,8 @@ from app.api.schemas import (
 from app.data import DatasetLoadError
 from app.llm.explain import explain
 from app.llm.extract import QUESTIONS, UnavailableExtractor
+from app.llm.provider import LLMExtractor
+from app.providers.routing import HttpRouteProvider
 from app.planner import engine
 
 router = APIRouter(responses={
@@ -90,9 +92,15 @@ def commit(session, prefs, tour, data, request, notes=()):
 @router.get("/health", response_model=Health)
 def health(request: Request):
     data = snapshot(request)
+    extractor, routing = request.app.state.extractor, request.app.state.routing
+    llm_mode = "unavailable" if isinstance(extractor, UnavailableExtractor) else (
+        "live" if isinstance(extractor, LLMExtractor) else "mock")
+    route_mode = ("provider_route" if routing.configured and routing.reachable else "unknown"
+                  ) if isinstance(routing, HttpRouteProvider) else "straight_line_estimate"
     return Health(status="ok", dataset_loaded=bool(data.venues),
-                  llm="unavailable" if isinstance(request.app.state.extractor, UnavailableExtractor) else "mock",
-                  routing="straight_line_estimate", dataset_source=public_source(data),
+                  llm=llm_mode, llm_configured=llm_mode != "unavailable",
+                  routing=route_mode, routing_configured=getattr(routing, "configured", True),
+                  dataset_source=public_source(data),
                   dataset_version=data.dataset_version)
 
 
