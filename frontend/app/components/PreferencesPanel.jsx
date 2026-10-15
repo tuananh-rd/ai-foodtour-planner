@@ -21,7 +21,8 @@ export default function PreferencesPanel({
   onPlanTour,
   busy,
   isMock,
-  clientConfig
+  clientConfig,
+  sessionToken = ''
 }) {
   const [originPreset, setOriginPreset] = useState('hoankiem');
   const [customLat, setCustomLat] = useState(21.033);
@@ -185,7 +186,7 @@ export default function PreferencesPanel({
     setGeocodingResults([]);
 
     try {
-      const res = await geocodeAddress(addressQuery);
+      const res = await geocodeAddress(addressQuery, sessionToken);
       if (res.status === 'ok' && Array.isArray(res.results) && res.results.length > 0) {
         setGeocodingResults(res.results);
       } else if (res.status === 'zero_results') {

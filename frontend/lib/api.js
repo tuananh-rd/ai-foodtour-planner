@@ -1126,7 +1126,7 @@ export async function getVenuesMap(params = {}, options = {}) {
  * 12. Manual address geocoding fallback (server Google Geocoding, contract v1.5)
  * POST /v1/geocode { query }
  */
-export async function geocodeAddress(queryText, options = {}) {
+export async function geocodeAddress(queryText, token = "", options = {}) {
   const trimmed = (queryText || '').trim();
   if (!trimmed) {
     throw new ApiError("validation_error", "Vui lòng nhập địa chỉ cần tìm.", null, 422);
@@ -1188,12 +1188,17 @@ export async function geocodeAddress(queryText, options = {}) {
     };
   }
 
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+  if (token) {
+    headers['X-Session-Token'] = token;
+  }
+
   return safeFetch(`${getApiBaseUrl()}/v1/geocode`, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json'
-    },
+    headers,
     body: JSON.stringify({ query: trimmed.slice(0, 200) }),
     signal: options?.signal
   });

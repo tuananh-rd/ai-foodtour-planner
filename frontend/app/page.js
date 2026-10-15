@@ -866,6 +866,7 @@ export default function Home() {
               busy={busy}
               isMock={isMock}
               clientConfig={clientConfig}
+              sessionToken={sessionToken}
             />
           </div>
 
