@@ -9,8 +9,9 @@ Phase 1 (local MVP) complete; see docs/RUNNING.md. Roadmap and gates: docs/ROADM
 | U4 | Security hardening | Codex | Claude | DONE, accepted | d0e527f; SEC01 report; 117 tests, drift OK |
 | U5 | Frontend residuals + UX | Claude | Codex | DONE (F4/F7 + busy-initial fix); browser re-verification in BE-05 | cd5bb74, 7e2a2a5 |
 | U6 | Real-browser E2E probe | Claude | Codex | DONE; 16/16 x3 runs; review in BE-05 | qa/e2e/browser_flow.mjs |
-| U7 | Provider adapters vs local fakes | Codex (impl), Claude (boundary) | Claude | Boundary DONE (a5212df: LLMExtractor validation, CheckedRouteProvider); adapters IN PROGRESS BE-05 part B | live use = USER GATE (credentials + approval) |
-| BE-05 | Review P2 + adapters | Codex | Claude | In progress | dispatch ctx_a000007d82ba (draft unsent; Enter sent; Working observed) |
+| U7 | Provider adapters vs local fakes | Codex (impl), Claude (boundary) | Claude | DONE: boundary a5212df + review fixes e82caf7; adapters 3484c48 accepted (134 tests x3 stable; loopback-only, no proxy/redirect/DNS) | LIVE USE = USER GATE |
+| BE-05 | Codex | DONE, accepted | c591444 (review), 3484c48 (adapters) | Claude | Claude fixed 2 provider tests (flaky 40 ms deadline; unknown_field) in 7b5785d |
+| BE-06 (U8a) | Codex | In progress | - | Claude | dispatch ctx_a5af3176c401: verified-evidence overlay pipeline (synthetic only); the real evidence source remains USER GATE |
 | U8 | Hours/price evidence ingestion | Codex/Claude | Claude | Blocked: needs verified source + permission | USER GATE |
 | U9 | Postgres/PostGIS | Codex | Claude | Blocked: DB infra | USER GATE |
 | U10 | Deployment | - | - | Out of scope | USER GATE |
