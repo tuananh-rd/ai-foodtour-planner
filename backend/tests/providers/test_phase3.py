@@ -371,5 +371,31 @@ class ExplanationPrivacy(unittest.TestCase):
                 self.assertNotIn(secret, dumped)
 
 
+class ExplanationTimeBudget(unittest.TestCase):
+    def test_retry_only_when_enough_time_remains(self):
+        import time as _t
+        vs = load_fixture()
+        t = plan_tour(vs, Preferences(origin=(21.029, 105.851), duration_min=240, budget_vnd=500000,
+                                      budget_scope="per_person"))
+
+        class Slow:
+            def __init__(self):
+                self.deadlines = []
+
+            def explain(self, facts, *, deadline_s):
+                self.deadlines.append(deadline_s)
+                _t.sleep(0.3)
+                return "Đi bộ hai mươi phút, chưa rõ giờ."  # always rejected (spelled number)
+
+        slow = Slow()
+        text, source = CheckedExplainer(slow, deadline_s=1.0, min_retry_s=0.9).explain(t, vs)
+        self.assertEqual(source, "template")
+        self.assertEqual(len(slow.deadlines), 1)  # ~0.7 s left < 0.9 s: no retry
+        slow2 = Slow()
+        CheckedExplainer(slow2, deadline_s=3.0, min_retry_s=0.5).explain(t, vs)
+        self.assertEqual(len(slow2.deadlines), 2)
+        self.assertLess(slow2.deadlines[1], slow2.deadlines[0])  # retry gets only the remaining budget
+
+
 if __name__ == "__main__":
     unittest.main()

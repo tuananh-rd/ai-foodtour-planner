@@ -16,7 +16,8 @@ export default function ChatPanel({
   missingSlots = [],
   questions = [],
   onQuickAnswer,
-  isMock
+  isMock,
+  llmProvider = 'rules'
 }) {
   const [inputText, setInputText] = useState('');
 
@@ -258,6 +259,13 @@ export default function ChatPanel({
             {prompt}
           </button>
         ))}
+      </div>
+
+      {/* Waiting hint: a real LLM call can take several seconds */}
+      <div role="status" aria-live="polite" style={{ minHeight: 0, fontSize: 12, color: 'var(--text-secondary)', marginBottom: busy && llmProvider === 'gemini' ? 6 : 0 }}>
+        {busy && llmProvider === 'gemini'
+          ? 'Gemini đang phân tích yêu cầu… thường mất vài giây, có khi tới 20 giây; nếu quá lâu hệ thống sẽ dùng bộ luật cục bộ và ghi rõ.'
+          : ''}
       </div>
 
       {/* Input Form */}

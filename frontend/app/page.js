@@ -836,6 +836,7 @@ export default function Home() {
               missingSlots={missingSlots}
               questions={questions}
               onQuickAnswer={handleQuickAnswer}
+              llmProvider={health?.llm_provider || 'rules'}
             />
           </div>
 
