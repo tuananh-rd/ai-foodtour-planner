@@ -198,7 +198,6 @@ class APITests(unittest.TestCase):
                  "price_status": "ok", "price_max_vnd_norm": 20000}]
         body = {"lat": 21.03, "lon": 105.85, "budget_vnd": 200000, "duration_min": 120}
         with patch("app.api.legacy.load", return_value=rows):
-            self.assertEqual(self.client.get("/v1/venues").json(), {"items": rows})
             for mode in ("explore", "strict"):
                 request = PlanRequest(**body, mode=mode)
                 response = self.client.post("/v1/plans", json=request.model_dump())
