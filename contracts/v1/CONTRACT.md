@@ -143,3 +143,6 @@ Rate limited per token; the query text goes to Google (documented). Never return
 
 ### Configuration (server only, git-ignored `backend/.env`)
 `GOOGLE_MAPS_BROWSER_KEY`, `GOOGLE_MAPS_MAP_ID`, `GOOGLE_MAPS_SERVER_KEY`, `FOODTOUR_ROUTING=google`, `FOODTOUR_GEOCODER=google`; plus existing `GEMINI_API_KEY`, `FOODTOUR_LLM=gemini`. Daily budgets: `FOODTOUR_ROUTING_DAILY_BUDGET`, `FOODTOUR_GEOCODE_DAILY_BUDGET`.
+
+### v1.5 addendum — free-text origins (Claude/Gemini ↔ API)
+The extractor may return `origin_text` (a place phrase the user wrote that is not a built-in landmark). The API layer, not the model, resolves it: if the geocoder is `ready`, call it server-side; on `ok` with ≥1 result use the first result, set `origin`, `origin_label = result.label`, `origin_source = "geocoded"` and add a note ("Điểm xuất phát lấy theo kết quả tìm kiếm Google: …; bạn có thể sửa"); on `zero_results`/`unavailable`/`quota` leave `origin` unset (missing slot, ask the user) and add a labelled note. Geocoding never happens without `origin_text`, and `origin_text` is never logged. Built-in landmarks resolve locally (`origin_source = "landmark"`, no Google call).
