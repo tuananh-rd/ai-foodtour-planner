@@ -77,7 +77,16 @@ export default function TourTimeline({
             <article
               key={s.venue_id}
               id={`stop-card-${s.venue_id}`}
+              role="button"
+              tabIndex={0}
+              aria-label={`Điểm dừng ${s.order}: ${s.name}`}
               onClick={() => onSelectStop && onSelectStop(s.venue_id)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  onSelectStop && onSelectStop(s.venue_id);
+                }
+              }}
               style={{
                 background: '#fff',
                 borderRadius: 14,
@@ -168,8 +177,9 @@ export default function TourTimeline({
               >
                 <span>🕒 Đến: <strong>{s.arrive || '--:--'}</strong></span>
                 <span>→</span>
-                <span>Rời đi: <strong>{s.depart || '--:--'}</strong></span>
-                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>(ước tính 30p dừng)</span>
+                <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
+                  (ước tính {tour?.assumptions?.visit_minutes_per_stop ? `${tour.assumptions.visit_minutes_per_stop}p` : 'thời gian'} dừng)
+                </span>
               </div>
 
               {/* Price & Hours Grid */}

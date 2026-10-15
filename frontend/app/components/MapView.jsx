@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 
 // Web Mercator projection formulas
 function project(lat, lon, zoom) {
@@ -20,6 +20,27 @@ export default function MapView({
   legSource = 'straight_line_estimate'
 }) {
   const [zoomOffset, setZoomOffset] = useState(0);
+  const containerRef = useRef(null);
+  const [viewportDims, setViewportDims] = useState({ width: 600, height: 380 });
+
+  // Responsive container width measurement to guarantee 1:1 tile & SVG marker alignment
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const updateDims = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth;
+        if (w > 0) {
+          setViewportDims({ width: w, height: 380 });
+        }
+      }
+    };
+    updateDims();
+    window.addEventListener('resize', updateDims);
+    return () => window.removeEventListener('resize', updateDims);
+  }, []);
+
+  const viewWidth = viewportDims.width;
+  const viewHeight = viewportDims.height;
 
   // Compute map center and default zoom based on all points
   const points = useMemo(() => {
@@ -63,10 +84,6 @@ export default function MapView({
   }, [points]);
 
   const currentZoom = Math.min(18, Math.max(11, baseZoom + zoomOffset));
-
-  // Dimensions of map viewport
-  const viewWidth = 600;
-  const viewHeight = 400;
 
   // Center point in world pixels
   const centerWorld = project(centerLat, centerLon, currentZoom);
@@ -116,8 +133,36 @@ export default function MapView({
 
   const osmUrl = `https://www.openstreetmap.org/?mlat=${centerLat}&mlon=${centerLon}#map=${currentZoom}/${centerLat.toFixed(4)}/${centerLon.toFixed(4)}`;
 
-  const isProviderRoute = legSource === 'provider_route';
+  // Contract v1 has NO route geometry. Never draw a polyline for provider_route!
+  // Only for straight_line_estimate, a dashed visual hint with strict caption is permitted.
+  const isStraightLine = legSource === 'straight_line_estimate';
   const polylinePoints = projectedPoints.map((p) => `${p.x},${p.y}`).join(' ');
+
+  // List each leg with minutes, km and its source label
+  const legs = useMemo(() => {
+    if (!stops || stops.length === 0) return [];
+    return stops.map((stop, idx) => {
+      const fromName = idx === 0 ? 'Điểm xuất phát (S)' : stops[idx - 1].name;
+      const toName = stop.name;
+      const leg = stop.leg_from_previous || {};
+      const src = leg.source || legSource || 'unknown';
+      let srcLabel = 'Chưa rõ';
+      if (src === 'provider_route') {
+        srcLabel = 'Xác minh từ nhà cung cấp';
+      } else if (src === 'straight_line_estimate') {
+        srcLabel = 'Ước tính đường chim bay';
+      }
+      return {
+        fromName,
+        toName,
+        order: stop.order,
+        minutes: leg.minutes,
+        km: leg.km,
+        source: src,
+        srcLabel
+      };
+    });
+  }, [stops, legSource]);
 
   return (
     <div
@@ -135,7 +180,7 @@ export default function MapView({
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 20 }}>🗺️</span>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            Bản Đồ Tuyến Đi Bộ (Hà Nội)
+            Bản Đồ Điểm Dừng (Hà Nội)
           </h3>
         </div>
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
@@ -157,6 +202,7 @@ export default function MapView({
 
       {/* Map Viewport */}
       <div
+        ref={containerRef}
         style={{
           position: 'relative',
           width: '100%',
@@ -188,7 +234,7 @@ export default function MapView({
           ))}
         </div>
 
-        {/* SVG Overlay for markers and routes */}
+        {/* SVG Overlay for markers and dashed straight-line hint */}
         <svg
           viewBox={`0 0 ${viewWidth} ${viewHeight}`}
           style={{
@@ -198,14 +244,15 @@ export default function MapView({
             height: '100%'
           }}
         >
-          {/* Route Line: Only drawn when route geometry is from provider_route. Never draw invented lines for straight-line estimates. */}
-          {isProviderRoute && projectedPoints.length > 1 && (
+          {/* Visual Hint: ONLY dashed line for straight_line_estimate legs. NEVER for provider_route! */}
+          {isStraightLine && projectedPoints.length > 1 && (
             <polyline
               points={polylinePoints}
               fill="none"
-              stroke="var(--accent-primary)"
-              strokeWidth={4}
-              strokeOpacity={0.9}
+              stroke="#888"
+              strokeWidth={2}
+              strokeDasharray="5,5"
+              strokeOpacity={0.75}
             />
           )}
 
@@ -217,7 +264,14 @@ export default function MapView({
                 key={p.id}
                 transform={`translate(${p.x},${p.y})`}
                 onClick={() => onSelectStop && onSelectStop(p.id)}
-                style={{ cursor: 'pointer' }}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    onSelectStop && onSelectStop(p.id);
+                  }
+                }}
+                tabIndex={0}
+                style={{ cursor: 'pointer', outline: 'none' }}
                 role="button"
                 aria-label={p.isOrigin ? 'Điểm xuất phát' : `Điểm dừng ${p.order}: ${p.name}`}
               >
@@ -246,6 +300,28 @@ export default function MapView({
           })}
         </svg>
 
+        {/* Dashed line caption banner overlay on map for straight-line hint */}
+        {isStraightLine && projectedPoints.length > 1 && (
+          <div
+            style={{
+              position: 'absolute',
+              top: 10,
+              left: 10,
+              background: 'rgba(255, 255, 255, 0.92)',
+              border: '1px solid #d9d9d9',
+              borderRadius: 6,
+              padding: '4px 8px',
+              fontSize: 11,
+              color: '#555',
+              fontWeight: 600,
+              zIndex: 10,
+              pointerEvents: 'none'
+            }}
+          >
+            - - - khoảng cách đường chim bay, không phải tuyến đi
+          </div>
+        )}
+
         {/* Zoom Controls */}
         <div
           style={{
@@ -273,7 +349,8 @@ export default function MapView({
               boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              cursor: 'pointer'
             }}
           >
             +
@@ -293,7 +370,8 @@ export default function MapView({
               boxShadow: '0 2px 4px rgba(0,0,0,0.15)',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center'
+              justifyContent: 'center',
+              cursor: 'pointer'
             }}
           >
             −
@@ -319,17 +397,66 @@ export default function MapView({
       </div>
 
       {/* Geometry disclaimer */}
-      <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
-        {isProviderRoute ? (
+      <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
+        {legSource === 'provider_route' ? (
           <span style={{ color: '#2e7d32', fontWeight: 600 }}>
-            ✓ Tuyến đường đi bộ thực tế được xác minh từ nhà cung cấp định tuyến (provider_route).
+            ✓ Nhà cung cấp định tuyến (provider_route) cung cấp thời gian và cự ly đi bộ. Bản đồ hiển thị các điểm dừng được đánh số; Contract v1 chưa hỗ trợ chuỗi tọa độ chi tiết từng tuyến đường phố.
           </span>
         ) : (
           <span style={{ color: '#e65100', fontWeight: 600 }}>
-            * Chưa có dữ liệu định tuyến thực tế (đang dùng cự ly đường chim bay ước tính). Bản đồ chỉ hiển thị các điểm dừng và điểm xuất phát, không tự vẽ tuyến đường giả định.
+            * Chưa có dữ liệu định tuyến thực tế (đang dùng cự ly đường chim bay ước tính). Đường nét đứt trên bản đồ chỉ thể hiện khoảng cách đường chim bay, không phải tuyến đi.
           </span>
         )}
       </div>
+
+      {/* Leg listing with minutes, km and source label */}
+      {legs.length > 0 && (
+        <div style={{ marginTop: 14, borderTop: '1px solid #f0f0f0', paddingTop: 12 }}>
+          <h4 style={{ fontSize: 13, fontWeight: 700, margin: '0 0 8px 0', color: 'var(--text-primary)' }}>
+            🚶 Chi tiết các chặng di chuyển ({legs.length} chặng):
+          </h4>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {legs.map((leg, idx) => (
+              <div
+                key={idx}
+                style={{
+                  background: '#fafafa',
+                  borderRadius: 8,
+                  padding: '8px 12px',
+                  fontSize: 12,
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  flexWrap: 'wrap',
+                  gap: 6
+                }}
+              >
+                <div>
+                  <strong>Chặng {idx + 1}:</strong> {leg.fromName} ➔ {leg.toName}
+                </div>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', color: '#555' }}>
+                  <span>{leg.minutes != null ? `${leg.minutes} phút` : 'Chưa rõ'}</span>
+                  <span>·</span>
+                  <span>{leg.km != null ? `${leg.km} km` : 'Chưa rõ'}</span>
+                  <span>·</span>
+                  <span
+                    style={{
+                      padding: '2px 6px',
+                      borderRadius: 4,
+                      fontSize: 11,
+                      fontWeight: 600,
+                      background: leg.source === 'provider_route' ? '#e8f5e9' : '#fff3e0',
+                      color: leg.source === 'provider_route' ? '#2e7d32' : '#e65100'
+                    }}
+                  >
+                    {leg.source}
+                  </span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

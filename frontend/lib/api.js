@@ -394,6 +394,9 @@ async function safeFetch(url, options = {}) {
   try {
     res = await fetch(url, options);
   } catch (err) {
+    if (err.name === 'AbortError') {
+      throw err;
+    }
     throw new ApiError(
       "provider_unavailable",
       `Không thể kết nối đến máy chủ backend (${getApiBaseUrl()}). Vui lòng kiểm tra dịch vụ.`,
@@ -409,6 +412,7 @@ async function safeFetch(url, options = {}) {
     } catch (_) {}
     const code = errorBody?.error?.code || (
       res.status === 409 ? "revision_conflict" :
+      res.status === 410 ? "session_expired" :
       (res.status === 401 || res.status === 403) ? "unauthorized_session" :
       res.status === 429 ? "rate_limited" :
       res.status === 503 ? "provider_unavailable" :
@@ -447,7 +451,7 @@ export async function getHealth() {
  * 2. Search / List venues
  * GET /v1/venues
  */
-export async function getVenues({ limit = 20, offset = 0, q = "" } = {}) {
+export async function getVenues({ limit = 50, offset = 0, q = "", city = "Hà Nội" } = {}, options = {}) {
   if (isMockMode()) {
     let list = SYNTHETIC_VENUES;
     if (q) {
@@ -464,22 +468,28 @@ export async function getVenues({ limit = 20, offset = 0, q = "" } = {}) {
       total: list.length,
       limit,
       offset,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
       is_mock: true
     };
   }
 
   const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
   if (q) params.set("q", q);
+  if (city) params.set("city", city);
   const data = await safeFetch(`${getApiBaseUrl()}/v1/venues?${params.toString()}`, {
-    headers: { 'Accept': 'application/json' }
+    headers: { 'Accept': 'application/json' },
+    signal: options?.signal
   });
   const items = data.items || [];
   return {
     items,
     venues: items,
-    total: items.length,
-    limit,
-    offset,
+    total: data.total !== undefined ? data.total : items.length,
+    limit: data.limit !== undefined ? data.limit : limit,
+    offset: data.offset !== undefined ? data.offset : offset,
+    dataset_source: data.dataset_source,
+    dataset_version: data.dataset_version,
     is_mock: false
   };
 }
@@ -488,7 +498,7 @@ export async function getVenues({ limit = 20, offset = 0, q = "" } = {}) {
  * 3. Venue detail
  * GET /v1/venues/{id}
  */
-export async function getVenueById(id) {
+export async function getVenueById(id, options = {}) {
   if (isMockMode()) {
     const found = SYNTHETIC_VENUES.find(v => v.id === id);
     if (!found) {
@@ -498,7 +508,8 @@ export async function getVenueById(id) {
   }
 
   return safeFetch(`${getApiBaseUrl()}/v1/venues/${id}`, {
-    headers: { 'Accept': 'application/json' }
+    headers: { 'Accept': 'application/json' },
+    signal: options?.signal
   });
 }
 
@@ -506,7 +517,7 @@ export async function getVenueById(id) {
  * 4. Create session
  * POST /v1/sessions
  */
-export async function createSession() {
+export async function createSession(options = {}) {
   if (isMockMode()) {
     const session = getOrCreateMockSession();
     return {
@@ -519,7 +530,8 @@ export async function createSession() {
 
   return safeFetch(`${getApiBaseUrl()}/v1/sessions`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
+    headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+    signal: options?.signal
   });
 }
 
@@ -528,7 +540,7 @@ export async function createSession() {
  * POST /v1/sessions/{id}/messages
  * Returns { preferences, missing_slots, questions, notes, tour|null, revision, dataset_source, dataset_version }
  */
-export async function sendMessage(sessionId, text, token = "") {
+export async function sendMessage(sessionId, text, token = "", options = {}) {
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
     session.revision += 1;
@@ -672,7 +684,8 @@ export async function sendMessage(sessionId, text, token = "") {
       'Accept': 'application/json',
       'X-Session-Token': token
     },
-    body: JSON.stringify({ text })
+    body: JSON.stringify({ text }),
+    signal: options?.signal
   });
 }
 
@@ -681,7 +694,7 @@ export async function sendMessage(sessionId, text, token = "") {
  * PUT /v1/sessions/{id}/preferences
  * Body: { base_revision, preferences }
  */
-export async function updatePreferences(sessionId, baseRevision, preferences, token = "") {
+export async function updatePreferences(sessionId, baseRevision, preferences, token = "", options = {}) {
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
     if (baseRevision !== undefined && baseRevision !== null && baseRevision !== session.revision) {
@@ -694,6 +707,8 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
     }
     session.preferences = { ...session.preferences, ...preferences };
     session.revision += 1;
+    // Server contract: updating preferences invalidates prior tour so tour=null and revisions do not drift
+    session.tour = null;
 
     // Recalculate missing slots
     const missing = [];
@@ -747,7 +762,8 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
       'Accept': 'application/json',
       'X-Session-Token': token
     },
-    body: JSON.stringify({ base_revision: baseRevision, preferences: sanitized })
+    body: JSON.stringify({ base_revision: baseRevision, preferences: sanitized }),
+    signal: options?.signal
   });
 }
 
@@ -756,7 +772,7 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
  * POST /v1/sessions/{id}/tour
  * Body: { base_revision }
  */
-export async function planTour(sessionId, baseRevision, token = "") {
+export async function planTour(sessionId, baseRevision, token = "", options = {}) {
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
     if (baseRevision !== undefined && baseRevision !== null && baseRevision !== session.revision) {
@@ -789,7 +805,8 @@ export async function planTour(sessionId, baseRevision, token = "") {
       'Accept': 'application/json',
       'X-Session-Token': token
     },
-    body: JSON.stringify({ base_revision: baseRevision })
+    body: JSON.stringify({ base_revision: baseRevision }),
+    signal: options?.signal
   });
 }
 
@@ -798,7 +815,7 @@ export async function planTour(sessionId, baseRevision, token = "") {
  * POST /v1/sessions/{id}/tour/replace
  * Body: { base_revision, venue_id }
  */
-export async function replaceTourStop(sessionId, baseRevision, venueId, token = "") {
+export async function replaceTourStop(sessionId, baseRevision, venueId, token = "", options = {}) {
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
     if (baseRevision !== undefined && baseRevision !== null && baseRevision !== session.revision) {
@@ -872,7 +889,8 @@ export async function replaceTourStop(sessionId, baseRevision, venueId, token = 
       'Accept': 'application/json',
       'X-Session-Token': token
     },
-    body: JSON.stringify({ base_revision: baseRevision, venue_id: venueId })
+    body: JSON.stringify({ base_revision: baseRevision, venue_id: venueId }),
+    signal: options?.signal
   });
 }
 

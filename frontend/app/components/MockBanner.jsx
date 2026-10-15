@@ -1,6 +1,6 @@
 'use client';
 
-export default function MockBanner({ isMock, datasetSource, datasetVersion, onToggleMode }) {
+export default function MockBanner({ isMock, datasetSource, datasetVersion, onToggleMode, busy = false }) {
   const isSynthetic = isMock || datasetSource === 'synthetic';
   const isPrivate = !isMock && datasetSource === 'private';
 
@@ -52,6 +52,7 @@ export default function MockBanner({ isMock, datasetSource, datasetVersion, onTo
           <button
             type="button"
             onClick={onToggleMode}
+            disabled={busy}
             style={{
               fontSize: 12,
               padding: '4px 10px',
@@ -59,7 +60,7 @@ export default function MockBanner({ isMock, datasetSource, datasetVersion, onTo
               border: '1px solid #d39e00',
               borderRadius: 6,
               color: '#856404',
-              cursor: 'pointer',
+              cursor: busy ? 'not-allowed' : 'pointer',
               fontWeight: 600
             }}
           >
@@ -113,6 +114,7 @@ export default function MockBanner({ isMock, datasetSource, datasetVersion, onTo
         <button
           type="button"
           onClick={onToggleMode}
+          disabled={busy}
           style={{
             fontSize: 12,
             padding: '4px 10px',
@@ -120,7 +122,7 @@ export default function MockBanner({ isMock, datasetSource, datasetVersion, onTo
             border: '1px solid #cbd5e1',
             borderRadius: 6,
             color: '#475569',
-            cursor: 'pointer',
+            cursor: busy ? 'not-allowed' : 'pointer',
             fontWeight: 600
           }}
         >

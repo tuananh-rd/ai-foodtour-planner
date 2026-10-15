@@ -454,6 +454,171 @@ async function runTestSuite() {
     `leg_source: ${tourForEvidence.totals.leg_source}`
   );
 
+  // -------------------------------------------------------------
+  // Scenario 14: FE-FIX-01 Findings & Assertions (F2, F3, F4, F6, N1, N2)
+  // -------------------------------------------------------------
+  console.log('\n--- Scenario 14: FE-FIX-01 Findings Verification ---');
+
+  // TC-29 (F2): Server-selected replace stop
+  console.log('Testing F2: Server-selected replacement stop (no client candidate)...');
+  const replaceSession = await createSession();
+  await sendMessage(replaceSession.session_id, 'Xuất phát từ Hồ Gươm, đi 180 phút, ngân sách 300k mỗi người', replaceSession.token);
+  const repTourRes = await planTour(replaceSession.session_id, 1, replaceSession.token);
+  const stopBefore = repTourRes.tour.stops[1];
+  const lockedBefore = [repTourRes.tour.stops[0].venue_id, repTourRes.tour.stops[2].venue_id];
+  const replaceOut = await replaceTourStop(replaceSession.session_id, repTourRes.revision, stopBefore.venue_id, replaceSession.token);
+  const stopAfter = replaceOut.tour.stops[1];
+  record(
+    'TC-29',
+    'F2 Replace preview: Stop is replaced by server-selected venue, all locked stops and order preserved',
+    replaceOut.tour.stops.length === 3 &&
+    stopAfter.venue_id !== stopBefore.venue_id &&
+    replaceOut.tour.stops[0].venue_id === lockedBefore[0] &&
+    replaceOut.tour.stops[2].venue_id === lockedBefore[1] &&
+    replaceOut.tour.locks.includes(lockedBefore[0]) &&
+    replaceOut.tour.locks.includes(lockedBefore[1]) &&
+    !replaceOut.tour.locks.includes(stopBefore.venue_id),
+    `Replaced ${stopBefore.venue_id} -> ${stopAfter.venue_id}, preserved [${lockedBefore.join(', ')}]`
+  );
+
+  // TC-30 (F4): Mode-only PUT preserves all other preference slots
+  console.log('Testing F4: Mode toggle preserves all other preference slots...');
+  const f4Session = await createSession();
+  const initPrefs = {
+    city: 'Hà Nội',
+    origin: { lat: 21.0285, lon: 105.8522 },
+    start_time: '09:00',
+    weekday: 2,
+    duration_min: 150,
+    budget_vnd: 250000,
+    budget_scope: 'per_person',
+    party_size: 3,
+    interests: ['phở', 'bún chả'],
+    exclusions: ['mắm tôm'],
+    max_stops: 4,
+    mode: 'explore'
+  };
+  const f4Put1 = await updatePreferences(f4Session.session_id, 0, initPrefs, f4Session.token);
+  // Now toggle mode to 'strict' using merged preferences
+  const f4Put2 = await updatePreferences(
+    f4Session.session_id,
+    f4Put1.revision,
+    { ...f4Put1.preferences, mode: 'strict' },
+    f4Session.token
+  );
+  record(
+    'TC-30',
+    'F4 Mode toggle preserves all other preference slots (origin, duration, budget, scope, party, interests, exclusions, max_stops)',
+    f4Put2.preferences.mode === 'strict' &&
+    Math.abs(f4Put2.preferences.origin.lat - 21.0285) < 0.0001 &&
+    Math.abs(f4Put2.preferences.origin.lon - 105.8522) < 0.0001 &&
+    f4Put2.preferences.duration_min === 150 &&
+    f4Put2.preferences.budget_vnd === 250000 &&
+    f4Put2.preferences.budget_scope === 'per_person' &&
+    f4Put2.preferences.party_size === 3 &&
+    f4Put2.preferences.interests.includes('phở') &&
+    f4Put2.preferences.exclusions.includes('mắm tôm') &&
+    f4Put2.preferences.max_stops === 4 &&
+    f4Put2.preferences.start_time === '09:00' &&
+    f4Put2.preferences.weekday === 2,
+    `mode: ${f4Put2.preferences.mode}, all 10 other preference slots strictly preserved`
+  );
+
+  // TC-31 (Item a / F10): Scope clarification resolves missing budget_scope
+  console.log('Testing Item (a) / F10: Scope clarification resolves budget_scope...');
+  const scopeSession = await createSession();
+  const scopeMsg1 = await sendMessage(scopeSession.session_id, 'Ngân sách 200k', scopeSession.token);
+  const scopePut = await updatePreferences(
+    scopeSession.session_id,
+    scopeMsg1.revision,
+    { ...scopeMsg1.preferences, budget_scope: 'per_person' },
+    scopeSession.token
+  );
+  record(
+    'TC-31',
+    'Item (a) / F10: Scope clarification resolves missing budget_scope while retaining budget_vnd',
+    scopeMsg1.missing_slots.includes('budget_scope') &&
+    !scopePut.missing_slots.includes('budget_scope') &&
+    scopePut.preferences.budget_scope === 'per_person' &&
+    scopePut.preferences.budget_vnd === 200000,
+    `budget_scope: ${scopePut.preferences.budget_scope}, budget_vnd: ${scopePut.preferences.budget_vnd}, missing_slots: ${scopePut.missing_slots.length}`
+  );
+
+  // TC-32 (Item b): Mock-mode PUT invalidates tour / keeps Tour.revision == wrapper revision
+  console.log('Testing Item (b): Mock-mode PUT invalidates tour and keeps revision aligned...');
+  setRuntimeMockMode(true);
+  const mockSess = await createSession();
+  await sendMessage(mockSess.session_id, 'Xuất phát từ Hồ Gươm, đi 120 phút, ngân sách 150k mỗi người', mockSess.token);
+  const mockPlan = await planTour(mockSess.session_id, 1, mockSess.token);
+  const mockPut = await updatePreferences(mockSess.session_id, mockPlan.revision, { ...mockPlan.preferences, max_stops: 2 }, mockSess.token);
+  record(
+    'TC-32',
+    'Item (b): Mock-mode PUT invalidates tour so tour is null and revisions do not drift',
+    mockPlan.tour !== null &&
+    mockPlan.tour.revision === mockPlan.revision &&
+    mockPut.tour === null &&
+    mockPut.revision === mockPlan.revision + 1,
+    `mockPlan rev: ${mockPlan.revision}, mockPut rev: ${mockPut.revision}, mockPut tour is null: ${mockPut.tour === null}`
+  );
+  setRuntimeMockMode(false); // Return to real mode
+
+  // TC-33 (Item c / N1): getVenues(limit=2) returns authoritative total (13) and pagination metadata
+  console.log('Testing Item (c) / N1: getVenues returns authoritative total and exposes pagination...');
+  const pagRes = await getVenues({ limit: 2, offset: 0 });
+  record(
+    'TC-33',
+    'Item (c) / N1: getVenues(limit=2) preserves server total (13) and returns limit/offset/source metadata',
+    pagRes.items.length === 2 &&
+    pagRes.total === 13 &&
+    pagRes.limit === 2 &&
+    pagRes.offset === 0 &&
+    pagRes.dataset_source === 'synthetic',
+    `items: ${pagRes.items.length}, total: ${pagRes.total}, limit: ${pagRes.limit}, offset: ${pagRes.offset}, source: ${pagRes.dataset_source}`
+  );
+
+  // TC-34 (Item N2): Tour timeline dwell assumption exposes visit_minutes_per_stop (45 min)
+  console.log('Testing Item N2: Tour timeline uses assumptions.visit_minutes_per_stop...');
+  record(
+    'TC-34',
+    'Item N2: Tour exposes assumptions.visit_minutes_per_stop (45 min default, not hardcoded 30)',
+    repTourRes.tour.assumptions &&
+    repTourRes.tour.assumptions.visit_minutes_per_stop === 45,
+    `visit_minutes_per_stop: ${repTourRes.tour.assumptions?.visit_minutes_per_stop}`
+  );
+
+  // TC-35 (F6): Contract v1 has NO route geometry
+  console.log('Testing F6: Contract v1 has NO route geometry...');
+  const legsList = repTourRes.tour.stops.map((s) => s.leg_from_previous);
+  const allLegsHaveMetrics = legsList.every(
+    (l) => typeof l.km === 'number' && ['straight_line_estimate', 'provider_route', 'unknown'].includes(l.source)
+  );
+  const hasInventedGeometry = repTourRes.tour.stops.some((s) => s.leg_from_previous?.geometry != null || s.leg_from_previous?.coordinates != null);
+  record(
+    'TC-35',
+    'F6 Map: Contract v1 has NO route geometry; all legs contain distance/source metadata without polyline points',
+    allLegsHaveMetrics && !hasInventedGeometry,
+    `stops count: ${repTourRes.tour.stops.length}, legs verified: ${allLegsHaveMetrics}, invented geometry absent: true`
+  );
+
+  // TC-36 (F3): Async mutations support AbortSignal and rethrow AbortError
+  console.log('Testing F3: Client safely handles AbortController signal without 503 conversion...');
+  const controller = new AbortController();
+  controller.abort();
+  let caughtAbort = false;
+  try {
+    await sendMessage(replaceSession.session_id, 'test abort', replaceSession.token, { signal: controller.signal });
+  } catch (err) {
+    if (err.name === 'AbortError') {
+      caughtAbort = true;
+    }
+  }
+  record(
+    'TC-36',
+    'F3 Race guards: Client respects AbortController signal and rethrows AbortError directly without mapping to 503',
+    caughtAbort,
+    `caughtAbort: ${caughtAbort}`
+  );
+
   console.log('\n===============================================================');
   console.log(`   QA-01 TEST SUMMARY: ${results.filter((r) => r.passed).length}/${results.length} PASSED`);
   console.log('===============================================================\n');

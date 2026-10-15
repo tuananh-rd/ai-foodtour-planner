@@ -27,7 +27,7 @@ export default function PreferencesPanel({
   const [startTime, setStartTime] = useState(preferences.start_time || '08:30');
   const [weekday, setWeekday] = useState(preferences.weekday ?? 0);
   const [durationMin, setDurationMin] = useState(preferences.duration_min || 120);
-  const [budgetVnd, setBudgetVnd] = useState(preferences.budget_vnd || 150000);
+  const [budgetVnd, setBudgetVnd] = useState(preferences.budget_vnd != null ? preferences.budget_vnd : 150000);
   const [budgetScope, setBudgetScope] = useState(preferences.budget_scope || 'per_person');
   const [partySize, setPartySize] = useState(preferences.party_size || 1);
   const [interestsStr, setInterestsStr] = useState((preferences.interests || []).join(', '));
@@ -35,18 +35,19 @@ export default function PreferencesPanel({
   const [maxStops, setMaxStops] = useState(preferences.max_stops || 3);
   const [mode, setMode] = useState(preferences.mode || 'explore');
 
-  // Sync state if preferences change from chat extraction
+  // Sync state if preferences change from chat extraction or server reset.
+  // Properly handle null/empty server resets so UI form fields reflect authoritative state.
   useEffect(() => {
-    if (preferences.start_time) setStartTime(preferences.start_time);
-    if (preferences.weekday !== undefined && preferences.weekday !== null) setWeekday(preferences.weekday);
-    if (preferences.duration_min) setDurationMin(preferences.duration_min);
-    if (preferences.budget_vnd) setBudgetVnd(preferences.budget_vnd);
-    if (preferences.budget_scope) setBudgetScope(preferences.budget_scope);
-    if (preferences.party_size) setPartySize(preferences.party_size);
-    if (preferences.interests) setInterestsStr(preferences.interests.join(', '));
-    if (preferences.exclusions) setExclusionsStr(preferences.exclusions.join(', '));
-    if (preferences.max_stops) setMaxStops(preferences.max_stops);
-    if (preferences.mode) setMode(preferences.mode);
+    setStartTime(preferences.start_time || '');
+    setWeekday(preferences.weekday ?? 0);
+    setDurationMin(preferences.duration_min != null ? preferences.duration_min : 120);
+    setBudgetVnd(preferences.budget_vnd != null ? preferences.budget_vnd : '');
+    setBudgetScope(preferences.budget_scope || 'per_person');
+    setPartySize(preferences.party_size != null ? preferences.party_size : 1);
+    setInterestsStr((preferences.interests || []).join(', '));
+    setExclusionsStr((preferences.exclusions || []).join(', '));
+    setMaxStops(preferences.max_stops != null ? preferences.max_stops : 3);
+    setMode(preferences.mode || 'explore');
     if (preferences.origin) {
       setCustomLat(preferences.origin.lat);
       setCustomLon(preferences.origin.lon);
@@ -79,16 +80,16 @@ export default function PreferencesPanel({
   const buildPreferencesPayload = () => {
     return {
       city: 'Hà Nội',
-      origin: { lat: Number(customLat), lon: Number(customLon) },
+      origin: customLat != null && customLon != null ? { lat: Number(customLat), lon: Number(customLon) } : null,
       start_time: startTime || null,
-      weekday: Number(weekday),
-      duration_min: Number(durationMin),
-      budget_vnd: budgetVnd ? Number(budgetVnd) : null,
-      budget_scope: budgetScope || 'per_person',
-      party_size: Number(partySize),
+      weekday: weekday !== '' && weekday != null ? Number(weekday) : null,
+      duration_min: durationMin !== '' && durationMin != null ? Number(durationMin) : null,
+      budget_vnd: budgetVnd !== '' && budgetVnd != null ? Number(budgetVnd) : null,
+      budget_scope: budgetScope || null,
+      party_size: partySize !== '' && partySize != null ? Number(partySize) : null,
       interests: interestsStr.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 10),
       exclusions: exclusionsStr.split(',').map((s) => s.trim()).filter(Boolean).slice(0, 10),
-      max_stops: Number(maxStops),
+      max_stops: maxStops !== '' && maxStops != null ? Number(maxStops) : 3,
       mode
     };
   };
@@ -110,27 +111,28 @@ export default function PreferencesPanel({
   return (
     <div
       role="region"
-      aria-label="Bảng tùy chọn foodtour có cấu trúc"
+      aria-label="Bảng tùy chọn chuyến đi có cấu trúc"
       style={{
         background: '#fff',
         borderRadius: 16,
         padding: 20,
-        boxShadow: 'var(--shadow-sm)'
+        boxShadow: 'var(--shadow-sm)',
+        marginBottom: 20
       }}
     >
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <span style={{ fontSize: 20 }}>⚙️</span>
-          <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            Tùy Chọn Có Cấu Trúc
-          </h2>
+          <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
+            Tùy Chọn Chuyến Đi (Cấu trúc)
+          </h3>
         </div>
         <span
           style={{
-            fontSize: 11,
-            background: '#edf2f7',
-            color: '#4a5568',
-            padding: '3px 8px',
+            fontSize: 12,
+            background: 'var(--bg-subtle)',
+            color: 'var(--text-secondary)',
+            padding: '4px 8px',
             borderRadius: 6,
             fontWeight: 600
           }}
@@ -142,12 +144,14 @@ export default function PreferencesPanel({
       <form onSubmit={handlePlanNow} style={{ display: 'grid', gap: 14 }}>
         {/* Điểm xuất phát Preset */}
         <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+          <label htmlFor="pref-origin-preset" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
             Điểm xuất phát (Hà Nội)
           </label>
           <select
+            id="pref-origin-preset"
             value={originPreset}
             onChange={(e) => handlePresetChange(e.target.value)}
+            disabled={busy}
             style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)', background: '#fff' }}
           >
             {PRESET_LOCATIONS.map((p) => (
@@ -160,23 +164,27 @@ export default function PreferencesPanel({
         {originPreset === 'custom' && (
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, background: '#f5f4ef', padding: 10, borderRadius: 8 }}>
             <div>
-              <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Vĩ độ (Lat)</label>
+              <label htmlFor="pref-custom-lat" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Vĩ độ (Lat)</label>
               <input
+                id="pref-custom-lat"
                 type="number"
                 step="any"
                 value={customLat}
                 onChange={(e) => setCustomLat(Number(e.target.value))}
+                disabled={busy}
                 required
                 style={{ width: '100%', minHeight: 38, padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border-color)' }}
               />
             </div>
             <div>
-              <label style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Kinh độ (Lon)</label>
+              <label htmlFor="pref-custom-lon" style={{ fontSize: 12, color: 'var(--text-secondary)' }}>Kinh độ (Lon)</label>
               <input
+                id="pref-custom-lon"
                 type="number"
                 step="any"
                 value={customLon}
                 onChange={(e) => setCustomLon(Number(e.target.value))}
+                disabled={busy}
                 required
                 style={{ width: '100%', minHeight: 38, padding: '6px 8px', borderRadius: 6, border: '1px solid var(--border-color)' }}
               />
@@ -187,23 +195,27 @@ export default function PreferencesPanel({
         {/* Giờ xuất phát & Thứ trong tuần */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-start-time" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Giờ bắt đầu
             </label>
             <input
+              id="pref-start-time"
               type="time"
               value={startTime}
               onChange={(e) => setStartTime(e.target.value)}
+              disabled={busy}
               style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)' }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-weekday" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Ngày trong tuần
             </label>
             <select
+              id="pref-weekday"
               value={weekday}
               onChange={(e) => setWeekday(Number(e.target.value))}
+              disabled={busy}
               style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)', background: '#fff' }}
             >
               <option value={0}>Thứ 2</option>
@@ -220,16 +232,18 @@ export default function PreferencesPanel({
         {/* Thời lượng & Số điểm dừng */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-duration" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Thời lượng (phút): {durationMin}p
             </label>
             <input
+              id="pref-duration"
               type="range"
               min="30"
               max="720"
               step="15"
               value={durationMin}
               onChange={(e) => setDurationMin(Number(e.target.value))}
+              disabled={busy}
               style={{ width: '100%', minHeight: 40 }}
             />
             <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, color: 'var(--text-muted)' }}>
@@ -240,12 +254,14 @@ export default function PreferencesPanel({
             </div>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-max-stops" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Số điểm dừng (1–5)
             </label>
             <select
+              id="pref-max-stops"
               value={maxStops}
               onChange={(e) => setMaxStops(Number(e.target.value))}
+              disabled={busy}
               style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)', background: '#fff' }}
             >
               <option value={1}>1 điểm</option>
@@ -260,25 +276,30 @@ export default function PreferencesPanel({
         {/* Ngân sách & Phạm vi & Số người */}
         <div style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr 0.8fr', gap: 10 }}>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-budget-vnd" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Ngân sách (₫)
             </label>
             <input
+              id="pref-budget-vnd"
               type="number"
               min="10000"
               step="10000"
               value={budgetVnd}
-              onChange={(e) => setBudgetVnd(Number(e.target.value))}
+              onChange={(e) => setBudgetVnd(e.target.value ? Number(e.target.value) : '')}
+              disabled={busy}
+              placeholder="150000"
               style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)' }}
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-budget-scope" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Phạm vi
             </label>
             <select
+              id="pref-budget-scope"
               value={budgetScope}
               onChange={(e) => setBudgetScope(e.target.value)}
+              disabled={busy}
               style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)', background: '#fff' }}
             >
               <option value="per_person">Mỗi người</option>
@@ -286,15 +307,17 @@ export default function PreferencesPanel({
             </select>
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+            <label htmlFor="pref-party-size" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Số người
             </label>
             <input
+              id="pref-party-size"
               type="number"
               min="1"
               max="20"
               value={partySize}
-              onChange={(e) => setPartySize(Number(e.target.value))}
+              onChange={(e) => setPartySize(e.target.value ? Number(e.target.value) : '')}
+              disabled={busy}
               style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)' }}
             />
           </div>
@@ -305,14 +328,16 @@ export default function PreferencesPanel({
 
         {/* Món ăn yêu thích & Chips */}
         <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+          <label htmlFor="pref-interests" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
             Sở thích món ăn (tối đa 10 món)
           </label>
           <input
+            id="pref-interests"
             type="text"
             placeholder="Ví dụ: Phở, Bún chả, Chè..."
             value={interestsStr}
             onChange={(e) => setInterestsStr(e.target.value)}
+            disabled={busy}
             style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)' }}
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
@@ -321,6 +346,7 @@ export default function PreferencesPanel({
                 key={item}
                 type="button"
                 onClick={() => handleAddInterest(item)}
+                disabled={busy}
                 style={chipStyle}
               >
                 + {item}
@@ -331,14 +357,16 @@ export default function PreferencesPanel({
 
         {/* Món loại trừ */}
         <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+          <label htmlFor="pref-exclusions" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
             Món / Thành phần loại trừ (tối đa 10 món)
           </label>
           <input
+            id="pref-exclusions"
             type="text"
             placeholder="Ví dụ: Ốc, Mắm tôm..."
             value={exclusionsStr}
             onChange={(e) => setExclusionsStr(e.target.value)}
+            disabled={busy}
             style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)' }}
           />
           <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
@@ -347,6 +375,7 @@ export default function PreferencesPanel({
                 key={item}
                 type="button"
                 onClick={() => handleAddExclusion(item)}
+                disabled={busy}
                 style={chipStyle}
               >
                 ✕ {item}
@@ -357,12 +386,14 @@ export default function PreferencesPanel({
 
         {/* Chế độ kiểm định */}
         <div>
-          <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+          <label htmlFor="pref-mode" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
             Chế độ kiểm định (Mode)
           </label>
           <select
+            id="pref-mode"
             value={mode}
             onChange={(e) => setMode(e.target.value)}
+            disabled={busy}
             style={{ width: '100%', minHeight: 44, padding: '10px 12px', borderRadius: 8, border: '1px solid var(--border-color)', background: '#fff' }}
           >
             <option value="explore">Khám phá có điều kiện (Explore - chấp nhận giờ/giá tham khảo)</option>

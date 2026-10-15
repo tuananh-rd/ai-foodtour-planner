@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import MockBanner from './components/MockBanner';
 import TourStatusBanner from './components/TourStatusBanner';
 import ChatPanel from './components/ChatPanel';
@@ -18,7 +18,6 @@ import {
   updatePreferences,
   planTour,
   replaceTourStop,
-  getVenues,
   ApiError
 } from '../lib/api';
 
@@ -61,19 +60,61 @@ export default function Home() {
   const [tour, setTour] = useState(null);
   const [highlightedStopId, setHighlightedStopId] = useState(null);
 
-  // Replace modal state
+  // Replace modal state (F2: server-chosen replacement, no client preview)
   const [replaceTargetStop, setReplaceTargetStop] = useState(null);
-  const [replaceCandidate, setReplaceCandidate] = useState(null);
+  const [replaceResultDiff, setReplaceResultDiff] = useState(null);
   const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
 
   // Async UI & error states
   const [busy, setBusy] = useState(false);
+  const [lastFailedAction, setLastFailedAction] = useState(null);
   const [error, setError] = useState(null);
   const [conflictError, setConflictError] = useState(null);
   const [noCandidatesError, setNoCandidatesError] = useState(null);
   const [authError, setAuthError] = useState(null);
   const [rateLimitError, setRateLimitError] = useState(null);
   const [providerUnavailableError, setProviderUnavailableError] = useState(null);
+
+  // F3 Race Condition Guards: Request token & AbortController
+  const requestTokenRef = useRef(0);
+  const abortControllerRef = useRef(null);
+
+  function startAsyncAction(actionType = '', payload = null) {
+    if (abortControllerRef.current) {
+      try {
+        abortControllerRef.current.abort();
+      } catch (_) {}
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+    const token = ++requestTokenRef.current;
+    if (actionType) {
+      setLastFailedAction({ type: actionType, payload });
+    }
+    return { token, signal: controller.signal };
+  }
+
+  function cancelAllPendingActions() {
+    if (abortControllerRef.current) {
+      try {
+        abortControllerRef.current.abort();
+      } catch (_) {}
+      abortControllerRef.current = null;
+    }
+    return ++requestTokenRef.current;
+  }
+
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  // Synchronize responsive layout on window resize (F8)
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(typeof window !== 'undefined' && window.innerWidth >= 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Initialize session on mount
   useEffect(() => {
@@ -91,7 +132,10 @@ export default function Home() {
     setProviderUnavailableError(null);
   }
 
-  function handleApiError(err) {
+  function handleApiError(err, actionContext = null) {
+    if (actionContext) {
+      setLastFailedAction(actionContext);
+    }
     if (err instanceof ApiError) {
       if (err.status === 409) {
         if (err.code === 'no_candidates') {
@@ -99,7 +143,7 @@ export default function Home() {
         } else {
           setConflictError(err);
         }
-      } else if (err.status === 401 || err.status === 403) {
+      } else if (err.status === 401 || err.status === 403 || err.status === 410) {
         setAuthError(err);
       } else if (err.status === 429) {
         setRateLimitError(err);
@@ -110,6 +154,25 @@ export default function Home() {
       }
     } else {
       setError(err);
+    }
+  }
+
+  function handleRetry() {
+    if (!lastFailedAction) {
+      handlePlanTour();
+      return;
+    }
+    const { type, payload } = lastFailedAction;
+    if (type === 'plan') {
+      handlePlanTour(payload);
+    } else if (type === 'message') {
+      handleSendMessage(payload);
+    } else if (type === 'preferences') {
+      handleUpdatePreferences(payload);
+    } else if (type === 'replace') {
+      handleConfirmReplace();
+    } else {
+      handlePlanTour();
     }
   }
 
@@ -125,28 +188,41 @@ export default function Home() {
     if (res.dataset_version) setDatasetVersion(res.dataset_version);
   }
 
+  // Atomically create or reset session, clearing all session-owned state
   async function initSession() {
-    try {
-      setBusy(true);
-      clearAllErrors();
-      setTour(null); // Reset tour on new session / mode toggle
-      setNotes([]);
-      setMissingSlots([]);
-      setQuestions([]);
-      setHighlightedStopId(null);
+    const token = cancelAllPendingActions();
+    setBusy(true);
+    clearAllErrors();
+    // Synchronously reset all session-owned state
+    setSessionId(null);
+    setSessionToken('');
+    setRevision(0);
+    setPreferences(DEFAULT_PREFERENCES);
+    setTour(null);
+    setMessages([]);
+    setMissingSlots([]);
+    setQuestions([]);
+    setNotes([]);
+    setHighlightedStopId(null);
+    setIsReplaceModalOpen(false);
+    setReplaceTargetStop(null);
+    setReplaceResultDiff(null);
 
+    try {
       const session = await createSession();
+      if (token !== requestTokenRef.current) return;
       setSessionId(session.session_id);
       setSessionToken(session.token);
       setRevision(session.revision);
 
       try {
         const health = await getHealth();
+        if (token !== requestTokenRef.current) return;
         if (health.dataset_source) setDatasetSource(health.dataset_source);
         if (health.dataset_version) setDatasetVersion(health.dataset_version);
       } catch (_) {}
 
-      // Add welcoming assistant message
+      if (token !== requestTokenRef.current) return;
       setMessages([
         {
           role: 'assistant',
@@ -154,15 +230,20 @@ export default function Home() {
         }
       ]);
     } catch (err) {
-      handleApiError(err);
+      if (token !== requestTokenRef.current) return;
+      if (err.name === 'AbortError') return;
+      handleApiError(err, { type: 'init' });
     } finally {
-      setBusy(false);
+      if (token === requestTokenRef.current) {
+        setBusy(false);
+      }
     }
   }
 
   // Handle natural language chat message
   async function handleSendMessage(text) {
     if (!sessionId || busy) return;
+    const { token, signal } = startAsyncAction('message', text);
     setBusy(true);
     clearAllErrors();
 
@@ -171,7 +252,8 @@ export default function Home() {
     setMessages((prev) => [...prev, userMsg]);
 
     try {
-      const res = await sendMessage(sessionId, text, sessionToken);
+      const res = await sendMessage(sessionId, text, sessionToken, { signal });
+      if (token !== requestTokenRef.current) return;
       applySessionWrapper(res);
 
       let assistantText = 'Đã cập nhật thông tin chuyến đi của bạn.';
@@ -179,7 +261,7 @@ export default function Home() {
         assistantText = 'Tôi đã ghi nhận các thông tin trên. Tuy nhiên còn thiếu một số thông tin bắt buộc để tối ưu tour:';
       } else if (res.tour) {
         assistantText = res.tour.explanation || 'Đã tạo xong hành trình ẩm thực tối ưu dựa trên sở thích của bạn!';
-        if (typeof window !== 'undefined' && window.innerWidth < 900) {
+        if (!isDesktop) {
           setActiveTab('timeline');
         }
       }
@@ -193,9 +275,13 @@ export default function Home() {
         }
       ]);
     } catch (err) {
-      handleApiError(err);
+      if (token !== requestTokenRef.current) return;
+      if (err.name === 'AbortError') return;
+      handleApiError(err, { type: 'message', payload: text });
     } finally {
-      setBusy(false);
+      if (token === requestTokenRef.current) {
+        setBusy(false);
+      }
     }
   }
 
@@ -204,100 +290,126 @@ export default function Home() {
     if (slot === 'duration_min') {
       handleSendMessage(`Thời lượng chuyến đi là ${val} phút`);
     } else if (slot === 'budget_scope') {
-      handleSendMessage(val === 'per_person' ? 'Ngân sách tính cho mỗi người' : 'Ngân sách tính cho cả nhóm');
+      // Coordinator item (a) / F10:
+      // Perform full merged structured update for budget_scope so the slot is directly resolved!
+      const text = val === 'per_person' ? 'Ngân sách tính cho mỗi người' : 'Ngân sách tính cho cả nhóm';
+      setMessages((prev) => [...prev, { role: 'user', text }]);
+      handleUpdatePreferences({ budget_scope: val });
     } else if (slot === 'origin') {
       handleSendMessage(val === 'hoankiem' ? 'Bắt đầu từ Hồ Hoàn Kiếm' : 'Bắt đầu từ Phố Cổ');
     }
   }
 
   // Handle structured preferences update (PUT)
+  // F4: Always send full merged preferences so all slots are preserved
   async function handleUpdatePreferences(newPrefs) {
     if (!sessionId || busy) return;
+    const { token, signal } = startAsyncAction('preferences', newPrefs);
     setBusy(true);
     clearAllErrors();
 
     try {
-      const res = await updatePreferences(sessionId, revision, newPrefs, sessionToken);
+      const merged = { ...preferences, ...newPrefs };
+      const res = await updatePreferences(sessionId, revision, merged, sessionToken, { signal });
+      if (token !== requestTokenRef.current) return;
       applySessionWrapper(res);
     } catch (err) {
-      handleApiError(err);
+      if (token !== requestTokenRef.current) return;
+      if (err.name === 'AbortError') return;
+      handleApiError(err, { type: 'preferences', payload: newPrefs });
     } finally {
-      setBusy(false);
+      if (token === requestTokenRef.current) {
+        setBusy(false);
+      }
     }
   }
 
   // Handle plan tour (POST /v1/sessions/{id}/tour)
+  // F4: Merge full preferences before planning if new preferences are provided
   async function handlePlanTour(newPrefs = null) {
     if (!sessionId || busy) return;
+    const { token, signal } = startAsyncAction('plan', newPrefs);
     setBusy(true);
     clearAllErrors();
 
     try {
       let baseRev = revision;
       if (newPrefs) {
-        const updateRes = await updatePreferences(sessionId, revision, newPrefs, sessionToken);
+        const merged = { ...preferences, ...newPrefs };
+        const updateRes = await updatePreferences(sessionId, revision, merged, sessionToken, { signal });
+        if (token !== requestTokenRef.current) return;
         applySessionWrapper(updateRes);
         baseRev = updateRes.revision;
       }
 
-      const tourRes = await planTour(sessionId, baseRev, sessionToken);
+      const tourRes = await planTour(sessionId, baseRev, sessionToken, { signal });
+      if (token !== requestTokenRef.current) return;
       applySessionWrapper(tourRes);
-      if (typeof window !== 'undefined' && window.innerWidth < 900) {
+      if (!isDesktop) {
         setActiveTab('timeline');
       }
     } catch (err) {
-      handleApiError(err);
+      if (token !== requestTokenRef.current) return;
+      if (err.name === 'AbortError') return;
+      handleApiError(err, { type: 'plan', payload: newPrefs });
     } finally {
-      setBusy(false);
+      if (token === requestTokenRef.current) {
+        setBusy(false);
+      }
     }
   }
 
-  // Initiate replace one stop flow
-  async function handleInitiateReplace(stop) {
+  // F2: Initiate replace one stop flow (No client candidate preview!)
+  function handleInitiateReplace(stop) {
+    if (busy) return;
     setReplaceTargetStop(stop);
-    try {
-      const venuesRes = await getVenues({ limit: 10 });
-      const list = venuesRes.items || venuesRes.venues || [];
-      const currentIds = (tour?.stops || []).map((s) => s.venue_id);
-      const candidate = list.find(
-        (v) => !currentIds.includes(v.id) && !v.online_only && v.geo_ok
-      );
-      setReplaceCandidate(candidate || null);
-      setIsReplaceModalOpen(true);
-    } catch (err) {
-      handleApiError(err);
-    }
+    setReplaceResultDiff(null);
+    setIsReplaceModalOpen(true);
   }
 
-  // Confirm replace one stop
+  // F2: Confirm replace one stop (Server-selected replacement)
   async function handleConfirmReplace() {
     if (!replaceTargetStop || !sessionId || busy) return;
+    const { token, signal } = startAsyncAction('replace', replaceTargetStop);
     setBusy(true);
     clearAllErrors();
 
+    const oldStop = replaceTargetStop;
     try {
       const updatedRes = await replaceTourStop(
         sessionId,
         revision,
-        replaceTargetStop.venue_id,
-        sessionToken
+        oldStop.venue_id,
+        sessionToken,
+        { signal }
       );
+      if (token !== requestTokenRef.current) return;
       applySessionWrapper(updatedRes);
-      setIsReplaceModalOpen(false);
-      setReplaceTargetStop(null);
-      setReplaceCandidate(null);
+      const newStop = updatedRes.tour?.stops?.find((s) => s.order === oldStop.order) || null;
+      setReplaceResultDiff({ oldStop, newStop });
     } catch (err) {
-      handleApiError(err);
+      if (token !== requestTokenRef.current) return;
+      if (err.name === 'AbortError') return;
+      handleApiError(err, { type: 'replace', payload: oldStop });
     } finally {
-      setBusy(false);
+      if (token === requestTokenRef.current) {
+        setBusy(false);
+      }
     }
   }
 
+  function handleCloseReplaceModal() {
+    if (busy) return;
+    setIsReplaceModalOpen(false);
+    setReplaceTargetStop(null);
+    setReplaceResultDiff(null);
+  }
+
   const handleToggleMockMode = () => {
+    if (busy) return;
     const nextMode = !isMock;
     setIsMock(nextMode);
     setRuntimeMockMode(nextMode);
-    setTour(null);
     initSession();
   };
 
@@ -307,7 +419,7 @@ export default function Home() {
   );
 
   return (
-    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '16px' }}>
+    <div style={{ maxWidth: 1280, margin: '0 auto', padding: '12px' }}>
       {/* Top Header */}
       <header
         style={{
@@ -324,28 +436,16 @@ export default function Home() {
         }}
       >
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
             <span style={{ fontSize: 24 }}>🍜</span>
-            <h1 style={{ fontSize: 20, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-              AI FoodTour Planner
+            <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: 'var(--accent-primary)' }}>
+              AI FoodTour Hà Nội
             </h1>
             <span
               style={{
                 fontSize: 11,
-                background: '#e8f5e9',
-                color: '#2e7d32',
-                fontWeight: 700,
-                padding: '2px 8px',
-                borderRadius: 12
-              }}
-            >
-              HÀ NỘI · PILOT
-            </span>
-            <span
-              style={{
-                fontSize: 11,
-                background: '#ede7f6',
-                color: '#512da8',
+                background: '#e0f2fe',
+                color: '#0284c7',
                 fontWeight: 700,
                 padding: '2px 8px',
                 borderRadius: 12
@@ -363,6 +463,7 @@ export default function Home() {
           <button
             type="button"
             onClick={initSession}
+            disabled={busy}
             style={{
               fontSize: 12,
               padding: '6px 12px',
@@ -370,7 +471,7 @@ export default function Home() {
               border: '1px solid var(--border-color)',
               background: '#fff',
               color: 'var(--text-secondary)',
-              cursor: 'pointer',
+              cursor: busy ? 'not-allowed' : 'pointer',
               fontWeight: 600
             }}
             title="Khởi tạo phiên làm việc mới"
@@ -399,6 +500,7 @@ export default function Home() {
         datasetSource={datasetSource}
         datasetVersion={datasetVersion}
         onToggleMode={handleToggleMockMode}
+        busy={busy}
       />
 
       {/* Revision Conflict Alert (409) */}
@@ -434,6 +536,7 @@ export default function Home() {
           <button
             type="button"
             onClick={() => setNoCandidatesError(null)}
+            aria-label="Đóng cảnh báo"
             style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: '#8c8c8c' }}
           >
             ✕
@@ -441,7 +544,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* 401 / 403 Unauthorized Session Alert */}
+      {/* 401 / 403 / 410 Auth / Session Expired Alert */}
       {authError && (
         <div
           role="alert"
@@ -459,7 +562,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong style={{ color: '#cf1322' }}>🔒 Lỗi xác thực phiên (401/403):</strong>
+            <strong style={{ color: '#cf1322' }}>🔒 Lỗi xác thực hoặc phiên hết hạn (401/403/410):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#434343' }}>
               {authError.message || 'Phiên làm việc không hợp lệ hoặc đã hết hạn. Vui lòng tạo phiên làm việc mới.'}
             </p>
@@ -467,7 +570,8 @@ export default function Home() {
           <button
             type="button"
             onClick={() => { setAuthError(null); initSession(); }}
-            style={{ padding: '6px 14px', background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+            disabled={busy}
+            style={{ padding: '6px 14px', background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: busy ? 'not-allowed' : 'pointer' }}
           >
             Tạo phiên mới
           </button>
@@ -492,14 +596,15 @@ export default function Home() {
           }}
         >
           <div>
-            <strong style={{ color: '#d46b08' }}>⏳ Đã vượt quá giới hạn yêu cầu (429 Rate Limited):</strong>
+            <strong style={{ color: '#d46b08' }}>⏳ Đã đạt giới hạn yêu cầu (429 Rate Limited):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
-              {rateLimitError.message || 'Hệ thống đang bận. Vui lòng thử lại sau giây lát.'}
+              {rateLimitError.message || 'Hệ thống đang tiếp nhận nhiều yêu cầu. Vui lòng đợi trong giây lát rồi thử lại.'}
             </p>
           </div>
           <button
             type="button"
             onClick={() => setRateLimitError(null)}
+            aria-label="Đóng cảnh báo"
             style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: '#8c8c8c' }}
           >
             ✕
@@ -540,7 +645,7 @@ export default function Home() {
         </div>
       )}
 
-      {/* General / Validation Error Banner */}
+      {/* General / Validation Error Banner with targeted Retry */}
       {error && !conflictError && !noCandidatesError && !authError && !rateLimitError && !providerUnavailableError && (
         <div
           role="alert"
@@ -558,11 +663,12 @@ export default function Home() {
           }}
         >
           <div>
-            <strong>⚠️ Lỗi hệ thống:</strong> {error.message || 'Không thể xử lý yêu cầu.'}
+            <strong>⚠️ Lỗi:</strong> {error.message || 'Không thể xử lý yêu cầu.'}
           </div>
           <button
             type="button"
-            onClick={() => handlePlanTour()}
+            onClick={handleRetry}
+            disabled={busy}
             style={{
               padding: '6px 12px',
               background: '#c62828',
@@ -571,7 +677,7 @@ export default function Home() {
               borderRadius: 6,
               fontSize: 12,
               fontWeight: 600,
-              cursor: 'pointer'
+              cursor: busy ? 'not-allowed' : 'pointer'
             }}
           >
             Thử lại
@@ -606,7 +712,7 @@ export default function Home() {
       {/* Mobile Tab Navigation Bar (<= 900px) */}
       <nav
         style={{
-          display: 'flex',
+          display: isDesktop ? 'none' : 'flex',
           background: '#fff',
           borderRadius: 12,
           padding: 4,
@@ -690,11 +796,11 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* Main Responsive Grid Layout */}
+      {/* Main Responsive Grid Layout - minmax fits 320/390px screens without overflow */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 300px), 1fr))',
           gap: 20,
           alignItems: 'start'
         }}
@@ -704,7 +810,7 @@ export default function Home() {
           {/* Chat Panel */}
           <div
             style={{
-              display: activeTab === 'chat' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none'
+              display: activeTab === 'chat' || isDesktop ? 'block' : 'none'
             }}
           >
             <ChatPanel
@@ -714,14 +820,13 @@ export default function Home() {
               missingSlots={missingSlots}
               questions={questions}
               onQuickAnswer={handleQuickAnswer}
-              isMock={isMock}
             />
           </div>
 
-          {/* Structured Preferences Panel */}
+          {/* Preferences Panel */}
           <div
             style={{
-              display: activeTab === 'preferences' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none'
+              display: activeTab === 'preferences' || isDesktop ? 'block' : 'none'
             }}
           >
             <PreferencesPanel
@@ -734,23 +839,25 @@ export default function Home() {
             />
           </div>
 
-          {/* Tour Status Banner & Timeline */}
+          {/* Tour Status & Timeline */}
           <div
             style={{
-              display: activeTab === 'timeline' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none'
+              display: activeTab === 'timeline' || isDesktop ? 'block' : 'none'
             }}
           >
-            {/* Pool truncated assumption indicator */}
-            {tour?.assumptions?.pool_truncated && (
+            {/* Pool truncated assumption banner */}
+            {tour && tour.assumptions?.pool_truncated && (
               <div
+                role="status"
                 style={{
                   background: '#fffbe6',
                   border: '1px solid #ffe58f',
+                  borderLeft: '5px solid #faad14',
                   borderRadius: 10,
-                  padding: '10px 14px',
-                  marginBottom: 14,
+                  padding: '12px 16px',
+                  marginBottom: 16,
                   fontSize: 13,
-                  color: '#d46b08',
+                  color: '#873800',
                   display: 'flex',
                   alignItems: 'center',
                   gap: 8
@@ -766,7 +873,7 @@ export default function Home() {
             {tour && (
               <TourStatusBanner
                 tour={tour}
-                onSwitchToExplore={() => handlePlanTour({ mode: 'explore' })}
+                onSwitchToExplore={() => handlePlanTour({ ...preferences, mode: 'explore' })}
                 onAdjustPreferences={() => setActiveTab('preferences')}
               />
             )}
@@ -784,19 +891,36 @@ export default function Home() {
                 style={{
                   background: '#fff',
                   borderRadius: 16,
-                  padding: 30,
+                  padding: 32,
                   textAlign: 'center',
-                  boxShadow: 'var(--shadow-sm)',
-                  color: 'var(--text-secondary)'
+                  boxShadow: 'var(--shadow-sm)'
                 }}
               >
-                <div style={{ fontSize: 36, marginBottom: 8 }}>🥣</div>
-                <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', marginBottom: 6 }}>
-                  Chưa có lịch trình nào được lập
+                <span style={{ fontSize: 40, display: 'block', marginBottom: 12 }}>🧭</span>
+                <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 6px', color: 'var(--text-primary)' }}>
+                  Chưa có lịch trình được tạo
                 </h3>
-                <p style={{ fontSize: 13, maxWidth: 380, margin: '0 auto', lineHeight: 1.5 }}>
-                  Hãy gửi yêu cầu trong khung <strong>Chat</strong> hoặc bấm <strong>Lập lịch trình</strong> trong mục <strong>Tùy chọn</strong> để nhận tour 3–5 quán tối ưu.
+                <p style={{ fontSize: 13, color: 'var(--text-secondary)', maxWidth: 360, margin: '0 auto 16px' }}>
+                  Hãy trò chuyện với AI hoặc chọn địa điểm bắt đầu từ tab Tùy chọn để tạo hành trình ẩm thực tối ưu.
                 </p>
+                <button
+                  type="button"
+                  onClick={() => handlePlanTour()}
+                  disabled={busy}
+                  style={{
+                    padding: '10px 20px',
+                    borderRadius: 8,
+                    border: 'none',
+                    background: busy ? '#aaa' : 'var(--accent-primary)',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: busy ? 'not-allowed' : 'pointer',
+                    boxShadow: 'var(--shadow-sm)'
+                  }}
+                >
+                  {busy ? 'Đang tạo…' : 'Tạo lịch trình ngay'}
+                </button>
               </div>
             )}
           </div>
@@ -805,8 +929,8 @@ export default function Home() {
         {/* Right Column: Interactive Map & Highlights */}
         <div
           style={{
-            display: activeTab === 'map' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none',
-            position: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'sticky' : 'static',
+            display: activeTab === 'map' || isDesktop ? 'block' : 'none',
+            position: isDesktop ? 'sticky' : 'static',
             top: 20
           }}
         >
@@ -853,18 +977,14 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Replace Stop Diff Modal */}
+      {/* Replace Stop Diff Modal (F2: Neutral confirmation before replace, server diff after replace) */}
       <ReplaceDiffModal
         isOpen={isReplaceModalOpen}
         oldStop={replaceTargetStop}
-        candidate={replaceCandidate}
+        resultDiff={replaceResultDiff}
         lockedStops={lockedVenueIds}
         onConfirm={handleConfirmReplace}
-        onCancel={() => {
-          setIsReplaceModalOpen(false);
-          setReplaceTargetStop(null);
-          setReplaceCandidate(null);
-        }}
+        onCancel={handleCloseReplaceModal}
         busy={busy}
       />
     </div>
