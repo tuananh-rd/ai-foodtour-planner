@@ -39,6 +39,7 @@ def explain(tour: Tour, venues: list) -> str:
 # Tour; its text is checked and replaced by the template above whenever a check fails.
 # ---------------------------------------------------------------------------
 import re as _re
+import time as _time
 import unicodedata as _ud
 from collections import OrderedDict as _OrderedDict
 from threading import Lock as _Lock
@@ -175,8 +176,12 @@ def check_explanation(text, facts: dict) -> list:
 class CheckedExplainer:
     """explain(tour, venues) -> (text, source). source is 'llm' only when every check passed."""
 
-    def __init__(self, provider=None, *, deadline_s: float = 15.0, cache_size: int = 256, attempts: int = 2):
+    def __init__(self, provider=None, *, deadline_s: float = 12.0, cache_size: int = 256, attempts: int = 2,
+                 min_retry_s: float = 4.0):
+        # deadline_s bounds the TOTAL time spent on one explanation, retries included, because the
+        # user is waiting for the tour; a retry starts only if at least min_retry_s remain.
         self.provider, self.deadline_s, self.attempts = provider, deadline_s, max(1, attempts)
+        self.min_retry_s = min_retry_s
         self._cache, self._lock, self.cache_size = _OrderedDict(), _Lock(), cache_size
         self.last_problems: list = []
         self.stats = {"llm": 0, "fallback": 0}
@@ -192,9 +197,13 @@ class CheckedExplainer:
                 self._cache.move_to_end(key)
                 return self._cache[key]
         text, problems = None, ["provider_error"]
-        for _ in range(self.attempts):  # model output varies between calls; each attempt is fully re-checked
+        end = _time.monotonic() + self.deadline_s
+        for attempt in range(self.attempts):  # model output varies between calls; each attempt is re-checked
+            remaining = end - _time.monotonic()
+            if attempt and remaining < self.min_retry_s:
+                break
             try:
-                text = self.provider.explain(facts, deadline_s=self.deadline_s)
+                text = self.provider.explain(facts, deadline_s=remaining)
                 problems = check_explanation(text, facts)
             except Exception:
                 text, problems = None, ["provider_error"]
