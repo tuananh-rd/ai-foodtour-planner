@@ -161,7 +161,8 @@ class GoogleRoutesProvider(WalkingRouteProvider):
             try:
                 body = {'origin': waypoint(pts[0]), 'destination': waypoint(pts[-1]),
                     'intermediates': [waypoint(p) for p in pts[1:-1]], 'travelMode': 'WALK',
-                    'polylineEncoding': 'GEO_JSON_LINESTRING', 'languageCode': 'vi', 'regionCode': 'VN'}
+                    'polylineEncoding': 'GEO_JSON_LINESTRING', 'polylineQuality': 'HIGH_QUALITY',
+                    'languageCode': 'vi', 'regionCode': 'VN'}
                 data = self._json('/directions/v2:computeRoutes', body, ROUTE_MASK)
                 route = data['routes'][0]
                 legs, warnings = route['legs'], route.get('warnings', [])

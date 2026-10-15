@@ -162,6 +162,7 @@ class GoogleFakeCase(unittest.TestCase):
         self.assertEqual(path, '/directions/v2:computeRoutes')
         self.assertEqual(headers['X-Goog-Fieldmask'], ROUTE_MASK)
         self.assertEqual(body['polylineEncoding'], 'GEO_JSON_LINESTRING')
+        self.assertEqual(body['polylineQuality'], 'HIGH_QUALITY')
         self.assertEqual(body['travelMode'], 'WALK')
         self.assertIsNone(p.geometry(POINTS * 10))
         self.assertEqual(len(self.server.requests), 1)

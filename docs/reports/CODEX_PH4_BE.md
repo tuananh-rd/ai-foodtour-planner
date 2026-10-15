@@ -1019,3 +1019,60 @@ OK (skipped=1)
 ```
 
 </details>
+
+## PH4-BE-2 follow-up — precise geometry and request volume
+
+Reviewed the current [computeRoutes reference](https://developers.google.com/maps/documentation/routes/reference/rest/v2/TopLevel/computeRoutes#PolylineQuality) again on 2026-10-15. `HIGH_QUALITY` is accepted; omitting quality defaults to OVERVIEW. Directions now sends `polylineQuality: HIGH_QUALITY` together with `GEO_JSON_LINESTRING` and `WALK`. The exact response field mask remains `routes.legs.polyline.geoJsonLinestring,routes.warnings`. The existing fake-server geometry test now asserts all three body values and the unchanged mask. More detailed polylines may be larger; existing response/geometry limits still fail closed if exceeded.
+
+### Volume table (no prices assumed)
+
+Cold cache, successful HTTP calls, current API planner defaults unless stated. A matrix element is one origin/destination pair, including diagonals and both directions. The daily routing setting counts **HTTP calls**, not elements, so it is not a monetary cap.
+
+| Operation / phase | Google matrix HTTP calls | Matrix elements requested | Directions HTTP calls | Geocoding HTTP calls |
+| --- | --- | --- | --- | --- |
+| Successful new plan, n total unique origin + candidate points | 1 for n <=16 | n x n; conservative envelope 256 at n=16; actual default POOL_CAP=14 gives n<=15 and <=225 | 0–1 for the final returned provider-route tour | 0, unless triggered by message origin_text below |
+| Failed/strict-insufficient plan diagnosis | Up to 1 additional matrix when diagnostic candidate set differs and is not cached | Up to 15 x 15 =225 additional elements; current default complete plan+diagnosis can therefore request up to 450 | 0 if no stops returned | 0 |
+| Replace one stop, n<=45 (corrected in Claude commit 5e49644) | Up to 4 | At 45: 25x25 + 25x20 + 20x25 + 20x20 =625+500+500+400 =2025 | 0–1 for the selected replacement tour | 0 |
+| Cold SQLite restore of an existing 5-stop tour before an operation | Up to 1 additional matrix | Up to (origin + 5 stops)^2 =36; those cells may then be re-requested by a larger cold chunk | A rendered session read may make 1 geometry request if not cached | 0 |
+| Message without free-text origin (including built-in landmark) | Planning costs above only when required slots are present | As above | As above | 0 |
+| Message with valid origin_text and ready geocoder | Planning costs above only if geocoding fills required origin | As above | As above | At most 1, including zero_results/unavailable/quota responses; no automatic retry |
+| Explicit POST /v1/geocode | 0 | 0 | 0 | At most 1 per authorized, rate-admitted request |
+| Missing configuration, auth/rate/budget rejection before HTTP | 0 for rejected phase | 0 for rejected phase | 0 for rejected phase | 0 for rejected phase |
+
+Caches reduce calls when complete requested chunks or final geometry are already available. Partial chunk overlap can be requested again; repeated new origins, diagnostics, session restores, expiry/eviction, and process restarts change volume. A failed matrix has a 30-second cooldown; an actual failed HTTP attempt still consumes a local budget unit. Geocoding has no result cache. Google Cloud quota/billing controls and current official billing units still need human review; no prices or currency conversion were guessed.
+
+The original replace expression allowed 46 points with five current stops. This was raised via Orca; Claude fixed the planner in **5e49644**, which was merged here without modifying Claude-owned files. The new planner cap regression test is included in this run. Plan's n<=16 is a conservative envelope; current default is 15.
+
+### Follow-up verification
+
+```powershell
+$env:PYTHONPATH='backend'
+./.venv/Scripts/python.exe -m unittest backend.tests.providers.test_google_maps -q
+./.venv/Scripts/python.exe scripts/run_unittests.py *> $env:TEMP/foodtour-ph4-be2-tests.txt
+$testResult=$LASTEXITCODE
+Get-Content $env:TEMP/foodtour-ph4-be2-tests.txt -Tail 5
+Write-Output "UNITTEST_EXIT=$testResult"
+./.venv/Scripts/python.exe tools/export_openapi.py --check
+```
+
+Actual focused output:
+
+```text
+----------------------------------------------------------------------
+Ran 11 tests in 1.326s
+
+OK
+```
+
+Actual complete-suite output after merging 5e49644:
+
+```text
+----------------------------------------------------------------------
+Ran 202 tests in 18.694s
+
+OK (skipped=1)
+UNITTEST_EXIT=0
+OpenAPI matches server schema
+```
+
+The same documented legacy private-data skip and existing TestClient deprecation warning apply. No live Google request or dependency change was made during this follow-up. Independent review of Claude's phase-4 changes is reported separately in CODEX_REVIEW_P4_CLAUDE.md.
