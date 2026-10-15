@@ -80,7 +80,23 @@
       "taskId": "task_7634f8a41b2b",
       "dispatchId": "ctx_4e1639c9fd30",
       "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
-      "state": "outcome_unknown (turn start unverified)"
+      "state": "succeeded (6ab3632)"
+    }
+  ],
+  "wave4": [
+    {
+      "task": "REVIEW-FE",
+      "taskId": "task_996788d6f968",
+      "dispatchId": "ctx_83cbcef21782",
+      "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
+      "note": "prompt was unsent in composer; coordinator sent one Enter; turn observed"
+    },
+    {
+      "task": "QA-01",
+      "taskId": "task_d94c1c376e22",
+      "dispatchId": "ctx_aaa3db20bd9d",
+      "terminal": "fresh antigravity terminal in foodtour-antigravity-web",
+      "launch": "model/effort omitted; effective not reported"
     }
   ]
 }
