@@ -59,4 +59,38 @@ restart_smoke=PASS; raw tokens and database paths omitted
 
 ## Part 2 / U4
 
-Security implementation, evidence and residual risks will be appended in the second task commit; SEC01.md is the accompanying threat model and offline dependency inventory.
+U3 commit: `bb3c98e3f8309c4eba5b508fcfd653840ff59777`. U4 is the separate subsequent commit, reported by hash through Orca after it is created. SEC01.md contains the STRIDE-lite threat model, configuration details, residual risks and local pip-freeze inventory; no network vulnerability lookup was run.
+
+Added pure ASGI guards: session body limit (default 8192 bytes, declared length plus actual streamed bytes), bounded configurable per-IP and per-token limits, no-store session responses, nosniff/no-referrer, server-issued request IDs and four-field JSON access events. Caller request-ID text is replaced to avoid arbitrary-content logging. Default raw-URL uvicorn access logging is disabled. Errors 404/405/413/422/500 use a safe envelope; validation locations/values are omitted to avoid echoing user-defined keys. Early guard errors retain CORS only for an exact member of the comma-separated WEB_ORIGIN list. Wildcard/credential/path entries fail closed. No token, message, preferences, coordinates, actual session identity, URL/query or filesystem path is sent to the access logger.
+
+Twelve new API/security tests cover status envelopes, no input echo/traceback, headers and request IDs, log keys/correlation/redaction/template-only paths, exact/list/preflight/early-error CORS, wildcard rejection, blank environment defaults, constant-time comparison, configurable IP/token limits, map bounds/window reset, and declared/chunked bodies rejected before session creation. Memory and SQLite ownership both use secrets.compare_digest; known and unknown memory-token paths are explicitly probed, and durable isolation tests cover SQLite. No new dependencies.
+
+Scope extension from Claude's Orca message `msg_bb8eb2128d6a`: normalize empty/whitespace FOODTOUR_DATA_PATH in `backend/app/data/loader.py`, normalize FOODTOUR_SESSION_DB, test both, and support an exact comma-separated origin list. The one-line loader edit is explicitly authorized by that follow-up; the added regression stays in backend/tests/api/test_security.py. SEC01 documents the localhost versus 127.0.0.1 origin distinction.
+
+After the final code changes, regenerated OpenAPI via `./.venv/Scripts/python.exe tools/export_openapi.py`. Full U4 acceptance was run offline:
+
+```powershell
+$env:PIP_NO_INDEX='1'
+$env:PIP_DISABLE_PIP_VERSION_CHECK='1'
+$env:npm_config_offline='true'
+$env:npm_config_audit='false'
+$env:npm_config_fund='false'
+$env:NEXT_TELEMETRY_DISABLED='1'
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/test.ps1
+```
+
+Final output after the authorized blank-env and origin-list follow-up, captured at `C:/Users/tuana/AppData/Local/Temp/foodtour-be04-u4-final.log`:
+
+```text
+Ran 113 tests in 3.924s
+OK (skipped=1)
+OpenAPI matches server schema
+Compiled successfully in 918ms
+ALL 12 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!
+PASS: all available checks passed; expected skips are listed above
+script_exit=0
+```
+
+The restart smoke command from U3 was repeated after security changes and again returned the same three aggregate PASS lines above. It leaves no running server. Test data and DBs remain outside the repository; default application import does not create a database.
+
+Residual limits: local unencrypted preference storage, logical rather than forensic expiry deletion, process-local rate counters, no distributed quotas/slow-client or planner deadlines, SQLite writer serialization, clock sensitivity for durable TTL, legacy endpoint body cap out of scope, historical locks regenerated rather than persisted. No remote deployment/provider calls, private-data audit or vulnerability lookup was performed. Review/merge belongs to Claude.

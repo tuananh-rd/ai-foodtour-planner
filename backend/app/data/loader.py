@@ -112,7 +112,7 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
     Duplicate winners are chosen by canonical row order, then ID, then URL.
     Current source formats have no verified weekday mapping: hours stay None.
     """
-    configured = path if path is not None else os.environ.get("FOODTOUR_DATA_PATH")
+    configured = path if path is not None else (os.environ.get("FOODTOUR_DATA_PATH", "").strip() or None)
     source_path = Path(configured) if configured is not None else DEFAULT_PATH
     if not source_path.is_absolute():
         raise DatasetLoadError("path_not_absolute")

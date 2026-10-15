@@ -77,7 +77,7 @@ class SessionStore:
             digest = hashlib.sha256(token.encode()).digest()
             session = self._sessions.get(identity)
             expected = session.token_hash if session else self._expired.get(identity)
-            if expected is None or not secrets.compare_digest(expected, digest):
+            if not secrets.compare_digest(expected if expected is not None else bytes(32), digest) or expected is None:
                 raise APIError(403, "unauthorized_session", "Không có quyền truy cập phiên.")
             if session is None:
                 raise APIError(410, "session_expired", "Phiên đã hết hạn; hãy tạo phiên mới.")

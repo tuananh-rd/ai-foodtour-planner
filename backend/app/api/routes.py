@@ -17,7 +17,7 @@ from app.llm.extract import QUESTIONS, UnavailableExtractor
 from app.planner import engine
 
 router = APIRouter(responses={
-    code: {"model": ErrorResponse} for code in (401, 403, 404, 409, 410, 422, 429, 500, 503)
+    code: {"model": ErrorResponse} for code in (401, 403, 404, 405, 409, 410, 413, 422, 429, 500, 503)
 })
 
 
