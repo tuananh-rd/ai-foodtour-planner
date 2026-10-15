@@ -12,6 +12,7 @@ from .types import Leg, Preferences, ReplaceResult, Stop, Tour, Venue
 
 POOL_CAP = 14
 REPLACE_CAP = 40
+MAX_ROUTE_POINTS = 45  # origin + current stops + candidates sent to a routing provider per replace
 
 
 def _prepare(routes, points) -> None:
@@ -255,7 +256,8 @@ def replace_stop(venues: list, prefs: Preferences, tour: Tour, venue_id: str,
     old = by_id[venue_id]
     candidates = sorted((c for c in venues if c.id not in ids and eligible(c, prefs)),
                         key=lambda c: (-interest_score(c, prefs.interests),
-                                       haversine_km((old.lat, old.lon), (c.lat, c.lon)), c.id))[:REPLACE_CAP]
+                                       haversine_km((old.lat, old.lon), (c.lat, c.lon)), c.id))[:max(
+                            1, min(REPLACE_CAP, MAX_ROUTE_POINTS - 1 - len(base)))]
     _prepare(routes, [prefs.origin] + [(v.lat, v.lon) for v in base] + [(c.lat, c.lon) for c in candidates])
     for c in candidates:
         seq = base[:pos] + [c] + base[pos + 1:]

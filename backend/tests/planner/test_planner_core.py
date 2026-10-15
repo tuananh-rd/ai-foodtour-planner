@@ -285,5 +285,30 @@ class CheckedProviderMalformedInput(unittest.TestCase):
         self.assertIsNone(out2.minutes)
 
 
+class ReplaceRoutePointCap(unittest.TestCase):
+    def test_replace_never_sends_more_than_45_points_to_a_provider(self):
+        from app.planner.engine import MAX_ROUTE_POINTS
+        vs = [Venue(id=f"V{i:03d}", name="v", lat=21.03 + i * 1e-4, lon=105.85, price_min_vnd=1, price_max_vnd=2,
+                    dish_tags=("bún",), synthetic=True) for i in range(120)]
+        p = Preferences(origin=(21.03, 105.85), duration_min=720, max_stops=5, max_leg_min=60)
+
+        class Spy:
+            def __init__(self):
+                self.points = set()
+
+            def prepare(self, pts):
+                self.points |= set(pts)
+
+            def leg(self, a, b):
+                return Leg(5, 0.3, "provider_route")
+
+        t = plan_tour(vs, p, Spy())
+        self.assertEqual(len(t.stops), 5)
+        spy = Spy()
+        r = replace_stop(vs, p, t, t.stops[2].venue_id, spy)
+        self.assertTrue(r.ok)
+        self.assertLessEqual(len(spy.points), MAX_ROUTE_POINTS)
+
+
 if __name__ == "__main__":
     unittest.main()
