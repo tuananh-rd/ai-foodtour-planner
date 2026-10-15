@@ -124,6 +124,7 @@ export default function Home() {
   }, []);
 
   function clearAllErrors() {
+    setLastFailedAction(null);
     setError(null);
     setConflictError(null);
     setNoCandidatesError(null);
@@ -171,6 +172,8 @@ export default function Home() {
       handleUpdatePreferences(payload);
     } else if (type === 'replace') {
       handleConfirmReplace();
+    } else if (type === 'init') {
+      initSession();
     } else {
       handlePlanTour();
     }

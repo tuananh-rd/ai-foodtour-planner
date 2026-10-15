@@ -158,6 +158,11 @@ export default function PreferencesPanel({
               <option key={p.id} value={p.id}>{p.name}</option>
             ))}
           </select>
+          {!preferences.origin && (
+            <div role="note" style={{ fontSize: 12, color: 'var(--text-muted)', marginTop: 4 }}>
+              Chưa xác nhận điểm xuất phát với máy chủ; đang đề xuất vị trí hiển thị phía trên. Bấm lập lịch trình để xác nhận.
+            </div>
+          )}
         </div>
 
         {/* Custom Coordinates */}
@@ -235,6 +240,11 @@ export default function PreferencesPanel({
             <label htmlFor="pref-duration" style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
               Thời lượng (phút): {durationMin}p
             </label>
+            {preferences.duration_min == null && (
+              <div role="note" style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 4 }}>
+                Giá trị gợi ý (chưa được xác nhận); bạn chỉ lập lịch với thời lượng này nếu bấm lập lịch trình.
+              </div>
+            )}
             <input
               id="pref-duration"
               type="range"
