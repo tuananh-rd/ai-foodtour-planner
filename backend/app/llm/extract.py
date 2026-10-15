@@ -7,6 +7,7 @@ which returns `status="unavailable"` instead of faking success.
 from __future__ import annotations
 
 import re
+import unicodedata
 from dataclasses import dataclass, field, replace
 from typing import Optional, Protocol
 
@@ -63,12 +64,18 @@ def _clean(text: str) -> tuple:
     return " ".join(kept), len(kept) != len(parts)
 
 
-def _money(t: str) -> Optional[int]:
-    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(triệu|tr\b|nghìn|ngàn|k\b)", t)
+def _strip_marks(text: str) -> str:
+    text = unicodedata.normalize("NFD", text.casefold().replace("đ", "d"))
+    return "".join(ch for ch in text if unicodedata.category(ch) != "Mn")
+
+
+def _money(u: str) -> Optional[int]:
+    """u is diacritic-stripped, lower-cased text."""
+    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(trieu|tr\b|nghin|ngan|k\b)", u)
     if m:
         n = float(m.group(1).replace(",", "."))
-        return int(n * (1_000_000 if m.group(2) in ("triệu", "tr") else 1000))
-    m = re.search(r"(\d{1,3}(?:[.,]\d{3})+|\d{4,})\s*(đ|đồng|vnd|vnđ)", t)
+        return int(n * (1_000_000 if m.group(2) in ("trieu", "tr") else 1000))
+    m = re.search(r"(\d{1,3}(?:[.,]\d{3})+|\d{4,})\s*(d\b|dong|vnd)", u)
     if m:
         return int(re.sub(r"[.,]", "", m.group(1)))
     return None
@@ -83,50 +90,56 @@ class MockExtractor:
         if dropped:
             notes.append("Đã bỏ qua phần văn bản giống chỉ thị; chỉ trích xuất sở thích hợp lệ.")
 
-        budget = _money(t)
+        # Slot parsing runs on diacritic-stripped text (users often type without accents).
+        u = _strip_marks(t)
+        rejected = []
+
+        budget = _money(u)
         if budget and 0 < budget <= 100_000_000:
             upd["budget_vnd"] = budget
-            if re.search(r"mỗi người|/\s*người|một người|người", t) and not re.search(r"cả nhóm|tổng|cả hội", t):
-                upd["budget_scope"] = "per_person"
-            elif re.search(r"cả nhóm|tổng|cả hội", t):
+            if re.search(r"ca nhom|tong|ca hoi|ca ban|chung", u):
                 upd["budget_scope"] = "group"
-        dur = re.search(r"(\d+(?:[.,]\d+)?)\s*(giờ|tiếng)(?!\s*\d)", t)
-        mins = re.search(r"(\d+)\s*phút", t)
-        if dur and not re.search(r"(lúc|vào|từ|bắt đầu)\s*" + re.escape(dur.group(0)), t):
-            upd["duration_min"] = int(float(dur.group(1).replace(",", ".")) * 60)
-        elif mins:
-            upd["duration_min"] = int(mins.group(1))
-        rejected = []
-        if "duration_min" in upd and not 30 <= upd["duration_min"] <= 720:
-            rejected.append("duration_min")
-            notes.append("Thời lượng ngoài khoảng 30–720 phút nên không được áp dụng; vui lòng nhập lại.")
-            del upd["duration_min"]
-        st = re.search(r"(?:lúc|vào|từ|bắt đầu)\s*(\d{1,2})(?::|\s*giờ\s*|h)(\d{2})?", t)
+            elif re.search(r"moi nguoi|/\s*nguoi|mot nguoi|dau nguoi|per person", u):
+                upd["budget_scope"] = "per_person"
+        # Start time first, then remove it so "8 gio 30" is not read as a duration.
+        st = re.search(r"(?:luc|vao|tu|bat dau|xuat phat)\s*(\d{1,2})(?::|\s*gio\s*|h)(\d{2})?", u)
+        u_dur = u
         if st:
             hh, mm = int(st.group(1)), int(st.group(2) or 0)
+            u_dur = u[:st.start()] + " " + u[st.end():]
             if hh < 24 and mm < 60:
                 upd["start_time_min"] = hh * 60 + mm
             else:
                 rejected.append("start_time_min")
                 notes.append("Giờ bắt đầu không hợp lệ nên không được áp dụng.")
-        stops = re.search(r"(\d)\s*(quán|điểm|chỗ)", t)
+        dur = re.search(r"(\d+(?:[.,]\d+)?)\s*(?:gio|tieng)(?:\s*(\d{1,2})\s*(?:phut|p)\b)?", u_dur)
+        mins = re.search(r"(\d+)\s*phut", u_dur)
+        if dur:
+            upd["duration_min"] = int(float(dur.group(1).replace(",", ".")) * 60) + int(dur.group(2) or 0)
+        elif mins:
+            upd["duration_min"] = int(mins.group(1))
+        if "duration_min" in upd and not 30 <= upd["duration_min"] <= 720:
+            rejected.append("duration_min")
+            notes.append("Thời lượng ngoài khoảng 30–720 phút nên không được áp dụng; vui lòng nhập lại.")
+            del upd["duration_min"]
+        stops = re.search(r"\b(\d)\s*(?:quan|diem|cho)\b", u)
         if stops:
             if 1 <= int(stops.group(1)) <= 5:
                 upd["max_stops"] = int(stops.group(1))
             else:
                 rejected.append("max_stops")
                 notes.append("Số điểm dừng phải từ 1 đến 5; không được áp dụng.")
-        party = re.search(r"(?:nhóm|đi|cho)\s*(\d+)\s*người", t)
+        party = re.search(r"(?:nhom|di|cho|ban|gia dinh)\s*(\d+)\s*nguoi", u)
         if party and 1 <= int(party.group(1)) <= 20:
             upd["party_size"] = int(party.group(1))
         for name, ll in ANCHORS.items():
-            if name in t:
+            if _strip_marks(name) in u:
                 upd["origin"] = ll
                 notes.append(f"Điểm xuất phát lấy theo mốc gần đúng '{name}'.")
                 break
-        if re.search(r"chắc chắn|nghiêm ngặt|đã xác minh", t):
+        if re.search(r"chac chan|nghiem ngat|da xac minh", u):
             upd["mode"] = "strict"
-        elif re.search(r"khám phá|tham khảo", t):
+        elif re.search(r"kham pha|tham khao", u):
             upd["mode"] = "explore"
 
         # Diacritic-insensitive, whole-word matching ("an bun" works; "oc" does not hit "hoc").
