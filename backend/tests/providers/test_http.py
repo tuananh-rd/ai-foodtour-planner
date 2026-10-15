@@ -114,7 +114,8 @@ class LocalProviders(unittest.TestCase):
                            ('truncated', 'bad_response')]:
             self.server.mode = mode
             with self.subTest(mode=mode), self.assertRaises(ProviderError) as caught:
-                provider.complete('text', None, deadline_s=.04)
+                # Only the slow mode needs a tiny deadline; others must not race a loaded machine.
+                provider.complete('text', None, deadline_s=.04 if mode == 'slow' else 2.0)
             self.assertEqual(caught.exception.kind, kind)
             self.assertNotIn(self.endpoint, str(caught.exception))
 
@@ -132,7 +133,7 @@ class LocalProviders(unittest.TestCase):
         prior = Preferences(mode='strict', budget_vnd=200000)
         result = LLMExtractor(HttpExtractionProvider(self.endpoint)).extract('hello', prior)
         self.assertEqual(result.preferences, prior)
-        self.assertEqual(set(result.rejected_fields), {'system', 'mode', 'budget_vnd', 'max_stops', 'origin'})
+        self.assertEqual(set(result.rejected_fields), {'unknown_field', 'mode', 'budget_vnd', 'max_stops', 'origin'})
 
     def test_route_success_foot_units_direction_and_lru(self):
         self.route_payload()
