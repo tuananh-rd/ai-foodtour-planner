@@ -326,6 +326,26 @@ async function runComponentTests() {
     'Form controls properly associated with labels'
   );
 
+  // v1.3: only verified overlay prices may be labelled per-person; estimates stay venue ranges.
+  const EvidenceBadges = loadComponent('../../frontend/app/components/EvidenceBadge.jsx');
+  const htmlPerPerson = renderToStaticMarkup(
+    React.createElement(EvidenceBadges.PriceBadge, { minVnd: 30000, maxVnd: 45000, evidence: 'verified', semantics: 'per_person' })
+  );
+  const htmlRange = renderToStaticMarkup(
+    React.createElement(EvidenceBadges.PriceBadge, { minVnd: 30000, maxVnd: 45000, evidence: 'estimate', semantics: 'venue_range' })
+  );
+  const htmlSpoof = renderToStaticMarkup(
+    React.createElement(EvidenceBadges.PriceBadge, { minVnd: 30000, maxVnd: 45000, evidence: 'estimate', semantics: 'per_person' })
+  );
+  record(
+    'TC-PP',
+    'Per-person label only for verified per_person prices; estimates and spoofed semantics stay venue ranges',
+    htmlPerPerson.includes('Giá theo người (đã xác minh') &&
+      htmlRange.includes('Khoảng giá quán, không bảo đảm') &&
+      htmlSpoof.includes('Khoảng giá quán, không bảo đảm') && !htmlSpoof.includes('Giá theo người'),
+    'verified per_person / estimate range / estimate-with-per_person'
+  );
+
   console.log('\n===============================================================');
   console.log(`   COMPONENT TESTS SUMMARY: ${results.filter((r) => r.passed).length}/${results.length} PASSED`);
   console.log('===============================================================\n');
