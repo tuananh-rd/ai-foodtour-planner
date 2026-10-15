@@ -1,0 +1,29 @@
+name: Local prototype checks
+on: [push, pull_request]
+jobs:
+  checks:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.12', '3.14']
+    runs-on: ${{ matrix.os }}
+    env:
+      PYTHONDONTWRITEBYTECODE: '1'
+      NEXT_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Windows checks
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./scripts/test.ps1
+      - name: Linux checks
+        if: runner.os != 'Windows'
+        shell: bash
+        run: bash scripts/test.sh
