@@ -14,6 +14,7 @@ import path from 'node:path';
 
 const WEB = process.env.WEB_URL || 'http://127.0.0.1:13000';
 const PORT = Number(process.env.CDP_PORT || 9344);
+const REPLY_MS = Number(process.env.REPLY_TIMEOUT_MS || 20000); // raise for real LLM providers
 const CANDIDATES = [
   process.env.BROWSER,
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',
@@ -79,7 +80,7 @@ async function typeAndSend(text, doneExpr = null) {
   await sleep(150); // let React flush the controlled input before submitting
   await ev(`document.querySelector('form button[type="submit"]').click()`);
   // After a tour is produced the mobile UI switches tabs, so the chat label may be hidden.
-  await waitFor(doneExpr || `${ASSISTANT_RE} > ${before}`, 20000, 'reply');
+  await waitFor(doneExpr || `${ASSISTANT_RE} > ${before}`, REPLY_MS, 'reply');
 }
 
 async function flow(width, height, label) {
@@ -97,7 +98,7 @@ async function flow(width, height, label) {
 
   // 2) complete request -> tour
   await typeAndSend('3 giờ, ngân sách 200k mỗi người, 3 quán', `document.body.innerText.includes('Đổi quán')`);
-  await waitFor(`document.body.innerText.includes('Đổi quán')`, 20000, 'tour stops');
+  await waitFor(`document.body.innerText.includes('Đổi quán')`, REPLY_MS, 'tour stops');
   const hasNoOpenClaim = await ev(`!/đang mở cửa/i.test(document.body.innerText)`);
   rec(`${label} tour rendered without "đang mở cửa" claim`, hasNoOpenClaim);
   const conditional = await ev(`/có điều kiện|chưa được xác minh|chưa xác minh/i.test(document.body.innerText)`);
@@ -133,7 +134,7 @@ async function flow(width, height, label) {
   await ev(`(() => { const b=[...document.querySelectorAll('button')].find(b=>b.innerText.includes('Đổi quán')); b.focus(); b.click(); })()`);
   await waitFor(`!!document.querySelector('[role="dialog"]')`, 5000, 'dialog 2');
   await ev(`[...document.querySelectorAll('[role="dialog"] button')].find(b=>b.innerText.includes('Thay quán này')).click()`);
-  await waitFor(`document.body.innerText.includes('Đã Đổi Xong') || document.body.innerText.includes('Đã đổi') || /Hoàn tất/.test(document.body.innerText)`, 20000, 'replace result');
+  await waitFor(`document.body.innerText.includes('Đã Đổi Xong') || document.body.innerText.includes('Đã đổi') || /Hoàn tất/.test(document.body.innerText)`, REPLY_MS, 'replace result');
   await ev(`[...document.querySelectorAll('[role="dialog"] button')].find(b=>/Hoàn tất|Đóng/.test(b.innerText))?.click()`);
   await sleep(400);
   const afterStops = await ev(stopNames);
