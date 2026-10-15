@@ -32,3 +32,32 @@ class StraightLineEstimator:
         km = haversine_km(a, b)
         minutes = math.ceil(km * self.detour / self.speed_kmh * 60)
         return Leg(minutes=minutes, km=round(km, 3), source="straight_line_estimate")
+
+
+class CheckedRouteProvider:
+    """Wrap any provider: never trust its output and never let its failures crash planning.
+
+    Invalid or failing answers become an `unknown` leg (minutes=None), which the planner treats
+    as unreachable rather than inventing a duration. Only sources the planner understands pass.
+    """
+
+    MAX_MINUTES = 24 * 60
+
+    def __init__(self, inner: RouteMatrixProvider):
+        self.inner = inner
+
+    def leg(self, a: tuple, b: tuple) -> Leg:
+        km = round(haversine_km(a, b), 3)
+        try:
+            out = self.inner.leg(a, b)
+            minutes, src = out.minutes, out.source
+            if src not in ("provider_route", "straight_line_estimate", "unknown"):
+                raise ValueError
+            if minutes is not None and (isinstance(minutes, bool) or not isinstance(minutes, int)
+                                        or not 0 <= minutes <= self.MAX_MINUTES):
+                raise ValueError
+            if isinstance(out.km, bool) or not isinstance(out.km, (int, float)) or not 0 <= out.km < 1000:
+                raise ValueError
+            return Leg(minutes=minutes, km=float(out.km), source=src if minutes is not None else "unknown")
+        except Exception:
+            return Leg(minutes=None, km=km, source="unknown")

@@ -238,5 +238,32 @@ class BuildTour(unittest.TestCase):
         self.assertIsNone(build_tour(vs, replace(p, mode="strict"), ids)[0])
 
 
+class CheckedProviderTests(unittest.TestCase):
+    def test_bad_provider_output_becomes_unknown_leg(self):
+        from app.planner.interfaces import CheckedRouteProvider
+
+        class Bad:
+            def __init__(self, leg=None, exc=None):
+                self._leg, self._exc = leg, exc
+
+            def leg(self, a, b):
+                if self._exc:
+                    raise self._exc
+                return self._leg
+
+        a, b = (21.03, 105.85), (21.031, 105.851)
+        for inner in (Bad(exc=RuntimeError("boom")), Bad(Leg(-5, 0.1, "provider_route")),
+                      Bad(Leg(10**6, 0.1, "provider_route")), Bad(Leg(5, float("nan"), "provider_route")),
+                      Bad(Leg(5, 0.1, "made_up_source"))):
+            out = CheckedRouteProvider(inner).leg(a, b)
+            self.assertIsNone(out.minutes)
+            self.assertEqual(out.source, "unknown")
+        good = CheckedRouteProvider(Bad(Leg(7, 0.5, "provider_route"))).leg(a, b)
+        self.assertEqual((good.minutes, good.source), (7, "provider_route"))
+        # planner treats an unknown leg as unreachable, never as free
+        t = plan_tour(load_fixture(), prefs(), CheckedRouteProvider(Bad(exc=RuntimeError("x"))))
+        self.assertEqual(t.status, "no_solution")
+
+
 if __name__ == "__main__":
     unittest.main()
