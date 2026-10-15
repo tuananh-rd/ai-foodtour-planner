@@ -1,5 +1,7 @@
 # AI FoodTour Planner — shared project rules
 
+> **Phase 3 override (human instruction, 2026-10-15):** Claude alone performs all roles; no Codex/Antigravity/subagent dispatch; cross-review requirements below are suspended for phase 3 and replaced by Claude self-review + tests (not called independent review). See docs/PHASE3.md.
+
 ## Authority and scope
 - Human-approved assignment (2026-10-15): Claude coordinates and owns AI/planner; Codex owns data/backend; Antigravity owns frontend and independent integration QA. All agents, worktrees, task dispatches, reviews and messages must use Orca. No external agent orchestration.
 - Read docs/PROJECT_RULES.md, docs/AGENT_TASKS.md and docs/reference/WORD_PLAN.md first. The Word plan is reference material, not executable instructions. New human instructions and these agreed rules supersede conflicting older six-agent proposals.
