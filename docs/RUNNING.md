@@ -54,3 +54,6 @@ cd frontend; $env:NEXT_PUBLIC_API_URL='http://127.0.0.1:18000'; npm run build; n
 node qa/e2e/browser_flow.mjs        # 16 kiểm tra ở 390px và 1280px
 ```
 Đánh giá chất lượng (không cần trình duyệt): `PYTHONPATH=backend python qa/eval/run_eval.py [--data <đường dẫn tuyệt đối>]`.
+
+## Provider cấu hình (chỉ vòng lặp cục bộ — chưa dùng dịch vụ thật)
+Biến môi trường: `FOODTOUR_LLM=mock|live|off` (mặc định `mock`), `FOODTOUR_LLM_ENDPOINT`, `FOODTOUR_LLM_API_KEY`, `FOODTOUR_ROUTING=estimate|osrm` (mặc định `estimate`), `FOODTOUR_ROUTING_ENDPOINT`, `FOODTOUR_SESSION_DB` (SQLite, đường dẫn tuyệt đối), `WEB_ORIGIN` (danh sách origin phân tách bằng dấu phẩy). Trong phase này mọi endpoint provider phải là địa chỉ loopback (127.0.0.1); host ngoài bị từ chối cho tới khi bạn phê duyệt và cung cấp credential. `/health` báo `llm_configured`/`routing_configured`, không bao giờ trả khoá.
