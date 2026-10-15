@@ -221,5 +221,22 @@ class BudgetPruneBeforeCap(unittest.TestCase):
         self.assertEqual(t.stops[0].venue_id, "TEST-14")
 
 
+class BuildTour(unittest.TestCase):
+    def test_rebuild_matches_planned_tour_and_rejects_bad_input(self):
+        from app.planner.engine import build_tour
+        vs = load_fixture()
+        p = prefs()
+        t = plan_tour(vs, p)
+        ids = [s.venue_id for s in t.stops]
+        rebuilt, why = build_tour(vs, p, ids)
+        self.assertIsNone(why)
+        self.assertEqual([s.venue_id for s in rebuilt.stops], ids)
+        self.assertEqual(rebuilt.walk_minutes, t.walk_minutes)
+        self.assertEqual(validate_tour(rebuilt, vs, p), [])
+        self.assertIsNone(build_tour(vs, p, ids + ["NOPE"])[0])
+        self.assertIsNone(build_tour(vs, p, [ids[0], ids[0]])[0])
+        self.assertIsNone(build_tour(vs, replace(p, mode="strict"), ids)[0])
+
+
 if __name__ == "__main__":
     unittest.main()

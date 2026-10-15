@@ -299,3 +299,28 @@ def validate_tour(tour: Tour, venues: list, prefs: Preferences,
                 want.hours_evidence, want.open_at_arrival, want.price_evidence):
             out.append(f"evidence mismatch at {want.venue_id}")
     return out
+
+
+def build_tour(venues: list, prefs: Preferences, venue_ids: list,
+               routes: Optional[RouteMatrixProvider] = None) -> tuple:
+    """Rebuild and validate a tour for an exact venue-id sequence (e.g. restoring a stored session).
+
+    Returns (Tour, None) or (None, reason). The result is always recomputed from current data;
+    nothing stored is trusted.
+    """
+    routes = routes or StraightLineEstimator()
+    by_id = {v.id: v for v in venues}
+    missing = [i for i in venue_ids if i not in by_id]
+    if missing:
+        return None, "venue no longer present in dataset"
+    if len(set(venue_ids)) != len(venue_ids) or not venue_ids:
+        return None, "invalid venue sequence"
+    seq = [by_id[i] for i in venue_ids]
+    if any(not eligible(v, prefs) for v in seq):
+        return None, "a stored venue is no longer eligible for these preferences"
+    tour, why = _evaluate(seq, prefs, routes)
+    if tour is None:
+        return None, why
+    if prefs.mode == "strict" and tour.status != "verified_feasible":
+        return None, "strict mode requires verified evidence"
+    return tour, None

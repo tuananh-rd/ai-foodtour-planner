@@ -77,3 +77,7 @@ Errors: `{error: {code, message, details?}}`. Codes: `validation_error`, `unauth
 - `GET /v1/venues` keeps legacy `items`; `GET /v1/venues/{id}` uses v1 evidence fields.
 - Optional metadata `dataset_source` (`private`/`synthetic`), `dataset_version`, `synthetic` may accompany responses and `/health` so fallback data is labelled in the UI.
 - Fail-closed: a tour that fails `validate_tour` is never returned; error code `internal_validation_failed`, no stops.
+
+## v1.2 additions (additive, 2026-10-15)
+- `GET /v1/sessions/{id}` (header `X-Session-Token`) returns the same SessionView wrapper as mutating endpoints, rebuilt from the current dataset. If the stored tour's `dataset_version` differs from the loaded one, or any stored venue is no longer valid, `tour` is `null` and `notes` explains that data changed; preferences are preserved.
+- Planner rebuild uses the public `planner.engine.build_tour(venues, prefs, venue_ids)`; stored tours are never trusted without recomputation.
