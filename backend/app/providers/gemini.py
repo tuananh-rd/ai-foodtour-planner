@@ -168,17 +168,9 @@ class GeminiExtractionProvider:
     def complete(self, text: str, prior, *, deadline_s: float) -> str:
         user = json.dumps({"truoc_do": prior or {}, "tin_nhan_moi": text}, ensure_ascii=False)
         out = self.client.generate_json(EXTRACT_SYSTEM, user, extraction_schema(), deadline_s=deadline_s)
-        # Map the landmark enum to server-side coordinates; the model never supplies coordinates.
-        landmark = out.pop("origin_landmark", None)
-        if landmark is not None:
-            if landmark not in ANCHORS:
-                out["origin"] = "invalid"  # rejected by the validator, reported as such
-            else:
-                lat, lon = ANCHORS[landmark]
-                out["origin"] = {"lat": lat, "lon": lon}
-                out["origin_label"] = landmark.title()
-                out["origin_source"] = "landmark"
-                out.pop("origin_text", None)
+        # Pass the raw model JSON through unchanged. Mapping origin_landmark to coordinates and
+        # grounding origin_text in the user's message is done by LLMExtractor (server-owned), so an
+        # out-of-schema model answer cannot supply an origin, a label or a source here.
         for key in ("interests", "exclusions"):
             if out.get(key) is None:
                 out.pop(key, None)

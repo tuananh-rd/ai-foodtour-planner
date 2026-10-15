@@ -142,7 +142,10 @@ def check_explanation(text, facts: dict) -> list:
     # (pattern, allowed by facts, name, negation may excuse it). Opening, per-person and guarantee
     # claims are never excused by nearby negation: wording like "đang mở cửa và không xa" must fail.
     rules = [
-        (r"dang mo|chac chan mo|luon mo|mo cua (luc|tu|den|ca)|van mo", hours_ok, "opening_claim", False),
+        (r"dang mo|chac chan mo|luon mo|mo cua (luc|tu|den) |mo cua ca ngay|van mo|mo suot|suot ngay|ca ngay|24 ?/ ?24|"
+         r"24 ?(h|gio)|moi luc|bat cu luc|hoat dong|phuc vu", hours_ok, "opening_claim", False),
+        # Quantified claims ("tất cả/đều ... mở") are excused only when the span itself says chưa/không.
+        (r"(tat ca|deu|moi|cac)[^.;,]{0,40}\bmo\b", hours_ok, "opening_claim", True),
         (r"(gia|chi phi|tien) (moi|cho moi|tren moi|1|mot) nguoi|moi nguoi (chi|het|tra)", per_person_ok,
          "per_person_claim", False),
         (r"tuyen (duong|di) thuc|duong di thuc|theo duong that|tuyen di bo thuc", routes_ok, "route_claim", True),
@@ -156,7 +159,9 @@ def check_explanation(text, facts: dict) -> list:
         for m in _re.finditer(pattern, f):
             before = f[max(0, m.start() - 12):m.start()]
             after = " ".join(f[m.end():].split()[:3])
-            if negatable and (_re.search(r"\b(chua|khong)\b", before) or _re.search(r"\b(chua|khong)\b", after)):
+            span = f[m.start():m.end()]
+            if negatable and (_re.search(r"\b(chua|khong)\b", before) or _re.search(r"\b(chua|khong)\b", after)
+                              or _re.search(r"\b(chua|khong)\b", span)):
                 continue
             problems.append(name)
             break

@@ -44,9 +44,15 @@ def check_extraction(res, sc) -> list:
     if "expect_missing" in sc and sorted(sc["expect_missing"]) != sorted(res.missing_slots):
         out.append(f"missing_slots {sorted(res.missing_slots)} != {sorted(sc['expect_missing'])}")
     if "expect_origin_text" in sc:
+        # Exact place phrase (allowing only a generic prefix word); extra invented places must fail.
+        want = fold(sc["expect_origin_text"])
         got = fold(res.origin_text or "")
-        if fold(sc["expect_origin_text"]) not in got:
-            out.append(f"origin_text {'present' if res.origin_text else 'missing'} but does not contain expected place")
+        generic = {"cho", "pho", "khu", "duong", "quan", "toa", "nha", "ngo"}
+        tokens = got.split()
+        while tokens and tokens[0] in generic and " ".join(tokens) != want:
+            tokens = tokens[1:]
+        if " ".join(tokens) != want:
+            out.append(f"origin_text {'present' if res.origin_text else 'missing'} but is not exactly the expected place")
     if "expect_mode" in sc and p.mode != sc["expect_mode"]:
         out.append(f"mode {p.mode}")
     if "expect_budget" in sc and p.budget_vnd != sc["expect_budget"]:
@@ -71,6 +77,7 @@ def main() -> int:
     ds = load_dataset(a.data) if a.data else load_dataset()
     venues = list(ds.venues)
     scenarios = json.loads((Path(__file__).with_name("scenarios.json")).read_text(encoding="utf-8"))["scenarios"]
+    skipped_llm_only = sum(1 for s in scenarios if s.get("llm_only")) if a.extractor != "gemini" else 0
     scenarios = [s for s in scenarios if a.extractor == "gemini" or not s.get("llm_only")]  # llm_only needs a real LLM
     ex = MockExtractor()
     explainer = None
@@ -132,7 +139,7 @@ def main() -> int:
         "tours_returned": tours_total, "invalid_tours": invalid_total,
         "validity_gate": "PASS" if invalid_total == 0 else "FAIL",
         "latency_ms": {"p50": round(pct(lat, .5), 1), "p95": round(pct(lat, .95), 1), "max": round(max(lat, default=0), 1)},
-        "extractor": a.extractor, "explainer": a.explain,
+        "extractor": a.extractor, "explainer": a.explain, "skipped_llm_only_scenarios": skipped_llm_only,
         "extraction_latency_ms": {"p50": round(pct(ext_latency, .5), 1), "max": round(max(ext_latency, default=0), 1)},
         "explanations": explain_rows,
         "all_expected_statuses_ok": all((r["plan"] or {}).get("status_expected_ok", True) for r in rows),

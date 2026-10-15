@@ -13,7 +13,10 @@ import re
 from dataclasses import replace
 from typing import Optional, Protocol
 
-from app.llm.extract import ExtractionResult, MAX_TEXT, QUESTIONS, _clean
+import unicodedata
+
+from app.llm.extract import ANCHORS, ExtractionResult, MAX_TEXT, QUESTIONS, _clean
+from app.planner.relevance import fold
 from app.planner.engine import missing_slots
 from app.planner.types import Preferences
 
@@ -56,9 +59,18 @@ def _place_text(v):
     if not isinstance(v, str):
         raise ValueError
     v = v.strip()
-    if not 2 <= len(v) <= 120 or CONTROL.search(v):
+    # Same policy as the API schema: no C0/DEL and no Unicode Cc/Cf/Cs (e.g. zero-width characters).
+    if (not 2 <= len(v) <= 120 or CONTROL.search(v)
+            or any(unicodedata.category(ch) in ("Cc", "Cf", "Cs") for ch in v)):
         raise ValueError
     return v
+
+
+def _grounded(phrase: str, user_text: str) -> bool:
+    """True when the phrase appears as a contiguous word sequence in the (cleaned) user text."""
+    want, have = fold(phrase).split(), fold(user_text).split()
+    n = len(want)
+    return n > 0 and any(have[i:i + n] == want for i in range(len(have) - n + 1))
 
 
 def _origin(v):
@@ -104,13 +116,16 @@ SCHEMA = {
     "mode": ("mode", _enum("explore", "strict")),
     # Not a Preferences field: carried on ExtractionResult.origin_text for server-side geocoding.
     "origin_text": ("origin_text", lambda v: _place_text(v)),
-    "origin_label": ("origin_label", lambda v: _place_text(v)),
-    "origin_source": ("origin_source", _enum("landmark")),
+    # origin_label/origin_source are NEVER accepted from a model; the server derives them.
 }
 
 
-def parse_and_validate(raw: str) -> tuple:
-    """Return (updates: dict of Preferences attrs, rejected: list of field names, error: str|None)."""
+def parse_and_validate(raw: str, user_text: str | None = None, allow_raw_origin: bool = True) -> tuple:
+    """Return (updates: dict of Preferences attrs, rejected: list of field names, error: str|None).
+
+    user_text (the cleaned current message) enables grounding: origin_text and origin_landmark are
+    accepted only when they appear in it. allow_raw_origin=False refuses model-supplied coordinates.
+    """
     if not isinstance(raw, str) or len(raw.encode("utf-8", "ignore")) > MAX_RAW_BYTES:
         return {}, [], "bad_response"
     try:
@@ -120,17 +135,36 @@ def parse_and_validate(raw: str) -> tuple:
     if not isinstance(data, dict):
         return {}, [], "bad_response"
     updates, rejected = {}, []
+    landmark = data.pop("origin_landmark", None)
+    if landmark is not None:
+        key = landmark.strip().casefold() if isinstance(landmark, str) else None
+        if key in ANCHORS and (user_text is None or _grounded(key, user_text)):
+            updates["origin"] = ANCHORS[key]
+            updates["origin_label"] = key.title()
+            updates["origin_source"] = "landmark"
+        else:
+            rejected.append("origin_landmark")
     for key, value in data.items():
         if key not in SCHEMA:
             rejected.append("unknown_field")  # model-controlled names are never reflected
             continue
         if value is None:
             continue  # explicit null = not specified
+        if key == "origin" and not allow_raw_origin:
+            rejected.append("origin")  # coordinates must come from the server, never from a model
+            continue
         attr, check = SCHEMA[key]
         try:
             updates[attr] = check(value)
         except (ValueError, TypeError):
             rejected.append(key)
+            continue
+        if key == "origin_text" and user_text is not None and not _grounded(updates[attr], user_text):
+            updates.pop(attr)
+            rejected.append("origin_text")  # not a phrase the user wrote
+    if "origin" in updates and "origin_source" not in updates:
+        # Raw coordinates (only possible with allow_raw_origin) carry no server-verified label.
+        updates["origin_source"] = None
     return updates, rejected, None
 
 
@@ -149,8 +183,9 @@ def _prior_json(p: Preferences) -> dict:
 class LLMExtractor:
     """Calls an ExtractionProvider and validates everything it returns."""
 
-    def __init__(self, provider: ExtractionProvider, deadline_s: float = 8.0):
+    def __init__(self, provider: ExtractionProvider, deadline_s: float = 8.0, allow_raw_origin: bool = False):
         self.provider, self.deadline_s = provider, deadline_s
+        self.allow_raw_origin = allow_raw_origin  # only for trusted internal providers/tests
 
     def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
         p = prior or Preferences()
@@ -162,19 +197,19 @@ class LLMExtractor:
             return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + (f"Nhà cung cấp LLM lỗi: {e.kind}.",))
         except Exception:  # never leak provider internals or crash the request
             return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Nhà cung cấp LLM không khả dụng.",))
-        updates, rejected, error = parse_and_validate(raw)
+        updates, rejected, error = parse_and_validate(raw, cleaned, self.allow_raw_origin)
         if error:
             return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Phản hồi LLM không hợp lệ.",))
         if rejected:
             notes.append("Một số trường từ mô hình không hợp lệ nên bị bỏ qua: " + ", ".join(sorted(set(rejected))) + ".")
         origin_text = updates.pop("origin_text", None)
-        if "origin" in updates and updates.get("origin_source") != "landmark":
-            updates.pop("origin_label", None)  # a label without a server-resolved landmark is not trusted
         if "origin" not in updates:
             updates.pop("origin_label", None)
             updates.pop("origin_source", None)
         else:
-            origin_text = None  # already resolved by a built-in landmark
+            origin_text = None  # already resolved (built-in landmark or trusted coordinates)
+            if updates.get("origin_source") is None:
+                updates.pop("origin_source", None)
         merged = replace(p, **updates)
         miss = tuple(missing_slots(merged))
         if origin_text and merged.origin is None:

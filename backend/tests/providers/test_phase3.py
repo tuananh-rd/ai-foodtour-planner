@@ -397,5 +397,28 @@ class ExplanationTimeBudget(unittest.TestCase):
         self.assertLess(slow2.deadlines[1], slow2.deadlines[0])  # retry gets only the remaining budget
 
 
+class OpeningClaimVariants(unittest.TestCase):
+    """Codex review P4-R3: unsupported all-day / always-open phrasings must not pass."""
+
+    def setUp(self):
+        vs = load_fixture()
+        t = plan_tour(vs, Preferences(origin=(21.029, 105.851), duration_min=240, budget_vnd=500000,
+                                      budget_scope="per_person"))
+        self.facts = tour_facts(t, vs)
+
+    def test_variants_rejected(self):
+        for text in ("Gợi ý có điều kiện: tất cả quán mở suốt ngày.",
+                     "Goi y co dieu kien: tat ca quan mo suot ngay.",
+                     "Chưa xác minh giá, nhưng các quán hoạt động 24/24.",
+                     "Các quán đều mở cửa vào buổi tối, chưa rõ giá.",
+                     "Quán phục vụ mọi lúc, chưa rõ giá."):
+            self.assertIn("opening_claim", check_explanation(text, self.facts), text)
+
+    def test_truthful_uncertainty_still_passes(self):
+        for text in ("Chưa rõ giờ mở cửa của tất cả các quán; tuyến là ước tính.",
+                     "Giờ mở cửa các quán chưa được xác minh, nên chỉ là gợi ý có điều kiện."):
+            self.assertNotIn("opening_claim", check_explanation(text, self.facts), text)
+
+
 if __name__ == "__main__":
     unittest.main()
