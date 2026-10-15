@@ -10,18 +10,22 @@ from app.api.legacy import PlanRequest, load, plan
 from app.api.routes import router
 from app.llm.extract import MockExtractor, UnavailableExtractor
 from app.planner.interfaces import StraightLineEstimator
-from app.repositories.sessions import SessionStore
+from app.repositories.sessions import SessionStore, SessionStoreInterface
+from app.repositories.sqlite_sessions import SQLiteSessionStore
 from app.repositories.venues import VenueRepository
 
 
-def create_app(*, data_path=None, sessions=None, extractor=None):
+def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None):
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
     app.state.venues = VenueRepository(data_path)
-    app.state.sessions = sessions if sessions is not None else SessionStore()
     app.state.extractor = extractor if extractor is not None else (
         UnavailableExtractor() if os.getenv("FOODTOUR_LLM", "mock").casefold() == "off" else MockExtractor()
     )
     app.state.routing = StraightLineEstimator()
+    db_path = os.getenv("FOODTOUR_SESSION_DB")
+    app.state.sessions = sessions if sessions is not None else (
+        SQLiteSessionStore(db_path, app.state.venues, app.state.routing) if db_path else SessionStore()
+    )
     app.add_middleware(
         CORSMiddleware, allow_origins=[os.getenv("WEB_ORIGIN", "http://localhost:3000")],
         allow_methods=["GET", "POST", "PUT"], allow_headers=["Content-Type", "X-Session-Token"],

@@ -81,7 +81,7 @@ def state_view(prefs, tour, data, revision, routes):
 def commit(session, prefs, tour, data, request, notes=()):
     revision = session.revision + 1
     view = state_view(prefs, tour, data, revision, request.app.state.routing)
-    view.notes = list(notes)
+    view.notes = list(dict.fromkeys((*session.notes, *notes)))
     session.preferences, session.tour, session.snapshot = prefs, tour, data
     session.revision = revision
     return view
@@ -140,6 +140,28 @@ def create_plan(req: legacy.PlanRequest):
 @router.post("/v1/sessions", response_model=SessionCreated)
 def create_session(request: Request):
     return request.app.state.sessions.create()
+
+
+@router.get("/v1/sessions/{session_id}", response_model=SessionView)
+def read_session(session_id: str, request: Request,
+                 x_session_token: str | None = Header(default=None)):
+    from app.repositories.sqlite_sessions import CHANGED
+    with request.app.state.sessions.owned(session_id, x_session_token) as session:
+        data = snapshot(request)
+        tour = session.tour
+        notes = session.notes
+        if tour is not None and session.snapshot is not None:
+            if data.dataset_version != session.snapshot.dataset_version:
+                tour, notes = None, (CHANGED,)
+            elif tour.stops:
+                rebuilt, why = engine.build_tour(data.venues, session.preferences,
+                    [s.venue_id for s in tour.stops], request.app.state.routing)
+                tour = rebuilt.with_locks(tour.locks) if rebuilt is not None and not why else None
+                if tour is None:
+                    notes = (CHANGED,)
+        view = state_view(session.preferences, tour, data, session.revision, request.app.state.routing)
+        view.notes = list(notes)
+        return view
 
 
 @router.post("/v1/sessions/{session_id}/messages", response_model=SessionView)

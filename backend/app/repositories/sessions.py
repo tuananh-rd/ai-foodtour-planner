@@ -6,6 +6,7 @@ from collections import OrderedDict
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from threading import RLock
+from typing import Protocol, ContextManager
 
 from app.api.errors import APIError
 from app.planner.types import Preferences
@@ -21,6 +22,15 @@ class Session:
     snapshot: object = None
     window_start: float = 0
     requests: int = 0
+    notes: tuple = ()
+
+
+class SessionStoreInterface(Protocol):
+    """Stores yield an isolated unit of work; only successful contexts commit."""
+
+    def create(self) -> dict: ...
+    def owned(self, identity: str, token: str) -> ContextManager[Session]: ...
+    def check_revision(self, session: Session, expected: int) -> None: ...
 
 
 class SessionStore:
