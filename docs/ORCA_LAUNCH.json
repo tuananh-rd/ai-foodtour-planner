@@ -98,5 +98,12 @@
       "terminal": "fresh antigravity terminal in foodtour-antigravity-web",
       "launch": "model/effort omitted; effective not reported"
     }
-  ]
+  ],
+  "finalState": {
+    "gate": "local MVP reached",
+    "integrationBranch": "foodtour-claude-coordinator",
+    "headNote": "see git log",
+    "antigravity": "out of workflow by human instruction; terminal term_6184ece1 released; failed dispatches ctx_8439a2f1a0e9, ctx_aff23d1f411b (agent_readiness timeout, CLI stuck at Signing in); CLI showed Gemini 3.8 Flash (High)",
+    "codexEffective": "gpt-6.1-sol medium (first launch receipt; reused terminal)"
+  }
 }

@@ -1,23 +1,23 @@
-# Task board (Run run_b0634cf639d3)
+# Task board (Run run_b0634cf639d3) — local MVP gate reached
 
-| Task | Owner | Status | Commit | Reviewer | Evidence / blocker |
+| Task | Owner | Status | Commit | Reviewer | Evidence |
 |---|---|---|---|---|---|
-| DATA-BE-00 | Codex | DONE, accepted | 078226d | Claude | baseline 4 pass / 1 fail (private data absent) |
-| FE-QA-00 | Antigravity | DONE, accepted | 3ca3fc9 | Claude | build OK, 10 defects |
+| DATA-BE-00 | Codex | DONE | 078226d | Claude | baseline 4 pass / 1 fail (private data absent) |
+| FE-QA-00 | Antigravity | DONE | 3ca3fc9 | Claude | build OK, 10 defects |
 | ARCH-01 | Claude | DONE | a35741e, 464a0de | Codex, Antigravity | PRD, ADR-001, contract v1 + v1.1 |
-| PLAN-01/02, AI-01 | Claude | DONE, reviewed by Codex | a35741e..36b79da | Codex | 48 planner/llm tests; Codex found 2 high + 3 medium, all fixed |
-| DATA-01 | Codex | DONE, accepted | 4d3fa1b | Claude | 38 tests; ds-1 aggregates verified |
-| BE-01 | Codex | DONE, accepted | 6ab3632 | Claude | 72 tests pass (re-run by Claude); OpenAPI drift passes; live smoke on ds-1 passed (chat->tour->replace, 409, 403, injection) |
-| FE-01 | Antigravity | DONE, accepted; NOT merged | 9ebe3b4 | Claude; Codex REVIEW-FE | build OK, 12 mock tests |
-| REVIEW-FE | Codex | DONE, accepted | ad815c9 (merged) | Claude | merge FE after fixes; F1-F6 blocking, F7-F10 medium; forwarded to Antigravity |
-| QA-01 + FE real-API integration | Antigravity | DONE, accepted (F1-F6 closure pending Codex verification) | 7d7afed (merged 1c6dba0) | Claude; Codex REVIEW-FE-2 | 28/28 E2E pass (re-run by Claude on synthetic); DEF-01 backend: GET /v1/venues empty |
-| FIX-01 + REVIEW-FE-2 | Codex | DONE, accepted | bd30c74 (merged bed3bc6) | Claude | scripts/test.ps1 re-run by Claude: 81 tests OK (1 explicit skip), drift, build, 12 mock; DEF-01 closed; FE F2/F3/F4/F6 still open |
-| FE-FIX-01 | Antigravity | DONE (worker_done succeeded, 4b8991a, merged); final gate pending | 4b8991a | Claude; Codex REVIEW-FE-3 | Claude re-ran: scripts/test.ps1 81 OK (1 skip), API E2E 36/36, components 11/11. Monitor alert (spinner 15 min) was a false alarm: dispatch already completed, terminal showed residual output |
-| REVIEW-FE-3 | Codex | DONE, accepted (MERGE-AFTER-FIXES: only F8 map sizing + F9 modal focus; F4/F7 residual, QA logs token prefix) | 472a7a0 (merged) | Claude | 81 backend + 36 API + 11 render re-run by Codex |
-| FE-FIX-02 | Antigravity -> reassigned to Claude | c8452d7 | Codex REVIEW-FE-4 | Antigravity CLI stuck at sign-in (2 failed dispatches at agent_readiness; breaker not used further). Scope reassigned by coordinator under AGENTS.md coordination clause: only MapView.jsx + ReplaceDiffModal.jsx. Author Claude, verifier Codex (no self-approval) |
-| OWNERSHIP | Claude (temporary) | Antigravity out of workflow by human instruction until sign-in fixed; Claude owns remaining frontend/qa; Codex verifies independently | - | see docs/OWNERSHIP_CHANGE.md | no Antigravity retries, no new Antigravity worker |
-| REVIEW-FE-4 | Codex | In progress | - | Claude | dispatch ctx_9505c3d6eccb; real-browser CDP verification of F8/F9 (draft unsent, Enter sent, Working observed) |
-| OPS-01 | Codex | DONE, accepted | 8ed069b (merged f183788) | Claude | scripts/test.ps1 passes on coordinator tree: 77 backend + 1 explicit legacy skip + OpenAPI drift + frontend build; npm test EXPECTED-SKIP; Linux/remote CI untested |
-| INT-01 | Claude | Pending | - | Codex | merge FE-01 after F1-F6 closure, combined checks, docs/RUNNING.md |
+| PLAN-01/02, AI-01 | Claude | DONE | a35741e..36b79da | Codex (2 high + 3 medium fixed) | 48 planner/llm tests |
+| DATA-01 | Codex | DONE | 4d3fa1b | Claude | 38 tests; ds-1 aggregates verified |
+| BE-01 | Codex | DONE | 6ab3632 | Claude | 72 tests; live smoke on ds-1 |
+| FE-01 | Antigravity | DONE | 9ebe3b4 | Claude + Codex | build OK |
+| REVIEW-FE .. REVIEW-FE-6 | Codex | DONE | ad815c9, 472a7a0, 6768e4d, 5eb39ab, e0f7a9f | Claude | F1-F10, N1, N2 closed; final recommendation MERGE, no blockers |
+| QA-01 | Antigravity | DONE | 7d7afed | Claude + Codex | 28 then 36 API E2E, 11 component |
+| OPS-01 | Codex | DONE | 8ed069b | Claude | scripts/test.ps1, dev.ps1, ci.yml (not enabled) |
+| FIX-01 | Codex | DONE | bd30c74 | Claude | GET /v1/venues from snapshot, 81 tests |
+| FE-FIX-01 | Antigravity | DONE | 4b8991a | Claude + Codex | F2/F3/F4/F6 + extras |
+| FE-FIX-02 | Antigravity -> Claude (temporary) | DONE | c8452d7, 138e158, 8f55933 | Codex REVIEW-FE-4/5/6 | map sizing, modal focus; Antigravity CLI stuck at sign-in |
+| INT-01 | Claude | DONE | e654aa3 | Codex | combined: scripts/test.ps1 81 OK (1 explicit skip), drift, build, 12 contract, API E2E 36/36, components 11/11 |
 
-Known limitations: single-process volatile sessions; bounded search pool (disclosed); estimated straight-line routing; hours unknown for all venues; price is venue range; no live LLM/routing provider (BE-02 not started, needs approved credentials).
+Temporary ownership: Antigravity is out of the workflow by human instruction until sign-in is fixed (docs/OWNERSHIP_CHANGE.md); Claude owns remaining frontend/qa, Codex verifies.
+Run guide: docs/RUNNING.md.
+
+Open follow-ups (non-blocking): F4 residual form defaults, F7 initial-load retry; BE-02 live LLM/routing providers (needs approved credentials); real hours mapping; per-person price semantics; persistent sessions/DB; Linux/remote CI untested; geoverification of coordinates; interest matching relevance (broad dish-group tags); docs/audit.json (pre-existing, baseline commit) contains one source URL.
