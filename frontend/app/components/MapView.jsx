@@ -198,15 +198,14 @@ export default function MapView({
             height: '100%'
           }}
         >
-          {/* Route Line: Solid only if provider_route, Dashed with disclaimer if straight_line_estimate */}
-          {projectedPoints.length > 1 && (
+          {/* Route Line: Only drawn when route geometry is from provider_route. Never draw invented lines for straight-line estimates. */}
+          {isProviderRoute && projectedPoints.length > 1 && (
             <polyline
               points={polylinePoints}
               fill="none"
               stroke="var(--accent-primary)"
-              strokeWidth={isProviderRoute ? 4 : 3}
-              strokeDasharray={isProviderRoute ? 'none' : '6,5'}
-              strokeOpacity={0.85}
+              strokeWidth={4}
+              strokeOpacity={0.9}
             />
           )}
 
@@ -322,12 +321,12 @@ export default function MapView({
       {/* Geometry disclaimer */}
       <div style={{ marginTop: 8, fontSize: 12, color: 'var(--text-muted)' }}>
         {isProviderRoute ? (
-          <span style={{ color: '#2e7d32' }}>
-            ✓ Đường nối hiển thị theo dữ liệu định tuyến thực tế từ provider.
+          <span style={{ color: '#2e7d32', fontWeight: 600 }}>
+            ✓ Tuyến đường đi bộ thực tế được xác minh từ nhà cung cấp định tuyến (provider_route).
           </span>
         ) : (
-          <span>
-            * Đường nét đứt biểu thị cự ly chim bay ước tính. Hệ thống không tự ý suy diễn hay bịa đặt hình học đường sá khi chưa có dữ liệu dẫn đường thực tế.
+          <span style={{ color: '#e65100', fontWeight: 600 }}>
+            * Chưa có dữ liệu định tuyến thực tế (đang dùng cự ly đường chim bay ước tính). Bản đồ chỉ hiển thị các điểm dừng và điểm xuất phát, không tự vẽ tuyến đường giả định.
           </span>
         )}
       </div>

@@ -12,6 +12,7 @@ import RevisionConflictAlert from './components/RevisionConflictAlert';
 import {
   isMockMode,
   setRuntimeMockMode,
+  getHealth,
   createSession,
   sendMessage,
   updatePreferences,
@@ -37,15 +38,20 @@ const DEFAULT_PREFERENCES = {
 };
 
 export default function Home() {
-  const [isMock, setIsMock] = useState(true);
+  const [isMock, setIsMock] = useState(false);
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'preferences' | 'timeline' | 'map'
   
   // Session & revision state
   const [sessionId, setSessionId] = useState(null);
   const [sessionToken, setSessionToken] = useState('');
-  const [revision, setRevision] = useState(1);
+  const [revision, setRevision] = useState(0);
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   
+  // Data provenance & server notes
+  const [datasetSource, setDatasetSource] = useState('synthetic');
+  const [datasetVersion, setDatasetVersion] = useState('');
+  const [notes, setNotes] = useState([]);
+
   // Chat & Questions
   const [messages, setMessages] = useState([]);
   const [missingSlots, setMissingSlots] = useState([]);
@@ -60,26 +66,85 @@ export default function Home() {
   const [replaceCandidate, setReplaceCandidate] = useState(null);
   const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
 
-  // Async UI states
+  // Async UI & error states
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
   const [conflictError, setConflictError] = useState(null);
+  const [noCandidatesError, setNoCandidatesError] = useState(null);
+  const [authError, setAuthError] = useState(null);
+  const [rateLimitError, setRateLimitError] = useState(null);
+  const [providerUnavailableError, setProviderUnavailableError] = useState(null);
 
   // Initialize session on mount
   useEffect(() => {
-    setIsMock(isMockMode());
+    const mock = isMockMode();
+    setIsMock(mock);
     initSession();
   }, []);
+
+  function clearAllErrors() {
+    setError(null);
+    setConflictError(null);
+    setNoCandidatesError(null);
+    setAuthError(null);
+    setRateLimitError(null);
+    setProviderUnavailableError(null);
+  }
+
+  function handleApiError(err) {
+    if (err instanceof ApiError) {
+      if (err.status === 409) {
+        if (err.code === 'no_candidates') {
+          setNoCandidatesError(err);
+        } else {
+          setConflictError(err);
+        }
+      } else if (err.status === 401 || err.status === 403) {
+        setAuthError(err);
+      } else if (err.status === 429) {
+        setRateLimitError(err);
+      } else if (err.status === 503) {
+        setProviderUnavailableError(err);
+      } else {
+        setError(err);
+      }
+    } else {
+      setError(err);
+    }
+  }
+
+  function applySessionWrapper(res) {
+    if (!res) return;
+    if (res.revision !== undefined) setRevision(res.revision);
+    if (res.preferences) setPreferences(res.preferences);
+    if (res.missing_slots !== undefined) setMissingSlots(res.missing_slots || []);
+    if (res.questions !== undefined) setQuestions(res.questions || []);
+    if (res.notes !== undefined) setNotes(res.notes || []);
+    if (res.tour !== undefined) setTour(res.tour);
+    if (res.dataset_source) setDatasetSource(res.dataset_source);
+    if (res.dataset_version) setDatasetVersion(res.dataset_version);
+  }
 
   async function initSession() {
     try {
       setBusy(true);
-      setError(null);
-      setConflictError(null);
+      clearAllErrors();
+      setTour(null); // Reset tour on new session / mode toggle
+      setNotes([]);
+      setMissingSlots([]);
+      setQuestions([]);
+      setHighlightedStopId(null);
+
       const session = await createSession();
       setSessionId(session.session_id);
       setSessionToken(session.token);
       setRevision(session.revision);
+
+      try {
+        const health = await getHealth();
+        if (health.dataset_source) setDatasetSource(health.dataset_source);
+        if (health.dataset_version) setDatasetVersion(health.dataset_version);
+      } catch (_) {}
 
       // Add welcoming assistant message
       setMessages([
@@ -89,7 +154,7 @@ export default function Home() {
         }
       ]);
     } catch (err) {
-      setError(err);
+      handleApiError(err);
     } finally {
       setBusy(false);
     }
@@ -99,8 +164,7 @@ export default function Home() {
   async function handleSendMessage(text) {
     if (!sessionId || busy) return;
     setBusy(true);
-    setError(null);
-    setConflictError(null);
+    clearAllErrors();
 
     // Add user message to UI immediately
     const userMsg = { role: 'user', text };
@@ -108,20 +172,13 @@ export default function Home() {
 
     try {
       const res = await sendMessage(sessionId, text, sessionToken);
-      setRevision(res.revision);
-      if (res.preferences) {
-        setPreferences(res.preferences);
-      }
-      setMissingSlots(res.missing_slots || []);
-      setQuestions(res.questions || []);
+      applySessionWrapper(res);
 
       let assistantText = 'Đã cập nhật thông tin chuyến đi của bạn.';
       if (res.missing_slots && res.missing_slots.length > 0) {
         assistantText = 'Tôi đã ghi nhận các thông tin trên. Tuy nhiên còn thiếu một số thông tin bắt buộc để tối ưu tour:';
       } else if (res.tour) {
         assistantText = res.tour.explanation || 'Đã tạo xong hành trình ẩm thực tối ưu dựa trên sở thích của bạn!';
-        setTour(res.tour);
-        // On mobile, auto-switch to timeline tab when tour is created
         if (typeof window !== 'undefined' && window.innerWidth < 900) {
           setActiveTab('timeline');
         }
@@ -136,11 +193,7 @@ export default function Home() {
         }
       ]);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) {
-        setConflictError(err);
-      } else {
-        setError(err);
-      }
+      handleApiError(err);
     } finally {
       setBusy(false);
     }
@@ -161,22 +214,13 @@ export default function Home() {
   async function handleUpdatePreferences(newPrefs) {
     if (!sessionId || busy) return;
     setBusy(true);
-    setError(null);
-    setConflictError(null);
+    clearAllErrors();
 
     try {
       const res = await updatePreferences(sessionId, revision, newPrefs, sessionToken);
-      setRevision(res.revision);
-      setPreferences(res.preferences);
-      if (res.tour) {
-        setTour(res.tour);
-      }
+      applySessionWrapper(res);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) {
-        setConflictError(err);
-      } else {
-        setError(err);
-      }
+      handleApiError(err);
     } finally {
       setBusy(false);
     }
@@ -186,30 +230,23 @@ export default function Home() {
   async function handlePlanTour(newPrefs = null) {
     if (!sessionId || busy) return;
     setBusy(true);
-    setError(null);
-    setConflictError(null);
+    clearAllErrors();
 
     try {
       let baseRev = revision;
       if (newPrefs) {
         const updateRes = await updatePreferences(sessionId, revision, newPrefs, sessionToken);
+        applySessionWrapper(updateRes);
         baseRev = updateRes.revision;
-        setRevision(baseRev);
-        setPreferences(updateRes.preferences);
       }
 
       const tourRes = await planTour(sessionId, baseRev, sessionToken);
-      setTour(tourRes);
-      setRevision(tourRes.revision);
+      applySessionWrapper(tourRes);
       if (typeof window !== 'undefined' && window.innerWidth < 900) {
         setActiveTab('timeline');
       }
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) {
-        setConflictError(err);
-      } else {
-        setError(err);
-      }
+      handleApiError(err);
     } finally {
       setBusy(false);
     }
@@ -219,16 +256,16 @@ export default function Home() {
   async function handleInitiateReplace(stop) {
     setReplaceTargetStop(stop);
     try {
-      // Find candidate
       const venuesRes = await getVenues({ limit: 10 });
+      const list = venuesRes.items || venuesRes.venues || [];
       const currentIds = (tour?.stops || []).map((s) => s.venue_id);
-      const candidate = venuesRes.venues.find(
+      const candidate = list.find(
         (v) => !currentIds.includes(v.id) && !v.online_only && v.geo_ok
       );
       setReplaceCandidate(candidate || null);
       setIsReplaceModalOpen(true);
     } catch (err) {
-      setError(err);
+      handleApiError(err);
     }
   }
 
@@ -236,27 +273,21 @@ export default function Home() {
   async function handleConfirmReplace() {
     if (!replaceTargetStop || !sessionId || busy) return;
     setBusy(true);
-    setError(null);
-    setConflictError(null);
+    clearAllErrors();
 
     try {
-      const updatedTour = await replaceTourStop(
+      const updatedRes = await replaceTourStop(
         sessionId,
         revision,
         replaceTargetStop.venue_id,
         sessionToken
       );
-      setTour(updatedTour);
-      setRevision(updatedTour.revision);
+      applySessionWrapper(updatedRes);
       setIsReplaceModalOpen(false);
       setReplaceTargetStop(null);
       setReplaceCandidate(null);
     } catch (err) {
-      if (err instanceof ApiError && err.status === 409) {
-        setConflictError(err);
-      } else {
-        setError(err);
-      }
+      handleApiError(err);
     } finally {
       setBusy(false);
     }
@@ -266,6 +297,7 @@ export default function Home() {
     const nextMode = !isMock;
     setIsMock(nextMode);
     setRuntimeMockMode(nextMode);
+    setTour(null);
     initSession();
   };
 
@@ -319,7 +351,7 @@ export default function Home() {
                 borderRadius: 12
               }}
             >
-              CONTRACT V1
+              CONTRACT V1.1
             </span>
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>
@@ -361,8 +393,13 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Prominent Mock Data Banner */}
-      <MockBanner isMock={isMock} onToggleMode={handleToggleMockMode} />
+      {/* Prominent Provenance / Mock Data Banner */}
+      <MockBanner
+        isMock={isMock}
+        datasetSource={datasetSource}
+        datasetVersion={datasetVersion}
+        onToggleMode={handleToggleMockMode}
+      />
 
       {/* Revision Conflict Alert (409) */}
       <RevisionConflictAlert
@@ -371,8 +408,140 @@ export default function Home() {
         onDismiss={() => setConflictError(null)}
       />
 
-      {/* General Error Banner */}
-      {error && !conflictError && (
+      {/* 409 No Candidates (Replace) Alert */}
+      {noCandidatesError && (
+        <div
+          role="alert"
+          style={{
+            padding: '14px 18px',
+            background: '#fffbe6',
+            border: '1px solid #ffe58f',
+            borderLeft: '5px solid #faad14',
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: 14,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <div>
+            <strong style={{ color: '#d46b08' }}>⚠️ Không còn quán thay thế phù hợp (409 No Candidates):</strong>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
+              {noCandidatesError.message || 'Không tìm được quán thay thế nào thỏa mãn ràng buộc trong khu vực. Lịch trình hiện tại vẫn được giữ nguyên.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setNoCandidatesError(null)}
+            style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: '#8c8c8c' }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 401 / 403 Unauthorized Session Alert */}
+      {authError && (
+        <div
+          role="alert"
+          style={{
+            padding: '14px 18px',
+            background: '#fff2f0',
+            border: '1px solid #ffccc7',
+            borderLeft: '5px solid #ff4d4f',
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: 14,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <div>
+            <strong style={{ color: '#cf1322' }}>🔒 Lỗi xác thực phiên (401/403):</strong>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: '#434343' }}>
+              {authError.message || 'Phiên làm việc không hợp lệ hoặc đã hết hạn. Vui lòng tạo phiên làm việc mới.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => { setAuthError(null); initSession(); }}
+            style={{ padding: '6px 14px', background: '#ff4d4f', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Tạo phiên mới
+          </button>
+        </div>
+      )}
+
+      {/* 429 Rate Limited Alert */}
+      {rateLimitError && (
+        <div
+          role="alert"
+          style={{
+            padding: '14px 18px',
+            background: '#fff7e6',
+            border: '1px solid #ffd591',
+            borderLeft: '5px solid #fa8c16',
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: 14,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <div>
+            <strong style={{ color: '#d46b08' }}>⏳ Đã vượt quá giới hạn yêu cầu (429 Rate Limited):</strong>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
+              {rateLimitError.message || 'Hệ thống đang bận. Vui lòng thử lại sau giây lát.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setRateLimitError(null)}
+            style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: '#8c8c8c' }}
+          >
+            ✕
+          </button>
+        </div>
+      )}
+
+      {/* 503 Provider Unavailable Alert */}
+      {providerUnavailableError && (
+        <div
+          role="alert"
+          style={{
+            padding: '14px 18px',
+            background: '#f6ffed',
+            border: '1px solid #b7eb8f',
+            borderLeft: '5px solid #52c41a',
+            borderRadius: 10,
+            marginBottom: 16,
+            fontSize: 14,
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center'
+          }}
+        >
+          <div>
+            <strong style={{ color: '#237804' }}>ℹ️ Dịch vụ tạm thời không khả dụng (503 Provider Unavailable):</strong>
+            <p style={{ margin: '4px 0 0', fontSize: 13, color: '#389e0d' }}>
+              {providerUnavailableError.message || 'Dịch vụ xử lý ngôn ngữ tự nhiên đang tạm gián đoạn. Bạn có thể sử dụng trực tiếp tab "Tùy chọn" để chọn địa điểm và lập lịch.'}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => { setProviderUnavailableError(null); setActiveTab('preferences'); }}
+            style={{ padding: '6px 14px', background: '#52c41a', color: '#fff', border: 'none', borderRadius: 8, fontSize: 13, fontWeight: 600, cursor: 'pointer' }}
+          >
+            Mở tab Tùy chọn
+          </button>
+        </div>
+      )}
+
+      {/* General / Validation Error Banner */}
+      {error && !conflictError && !noCandidatesError && !authError && !rateLimitError && !providerUnavailableError && (
         <div
           role="alert"
           style={{
@@ -389,7 +558,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong>⚠️ Lỗi hệ thống:</strong> {error.message || 'Không thể kết nối đến máy chủ backend.'}
+            <strong>⚠️ Lỗi hệ thống:</strong> {error.message || 'Không thể xử lý yêu cầu.'}
           </div>
           <button
             type="button"
@@ -407,6 +576,30 @@ export default function Home() {
           >
             Thử lại
           </button>
+        </div>
+      )}
+
+      {/* Notes / Rejected Fields Notice from Extractor */}
+      {notes.length > 0 && (
+        <div
+          role="note"
+          style={{
+            background: '#f0f5ff',
+            border: '1px solid #adc6ff',
+            borderLeft: '5px solid #2f54eb',
+            borderRadius: 10,
+            padding: '12px 16px',
+            marginBottom: 16,
+            fontSize: 13,
+            color: '#1d39c4'
+          }}
+        >
+          <strong>💬 Lưu ý từ hệ thống trích xuất yêu cầu:</strong>
+          <ul style={{ margin: '4px 0 0', paddingLeft: 20 }}>
+            {notes.map((note, idx) => (
+              <li key={idx}>{note}</li>
+            ))}
+          </ul>
         </div>
       )}
 
@@ -511,7 +704,7 @@ export default function Home() {
           {/* Chat Panel */}
           <div
             style={{
-              display: activeTab === 'chat' || typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'block' : 'none'
+              display: activeTab === 'chat' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none'
             }}
           >
             <ChatPanel
@@ -528,7 +721,7 @@ export default function Home() {
           {/* Structured Preferences Panel */}
           <div
             style={{
-              display: activeTab === 'preferences' || typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'block' : 'none'
+              display: activeTab === 'preferences' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none'
             }}
           >
             <PreferencesPanel
@@ -544,9 +737,32 @@ export default function Home() {
           {/* Tour Status Banner & Timeline */}
           <div
             style={{
-              display: activeTab === 'timeline' || typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'block' : 'none'
+              display: activeTab === 'timeline' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none'
             }}
           >
+            {/* Pool truncated assumption indicator */}
+            {tour?.assumptions?.pool_truncated && (
+              <div
+                style={{
+                  background: '#fffbe6',
+                  border: '1px solid #ffe58f',
+                  borderRadius: 10,
+                  padding: '10px 14px',
+                  marginBottom: 14,
+                  fontSize: 13,
+                  color: '#d46b08',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8
+                }}
+              >
+                <span>⚠️</span>
+                <span>
+                  <strong>Giới hạn tập tìm kiếm:</strong> Đang xét {tour.assumptions.search_pool} quán gần nhất (trên tổng số {tour.assumptions.eligible_total} quán phù hợp) để đảm bảo thời gian phản hồi.
+                </span>
+              </div>
+            )}
+
             {tour && (
               <TourStatusBanner
                 tour={tour}
@@ -589,7 +805,7 @@ export default function Home() {
         {/* Right Column: Interactive Map & Highlights */}
         <div
           style={{
-            display: activeTab === 'map' || typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'block' : 'none',
+            display: activeTab === 'map' || (typeof window !== 'undefined' && window.innerWidth >= 1024) ? 'block' : 'none',
             position: typeof window !== 'undefined' && window.innerWidth >= 1024 ? 'sticky' : 'static',
             top: 20
           }}

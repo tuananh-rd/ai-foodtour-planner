@@ -73,6 +73,8 @@ export function HoursBadge({ hours }) {
     statusText = 'Đóng cửa vào giờ đến';
   }
 
+  const displayHours = hours.display && hours.display.trim() ? hours.display : 'Chưa rõ giờ mở cửa';
+
   return (
     <span
       style={{
@@ -85,7 +87,7 @@ export function HoursBadge({ hours }) {
       }}
       title={`Trạng thái giờ mở cửa: ${hours.status}. open_at_arrival: ${hours.open_at_arrival}`}
     >
-      🕒 Giờ: {hours.display || '07:00–22:00 (tham khảo)'} · {statusText}
+      🕒 Giờ: {displayHours} · {statusText}
     </span>
   );
 }

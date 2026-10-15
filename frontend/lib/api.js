@@ -182,9 +182,9 @@ let runtimeMockOverride = null;
 export function isMockMode() {
   if (runtimeMockOverride !== null) return runtimeMockOverride;
   const envMode = process.env.NEXT_PUBLIC_API_MODE;
-  if (envMode === 'live') return false;
-  // Default to mock if NEXT_PUBLIC_API_MODE=mock or not explicitly set to live
-  return true;
+  // Default to real mode (NEXT_PUBLIC_API_MODE unset or 'real').
+  // Mock mode is ONLY used when explicitly set to 'mock'.
+  return envMode === 'mock';
 }
 
 export function setRuntimeMockMode(enable) {
@@ -192,7 +192,7 @@ export function setRuntimeMockMode(enable) {
 }
 
 export function getApiBaseUrl() {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000';
 }
 
 // In-memory mock session store for realistic client testing
@@ -204,7 +204,7 @@ function getOrCreateMockSession(sessionId = null) {
     mockSessions.set(sid, {
       session_id: sid,
       token: `mock-token-${Math.random().toString(36).substring(2, 10)}`,
-      revision: 1,
+      revision: 0,
       preferences: {
         city: "Hà Nội",
         origin: null, // Required to plan
@@ -219,7 +219,8 @@ function getOrCreateMockSession(sessionId = null) {
         max_stops: 3,
         mode: "explore"
       },
-      tour: null
+      tour: null,
+      notes: []
     });
   }
   return mockSessions.get(sid);
@@ -249,6 +250,7 @@ function createMockTour(prefs, revision = 1, lockedIds = [], candidateStops = nu
       },
       explanation: "Chưa đủ bằng chứng để lập lịch trình đáng tin cậy. Lý do: Chưa có ma trận đường bộ và giờ mở cửa đã xác minh từng ngày.",
       locks: lockedIds,
+      assumptions: { search_pool: 8, eligible_total: 8, pool_truncated: false },
       is_mock: true
     };
   }
@@ -273,6 +275,7 @@ function createMockTour(prefs, revision = 1, lockedIds = [], candidateStops = nu
       },
       explanation: "Không tìm được lịch trình thoả các ràng buộc. Lý do: Ngân sách thấp hơn mức giá của các quán trong khu vực.",
       locks: lockedIds,
+      assumptions: { search_pool: 8, eligible_total: 8, pool_truncated: false },
       is_mock: true
     };
   }
@@ -296,6 +299,7 @@ function createMockTour(prefs, revision = 1, lockedIds = [], candidateStops = nu
       },
       explanation: "Không tìm được lịch trình thoả các ràng buộc. Lý do: Thời lượng quá ngắn.",
       locks: lockedIds,
+      assumptions: { search_pool: 8, eligible_total: 8, pool_truncated: false },
       is_mock: true
     };
   }
@@ -373,8 +377,48 @@ function createMockTour(prefs, revision = 1, lockedIds = [], candidateStops = nu
     },
     explanation: `Gợi ý có điều kiện: một số thông tin chưa được xác minh. Các điểm dừng: ${stops.map(s => s.name).join(" → ")}. Tổng đi bộ khoảng ${walkMinutes} phút (ước tính đường chim bay). Tổng khoảng giá tối đa của quán: ${upperSum.toLocaleString('vi-VN')} ₫ (không phải hoá đơn mỗi người). Chưa biết: giờ mở cửa theo ngày, tuyến đi bộ thực tế.`,
     locks: lockedIds,
+    assumptions: {
+      search_pool: venues.length,
+      eligible_total: venues.length,
+      pool_truncated: false
+    },
     is_mock: true
   };
+}
+
+/**
+ * Safe fetch helper with structured ApiError handling
+ */
+async function safeFetch(url, options = {}) {
+  let res;
+  try {
+    res = await fetch(url, options);
+  } catch (err) {
+    throw new ApiError(
+      "provider_unavailable",
+      `Không thể kết nối đến máy chủ backend (${getApiBaseUrl()}). Vui lòng kiểm tra dịch vụ.`,
+      { originalError: err.message },
+      503
+    );
+  }
+
+  if (!res.ok) {
+    let errorBody = null;
+    try {
+      errorBody = await res.json();
+    } catch (_) {}
+    const code = errorBody?.error?.code || (
+      res.status === 409 ? "revision_conflict" :
+      (res.status === 401 || res.status === 403) ? "unauthorized_session" :
+      res.status === 429 ? "rate_limited" :
+      res.status === 503 ? "provider_unavailable" :
+      res.status === 422 ? "validation_error" : "request_failed"
+    );
+    const msg = errorBody?.error?.message || `Yêu cầu thất bại (HTTP ${res.status})`;
+    const details = errorBody?.error?.details || null;
+    throw new ApiError(code, msg, details, res.status);
+  }
+  return res.json();
 }
 
 /**
@@ -387,18 +431,16 @@ export async function getHealth() {
       status: "ok",
       dataset_loaded: true,
       llm: "mock",
-      routing: "straight_line_estimator",
+      routing: "straight_line_estimate",
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
       is_mock: true
     };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/health`, {
+  return safeFetch(`${getApiBaseUrl()}/health`, {
     headers: { 'Accept': 'application/json' }
   });
-  if (!res.ok) {
-    throw new ApiError("health_check_failed", "Không thể kiểm tra sức khỏe hệ thống backend", null, res.status);
-  }
-  return res.json();
 }
 
 /**
@@ -417,6 +459,7 @@ export async function getVenues({ limit = 20, offset = 0, q = "" } = {}) {
     }
     const paginated = list.slice(offset, offset + limit);
     return {
+      items: paginated,
       venues: paginated,
       total: list.length,
       limit,
@@ -427,14 +470,18 @@ export async function getVenues({ limit = 20, offset = 0, q = "" } = {}) {
 
   const params = new URLSearchParams({ limit: String(limit), offset: String(offset) });
   if (q) params.set("q", q);
-  const res = await fetch(`${getApiBaseUrl()}/v1/venues?${params.toString()}`, {
+  const data = await safeFetch(`${getApiBaseUrl()}/v1/venues?${params.toString()}`, {
     headers: { 'Accept': 'application/json' }
   });
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "request_failed", errorBody?.error?.message || "Lỗi tải danh sách quán", errorBody?.error?.details, res.status);
-  }
-  return res.json();
+  const items = data.items || [];
+  return {
+    items,
+    venues: items,
+    total: items.length,
+    limit,
+    offset,
+    is_mock: false
+  };
 }
 
 /**
@@ -450,14 +497,9 @@ export async function getVenueById(id) {
     return { ...found, is_mock: true };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/venues/${id}`, {
+  return safeFetch(`${getApiBaseUrl()}/v1/venues/${id}`, {
     headers: { 'Accept': 'application/json' }
   });
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "request_failed", errorBody?.error?.message || "Lỗi tải thông tin quán", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
 
 /**
@@ -475,21 +517,16 @@ export async function createSession() {
     };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/sessions`, {
+  return safeFetch(`${getApiBaseUrl()}/v1/sessions`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' }
   });
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "session_creation_failed", errorBody?.error?.message || "Không thể tạo phiên làm việc", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
 
 /**
  * 5. Send chat message (Extract + Merge preferences)
  * POST /v1/sessions/{id}/messages
- * Returns { preferences, missing_slots, questions, tour|null, revision }
+ * Returns { preferences, missing_slots, questions, notes, tour|null, revision, dataset_source, dataset_version }
  */
 export async function sendMessage(sessionId, text, token = "") {
   if (isMockMode()) {
@@ -556,8 +593,11 @@ export async function sendMessage(sessionId, text, token = "") {
         preferences: session.preferences,
         missing_slots: [],
         questions: [],
+        notes: session.notes || [],
         tour: session.tour,
         revision: session.revision,
+        dataset_source: "synthetic",
+        dataset_version: "v1.0-mock",
         is_mock: true
       };
     }
@@ -570,8 +610,11 @@ export async function sendMessage(sessionId, text, token = "") {
         preferences: session.preferences,
         missing_slots: [],
         questions: [],
+        notes: session.notes || [],
         tour: session.tour,
         revision: session.revision,
+        dataset_source: "synthetic",
+        dataset_version: "v1.0-mock",
         is_mock: true
       };
     }
@@ -598,8 +641,11 @@ export async function sendMessage(sessionId, text, token = "") {
         preferences: session.preferences,
         missing_slots: missing,
         questions: questions,
+        notes: session.notes || [],
         tour: null,
         revision: session.revision,
+        dataset_source: "synthetic",
+        dataset_version: "v1.0-mock",
         is_mock: true
       };
     }
@@ -610,13 +656,16 @@ export async function sendMessage(sessionId, text, token = "") {
       preferences: session.preferences,
       missing_slots: [],
       questions: [],
+      notes: session.notes || [],
       tour: session.tour,
       revision: session.revision,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
       is_mock: true
     };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/messages`, {
+  return safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/messages`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -625,12 +674,6 @@ export async function sendMessage(sessionId, text, token = "") {
     },
     body: JSON.stringify({ text })
   });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "message_failed", errorBody?.error?.message || "Lỗi xử lý tin nhắn", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
 
 /**
@@ -651,29 +694,61 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
     }
     session.preferences = { ...session.preferences, ...preferences };
     session.revision += 1;
+
+    // Recalculate missing slots
+    const missing = [];
+    const questions = [];
+    if (session.preferences.origin === null) {
+      missing.push("origin");
+      questions.push("Bạn muốn bắt đầu xuất phát từ điểm nào quanh Phố Cổ Hà Nội (ví dụ: Hồ Gươm, Phố Cổ, Nhà Thờ Lớn)?");
+    }
+    if (session.preferences.duration_min === null) {
+      missing.push("duration_min");
+      questions.push("Bạn có khoảng bao nhiêu thời gian cho chuyến đi (ví dụ: 60 phút, 90 phút hay 180 phút)?");
+    }
+    if (session.preferences.budget_vnd !== null && session.preferences.budget_scope === null) {
+      missing.push("budget_scope");
+      questions.push("Ngân sách này là cho mỗi người hay cả nhóm?");
+    }
+
     return {
       preferences: session.preferences,
-      revision: session.revision,
+      missing_slots: missing,
+      questions: questions,
+      notes: session.notes || [],
       tour: session.tour,
+      revision: session.revision,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
       is_mock: true
     };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/preferences`, {
+  // Sanitize preferences so we never send extra fields that fail pydantic model extra=forbid
+  const sanitized = {
+    city: preferences.city || "Hà Nội",
+    origin: preferences.origin ? { lat: Number(preferences.origin.lat), lon: Number(preferences.origin.lon) } : null,
+    start_time: preferences.start_time || null,
+    weekday: preferences.weekday != null ? Number(preferences.weekday) : null,
+    duration_min: preferences.duration_min != null ? Number(preferences.duration_min) : null,
+    budget_vnd: preferences.budget_vnd != null ? Number(preferences.budget_vnd) : null,
+    budget_scope: preferences.budget_scope || null,
+    party_size: preferences.party_size != null ? Number(preferences.party_size) : null,
+    interests: Array.isArray(preferences.interests) ? preferences.interests : [],
+    exclusions: Array.isArray(preferences.exclusions) ? preferences.exclusions : [],
+    max_stops: preferences.max_stops != null ? Number(preferences.max_stops) : 3,
+    mode: preferences.mode || "explore"
+  };
+
+  return safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/preferences`, {
     method: 'PUT',
     headers: {
       'Content-Type': 'application/json',
       'Accept': 'application/json',
       'X-Session-Token': token
     },
-    body: JSON.stringify({ base_revision: baseRevision, preferences })
+    body: JSON.stringify({ base_revision: baseRevision, preferences: sanitized })
   });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "update_failed", errorBody?.error?.message || "Lỗi cập nhật tùy chọn", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
 
 /**
@@ -694,10 +769,20 @@ export async function planTour(sessionId, baseRevision, token = "") {
     }
     session.revision += 1;
     session.tour = createMockTour(session.preferences, session.revision, []);
-    return session.tour;
+    return {
+      preferences: session.preferences,
+      missing_slots: [],
+      questions: [],
+      notes: session.notes || [],
+      tour: session.tour,
+      revision: session.revision,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
+      is_mock: true
+    };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/tour`, {
+  return safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/tour`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -706,12 +791,6 @@ export async function planTour(sessionId, baseRevision, token = "") {
     },
     body: JSON.stringify({ base_revision: baseRevision })
   });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "plan_failed", errorBody?.error?.message || "Lỗi lập lịch trình", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
 
 /**
@@ -732,7 +811,7 @@ export async function replaceTourStop(sessionId, baseRevision, venueId, token = 
     }
 
     if (!session.tour || !session.tour.stops || session.tour.stops.length === 0) {
-      throw new ApiError("not_found", "Chưa có tour nào được tạo trong phiên này để thay thế.", null, 404);
+      throw new ApiError("no_candidates", "Phiên chưa có điểm dừng để thay thế.", null, 409);
     }
 
     const currentStops = session.tour.stops;
@@ -749,7 +828,7 @@ export async function replaceTourStop(sessionId, baseRevision, venueId, token = 
     const candidate = SYNTHETIC_VENUES.find(v => !existingIds.includes(v.id) && !v.online_only && v.geo_ok);
 
     if (!candidate) {
-      throw new ApiError("no_candidates", "Không còn quán thay thế phù hợp nào trong khu vực thỏa mãn các ràng buộc.", null, 400);
+      throw new ApiError("no_candidates", "Không có phương án thay thế thoả ràng buộc.", { reasons: ["Không còn quán thay thế phù hợp trong khu vực"] }, 409);
     }
 
     // Form new venues list preserving order and identity of other stops
@@ -773,10 +852,20 @@ export async function replaceTourStop(sessionId, baseRevision, venueId, token = 
 
     session.revision += 1;
     session.tour = createMockTour(session.preferences, session.revision, lockedIds, newVenues);
-    return session.tour;
+    return {
+      preferences: session.preferences,
+      missing_slots: [],
+      questions: [],
+      notes: session.notes || [],
+      tour: session.tour,
+      revision: session.revision,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
+      is_mock: true
+    };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/tour/replace`, {
+  return safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/tour/replace`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -785,12 +874,6 @@ export async function replaceTourStop(sessionId, baseRevision, venueId, token = 
     },
     body: JSON.stringify({ base_revision: baseRevision, venue_id: venueId })
   });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "replace_failed", errorBody?.error?.message || "Lỗi thay đổi điểm dừng", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
 
 /**
@@ -837,15 +920,10 @@ export async function planTourLegacy(payload) {
     };
   }
 
-  const res = await fetch(`${getApiBaseUrl()}/v1/plans`, {
+  return safeFetch(`${getApiBaseUrl()}/v1/plans`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
     body: JSON.stringify(payload)
   });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    throw new ApiError(errorBody?.error?.code || "legacy_failed", errorBody?.error?.message || "Lỗi lập kế hoạch theo API cũ", errorBody?.error?.details, res.status);
-  }
-  return res.json();
 }
+

@@ -119,11 +119,11 @@ export default function ReplaceDiffModal({
               Quán đề xuất mới
             </span>
             <h4 style={{ fontSize: 14, fontWeight: 700, marginTop: 4, color: '#389e0d' }}>
-              {candidate?.name || 'Quán đề xuất tối ưu'}
+              {candidate?.name || 'Điểm dừng thay thế tối ưu (Server)'}
             </h4>
             <p style={{ fontSize: 11, color: '#237804', marginTop: 2 }}>{candidate?.address || 'Hoàn Kiếm, Hà Nội'}</p>
             <div style={{ marginTop: 8, fontSize: 12, color: '#595959' }}>
-              Khoảng giá: {candidate?.price_min_vnd?.toLocaleString('vi-VN')}–{candidate?.price_max_vnd?.toLocaleString('vi-VN')} ₫
+              Khoảng giá: {candidate?.price_min_vnd != null ? `${candidate.price_min_vnd.toLocaleString('vi-VN')}–${candidate.price_max_vnd.toLocaleString('vi-VN')} ₫` : 'Tối ưu theo ngân sách'}
             </div>
           </div>
         </div>
@@ -132,8 +132,8 @@ export default function ReplaceDiffModal({
         <div style={{ background: '#fafafa', borderRadius: 10, padding: '10px 14px', fontSize: 13, marginBottom: 18 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 4 }}>
             <span>Chênh lệch trần giá quán:</span>
-            <strong style={{ color: priceDiff > 0 ? '#d4380d' : '#389e0d' }}>
-              {priceDiff > 0 ? `+${priceDiff.toLocaleString('vi-VN')} ₫` : `${priceDiff.toLocaleString('vi-VN')} ₫`}
+            <strong style={{ color: candidate ? (priceDiff > 0 ? '#d4380d' : '#389e0d') : '#595959' }}>
+              {candidate ? (priceDiff > 0 ? `+${priceDiff.toLocaleString('vi-VN')} ₫` : `${priceDiff.toLocaleString('vi-VN')} ₫`) : 'Tối ưu tự động'}
             </strong>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
