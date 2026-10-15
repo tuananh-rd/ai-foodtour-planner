@@ -241,11 +241,34 @@ def validate_tour(tour: Tour, venues: list, prefs: Preferences,
         return out + [f"unknown venue ids: {missing}"]
     seq = [by_id[i] for i in ids]
     for v in seq:
-        if v.online_only or not v.geo_ok:
-            out.append(f"{v.id} is not a physical venue with valid geo")
+        if not eligible(v, prefs):
+            out.append(f"{v.id} is not eligible for these preferences")
+    if len(seq) > 1 and out:
+        return out
     t, why = _evaluate(seq, prefs, routes)
     if t is None:
-        out.append(why)
-    elif tour.status == "verified_feasible" and t.status != "verified_feasible":
-        out.append("claims verified_feasible without verified evidence")
+        return out + [why]
+    # Compare every returned claim with an independent recomputation (no trust in the payload).
+    if tour.status != t.status:
+        out.append(f"status {tour.status} != recomputed {t.status}")
+    if prefs.mode == "strict" and t.status != "verified_feasible":
+        out.append("strict mode requires verified_feasible")
+    if tour.venue_range_upper_sum_vnd != t.venue_range_upper_sum_vnd:
+        out.append("venue_range_upper_sum_vnd mismatch")
+    if tour.walk_minutes != t.walk_minutes:
+        out.append("walk_minutes mismatch")
+    if tour.leg_source != t.leg_source:
+        out.append("leg_source mismatch")
+    if set(tour.unknowns) != set(t.unknowns):
+        out.append("unknowns mismatch")
+    for got, want in zip(tour.stops, t.stops):
+        if (got.venue_id, got.order) != (want.venue_id, want.order):
+            out.append(f"stop order mismatch at {want.order}")
+        if got.leg_from_previous != want.leg_from_previous:
+            out.append(f"leg mismatch at {want.venue_id}")
+        if (got.arrive_min, got.depart_min) != (want.arrive_min, want.depart_min):
+            out.append(f"timeline mismatch at {want.venue_id}")
+        if (got.hours_evidence, got.open_at_arrival, got.price_evidence) != (
+                want.hours_evidence, want.open_at_arrival, want.price_evidence):
+            out.append(f"evidence mismatch at {want.venue_id}")
     return out

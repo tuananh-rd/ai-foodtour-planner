@@ -161,5 +161,33 @@ class PlannerCore(unittest.TestCase):
         self.assertEqual(tuple(s.venue_id for s in got.stops), best[3])
 
 
+class ValidateRecompute(unittest.TestCase):
+    def setUp(self):
+        self.venues = load_fixture()
+        self.p = prefs()
+        self.t = plan_tour(self.venues, self.p)
+
+    def test_ineligible_venue_fails(self):
+        vs = [replace(v, online_only=True) if v.id == self.t.stops[0].venue_id else v for v in self.venues]
+        self.assertTrue(validate_tour(self.t, vs, self.p))
+
+    def test_tampered_leg_totals_and_timeline_fail(self):
+        s0 = self.t.stops[0]
+        bad_leg = replace(self.t, stops=(replace(s0, leg_from_previous=Leg(1, 0.0, "provider_route")),) + self.t.stops[1:])
+        self.assertTrue(validate_tour(bad_leg, self.venues, self.p))
+        self.assertTrue(validate_tour(replace(self.t, walk_minutes=1), self.venues, self.p))
+        self.assertTrue(validate_tour(replace(self.t, venue_range_upper_sum_vnd=1), self.venues, self.p))
+        bad_tl = replace(self.t, stops=(replace(s0, arrive_min=5),) + self.t.stops[1:])
+        self.assertTrue(validate_tour(bad_tl, self.venues, self.p))
+
+    def test_order_swap_fails_and_clean_passes(self):
+        sw = replace(self.t, stops=tuple(reversed(self.t.stops)))
+        self.assertTrue(validate_tour(sw, self.venues, self.p))
+        self.assertEqual(validate_tour(self.t, self.venues, self.p), [])
+
+    def test_strict_pref_rejects_conditional_tour(self):
+        self.assertTrue(validate_tour(self.t, self.venues, replace(self.p, mode="strict")))
+
+
 if __name__ == "__main__":
     unittest.main()

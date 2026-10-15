@@ -48,6 +48,18 @@ class UnavailableExtractor:
         return ExtractionResult("unavailable", "none", p, notes=("Chưa cấu hình nhà cung cấp LLM.",))
 
 
+# Instruction-like text is data about the user's request, never a source of slots.
+INJECTION = re.compile(
+    r"bỏ qua|bo qua|ignore|disregard|system\s*:|assistant\s*:|developer\s*:|prompt|reveal|api[ _-]?key|"
+    r"\bmode\s*=|verified_feasible|jailbreak|quy tắc|instructions?", re.I)
+
+
+def _clean(text: str) -> tuple:
+    parts = re.split(r"(?<=[.!?;])\s+|\n+", text)
+    kept = [x for x in parts if not INJECTION.search(x)]
+    return " ".join(kept), len(kept) != len(parts)
+
+
 def _money(t: str) -> Optional[int]:
     m = re.search(r"(\d+(?:[.,]\d+)?)\s*(triệu|tr\b|nghìn|ngàn|k\b)", t)
     if m:
@@ -62,8 +74,11 @@ def _money(t: str) -> Optional[int]:
 class MockExtractor:
     def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
         p = prior or Preferences()
-        t = " ".join(text[:MAX_TEXT].casefold().split())
+        cleaned, dropped = _clean(text[:MAX_TEXT])
+        t = " ".join(cleaned.casefold().split())
         upd, notes = {}, []
+        if dropped:
+            notes.append("Đã bỏ qua phần văn bản giống chỉ thị; chỉ trích xuất sở thích hợp lệ.")
 
         budget = _money(t)
         if budget and 0 < budget <= 100_000_000:
