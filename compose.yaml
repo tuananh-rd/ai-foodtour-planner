@@ -1,0 +1,13 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5
+    environment:
+      POSTGRES_DB: foodtour
+      POSTGRES_USER: foodtour
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    ports: ["127.0.0.1:5432:5432"]
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./db:/docker-entrypoint-initdb.d:ro
+volumes:
+  dbdata:

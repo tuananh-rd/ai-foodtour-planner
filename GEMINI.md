@@ -1,0 +1,1 @@
+Read AGENTS.md, docs/PROJECT_RULES.md and docs/AGENT_TASKS.md before work. Antigravity owns frontend and independent integration QA. Preserve your configured default model (user says 3.8 Flash high), use only Orca for coordination, and do not modify backend/planner production code to fix test failures without a task reassignment.

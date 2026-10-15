@@ -1,0 +1,12 @@
+__pycache__/
+.venv/
+node_modules/
+.next/
+.env
+data/raw/
+data/venues.json
+*.log
+
+docs/sample-response.json
+.env.*
+!.env.example
