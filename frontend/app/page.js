@@ -13,6 +13,7 @@ import {
   isMockMode,
   setRuntimeMockMode,
   getHealth,
+  getClientConfig,
   createSession,
   sendMessage,
   updatePreferences,
@@ -24,6 +25,8 @@ import {
 const DEFAULT_PREFERENCES = {
   city: 'Hà Nội',
   origin: { lat: 21.033, lon: 105.850 },
+  origin_label: 'Hồ Hoàn Kiếm / Phố Cổ',
+  origin_source: 'landmark',
   start_time: '08:30',
   weekday: 0,
   duration_min: 120,
@@ -46,6 +49,9 @@ export default function Home() {
   const [revision, setRevision] = useState(0);
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   
+  // Client config from GET /v1/client-config (Google Maps key, map_id, privacy info)
+  const [clientConfig, setClientConfig] = useState(null);
+
   // Data provenance & server notes
   const [datasetSource, setDatasetSource] = useState('synthetic');
   const [datasetVersion, setDatasetVersion] = useState('');
@@ -227,6 +233,12 @@ export default function Home() {
         setHealth(health);
         if (health.dataset_source) setDatasetSource(health.dataset_source);
         if (health.dataset_version) setDatasetVersion(health.dataset_version);
+      } catch (_) {}
+
+      try {
+        const config = await getClientConfig();
+        if (token !== requestTokenRef.current) return;
+        setClientConfig(config);
       } catch (_) {}
 
       if (token !== requestTokenRef.current) return;
@@ -853,6 +865,7 @@ export default function Home() {
               onPlanTour={handlePlanTour}
               busy={busy}
               isMock={isMock}
+              clientConfig={clientConfig}
             />
           </div>
 
@@ -956,11 +969,14 @@ export default function Home() {
         >
           <MapView
             origin={preferences.origin}
+            originLabel={preferences.origin_label}
             stops={stops}
             highlightedStopId={highlightedStopId}
             onSelectStop={(id) => setHighlightedStopId(id)}
             legSource={tour?.totals?.leg_source || 'straight_line_estimate'}
-            routingProvider={health?.routing_provider || 'estimate'}
+            routingProvider={tour?.totals?.route_provider || health?.routing_provider || 'estimate'}
+            routeWarnings={tour?.route_warnings || []}
+            clientConfig={clientConfig}
           />
 
           {/* Quick highlight venue preview card */}

@@ -208,6 +208,8 @@ function getOrCreateMockSession(sessionId = null) {
       preferences: {
         city: "Hà Nội",
         origin: null, // Required to plan
+        origin_label: null,
+        origin_source: null,
         start_time: "08:30",
         weekday: 0,
         duration_min: null, // Required to plan
@@ -373,8 +375,10 @@ function createMockTour(prefs, revision = 1, lockedIds = [], candidateStops = nu
     totals: {
       venue_range_upper_sum_vnd: upperSum,
       walk_minutes: walkMinutes,
-      leg_source: "straight_line_estimate"
+      leg_source: "straight_line_estimate",
+      route_provider: null
     },
+    route_warnings: [],
     explanation: `Gợi ý có điều kiện: một số thông tin chưa được xác minh. Các điểm dừng: ${stops.map(s => s.name).join(" → ")}. Tổng đi bộ khoảng ${walkMinutes} phút (ước tính đường chim bay). Tổng khoảng giá tối đa của quán: ${upperSum.toLocaleString('vi-VN')} ₫ (không phải hoá đơn mỗi người). Chưa biết: giờ mở cửa theo ngày, tuyến đi bộ thực tế.`,
     locks: lockedIds,
     assumptions: {
@@ -743,6 +747,8 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
   const sanitized = {
     city: preferences.city || "Hà Nội",
     origin: preferences.origin ? { lat: Number(preferences.origin.lat), lon: Number(preferences.origin.lon) } : null,
+    origin_label: preferences.origin_label != null ? String(preferences.origin_label).slice(0, 120) : null,
+    origin_source: preferences.origin_source || null,
     start_time: preferences.start_time || null,
     weekday: preferences.weekday != null ? Number(preferences.weekday) : null,
     duration_min: preferences.duration_min != null ? Number(preferences.duration_min) : null,
@@ -755,16 +761,35 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
     mode: preferences.mode || "explore"
   };
 
-  return safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/preferences`, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'Accept': 'application/json',
-      'X-Session-Token': token
-    },
-    body: JSON.stringify({ base_revision: baseRevision, preferences: sanitized }),
-    signal: options?.signal
-  });
+  try {
+    return await safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/preferences`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+        'X-Session-Token': token
+      },
+      body: JSON.stringify({ base_revision: baseRevision, preferences: sanitized }),
+      signal: options?.signal
+    });
+  } catch (err) {
+    if (err.status === 422 && (sanitized.origin_label !== undefined || sanitized.origin_source !== undefined)) {
+      const fallback = { ...sanitized };
+      delete fallback.origin_label;
+      delete fallback.origin_source;
+      return safeFetch(`${getApiBaseUrl()}/v1/sessions/${sessionId}/preferences`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'X-Session-Token': token
+        },
+        body: JSON.stringify({ base_revision: baseRevision, preferences: fallback }),
+        signal: options?.signal
+      });
+    }
+    throw err;
+  }
 }
 
 /**
@@ -944,4 +969,234 @@ export async function planTourLegacy(payload) {
     body: JSON.stringify(payload)
   });
 }
+
+/**
+ * 10. Client config for Google Maps & providers (contract v1.5)
+ * GET /v1/client-config
+ */
+export async function getClientConfig(options = {}) {
+  if (isMockMode()) {
+    return {
+      maps: {
+        provider: "google",
+        status: "unavailable",
+        reason: "not_configured",
+        js_api_key: null,
+        map_id: null,
+        language: "vi",
+        region: "VN",
+        default_center: { lat: 21.0285, lon: 105.8522 },
+        default_zoom: 15
+      },
+      geocoding: { status: "unavailable" },
+      routing: { provider: "estimate", status: "unavailable" },
+      privacy: {
+        sent_to_google: ["map_tiles", "autocomplete_text", "route_coordinates"],
+        doc: "docs/PHASE4.md"
+      },
+      is_mock: true
+    };
+  }
+
+  try {
+    return await safeFetch(`${getApiBaseUrl()}/v1/client-config`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      signal: options?.signal
+    });
+  } catch (err) {
+    // Graceful fallback when backend endpoint is not configured / not yet deployed
+    return {
+      maps: {
+        provider: "google",
+        status: "unavailable",
+        reason: "not_configured",
+        js_api_key: null,
+        map_id: null,
+        language: "vi",
+        region: "VN",
+        default_center: { lat: 21.0285, lon: 105.8522 },
+        default_zoom: 15
+      },
+      geocoding: { status: "unavailable" },
+      routing: { provider: "estimate", status: "unavailable" },
+      privacy: {
+        sent_to_google: ["map_tiles", "autocomplete_text", "route_coordinates"],
+        doc: "docs/PHASE4.md"
+      }
+    };
+  }
+}
+
+/**
+ * 11. Restaurant venues for map viewport (contract v1.5)
+ * GET /v1/venues/map?min_lat&min_lon&max_lat&max_lon&limit<=500
+ */
+export async function getVenuesMap(params = {}, options = {}) {
+  const { min_lat, min_lon, max_lat, max_lon, limit = 500 } = params;
+
+  if (isMockMode()) {
+    let items = SYNTHETIC_VENUES.filter((v) => !v.online_only && v.geo_ok);
+    if (min_lat != null && max_lat != null && min_lon != null && max_lon != null) {
+      items = items.filter((v) => v.lat >= min_lat && v.lat <= max_lat && v.lon >= min_lon && v.lon <= max_lon);
+    }
+    const truncated = items.length > limit;
+    const sliced = items.slice(0, Math.min(limit, 500)).map((v) => ({
+      id: v.id,
+      name: v.name,
+      lat: v.lat,
+      lon: v.lon,
+      district: v.district,
+      dish_tags: v.dish_tags || [],
+      price_max_vnd: v.price_max_vnd,
+      synthetic: true
+    }));
+
+    return {
+      items: sliced,
+      total_in_view: items.length,
+      truncated,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-mock",
+      is_mock: true
+    };
+  }
+
+  const query = new URLSearchParams();
+  if (min_lat != null) query.set('min_lat', String(min_lat));
+  if (min_lon != null) query.set('min_lon', String(min_lon));
+  if (max_lat != null) query.set('max_lat', String(max_lat));
+  if (max_lon != null) query.set('max_lon', String(max_lon));
+  query.set('limit', String(Math.min(limit, 500)));
+
+  try {
+    return await safeFetch(`${getApiBaseUrl()}/v1/venues/map?${query.toString()}`, {
+      method: 'GET',
+      headers: { 'Accept': 'application/json' },
+      signal: options?.signal
+    });
+  } catch (err) {
+    // Graceful fallback during Phase 4 transition if backend endpoint is not yet mounted
+    try {
+      const fallbackVenues = await safeFetch(`${getApiBaseUrl()}/v1/venues?limit=50`, {
+        method: 'GET',
+        headers: { 'Accept': 'application/json' },
+        signal: options?.signal
+      });
+      if (fallbackVenues && Array.isArray(fallbackVenues.items)) {
+        return {
+          items: fallbackVenues.items.filter((v) => v.geo_status === 'ok').map((v) => ({
+            id: v.id,
+            name: v.name,
+            lat: v.lat,
+            lon: v.lon,
+            district: v.district,
+            dish_tags: v.dish_tags || [],
+            price_max_vnd: v.price?.max_vnd,
+            synthetic: Boolean(v.synthetic)
+          })),
+          total_in_view: fallbackVenues.items.length,
+          truncated: false,
+          dataset_source: fallbackVenues.dataset_source,
+          dataset_version: fallbackVenues.dataset_version
+        };
+      }
+    } catch (_) {}
+
+    return {
+      items: SYNTHETIC_VENUES.filter((v) => !v.online_only && v.geo_ok).map((v) => ({
+        id: v.id,
+        name: v.name,
+        lat: v.lat,
+        lon: v.lon,
+        district: v.district,
+        dish_tags: v.dish_tags || [],
+        price_max_vnd: v.price_max_vnd,
+        synthetic: true
+      })),
+      total_in_view: 5,
+      truncated: false,
+      dataset_source: "synthetic",
+      dataset_version: "v1.0-fallback"
+    };
+  }
+}
+
+/**
+ * 12. Manual address geocoding fallback (server Google Geocoding, contract v1.5)
+ * POST /v1/geocode { query }
+ */
+export async function geocodeAddress(queryText, options = {}) {
+  const trimmed = (queryText || '').trim();
+  if (!trimmed) {
+    throw new ApiError("validation_error", "Vui lòng nhập địa chỉ cần tìm.", null, 422);
+  }
+
+  if (isMockMode()) {
+    const q = trimmed.toLowerCase();
+    const match = SYNTHETIC_VENUES.find((v) =>
+      v.name.toLowerCase().includes(q) ||
+      v.address.toLowerCase().includes(q) ||
+      (v.district && v.district.toLowerCase().includes(q))
+    );
+
+    if (match) {
+      return {
+        status: "ok",
+        provider: "google_geocoding",
+        results: [
+          {
+            label: `${match.name}, ${match.address}`,
+            lat: match.lat,
+            lon: match.lon,
+            place_id: `synthetic-${match.id}`
+          }
+        ],
+        is_mock: true
+      };
+    }
+
+    if (q.includes("hồ gươm") || q.includes("hoàn kiếm")) {
+      return {
+        status: "ok",
+        provider: "google_geocoding",
+        results: [
+          { label: "Hồ Hoàn Kiếm, Hàng Trống, Hoàn Kiếm, Hà Nội", lat: 21.0285, lon: 105.8522, place_id: "synthetic-hk" }
+        ],
+        is_mock: true
+      };
+    }
+
+    if (q.includes("nhà thờ")) {
+      return {
+        status: "ok",
+        provider: "google_geocoding",
+        results: [
+          { label: "Nhà Thờ Lớn Hà Nội, 40 Nhà Chung, Hoàn Kiếm, Hà Nội", lat: 21.0287, lon: 105.8490, place_id: "synthetic-nt" }
+        ],
+        is_mock: true
+      };
+    }
+
+    return {
+      status: "ok",
+      provider: "google_geocoding",
+      results: [
+        { label: `${trimmed}, Hoàn Kiếm, Hà Nội`, lat: 21.033, lon: 105.850, place_id: "synthetic-custom" }
+      ],
+      is_mock: true
+    };
+  }
+
+  return safeFetch(`${getApiBaseUrl()}/v1/geocode`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify({ query: trimmed.slice(0, 200) }),
+    signal: options?.signal
+  });
+}
+
 
