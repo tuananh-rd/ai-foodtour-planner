@@ -199,5 +199,16 @@ class Midnight(unittest.TestCase):
             self.assertLessEqual(s.depart_min, 1440)
 
 
+class PoolTruncation(unittest.TestCase):
+    def test_truncation_is_disclosed(self):
+        vs = load_fixture()
+        t = plan_tour(vs, prefs(budget_vnd=1000), pool_cap=3)
+        self.assertEqual(t.status, "no_solution")
+        self.assertTrue(t.assumptions["pool_truncated"])
+        self.assertTrue(any("gần nhất" in r for r in t.reasons))
+        ok = plan_tour(vs, prefs(), pool_cap=5)
+        self.assertTrue(ok.assumptions["pool_truncated"])
+
+
 if __name__ == "__main__":
     unittest.main()

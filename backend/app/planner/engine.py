@@ -148,8 +148,10 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
     if missing:
         return Tour("insufficient_evidence", reasons=(f"Thiếu thông tin bắt buộc: {', '.join(missing)}",),
                     proposed_changes=("Bổ sung thông tin còn thiếu.",), unknowns=tuple(missing))
-    pool = sorted((v for v in venues if eligible(v, prefs)),
-                  key=lambda v: (routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))[:pool_cap]
+    ranked = sorted((v for v in venues if eligible(v, prefs)),
+                    key=lambda v: (routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))
+    pool = ranked[:pool_cap]
+    truncated = len(ranked) > len(pool)
     best = {"key": None, "tour": None}
     limit = max(1, min(prefs.max_stops, 5))
 
@@ -186,7 +188,15 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
             reasons = ("Chế độ nghiêm ngặt cần giờ mở cửa, giá theo người và tuyến đường đã xác minh; "
                        "chưa có đủ bằng chứng.",) + reasons
             changes = ("Dùng chế độ khám phá để xem gợi ý có điều kiện.",) + changes
-        return Tour(status, reasons=reasons, proposed_changes=changes)
+        if truncated:
+            reasons = reasons + (f"Chỉ tìm trong {len(pool)} quán gần nhất trong {len(ranked)} quán phù hợp; "
+                                 "có thể còn lựa chọn xa hơn chưa được xét.",)
+        return Tour(status, reasons=reasons, proposed_changes=changes,
+                    assumptions={"search_pool": len(pool), "eligible_total": len(ranked), "pool_truncated": truncated})
+    if truncated:
+        t = Tour(t.status, t.stops, t.reasons, t.proposed_changes, t.unknowns, t.venue_range_upper_sum_vnd,
+                 t.walk_minutes, t.leg_source, t.locks,
+                 {**t.assumptions, "search_pool": len(pool), "eligible_total": len(ranked), "pool_truncated": True})
     if len(t.stops) < MIN_PREFERRED_STOPS and limit >= MIN_PREFERRED_STOPS:
         t = Tour(t.status, t.stops, t.reasons + (f"Chỉ tìm được {len(t.stops)} điểm dừng thoả ràng buộc.",),
                  ("Tăng thời lượng hoặc ngân sách để có thêm điểm dừng.",), t.unknowns,
