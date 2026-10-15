@@ -41,8 +41,8 @@ def check_extraction(res, sc) -> list:
                 out.append(f"exclusions missing {sorted(set(want) - set(p.exclusions))}")
         elif getattr(p, k) != want:
             out.append(f"{k}={getattr(p, k)!r} != {want!r}")
-    if "expect_missing" in sc and set(sc["expect_missing"]) - set(res.missing_slots):
-        out.append(f"missing_slots {res.missing_slots} lacks {sc['expect_missing']}")
+    if "expect_missing" in sc and sorted(sc["expect_missing"]) != sorted(res.missing_slots):
+        out.append(f"missing_slots {sorted(res.missing_slots)} != {sorted(sc['expect_missing'])}")
     if "expect_mode" in sc and p.mode != sc["expect_mode"]:
         out.append(f"mode {p.mode}")
     if "expect_budget" in sc and p.budget_vnd != sc["expect_budget"]:
@@ -79,7 +79,7 @@ def main() -> int:
                 t0 = time.perf_counter()
                 t = plan_tour(venues, p)
                 lat.append((time.perf_counter() - t0) * 1000)
-            viol = validate_tour(t, venues, p) if t.stops else []
+            viol = validate_tour(t, venues, p)  # every Tour object, including empty failure tours
             tours_total += bool(t.stops)
             invalid_total += bool(viol)
             rel = [interest_score(next(v for v in venues if v.id == s.venue_id), p.interests) for s in t.stops]

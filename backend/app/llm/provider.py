@@ -108,7 +108,7 @@ def parse_and_validate(raw: str) -> tuple:
     updates, rejected = {}, []
     for key, value in data.items():
         if key not in SCHEMA:
-            rejected.append(str(key)[:40])  # unknown keys are dropped and reported
+            rejected.append("unknown_field")  # model-controlled names are never reflected
             continue
         if value is None:
             continue  # explicit null = not specified
@@ -126,6 +126,9 @@ def _prior_json(p: Preferences) -> dict:
         "duration_min": p.duration_min, "budget_vnd": p.budget_vnd, "budget_scope": p.budget_scope,
         "party_size": p.party_size, "interests": list(p.interests), "exclusions": list(p.exclusions),
         "max_stops": p.max_stops, "mode": p.mode,
+        "start_time": (f"{p.start_time_min // 60:02d}:{p.start_time_min % 60:02d}"
+                       if p.start_time_min is not None else None),
+        "weekday": p.weekday,
     }
 
 

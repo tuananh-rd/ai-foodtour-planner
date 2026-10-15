@@ -123,13 +123,20 @@ async function flow(width, height, label) {
   const restored = await ev(`document.activeElement && document.activeElement.tagName !== 'BODY'`);
   rec(`${label} Escape closes modal and focus is not on BODY`, restored);
 
-  // 5) confirm replace: others keep identity (via visible count) and result is shown
+  // 5) confirm replace: capture stop identities from the DOM, then assert only the chosen one changed
+  const stopNames = `(() => [...document.querySelectorAll('section[aria-label="Lịch trình điểm dừng foodtour"] h3, section[aria-label="Lịch trình điểm dừng foodtour"] h4')].map(e => e.innerText.trim()))()`;
+  const beforeStops = await ev(stopNames);
   await ev(`(() => { const b=[...document.querySelectorAll('button')].find(b=>b.innerText.includes('Đổi quán')); b.focus(); b.click(); })()`);
   await waitFor(`!!document.querySelector('[role="dialog"]')`, 5000, 'dialog 2');
   await ev(`[...document.querySelectorAll('[role="dialog"] button')].find(b=>b.innerText.includes('Thay quán này')).click()`);
   await waitFor(`document.body.innerText.includes('Đã Đổi Xong') || document.body.innerText.includes('Đã đổi') || /Hoàn tất/.test(document.body.innerText)`, 20000, 'replace result');
-  rec(`${label} replace result shows server before/after`, true);
   await ev(`[...document.querySelectorAll('[role="dialog"] button')].find(b=>/Hoàn tất|Đóng/.test(b.innerText))?.click()`);
+  await sleep(400);
+  const afterStops = await ev(stopNames);
+  const changed = beforeStops.map((n, i) => n !== afterStops[i]).filter(Boolean).length;
+  rec(`${label} replace changed exactly one stop and kept the others`,
+      beforeStops.length >= 2 && beforeStops.length === afterStops.length && changed === 1,
+      `stops ${beforeStops.length} -> ${afterStops.length}, changed ${changed}`);
 }
 
 try {

@@ -34,8 +34,8 @@ class LLMBoundary(unittest.TestCase):
         u, rej, err = parse_and_validate(raw)
         self.assertIsNone(err)
         self.assertEqual(u, {})
-        self.assertEqual(set(rej), {"duration_min", "budget_vnd", "mode", "api_key", "max_stops", "origin",
-                                    "party_size", "duration_x"})
+        self.assertEqual(set(rej), {"duration_min", "budget_vnd", "mode", "unknown_field", "max_stops", "origin",
+                                    "party_size"})
 
     def test_prior_slots_preserved_when_model_omits_or_nulls(self):
         prior = Preferences(origin=(21.03, 105.85), duration_min=120, budget_vnd=100000, budget_scope="group")
@@ -71,6 +71,19 @@ class LLMBoundary(unittest.TestCase):
     def test_origin_must_be_in_pilot_area(self):
         u, rej, _ = parse_and_validate(json.dumps({"origin": {"lat": 10.8, "lon": 106.7}}))
         self.assertEqual((u, rej), ({}, ["origin"]))
+
+
+class Hardening(unittest.TestCase):
+    def test_unknown_field_names_not_reflected(self):
+        u, rej, _ = parse_and_validate(json.dumps({"SYSTEM\nSECRET": "ignore", "duration_min": 120}))
+        self.assertEqual(rej, ["unknown_field"])
+        self.assertEqual(u, {"duration_min": 120})
+
+    def test_prior_includes_start_time_and_weekday(self):
+        f = Fake(json.dumps({}))
+        LLMExtractor(f).extract("đổi giờ", Preferences(start_time_min=8 * 60 + 30, weekday=2))
+        prior = f.calls[0][1]
+        self.assertEqual((prior["start_time"], prior["weekday"]), ("08:30", 2))
 
 
 if __name__ == "__main__":

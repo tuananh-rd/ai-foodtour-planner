@@ -47,8 +47,15 @@ class CheckedRouteProvider:
         self.inner = inner
 
     def leg(self, a: tuple, b: tuple) -> Leg:
-        km = round(haversine_km(a, b), 3)
+        km = 0.0
         try:
+            for lat, lon in (a, b):
+                if (isinstance(lat, bool) or isinstance(lon, bool)
+                        or not isinstance(lat, (int, float)) or not isinstance(lon, (int, float))
+                        or not (math.isfinite(lat) and math.isfinite(lon))
+                        or not (-90 <= lat <= 90 and -180 <= lon <= 180)):
+                    raise ValueError
+            km = round(haversine_km(a, b), 3)
             out = self.inner.leg(a, b)
             minutes, src = out.minutes, out.source
             if src not in ("provider_route", "straight_line_estimate", "unknown"):

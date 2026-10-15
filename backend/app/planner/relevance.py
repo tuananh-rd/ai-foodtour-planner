@@ -1,7 +1,7 @@
 """Interest relevance. Pure, stdlib only.
 
 Matching is whole-word and diacritic-insensitive ("bun" ~ "bún"), so "oc" does not hit
-"học" and "che" does not hit "chè sầu"-style substrings by accident. Scores:
+"học". Note whole-token "che" does match a longer tag such as "che sau"; that is intended. Scores:
   3 = interest is a whole word/phrase inside a dish tag
   2 = interest is a whole word/phrase inside the venue name
   0 = no match

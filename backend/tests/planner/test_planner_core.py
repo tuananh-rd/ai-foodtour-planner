@@ -275,5 +275,15 @@ class BuildTourMaxStops(unittest.TestCase):
         self.assertIsNone(build_tour(vs, replace(p, max_stops=1), ids)[0])
 
 
+class CheckedProviderMalformedInput(unittest.TestCase):
+    def test_malformed_coordinates_do_not_raise(self):
+        from app.planner.interfaces import CheckedRouteProvider
+        out = CheckedRouteProvider(FixedProvider()).leg(("bad", 0), (0, 0))
+        self.assertIsNone(out.minutes)
+        self.assertEqual(out.source, "unknown")
+        out2 = CheckedRouteProvider(FixedProvider()).leg((float("nan"), 0.0), (0.0, 0.0))
+        self.assertIsNone(out2.minutes)
+
+
 if __name__ == "__main__":
     unittest.main()

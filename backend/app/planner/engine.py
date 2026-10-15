@@ -325,4 +325,7 @@ def build_tour(venues: list, prefs: Preferences, venue_ids: list,
         return None, why
     if prefs.mode == "strict" and tour.status != "verified_feasible":
         return None, "strict mode requires verified evidence"
+    violations = validate_tour(tour, venues, prefs, routes)
+    if violations:
+        return None, "; ".join(violations[:3])
     return tour, None
