@@ -1,0 +1,49 @@
+:root {
+  --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --bg-primary: #f8f6f0;
+  --bg-card: #ffffff;
+  --bg-subtle: #efece4;
+  --text-primary: #1f3024;
+  --text-secondary: #576b5c;
+  --text-muted: #829487;
+  --accent-primary: #d9532f;
+  --accent-hover: #b84020;
+  --border-color: #dfdacf;
+  --badge-verified-bg: #e8f5e9;
+  --badge-verified-text: #2e7d32;
+  --badge-estimate-bg: #e3f2fd;
+  --badge-estimate-text: #1565c0;
+  --badge-unknown-bg: #fff3e0;
+  --badge-unknown-text: #e65100;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  font-size: 14px;
+}
+
+/* Touch-friendly target minimum */
+button, input, select, a {
+  touch-action: manipulation;
+}
