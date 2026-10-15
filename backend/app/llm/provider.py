@@ -170,7 +170,10 @@ def parse_and_validate(raw: str, user_text: str | None = None, allow_raw_origin:
 
 def _prior_json(p: Preferences) -> dict:
     return {
-        "origin": {"lat": p.origin[0], "lon": p.origin[1]} if p.origin else None,
+        # Privacy: never send precise coordinates (possibly the user's current location) to the LLM.
+        "origin_set": p.origin is not None,
+        "origin_label": (p.origin_label if p.origin and p.origin_source in ("landmark", "place", "geocoded")
+                         else None),
         "duration_min": p.duration_min, "budget_vnd": p.budget_vnd, "budget_scope": p.budget_scope,
         "party_size": p.party_size, "interests": list(p.interests), "exclusions": list(p.exclusions),
         "max_stops": p.max_stops, "mode": p.mode,

@@ -184,5 +184,22 @@ class OriginTrustBoundary(unittest.TestCase):
         self.assertIsNone(r.preferences.origin_source)
 
 
+class PriorPrivacy(unittest.TestCase):
+    def test_precise_origin_never_sent_to_the_model(self):
+        f = Fake(json.dumps({}))
+        prior = Preferences(origin=(21.028512, 105.852207), origin_label="Vị trí của tôi",
+                            origin_source="current_location", duration_min=120)
+        LLMExtractor(f).extract("đổi sang 4 quán", prior)
+        sent = json.dumps(f.calls[0][1], ensure_ascii=False)
+        self.assertNotIn("21.0285", sent)
+        self.assertNotIn("105.8522", sent)
+        self.assertNotIn("Vị trí của tôi", sent)
+        self.assertTrue(f.calls[0][1]["origin_set"])
+        landmark = Preferences(origin=(21.0285, 105.8522), origin_label="Hồ Gươm", origin_source="landmark")
+        f2 = Fake(json.dumps({}))
+        LLMExtractor(f2).extract("x", landmark)
+        self.assertEqual(f2.calls[0][1]["origin_label"], "Hồ Gươm")
+
+
 if __name__ == "__main__":
     unittest.main()
