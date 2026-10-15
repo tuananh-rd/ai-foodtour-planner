@@ -1069,57 +1069,12 @@ export async function getVenuesMap(params = {}, options = {}) {
   if (max_lon != null) query.set('max_lon', String(max_lon));
   query.set('limit', String(Math.min(limit, 500)));
 
-  try {
-    return await safeFetch(`${getApiBaseUrl()}/v1/venues/map?${query.toString()}`, {
-      method: 'GET',
-      headers: { 'Accept': 'application/json' },
-      signal: options?.signal
-    });
-  } catch (err) {
-    // Graceful fallback during Phase 4 transition if backend endpoint is not yet mounted
-    try {
-      const fallbackVenues = await safeFetch(`${getApiBaseUrl()}/v1/venues?limit=50`, {
-        method: 'GET',
-        headers: { 'Accept': 'application/json' },
-        signal: options?.signal
-      });
-      if (fallbackVenues && Array.isArray(fallbackVenues.items)) {
-        return {
-          items: fallbackVenues.items.filter((v) => v.geo_status === 'ok').map((v) => ({
-            id: v.id,
-            name: v.name,
-            lat: v.lat,
-            lon: v.lon,
-            district: v.district,
-            dish_tags: v.dish_tags || [],
-            price_max_vnd: v.price?.max_vnd,
-            synthetic: Boolean(v.synthetic)
-          })),
-          total_in_view: fallbackVenues.items.length,
-          truncated: false,
-          dataset_source: fallbackVenues.dataset_source,
-          dataset_version: fallbackVenues.dataset_version
-        };
-      }
-    } catch (_) {}
-
-    return {
-      items: SYNTHETIC_VENUES.filter((v) => !v.online_only && v.geo_ok).map((v) => ({
-        id: v.id,
-        name: v.name,
-        lat: v.lat,
-        lon: v.lon,
-        district: v.district,
-        dish_tags: v.dish_tags || [],
-        price_max_vnd: v.price_max_vnd,
-        synthetic: true
-      })),
-      total_in_view: 5,
-      truncated: false,
-      dataset_source: "synthetic",
-      dataset_version: "v1.0-fallback"
-    };
-  }
+  const signal = options?.signal || params?.signal;
+  return await safeFetch(`${getApiBaseUrl()}/v1/venues/map?${query.toString()}`, {
+    method: 'GET',
+    headers: { 'Accept': 'application/json' },
+    signal
+  });
 }
 
 /**

@@ -93,7 +93,7 @@ async function flow(width, height, label) {
 
   // 1) missing slots asked back, no tour yet
   await typeAndSend('Muốn ăn bún và chè quanh Hồ Gươm');
-  await waitFor(`/bao nhiêu giờ|Cần thêm thông tin/.test(document.body.innerText)`, 15000, 'question');
+  await waitFor(`/bao nhiêu giờ|bao nhiêu thời gian|Cần thêm thông tin/.test(document.body.innerText)`, 15000, 'question');
   rec(`${label} missing-slot question shown`, true);
 
   // 2) complete request -> tour
@@ -159,12 +159,21 @@ async function flow(width, height, label) {
         this._zoom = opts.zoom || 15;
         this.listeners = {};
       }
-      addListener(ev, cb) { this.listeners[ev] = cb; }
+      addListener(ev, cb) {
+        this.listeners[ev] = cb;
+        return { remove: () => { delete this.listeners[ev]; } };
+      }
       getZoom() { return this._zoom; }
       setZoom(z) { this._zoom = z; if (this.listeners['zoom_changed']) this.listeners['zoom_changed'](); }
       getCenter() { return { lat: 21.0285, lng: 105.8522 }; }
       setCenter() {}
       fitBounds() {}
+      getBounds() {
+        return {
+          getSouthWest: () => ({ lat: () => 21.0150, lng: () => 105.8350 }),
+          getNorthEast: () => ({ lat: () => 21.0420, lng: () => 105.8650 })
+        };
+      }
     }
     class FakeAdvancedMarkerElement {
       constructor(opts) {
@@ -193,12 +202,23 @@ async function flow(width, height, label) {
       constructor(opts) { this.opts = opts; }
       setMap(m) {}
     }
+    class FakePlaceAutocompleteElement extends HTMLElement {
+      constructor(opts = {}) {
+        super();
+        this.opts = opts;
+        this.includedRegionCodes = opts.includedRegionCodes || ['vn'];
+        this.locationBias = opts.locationBias || null;
+      }
+    }
+    if (!customElements.get('gmp-place-autocomplete')) {
+      customElements.define('gmp-place-autocomplete', FakePlaceAutocompleteElement);
+    }
     window.google = window.google || {};
     window.google.maps = {
       importLibrary: async (lib) => {
         if (lib === 'maps') return { Map: FakeMap, LatLngBounds: FakeLatLngBounds, Polyline: FakePolyline };
         if (lib === 'marker') return { AdvancedMarkerElement: FakeAdvancedMarkerElement };
-        if (lib === 'places') return {};
+        if (lib === 'places') return { PlaceAutocompleteElement: FakePlaceAutocompleteElement };
         return {};
       }
     };

@@ -31,8 +31,11 @@ export default function MapView({
   const [venues, setVenues] = useState([]);
   const [isVenuesLoading, setIsVenuesLoading] = useState(false);
   const [isVenuesTruncated, setIsVenuesTruncated] = useState(false);
+  const [venuesError, setVenuesError] = useState(null);
   const [selectedVenue, setSelectedVenue] = useState(null);
   const [currentZoom, setCurrentZoom] = useState(15);
+  const venueAbortControllerRef = useRef(null);
+  const debounceTimerRef = useRef(null);
 
   // Determine provider display name
   const providerName = routingProvider === 'google_routes' || routingProvider === 'google'
@@ -93,38 +96,11 @@ export default function MapView({
     let active = true;
 
     async function initMap() {
-      // 1. Check if fake google.maps is already injected by test harness
-      if (typeof window !== 'undefined' && window.google?.maps?.importLibrary) {
-        try {
-          const { Map } = await window.google.maps.importLibrary('maps');
-          await window.google.maps.importLibrary('marker');
-          if (!active) return;
-          if (containerRef.current && !mapInstanceRef.current) {
-            const defaultCenter = clientConfig?.maps?.default_center || { lat: 21.0285, lon: 105.8522 };
-            mapInstanceRef.current = new Map(containerRef.current, {
-              center: { lat: defaultCenter.lat, lng: defaultCenter.lon },
-              zoom: clientConfig?.maps?.default_zoom || 15,
-              mapId: clientConfig?.maps?.map_id || 'DEMO_MAP_ID'
-            });
-            if (mapInstanceRef.current.addListener) {
-              mapInstanceRef.current.addListener('zoom_changed', () => {
-                if (active && mapInstanceRef.current) {
-                  const z = typeof mapInstanceRef.current.getZoom === 'function' ? mapInstanceRef.current.getZoom() : 15;
-                  setCurrentZoom(z);
-                }
-              });
-            }
-          }
-          setMapState('ready');
-          return;
-        } catch (e) {
-          if (!active) return;
-        }
-      }
-
-      // 2. Check clientConfig
+      const isTestFake = typeof window !== 'undefined' && Boolean(window.__TEST_FAKE_GOOGLE_MAPS__);
       const mapsConfig = clientConfig?.maps;
-      if (!mapsConfig || mapsConfig.status !== 'ready' || !mapsConfig.js_api_key) {
+      const isConfigReady = mapsConfig && mapsConfig.status === 'ready' && mapsConfig.js_api_key;
+
+      if (!isConfigReady && !isTestFake) {
         if (!active) return;
         setMapState('unavailable');
         setUnavailableReason(mapsConfig?.reason || 'not_configured');
@@ -139,37 +115,44 @@ export default function MapView({
       }
 
       try {
-        const { Map } = await loadGoogleMaps({
-          apiKey: mapsConfig.js_api_key,
-          language: mapsConfig.language || 'vi',
-          region: mapsConfig.region || 'VN'
+        const { maps } = await loadGoogleMaps({
+          apiKey: mapsConfig?.js_api_key || 'TEST_KEY',
+          language: mapsConfig?.language || 'vi',
+          region: mapsConfig?.region || 'VN'
         });
+        const { Map } = maps || {};
+        if (!Map) {
+          throw new Error('Google Maps Map constructor not found in loaded maps library');
+        }
 
         if (!active) return;
 
         if (containerRef.current && !mapInstanceRef.current) {
-          const defaultCenter = mapsConfig.default_center || { lat: 21.0285, lon: 105.8522 };
+          const defaultCenter = mapsConfig?.default_center || { lat: 21.0285, lon: 105.8522 };
           const map = new Map(containerRef.current, {
             center: { lat: defaultCenter.lat, lng: defaultCenter.lon },
-            zoom: mapsConfig.default_zoom || 15,
-            mapId: mapsConfig.map_id || 'DEMO_MAP_ID',
+            zoom: mapsConfig?.default_zoom || 15,
+            mapId: mapsConfig?.map_id || 'DEMO_MAP_ID',
             mapTypeControl: false,
             streetViewControl: false,
             fullscreenControl: true
           });
           mapInstanceRef.current = map;
 
-          map.addListener('zoom_changed', () => {
-            if (active && mapInstanceRef.current) {
-              const z = typeof mapInstanceRef.current.getZoom === 'function' ? mapInstanceRef.current.getZoom() : 15;
-              setCurrentZoom(z);
-            }
-          });
+          if (map.addListener) {
+            map.addListener('zoom_changed', () => {
+              if (active && mapInstanceRef.current) {
+                const z = typeof mapInstanceRef.current.getZoom === 'function' ? mapInstanceRef.current.getZoom() : 15;
+                setCurrentZoom(z);
+              }
+            });
+          }
         }
 
         setMapState('ready');
       } catch (err) {
         if (!active) return;
+        console.warn('[MapView] initMap failed');
         if (err.code === 'KEY_REJECTED' || isAuthFailed()) {
           setMapState('key_rejected');
           setUnavailableReason('key_rejected');
@@ -317,7 +300,7 @@ export default function MapView({
           map.fitBounds(bounds, { top: 40, right: 40, bottom: 40, left: 40 });
         }
       } catch (err) {
-        console.warn('Error rendering tour objects:', err);
+        console.warn('[MapView] tour objects rendering error');
       }
     }
 
@@ -328,36 +311,128 @@ export default function MapView({
     };
   }, [mapState, origin, originLabel, stops, highlightedStopId, onSelectStop]);
 
-  // Load restaurant venues when toggle is turned ON
+  // Load restaurant venues for viewport when toggle is ON
   useEffect(() => {
-    let active = true;
+    const map = mapInstanceRef.current;
+
+    const cancelInFlight = () => {
+      if (debounceTimerRef.current) {
+        clearTimeout(debounceTimerRef.current);
+        debounceTimerRef.current = null;
+      }
+      if (venueAbortControllerRef.current) {
+        venueAbortControllerRef.current.abort();
+        venueAbortControllerRef.current = null;
+      }
+    };
 
     if (!showVenues) {
+      cancelInFlight();
       setVenues([]);
       setIsVenuesTruncated(false);
+      setVenuesError(null);
+      setIsVenuesLoading(false);
       return;
     }
 
-    async function loadVenues() {
+    if (mapState !== 'ready' || !map) {
+      return;
+    }
+
+    async function fetchVenuesForBounds() {
+      if (!map) return;
+      let min_lat, min_lon, max_lat, max_lon;
+
+      const bounds = typeof map.getBounds === 'function' ? map.getBounds() : null;
+      if (bounds && typeof bounds.getSouthWest === 'function' && typeof bounds.getNorthEast === 'function') {
+        const sw = bounds.getSouthWest();
+        const ne = bounds.getNorthEast();
+        min_lat = typeof sw.lat === 'function' ? sw.lat() : sw.lat;
+        min_lon = typeof sw.lng === 'function' ? sw.lng() : (sw.lon || sw.lng);
+        max_lat = typeof ne.lat === 'function' ? ne.lat() : ne.lat;
+        max_lon = typeof ne.lng === 'function' ? ne.lng() : (ne.lon || ne.lng);
+      } else {
+        const center = typeof map.getCenter === 'function' ? map.getCenter() : null;
+        const cLat = center ? (typeof center.lat === 'function' ? center.lat() : center.lat) : 21.0285;
+        const cLon = center ? (typeof center.lng === 'function' ? center.lng() : (center.lon || center.lng)) : 105.8522;
+        min_lat = cLat - 0.03;
+        max_lat = cLat + 0.03;
+        min_lon = cLon - 0.03;
+        max_lon = cLon + 0.03;
+      }
+
+      if (!Number.isFinite(min_lat) || !Number.isFinite(min_lon) || !Number.isFinite(max_lat) || !Number.isFinite(max_lon)) {
+        return;
+      }
+
+      // Abort previous in-flight request when viewport changes
+      if (venueAbortControllerRef.current) {
+        venueAbortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      venueAbortControllerRef.current = controller;
+
       setIsVenuesLoading(true);
+      setVenuesError(null);
+
       try {
-        const res = await getVenuesMap({ limit: 500 });
-        if (!active) return;
-        setVenues(res.items || []);
-        setIsVenuesTruncated(Boolean(res.truncated));
+        const res = await getVenuesMap({
+          min_lat: Math.round(min_lat * 1e6) / 1e6,
+          min_lon: Math.round(min_lon * 1e6) / 1e6,
+          max_lat: Math.round(max_lat * 1e6) / 1e6,
+          max_lon: Math.round(max_lon * 1e6) / 1e6,
+          limit: 500
+        }, { signal: controller.signal });
+
+        if (!controller.signal.aborted) {
+          const items = Array.isArray(res?.items) ? res.items.filter((v) => !v.online_only) : [];
+          setVenues(items);
+          setIsVenuesTruncated(Boolean(res?.truncated));
+          setVenuesError(null);
+        }
       } catch (err) {
-        console.warn('Could not fetch venues for map:', err);
+        if (err.name === 'AbortError' || controller.signal.aborted) {
+          return;
+        }
+        console.warn('[VenuesMap] fetch failed');
+        setVenues([]);
+        setIsVenuesTruncated(false);
+        setVenuesError(err.message || 'Không thể tải danh sách quán ăn trong vùng nhìn hiện tại.');
       } finally {
-        if (active) setIsVenuesLoading(false);
+        if (!controller.signal.aborted) {
+          setIsVenuesLoading(false);
+        }
       }
     }
 
-    loadVenues();
+    const scheduleFetch = () => {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = setTimeout(() => {
+        fetchVenuesForBounds();
+      }, 400);
+    };
+
+    // Initial fetch on toggle ON
+    fetchVenuesForBounds();
+
+    // Listen to map 'idle' event for viewport changes while toggle is ON
+    let idleListener = null;
+    if (typeof map.addListener === 'function') {
+      idleListener = map.addListener('idle', () => {
+        scheduleFetch();
+      });
+    }
 
     return () => {
-      active = false;
+      cancelInFlight();
+      if (idleListener) {
+        if (typeof idleListener.remove === 'function') idleListener.remove();
+        else if (typeof window !== 'undefined' && window.google?.maps?.event?.removeListener) {
+          window.google.maps.event.removeListener(idleListener);
+        }
+      }
     };
-  }, [showVenues]);
+  }, [showVenues, mapState]);
 
   // Render Clustered Restaurant Markers
   useEffect(() => {
@@ -463,7 +538,7 @@ export default function MapView({
           }
         });
       } catch (err) {
-        console.warn('Error rendering venue markers:', err);
+        console.warn('[MapView] venue markers rendering error');
       }
     }
 
@@ -535,6 +610,29 @@ export default function MapView({
           </button>
         </div>
       </div>
+
+      {/* Labelled Error Notice when map venues fetch fails */}
+      {showVenues && venuesError && (
+        <div
+          role="alert"
+          data-testid="venues-error-banner"
+          style={{
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            borderRadius: 8,
+            padding: '8px 12px',
+            fontSize: 12,
+            color: '#991b1b',
+            marginBottom: 12,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6
+          }}
+        >
+          <span>⚠️</span>
+          <span>{venuesError}</span>
+        </div>
+      )}
 
       {/* Truncated Venues Notice */}
       {showVenues && isVenuesTruncated && (

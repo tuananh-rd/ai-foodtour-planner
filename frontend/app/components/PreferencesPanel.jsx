@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { geocodeAddress } from '../../lib/api';
+import { loadGoogleMaps } from '../../lib/googleMapsLoader';
 
 const PRESET_LOCATIONS = [
   { id: 'hoankiem', name: 'Hồ Hoàn Kiếm / Phố Cổ', lat: 21.033, lon: 105.850 },
@@ -30,6 +31,10 @@ export default function PreferencesPanel({
   const [originLabel, setOriginLabel] = useState(preferences.origin_label || null);
   const [originSource, setOriginSource] = useState(preferences.origin_source || null);
 
+  // Origin selection race guard token
+  const originGenerationRef = useRef(0);
+  const geocodeAbortRef = useRef(null);
+
   // Geolocation state
   const [geoError, setGeoError] = useState(null);
   const [geoLoading, setGeoLoading] = useState(false);
@@ -54,6 +59,16 @@ export default function PreferencesPanel({
   const [exclusionsStr, setExclusionsStr] = useState((preferences.exclusions || []).join(', '));
   const [maxStops, setMaxStops] = useState(preferences.max_stops || 3);
   const [mode, setMode] = useState(preferences.mode || 'explore');
+
+  // Cancel geocode search and bump generation on unmount
+  useEffect(() => {
+    return () => {
+      originGenerationRef.current++;
+      if (geocodeAbortRef.current) {
+        geocodeAbortRef.current.abort();
+      }
+    };
+  }, []);
 
   // Sync state when preferences change from external source
   useEffect(() => {
@@ -81,50 +96,93 @@ export default function PreferencesPanel({
     if (typeof window === 'undefined') return;
 
     async function initPlacesAutocomplete() {
-      if (!window.google?.maps?.importLibrary) return;
+      const isTestFake = typeof window !== 'undefined' && Boolean(window.__TEST_FAKE_GOOGLE_MAPS__);
+      const mapsConfig = clientConfig?.maps;
+      const isConfigReady = mapsConfig && mapsConfig.status === 'ready' && mapsConfig.js_api_key;
+
+      if (!isConfigReady && !isTestFake) {
+        setPlacesAvailable(false);
+        return;
+      }
 
       try {
-        const { PlaceAutocompleteElement } = await window.google.maps.importLibrary('places');
+        const { places } = await loadGoogleMaps({
+          apiKey: mapsConfig?.js_api_key || 'TEST_KEY',
+          language: mapsConfig?.language || 'vi',
+          region: mapsConfig?.region || 'VN'
+        });
+        const { PlaceAutocompleteElement } = places || {};
         if (!active || !PlaceAutocompleteElement || !autocompleteContainerRef.current) return;
 
         autocompleteContainerRef.current.innerHTML = '';
-        const autocomplete = new PlaceAutocompleteElement();
-        autocomplete.setAttribute('aria-label', 'Tìm kiếm địa điểm với Google Maps');
+        const autocomplete = new PlaceAutocompleteElement({
+          includedRegionCodes: ['vn'],
+          locationBias: {
+            center: { lat: 21.0285, lng: 105.8522 },
+            radius: 20000
+          }
+        });
+        try {
+          if (Array.isArray(autocomplete.includedRegionCodes)) {
+            autocomplete.includedRegionCodes = ['vn'];
+          }
+          if (autocomplete.locationBias !== undefined) {
+            autocomplete.locationBias = {
+              center: { lat: 21.0285, lng: 105.8522 },
+              radius: 20000
+            };
+          }
+        } catch (_) {}
+        autocomplete.setAttribute('aria-label', 'Tìm kiếm địa điểm với Google Maps (Hà Nội)');
 
         autocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
           if (!placePrediction) return;
+          const currentGen = ++originGenerationRef.current;
           try {
-            const place = placePrediction.toPlace();
-            await place.fetchFields({
-              fields: ['displayName', 'formattedAddress', 'location']
-            });
-            const loc = place.location;
+            const place = typeof placePrediction.toPlace === 'function' ? placePrediction.toPlace() : placePrediction;
+            if (typeof place?.fetchFields === 'function') {
+              await place.fetchFields({
+                fields: ['displayName', 'formattedAddress', 'location']
+              });
+            }
+            if (!active || currentGen !== originGenerationRef.current) return;
+
+            const loc = place?.location;
             if (loc) {
               const lat = typeof loc.lat === 'function' ? loc.lat() : loc.lat;
               const lon = typeof loc.lng === 'function' ? loc.lng() : (loc.lon || loc.lng);
               const label = place.displayName || place.formattedAddress || 'Địa điểm Google Maps';
               setCustomLat(Math.round(lat * 1e6) / 1e6);
               setCustomLon(Math.round(lon * 1e6) / 1e6);
-              setOriginLabel(label.slice(0, 120));
+              setOriginLabel(typeof label === 'string' ? label.slice(0, 120) : String(label).slice(0, 120));
               setOriginSource('place');
               setOriginPreset('custom');
             }
           } catch (err) {
-            console.warn('Place fetchFields error:', err);
+            console.warn('[Places] fetchFields failed');
           }
         });
 
         autocompleteContainerRef.current.appendChild(autocomplete);
         setPlacesAvailable(true);
       } catch (_) {
-        setPlacesAvailable(false);
+        if (active) setPlacesAvailable(false);
       }
     }
 
     initPlacesAutocomplete();
 
+    const handleTestInit = () => initPlacesAutocomplete();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
+    }
+
     return () => {
       active = false;
+      originGenerationRef.current++;
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
+      }
     };
   }, [clientConfig]);
 
@@ -132,6 +190,7 @@ export default function PreferencesPanel({
   const handleGetCurrentPosition = (e) => {
     e.preventDefault();
     setGeoError(null);
+    const currentGen = ++originGenerationRef.current;
 
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setGeoError('Trình duyệt của bạn không hỗ trợ định vị (Geolocation API).');
@@ -147,6 +206,7 @@ export default function PreferencesPanel({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
+        if (currentGen !== originGenerationRef.current) return;
         setGeoLoading(false);
         const lat = Math.round(position.coords.latitude * 1e6) / 1e6;
         const lon = Math.round(position.coords.longitude * 1e6) / 1e6;
@@ -157,6 +217,7 @@ export default function PreferencesPanel({
         setOriginPreset('custom');
       },
       (error) => {
+        if (currentGen !== originGenerationRef.current) return;
         setGeoLoading(false);
         if (error.code === 1) { // PERMISSION_DENIED
           setGeoError('Bạn đã từ chối quyền truy cập vị trí. Hãy bật lại quyền trong cài đặt trình duyệt hoặc chọn địa điểm thủ công.');
@@ -179,14 +240,23 @@ export default function PreferencesPanel({
   // Manual Geocode Address search fallback
   const handleGeocodeSearch = async (e) => {
     e.preventDefault();
-    if (!addressQuery.trim()) return;
+    const query = (addressQuery || '').trim();
+    if (!query) return;
 
+    if (geocodeAbortRef.current) {
+      geocodeAbortRef.current.abort();
+    }
+    const controller = new AbortController();
+    geocodeAbortRef.current = controller;
+
+    const currentGen = ++originGenerationRef.current;
     setGeocodingLoading(true);
     setGeocodingStatusMsg(null);
     setGeocodingResults([]);
 
     try {
-      const res = await geocodeAddress(addressQuery, sessionToken);
+      const res = await geocodeAddress(query, sessionToken, { signal: controller.signal });
+      if (currentGen !== originGenerationRef.current) return;
       if (res.status === 'ok' && Array.isArray(res.results) && res.results.length > 0) {
         setGeocodingResults(res.results);
       } else if (res.status === 'zero_results') {
@@ -197,13 +267,18 @@ export default function PreferencesPanel({
         setGeocodingStatusMsg('Dịch vụ tìm toạ độ hiện không khả dụng. Vui lòng nhập toạ độ thủ công.');
       }
     } catch (err) {
+      if (err.name === 'AbortError') return;
+      if (currentGen !== originGenerationRef.current) return;
       setGeocodingStatusMsg(err.message || 'Lỗi khi tìm toạ độ địa chỉ.');
     } finally {
-      setGeocodingLoading(false);
+      if (currentGen === originGenerationRef.current) {
+        setGeocodingLoading(false);
+      }
     }
   };
 
   const handleSelectGeocodeResult = (result) => {
+    originGenerationRef.current++;
     setCustomLat(Math.round(result.lat * 1e6) / 1e6);
     setCustomLon(Math.round(result.lon * 1e6) / 1e6);
     setOriginLabel(result.label.slice(0, 120));
@@ -214,6 +289,7 @@ export default function PreferencesPanel({
   };
 
   const handlePresetChange = (presetId) => {
+    originGenerationRef.current++;
     setOriginPreset(presetId);
     const loc = PRESET_LOCATIONS.find((p) => p.id === presetId);
     if (loc && presetId !== 'custom') {
@@ -403,6 +479,9 @@ export default function PreferencesPanel({
 
           {/* Manual Address Search Fallback (Server Geocoding) */}
           <div style={{ marginBottom: 10 }}>
+            <label htmlFor="pref-address-query" style={{ display: 'block', fontSize: 11, fontWeight: 600, marginBottom: 4, color: 'var(--text-secondary)' }}>
+              Tìm địa chỉ xuất phát tại Hà Nội
+            </label>
             <div style={{ display: 'flex', gap: 6 }}>
               <input
                 id="pref-address-query"
@@ -531,6 +610,7 @@ export default function PreferencesPanel({
                 step="any"
                 value={customLat}
                 onChange={(e) => {
+                  originGenerationRef.current++;
                   setCustomLat(Number(e.target.value));
                   setOriginSource('manual_coordinates');
                   setOriginPreset('custom');
@@ -550,6 +630,7 @@ export default function PreferencesPanel({
                 step="any"
                 value={customLon}
                 onChange={(e) => {
+                  originGenerationRef.current++;
                   setCustomLon(Number(e.target.value));
                   setOriginSource('manual_coordinates');
                   setOriginPreset('custom');
@@ -564,17 +645,36 @@ export default function PreferencesPanel({
           {/* Privacy Note (Mandatory per docs/PHASE4.md 'Data sent to Google') */}
           <div
             role="note"
+            data-testid="privacy-disclosure"
             style={{
               marginTop: 10,
-              padding: '6px 10px',
-              background: '#f1f5f9',
-              borderRadius: 6,
+              padding: '8px 12px',
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              borderRadius: 8,
               fontSize: 11,
               color: 'var(--text-secondary)',
-              lineHeight: 1.4
+              lineHeight: 1.5
             }}
           >
-            🔒 <strong>Dữ liệu gửi tới Google:</strong> (1) Ô tìm kiếm địa điểm: từ khoá gửi khi bạn nhập; (2) Bản đồ: tải ô bản đồ theo toạ độ xem; (3) Định vị hiện tại chỉ lưu trên trình duyệt của bạn; toạ độ xuất phát chỉ gửi tới dịch vụ tính tuyến đi bộ khi bạn bấm lập lịch trình. Danh sách địa điểm nội bộ không bao giờ được gửi.
+            🔒 <strong>Dữ liệu gửi tới Google:</strong>
+            <ul style={{ margin: '4px 0 0 0', paddingLeft: 16 }}>
+              <li>
+                <strong>Vị trí hiện tại:</strong> Ứng dụng chỉ hỏi vị trí khi bạn bấm nút &quot;Dùng vị trí hiện tại&quot;. Tuỳ trình duyệt, trình duyệt có thể dùng dịch vụ vị trí riêng của hãng (nằm ngoài kiểm soát của ứng dụng). Toạ độ được lưu vào phiên làm việc trên máy chủ (TTL/SQLite) khi lưu tuỳ chọn hoặc lập lịch trình.
+              </li>
+              <li>
+                <strong>Tuyến đi bộ (Google Routes):</strong> Khi lập lịch trình hoặc đổi quán, toạ độ xuất phát cùng toạ độ các quán ăn ứng viên (≤ 16 điểm khi lập, ≤ 45 điểm khi đổi quán) được gửi tới Google Routes để tính đường đi.
+              </li>
+              <li>
+                <strong>Tìm kiếm địa chỉ:</strong> Ký tự bạn gõ vào ô tìm kiếm được gửi tới Google Places / Geocoding. Nhập toạ độ thủ công không gửi dữ liệu tới Google.
+              </li>
+              <li>
+                <strong>Trợ lý AI (Gemini):</strong> Nội dung chat và tiêu chí lọc được gửi tới Gemini nếu được cấu hình; toạ độ GPS chính xác không bao giờ gửi tới Gemini.
+              </li>
+              <li>
+                <strong>Bản đồ:</strong> Trình duyệt tải các ô bản đồ hiển thị; danh sách quán ăn nội bộ không bao giờ tải lên Google.
+              </li>
+            </ul>
           </div>
         </div>
 

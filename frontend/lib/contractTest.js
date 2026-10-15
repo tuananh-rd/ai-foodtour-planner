@@ -15,6 +15,7 @@ import {
   planTour,
   replaceTourStop,
   planTourLegacy,
+  getVenuesMap,
   ApiError
 } from './api.js';
 
@@ -167,7 +168,59 @@ async function runTests() {
   assert(legacyRes.is_mock === true, "legacy is_mock true");
   console.log("  ✓ Legacy endpoint passed:", legacyRes.stops.length, "stops");
 
-  console.log("\n🎉 ALL 12 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
+  // 13. getVenuesMap in MOCK mode
+  console.log("Test 13: GET /v1/venues/map (mock mode contract)");
+  setRuntimeMockMode(true);
+  const mapRes = await getVenuesMap({
+    min_lat: 21.02,
+    min_lon: 105.84,
+    max_lat: 21.04,
+    max_lon: 105.86,
+    limit: 10
+  });
+  assert(Array.isArray(mapRes.items), "mapRes.items must be an array");
+  assert(mapRes.is_mock === true, "mapRes.is_mock must be true");
+  assert(mapRes.dataset_source === "synthetic", "mapRes.dataset_source must be synthetic");
+  assert(mapRes.items.every(v => !v.online_only), "items must not contain online-only venues");
+  console.log("  ✓ Mock map venues passed:", mapRes.items.length, "items, truncated:", mapRes.truncated);
+
+  // 14. getVenuesMap in REAL mode: must NOT fall back to synthetic fixtures on error
+  console.log("Test 14: GET /v1/venues/map (real mode error propagation, no silent fallback)");
+  setRuntimeMockMode(false);
+  let caughtRealError = false;
+  try {
+    // Port 19999 is intentionally unreachable
+    process.env.NEXT_PUBLIC_API_URL = 'http://127.0.0.1:19999';
+    await getVenuesMap({ min_lat: 21.0, min_lon: 105.0, max_lat: 22.0, max_lon: 106.0 });
+  } catch (err) {
+    caughtRealError = true;
+    assert(err instanceof ApiError || err.name === 'TypeError', "Must throw an error");
+    assert(err.message.includes('Không thể kết nối') || err.message.includes('fetch'), "Must reflect network error");
+  } finally {
+    delete process.env.NEXT_PUBLIC_API_URL;
+    setRuntimeMockMode(true);
+  }
+  assert(caughtRealError === true, "Real mode getVenuesMap MUST throw on failure instead of fabricating synthetic data");
+  console.log("  ✓ Real mode getVenuesMap properly propagated error without synthetic fallback");
+
+  // 15. getVenuesMap AbortSignal handling: must propagate AbortError
+  console.log("Test 15: GET /v1/venues/map (AbortSignal handling)");
+  setRuntimeMockMode(false);
+  const abortController = new AbortController();
+  abortController.abort();
+  let caughtAbort = false;
+  try {
+    await getVenuesMap({ min_lat: 21.0, min_lon: 105.0, max_lat: 22.0, max_lon: 106.0 }, { signal: abortController.signal });
+  } catch (err) {
+    caughtAbort = true;
+    assert(err.name === 'AbortError', `Expected AbortError, got ${err.name}`);
+  } finally {
+    setRuntimeMockMode(true);
+  }
+  assert(caughtAbort === true, "Must propagate AbortError when signal is aborted");
+  console.log("  ✓ AbortError properly propagated without being swallowed");
+
+  console.log("\n🎉 ALL 15 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
 }
 
 runTests().catch(err => {

@@ -360,11 +360,24 @@ async function runComponentTests() {
     'TC-DOM-11',
     'PreferencesPanel connects form labels and controls with htmlFor and id',
     htmlPrefs.includes('for="pref-origin-preset"') && htmlPrefs.includes('id="pref-origin-preset"') &&
+    htmlPrefs.includes('for="pref-address-query"') && htmlPrefs.includes('id="pref-address-query"') &&
     htmlPrefs.includes('for="pref-start-time"') && htmlPrefs.includes('id="pref-start-time"') &&
     htmlPrefs.includes('for="pref-duration"') && htmlPrefs.includes('id="pref-duration"') &&
     htmlPrefs.includes('for="pref-budget-vnd"') && htmlPrefs.includes('id="pref-budget-vnd"') &&
     htmlPrefs.includes('for="pref-mode"') && htmlPrefs.includes('id="pref-mode"'),
     'Form controls properly associated with labels'
+  );
+
+  record(
+    'TC-DOM-12',
+    'PreferencesPanel privacy disclosure renders accurate Phase 4 data flows',
+    htmlPrefs.includes('data-testid="privacy-disclosure"') &&
+    htmlPrefs.includes('Vị trí hiện tại:') &&
+    htmlPrefs.includes('Tuyến đi bộ (Google Routes):') &&
+    htmlPrefs.includes('Tìm kiếm địa chỉ:') &&
+    htmlPrefs.includes('Trợ lý AI (Gemini):') &&
+    htmlPrefs.includes('Bản đồ:'),
+    'Accurate Phase 4 privacy statements verified'
   );
 
   // v1.3: only verified overlay prices may be labelled per-person; estimates stay venue ranges.
