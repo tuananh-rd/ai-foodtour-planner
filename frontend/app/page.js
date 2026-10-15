@@ -66,7 +66,8 @@ export default function Home() {
   const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
 
   // Async UI & error states
-  const [busy, setBusy] = useState(false);
+  // Starts true: the session is being created on mount, so input must not be accepted yet.
+  const [busy, setBusy] = useState(true);
   const [lastFailedAction, setLastFailedAction] = useState(null);
   const [error, setError] = useState(null);
   const [conflictError, setConflictError] = useState(null);

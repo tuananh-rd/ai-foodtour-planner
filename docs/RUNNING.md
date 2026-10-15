@@ -44,3 +44,13 @@ Kỳ vọng hiện biết: 1 test legacy (`test_budget_and_source`) được đ�
 - Phiên lưu trong bộ nhớ một tiến trình (mất khi khởi động lại); tìm kiếm có giới hạn pool (có thông báo khi bị cắt).
 - Chưa chạy thử trên Linux/CI từ xa, chưa có DB/PostGIS thật, chưa geoverify toạ độ.
 - Tính năng chưa thuộc P0: tài khoản, nhiều tour thay thế, nhiều phương tiện, chia sẻ, triển khai công khai.
+
+## Kiểm thử trình duyệt thật (U6)
+```powershell
+# 1) API với origin của web:  $env:WEB_ORIGIN='http://127.0.0.1:13000'; python -m uvicorn app.main:app --port 18000   (từ backend/, PYTHONPATH=.)
+# 2) Frontend build trỏ tới API rồi serve:
+cd frontend; $env:NEXT_PUBLIC_API_URL='http://127.0.0.1:18000'; npm run build; npx next start -p 13000
+# 3) Probe (Edge/Chrome headless qua CDP, không thêm phụ thuộc):
+node qa/e2e/browser_flow.mjs        # 16 kiểm tra ở 390px và 1280px
+```
+Đánh giá chất lượng (không cần trình duyệt): `PYTHONPATH=backend python qa/eval/run_eval.py [--data <đường dẫn tuyệt đối>]`.
