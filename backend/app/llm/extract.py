@@ -70,11 +70,13 @@ def _strip_marks(text: str) -> str:
 
 
 def _money(u: str) -> Optional[int]:
-    """u is diacritic-stripped, lower-cased text."""
-    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(trieu|tr\b|nghin|ngan|k\b)", u)
+    """u is diacritic-stripped, lower-cased text. Negative amounts return -1 so callers reject them."""
+    m = re.search(r"(-?)(\d+(?:[.,]\d+)?)\s*(trieu|tr\b|nghin|ngan|k\b)", u)
     if m:
-        n = float(m.group(1).replace(",", "."))
-        return int(n * (1_000_000 if m.group(2) in ("trieu", "tr") else 1000))
+        if m.group(1):
+            return -1
+        n = float(m.group(2).replace(",", "."))
+        return int(n * (1_000_000 if m.group(3) in ("trieu", "tr") else 1000))
     m = re.search(r"(\d{1,3}(?:[.,]\d{3})+|\d{4,})\s*(d\b|dong|vnd)", u)
     if m:
         return int(re.sub(r"[.,]", "", m.group(1)))
@@ -95,7 +97,11 @@ class MockExtractor:
         rejected = []
 
         budget = _money(u)
-        if budget and 0 < budget <= 100_000_000:
+        if budget is not None and not 0 < budget <= 100_000_000:
+            rejected.append("budget_vnd")
+            notes.append("Ngân sách phải lớn hơn 0 và không quá 100 triệu đồng; không được áp dụng.")
+            budget = None
+        if budget:
             upd["budget_vnd"] = budget
             if re.search(r"ca nhom|tong|ca hoi|ca ban|chung", u):
                 upd["budget_scope"] = "group"
@@ -122,7 +128,7 @@ class MockExtractor:
             rejected.append("duration_min")
             notes.append("Thời lượng ngoài khoảng 30–720 phút nên không được áp dụng; vui lòng nhập lại.")
             del upd["duration_min"]
-        stops = re.search(r"\b(\d)\s*(?:quan|diem|cho)\b", u)
+        stops = re.search(r"\b(\d+)\s*(?:quan|diem|cho)\b", u)
         if stops:
             if 1 <= int(stops.group(1)) <= 5:
                 upd["max_stops"] = int(stops.group(1))
@@ -130,8 +136,12 @@ class MockExtractor:
                 rejected.append("max_stops")
                 notes.append("Số điểm dừng phải từ 1 đến 5; không được áp dụng.")
         party = re.search(r"(?:nhom|di|cho|ban|gia dinh)\s*(\d+)\s*nguoi", u)
-        if party and 1 <= int(party.group(1)) <= 20:
-            upd["party_size"] = int(party.group(1))
+        if party:
+            if 1 <= int(party.group(1)) <= 20:
+                upd["party_size"] = int(party.group(1))
+            else:
+                rejected.append("party_size")
+                notes.append("Số người phải từ 1 đến 20; không được áp dụng.")
         for name, ll in ANCHORS.items():
             if _strip_marks(name) in u:
                 upd["origin"] = ll

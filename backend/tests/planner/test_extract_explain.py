@@ -100,5 +100,19 @@ class FoldedTerms(unittest.TestCase):
         self.assertNotIn("ốc", r.preferences.interests)
 
 
+class RangeRejection(unittest.TestCase):
+    def test_negative_zero_and_out_of_range_are_rejected_and_reported(self):
+        x = MockExtractor()
+        prior = Preferences(budget_vnd=120000, budget_scope="per_person")
+        for text in ("ngân sách -10k mỗi người", "ngân sách 0k", "ngân sách 500 triệu"):
+            r = x.extract(text, prior)
+            self.assertIn("budget_vnd", r.rejected_fields, text)
+            self.assertEqual(r.preferences.budget_vnd, 120000, text)
+        r = x.extract("đi 10 quán, nhóm 21 người")
+        self.assertEqual(set(r.rejected_fields), {"max_stops", "party_size"})
+        self.assertEqual(r.preferences.max_stops, 3)
+        self.assertIsNone(r.preferences.party_size)
+
+
 if __name__ == "__main__":
     unittest.main()

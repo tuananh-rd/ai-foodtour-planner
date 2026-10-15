@@ -265,5 +265,15 @@ class CheckedProviderTests(unittest.TestCase):
         self.assertEqual(t.status, "no_solution")
 
 
+class BuildTourMaxStops(unittest.TestCase):
+    def test_more_stops_than_max_is_rejected(self):
+        from app.planner.engine import build_tour
+        vs = load_fixture()
+        p = prefs(max_stops=3)
+        ids = [s.venue_id for s in plan_tour(vs, p).stops]
+        self.assertIsNotNone(build_tour(vs, p, ids)[0])
+        self.assertIsNone(build_tour(vs, replace(p, max_stops=1), ids)[0])
+
+
 if __name__ == "__main__":
     unittest.main()

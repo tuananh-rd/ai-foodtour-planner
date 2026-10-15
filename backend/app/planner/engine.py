@@ -315,6 +315,8 @@ def build_tour(venues: list, prefs: Preferences, venue_ids: list,
         return None, "venue no longer present in dataset"
     if len(set(venue_ids)) != len(venue_ids) or not venue_ids:
         return None, "invalid venue sequence"
+    if len(venue_ids) > prefs.max_stops:
+        return None, "more stops than max_stops"
     seq = [by_id[i] for i in venue_ids]
     if any(not eligible(v, prefs) for v in seq):
         return None, "a stored venue is no longer eligible for these preferences"
