@@ -56,7 +56,12 @@ def _fold(text: str) -> str:
 
 
 def tour_facts(tour: Tour, venues: list) -> dict:
-    """Facts the model may restate. Nothing here is inferred."""
+    """Facts the model may restate. Nothing here is inferred.
+
+    Privacy: no venue name, address, URL or id is included - the venue dataset is private local
+    input and must not be sent to an external LLM. Stops are referred to as "Điểm dừng N"; the UI
+    shows the real names next to the text.
+    """
     by_id = {v.id: v for v in venues}
     stops = []
     for s in tour.stops:
@@ -65,7 +70,7 @@ def tour_facts(tour: Tour, venues: list) -> dict:
             continue
         per_person = v.price_evidence == "verified"
         stops.append({
-            "thu_tu": s.order, "ten": v.name,
+            "thu_tu": s.order, "ten": f"Điểm dừng {s.order}",
             "di_bo_phut": s.leg_from_previous.minutes, "km": s.leg_from_previous.km,
             "nguon_tuyen": _ROUTE_LABEL[s.leg_from_previous.source],
             "gia_min": v.price_min_vnd, "gia_max": v.price_max_vnd,

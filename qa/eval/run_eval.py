@@ -91,7 +91,8 @@ def main() -> int:
         problems = check_extraction(res, sc) if res.status == "ok" else ["provider_unavailable"]
         ext_ok += not problems
         p = res.preferences
-        row = {"id": sc["id"], "extraction_ok": not problems, "provider_status": res.status, "extraction_problems": problems,
+        row = {"id": sc["id"], "extraction_ok": not problems, "provider_status": res.status,
+               "provider_notes": list(res.notes) if res.status != "ok" else [], "extraction_problems": problems,
                "missing_slots": list(res.missing_slots), "plan": None}
         if not res.missing_slots:
             for _ in range(a.repeat):

@@ -25,9 +25,10 @@ CONTROL = re.compile(r"[\x00-\x1f\x7f]")
 
 
 class ProviderError(Exception):
-    def __init__(self, kind: str, message: str = ""):
+    def __init__(self, kind: str, message: str = "", status: int | None = None):
         super().__init__(message or kind)
         self.kind = kind  # timeout | quota | unavailable | bad_response
+        self.status = status  # HTTP status when the provider answered with an error (never a URL/body)
 
 
 class ExtractionProvider(Protocol):

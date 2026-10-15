@@ -11,6 +11,7 @@ import datetime as _dt
 import json
 import os
 import re
+import time
 from threading import Lock
 
 from app.llm.extract import ANCHORS
@@ -22,6 +23,7 @@ OFFICIAL_BASE = "https://" + GEMINI_HOST
 DEFAULT_MODEL = "gemini-3.5-flash-lite"
 MODEL_RE = re.compile(r"^[a-z0-9][a-z0-9.\-]{2,63}$")
 MAX_RESPONSE_BYTES = 64 * 1024
+TRANSIENT_STATUS = (500, 502, 503, 504)
 
 
 class GeminiClient:
@@ -72,8 +74,21 @@ class GeminiClient:
         headers = {"Content-Type": "application/json", "Accept": "application/json",
                    "x-goog-api-key": os.getenv(self.api_key_env, "").strip()}
         url = f"{self.base_url}/v1beta/models/{self.model}:generateContent"
-        raw = request_bytes(url, body=json.dumps(body, ensure_ascii=False).encode("utf-8"), headers=headers,
-                            deadline_s=deadline_s, max_bytes=MAX_RESPONSE_BYTES)
+        payload = json.dumps(body, ensure_ascii=False).encode("utf-8")
+        end = time.monotonic() + deadline_s
+        try:
+            raw = request_bytes(url, body=payload, headers=headers, deadline_s=deadline_s,
+                                max_bytes=MAX_RESPONSE_BYTES)
+        except ProviderError as error:
+            # One retry only for a transient server error (e.g. overloaded); never for quota (429),
+            # client errors, timeouts or bad bodies. The retry counts against the daily budget.
+            remaining = end - time.monotonic()
+            if error.status not in TRANSIENT_STATUS or remaining < 1.5:
+                raise
+            time.sleep(0.5)
+            self._admit()
+            raw = request_bytes(url, body=payload, headers=headers, deadline_s=end - time.monotonic(),
+                                max_bytes=MAX_RESPONSE_BYTES)
         try:
             data = json.loads(raw.decode("utf-8"))
             if not isinstance(data, dict):

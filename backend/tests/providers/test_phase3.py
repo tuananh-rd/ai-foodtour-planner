@@ -41,8 +41,9 @@ class FakeHandler(BaseHTTPRequestHandler):
         body = json.loads(self.rfile.read(int(self.headers.get("Content-Length", 0))) or b"{}")
         srv = self.server
         srv.requests.append({"path": self.path, "headers": {k.lower(): v for k, v in self.headers.items()}, "body": body})
-        if srv.status != 200:
-            return self._reply(srv.status, {"error": {"message": "fake"}})
+        status = srv.status_seq.pop(0) if srv.status_seq else srv.status
+        if status != 200:
+            return self._reply(status, {"error": {"message": "fake"}})
         if ":generateContent" in self.path:
             if srv.gemini_raw is not None:
                 return self._reply(200, srv.gemini_raw)
@@ -77,7 +78,7 @@ class FakeServerCase(unittest.TestCase):
         self.server = ThreadingHTTPServer(("127.0.0.1", 0), FakeHandler)
         self.server.daemon_threads = True
         s = self.server
-        s.requests, s.status, s.gemini_json, s.gemini_raw = [], 200, {}, None
+        s.requests, s.status, s.gemini_json, s.gemini_raw, s.status_seq = [], 200, {}, None, []
         s.seconds, s.meters, s.unreachable, s.bad_waypoints = 300, 350, None, False
         threading.Thread(target=lambda: s.serve_forever(poll_interval=.01), daemon=True).start()
         self.addCleanup(lambda: (s.shutdown(), s.server_close()))
@@ -152,6 +153,25 @@ class GeminiFake(FakeServerCase):
         self.assertTrue(any("bộ luật" in n for n in r.notes))
         self.assertEqual(r.preferences.duration_min, 120)
 
+    def test_single_retry_only_for_transient_server_errors(self):
+        self.server.gemini_json = {"duration_min": 90}
+        self.server.status_seq = [503]
+        out = self.client().generate_json("s", "u", {"type": "OBJECT"}, deadline_s=5)
+        self.assertEqual(out, {"duration_min": 90})
+        self.assertEqual(len(self.server.requests), 2)
+        for status, kind in ((429, "quota"), (403, "unavailable")):
+            self.server.requests.clear()
+            self.server.status_seq = [status]
+            with self.assertRaises(ProviderError) as e:
+                self.client().generate_json("s", "u", {"type": "OBJECT"}, deadline_s=5)
+            self.assertEqual((e.exception.kind, e.exception.status), (kind, status))
+            self.assertEqual(len(self.server.requests), 1)  # no retry
+        self.server.requests.clear()
+        self.server.status_seq = [503, 503]
+        with self.assertRaises(ProviderError):
+            self.client().generate_json("s", "u", {"type": "OBJECT"}, deadline_s=5)
+        self.assertEqual(len(self.server.requests), 2)  # exactly one retry
+
     def test_daily_budget_and_missing_key(self):
         c = self.client(daily_budget=1)
         self.server.gemini_json = {}
@@ -180,7 +200,7 @@ class GeminiFake(FakeServerCase):
         self.server.gemini_json = {"tom_tat": "Các quán đều đang mở cửa, đảm bảo ngon."}
         text, source = CheckedExplainer(GeminiExplanationProvider(self.client())).explain(t, vs)
         self.assertEqual(source, "template")
-        self.server.status = 500
+        self.server.status = 403  # non-transient: neither the client nor the explainer retries
         before = len(self.server.requests)
         self.assertEqual(CheckedExplainer(GeminiExplanationProvider(self.client())).explain(t, vs)[1], "template")
         self.assertEqual(len(self.server.requests) - before, 1)  # no retry against a failing provider
@@ -337,6 +357,18 @@ class LocalEnv(unittest.TestCase):
                 self.assertEqual(os.environ["GEMINI_API_KEY"], "env")
                 self.assertNotEqual(os.environ.get("PATH"), "evil")
                 os.environ.pop("FOODTOUR_TEST_A", None)
+
+
+class ExplanationPrivacy(unittest.TestCase):
+    def test_facts_sent_to_llm_contain_no_venue_identity(self):
+        vs = load_fixture()
+        t = plan_tour(vs, Preferences(origin=(21.029, 105.851), duration_min=240, budget_vnd=500000,
+                                      budget_scope="per_person"))
+        dumped = json.dumps(tour_facts(t, vs), ensure_ascii=False)
+        for s in t.stops:
+            v = next(x for x in vs if x.id == s.venue_id)
+            for secret in (v.name, v.address, v.source_url, v.id):
+                self.assertNotIn(secret, dumped)
 
 
 if __name__ == "__main__":

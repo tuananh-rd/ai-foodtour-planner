@@ -124,7 +124,7 @@ def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=819
     except HTTPError as error:
         status = error.code
         error.close()
-        raise ProviderError('quota' if status == 429 else 'unavailable') from None
+        raise ProviderError('quota' if status == 429 else 'unavailable', status=status) from None
     except (TimeoutError, socket.timeout):
         raise ProviderError('timeout') from None
     except URLError as error:
