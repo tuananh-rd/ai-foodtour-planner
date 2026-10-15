@@ -7,6 +7,7 @@ from __future__ import annotations
 from typing import Optional
 
 from .interfaces import RouteMatrixProvider, StraightLineEstimator
+from .relevance import excluded, interest_score
 from .types import Leg, Preferences, ReplaceResult, Stop, Tour, Venue
 
 POOL_CAP = 14
@@ -37,11 +38,9 @@ def eligible(v: Venue, prefs: Preferences) -> bool:
         return False
     if prefs.budget_vnd is not None and v.price_max_vnd is None:
         return False  # budget can't be checked; unknown price is never free
-    t = _text(v)
-    if any(x.strip().casefold() in t for x in prefs.exclusions if x.strip()):
+    if excluded(v, prefs.exclusions):
         return False
-    wanted = [x.strip().casefold() for x in prefs.interests if x.strip()]
-    if wanted and not any(w in t for w in wanted):
+    if any(x.strip() for x in prefs.interests) and interest_score(v, prefs.interests) == 0:
         return False
     return True
 
@@ -108,7 +107,8 @@ def _evaluate(seq: list, prefs: Preferences, routes: RouteMatrixProvider) -> tup
     status = "verified_feasible" if not unknowns else "conditional"
     reasons = tuple(f"Chưa xác minh: {u}" for u in sorted(unknowns))
     return Tour(status, tuple(stops), reasons, (), tuple(sorted(unknowns)), upper, walk_total, src,
-                (), {"visit_minutes_per_stop": prefs.visit_minutes, "max_leg_min": prefs.max_leg_min}), None
+                (), {"visit_minutes_per_stop": prefs.visit_minutes, "max_leg_min": prefs.max_leg_min,
+                     "relevance_score": sum(interest_score(v, prefs.interests) for v in seq)}), None
 
 
 def _strict_ok(t: Tour) -> bool:
@@ -159,8 +159,10 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
     if missing:
         return Tour("insufficient_evidence", reasons=(f"Thiếu thông tin bắt buộc: {', '.join(missing)}",),
                     proposed_changes=("Bổ sung thông tin còn thiếu.",), unknowns=tuple(missing))
+    # Relevance first so the pool cap keeps the best category fits, then proximity, then id.
     ranked = sorted((v for v in venues if eligible(v, prefs) and _possible_alone(v, prefs)),
-                    key=lambda v: (routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))
+                    key=lambda v: (-interest_score(v, prefs.interests),
+                                   routes.leg(prefs.origin, (v.lat, v.lon)).km, v.id))
     pool = ranked[:pool_cap]
     truncated = len(ranked) > len(pool)
     best = {"key": None, "tour": None}
@@ -170,7 +172,8 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
         tour, _ = _evaluate(seq, prefs, routes)
         if tour is None or (prefs.mode == "strict" and not _strict_ok(tour)):
             return
-        key = (-len(seq), -_diversity(seq), tour.walk_minutes, tuple(v.id for v in seq))
+        rel = sum(interest_score(v, prefs.interests) for v in seq)
+        key = (-len(seq), -rel, -_diversity(seq), tour.walk_minutes, tuple(v.id for v in seq))
         if best["key"] is None or key < best["key"]:
             best["key"], best["tour"] = key, tour
 
@@ -236,7 +239,8 @@ def replace_stop(venues: list, prefs: Preferences, tour: Tour, venue_id: str,
         t, _ = _evaluate(seq, prefs, routes)
         if t is None or (prefs.mode == "strict" and not _strict_ok(t)):
             continue
-        key = (-_diversity(seq), t.walk_minutes, c.id)
+        rel = sum(interest_score(v, prefs.interests) for v in seq)
+        key = (-rel, -_diversity(seq), t.walk_minutes, c.id)
         if best_key is None or key < best_key:
             best_key, best_tour = key, t
     if best_tour is None:

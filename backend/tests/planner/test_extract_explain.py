@@ -87,5 +87,18 @@ class NoSilentClamp(unittest.TestCase):
         self.assertIn("duration_min", r.missing_slots)
 
 
+class FoldedTerms(unittest.TestCase):
+    def test_no_diacritics_and_whole_word(self):
+        r = MockExtractor().extract("muon an bun va che, khong an oc")
+        self.assertIn("bún", r.preferences.interests)
+        self.assertIn("chè", r.preferences.interests)
+        self.assertIn("ốc", r.preferences.exclusions)
+        self.assertNotIn("ốc", r.preferences.interests)
+
+    def test_substring_inside_other_word_is_ignored(self):
+        r = MockExtractor().extract("đi học xong muốn ăn gì đó")
+        self.assertNotIn("ốc", r.preferences.interests)
+
+
 if __name__ == "__main__":
     unittest.main()

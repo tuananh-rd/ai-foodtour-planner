@@ -11,10 +11,12 @@ from dataclasses import dataclass, field, replace
 from typing import Optional, Protocol
 
 from app.planner.engine import missing_slots
+from app.planner.relevance import fold
 from app.planner.types import Preferences
 
 MAX_TEXT = 1000
-DISH_TERMS = ("bún", "phở", "bánh mì", "bánh cuốn", "chè", "nem", "xôi", "cà phê", "lẩu", "ốc", "chả", "kem")
+DISH_TERMS = ("bún", "phở", "bánh mì", "bánh cuốn", "chè", "nem", "xôi", "cà phê", "lẩu", "ốc", "chả", "kem",
+              "cơm", "cháo", "miến", "mì", "hải sản", "trà sữa", "ăn vặt", "bánh tằm", "bánh ướt", "đồ ngọt")
 # Public landmark anchors (not venue data). Approximate; the UI should let the user correct them.
 ANCHORS = {
     "hồ gươm": (21.0285, 105.8522), "hồ hoàn kiếm": (21.0285, 105.8522),
@@ -127,13 +129,16 @@ class MockExtractor:
         elif re.search(r"khám phá|tham khảo", t):
             upd["mode"] = "explore"
 
+        # Diacritic-insensitive, whole-word matching ("an bun" works; "oc" does not hit "hoc").
+        ft = fold(t)
         excl = list(p.exclusions)
         for d in DISH_TERMS:
-            if re.search(r"(không|tránh|trừ|bỏ)\s+(?:ăn\s+|muốn\s+)?" + re.escape(d), t) and d not in excl:
+            fd = re.escape(fold(d))
+            if re.search(r"\b(khong|tranh|tru|bo)\s+(?:an\s+|muon\s+)?" + fd + r"\b", ft) and d not in excl:
                 excl.append(d)
         want = list(p.interests)
         for d in DISH_TERMS:
-            if d in t and d not in excl and d not in want:
+            if re.search(r"\b" + re.escape(fold(d)) + r"\b", ft) and d not in excl and d not in want:
                 want.append(d)
         if tuple(want) != p.interests:
             upd["interests"] = tuple(want[:10])
