@@ -147,7 +147,9 @@ def _diagnose(venues, prefs, routes) -> tuple:
         reasons.append("Thời lượng ngắn hơn thời gian ghé một quán.")
         changes.append(f"Tăng thời lượng lên ít nhất {prefs.visit_minutes} phút.")
     # Only the nearest candidates are probed so a real provider is not called once per venue.
-    probe = sorted(pool, key=lambda v: (haversine_km(prefs.origin, (v.lat, v.lon)), v.id))[:POOL_CAP]         if prefs.origin else []
+    probe = []
+    if prefs.origin:
+        probe = sorted(pool, key=lambda v: (haversine_km(prefs.origin, (v.lat, v.lon)), v.id))[:POOL_CAP]
     _prepare(routes, [prefs.origin] + [(v.lat, v.lon) for v in probe])
     near = []
     for v in probe:

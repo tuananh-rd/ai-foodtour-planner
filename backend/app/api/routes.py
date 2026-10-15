@@ -106,7 +106,7 @@ def health(request: Request):
     data = snapshot(request)
     extractor, routing = request.app.state.extractor, request.app.state.routing
     llm_mode = "unavailable" if isinstance(extractor, UnavailableExtractor) else (
-        "live" if isinstance(extractor, LLMExtractor) else "mock")
+        "live" if isinstance(extractor, (LLMExtractor, FallbackExtractor)) else "mock")
     route_mode = ("provider_route" if routing.configured and routing.reachable else "unknown"
                   ) if isinstance(routing, (HttpRouteProvider, WalkingRouteProvider)) else "straight_line_estimate"
     info = request.app.state.provider_info

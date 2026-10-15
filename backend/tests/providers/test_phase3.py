@@ -181,7 +181,16 @@ class GeminiFake(FakeServerCase):
         text, source = CheckedExplainer(GeminiExplanationProvider(self.client())).explain(t, vs)
         self.assertEqual(source, "template")
         self.server.status = 500
+        before = len(self.server.requests)
         self.assertEqual(CheckedExplainer(GeminiExplanationProvider(self.client())).explain(t, vs)[1], "template")
+        self.assertEqual(len(self.server.requests) - before, 1)  # no retry against a failing provider
+        self.server.status = 200
+        self.server.gemini_json = {"tom_tat": "Đi bộ hai mươi phút, chưa rõ giờ."}
+        before = len(self.server.requests)
+        ex2 = CheckedExplainer(GeminiExplanationProvider(self.client()))
+        self.assertEqual(ex2.explain(t, vs)[1], "template")
+        self.assertEqual(len(self.server.requests) - before, 2)  # one retry after a rejected text
+        self.assertEqual(ex2.last_problems, ["spelled_number"])
 
 
 class ExplanationChecker(unittest.TestCase):
@@ -210,6 +219,11 @@ class ExplanationChecker(unittest.TestCase):
         for text, problem in bad.items():
             self.assertIn(problem, check_explanation(text, self.facts), text)
         self.assertIn("too_long", check_explanation("chưa rõ " * 200, self.facts))
+        self.assertIn("spelled_number", check_explanation("Đi bộ hai mươi hai phút, chưa rõ giờ.", self.facts))
+        self.assertNotIn("spelled_number", check_explanation("Quãng ngắn, chưa rõ giờ.", self.facts))
+        # Restating the unknown list verbatim (as real Gemini output did) is truthful and must pass.
+        listed = "Các điểm chưa được xác minh: " + ", ".join(self.facts["chua_biet"]) + "."
+        self.assertEqual(check_explanation(listed, self.facts), [])
         self.assertEqual(check_explanation("", self.facts), ["empty"])
 
 

@@ -10,7 +10,7 @@ LABEL = {
     "no_solution": "Không tìm được lịch trình thoả các ràng buộc.",
 }
 UNKNOWN_LABEL = {
-    "hours": "giờ mở cửa theo ngày", "price_per_person": "giá theo người", "route": "tuyến đi bộ thực tế",
+    "hours": "giờ mở cửa theo ngày", "price_per_person": "giá theo người", "route": "dữ liệu định tuyến đi bộ từ nhà cung cấp",
     "party_size": "số người", "origin": "điểm xuất phát", "duration_min": "thời lượng", "budget_scope": "phạm vi ngân sách",
 }
 
@@ -154,6 +154,9 @@ def check_explanation(text, facts: dict) -> list:
                 continue
             problems.append(name)
             break
+    # Spelled-out compound numbers would bypass the numeric check below.
+    if _re.search(r"\b(muoi|tram|nghin|trieu)\b|\b(mot|hai|ba|bon|nam|sau|bay|tam|chin) ngan\b", f):
+        problems.append("spelled_number")
     if facts.get("chua_biet") and not _re.search(r"chua|uoc tinh|tham khao|co dieu kien", f):
         problems.append("missing_uncertainty")
     allowed = _allowed_numbers(facts)
@@ -167,8 +170,8 @@ def check_explanation(text, facts: dict) -> list:
 class CheckedExplainer:
     """explain(tour, venues) -> (text, source). source is 'llm' only when every check passed."""
 
-    def __init__(self, provider=None, *, deadline_s: float = 15.0, cache_size: int = 256):
-        self.provider, self.deadline_s = provider, deadline_s
+    def __init__(self, provider=None, *, deadline_s: float = 15.0, cache_size: int = 256, attempts: int = 2):
+        self.provider, self.deadline_s, self.attempts = provider, deadline_s, max(1, attempts)
         self._cache, self._lock, self.cache_size = _OrderedDict(), _Lock(), cache_size
         self.last_problems: list = []
         self.stats = {"llm": 0, "fallback": 0}
@@ -183,11 +186,16 @@ class CheckedExplainer:
             if key in self._cache:
                 self._cache.move_to_end(key)
                 return self._cache[key]
-        try:
-            text = self.provider.explain(facts, deadline_s=self.deadline_s)
-            problems = check_explanation(text, facts)
-        except Exception:
-            text, problems = None, ["provider_error"]
+        text, problems = None, ["provider_error"]
+        for _ in range(self.attempts):  # model output varies between calls; each attempt is fully re-checked
+            try:
+                text = self.provider.explain(facts, deadline_s=self.deadline_s)
+                problems = check_explanation(text, facts)
+            except Exception:
+                text, problems = None, ["provider_error"]
+                break  # do not hammer an unavailable/over-quota provider
+            if not problems:
+                break
         self.last_problems = problems
         result = (text.strip(), "llm") if not problems else (template, "template")
         with self._lock:
