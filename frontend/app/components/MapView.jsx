@@ -17,7 +17,8 @@ export default function MapView({
   stops = [],
   highlightedStopId,
   onSelectStop,
-  legSource = 'straight_line_estimate'
+  legSource = 'straight_line_estimate',
+  routingProvider = 'estimate'
 }) {
   const [zoomOffset, setZoomOffset] = useState(0);
   const containerRef = useRef(null);
@@ -147,9 +148,20 @@ export default function MapView({
 
   const osmUrl = `https://www.openstreetmap.org/?mlat=${centerLat}&mlon=${centerLon}#map=${currentZoom}/${centerLat.toFixed(4)}/${centerLon.toFixed(4)}`;
 
-  // Contract v1 has NO route geometry. Never draw a polyline for provider_route!
-  // Only for straight_line_estimate, a dashed visual hint with strict caption is permitted.
+  // Real walking geometry comes only from the routing provider (contract v1.4: leg_from_previous.geometry,
+  // present only for provider_route legs). Straight-line estimates get a captioned dashed hint instead.
   const isStraightLine = legSource === 'straight_line_estimate';
+  const routeLines = stops
+    .filter((st) => st.leg_from_previous && st.leg_from_previous.source === 'provider_route'
+      && Array.isArray(st.leg_from_previous.geometry) && st.leg_from_previous.geometry.length >= 2)
+    .map((st) => ({
+      id: st.venue_id,
+      points: st.leg_from_previous.geometry
+        .filter((pt) => Array.isArray(pt) && Number.isFinite(pt[0]) && Number.isFinite(pt[1]))
+        .map(([lat, lon]) => { const q = toLocalPx(lat, lon); return `${q.x},${q.y}`; })
+        .join(' ')
+    }));
+  const providerName = routingProvider === 'ors' ? 'openrouteservice' : routingProvider === 'osrm' ? 'máy chủ OSRM' : 'nhà cung cấp định tuyến';
   const polylinePoints = projectedPoints.map((p) => `${p.x},${p.y}`).join(' ');
 
   // List each leg with minutes, km and its source label
@@ -162,7 +174,7 @@ export default function MapView({
       const src = leg.source || legSource || 'unknown';
       let srcLabel = 'Chưa rõ';
       if (src === 'provider_route') {
-        srcLabel = 'Xác minh từ nhà cung cấp';
+        srcLabel = 'Tuyến đi bộ từ nhà cung cấp';
       } else if (src === 'straight_line_estimate') {
         srcLabel = 'Ước tính đường chim bay';
       }
@@ -258,6 +270,20 @@ export default function MapView({
             height: '100%'
           }}
         >
+          {/* Real walking routes from the provider (solid). */}
+          {routeLines.map((line) => (
+            <polyline
+              key={'route-' + line.id}
+              points={line.points}
+              fill="none"
+              stroke="#1565c0"
+              strokeWidth={4}
+              strokeOpacity={0.85}
+              strokeLinejoin="round"
+              strokeLinecap="round"
+              data-route-geometry="provider"
+            />
+          ))}
           {/* Visual Hint: ONLY dashed line for straight_line_estimate legs. NEVER for provider_route! */}
           {isStraightLine && projectedPoints.length > 1 && (
             <polyline
@@ -414,7 +440,12 @@ export default function MapView({
       <div style={{ marginTop: 10, fontSize: 12, color: 'var(--text-muted)' }}>
         {legSource === 'provider_route' ? (
           <span style={{ color: '#2e7d32', fontWeight: 600 }}>
-            ✓ Nhà cung cấp định tuyến (provider_route) cung cấp thời gian và cự ly đi bộ. Bản đồ hiển thị các điểm dừng được đánh số; Contract v1 chưa hỗ trợ chuỗi tọa độ chi tiết từng tuyến đường phố.
+            {routeLines.length > 0
+              ? `✓ Đường xanh là tuyến đi bộ do ${providerName} tính (hồ sơ đi bộ). Thời gian và cự ly từng chặng cũng từ nhà cung cấp này.`
+              : `Thời gian và cự ly đi bộ do ${providerName} tính; chưa nhận được hình học tuyến nên bản đồ không vẽ đường.`}
+            {routingProvider === 'ors' && (
+              <> Dữ liệu định tuyến: <a href="https://openrouteservice.org/" target="_blank" rel="noreferrer">openrouteservice.org</a> / © OpenStreetMap contributors.</>
+            )}
           </span>
         ) : (
           <span style={{ color: '#e65100', fontWeight: 600 }}>

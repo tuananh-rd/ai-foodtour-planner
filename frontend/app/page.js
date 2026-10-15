@@ -49,6 +49,8 @@ export default function Home() {
   // Data provenance & server notes
   const [datasetSource, setDatasetSource] = useState('synthetic');
   const [datasetVersion, setDatasetVersion] = useState('');
+  // Provider status from /health (no secrets): which LLM/routing services are actually in use.
+  const [health, setHealth] = useState(null);
   const [notes, setNotes] = useState([]);
 
   // Chat & Questions
@@ -222,6 +224,7 @@ export default function Home() {
       try {
         const health = await getHealth();
         if (token !== requestTokenRef.current) return;
+        setHealth(health);
         if (health.dataset_source) setDatasetSource(health.dataset_source);
         if (health.dataset_version) setDatasetVersion(health.dataset_version);
       } catch (_) {}
@@ -275,7 +278,8 @@ export default function Home() {
         {
           role: 'assistant',
           text: assistantText,
-          extracted: res.preferences
+          extracted: res.preferences,
+          extractionSource: res.extraction_source || null
         }
       ]);
     } catch (err) {
@@ -455,8 +459,15 @@ export default function Home() {
                 borderRadius: 12
               }}
             >
-              CONTRACT V1.1
+              CONTRACT V1.4
             </span>
+            {health && (
+              <span data-provider-status style={{ fontSize: 11, color: 'var(--text-secondary)', fontWeight: 600 }}>
+                AI: {health.llm_provider === 'gemini' ? `Gemini (${health.llm_model || 'model?'})` : health.llm_provider === 'off' ? 'tắt' : 'bộ luật cục bộ'}
+                {' · '}Tuyến: {health.routing_provider === 'ors' ? 'openrouteservice' : health.routing_provider === 'osrm' ? 'OSRM' : 'ước tính chim bay'}
+                {health.routing_provider !== 'estimate' && health.routing !== 'provider_route' ? ' (chưa phản hồi)' : ''}
+              </span>
+            )}
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>
             Trợ lý lập lịch trình ẩm thực Phố Cổ minh bạch bằng chứng · Đi bộ tối ưu
@@ -948,6 +959,7 @@ export default function Home() {
             highlightedStopId={highlightedStopId}
             onSelectStop={(id) => setHighlightedStopId(id)}
             legSource={tour?.totals?.leg_source || 'straight_line_estimate'}
+            routingProvider={health?.routing_provider || 'estimate'}
           />
 
           {/* Quick highlight venue preview card */}

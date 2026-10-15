@@ -91,6 +91,11 @@ export default function TourStatusBanner({ tour, onSwitchToExplore, onAdjustPref
       {tour.explanation && (
         <p style={{ fontSize: 14, color: cfg.textColor, lineHeight: 1.5, marginBottom: 10 }}>
           {tour.explanation}
+          {tour.explanation_source === 'llm' && (
+            <span data-explanation-source="llm" style={{ display: 'block', fontSize: 11, opacity: 0.8, marginTop: 4 }}>
+              Lời giải thích do Gemini diễn đạt lại từ dữ kiện đã được hệ thống kiểm tra.
+            </span>
+          )}
         </p>
       )}
 

@@ -87,3 +87,10 @@ Errors: `{error: {code, message, details?}}`. Codes: `validation_error`, `unauth
 - `dataset_version` is the combined hash of input and overlay content when an overlay is configured (unchanged otherwise), so stored sessions are invalidated correctly.
 - `/health.evidence_overlay` carries counts only: `{entries_loaded, entries_rejected, hours_verified, prices_verified}`. A configured but missing/malformed overlay fails closed (redacted 503), never silently serves unverified data as verified.
 - Error code `dataset_changed` (HTTP 409, no mutation): returned by `tour/replace` (and any tour action) when the session's stored tour was built on a different dataset/overlay version than the one now loaded. The client should re-plan (`POST /tour`). It is distinct from `no_candidates` (no valid replacement exists).
+
+## v1.4 additions (additive, phase 3)
+- `Stop.leg_from_previous.geometry`: `[[lat, lon], ...] | null`. Present only when `source = provider_route` and the routing provider returned a route; display-only. Never present for estimated legs. Durations/distances come from the provider's walking matrix.
+- `Tour.explanation_source`: `template | llm`. `llm` only when a Gemini-worded text passed `check_explanation` against facts of the validated tour; otherwise the template text is returned.
+- `SessionView.extraction_source` (messages only): `rules | llm`. When the LLM fails, the rule extractor answers and `notes` says so.
+- `/health` additive: `llm_provider (rules|gemini|http|off)`, `llm_model`, `explanation_provider (template|gemini)`, `routing_provider (estimate|ors|osrm)`, `routing_last_error`. Never contains keys.
+- `routing` mode `osrm` now uses OSRM `table` + `route` (foot profile, GeoJSON steps); `ors` uses openrouteservice `foot-walking` matrix + directions.

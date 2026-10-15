@@ -240,11 +240,34 @@ async function runComponentTests() {
 
   record(
     'TC-DOM-08',
-    'MapView provider_route suppresses all polyline route drawing (Contract v1 has no geometry)',
+    'MapView provider_route WITHOUT geometry draws no route line and says so (v1.4)',
     !htmlMapProvider.includes('<polyline') &&
-    htmlMapProvider.includes('provider_route') &&
-    htmlMapProvider.includes('Contract v1 chưa hỗ trợ chuỗi tọa độ chi tiết'),
-    'Polyline route strictly suppressed under provider_route'
+    htmlMapProvider.includes('chưa nhận được hình học tuyến'),
+    'No geometry -> no line'
+  );
+
+  // Probe C: provider_route WITH provider geometry draws solid route polylines (v1.4)
+  const geomStops = [
+    { ...stops[0], leg_from_previous: { ...stops[0].leg_from_previous, source: 'provider_route',
+      geometry: [[origin.lat, origin.lon], [stops[0].lat + 0.0002, stops[0].lon], [stops[0].lat, stops[0].lon]] } },
+    { ...stops[1], leg_from_previous: { ...stops[1].leg_from_previous, source: 'provider_route',
+      geometry: [[stops[0].lat, stops[0].lon], [stops[1].lat, stops[1].lon]] } }
+  ];
+  const htmlMapGeom = renderToStaticMarkup(
+    React.createElement(MapView, { origin, stops: geomStops, legSource: 'provider_route', routingProvider: 'ors' })
+  );
+  const htmlMixed = renderToStaticMarkup(
+    React.createElement(MapView, { origin, legSource: 'straight_line_estimate', stops: [
+      { ...stops[0], leg_from_previous: { ...stops[0].leg_from_previous, source: 'straight_line_estimate',
+        geometry: [[origin.lat, origin.lon], [stops[0].lat, stops[0].lon]] } }] })
+  );
+  record(
+    'TC-DOM-08b',
+    'Provider geometry is drawn as solid route with attribution; estimated legs never get a solid route even if geometry is present',
+    (htmlMapGeom.match(/data-route-geometry="provider"/g) || []).length === 2 &&
+    htmlMapGeom.includes('openrouteservice') &&
+    !htmlMixed.includes('data-route-geometry="provider"'),
+    'route lines only for provider_route legs'
   );
 
   // -------------------------------------------------------------

@@ -121,12 +121,19 @@ export default function ChatPanel({
               {/* Display extracted preferences tags if assistant message */}
               {m.extracted && (
                 <div style={{ marginTop: 8, paddingTop: 6, borderTop: '1px solid rgba(0,0,0,0.08)', fontSize: 12, color: 'var(--text-secondary)' }}>
-                  <div style={{ fontWeight: 600, marginBottom: 2 }}>Trích xuất thông tin:</div>
+                  <div style={{ fontWeight: 600, marginBottom: 2 }}>
+                    Trích xuất thông tin
+                    {m.extractionSource && (
+                      <span data-extraction-source={m.extractionSource} style={{ fontWeight: 500, opacity: 0.8 }}>
+                        {m.extractionSource === 'llm' ? ' (Gemini, đã kiểm tra theo schema)' : ' (bộ luật cục bộ)'}
+                      </span>
+                    )}:
+                  </div>
                   <ul style={{ paddingLeft: 16, margin: 0 }}>
                     {m.extracted.duration_min && <li>Thời lượng: {m.extracted.duration_min} phút</li>}
                     {m.extracted.budget_vnd && (
                       <li>
-                        Ngân sách: {m.extracted.budget_vnd.toLocaleString('vi-VN')} ₫ ({m.extracted.budget_scope === 'group' ? 'cả nhóm' : 'mỗi người'})
+                        Ngân sách: {m.extracted.budget_vnd.toLocaleString('vi-VN')} ₫ ({m.extracted.budget_scope === 'group' ? 'cả nhóm' : m.extracted.budget_scope === 'per_person' ? 'mỗi người' : 'chưa rõ mỗi người hay cả nhóm'})
                       </li>
                     )}
                     {m.extracted.interests && m.extracted.interests.length > 0 && (
