@@ -44,7 +44,11 @@ export default function TourTimeline({
         </div>
 
         <div>
-          <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block' }}>Trần khoảng giá quán</span>
+          <span style={{ fontSize: 11, color: 'var(--text-muted)', display: 'block' }}>
+            {(tour?.stops || []).length > 0 && (tour.stops || []).every((s) => s.price?.semantics === 'per_person' && s.price?.evidence === 'verified')
+              ? 'Tổng giá theo người (đã xác minh)'
+              : 'Trần khoảng giá quán'}
+          </span>
           <strong style={{ fontSize: 15, color: 'var(--text-primary)' }}>
             {totals.venue_range_upper_sum_vnd?.toLocaleString('vi-VN')} ₫
           </strong>

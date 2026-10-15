@@ -103,7 +103,8 @@ export default function ReplaceDiffModal({
     }
     const min = priceObj.min_vnd != null ? priceObj.min_vnd.toLocaleString('vi-VN') : '?';
     const max = priceObj.max_vnd != null ? priceObj.max_vnd.toLocaleString('vi-VN') : '?';
-    return `${min}–${max} ₫ (khoảng giá quán)`;
+    const verifiedPerPerson = priceObj.semantics === 'per_person' && priceObj.evidence === 'verified';
+    return `${min}–${max} ₫ (${verifiedPerPerson ? 'giá theo người, đã xác minh' : 'khoảng giá quán'})`;
   };
 
   const oldPriceDiff = oldStop.price?.max_vnd || 0;

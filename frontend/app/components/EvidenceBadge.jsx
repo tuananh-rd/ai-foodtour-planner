@@ -3,6 +3,11 @@
 export function PriceBadge({ minVnd, maxVnd, evidence = 'estimate', semantics = 'venue_range' }) {
   const isVerified = evidence === 'verified';
   const isEstimate = evidence === 'estimate';
+  // Only a verified overlay price carries per-person semantics; everything else is a venue range.
+  const perPerson = isVerified && semantics === 'per_person';
+  const semanticsNote = perPerson
+    ? 'Giá theo người (đã xác minh từ nguồn bổ sung)'
+    : 'Khoảng giá quán, không bảo đảm chi phí mỗi người';
 
   const bg = isVerified ? 'var(--badge-verified-bg)' : isEstimate ? 'var(--badge-estimate-bg)' : 'var(--badge-unknown-bg)';
   const color = isVerified ? 'var(--badge-verified-text)' : isEstimate ? 'var(--badge-estimate-text)' : 'var(--badge-unknown-text)';
@@ -30,13 +35,13 @@ export function PriceBadge({ minVnd, maxVnd, evidence = 'estimate', semantics = 
           alignItems: 'center',
           gap: 4
         }}
-        title={`Bằng chứng giá: ${label}. Ngữ nghĩa: Khoảng giá quán, không phải hóa đơn mỗi người.`}
+        title={`Bằng chứng giá: ${label}. Ngữ nghĩa: ${perPerson ? 'giá theo người đã xác minh' : 'khoảng giá quán, không phải hóa đơn mỗi người'}.`}
       >
         <span>{symbol} Giá: {displayStr}</span>
         <span style={{ fontSize: 10, opacity: 0.85 }}>({label})</span>
       </span>
       <span style={{ fontSize: 10, color: 'var(--text-muted)', fontStyle: 'italic' }}>
-        * Khoảng giá quán, không bảo đảm chi phí mỗi người
+        * {semanticsNote}
       </span>
     </div>
   );
