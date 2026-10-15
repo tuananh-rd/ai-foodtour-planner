@@ -2,6 +2,6 @@
 
 | Task | Owner | Status | Commit | Reviewer | Evidence / blocker |
 |---|---|---|---|---|---|
-| DATA-BE-00 | Codex | BLOCKED at launch | - | Claude | Codex trust-folder prompt in foodtour-codex-backend; needs human decision |
+| DATA-BE-00 | Codex | In progress (retry ctx_f3ddc4065607) | - | Claude | Trust accepted by human; first attempt ctx_75cf0e331a18 failed at agent_readiness |
 | FE-QA-00 | Antigravity | In progress | - | Claude (+Codex for frontend code) | Started; effective model unreported |
 | ARCH-01 | Claude | In progress | - | Codex, Antigravity | PRD/ADR/contract v1 pending |
