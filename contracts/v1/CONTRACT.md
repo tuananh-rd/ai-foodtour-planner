@@ -94,3 +94,52 @@ Errors: `{error: {code, message, details?}}`. Codes: `validation_error`, `unauth
 - `SessionView.extraction_source` (messages only): `rules | llm`. When the LLM fails, the rule extractor answers and `notes` says so.
 - `/health` additive: `llm_provider (rules|gemini|http|off)`, `llm_model`, `explanation_provider (template|gemini)`, `routing_provider (estimate|ors|osrm)`, `routing_last_error`. Never contains keys.
 - `routing` mode `osrm` now uses OSRM `table` + `route` (foot profile, GeoJSON steps); `ors` uses openrouteservice `foot-walking` matrix + directions.
+
+## v1.5 additions (additive, phase 4 — Google Maps platform)
+Normative for Codex (server) and Antigravity (browser). Field names below are fixed.
+
+### `GET /v1/client-config` (no auth, no secrets beyond the restricted browser key)
+```
+{ "maps": { "provider": "google",
+            "status": "ready" | "unavailable",
+            "reason": null | "not_configured",       // never a key name or value
+            "js_api_key": string | null,             // GOOGLE_MAPS_BROWSER_KEY (referrer-restricted browser key)
+            "map_id": string | null,                 // GOOGLE_MAPS_MAP_ID (required for Advanced Markers)
+            "language": "vi", "region": "VN",
+            "default_center": {"lat": 21.0285, "lon": 105.8522}, "default_zoom": 15 },
+  "geocoding": {"status": "ready" | "unavailable"},   // server-side POST /v1/geocode
+  "routing":   {"provider": "google_routes" | "ors" | "osrm" | "estimate", "status": "ready" | "unavailable"},
+  "privacy":   {"sent_to_google": ["map_tiles", "autocomplete_text", "route_coordinates"], "doc": "docs/PHASE4.md"} }
+```
+`js_api_key` is returned only when `status = ready`.
+
+### `GET /v1/venues/map?min_lat&min_lon&max_lat&max_lon&limit<=500&q?`
+```
+{ "items": [{"id","name","lat","lon","district","dish_tags": [string], "price_max_vnd": int|null, "synthetic": bool}],
+  "total_in_view": int, "truncated": bool, "dataset_source", "dataset_version" }
+```
+Physical venues with valid geo only (`online_only=false`, `geo_ok=true`), deterministic order, never more than `limit`. Evidence fields stay unknown-safe: no opening-hours or per-person claims here.
+
+### `POST /v1/geocode` `{ "query": string (<=200) }` — manual address fallback (server key)
+```
+{ "status": "ok" | "zero_results" | "unavailable" | "quota",
+  "provider": "google_geocoding",
+  "results": [{"label": string, "lat": number, "lon": number, "place_id": string|null}]  // <= 5, Hà Nội-biased
+}
+```
+Rate limited per token; the query text goes to Google (documented). Never returns the key.
+
+### Preferences additions
+`origin_label: string | null` (<=120, display only) and `origin_source: "current_location" | "place" | "manual_coordinates" | "landmark" | "geocoded" | null`. They never affect planning. `current_location` coordinates are session data (TTL) and are never logged.
+
+### Tour additions
+- `totals.route_provider: "google_routes" | "ors" | "osrm" | null`
+- `tour.route_warnings: string[]` — **Google's `routes[].warnings[]` for walking routes; the UI must display them** (Google requires showing the walking warning) next to any drawn route. Empty when estimated.
+- `leg_from_previous.geometry` (v1.4) is produced from Google Routes output only when `source = provider_route`.
+- Estimated legs (`straight_line_estimate`) are NEVER drawn as a route; at most a clearly captioned dashed hint (or nothing).
+
+### Errors / states
+`provider_unavailable` (503) for routing/geocoding provider failures keeps its envelope. The frontend must show labelled unavailable states for: map not configured, geolocation permission denied / timeout / insecure context, autocomplete unavailable, geocode `quota` / `unavailable`, routes unavailable.
+
+### Configuration (server only, git-ignored `backend/.env`)
+`GOOGLE_MAPS_BROWSER_KEY`, `GOOGLE_MAPS_MAP_ID`, `GOOGLE_MAPS_SERVER_KEY`, `FOODTOUR_ROUTING=google`, `FOODTOUR_GEOCODER=google`; plus existing `GEMINI_API_KEY`, `FOODTOUR_LLM=gemini`. Daily budgets: `FOODTOUR_ROUTING_DAILY_BUDGET`, `FOODTOUR_GEOCODE_DAILY_BUDGET`.
