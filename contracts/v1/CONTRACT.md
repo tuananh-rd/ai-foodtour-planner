@@ -68,3 +68,12 @@ Errors: `{error: {code, message, details?}}`. Codes: `validation_error`, `unauth
 3. Unspecified preference slots survive a message revision.
 4. `verified_feasible` needs provider routes, known hours covering arrival..depart, and per-person price evidence within budget; otherwise at best `conditional`, and strict mode returns `insufficient_evidence`.
 5. Sessions are isolated by token; the LLM never receives another session's data.
+
+## v1.1 additions (additive, 2026-10-15, agreed with Codex BE-01)
+- Mutating session endpoints (`messages`, `preferences`, `tour`, `tour/replace`) return one wrapper: `{preferences, missing_slots, questions, tour|null, revision, dataset_source, dataset_version}`. `Tour.revision == revision`. `POST /v1/sessions` returns only `{session_id, token, revision: 0}`.
+- `messages` body is `{text}` only; messages serialize per session (no base_revision).
+- Failed replacement: HTTP 409 `no_candidates`; session and tour unchanged.
+- Unavailable extractor: HTTP 503 `provider_unavailable`.
+- `GET /v1/venues` keeps legacy `items`; `GET /v1/venues/{id}` uses v1 evidence fields.
+- Optional metadata `dataset_source` (`private`/`synthetic`), `dataset_version`, `synthetic` may accompany responses and `/health` so fallback data is labelled in the UI.
+- Fail-closed: a tour that fails `validate_tour` is never returned; error code `internal_validation_failed`, no stops.
