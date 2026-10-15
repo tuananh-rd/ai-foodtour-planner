@@ -211,7 +211,7 @@ export default function Home() {
     setSessionId(null);
     setSessionToken('');
     setRevision(0);
-    setPreferences(DEFAULT_PREFERENCES);
+    setPreferences({ ...DEFAULT_PREFERENCES, origin: { ...DEFAULT_PREFERENCES.origin } });
     setTour(null);
     setMessages([]);
     setMissingSlots([]);

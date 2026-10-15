@@ -66,7 +66,50 @@ export default function PreferencesPanel({
 
   // Place Autocomplete container
   const autocompleteContainerRef = useRef(null);
+  const autocompleteInstanceRef = useRef(null);
   const [placesAvailable, setPlacesAvailable] = useState(false);
+
+  const clearAutocompleteInput = useCallback(() => {
+    const el = autocompleteInstanceRef.current;
+    if (el) {
+      try {
+        if ('value' in el) {
+          el.value = '';
+        }
+      } catch (_) {}
+      try {
+        if (typeof el.clear === 'function') {
+          el.clear();
+        }
+      } catch (_) {}
+      try {
+        const shadowInput = el.shadowRoot?.querySelector('input');
+        if (shadowInput) {
+          shadowInput.value = '';
+          shadowInput.dispatchEvent(new Event('input', { bubbles: true }));
+          shadowInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      } catch (_) {}
+      try {
+        const lightInput = el.querySelector('input');
+        if (lightInput) {
+          lightInput.value = '';
+          lightInput.dispatchEvent(new Event('input', { bubbles: true }));
+          lightInput.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      } catch (_) {}
+    }
+    if (autocompleteContainerRef.current) {
+      try {
+        const inputs = autocompleteContainerRef.current.querySelectorAll('input');
+        inputs.forEach((inp) => {
+          inp.value = '';
+          inp.dispatchEvent(new Event('input', { bubbles: true }));
+          inp.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+      } catch (_) {}
+    }
+  }, []);
 
   const [startTime, setStartTime] = useState(preferences.start_time || '08:30');
   const [weekday, setWeekday] = useState(preferences.weekday ?? 0);
@@ -86,17 +129,27 @@ export default function PreferencesPanel({
     };
   }, [invalidateOriginRequests]);
 
-  // Synchronize or reset origin form state on session epoch or session token changes
+  // Synchronize and reset origin form state unconditionally on session epoch, token, or id changes (G1/F1 fix)
   useEffect(() => {
     invalidateOriginRequests();
-    if (!preferences.origin) {
-      setCustomLat(21.033);
-      setCustomLon(105.850);
-      setOriginLabel(null);
-      setOriginSource(null);
-      setOriginPreset('hoankiem');
-    }
-  }, [sessionEpoch, sessionToken, sessionId, invalidateOriginRequests, preferences.origin]);
+    clearAutocompleteInput();
+    setGeoError(null);
+    setGeoLoading(false);
+    setAddressQuery('');
+    setGeocodingResults([]);
+    setGeocodingStatusMsg(null);
+
+    const defaultLat = preferences?.origin?.lat ?? 21.033;
+    const defaultLon = preferences?.origin?.lon ?? 105.850;
+    const defaultLabel = preferences?.origin_label ?? (preferences?.origin ? 'Hồ Hoàn Kiếm / Phố Cổ' : null);
+    const defaultSource = preferences?.origin_source ?? (preferences?.origin ? 'landmark' : null);
+
+    setCustomLat(defaultLat);
+    setCustomLon(defaultLon);
+    setOriginLabel(defaultLabel);
+    setOriginSource(defaultSource);
+    setOriginPreset('hoankiem');
+  }, [sessionEpoch, sessionToken, sessionId, invalidateOriginRequests, clearAutocompleteInput, preferences]);
 
   // Sync state when preferences change from external source
   useEffect(() => {
@@ -195,6 +248,7 @@ export default function PreferencesPanel({
         });
 
         autocompleteContainerRef.current.appendChild(autocomplete);
+        autocompleteInstanceRef.current = autocomplete;
         setPlacesAvailable(true);
       } catch (_) {
         if (active) setPlacesAvailable(false);
@@ -205,6 +259,7 @@ export default function PreferencesPanel({
 
     return () => {
       active = false;
+      autocompleteInstanceRef.current = null;
       invalidateOriginRequests();
     };
   }, [clientConfig, invalidateOriginRequests]);

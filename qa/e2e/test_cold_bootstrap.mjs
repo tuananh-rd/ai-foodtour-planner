@@ -20,6 +20,7 @@
  * - TC-COLD-12: Stale place details / fetchFields response crossing session reset does NOT overwrite new session.
  * - TC-COLD-13: Superseded geolocation request clears loading state immediately and does not overwrite current origin.
  * - TC-COLD-14: In-flight cancellation cleanly throws AbortError without fallback to synthetic.
+ * - TC-COLD-15: Completed unsaved place selection does NOT leak into new session (label, coordinates, autocomplete revert to defaults).
  */
 
 import { spawn } from 'node:child_process';
@@ -183,6 +184,7 @@ const FAKE_BOOTSTRAP_SCRIPT = `
       this.options = options;
       this.includedRegionCodes = options.includedRegionCodes || null;
       this.locationBias = options.locationBias || null;
+      this._value = '';
       window.__GMAP_EVENTS__.autocompletes.push({
         includedRegionCodes: this.includedRegionCodes,
         locationBias: this.locationBias,
@@ -190,6 +192,9 @@ const FAKE_BOOTSTRAP_SCRIPT = `
       });
       window.__CURRENT_AUTOCOMPLETE__ = this;
     }
+    get value() { return this._value; }
+    set value(v) { this._value = String(v ?? ''); }
+    clear() { this._value = ''; }
   }
 
   if (!customElements.get('gmp-place-autocomplete')) {
@@ -542,7 +547,14 @@ async function runRealBrowserSuite() {
     );
 
     // TC-COLD-11: Map zoom/idle listeners survive session reset (N3 / R-E)
-    // Perform session reset by clicking "Tạo phiên mới"
+    // Strengthened: Enter session reset while at zoom 15 (individual pins, 0 clusters)
+    await ev(`window.__CURRENT_MAP__?.setZoom(15)`);
+    await sleep(400);
+
+    const preResetClusters = await ev(`document.querySelectorAll('.gmp-venue-cluster').length`);
+    const preResetPins = await ev(`document.querySelectorAll('.gmp-venue-marker').length`);
+
+    // Perform session reset by clicking "Tạo phiên mới" while map is at zoom 15
     await ev(`(() => {
       const b = [...document.querySelectorAll('header button, [title*="phiên"]')].find(x => x.innerText.includes('Tạo phiên mới'));
       if (b) b.click();
@@ -565,9 +577,8 @@ async function runRealBrowserSuite() {
     })()`);
     await sleep(500);
 
-    // Reset zoom to 15 (individual pins)
-    await ev(`window.__CURRENT_MAP__?.setZoom(15)`);
-    await sleep(400);
+    // Verify map after reset is at zoom 15 with 0 clusters
+    const postResetZoom15Clusters = await ev(`document.querySelectorAll('.gmp-venue-cluster').length`);
 
     // Zoom out to 12 on the reused map to verify zoom listener fires after reset
     await ev(`window.__CURRENT_MAP__?.setZoom(12)`);
@@ -576,9 +587,9 @@ async function runRealBrowserSuite() {
     const clusterCountAfterReset = await ev(`document.querySelectorAll('.gmp-venue-cluster').length`);
     record(
       'TC-COLD-11',
-      'Map zoom and idle listeners survive session reset without stale closures (zoom 12 yields clusters, not 0)',
-      clusterCountAfterReset > 0,
-      `Clusters after reset: ${clusterCountAfterReset}`
+      'Map zoom and idle listeners survive session reset without stale closures (enter at zoom 15 with 0 clusters, then zoom 12 yields clusters, not 0)',
+      preResetClusters === 0 && preResetPins > 0 && postResetZoom15Clusters === 0 && clusterCountAfterReset > 0,
+      `Pre-reset: ${preResetPins} pins, ${preResetClusters} clusters; Post-reset zoom 15: ${postResetZoom15Clusters} clusters; Post-reset zoom 12: ${clusterCountAfterReset} clusters`
     );
 
     // TC-COLD-12: Stale place details / fetchFields response crossing session reset does NOT write into new session (N1 / R-C)
@@ -683,6 +694,77 @@ async function runRealBrowserSuite() {
       'Superseded geolocation request clears button loading state immediately and ignores late GPS arrival',
       isLoadingInitially && isClearedOnSupersede && geoNotOverwritten,
       `Loading initially: ${isLoadingInitially}, cleared on supersede: ${isClearedOnSupersede}, lat: ${latAfterLateGeo}`
+    );
+
+    // TC-COLD-15: Unsaved place selection does NOT leak into new session (G1 privacy invariant)
+    // Switch to Preferences tab
+    await ev(`(() => {
+      const b = [...document.querySelectorAll('button')].find(x => x.innerText.includes('Tùy chọn'));
+      if (b) b.click();
+    })()`);
+    await sleep(300);
+
+    // User chooses a place in autocomplete WITHOUT saving
+    await ev(`(() => {
+      const fakePlace = {
+        fetchFields: async () => {},
+        displayName: 'Quán Phở Khôi Hói Unsaved',
+        formattedAddress: '50 Hàng Vải, Hoàn Kiếm, Hà Nội',
+        location: { lat: 21.0371, lng: 105.8488 }
+      };
+      if (window.__CURRENT_AUTOCOMPLETE__) {
+        window.__CURRENT_AUTOCOMPLETE__.value = 'Quán Phở Khôi Hói Unsaved';
+      }
+      const evt = new CustomEvent('gmp-select', {
+        detail: { placePrediction: { toPlace: () => fakePlace } }
+      });
+      evt.placePrediction = { toPlace: () => fakePlace };
+      window.__CURRENT_AUTOCOMPLETE__?.dispatchEvent(evt);
+    })()`);
+    await sleep(300);
+
+    // Verify the unsaved place is held in local form state
+    const unsavedLat = await ev(`Number(document.querySelector('#pref-custom-lat')?.value)`);
+    const unsavedLon = await ev(`Number(document.querySelector('#pref-custom-lon')?.value)`);
+    const unsavedLabelHeld = await ev(`document.body.innerText.includes('Quán Phở Khôi Hói Unsaved')`);
+    const unsavedAutoVal = await ev(`window.__CURRENT_AUTOCOMPLETE__?.value || ''`);
+    const unsavedHeld = unsavedLat === 21.0371 && unsavedLon === 105.8488 && unsavedLabelHeld && unsavedAutoVal.includes('Quán Phở Khôi Hói Unsaved');
+
+    // User presses 'Tạo phiên mới' WITHOUT saving preferences
+    await ev(`(() => {
+      const b = [...document.querySelectorAll('header button, [title*="phiên"]')].find(x => x.innerText.includes('Tạo phiên mới'));
+      if (b) b.click();
+    })()`);
+    await sleep(800);
+
+    // Switch back to Preferences tab to verify state after reset
+    await ev(`(() => {
+      const b = [...document.querySelectorAll('button')].find(x => x.innerText.includes('Tùy chọn'));
+      if (b) b.click();
+    })()`);
+    await sleep(300);
+
+    // In a privacy-safe new session, all origin fields and autocomplete input MUST be back to defaults
+    const postResetLat = await ev(`Number(document.querySelector('#pref-custom-lat')?.value)`);
+    const postResetLon = await ev(`Number(document.querySelector('#pref-custom-lon')?.value)`);
+    const oldLabelPresent = await ev(`document.body.innerText.includes('Quán Phở Khôi Hói Unsaved')`);
+    const defaultLabelPresent = await ev(`document.body.innerText.includes('Hồ Hoàn Kiếm / Phố Cổ')`);
+    const postResetAutoVal = await ev(`window.__CURRENT_AUTOCOMPLETE__?.value || ''`);
+
+    const g1Passed = (
+      unsavedHeld &&
+      postResetLat === 21.033 &&
+      postResetLon === 105.850 &&
+      !oldLabelPresent &&
+      defaultLabelPresent &&
+      postResetAutoVal === ''
+    );
+
+    record(
+      'TC-COLD-15',
+      'Completed unsaved place selection does NOT leak into new session (label, coordinates, and autocomplete revert to defaults)',
+      g1Passed,
+      `Unsaved held before reset: ${unsavedHeld}; After reset: lat=${postResetLat} (expected 21.033), lon=${postResetLon} (expected 105.850), oldLabelLeaked=${oldLabelPresent}, defaultLabel=${defaultLabelPresent}, autoVal='${postResetAutoVal}'`
     );
 
   } finally {
