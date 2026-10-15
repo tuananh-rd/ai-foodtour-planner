@@ -97,44 +97,7 @@ PS> curl.exe -s http://localhost:8000/health
 PS> node -e "fetch('http://localhost:8000/v1/plans', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({city:'Hà Nội',lat:21.03,lon:105.85,budget_vnd:200000,duration_min:120,interests:[],mode:'explore'})}).then(r=>r.json()).then(d=>console.log(JSON.stringify(d,null,2)))"
 {
   "status": "conditional_suggestions",
-  "stops": [
-    {
-      "id": "82828",
-      "name": "Bún Dọc Mùng - Bát Đàn",
-      "address": "18 Bát Đàn",
-      "district": "Quận Hoàn Kiếm",
-      "dish_groups": "Trà | Bún | Món nước | Thức uống | Bia | Nước ngọt",
-      "price_min_vnd_norm": 30000,
-      "price_max_vnd_norm": 50000,
-      "hours_displayed": "07:00 - 23:00",
-      "straight_line_leg_km": 0.495,
-      "source_url": "https://www.foody.vn/ha-noi/bun-doc-mung-bat-dan"
-    },
-    {
-      "id": "6734",
-      "name": "Xôi Yến - Nguyễn Hữu Huân",
-      "address": "35B Nguyễn Hữu Huân",
-      "district": "Quận Hoàn Kiếm",
-      "dish_groups": "Xôi | Ăn vặt - Ăn nhẹ",
-      "price_min_vnd_norm": 35000,
-      "price_max_vnd_norm": 44000,
-      "hours_displayed": "06:30 - 23:00",
-      "straight_line_leg_km": 0.721,
-      "source_url": "https://www.foody.vn/ha-noi/xoi-yen-nguyen-huu-huan"
-    },
-    {
-      "id": "111781",
-      "name": "Bún Ốc Sườn - Hai Bà Trưng",
-      "address": "57 Hai Bà Trưng, P. Trần Hưng Đạo",
-      "district": "Quận Hoàn Kiếm",
-      "dish_groups": "Bún | Hải sản | Món nước | Nghêu - Sò - Ốc",
-      "price_min_vnd_norm": 30000,
-      "price_max_vnd_norm": 40000,
-      "hours_displayed": "14:30 - 22:00",
-      "straight_line_leg_km": 1.309,
-      "source_url": "https://www.foody.vn/ha-noi/bun-oc-suon-hai-ba-trung"
-    }
-  ],
+  "stops": [ "<3 stop records redacted: private venue data (id, name, address, source_url) is not committed>" ],
   "venue_range_upper_sum_vnd": 134000,
   "straight_line_total_km": 2.525,
   "schedule_verified": false,
