@@ -40,6 +40,10 @@ class ExtractionResult:
     questions: tuple = ()
     notes: tuple = ()
     rejected_fields: tuple = ()  # values seen but out of range; never silently clamped
+    # Free-text place the user wants to start from that is NOT one of the built-in landmarks.
+    # The API layer resolves it with the server-side geocoder (Google) or asks the user; the
+    # extractor never invents coordinates for it.
+    origin_text: Optional[str] = None
 
 
 class PreferenceExtractor(Protocol):
@@ -145,6 +149,8 @@ class MockExtractor:
         for name, ll in ANCHORS.items():
             if _strip_marks(name) in u:
                 upd["origin"] = ll
+                upd["origin_label"] = name.title()
+                upd["origin_source"] = "landmark"
                 notes.append(f"Điểm xuất phát lấy theo mốc gần đúng '{name}'.")
                 break
         if re.search(r"chac chan|nghiem ngat|da xac minh", u):
