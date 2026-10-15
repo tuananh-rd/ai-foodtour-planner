@@ -1,0 +1,34 @@
+{
+  "runId": "run_b0634cf639d3",
+  "runRecordId": "56b7880e-90ee-442b-b1da-0a464da12e23",
+  "coordinatorTerminal": "term_a08c6353-9bd2-4bae-820f-4d66ed153569",
+  "baselineCommit": "08041a17dbdb99e5ce16ab795bf3bcd9f69e4fe8",
+  "repositoryId": "e37e2046-e0ce-4a5d-b740-42509ac98994",
+  "createdAt": "2026-10-15",
+  "workers": [
+    {
+      "task": "DATA-BE-00",
+      "taskId": "task_be0f9810b29d",
+      "dispatchId": "ctx_75cf0e331a18",
+      "worktreeId": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend",
+      "worktreePath": "C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend",
+      "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
+      "requested": {"agent": "codex", "model": "gpt-6.1-sol", "effort": "medium"},
+      "effective": {"agent": "codex", "model": "gpt-6.1-sol", "effort": "medium"},
+      "outcome": "failed_at_agent_readiness",
+      "detail": "Agent startup blocked: agent-trust-workspace. Codex asks 'Trust this folder?' and would persist trust for the main checkout root (which holds private data). Task never ran. Awaiting human decision; not auto-approved."
+    },
+    {
+      "task": "FE-QA-00",
+      "taskId": "task_ee160cdc8794",
+      "dispatchId": "ctx_43e3477b9c9b",
+      "worktreeId": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web",
+      "worktreePath": "C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web",
+      "terminal": "term_33b34ff2-d401-44f7-906b-025c99e1713c",
+      "requested": {"agent": "antigravity", "model": null, "effort": null},
+      "effective": {"agent": "antigravity", "model": null, "effort": null},
+      "outcome": "ready_turn_started",
+      "detail": "Model/effort omitted to inherit configured default; runtime did not report the effective model, so 3.8 Flash high is NOT verified."
+    }
+  ]
+}
