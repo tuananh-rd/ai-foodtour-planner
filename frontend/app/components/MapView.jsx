@@ -23,20 +23,31 @@ export default function MapView({
   const containerRef = useRef(null);
   const [viewportDims, setViewportDims] = useState({ width: 600, height: 380 });
 
-  // Responsive container width measurement to guarantee 1:1 tile & SVG marker alignment
+  // Responsive container measurement. A hidden tab has clientWidth 0, so observe the element
+  // itself: ResizeObserver fires when the tab becomes visible, keeping SVG viewBox, markers
+  // and tiles in one coordinate system.
   useEffect(() => {
-    if (!containerRef.current) return;
+    const el = containerRef.current;
+    if (!el) return undefined;
     const updateDims = () => {
-      if (containerRef.current) {
-        const w = containerRef.current.clientWidth;
-        if (w > 0) {
-          setViewportDims({ width: w, height: 380 });
-        }
+      const w = el.clientWidth;
+      if (w > 0) {
+        setViewportDims((prev) => (prev.width === w ? prev : { width: w, height: 380 }));
       }
     };
     updateDims();
+    let observer = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(updateDims);
+      observer.observe(el);
+    }
     window.addEventListener('resize', updateDims);
-    return () => window.removeEventListener('resize', updateDims);
+    window.addEventListener('orientationchange', updateDims);
+    return () => {
+      if (observer) observer.disconnect();
+      window.removeEventListener('resize', updateDims);
+      window.removeEventListener('orientationchange', updateDims);
+    };
   }, []);
 
   const viewWidth = viewportDims.width;
