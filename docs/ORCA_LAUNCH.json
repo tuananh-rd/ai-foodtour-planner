@@ -62,7 +62,7 @@
       "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
       "worktree": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend",
       "launch": "reused terminal; requested/effective model not restated (--terminal)",
-      "state": "outcome_unknown (turn start unverified)"
+      "state": "succeeded (4d3fa1b)"
     },
     {
       "task": "FE-01",
@@ -72,6 +72,15 @@
       "worktree": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web",
       "launch": "antigravity, model/effort omitted (configured default; effective not reported)",
       "state": "ready"
+    }
+  ],
+  "wave3": [
+    {
+      "task": "BE-01",
+      "taskId": "task_7634f8a41b2b",
+      "dispatchId": "ctx_4e1639c9fd30",
+      "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
+      "state": "outcome_unknown (turn start unverified)"
     }
   ]
 }
