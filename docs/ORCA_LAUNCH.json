@@ -9,14 +9,29 @@
     {
       "task": "DATA-BE-00",
       "taskId": "task_be0f9810b29d",
-      "dispatchId": "ctx_75cf0e331a18",
+      "dispatchId": "ctx_f3ddc4065607",
       "worktreeId": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend",
       "worktreePath": "C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend",
       "terminal": "term_80f429c1-def5-44fe-a042-5dcea458639f",
-      "requested": {"agent": "codex", "model": "gpt-6.1-sol", "effort": "medium"},
-      "effective": {"agent": "codex", "model": "gpt-6.1-sol", "effort": "medium"},
-      "outcome": "failed_at_agent_readiness",
-      "detail": "Agent startup blocked: agent-trust-workspace. Codex asks 'Trust this folder?' and would persist trust for the main checkout root (which holds private data). Task never ran. Awaiting human decision; not auto-approved."
+      "requested": {
+        "agent": "codex",
+        "model": "gpt-6.1-sol",
+        "effort": "medium"
+      },
+      "effective": {
+        "agent": "codex",
+        "model": "gpt-6.1-sol",
+        "effort": "medium",
+        "evidence": "first launch receipt for terminal process incarnation 3b8d4cc5 (same process reused); retry receipt launch.* is null because --terminal reuse cannot restate model/effort"
+      },
+      "outcome": "ready_turn_started",
+      "detail": "Human accepted Codex trust prompt and ran the retry; same worktree and terminal reused, no duplicate worktree.",
+      "failedAttempt": {
+        "dispatchId": "ctx_75cf0e331a18",
+        "outcome": "failed_at_agent_readiness",
+        "detail": "Agent startup blocked: agent-trust-workspace. Codex asks 'Trust this folder?' and would persist trust for the main checkout root (which holds private data). Task never ran. Awaiting human decision; not auto-approved."
+      },
+      "retryOf": "ctx_75cf0e331a18"
     },
     {
       "task": "FE-QA-00",
@@ -25,8 +40,16 @@
       "worktreeId": "e37e2046-e0ce-4a5d-b740-42509ac98994::C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web",
       "worktreePath": "C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web",
       "terminal": "term_33b34ff2-d401-44f7-906b-025c99e1713c",
-      "requested": {"agent": "antigravity", "model": null, "effort": null},
-      "effective": {"agent": "antigravity", "model": null, "effort": null},
+      "requested": {
+        "agent": "antigravity",
+        "model": null,
+        "effort": null
+      },
+      "effective": {
+        "agent": "antigravity",
+        "model": null,
+        "effort": null
+      },
       "outcome": "ready_turn_started",
       "detail": "Model/effort omitted to inherit configured default; runtime did not report the effective model, so 3.8 Flash high is NOT verified."
     }
