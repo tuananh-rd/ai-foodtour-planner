@@ -821,6 +821,240 @@
         "title": "TourView",
         "type": "object"
       },
+      "VenueList": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_source": {
+            "enum": [
+              "private",
+              "synthetic"
+            ],
+            "title": "Dataset Source",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/VenueListItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset",
+          "dataset_source",
+          "dataset_version"
+        ],
+        "title": "VenueList",
+        "type": "object"
+      },
+      "VenueListItem": {
+        "additionalProperties": false,
+        "description": "Explicit legacy aliases over validated snapshot fields, never raw rows.",
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "city": {
+            "title": "City",
+            "type": "string"
+          },
+          "cuisine_styles": {
+            "title": "Cuisine Styles",
+            "type": "null"
+          },
+          "dataset_source": {
+            "enum": [
+              "private",
+              "synthetic"
+            ],
+            "title": "Dataset Source",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "dish_groups": {
+            "title": "Dish Groups",
+            "type": "string"
+          },
+          "dish_tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dish Tags",
+            "type": "array"
+          },
+          "district": {
+            "title": "District",
+            "type": "string"
+          },
+          "foody_id": {
+            "title": "Foody Id",
+            "type": "string"
+          },
+          "geo_ok": {
+            "title": "Geo Ok",
+            "type": "boolean"
+          },
+          "geo_status": {
+            "enum": [
+              "ok",
+              "unknown"
+            ],
+            "title": "Geo Status",
+            "type": "string"
+          },
+          "hours": {
+            "$ref": "#/components/schemas/Hours"
+          },
+          "hours_displayed": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hours Displayed"
+          },
+          "hours_status": {
+            "const": "unknown",
+            "default": "unknown",
+            "title": "Hours Status",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "online_only": {
+            "title": "Online Only",
+            "type": "boolean"
+          },
+          "price": {
+            "$ref": "#/components/schemas/Price"
+          },
+          "price_max_vnd_norm": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Max Vnd Norm"
+          },
+          "price_min_vnd_norm": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Price Min Vnd Norm"
+          },
+          "price_semantics": {
+            "const": "venue_range",
+            "default": "venue_range",
+            "title": "Price Semantics",
+            "type": "string"
+          },
+          "price_status": {
+            "enum": [
+              "ok",
+              "unknown"
+            ],
+            "title": "Price Status",
+            "type": "string"
+          },
+          "source_url": {
+            "title": "Source Url",
+            "type": "string"
+          },
+          "synthetic": {
+            "title": "Synthetic",
+            "type": "boolean"
+          },
+          "venue_types": {
+            "anyOf": [
+              {
+                "const": "Shop Online",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue Types"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "city",
+          "address",
+          "district",
+          "lat",
+          "lon",
+          "source_url",
+          "dish_tags",
+          "online_only",
+          "geo_ok",
+          "synthetic",
+          "price",
+          "hours",
+          "dataset_source",
+          "dataset_version",
+          "foody_id",
+          "dish_groups",
+          "venue_types",
+          "geo_status",
+          "price_min_vnd_norm",
+          "price_max_vnd_norm",
+          "price_status",
+          "hours_displayed"
+        ],
+        "title": "VenueListItem",
+        "type": "object"
+      },
       "VenueView": {
         "additionalProperties": false,
         "properties": {
@@ -1845,8 +2079,32 @@
             "required": false,
             "schema": {
               "default": "Hà Nội",
+              "maxLength": 100,
               "title": "City",
               "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
             }
           }
         ],
@@ -1854,7 +2112,9 @@
           "200": {
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "$ref": "#/components/schemas/VenueList"
+                }
               }
             },
             "description": "Successful Response"

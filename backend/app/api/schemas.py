@@ -115,6 +115,30 @@ class VenueView(Model):
     dataset_version: str
 
 
+class VenueListItem(VenueView):
+    """Explicit legacy aliases over validated snapshot fields, never raw rows."""
+    foody_id: str
+    dish_groups: str
+    cuisine_styles: None = None  # The canonical snapshot does not retain this field.
+    venue_types: Literal["Shop Online"] | None
+    geo_status: Literal["ok", "unknown"]
+    price_min_vnd_norm: int | None
+    price_max_vnd_norm: int | None
+    price_status: Literal["ok", "unknown"]
+    price_semantics: Literal["venue_range"] = "venue_range"
+    hours_displayed: str | None
+    hours_status: Literal["unknown"] = "unknown"
+
+
+class VenueList(Model):
+    items: list[VenueListItem]
+    total: int
+    limit: int
+    offset: int
+    dataset_source: Literal["private", "synthetic"]
+    dataset_version: str
+
+
 class LegView(Model):
     minutes: int | None
     km: float

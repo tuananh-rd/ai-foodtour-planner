@@ -1,7 +1,7 @@
 """Contract-v1 endpoints. All session mutations are atomic and checked."""
 from dataclasses import asdict
 
-from fastapi import APIRouter, Header, Request
+from fastapi import APIRouter, Header, Query, Request
 from pydantic import ValidationError
 
 from app.api import legacy
@@ -9,7 +9,7 @@ from app.api.errors import APIError
 from app.api.schemas import (
     ErrorResponse, Health, Hours, LegView, MessageRequest, PreferencesRequest,
     PreferencesSchema, Price, ReplaceRequest, RevisionRequest, SessionCreated,
-    SessionView, StopView, Totals, TourView, VenueView, clock,
+    SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
 )
 from app.data import DatasetLoadError
 from app.llm.explain import explain
@@ -96,9 +96,31 @@ def health(request: Request):
                   dataset_version=data.dataset_version)
 
 
-@router.get("/v1/venues")
-def venues(city: str = "Hà Nội"):
-    return {"items": [r for r in legacy.load() if r["city"] == city]}
+def venue_view(v, data):
+    return VenueView(
+        id=v.id, name=v.name, city=v.city, address=v.address, district=v.district,
+        lat=v.lat, lon=v.lon, source_url=v.source_url, dish_tags=list(v.dish_tags),
+        online_only=v.online_only, geo_ok=v.geo_ok, synthetic=v.synthetic,
+        price=price(v), hours=Hours(status="unknown", display=v.hours_display),
+        dataset_source=public_source(data), dataset_version=data.dataset_version,
+    )
+
+
+@router.get("/v1/venues", response_model=VenueList)
+def venues(request: Request, city: str = Query(default="Hà Nội", max_length=100),
+           limit: int = Query(default=50, ge=1, le=200), offset: int = Query(default=0, ge=0)):
+    data = snapshot(request)
+    selected = [v for v in data.venues if v.city == city]
+    items = [VenueListItem(
+        **venue_view(v, data).model_dump(), foody_id=v.id,
+        dish_groups=" | ".join(v.dish_tags), venue_types="Shop Online" if v.online_only else None,
+        geo_status="ok" if v.geo_ok else "unknown", price_min_vnd_norm=v.price_min_vnd,
+        price_max_vnd_norm=v.price_max_vnd,
+        price_status="ok" if v.price_min_vnd is not None and v.price_max_vnd is not None else "unknown",
+        hours_displayed=v.hours_display,
+    ) for v in selected[offset:offset + limit]]
+    return VenueList(items=items, total=len(selected), limit=limit, offset=offset,
+                     dataset_source=public_source(data), dataset_version=data.dataset_version)
 
 
 @router.get("/v1/venues/{venue_id}", response_model=VenueView)
@@ -107,13 +129,7 @@ def venue_detail(venue_id: str, request: Request):
     v = next((v for v in data.venues if v.id == venue_id), None)
     if v is None:
         raise APIError(404, "no_candidates", "Không tìm thấy địa điểm.")
-    return VenueView(
-        id=v.id, name=v.name, city=v.city, address=v.address, district=v.district,
-        lat=v.lat, lon=v.lon, source_url=v.source_url, dish_tags=list(v.dish_tags),
-        online_only=v.online_only, geo_ok=v.geo_ok, synthetic=v.synthetic,
-        price=price(v), hours=Hours(status="unknown", display=v.hours_display),
-        dataset_source=public_source(data), dataset_version=data.dataset_version,
-    )
+    return venue_view(v, data)
 
 
 @router.post("/v1/plans")
