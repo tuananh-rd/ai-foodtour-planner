@@ -31,6 +31,7 @@ class SessionStoreInterface(Protocol):
     def create(self) -> dict: ...
     def owned(self, identity: str, token: str) -> ContextManager[Session]: ...
     def check_revision(self, session: Session, expected: int) -> None: ...
+    def authorize_token(self, token: str) -> None: ...
 
 
 class SessionStore:
@@ -93,3 +94,19 @@ class SessionStore:
         if expected != session.revision:
             raise APIError(409, "revision_conflict", "Phiên đã thay đổi; hãy dùng bản sửa đổi mới nhất.",
                            {"revision": session.revision})
+
+    def authorize_token(self, token):
+        """Authenticate a token-only auxiliary operation without exposing session identity."""
+        if not token or len(token) > 200:
+            raise APIError(401, 'unauthorized_session', 'Thiếu thông tin xác thực phiên.')
+        digest = hashlib.sha256(token.encode()).digest()
+        with self._lock:
+            self._expire(self.clock())
+            identity = None
+            for key, session in self._sessions.items():
+                if secrets.compare_digest(session.token_hash, digest):
+                    identity = key
+            if identity is None:
+                raise APIError(403, 'unauthorized_session', 'Không có quyền truy cập phiên.')
+            with self.owned(identity, token):
+                pass

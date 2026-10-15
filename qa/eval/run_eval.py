@@ -43,6 +43,10 @@ def check_extraction(res, sc) -> list:
             out.append(f"{k}={getattr(p, k)!r} != {want!r}")
     if "expect_missing" in sc and sorted(sc["expect_missing"]) != sorted(res.missing_slots):
         out.append(f"missing_slots {sorted(res.missing_slots)} != {sorted(sc['expect_missing'])}")
+    if "expect_origin_text" in sc:
+        got = fold(res.origin_text or "")
+        if fold(sc["expect_origin_text"]) not in got:
+            out.append(f"origin_text {'present' if res.origin_text else 'missing'} but does not contain expected place")
     if "expect_mode" in sc and p.mode != sc["expect_mode"]:
         out.append(f"mode {p.mode}")
     if "expect_budget" in sc and p.budget_vnd != sc["expect_budget"]:
@@ -67,6 +71,7 @@ def main() -> int:
     ds = load_dataset(a.data) if a.data else load_dataset()
     venues = list(ds.venues)
     scenarios = json.loads((Path(__file__).with_name("scenarios.json")).read_text(encoding="utf-8"))["scenarios"]
+    scenarios = [s for s in scenarios if a.extractor == "gemini" or not s.get("llm_only")]  # llm_only needs a real LLM
     ex = MockExtractor()
     explainer = None
     if a.extractor == "gemini" or a.explain == "gemini":
@@ -85,6 +90,8 @@ def main() -> int:
     rows, lat = [], []
     invalid_total = tours_total = ext_ok = 0
     for sc in scenarios:
+        if sc.get("llm_only") and a.extractor != "gemini":
+            continue  # free-text places need the LLM; the rule extractor only knows built-in landmarks
         t_ext = time.perf_counter()
         res = ex.extract(sc["text"])
         ext_latency.append((time.perf_counter() - t_ext) * 1000)

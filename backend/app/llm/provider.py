@@ -52,6 +52,15 @@ def _terms(v):
     return tuple(out)
 
 
+def _place_text(v):
+    if not isinstance(v, str):
+        raise ValueError
+    v = v.strip()
+    if not 2 <= len(v) <= 120 or CONTROL.search(v):
+        raise ValueError
+    return v
+
+
 def _origin(v):
     if not isinstance(v, dict) or set(v) != {"lat", "lon"}:
         raise ValueError
@@ -93,6 +102,10 @@ SCHEMA = {
     "exclusions": ("exclusions", _terms),
     "max_stops": ("max_stops", lambda v: _int(v, 1, 5)),
     "mode": ("mode", _enum("explore", "strict")),
+    # Not a Preferences field: carried on ExtractionResult.origin_text for server-side geocoding.
+    "origin_text": ("origin_text", lambda v: _place_text(v)),
+    "origin_label": ("origin_label", lambda v: _place_text(v)),
+    "origin_source": ("origin_source", _enum("landmark")),
 }
 
 
@@ -154,10 +167,21 @@ class LLMExtractor:
             return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Phản hồi LLM không hợp lệ.",))
         if rejected:
             notes.append("Một số trường từ mô hình không hợp lệ nên bị bỏ qua: " + ", ".join(sorted(set(rejected))) + ".")
+        origin_text = updates.pop("origin_text", None)
+        if "origin" in updates and updates.get("origin_source") != "landmark":
+            updates.pop("origin_label", None)  # a label without a server-resolved landmark is not trusted
+        if "origin" not in updates:
+            updates.pop("origin_label", None)
+            updates.pop("origin_source", None)
+        else:
+            origin_text = None  # already resolved by a built-in landmark
         merged = replace(p, **updates)
         miss = tuple(missing_slots(merged))
+        if origin_text and merged.origin is None:
+            miss = tuple(miss)  # origin stays missing until the API geocodes origin_text or the user answers
         return ExtractionResult("ok", "live", merged, tuple(sorted(updates)), miss,
-                                tuple(QUESTIONS[m] for m in miss if m in QUESTIONS), tuple(notes), tuple(sorted(set(rejected))))
+                                tuple(QUESTIONS[m] for m in miss if m in QUESTIONS), tuple(notes),
+                                tuple(sorted(set(rejected))), origin_text)
 
 
 class FallbackExtractor:

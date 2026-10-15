@@ -156,3 +156,25 @@ class SQLiteSessionStore:
             db.execute('UPDATE sessions SET preferences=?,revision=?,tour=? WHERE id=? AND revision=?',
                        (PreferencesSchema.from_domain(session.preferences).model_dump_json(),
                         session.revision, encoded_tour, identity, row[2]))
+
+    def authorize_token(self, token):
+        if not token or len(token) > 200:
+            raise APIError(401, 'unauthorized_session', 'Thiếu thông tin xác thực phiên.')
+        digest, match = hashlib.sha256(token.encode()).digest(), None
+        with self._transaction() as db:
+            now = self.clock()
+            self._purge(db, now)
+            for identity, expected, expiry in db.execute('SELECT id,token_hash,expires_at FROM sessions'):
+                if isinstance(expected, bytes) and secrets.compare_digest(expected, digest) and expiry > now:
+                    match = (identity, expected, expiry)
+        if match is None:
+            raise APIError(403, 'unauthorized_session', 'Không có quyền truy cập phiên.')
+        identity, expected, expiry = match
+        with self._rates._lock:
+            self._rates._expire(now)
+            if identity not in self._rates._sessions:
+                self._rates._sessions[identity] = Session(expected, expiry, window_start=now)
+            while len(self._rates._sessions) > self.max_sessions:
+                del self._rates._sessions[next(iter(self._rates._sessions))]
+            with self._rates.owned(identity, token):
+                pass

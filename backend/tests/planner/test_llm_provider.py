@@ -1,6 +1,7 @@
 import json
 import unittest
 
+from app.llm.extract import MockExtractor
 from app.llm.provider import LLMExtractor, ProviderError, parse_and_validate
 from app.planner.types import Preferences
 
@@ -84,6 +85,36 @@ class Hardening(unittest.TestCase):
         LLMExtractor(f).extract("đổi giờ", Preferences(start_time_min=8 * 60 + 30, weekday=2))
         prior = f.calls[0][1]
         self.assertEqual((prior["start_time"], prior["weekday"]), ("08:30", 2))
+
+
+class OriginText(unittest.TestCase):
+    def test_free_text_place_is_carried_not_resolved(self):
+        r = LLMExtractor(Fake(json.dumps({"origin_text": "chợ Đồng Xuân", "duration_min": 120}))).extract("x")
+        self.assertEqual(r.origin_text, "chợ Đồng Xuân")
+        self.assertIsNone(r.preferences.origin)
+        self.assertIn("origin", r.missing_slots)  # stays missing until server-side geocoding or the user answers
+
+    def test_model_cannot_set_label_or_source_without_landmark(self):
+        r = LLMExtractor(Fake(json.dumps({"origin_label": "Nhà tôi", "origin_source": "landmark"}))).extract("x")
+        self.assertIsNone(r.preferences.origin_label)
+        self.assertIsNone(r.preferences.origin_source)
+        bad = LLMExtractor(Fake(json.dumps({"origin_text": "a\x00b"}))).extract("x")
+        self.assertIsNone(bad.origin_text)
+        self.assertIn("origin_text", bad.rejected_fields)
+
+    def test_landmark_sets_label_and_source(self):
+        from app.providers.gemini import GeminiExtractionProvider
+        class C:
+            configured = True
+            def generate_json(self, *a, **k):
+                return {"origin_landmark": "hồ gươm", "origin_text": "Hồ Gươm"}
+        r = LLMExtractor(GeminiExtractionProvider(C())).extract("quanh Hồ Gươm")
+        self.assertEqual((r.preferences.origin_source, r.preferences.origin_label), ("landmark", "Hồ Gươm"))
+        self.assertIsNone(r.origin_text)
+
+    def test_rules_extractor_labels_landmarks(self):
+        r = MockExtractor().extract("ăn phở quanh Phố cổ")
+        self.assertEqual((r.preferences.origin_source, r.preferences.origin_label), ("landmark", "Phố Cổ"))
 
 
 if __name__ == "__main__":

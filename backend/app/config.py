@@ -1,6 +1,6 @@
 """Local, git-ignored configuration loader (backend/.env). No dependency, no secret output.
 
-Only project keys are accepted (FOODTOUR_*, GEMINI_API_KEY, ORS_API_KEY). Existing process
+Only project keys are accepted (FOODTOUR_*, provider keys, Maps ID and WEB_ORIGIN). Existing process
 environment always wins. Values are never logged or returned; callers get key NAMES only.
 """
 from __future__ import annotations
@@ -10,7 +10,7 @@ import re
 from pathlib import Path
 
 DEFAULT_PATH = Path(__file__).resolve().parents[1] / ".env"
-ALLOWED = re.compile(r"^(FOODTOUR_[A-Z0-9_]+|GEMINI_API_KEY|ORS_API_KEY)$")
+ALLOWED = re.compile(r"^(FOODTOUR_[A-Z0-9_]+|GEMINI_API_KEY|ORS_API_KEY|GOOGLE_MAPS_(SERVER_KEY|BROWSER_KEY|MAP_ID)|WEB_ORIGIN)$")
 
 
 def load_local_env(path: Path | None = None) -> list:

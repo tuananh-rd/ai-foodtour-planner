@@ -50,6 +50,9 @@ class Preferences:
     exclusions: tuple = ()
     max_stops: int = 3
     mode: Mode = "explore"
+    # Display/provenance only; never affects planning (contract v1.5).
+    origin_label: Optional[str] = None
+    origin_source: Optional[str] = None  # current_location|place|manual_coordinates|landmark|geocoded
     visit_minutes: int = 45  # explicit exploration assumption, not source data
     max_leg_min: int = 20
 
