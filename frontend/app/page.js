@@ -87,6 +87,7 @@ export default function Home() {
   // F3 Race Condition Guards: Request token & AbortController
   const requestTokenRef = useRef(0);
   const abortControllerRef = useRef(null);
+  const [sessionEpoch, setSessionEpoch] = useState(0);
 
   function startAsyncAction(actionType = '', payload = null) {
     if (abortControllerRef.current) {
@@ -203,6 +204,7 @@ export default function Home() {
   // Atomically create or reset session, clearing all session-owned state
   async function initSession() {
     const token = cancelAllPendingActions();
+    setSessionEpoch((prev) => prev + 1);
     setBusy(true);
     clearAllErrors();
     // Synchronously reset all session-owned state
@@ -867,6 +869,8 @@ export default function Home() {
               isMock={isMock}
               clientConfig={clientConfig}
               sessionToken={sessionToken}
+              sessionId={sessionId}
+              sessionEpoch={sessionEpoch}
             />
           </div>
 

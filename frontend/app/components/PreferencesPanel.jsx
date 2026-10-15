@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { geocodeAddress } from '../../lib/api';
 import { loadGoogleMaps } from '../../lib/googleMapsLoader';
 
@@ -23,7 +23,9 @@ export default function PreferencesPanel({
   busy,
   isMock,
   clientConfig,
-  sessionToken = ''
+  sessionToken = '',
+  sessionId = null,
+  sessionEpoch = 0
 }) {
   const [originPreset, setOriginPreset] = useState('hoankiem');
   const [customLat, setCustomLat] = useState(21.033);
@@ -31,13 +33,30 @@ export default function PreferencesPanel({
   const [originLabel, setOriginLabel] = useState(preferences.origin_label || null);
   const [originSource, setOriginSource] = useState(preferences.origin_source || null);
 
-  // Origin selection race guard token
+  // Origin selection race guard token and session epoch tracking
   const originGenerationRef = useRef(0);
+  const sessionEpochRef = useRef(sessionEpoch);
+  sessionEpochRef.current = sessionEpoch;
   const geocodeAbortRef = useRef(null);
 
   // Geolocation state
   const [geoError, setGeoError] = useState(null);
   const [geoLoading, setGeoLoading] = useState(false);
+
+  // Invalidate any ongoing origin lookups (geolocation, manual geocode, place details)
+  const invalidateOriginRequests = useCallback(() => {
+    originGenerationRef.current++;
+    if (geocodeAbortRef.current) {
+      try {
+        geocodeAbortRef.current.abort();
+      } catch (_) {}
+      geocodeAbortRef.current = null;
+    }
+    setGeoLoading(false);
+    setGeocodingLoading(false);
+    setGeocodingResults([]);
+    setGeocodingStatusMsg(null);
+  }, []);
 
   // Manual Geocoding fallback state
   const [addressQuery, setAddressQuery] = useState('');
@@ -60,15 +79,24 @@ export default function PreferencesPanel({
   const [maxStops, setMaxStops] = useState(preferences.max_stops || 3);
   const [mode, setMode] = useState(preferences.mode || 'explore');
 
-  // Cancel geocode search and bump generation on unmount
+  // Cancel origin requests on unmount
   useEffect(() => {
     return () => {
-      originGenerationRef.current++;
-      if (geocodeAbortRef.current) {
-        geocodeAbortRef.current.abort();
-      }
+      invalidateOriginRequests();
     };
-  }, []);
+  }, [invalidateOriginRequests]);
+
+  // Synchronize or reset origin form state on session epoch or session token changes
+  useEffect(() => {
+    invalidateOriginRequests();
+    if (!preferences.origin) {
+      setCustomLat(21.033);
+      setCustomLon(105.850);
+      setOriginLabel(null);
+      setOriginSource(null);
+      setOriginPreset('hoankiem');
+    }
+  }, [sessionEpoch, sessionToken, sessionId, invalidateOriginRequests, preferences.origin]);
 
   // Sync state when preferences change from external source
   useEffect(() => {
@@ -96,18 +124,17 @@ export default function PreferencesPanel({
     if (typeof window === 'undefined') return;
 
     async function initPlacesAutocomplete() {
-      const isTestFake = typeof window !== 'undefined' && Boolean(window.__TEST_FAKE_GOOGLE_MAPS__);
       const mapsConfig = clientConfig?.maps;
       const isConfigReady = mapsConfig && mapsConfig.status === 'ready' && mapsConfig.js_api_key;
 
-      if (!isConfigReady && !isTestFake) {
+      if (!isConfigReady) {
         setPlacesAvailable(false);
         return;
       }
 
       try {
         const { places } = await loadGoogleMaps({
-          apiKey: mapsConfig?.js_api_key || 'TEST_KEY',
+          apiKey: mapsConfig.js_api_key,
           language: mapsConfig?.language || 'vi',
           region: mapsConfig?.region || 'VN'
         });
@@ -135,9 +162,13 @@ export default function PreferencesPanel({
         } catch (_) {}
         autocomplete.setAttribute('aria-label', 'Tìm kiếm địa điểm với Google Maps (Hà Nội)');
 
-        autocomplete.addEventListener('gmp-select', async ({ placePrediction }) => {
+        autocomplete.addEventListener('gmp-select', async (event) => {
+          const placePrediction = event?.placePrediction || event?.detail?.placePrediction;
           if (!placePrediction) return;
-          const currentGen = ++originGenerationRef.current;
+          invalidateOriginRequests();
+          const opEpoch = sessionEpochRef.current;
+          const opGen = originGenerationRef.current;
+
           try {
             const place = typeof placePrediction.toPlace === 'function' ? placePrediction.toPlace() : placePrediction;
             if (typeof place?.fetchFields === 'function') {
@@ -145,7 +176,7 @@ export default function PreferencesPanel({
                 fields: ['displayName', 'formattedAddress', 'location']
               });
             }
-            if (!active || currentGen !== originGenerationRef.current) return;
+            if (!active || opEpoch !== sessionEpochRef.current || opGen !== originGenerationRef.current) return;
 
             const loc = place?.location;
             if (loc) {
@@ -172,25 +203,19 @@ export default function PreferencesPanel({
 
     initPlacesAutocomplete();
 
-    const handleTestInit = () => initPlacesAutocomplete();
-    if (typeof window !== 'undefined') {
-      window.addEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
-    }
-
     return () => {
       active = false;
-      originGenerationRef.current++;
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
-      }
+      invalidateOriginRequests();
     };
-  }, [clientConfig]);
+  }, [clientConfig, invalidateOriginRequests]);
 
   // Explicit Click: Dùng vị trí hiện tại
   const handleGetCurrentPosition = (e) => {
     e.preventDefault();
     setGeoError(null);
-    const currentGen = ++originGenerationRef.current;
+    invalidateOriginRequests();
+    const opEpoch = sessionEpochRef.current;
+    const opGen = originGenerationRef.current;
 
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setGeoError('Trình duyệt của bạn không hỗ trợ định vị (Geolocation API).');
@@ -206,7 +231,7 @@ export default function PreferencesPanel({
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        if (currentGen !== originGenerationRef.current) return;
+        if (opEpoch !== sessionEpochRef.current || opGen !== originGenerationRef.current) return;
         setGeoLoading(false);
         const lat = Math.round(position.coords.latitude * 1e6) / 1e6;
         const lon = Math.round(position.coords.longitude * 1e6) / 1e6;
@@ -217,7 +242,7 @@ export default function PreferencesPanel({
         setOriginPreset('custom');
       },
       (error) => {
-        if (currentGen !== originGenerationRef.current) return;
+        if (opEpoch !== sessionEpochRef.current || opGen !== originGenerationRef.current) return;
         setGeoLoading(false);
         if (error.code === 1) { // PERMISSION_DENIED
           setGeoError('Bạn đã từ chối quyền truy cập vị trí. Hãy bật lại quyền trong cài đặt trình duyệt hoặc chọn địa điểm thủ công.');
@@ -243,20 +268,20 @@ export default function PreferencesPanel({
     const query = (addressQuery || '').trim();
     if (!query) return;
 
-    if (geocodeAbortRef.current) {
-      geocodeAbortRef.current.abort();
-    }
+    invalidateOriginRequests();
     const controller = new AbortController();
     geocodeAbortRef.current = controller;
 
-    const currentGen = ++originGenerationRef.current;
+    const opEpoch = sessionEpochRef.current;
+    const opGen = originGenerationRef.current;
+
     setGeocodingLoading(true);
     setGeocodingStatusMsg(null);
     setGeocodingResults([]);
 
     try {
       const res = await geocodeAddress(query, sessionToken, { signal: controller.signal });
-      if (currentGen !== originGenerationRef.current) return;
+      if (opEpoch !== sessionEpochRef.current || opGen !== originGenerationRef.current) return;
       if (res.status === 'ok' && Array.isArray(res.results) && res.results.length > 0) {
         setGeocodingResults(res.results);
       } else if (res.status === 'zero_results') {
@@ -268,17 +293,17 @@ export default function PreferencesPanel({
       }
     } catch (err) {
       if (err.name === 'AbortError') return;
-      if (currentGen !== originGenerationRef.current) return;
+      if (opEpoch !== sessionEpochRef.current || opGen !== originGenerationRef.current) return;
       setGeocodingStatusMsg(err.message || 'Lỗi khi tìm toạ độ địa chỉ.');
     } finally {
-      if (currentGen === originGenerationRef.current) {
+      if (opEpoch === sessionEpochRef.current && opGen === originGenerationRef.current) {
         setGeocodingLoading(false);
       }
     }
   };
 
   const handleSelectGeocodeResult = (result) => {
-    originGenerationRef.current++;
+    invalidateOriginRequests();
     setCustomLat(Math.round(result.lat * 1e6) / 1e6);
     setCustomLon(Math.round(result.lon * 1e6) / 1e6);
     setOriginLabel(result.label.slice(0, 120));
@@ -289,7 +314,7 @@ export default function PreferencesPanel({
   };
 
   const handlePresetChange = (presetId) => {
-    originGenerationRef.current++;
+    invalidateOriginRequests();
     setOriginPreset(presetId);
     const loc = PRESET_LOCATIONS.find((p) => p.id === presetId);
     if (loc && presetId !== 'custom') {
@@ -610,7 +635,7 @@ export default function PreferencesPanel({
                 step="any"
                 value={customLat}
                 onChange={(e) => {
-                  originGenerationRef.current++;
+                  invalidateOriginRequests();
                   setCustomLat(Number(e.target.value));
                   setOriginSource('manual_coordinates');
                   setOriginPreset('custom');
@@ -630,7 +655,7 @@ export default function PreferencesPanel({
                 step="any"
                 value={customLon}
                 onChange={(e) => {
-                  originGenerationRef.current++;
+                  invalidateOriginRequests();
                   setCustomLon(Number(e.target.value));
                   setOriginSource('manual_coordinates');
                   setOriginPreset('custom');

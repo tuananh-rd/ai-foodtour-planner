@@ -21,6 +21,7 @@ export default function MapView({
   const markersRef = useRef([]);
   const polylinesRef = useRef([]);
   const venueMarkersRef = useRef([]);
+  const zoomListenerRef = useRef(null);
 
   // Map state: 'loading' | 'ready' | 'unavailable' | 'key_rejected' | 'blocked'
   const [mapState, setMapState] = useState('loading');
@@ -96,11 +97,10 @@ export default function MapView({
     let active = true;
 
     async function initMap() {
-      const isTestFake = typeof window !== 'undefined' && Boolean(window.__TEST_FAKE_GOOGLE_MAPS__);
       const mapsConfig = clientConfig?.maps;
       const isConfigReady = mapsConfig && mapsConfig.status === 'ready' && mapsConfig.js_api_key;
 
-      if (!isConfigReady && !isTestFake) {
+      if (!isConfigReady) {
         if (!active) return;
         setMapState('unavailable');
         setUnavailableReason(mapsConfig?.reason || 'not_configured');
@@ -116,7 +116,7 @@ export default function MapView({
 
       try {
         const { maps } = await loadGoogleMaps({
-          apiKey: mapsConfig?.js_api_key || 'TEST_KEY',
+          apiKey: mapsConfig.js_api_key,
           language: mapsConfig?.language || 'vi',
           region: mapsConfig?.region || 'VN'
         });
@@ -138,15 +138,6 @@ export default function MapView({
             fullscreenControl: true
           });
           mapInstanceRef.current = map;
-
-          if (map.addListener) {
-            map.addListener('zoom_changed', () => {
-              if (active && mapInstanceRef.current) {
-                const z = typeof mapInstanceRef.current.getZoom === 'function' ? mapInstanceRef.current.getZoom() : 15;
-                setCurrentZoom(z);
-              }
-            });
-          }
         }
 
         setMapState('ready');
@@ -168,18 +159,47 @@ export default function MapView({
 
     initMap();
 
-    const handleTestInit = () => initMap();
-    if (typeof window !== 'undefined') {
-      window.addEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
+    return () => {
+      active = false;
+    };
+  }, [clientConfig]);
+
+  // Manage zoom listener independently per map instance with refs, immune to stale closures
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    if (!map || mapState !== 'ready') return;
+
+    if (zoomListenerRef.current) {
+      if (typeof zoomListenerRef.current.remove === 'function') {
+        zoomListenerRef.current.remove();
+      } else if (typeof window !== 'undefined' && window.google?.maps?.event?.removeListener) {
+        window.google.maps.event.removeListener(zoomListenerRef.current);
+      }
+      zoomListenerRef.current = null;
+    }
+
+    if (typeof map.addListener === 'function') {
+      zoomListenerRef.current = map.addListener('zoom_changed', () => {
+        if (mapInstanceRef.current) {
+          const z = typeof mapInstanceRef.current.getZoom === 'function'
+            ? mapInstanceRef.current.getZoom()
+            : 15;
+          setCurrentZoom(z);
+        }
+      });
     }
 
     return () => {
-      active = false;
-      if (typeof window !== 'undefined') {
-        window.removeEventListener('__TEST_INIT_FAKE_MAPS__', handleTestInit);
+      if (zoomListenerRef.current) {
+        if (typeof zoomListenerRef.current.remove === 'function') {
+          zoomListenerRef.current.remove();
+        } else if (typeof window !== 'undefined' && window.google?.maps?.event?.removeListener) {
+          window.google.maps.event.removeListener(zoomListenerRef.current);
+        }
+        zoomListenerRef.current = null;
       }
     };
-  }, [clientConfig]);
+  }, [mapState]);
 
   // Update Tour Markers & Route Polylines
   useEffect(() => {
