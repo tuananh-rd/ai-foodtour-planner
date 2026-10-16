@@ -67,15 +67,15 @@ class ChatEngine:
         else:
             u = understand(text or "", st, self.gz, prefs)
             if u.confidence < CONFIDENT and llm is not None:
-                got = llm(text or "", self.compact(st))
-                if got:
-                    cand = self._validate_llm(got)
-                    if cand:
-                        u, R.understanding, R.llm_calls = cand, "llm", 1
-                    else:
-                        R.llm_calls = 1
+                out = llm(text or "", self.compact(st), st.llm_used)  # app.chat.llm_understand.Outcome
+                R.llm_calls = out.calls
+                st.llm_used += out.calls
+                llm_status = out.status or llm_status
+                cand = self._from_llm(out.data) if out.data else None
+                if cand:
+                    u, R.understanding = cand, ("cache" if out.calls == 0 else "llm")
             st.remember("user", text or "", u.intent)
-            if u.source == "rules" and llm is None and u.confidence < LOW_CONFIDENCE:
+            if u.source == "rules" and u.confidence < LOW_CONFIDENCE:
                 R.intent = "UNKNOWN"
                 self._low_confidence(R, u, llm_status)
                 return self._finish(R)
@@ -205,24 +205,19 @@ class ChatEngine:
         R.blocks.append(self._clarify_block(st, "Bạn muốn mình làm gì trước?"))
         R.tools.append("clarify")
 
-    def _validate_llm(self, got: dict) -> Optional[Understanding]:
-        intent = got.get("intent")
-        from .understand import INTENTS
-        if intent not in INTENTS or intent in ("UNSAFE",):
-            return None
-        patch = got.get("patch") if isinstance(got.get("patch"), dict) else {}
-        allowed = {"party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min", "vehicle", "max_leg_min",
-                   "audience", "taste", "dish", "area", "mood", "meal", "criteria", "radius_m", "dislike", "amenity", "reason", "field"}
-        clean = {k: v for k, v in patch.items() if k in allowed}
-        if isinstance(clean.get("area"), dict):
-            name = clean["area"].get("district") or clean["area"].get("label") or ""
-            pl = self.gz.resolve(name) if name else None
-            if pl:
-                clean["area"] = pl.to_json()
-            else:
-                clean.pop("area")
-        refs = [r for r in (got.get("refs") or []) if isinstance(r, str) and len(r) <= 8][:4]
-        return Understanding(intent, clean, refs, 0.8, "llm")
+    def _from_llm(self, data: dict) -> Optional[Understanding]:
+        """`data` was already whitelisted/range-checked by llm_understand.sanitize; map it to an Understanding."""
+        intent = data.get("intent")
+        patch = dict(data.get("patch") or {})
+        extra = {}
+        terms = patch.pop("allergy", None)
+        if intent in ("SET_ALLERGY", "SET_AVOID") and terms:
+            sp = safety_parse.SafetyParse(mentioned=True)
+            (sp.allergies if intent == "SET_ALLERGY" else sp.avoid).extend(terms)
+            extra["safety"] = sp
+        elif intent in ("SET_ALLERGY", "SET_AVOID"):
+            return None  # an allergy statement without a concrete term is never guessed
+        return Understanding(intent, patch, list(data.get("refs") or []), 0.8, "llm", extra)
 
     # ------------------------------------------------------------------ dispatch
     def _dispatch(self, R: TurnResult, u: Understanding) -> None:

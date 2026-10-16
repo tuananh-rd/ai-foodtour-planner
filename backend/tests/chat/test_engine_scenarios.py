@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from app.chat.engine import ChatEngine
+from app.chat.llm_understand import Outcome, sanitize
 from app.chat.state import ChatState
 from app.data import loader
 from app.planner.relevance import fold_uncached
@@ -63,14 +64,15 @@ def run(only=None):
         for i, t in enumerate(s["turns"]):
             calls = [0]
 
-            def llm(text, compact):
-                if budget == 0 or text not in llm_stub:
-                    return None
+            def llm(text, compact, used):
+                if budget == 0:
+                    return Outcome(None, 0, "exhausted")
+                if text not in llm_stub:
+                    return Outcome(None, 1, "error")
                 calls[0] += 1
-                return llm_stub[text]
+                return Outcome(sanitize(llm_stub[text], eng.gz), 1, None)
             R = eng.handle(st, prefs, text=t.get("say"), action=t.get("action"),
-                           llm=(llm if (s["setup"].get("llm") == "stub" and budget) else None),
-                           llm_status=("exhausted" if (s["setup"].get("llm") == "stub" and not budget) else None))
+                           llm=(llm if s["setup"].get("llm") == "stub" else None))
             st, prefs = R.state, R.prefs
             errs = check(R, st, t["expect"])
             if errs:
