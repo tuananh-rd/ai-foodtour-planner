@@ -221,8 +221,8 @@ class APITests(unittest.TestCase):
         s, headers = self.session()
         from app.api import routes
         original = routes.engine.plan_tour
-        def tampered(*args):
-            t = original(*args)
+        def tampered(*args, **kwargs):
+            t = original(*args, **kwargs)
             return replace(t, status="verified_feasible")
         with patch.object(routes.engine, "plan_tour", side_effect=tampered):
             response = self.message(s, headers)
@@ -253,8 +253,8 @@ class APITests(unittest.TestCase):
         s, headers = self.session()
         state = self.message(s, headers).json()
         original = routes.engine.replace_stop
-        def tampered(*args):
-            result = original(*args)
+        def tampered(*args, **kwargs):
+            result = original(*args, **kwargs)
             return replace(result, tour=replace(result.tour, locks=()))
         with patch.object(routes.engine, "replace_stop", side_effect=tampered):
             response = self.client.post(f"/v1/sessions/{s['session_id']}/tour/replace", headers=headers,
@@ -278,8 +278,8 @@ class APITests(unittest.TestCase):
     def test_bounded_search_assumptions_are_exposed(self):
         from app.api import routes
         original = routes.engine.plan_tour
-        def bounded(*args):
-            result = original(*args)
+        def bounded(*args, **kwargs):
+            result = original(*args, **kwargs)
             return replace(result, assumptions=dict(result.assumptions,
                 search_pool=14, eligible_total=15, pool_truncated=True))
         s, headers = self.session()
@@ -300,8 +300,8 @@ class APITests(unittest.TestCase):
         self.assertEqual(response.json()["tour"]["status"], "no_solution")
         from app.api import routes
         original = routes.engine.plan_tour
-        def invalid_clock(*args):
-            result = original(*args)
+        def invalid_clock(*args, **kwargs):
+            result = original(*args, **kwargs)
             return replace(result, stops=(replace(result.stops[0], depart_min=1440),) + result.stops[1:])
         # Use another ready session to inject a malformed planner clock claim.
         a, ha = self.session()

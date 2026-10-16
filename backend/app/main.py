@@ -1,5 +1,6 @@
 """FastAPI composition with backward-compatible legacy imports."""
 import os
+import math
 import logging
 from urllib.parse import urlsplit
 from fastapi import FastAPI, Request
@@ -28,6 +29,11 @@ from app.repositories.venues import VenueRepository
 def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None):
     configure_access_logging()
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
+    try:
+        quality_weight = float(os.getenv("FOODTOUR_RANK_QUALITY_WEIGHT", "1.0"))
+    except ValueError:
+        quality_weight = 1.0
+    app.state.quality_weight = quality_weight if math.isfinite(quality_weight) and quality_weight >= 0 else 1.0
     app.state.venues = VenueRepository(data_path)
     llm_mode = os.getenv("FOODTOUR_LLM", "mock").strip().casefold()
     info = {"llm_provider": "rules", "llm_model": None, "explanation_provider": "template",
@@ -94,7 +100,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     rate_window = setting("FOODTOUR_RATE_WINDOW_SECONDS", 60)
     app.state.sessions = sessions if sessions is not None else (
         SQLiteSessionStore(db_path, app.state.venues, app.state.routing,
-                           rate_limit=rate_limit, rate_window=rate_window) if db_path else
+                           rate_limit=rate_limit, rate_window=rate_window,
+                           quality_weight=app.state.quality_weight) if db_path else
         SessionStore(rate_limit=rate_limit, rate_window=rate_window)
     )
     app.add_middleware(

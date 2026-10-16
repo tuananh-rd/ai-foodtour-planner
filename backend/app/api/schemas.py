@@ -31,6 +31,8 @@ class PreferencesSchema(Model):
     budget_vnd: int | None = Field(default=None, gt=0, strict=True)
     budget_scope: Literal["per_person", "group"] | None = None
     party_size: int | None = Field(default=None, ge=1, le=20, strict=True)
+    meal: Literal["breakfast", "lunch", "snack", "dinner", "late"] | None = None
+    audience: Literal["solo", "friends", "family"] | None = None
     interests: list[str] = Field(default_factory=list, max_length=10)
     exclusions: list[str] = Field(default_factory=list, max_length=10)
     max_stops: int = Field(default=3, ge=1, le=5, strict=True)
@@ -63,7 +65,7 @@ class PreferencesSchema(Model):
             duration_min=prefs.duration_min, budget_vnd=prefs.budget_vnd,
             budget_scope=prefs.budget_scope, party_size=prefs.party_size,
             interests=list(prefs.interests), exclusions=list(prefs.exclusions),
-            max_stops=prefs.max_stops, mode=prefs.mode,
+            max_stops=prefs.max_stops, mode=prefs.mode, meal=prefs.meal, audience=prefs.audience,
         )
 
 
@@ -187,7 +189,13 @@ class LegView(Model):
     geometry: list[list[float]] | None = None
 
 
+class WhyReason(Model):
+    code: Literal["match_interest", "near_origin", "short_walk", "well_rated", "fits_meal", "diverse"]
+    text: str
+
+
 class StopView(Model):
+    why: list[WhyReason] = Field(default_factory=list)
     venue: VenueView | None = None
     venue_id: str
     name: str
@@ -253,7 +261,12 @@ class GeocodingHealth(Model):
     last_error: str | None = None
 
 
+class RankingHealth(Model):
+    quality_weight: float = Field(ge=0)
+
+
 class Health(Model):
+    ranking: RankingHealth
     llm_budget: LLMBudget | None = None
     status: str
     dataset_loaded: bool

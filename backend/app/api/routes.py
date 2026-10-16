@@ -79,7 +79,7 @@ def render_tour(tour, data, prefs, revision, routes, explainer=None):
             leg_from_previous=LegView(**leg),
             price=price(venue), hours=Hours(status=stop.hours_evidence,
                 display=venue.hours_display, open_at_arrival=stop.open_at_arrival),
-            synthetic=venue.synthetic,
+            synthetic=venue.synthetic, why=[{"code": code, "text": text} for code, text in stop.why],
         ))
     text, text_source = explainer.explain(tour, data.venues) if explainer else (explain(tour, data.venues), "template")
     return TourView(
@@ -126,7 +126,8 @@ def health(request: Request):
     route_mode = ("provider_route" if routing.configured and routing.reachable else "unknown"
                   ) if isinstance(routing, (HttpRouteProvider, WalkingRouteProvider)) else "straight_line_estimate"
     info = request.app.state.provider_info
-    return Health(llm_budget=budget_snapshot(request),
+    return Health(ranking={"quality_weight": request.app.state.quality_weight},
+                  llm_budget=budget_snapshot(request),
                   status="ok", dataset_loaded=bool(data.venues),
                   llm=llm_mode, llm_configured=(llm_mode != "unavailable" and not (
                       isinstance(extractor, RulesFirstExtractor) and isinstance(extractor.llm, UnavailableExtractor))),
@@ -280,7 +281,8 @@ def message(session_id: str, body: MessageRequest, request: Request,
                 notes.append('Chưa xác định được điểm xuất phát qua Google (' + found['status'] + '); hãy chọn hoặc nhập tọa độ.')
         prefs = PreferencesSchema.from_domain(prefs).domain()
         data = snapshot(request)
-        tour = None if engine.missing_slots(prefs) or result.rejected_fields else engine.plan_tour(data.venues, prefs, request.app.state.routing)
+        tour = None if engine.missing_slots(prefs) or result.rejected_fields else engine.plan_tour(
+            data.venues, prefs, request.app.state.routing, quality_weight=request.app.state.quality_weight)
         view = commit(session, prefs, tour, data, request, notes)
         view.extraction_source = {"live": "llm", "cache": "cache"}.get(result.source, "rules")
         view.llm_calls = result.llm_calls
@@ -304,7 +306,8 @@ def tour(session_id: str, body: RevisionRequest, request: Request,
     with request.app.state.sessions.owned(session_id, x_session_token) as session:
         request.app.state.sessions.check_revision(session, body.base_revision)
         data = snapshot(request)
-        result = engine.plan_tour(data.venues, session.preferences, request.app.state.routing)
+        result = engine.plan_tour(data.venues, session.preferences, request.app.state.routing,
+                                  quality_weight=request.app.state.quality_weight)
         return commit(session, session.preferences, result, data, request)
 
 
@@ -323,7 +326,8 @@ def replace(session_id: str, body: ReplaceRequest, request: Request,
                 raise APIError(409, "dataset_changed", "Dữ liệu đã đổi; hãy lập lại lịch trình trước khi thay quán.")
             data = current
         result = engine.replace_stop(data.venues, session.preferences, session.tour,
-                                     body.venue_id, request.app.state.routing)
+                                     body.venue_id, request.app.state.routing,
+                                     quality_weight=request.app.state.quality_weight)
         if not result.ok:
             raise APIError(409, "no_candidates", "Không có phương án thay thế thoả ràng buộc.",
                            {"reasons": list(result.reasons)})
