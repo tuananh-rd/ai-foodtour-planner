@@ -1,0 +1,366 @@
+{
+  "heldouts": {
+    "2": {
+      "rows": 100,
+      "correct": 99,
+      "accuracy": 0.99,
+      "invariant_failures": 0,
+      "confusion": {
+        "ADD": {
+          "ADD": 5
+        },
+        "AMBIGUOUS_ACK": {
+          "AMBIGUOUS_ACK": 5
+        },
+        "ANSWER_PENDING": {
+          "ANSWER_PENDING": 10
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 4,
+          "KEEP": 1
+        },
+        "COMPARE": {
+          "COMPARE": 5
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 5
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 5
+        },
+        "DISCOVER_DISH": {
+          "DISCOVER_DISH": 5
+        },
+        "GREET_OR_SMALLTALK": {
+          "GREET_OR_SMALLTALK": 5
+        },
+        "KEEP": {
+          "KEEP": 5
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 5
+        },
+        "OUT_OF_SCOPE": {
+          "OUT_OF_SCOPE": 5
+        },
+        "REMOVE": {
+          "REMOVE": 5
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 5
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 5
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 5
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 5
+        },
+        "UNSAFE": {
+          "UNSAFE": 5
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 5
+        }
+      },
+      "corpus_sha256": "fa484371dbbc7bda143a97e37778d9a2d70278908337773ba92dd9131c3d6921"
+    },
+    "3": {
+      "rows": 104,
+      "correct": 103,
+      "accuracy": 0.9903846153846154,
+      "invariant_failures": 1,
+      "confusion": {
+        "ADD": {
+          "ADD": 6
+        },
+        "AMBIGUOUS_ACK": {
+          "AMBIGUOUS_ACK": 6
+        },
+        "ANSWER_PENDING": {
+          "ANSWER_PENDING": 8
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 10
+        },
+        "COMPARE": {
+          "COMPARE": 8
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 4
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 4
+        },
+        "DISCOVER_DISH": {
+          "DISCOVER_DISH": 6
+        },
+        "KEEP": {
+          "KEEP": 6
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 6
+        },
+        "REMOVE": {
+          "REMOVE": 6
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 3,
+          "null": 1
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 6
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 8
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 8
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 8
+        }
+      },
+      "corpus_sha256": "c26cb9f9e63f3dc80cd3c193c0ff9317933b9d2c83aacfd0fe49ccf09160f452"
+    },
+    "4": {
+      "rows": 104,
+      "correct": 97,
+      "accuracy": 0.9326923076923077,
+      "invariant_failures": 0,
+      "confusion": {
+        "ADD": {
+          "ADD": 6
+        },
+        "AMBIGUOUS_ACK": {
+          "AMBIGUOUS_ACK": 5,
+          "UNKNOWN": 1
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 8
+        },
+        "COMPARE": {
+          "COMPARE": 6
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 4
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 4
+        },
+        "DISCOVER_DISH": {
+          "DISCOVER_DISH": 4
+        },
+        "KEEP": {
+          "KEEP": 6
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 6
+        },
+        "OUT_OF_SCOPE": {
+          "OUT_OF_SCOPE": 6
+        },
+        "REMOVE": {
+          "REMOVE": 6
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 4
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 5,
+          "UPDATE_PROFILE": 1
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 6
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 6
+        },
+        "UNKNOWN": {
+          "UNKNOWN": 9,
+          "AMBIGUOUS_ACK": 5
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 6
+        }
+      },
+      "corpus_sha256": "a6308b31bc2298718f109509c2a68ad3e04adab68a669b0893aa4e7ddc857ab0"
+    },
+    "5": {
+      "rows": 105,
+      "correct": 72,
+      "accuracy": 0.6857142857142857,
+      "invariant_failures": 0,
+      "confusion": {
+        "ADD": {
+          "ADD": 5
+        },
+        "AMBIGUOUS_ACK": {
+          "UNKNOWN": 5,
+          "AMBIGUOUS_ACK": 2,
+          "CONFIRM_NO": 1
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 4,
+          "OUT_OF_SCOPE": 1
+        },
+        "COMPARE": {
+          "AMBIGUOUS_ACK": 1,
+          "COMPARE": 4
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 5
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 5
+        },
+        "DISCOVER_DISH": {
+          "ADD": 2,
+          "DISCOVER_DISH": 2,
+          "UNKNOWN": 1
+        },
+        "GREET_OR_SMALLTALK": {
+          "UNKNOWN": 2,
+          "GREET_OR_SMALLTALK": 3
+        },
+        "KEEP": {
+          "KEEP": 4,
+          "SEARCH_VENUES": 1
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 4,
+          "SEARCH_VENUES": 1
+        },
+        "OUT_OF_SCOPE": {
+          "OUT_OF_SCOPE": 4,
+          "UNKNOWN": 1
+        },
+        "REMOVE": {
+          "REMOVE": 4,
+          "UNKNOWN": 1
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 4,
+          "UNKNOWN": 1
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 4,
+          "KEEP": 1
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 5
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 4,
+          "UNKNOWN": 1
+        },
+        "UNKNOWN": {
+          "ADD": 2,
+          "REMOVE": 2,
+          "KEEP": 1,
+          "DISCOVER_DISH": 1,
+          "COMPARE": 1,
+          "UNKNOWN": 6,
+          "AMBIGUOUS_ACK": 2,
+          "UPDATE_PROFILE": 1,
+          "SET_ALLERGY": 1
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 3,
+          "DISCOVER_DISH": 1,
+          "UNKNOWN": 1
+        }
+      },
+      "corpus_sha256": "f0f50f5c492ce7f8616a053cf417a040f2d92b2b6e1b6be7f6a0eda635ffe8fa"
+    }
+  },
+  "audits": {
+    "2": {
+      "dangerous_rows": 0,
+      "effects": {},
+      "safe_correct": 100,
+      "safe_accuracy": 1.0,
+      "patterns": []
+    },
+    "3": {
+      "dangerous_rows": 1,
+      "effects": {
+        "profile": 1
+      },
+      "safe_correct": 103,
+      "safe_accuracy": 0.9903846153846154,
+      "patterns": [
+        {
+          "text": "Bé nhà chị dị ứng đậu phộng nhé",
+          "effects": [
+            "profile:vehicle"
+          ]
+        }
+      ]
+    },
+    "4": {
+      "dangerous_rows": 0,
+      "effects": {},
+      "safe_correct": 103,
+      "safe_accuracy": 0.9903846153846154,
+      "patterns": []
+    },
+    "5": {
+      "dangerous_rows": 4,
+      "effects": {
+        "profile": 2,
+        "add": 2
+      },
+      "safe_correct": 94,
+      "safe_accuracy": 0.8952380952380953,
+      "patterns": [
+        {
+          "text": "Dạ xin ghi nhận bé nhà tôi dị ứng đậu phộng ạ.",
+          "effects": [
+            "profile:vehicle"
+          ]
+        },
+        {
+          "text": "Có người nhắn \"thêm A\"; tôi đang hỏi nghĩa của câu đó.",
+          "effects": [
+            "add"
+          ]
+        },
+        {
+          "text": "Great, cứ thêm A đi để tôi phá sản à? Tôi nói mỉa đó.",
+          "effects": [
+            "add"
+          ]
+        },
+        {
+          "text": "Tin nhắn nháp ghi \"ngân sách 100k\", chưa phải cập nhật hồ sơ.",
+          "effects": [
+            "profile:budget"
+          ]
+        }
+      ]
+    }
+  },
+  "heldout1": {
+    "correct": 64,
+    "rows": 70
+  },
+  "retry": {
+    "outcome": {
+      "data": null,
+      "calls": 1,
+      "status": "error"
+    },
+    "budget_used": 1
+  },
+  "scanned_replies": 1598,
+  "phrase_hits": 321,
+  "instruction_echoes": 0,
+  "privacy": {
+    "compact_has_marker": false,
+    "retained_turns": 8,
+    "marker_after_10_turns": false
+  }
+}

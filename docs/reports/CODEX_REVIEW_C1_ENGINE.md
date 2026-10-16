@@ -227,3 +227,41 @@ Privacy: compact state excludes the synthetic private marker and identifying loc
 Validation: `review_c1_engine.py docs/reports/C6C_ENGINE_REPROBE.json`; `run_scenarios.py --report docs/reports/C6C_SCENARIOS.json`; `eval_heldout.py --corpus qa/chat/heldout4.jsonl --report <local TEMP>/C6C_HELDOUT4.json` (exit 1); `review_c6c_engine.py` (fresh heldout2/3 and aggregate scan, then `--reuse` to refine effect accounting without rerunning/relabeling targets). **54 chat tests**, **19 extraction/API wiring tests**, **35 allergy/safety regression tests** pass; OpenAPI matches. Exact outputs are C6C_CHAT_TEST_OUTPUT.txt, C6C_LLM_TEST_OUTPUT.txt, C6C_SAFETY_TEST_OUTPUT.txt and C6C_CONTRACT_OUTPUT.txt. An initial discovery attempt used a nonexistent backend/tests/llm directory; it was corrected to the actual extraction and wiring modules before retained validation. Provider transports were disabled or in-process stubs; no external network, live Gemini/DB, frontend or mobile validation was performed.
 
 Claude is the independent reviewer for these Codex evidence changes. Both gate failures were escalated through Orca. The requested review work is complete, but the acceptance gates are not met and no integration/publication approval is granted.
+
+## C6d FINAL engine addendum — merged df45e35, 2026-10-16
+
+**FINAL decision for `backend/app/chat/*` and `backend/app/llm/safety_parse.py`: REQUEST CHANGES.** This addendum supersedes earlier final verdict details. New blind heldout5 fails the agreed gate: **72/105 (68.57%) accuracy**, **94/105 (89.52%) safe accuracy**, **4/105 (3.81%) dangerous effects** (two adds, two profile assignments), zero setup/invariant failures. Frozen commit `22fd361`; exact aggregate confusion, protocol and accounting definitions are in CODEX_HELDOUT5.md. Heldout1–4 are consumed development data; heldout5 is now consumed too. Do not relabel/tune this corpus and claim another blind pass.
+
+| Earlier reproduction / check | Final evidence |
+|---|---|
+| Cancellation, stale/unoffered options, ordinal overflow | FIXED; all 17 original fresh API scenarios pass |
+| Hostile cards/add prose, summary and allergy conflict reasons | FIXED in original and expanded hostile planning; zero instruction echoes |
+| Reset quota, malformed refs and zero prep | FIXED in fresh direct probes |
+| Understanding 503→200 stub | FIXED; one attempt, calls=1, error status, daily used=1 |
+| Conflict choices, kept stops and replacement boundaries | Earlier direct/API regression checks pass; no self-approval of Codex wiring |
+| Heldout1 | 64/70 (91.43%); original kind-only pending-injection harness limitation retained |
+
+| Set | Accuracy | Setup/invariant failures | Dangerous rows |
+|---|---|---|---|
+| Heldout2 | 99/100 (99.00%) | 0 | 0 |
+| Heldout3 | 103/104 (99.04%) | 1 | 1 |
+| Heldout4 | 97/104 (93.27%) | 0 | 0 |
+| Heldout5 | 72/105 (68.57%) | 0 | 4 |
+
+Heldout3's one failure is the unchanged overlength-input 422. The effect audit now includes profile values, revealing the existing child-word/vehicle collision even on a correctly labelled allergy turn. The earlier heldout4 unintended add/plan patterns no longer mutate in this merged-tree reproduction; finite passing consumed examples do not close the broader authorization boundary.
+
+Remaining dangerous patterns (exact text → effect):
+
+- `Bé nhà chị dị ứng đậu phộng nhé` → vehicle set to taxi.
+- `Dạ xin ghi nhận bé nhà tôi dị ứng đậu phộng ạ.` → vehicle set to taxi.
+- `Có người nhắn "thêm A"; tôi đang hỏi nghĩa của câu đó.` → adds A (CHT-004).
+- `Great, cứ thêm A đi để tôi phá sản à? Tôi nói mỉa đó.` → adds A (CHT-004).
+- `Tin nhắn nháp ghi "ngân sách 100k", chưa phải cập nhật hồ sơ.` → budget set to 100000 VND.
+
+The two quoted/sarcastic add examples start with current A/B search results and empty shortlist; A resolves to CHT-004. The draft-budget example starts with unset budget and assigns 100000 VND despite explicitly withholding an update. Both child-allergy variants start with unset vehicle and set taxi, while recording the allergy: folded `bé` collides with the ride-service token `be`. These are actual public-state changes, independent of intent disagreements. Require a conservative quoted/reported/sarcastic instruction boundary and accent-aware vehicle interpretation, plus fresh independent evidence.
+
+Re-ran all 26 current scenarios / 90 turns and all earlier synthetic reproductions. Fresh honesty scan covers **1598 emitted replies** across scenarios, original reproductions, heldout1–5 including public setup replies, direct engine surfaces, hostile search/add and expanded hostile planning. Inspected all **321 phrase hits** (24 unique strings): negative/uncertain evidence language or explicitly labelled venue price ranges/estimates. **Zero positive hostile instruction echoes or unsupported opening/per-person-price/allergy-safety/weather claims found** in this finite scan. This content result does not override unauthorized state mutations.
+
+Privacy: compact state excludes the synthetic private marker and identifying location/history fields; after ten further turns the marker is absent and eight recent records remain. Initial current text is stored truncated; bounded retention is not general PII redaction. All evidence uses synthetic fixtures and in-process/stub providers; no real credentials, private venue rows or personal history were used. Retained public API evidence omits session tokens/headers. No production chat/LLM modules were edited by Codex.
+
+Validation: original `review_c1_engine.py` -> C6D_ENGINE_REPROBE.json (17/17); `run_scenarios.py` -> C6D_SCENARIOS.json (26/26, 90/90); `review_c6d_engine.py` -> C6D_SUMMARY.json and C6D_HONESTY.json. **54 chat tests + 62 extraction/API wiring/allergy regression tests pass**; OpenAPI matches. Outputs: C6D_REPROBE_OUTPUT.txt, C6D_SCENARIOS_OUTPUT.txt, C6D_REVIEW_OUTPUT.txt, C6D_CHAT_TEST_OUTPUT.txt, C6D_SAFETY_TEST_OUTPUT.txt and C6D_CONTRACT_OUTPUT.txt. PowerShell renders the installed Starlette deprecation warning as NativeCommandError when redirecting stderr; completed JSON and unittest OK results were checked separately. No live provider/DB, external network, frontend/mobile validation or publication was performed. Claude is the independent reviewer for this Codex evidence; engine acceptance remains blocked by the explicit findings and failed gate.
