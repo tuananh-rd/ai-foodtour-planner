@@ -11,6 +11,7 @@ from starlette.exceptions import HTTPException
 from app.api.errors import APIError
 from app.api.legacy import PlanRequest, load, plan
 from app.api.routes import router
+from app.chat.llm_understand import GeminiUnderstandingProvider
 from app.api.security import SecurityMiddleware, configure_access_logging, setting
 from app.llm.extract import MockExtractor, UnavailableExtractor
 from app.llm.explain import CheckedExplainer
@@ -26,7 +27,7 @@ from app.repositories.sqlite_sessions import SQLiteSessionStore
 from app.repositories.venues import VenueRepository
 
 
-def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None):
+def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None, chat_understander=None):
     configure_access_logging()
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
     try:
@@ -34,7 +35,9 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     except ValueError:
         quality_weight = 1.0
     app.state.quality_weight = quality_weight if math.isfinite(quality_weight) and quality_weight >= 0 else 1.0
-    app.state.chat_understanding_provider = None  # C5 provider admission seam; C1 remains rules only.
+    app.state.chat_understander = chat_understander
+    app.state.chat_understander_injected = chat_understander is not None
+    app.state.chat_understanding_provider = None
     app.state.chat_engine_cache = None
     app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 6)
     app.state.llm_reserve = setting("FOODTOUR_LLM_RESERVE", 3)
@@ -69,6 +72,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     else:
         app.state.explainer = CheckedExplainer(None)
     app.state.llm_budget = gemini.budget if gemini is not None and gemini.configured else None
+    if llm_mode == "gemini" and gemini is not None and gemini.configured:
+        app.state.chat_understanding_provider = GeminiUnderstandingProvider(gemini)
     routing_mode = os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold()
     if routing_mode == "google":
         app.state.routing = GoogleRoutesProvider()

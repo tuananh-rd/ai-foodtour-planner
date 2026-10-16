@@ -119,6 +119,11 @@ def _count(value):
         return None
 
 
+def _bounded_int(value, low, high):
+    number = _count(value)
+    return number if number is not None and low <= number <= high else None
+
+
 def _timestamp(value):
     value = _text(value)
     try:
@@ -270,6 +275,15 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
             hours_display=_text(row.get("hours_display" if canonical else "hours_displayed")) or None,
             synthetic=wrapper_synthetic or row.get("synthetic") is True,
             rating=rating, rating_scale_max=scale, review_count=reviews,
+            capacity_value=_bounded_int(row.get("capacity_value"), 1, 100000),
+            prep_time_min=_bounded_int(row.get("prep_time_min"), 0, 1440),
+            prep_time_max=_bounded_int(row.get("prep_time_max"), 0, 1440),
+            rating_quality=_rating(row.get("rating_quality"), row.get("rating_scale_max"))[0],
+            rating_location=_rating(row.get("rating_location"), row.get("rating_scale_max"))[0],
+            rating_service=_rating(row.get("rating_service"), row.get("rating_scale_max"))[0],
+            rating_space=_rating(row.get("rating_space"), row.get("rating_scale_max"))[0],
+            rating_price=_rating(row.get("rating_price"), row.get("rating_scale_max"))[0],
+
             suitable_meals=meals, audiences=_tags(row.get("audiences")),
             cuisine_styles=_tags(row.get("cuisine_styles")),
             amenities_yes=_tags(row.get("amenities_yes")), amenities_no=_tags(row.get("amenities_no")),

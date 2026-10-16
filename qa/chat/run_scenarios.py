@@ -29,11 +29,14 @@ class StubUnderstandingProvider:
     Exact text lookup, detached dict result, fail closed on unmapped calls.
     Budget admission belongs to the call site; calls counts even failed lookups.
     """
-    def __init__(self, answers):
+    def __init__(self, answers, budget=None):
         self.answers = deepcopy(answers)
         self.calls = 0
+        self.budget = budget
 
-    def understand(self, text, state):
+    def understand(self, text, state, *, deadline_s=8.0):
+        if self.budget is not None:
+            self.budget.admit()
         self.calls += 1
         if text not in self.answers:
             raise AssertionError("Unmapped stub understanding request")
@@ -87,9 +90,10 @@ def scenario_app(setup):
             env["FOODTOUR_LLM_DAILY_BUDGET"] = str(budget)
         with patch.dict(os.environ, env):
             app = create_app(data_path=env["FOODTOUR_DATA_PATH"])
-            provider = StubUnderstandingProvider(setup.get("llm_stub", {}))
-            app.state.chat_understanding_provider = provider if setup.get("llm") == "stub" else None
+            from app.chat.llm_understand import LLMUnderstander
             app.state.llm_budget = DailyLLMBudget(budget if budget is not None else 18, db_path=env["FOODTOUR_BUDGET_DB"])
+            provider = StubUnderstandingProvider(setup.get("llm_stub", {}), app.state.llm_budget)
+            app.state.chat_understander = LLMUnderstander(provider, app.state.llm_budget) if setup.get("llm") == "stub" else None
             with TestClient(app) as client:
                 yield app, client, provider
 

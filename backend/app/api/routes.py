@@ -15,6 +15,7 @@ from app.api.schemas import (
     GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig, MapsLinksResponse,
 )
 from app.chat.engine import ChatEngine
+from app.chat.llm_understand import LLMUnderstander
 from app.chat.planning import plan_selected, routing_for
 from app.repositories.sessions import encode_chat
 from app.data import DatasetLoadError
@@ -194,6 +195,15 @@ def venue_view(v, data):
         cuisine_styles=list(v.cuisine_styles),
         amenities={"yes": list(v.amenities_yes), "no": list(v.amenities_no)},
         source_fetched_at=v.source_fetched_at,
+        capacity_value=v.capacity_value,
+        prep_time_min=v.prep_time_min,
+        prep_time_max=v.prep_time_max,
+        rating_quality=v.rating_quality,
+        rating_location=v.rating_location,
+        rating_service=v.rating_service,
+        rating_space=v.rating_space,
+        rating_price=v.rating_price,
+
         id=v.id, name=v.name, city=v.city, address=v.address, district=v.district,
         lat=v.lat, lon=v.lon, source_url=v.source_url, dish_tags=list(v.dish_tags),
         online_only=v.online_only, geo_ok=v.geo_ok, synthetic=v.synthetic,
@@ -397,14 +407,25 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         cached = request.app.state.chat_engine_cache
         key = (data.dataset_version, data.dataset_source)
         if cached is None or cached[0] != key:
-            cached = (key, ChatEngine(data.venues))
+            chat_engine = ChatEngine(data.venues)
+            understander = request.app.state.chat_understander
+            provider = request.app.state.chat_understanding_provider
+            if provider is not None and not request.app.state.chat_understander_injected:
+                understander = LLMUnderstander.from_env(
+                    provider, provider.client.budget, gazetteer=chat_engine.gz)
+                request.app.state.chat_understander = understander
+            cached = (key, chat_engine, understander)
             request.app.state.chat_engine_cache = cached
         budget = budget_snapshot(request)
+        # Keep each request on the engine/understander pair for its own snapshot.
+        understander = cached[2]
+        exhausted = bool(budget and (budget["exhausted"] or budget["remaining"] <= request.app.state.llm_reserve))
         try:
             try:
                 result = cached[1].handle(session.chat, session.preferences, text=body.text,
                     action=body.action.model_dump(exclude_none=True) if body.action else None,
-                    llm=None, llm_status='exhausted' if budget and budget['exhausted'] else None)
+                    llm=understander.understand if understander is not None else None,
+                    llm_status='exhausted' if exhausted else None)
             except Exception:
                 raise APIError(500, 'internal_validation_failed', 'Unable to validate chat result.') from None
             if result.error:
@@ -430,7 +451,9 @@ def chat(session_id: str, body: ChatRequest, request: Request,
             values = view.model_dump()
             values.update(chat=result.state.to_json(), reply={'blocks': result.blocks},
                 turn={'intent': result.intent, 'tools': result.tools, 'understanding': result.understanding},
-                llm_calls=0, extraction_source='rules')
+                llm_calls=result.llm_calls,
+                extraction_source=result.understanding if result.understanding in ('llm', 'cache') else 'rules')
+            budget = budget_snapshot(request)
             if budget:
                 values['llm_budget'] = {k: budget[k] for k in ('limit', 'remaining', 'exhausted')}
             # Validate the entire output before the unit of work can commit.

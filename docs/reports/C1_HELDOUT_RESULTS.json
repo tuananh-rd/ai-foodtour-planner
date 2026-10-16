@@ -1,0 +1,426 @@
+{
+  "total": 70,
+  "correct": 46,
+  "accuracy": 0.6571428571428571,
+  "confusion": {
+    "GREET_OR_SMALLTALK": {
+      "GREET_OR_SMALLTALK": 4
+    },
+    "DISCOVER_DISH": {
+      "DISCOVER_DISH": 3,
+      "SEARCH_VENUES": 1
+    },
+    "SEARCH_VENUES": {
+      "SEARCH_VENUES": 4
+    },
+    "COMPARE": {
+      "COMPARE": 4
+    },
+    "ADD": {
+      "ADD": 3,
+      "SEARCH_VENUES": 1
+    },
+    "REMOVE": {
+      "REMOVE": 4
+    },
+    "KEEP": {
+      "KEEP": 4
+    },
+    "UPDATE_PROFILE": {
+      "UPDATE_PROFILE": 4
+    },
+    "SET_ALLERGY": {
+      "SET_ALLERGY": 4
+    },
+    "SET_AVOID": {
+      "UPDATE_PROFILE": 3,
+      "SET_AVOID": 1
+    },
+    "AMBIGUOUS_ACK": {
+      "UNKNOWN": 4
+    },
+    "REQUEST_PLAN": {
+      "UNKNOWN": 3,
+      "REQUEST_PLAN": 1
+    },
+    "MODIFY_PLAN": {
+      "MODIFY_PLAN": 4
+    },
+    "ASK_DETAIL": {
+      "SEARCH_VENUES": 2,
+      "ASK_DETAIL": 2
+    },
+    "OUT_OF_SCOPE": {
+      "SEARCH_VENUES": 4
+    },
+    "UNSAFE": {
+      "UNSAFE": 3,
+      "REMOVE": 1
+    },
+    "CONFIRM_YES": {
+      "UNKNOWN": 1,
+      "CONFIRM_YES": 1
+    },
+    "CONFIRM_NO": {
+      "CONFIRM_YES": 1,
+      "UNKNOWN": 1
+    },
+    "ANSWER_PENDING": {
+      "SEARCH_VENUES": 1,
+      "DISCOVER_DISH": 1
+    }
+  },
+  "cases": [
+    {
+      "expected": "GREET_OR_SMALLTALK",
+      "actual": "GREET_OR_SMALLTALK",
+      "correct": true
+    },
+    {
+      "expected": "GREET_OR_SMALLTALK",
+      "actual": "GREET_OR_SMALLTALK",
+      "correct": true
+    },
+    {
+      "expected": "GREET_OR_SMALLTALK",
+      "actual": "GREET_OR_SMALLTALK",
+      "correct": true
+    },
+    {
+      "expected": "GREET_OR_SMALLTALK",
+      "actual": "GREET_OR_SMALLTALK",
+      "correct": true
+    },
+    {
+      "expected": "DISCOVER_DISH",
+      "actual": "DISCOVER_DISH",
+      "correct": true
+    },
+    {
+      "expected": "DISCOVER_DISH",
+      "actual": "DISCOVER_DISH",
+      "correct": true
+    },
+    {
+      "expected": "DISCOVER_DISH",
+      "actual": "DISCOVER_DISH",
+      "correct": true
+    },
+    {
+      "expected": "DISCOVER_DISH",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "SEARCH_VENUES",
+      "actual": "SEARCH_VENUES",
+      "correct": true
+    },
+    {
+      "expected": "SEARCH_VENUES",
+      "actual": "SEARCH_VENUES",
+      "correct": true
+    },
+    {
+      "expected": "SEARCH_VENUES",
+      "actual": "SEARCH_VENUES",
+      "correct": true
+    },
+    {
+      "expected": "SEARCH_VENUES",
+      "actual": "SEARCH_VENUES",
+      "correct": true
+    },
+    {
+      "expected": "COMPARE",
+      "actual": "COMPARE",
+      "correct": true
+    },
+    {
+      "expected": "COMPARE",
+      "actual": "COMPARE",
+      "correct": true
+    },
+    {
+      "expected": "COMPARE",
+      "actual": "COMPARE",
+      "correct": true
+    },
+    {
+      "expected": "COMPARE",
+      "actual": "COMPARE",
+      "correct": true
+    },
+    {
+      "expected": "ADD",
+      "actual": "ADD",
+      "correct": true
+    },
+    {
+      "expected": "ADD",
+      "actual": "ADD",
+      "correct": true
+    },
+    {
+      "expected": "ADD",
+      "actual": "ADD",
+      "correct": true
+    },
+    {
+      "expected": "ADD",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "REMOVE",
+      "actual": "REMOVE",
+      "correct": true
+    },
+    {
+      "expected": "REMOVE",
+      "actual": "REMOVE",
+      "correct": true
+    },
+    {
+      "expected": "REMOVE",
+      "actual": "REMOVE",
+      "correct": true
+    },
+    {
+      "expected": "REMOVE",
+      "actual": "REMOVE",
+      "correct": true
+    },
+    {
+      "expected": "KEEP",
+      "actual": "KEEP",
+      "correct": true
+    },
+    {
+      "expected": "KEEP",
+      "actual": "KEEP",
+      "correct": true
+    },
+    {
+      "expected": "KEEP",
+      "actual": "KEEP",
+      "correct": true
+    },
+    {
+      "expected": "KEEP",
+      "actual": "KEEP",
+      "correct": true
+    },
+    {
+      "expected": "UPDATE_PROFILE",
+      "actual": "UPDATE_PROFILE",
+      "correct": true
+    },
+    {
+      "expected": "UPDATE_PROFILE",
+      "actual": "UPDATE_PROFILE",
+      "correct": true
+    },
+    {
+      "expected": "UPDATE_PROFILE",
+      "actual": "UPDATE_PROFILE",
+      "correct": true
+    },
+    {
+      "expected": "UPDATE_PROFILE",
+      "actual": "UPDATE_PROFILE",
+      "correct": true
+    },
+    {
+      "expected": "SET_ALLERGY",
+      "actual": "SET_ALLERGY",
+      "correct": true
+    },
+    {
+      "expected": "SET_ALLERGY",
+      "actual": "SET_ALLERGY",
+      "correct": true
+    },
+    {
+      "expected": "SET_ALLERGY",
+      "actual": "SET_ALLERGY",
+      "correct": true
+    },
+    {
+      "expected": "SET_ALLERGY",
+      "actual": "SET_ALLERGY",
+      "correct": true
+    },
+    {
+      "expected": "SET_AVOID",
+      "actual": "UPDATE_PROFILE",
+      "correct": false
+    },
+    {
+      "expected": "SET_AVOID",
+      "actual": "UPDATE_PROFILE",
+      "correct": false
+    },
+    {
+      "expected": "SET_AVOID",
+      "actual": "SET_AVOID",
+      "correct": true
+    },
+    {
+      "expected": "SET_AVOID",
+      "actual": "UPDATE_PROFILE",
+      "correct": false
+    },
+    {
+      "expected": "AMBIGUOUS_ACK",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "AMBIGUOUS_ACK",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "AMBIGUOUS_ACK",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "AMBIGUOUS_ACK",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "REQUEST_PLAN",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "REQUEST_PLAN",
+      "actual": "REQUEST_PLAN",
+      "correct": true
+    },
+    {
+      "expected": "REQUEST_PLAN",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "REQUEST_PLAN",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "MODIFY_PLAN",
+      "actual": "MODIFY_PLAN",
+      "correct": true
+    },
+    {
+      "expected": "MODIFY_PLAN",
+      "actual": "MODIFY_PLAN",
+      "correct": true
+    },
+    {
+      "expected": "MODIFY_PLAN",
+      "actual": "MODIFY_PLAN",
+      "correct": true
+    },
+    {
+      "expected": "MODIFY_PLAN",
+      "actual": "MODIFY_PLAN",
+      "correct": true
+    },
+    {
+      "expected": "ASK_DETAIL",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "ASK_DETAIL",
+      "actual": "ASK_DETAIL",
+      "correct": true
+    },
+    {
+      "expected": "ASK_DETAIL",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "ASK_DETAIL",
+      "actual": "ASK_DETAIL",
+      "correct": true
+    },
+    {
+      "expected": "OUT_OF_SCOPE",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "OUT_OF_SCOPE",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "OUT_OF_SCOPE",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "OUT_OF_SCOPE",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "UNSAFE",
+      "actual": "UNSAFE",
+      "correct": true
+    },
+    {
+      "expected": "UNSAFE",
+      "actual": "UNSAFE",
+      "correct": true
+    },
+    {
+      "expected": "UNSAFE",
+      "actual": "REMOVE",
+      "correct": false
+    },
+    {
+      "expected": "UNSAFE",
+      "actual": "UNSAFE",
+      "correct": true
+    },
+    {
+      "expected": "CONFIRM_YES",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "CONFIRM_YES",
+      "actual": "CONFIRM_YES",
+      "correct": true
+    },
+    {
+      "expected": "CONFIRM_NO",
+      "actual": "CONFIRM_YES",
+      "correct": false
+    },
+    {
+      "expected": "CONFIRM_NO",
+      "actual": "UNKNOWN",
+      "correct": false
+    },
+    {
+      "expected": "ANSWER_PENDING",
+      "actual": "SEARCH_VENUES",
+      "correct": false
+    },
+    {
+      "expected": "ANSWER_PENDING",
+      "actual": "DISCOVER_DISH",
+      "correct": false
+    }
+  ],
+  "limitation": "pending kind only; corpus has no pending context or last-results fixtures"
+}

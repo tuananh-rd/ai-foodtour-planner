@@ -55,6 +55,9 @@ def build():
                 "amenities_no": [], "capacity_value": [None, 20, 40, 80, 120][(n % 5)],
                 "prep_time_min": [None, 5, 10, 15][(n % 4)], "source_fetched_at": "2026-10-01T00:00:00Z",
             }
+            row["prep_time_max"] = row["prep_time_min"] + 10 if row["prep_time_min"] is not None else None
+            for j, key in enumerate(("rating_quality", "rating_location", "rating_service", "rating_space", "rating_price")):
+                row[key] = round(max(0, min(10, rating10 + (j - 2) * 0.2)), 1) if rating10 is not None else None
             rows.append(row)
     return {"_label": "SYNTHETIC chat fixture - fictional venues, public street names only", "synthetic": True, "venues": rows}
 

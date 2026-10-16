@@ -44,6 +44,15 @@ class Venue:
     amenities_yes: tuple = ()
     amenities_no: tuple = ()
     source_fetched_at: Optional[str] = None
+    # Optional source metadata (theo nguồn), never feasibility guarantees.
+    capacity_value: Optional[int] = None
+    prep_time_min: Optional[int] = None
+    prep_time_max: Optional[int] = None
+    rating_quality: Optional[float] = None
+    rating_location: Optional[float] = None
+    rating_service: Optional[float] = None
+    rating_space: Optional[float] = None
+    rating_price: Optional[float] = None
 
 
 @dataclass(frozen=True)

@@ -226,7 +226,8 @@ class ChatAPI(unittest.TestCase):
         self.app.state.llm_budget=DailyLLMBudget(0,db_path=str(Path(self.temp.name)/'budget.sqlite'))
         def forbidden(*args,**kw):
             raise AssertionError('C5 is not wired')
-        self.app.state.chat_understanding_provider=forbidden
+        from app.chat.llm_understand import LLMUnderstander
+        self.app.state.chat_understander=LLMUnderstander(forbidden, self.app.state.llm_budget)
         response=self.post(text='SYNTHETIC_UNKNOWN')
         self.assertEqual(response.status_code,200,response.text)
         self.assertEqual(response.json()['llm_calls'],0)
