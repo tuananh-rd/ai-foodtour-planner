@@ -12,6 +12,7 @@ from __future__ import annotations
 
 import re
 import unicodedata
+from functools import lru_cache
 
 from .types import Venue
 
@@ -23,6 +24,7 @@ _SYNONYMS = {
 }
 
 
+@lru_cache(maxsize=8192)
 def fold(text: str) -> str:
     text = unicodedata.normalize("NFD", text.casefold().replace("đ", "d"))
     text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn")

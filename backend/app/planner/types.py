@@ -63,6 +63,9 @@ class Preferences:
     # Display/provenance only; never affects planning (contract v1.5).
     origin_label: Optional[str] = None
     origin_source: Optional[str] = None  # current_location|place|manual_coordinates|landmark|geocoded
+    # Soft ranking only (contract v1.6); never hard constraints and never part of validate_tour.
+    meal: Optional[str] = None       # breakfast|lunch|snack|dinner|late|None (defaults from start time)
+    audience: Optional[str] = None   # solo|friends|family|None
     visit_minutes: int = 45  # explicit exploration assumption, not source data
     max_leg_min: int = 20
 
@@ -84,6 +87,8 @@ class Stop:
     hours_evidence: Evidence = "unknown"
     open_at_arrival: Optional[bool] = None
     price_evidence: Evidence = "estimate"
+    # Reasons (code, text) built from validated facts only (contract v1.6).
+    why: tuple = ()
 
 
 @dataclass(frozen=True)

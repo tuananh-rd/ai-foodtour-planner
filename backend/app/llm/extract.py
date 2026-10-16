@@ -156,6 +156,19 @@ class MockExtractor:
                 upd["origin_source"] = "landmark"
                 notes.append(f"Điểm xuất phát lấy theo mốc gần đúng '{name}'.")
                 break
+        # Soft-ranking hints only (contract v1.6); the planner never treats them as constraints.
+        for meal, pattern in (("late", r"\b(khuya|dem khuya|an dem)\b"), ("breakfast", r"\b(an sang|bua sang|buoi sang)\b"),
+                              ("lunch", r"\b(an trua|bua trua|buoi trua)\b"), ("snack", r"\b(buoi xe|bua xe|an chieu|chieu nay)\b"),
+                              ("dinner", r"\b(an toi|bua toi|buoi toi|toi nay)\b")):
+            if re.search(pattern, u):
+                upd["meal"] = meal
+                break
+        for audience, pattern in (("family", r"\b(gia dinh|tre em|con nho|bo me|ong ba)\b"),
+                                  ("friends", r"\b(ban be|nhom ban|dong nghiep|hop nhom)\b"),
+                                  ("solo", r"\b(mot minh|di mot minh|di le)\b")):
+            if re.search(pattern, u):
+                upd["audience"] = audience
+                break
         if re.search(r"chac chan|nghiem ngat|da xac minh", u):
             upd["mode"] = "strict"
         elif re.search(r"kham pha|tham khao", u):
