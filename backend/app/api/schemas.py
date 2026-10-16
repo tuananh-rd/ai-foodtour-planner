@@ -1,5 +1,5 @@
 """Contract-v1 HTTP models; domain time is converted only at the boundary."""
-from typing import Literal
+from typing import Annotated, Literal
 import unicodedata
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
@@ -62,8 +62,19 @@ class PreferencesSchema(Model):
     audience: Literal["solo", "friends", "family"] | None = None
     interests: list[str] = Field(default_factory=list, max_length=10)
     exclusions: list[str] = Field(default_factory=list, max_length=10)
+    allergies: list[Annotated[str, Field(min_length=1, max_length=40)]] = Field(default_factory=list, max_length=10)
     max_stops: int = Field(default=3, ge=1, le=5, strict=True)
     mode: Literal["explore", "strict"] = "explore"
+
+    @field_validator('allergies', mode='before')
+    @classmethod
+    def safe_allergies(cls, value):
+        if isinstance(value, list):
+            for term in value:
+                if isinstance(term, str) and any(unicodedata.category(c) in ('Cc', 'Cf', 'Cs') for c in term):
+                    raise ValueError('invalid allergy term')
+            return [term.strip() if isinstance(term, str) else term for term in value]
+        return value
 
     @field_validator('origin_label')
     @classmethod
@@ -80,6 +91,7 @@ class PreferencesSchema(Model):
         )
         values["interests"] = tuple(values["interests"])
         values["exclusions"] = tuple(values["exclusions"])
+        values["allergies"] = tuple(values["allergies"])
         return Preferences(**values)
 
     @classmethod
@@ -92,6 +104,7 @@ class PreferencesSchema(Model):
             duration_min=prefs.duration_min, budget_vnd=prefs.budget_vnd,
             budget_scope=prefs.budget_scope, party_size=prefs.party_size,
             interests=list(prefs.interests), exclusions=list(prefs.exclusions),
+            allergies=list(prefs.allergies),
             max_stops=prefs.max_stops, mode=prefs.mode, meal=prefs.meal, audience=prefs.audience,
         )
 
