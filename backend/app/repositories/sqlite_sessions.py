@@ -102,7 +102,7 @@ class SQLiteSessionStore:
         if encoded_tour is None:
             return session
         record = json.loads(encoded_tour)
-        if not {'dataset_version', 'stops'} <= set(record) or set(record) - {'dataset_version', 'stops', 'preferences', 'vehicle', 'selected_ids'} or not isinstance(record['stops'], list):
+        if not {'dataset_version', 'stops'} <= set(record) or set(record) - {'dataset_version', 'stops', 'preferences', 'vehicle', 'selected_ids', 'locks'} or not isinstance(record['stops'], list):
             raise ValueError('invalid tour record')
         if record.get('preferences'):
             prefs = PreferencesSchema.model_validate(record['preferences']).domain()
@@ -130,19 +130,23 @@ class SQLiteSessionStore:
         if any(set(s) != {'venue_id', 'order'} or type(s['order']) is not int for s in stops):
             raise ValueError('invalid stops')
         ordered = sorted(stops, key=lambda s: s['order'])
+        locks = record.get('locks', [])
+        if (not isinstance(locks, list) or any(not isinstance(i, str) for i in locks)
+                or len(set(locks)) != len(locks) or not set(locks) <= {s['venue_id'] for s in ordered}):
+            raise ValueError('invalid tour locks')
         if [s['order'] for s in ordered] != list(range(1, len(stops) + 1)):
             raise ValueError('invalid order')
         if not restore_tour:
             # URL export needs stored identities/sequence, never routing or feasibility claims.
             session.tour = Tour('conditional', stops=tuple(
-                Stop(s['venue_id'], s['order'], Leg(None, 0, 'unknown')) for s in ordered))
+                Stop(s['venue_id'], s['order'], Leg(None, 0, 'unknown')) for s in ordered)).with_locks(tuple(locks))
             return session
         rebuilt, violation = engine.build_tour(data.venues, prefs,
                                                [s['venue_id'] for s in ordered], routing)
         if violation or rebuilt is None or engine.validate_tour(rebuilt, data.venues, prefs, routing):
             session.notes = (CHANGED,)
             return session
-        session.tour = rebuilt
+        session.tour = rebuilt.with_locks(tuple(locks))
         return session
 
     @contextmanager
@@ -183,6 +187,7 @@ class SQLiteSessionStore:
                     **({'preferences': PreferencesSchema.from_domain(session.tour_preferences or session.preferences).model_dump(),
                         'vehicle': session.tour_vehicle, 'selected_ids': list(session.tour_selected_ids)}
                         if session.chat.turn_count else {}),
+                    'locks': list(session.tour.locks),
                     'stops': [{'venue_id': s.venue_id, 'order': s.order} for s in session.tour.stops]})
             db.execute('UPDATE sessions SET preferences=?,revision=?,tour=?,chat=? WHERE id=? AND revision=?',
                        (PreferencesSchema.from_domain(session.preferences).model_dump_json(),

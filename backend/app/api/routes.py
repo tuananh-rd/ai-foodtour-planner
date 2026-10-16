@@ -17,6 +17,7 @@ from app.api.schemas import (
 from app.chat.engine import ChatEngine
 from app.chat.llm_understand import LLMUnderstander
 from app.chat.planning import plan_selected, routing_for
+from app.chat.tools import clean_text
 from app.repositories.sessions import encode_chat
 from app.data import DatasetLoadError
 from app.llm.explain import explain
@@ -397,6 +398,64 @@ def require_chat():
         raise APIError(404, 'not_found', 'Chat is unavailable.')
 
 
+def replace_chat_stop(session, result, data, request, chat_engine):
+    """Resolve references in the current tour and validate before changing the unit of work."""
+    def say(text, code=None):
+        result.blocks.append({'type': 'notice', 'level': 'warning', 'code': code, 'text': text}
+                             if code else {'type': 'text', 'text': text})
+    if session.tour is None or not session.tour.stops:
+        say('Chưa có lịch trình để đổi quán; hãy lập lịch trình trước.')
+        return
+    ids = [s.venue_id for s in session.tour.stops]
+    resolved = set()
+    for ref in result.replace_request['refs']:
+        identity = None
+        if ref.isdigit():
+            index = int(ref) - 1
+            identity = ids[index] if 0 <= index < len(ids) else None
+        elif ref == 'last':
+            identity = ids[-1]
+        elif ref.startswith('id:'):
+            identity = ref[3:]
+        elif not result.state.results_stale:
+            identity = next((r['venue_id'] for r in result.state.last_results if r['label'] == ref), None)
+        if identity not in ids:
+            say('Bạn muốn đổi quán nào trong lịch trình? Hãy chọn đúng một điểm dừng.')
+            return
+        resolved.add(identity)
+    if len(resolved) != 1:
+        say('Bạn muốn đổi quán nào trong lịch trình? Hãy chọn đúng một điểm dừng.')
+        return
+    old_id = resolved.pop()
+    if old_id in session.tour.locks or any(s.venue_id == old_id and s.status == 'kept' for s in result.state.shortlist):
+        say('Quán này đang được giữ hoặc khoá; hãy bỏ giữ trước khi đổi.', 'stop_locked')
+        return
+    if session.snapshot is None or session.snapshot.dataset_version != data.dataset_version:
+        say('Dữ liệu đã đổi; hãy lập lại lịch trình trước khi thay quán.', 'dataset_changed')
+        return
+    prefs = session.tour_preferences or session.preferences
+    routes = routing_for(session.tour_vehicle, request.app.state.routing)
+    replacement = engine.replace_stop(data.venues, prefs, session.tour, old_id, routes,
+                                      quality_weight=request.app.state.quality_weight)
+    if not replacement.ok:
+        say(' '.join(clean_text(reason) for reason in replacement.reasons), 'replace_failed')
+        return
+    new_ids = [s.venue_id for s in replacement.tour.stops]
+    locks = tuple(i for i in ids if i != old_id)
+    if (len(ids) != len(new_ids) or old_id in new_ids
+            or any(a != b for a, b in zip(ids, new_ids) if a != old_id)
+            or tuple(replacement.tour.locks) != locks
+            or engine.validate_tour(replacement.tour, data.venues, prefs, routes)):
+        raise APIError(500, 'internal_validation_failed', 'Phương án thay thế không giữ các điểm đã khoá.')
+    new_id = new_ids[ids.index(old_id)]
+    chat_engine.swap_shortlist(result.state, old_id, new_id)
+    session.tour, session.snapshot = replacement.tour, data
+    session.tour_selected_ids = tuple(new_ids)
+    result.state.phase, result.state.tour_stale = 'planned', False
+    say('Đã đổi một quán và giữ nguyên các điểm dừng còn lại; xem bằng chứng trong lịch trình.')
+    result.blocks.append({'type': 'tour_ready', 'revision': session.revision + 1})
+
+
 @router.post('/v1/sessions/{session_id}/chat', response_model=ChatTurn, response_model_exclude_unset=True,
              dependencies=[Depends(require_chat)])
 def chat(session_id: str, body: ChatRequest, request: Request,
@@ -441,10 +500,18 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                 plan_prefs = domain_replace(prefs, interests=(), max_stops=min(5, len(ids)))
                 if planned.stops and {s.venue_id for s in planned.stops} != set(ids):
                     raise APIError(500, 'internal_validation_failed', 'Planner changed the selected venues.')
-                session.tour, session.snapshot = planned, data
-                session.tour_preferences, session.tour_vehicle = plan_prefs, vehicle
-                session.tour_selected_ids = tuple(ids)
-                result.blocks.append({'type': 'tour_ready', 'revision': session.revision + 1})
+                outcome_blocks = cached[1].after_plan(result.state, planned)
+                if planned.stops:
+                    planned = planned.with_locks(tuple(result.plan_request.get('kept', ())))
+                    session.tour, session.snapshot = planned, data
+                    session.tour_preferences, session.tour_vehicle = plan_prefs, vehicle
+                    session.tour_selected_ids = tuple(ids)
+                    result.blocks.extend(outcome_blocks)
+                    result.blocks.append({'type': 'tour_ready', 'revision': session.revision + 1})
+                else:
+                    result.blocks = outcome_blocks
+            if result.replace_request:
+                replace_chat_stop(session, result, data, request, cached[1])
             session.preferences, session.chat = prefs, result.state
             session.revision += 1
             view = session_view(session, session.tour, session.snapshot or data, request)
