@@ -62,6 +62,18 @@ const MapView = loadComponent('../../frontend/app/components/MapView.jsx');
 const TourTimeline = loadComponent('../../frontend/app/components/TourTimeline.jsx');
 const PreferencesPanel = loadComponent('../../frontend/app/components/PreferencesPanel.jsx');
 
+// UI_V2 Base Components
+const Button = loadComponent('../../frontend/app/ui/Button.jsx');
+const Chip = loadComponent('../../frontend/app/ui/Chip.jsx');
+const Card = loadComponent('../../frontend/app/ui/Card.jsx');
+const BannerModule = loadComponent('../../frontend/app/ui/Banner.jsx');
+const Banner = BannerModule.default || BannerModule;
+const StatusQueueModule = loadComponent('../../frontend/app/ui/StatusQueue.js');
+const Sheet = loadComponent('../../frontend/app/ui/Sheet.jsx');
+const Skeleton = loadComponent('../../frontend/app/ui/Skeleton.jsx');
+const EvidenceChip = loadComponent('../../frontend/app/ui/EvidenceChip.jsx');
+const Toast = loadComponent('../../frontend/app/ui/Toast.jsx');
+
 const results = [];
 function record(id, title, passed, details = '') {
   results.push({ id, title, passed, details });
@@ -398,6 +410,197 @@ async function runComponentTests() {
       htmlRange.includes('Khoảng giá quán, không bảo đảm') &&
       htmlSpoof.includes('Khoảng giá quán, không bảo đảm') && !htmlSpoof.includes('Giá theo người'),
     'verified per_person / estimate range / estimate-with-per_person'
+  );
+
+  // -------------------------------------------------------------
+  // Test 6: UI_V2 Base Components & Accessibility (R1-1)
+  // -------------------------------------------------------------
+  console.log('\n--- Test 6: UI_V2 Base Components & Accessibility (R1-1) ---');
+
+  // TC-UIV2-01: Button
+  const htmlBtnPrimary = renderToStaticMarkup(
+    React.createElement(Button, { variant: 'primary' }, 'Lập hành trình')
+  );
+  const htmlBtnLoading = renderToStaticMarkup(
+    React.createElement(Button, { variant: 'primary', loading: true }, 'Lập hành trình')
+  );
+  record(
+    'TC-UIV2-01',
+    'Button renders min-height >= 44px, loading state aria-busy="true" and Vietnamese text',
+    htmlBtnPrimary.includes('min-height:44px') &&
+      htmlBtnPrimary.includes('Lập hành trình') &&
+      htmlBtnLoading.includes('aria-busy="true"') &&
+      htmlBtnLoading.includes('Đang xử lý…'),
+    'Button min-height 44px and loading semantics verified'
+  );
+
+  // TC-UIV2-02: Chip
+  const htmlChipSelected = renderToStaticMarkup(
+    React.createElement(Chip, { selected: true, icon: '🍜' }, 'Ăn sáng 2 giờ')
+  );
+  const htmlChipUnselected = renderToStaticMarkup(
+    React.createElement(Chip, { selected: false }, 'Đi gia đình')
+  );
+  record(
+    'TC-UIV2-02',
+    'Chip renders aria-pressed="true" / "false" and min-height >= 44px',
+    htmlChipSelected.includes('aria-pressed="true"') &&
+      htmlChipSelected.includes('min-height:44px') &&
+      htmlChipSelected.includes('🍜') &&
+      htmlChipUnselected.includes('aria-pressed="false"'),
+    'Chip aria-pressed and min-height confirmed'
+  );
+
+  // TC-UIV2-03: Card
+  const htmlCard = renderToStaticMarkup(
+    React.createElement(
+      Card,
+      {
+        header: React.createElement('h3', null, 'Tiêu đề thẻ'),
+        footer: React.createElement('span', null, 'Chân thẻ'),
+        elevated: true,
+      },
+      React.createElement('p', null, 'Nội dung thẻ')
+    )
+  );
+  record(
+    'TC-UIV2-03',
+    'Card renders header, body, footer, and elevated container structure',
+    htmlCard.includes('ft-card-elevated') &&
+      htmlCard.includes('Tiêu đề thẻ') &&
+      htmlCard.includes('Nội dung thẻ') &&
+      htmlCard.includes('Chân thẻ'),
+    'Card container confirmed'
+  );
+
+  // TC-UIV2-04: Banner
+  const htmlBannerError = renderToStaticMarkup(
+    React.createElement(Banner, {
+      type: 'error',
+      title: 'Lỗi kết nối',
+      message: 'Không thể kết nối máy chủ',
+      onDismiss: () => {},
+    })
+  );
+  const htmlBannerInfo = renderToStaticMarkup(
+    React.createElement(Banner, {
+      type: 'info',
+      message: 'Đã cập nhật tour mới',
+    })
+  );
+  record(
+    'TC-UIV2-04',
+    'Banner renders role="alert" for error and role="status" for info with 44px dismiss button',
+    htmlBannerError.includes('role="alert"') &&
+      htmlBannerError.includes('aria-label="Đóng thông báo"') &&
+      htmlBannerError.includes('min-height:44px') &&
+      htmlBannerInfo.includes('role="status"'),
+    'Banner alert and status roles verified'
+  );
+
+  // TC-UIV2-05: StatusQueue priority order (error > warning > info)
+  const sq = StatusQueueModule.globalStatusQueue;
+  sq.clear();
+  sq.enqueue({ id: 'inf_test', type: 'info', message: 'Thông tin thường' });
+  const active1 = sq.getActive();
+  sq.enqueue({ id: 'err_test', type: 'error', message: 'Lỗi nghiêm trọng' });
+  const active2 = sq.getActive();
+  sq.enqueue({ id: 'warn_test', type: 'warning', message: 'Cảnh báo mức trung' });
+  const active3 = sq.getActive();
+  sq.dismiss('err_test');
+  const active4 = sq.getActive();
+  sq.dismiss('warn_test');
+  const active5 = sq.getActive();
+  sq.clear();
+
+  record(
+    'TC-UIV2-05',
+    'StatusQueue guarantees ONLY ONE active banner with priority error > warning > info',
+    active1.type === 'info' &&
+      active2.type === 'error' &&
+      active3.type === 'error' &&
+      active4.type === 'warning' &&
+      active5.type === 'info',
+    'StatusQueue priority order verified'
+  );
+
+  // TC-UIV2-06: Sheet
+  const htmlSheet = renderToStaticMarkup(
+    React.createElement(
+      Sheet,
+      {
+        isOpen: true,
+        title: 'Tùy chọn hành trình',
+        onClose: () => {},
+      },
+      React.createElement('input', { type: 'text', defaultValue: 'Hà Nội' })
+    )
+  );
+  record(
+    'TC-UIV2-06',
+    'Sheet renders dialog, aria-modal="true", aria-labelledby, and 44px close button',
+    htmlSheet.includes('role="dialog"') &&
+      htmlSheet.includes('aria-modal="true"') &&
+      htmlSheet.includes('aria-labelledby=') &&
+      htmlSheet.includes('aria-label="Đóng bảng"') &&
+      htmlSheet.includes('min-height:44px'),
+    'Sheet accessibility attributes confirmed'
+  );
+
+  // TC-UIV2-07: EvidenceChip (never colour only)
+  const htmlEvVerified = renderToStaticMarkup(
+    React.createElement(EvidenceChip, { level: 'verified' })
+  );
+  const htmlEvEstimate = renderToStaticMarkup(
+    React.createElement(EvidenceChip, { level: 'estimate' })
+  );
+  const htmlEvUnknown = renderToStaticMarkup(
+    React.createElement(EvidenceChip, { level: 'unknown' })
+  );
+  record(
+    'TC-UIV2-07',
+    'EvidenceChip verified/estimate/unknown render icon + text + title (never colour only)',
+    htmlEvVerified.includes('✓') &&
+      htmlEvVerified.includes('Đã xác minh') &&
+      htmlEvVerified.includes('title=') &&
+      htmlEvEstimate.includes('≈') &&
+      htmlEvEstimate.includes('Ước tính') &&
+      htmlEvEstimate.includes('title=') &&
+      htmlEvUnknown.includes('?') &&
+      htmlEvUnknown.includes('Chưa rõ') &&
+      htmlEvUnknown.includes('title='),
+    'EvidenceChip multi-channel encoding verified'
+  );
+
+  // TC-UIV2-08: Skeleton
+  const htmlSkeleton = renderToStaticMarkup(
+    React.createElement(Skeleton, { variant: 'rect', height: 40 })
+  );
+  record(
+    'TC-UIV2-08',
+    'Skeleton renders aria-hidden="true" and role="presentation"',
+    htmlSkeleton.includes('aria-hidden="true"') &&
+      htmlSkeleton.includes('role="presentation"') &&
+      htmlSkeleton.includes('ft-skeleton-rect'),
+    'Skeleton placeholder accessibility confirmed'
+  );
+
+  // TC-UIV2-09: Toast
+  const htmlToast = renderToStaticMarkup(
+    React.createElement(Toast, {
+      message: 'Hành trình đã lưu',
+      type: 'success',
+      onClose: () => {},
+    })
+  );
+  record(
+    'TC-UIV2-09',
+    'Toast renders role="status", aria-live="polite", and 44px dismiss button',
+    htmlToast.includes('role="status"') &&
+      htmlToast.includes('aria-live="polite"') &&
+      htmlToast.includes('aria-label="Đóng thông báo"') &&
+      htmlToast.includes('min-height:44px'),
+    'Toast notification confirmed'
   );
 
   console.log('\n===============================================================');

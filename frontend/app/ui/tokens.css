@@ -1,0 +1,251 @@
+/**
+ * AI FoodTour Planner — V2 Design Tokens (tokens.css)
+ * Spec: docs/UPGRADE_PLAN.md §3.0, CONTRACT.md §v1.6, Task R1-1
+ *
+ * Rules:
+ * - Colours: --bg #FBF8F3, --text #1F1B16, --accent #C8431A, --muted #6B6259
+ * - Evidence states: verified (green + check icon), estimate (amber + approx icon), unknown (grey + question icon) - never colour only
+ * - Spacing / radius / shadow scale
+ * - Type scale: 12/14/16/20/24/32 with line-height 1.5 for body, tabular-nums for numbers
+ * - Dark theme via prefers-color-scheme with its own tokens
+ * - prefers-reduced-motion respected
+ * - focus-visible ring on every interactive element
+ */
+
+:root {
+  /* Core Colours (Light Mode) */
+  --bg: #FBF8F3;
+  --card-bg: #FFFFFF;
+  --text: #1F1B16;
+  --accent: #C8431A;
+  --accent-hover: #A73310;
+  --accent-contrast: #FFFFFF;
+  --muted: #6B6259;
+  --subtle: #F0EAE1;
+  --border: #DFD5C6;
+  --focus-ring: #C8431A;
+
+  /* Evidence States — Light (Contrast with respective bg > 4.5:1) */
+  --evidence-verified-bg: #EAF7EC;
+  --evidence-verified-text: #195624;
+  --evidence-verified-border: #9ED4A7;
+
+  --evidence-estimate-bg: #FFF6E0;
+  --evidence-estimate-text: #6E4300;
+  --evidence-estimate-border: #FFD480;
+
+  --evidence-unknown-bg: #EFECE6;
+  --evidence-unknown-text: #413C36;
+  --evidence-unknown-border: #C8C1B7;
+
+  /* Banner States — Light */
+  --banner-info-bg: #EFF6FF;
+  --banner-info-text: #1E3A8A;
+  --banner-info-border: #BFDBFE;
+
+  --banner-warning-bg: #FFFBEB;
+  --banner-warning-text: #78350F;
+  --banner-warning-border: #FDE68A;
+
+  --banner-error-bg: #FEF2F2;
+  --banner-error-text: #7F1D1D;
+  --banner-error-border: #FECACA;
+
+  /* Spacing Scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Radius Scale */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* Shadow Scale */
+  --shadow-sm: 0 1px 3px rgba(31, 27, 22, 0.08);
+  --shadow-md: 0 4px 12px rgba(31, 27, 22, 0.10);
+  --shadow-lg: 0 10px 24px rgba(31, 27, 22, 0.14);
+
+  /* Typography Scale */
+  --type-12: 12px;
+  --type-14: 14px;
+  --type-16: 16px;
+  --type-20: 20px;
+  --type-24: 24px;
+  --type-32: 32px;
+  --line-height-body: 1.5;
+  --line-height-heading: 1.25;
+
+  /* Transitions */
+  --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark Theme via prefers-color-scheme */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #151311;
+    --card-bg: #211E1A;
+    --text: #F3EFEA;
+    --accent: #FF7A50;
+    --accent-hover: #FF926E;
+    --accent-contrast: #151311;
+    --muted: #BAAFA6;
+    --subtle: #2C2823;
+    --border: #443E37;
+    --focus-ring: #FF7A50;
+
+    --evidence-verified-bg: #0F2D17;
+    --evidence-verified-text: #92E89F;
+    --evidence-verified-border: #286C37;
+
+    --evidence-estimate-bg: #332205;
+    --evidence-estimate-text: #FFD478;
+    --evidence-estimate-border: #805708;
+
+    --evidence-unknown-bg: #262421;
+    --evidence-unknown-text: #DFDAD2;
+    --evidence-unknown-border: #565048;
+
+    --banner-info-bg: #172554;
+    --banner-info-text: #BFDBFE;
+    --banner-info-border: #1E40AF;
+
+    --banner-warning-bg: #451A03;
+    --banner-warning-text: #FDE68A;
+    --banner-warning-border: #92400E;
+
+    --banner-error-bg: #450A0A;
+    --banner-error-text: #FECACA;
+    --banner-error-border: #991B1B;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+    --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* Explicit class or data-attribute for dark theme testing / toggling */
+[data-theme="dark"],
+.dark-theme {
+  --bg: #151311;
+  --card-bg: #211E1A;
+  --text: #F3EFEA;
+  --accent: #FF7A50;
+  --accent-hover: #FF926E;
+  --accent-contrast: #151311;
+  --muted: #BAAFA6;
+  --subtle: #2C2823;
+  --border: #443E37;
+  --focus-ring: #FF7A50;
+
+  --evidence-verified-bg: #0F2D17;
+  --evidence-verified-text: #92E89F;
+  --evidence-verified-border: #286C37;
+
+  --evidence-estimate-bg: #332205;
+  --evidence-estimate-text: #FFD478;
+  --evidence-estimate-border: #805708;
+
+  --evidence-unknown-bg: #262421;
+  --evidence-unknown-text: #DFDAD2;
+  --evidence-unknown-border: #565048;
+
+  --banner-info-bg: #172554;
+  --banner-info-text: #BFDBFE;
+  --banner-info-border: #1E40AF;
+
+  --banner-warning-bg: #451A03;
+  --banner-warning-text: #FDE68A;
+  --banner-warning-border: #92400E;
+
+  --banner-error-bg: #450A0A;
+  --banner-error-text: #FECACA;
+  --banner-error-border: #991B1B;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 10px 24px rgba(0, 0, 0, 0.6);
+}
+
+/* Numeric text uses tabular numbers */
+.tabular-nums,
+[data-tabular-nums="true"],
+.ft-number {
+  font-variant-numeric: tabular-nums;
+  -webkit-font-feature-settings: "tnum";
+  font-feature-settings: "tnum";
+}
+
+/* Body line height */
+.ft-body {
+  font-size: var(--type-16);
+  line-height: var(--line-height-body);
+  color: var(--text);
+}
+
+/* Focus-visible ring on interactive elements */
+:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* Touch-friendly target minimum (UX-07, Task R1-1) */
+button,
+input,
+select,
+textarea,
+.ft-button,
+.ft-chip {
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Keyframe animations */
+@keyframes ft-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes ft-skeleton-pulse {
+  0% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0.6;
+  }
+}
+
