@@ -25,6 +25,9 @@
       "ClientConfig": {
         "additionalProperties": false,
         "properties": {
+          "features": {
+            "$ref": "#/components/schemas/FeaturesConfig"
+          },
           "geocoding": {
             "$ref": "#/components/schemas/ServiceConfig"
           },
@@ -39,6 +42,7 @@
           }
         },
         "required": [
+          "features",
           "maps",
           "geocoding",
           "routing",
@@ -124,6 +128,20 @@
           }
         },
         "title": "EvidenceOverlayCounts",
+        "type": "object"
+      },
+      "FeaturesConfig": {
+        "additionalProperties": false,
+        "properties": {
+          "ui_v2": {
+            "title": "Ui V2",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ui_v2"
+        ],
+        "title": "FeaturesConfig",
         "type": "object"
       },
       "GeocodeRequest": {
@@ -1148,6 +1166,7 @@
           "count": {
             "anyOf": [
               {
+                "maximum": 10000000.0,
                 "minimum": 0.0,
                 "type": "integer"
               },
