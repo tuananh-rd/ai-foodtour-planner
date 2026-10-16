@@ -328,6 +328,12 @@ class RulesFirstExtractor:
         """Model answer wins per field; rule-validated fields it did not set (meal, audience, ...) survive."""
         extra = {f: getattr(base.preferences, f) for f in base.updated_fields
                  if f not in out.updated_fields and hasattr(out.preferences, f)}
+        # Safety notes from the rules (allergy warning, avoid question) must survive a model answer.
+        notes = tuple(out.notes) + tuple(n for n in base.notes if n not in out.notes)
+        out = replace(out, notes=notes)
+        if "exclusions" in out.updated_fields and "exclusions" in base.updated_fields:
+            union = tuple(dict.fromkeys(tuple(out.preferences.exclusions) + tuple(base.preferences.exclusions)))[:10]
+            out = replace(out, preferences=replace(out.preferences, exclusions=union))
         if not extra:
             return out
         origin_text = None if "origin" in extra else out.origin_text

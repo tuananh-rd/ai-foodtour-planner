@@ -115,3 +115,41 @@ class Planner(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CodexReviewC0HF(unittest.TestCase):
+    """Findings from the independent review (escalation msg): fail before the follow-up fix."""
+
+    def setUp(self):
+        self.m = MockExtractor()
+
+    def test_allergy_followed_by_count_is_not_dropped(self):
+        r = self.m.extract("dị ứng cua 4 người")
+        self.assertEqual((r.preferences.allergies, r.preferences.party_size), (("cua",), 4))
+        self.assertTrue(any("không quán nào được xác nhận an toàn" in n for n in r.notes))
+
+    def test_negated_allergy_is_not_recorded(self):
+        self.assertEqual(self.m.extract("không bị dị ứng gì").preferences.allergies, ())
+        self.assertEqual(self.m.extract("mình không dị ứng cua").preferences.allergies, ())
+
+    def test_retracted_allergy_is_removed(self):
+        prior = self.m.extract("dị ứng cua và tôm").preferences
+        after = self.m.extract("hết dị ứng cua rồi", prior).preferences
+        self.assertEqual(after.allergies, ("tôm",))
+
+    def test_markup_never_reaches_notes(self):
+        r = self.m.extract("dị ứng <b>cua</b>")
+        self.assertEqual(r.preferences.allergies, ("cua",))
+        self.assertFalse(any("<" in n or ">" in n for n in r.notes))
+
+    def test_model_answer_keeps_rule_safety_note(self):
+        from app.llm.provider import LLMExtractor, RulesFirstExtractor
+
+        class Stub:
+            def complete(self, text, prior, deadline_s=8.0):
+                return '{"duration_min":120,"origin_text":"chợ Đồng Xuân"}'
+        rf = RulesFirstExtractor(self.m, LLMExtractor(Stub()))
+        r = rf.extract("dị ứng cua, ăn bún quanh chợ Đồng Xuân hai tiếng")
+        self.assertEqual(r.source, "live")
+        self.assertEqual(r.preferences.allergies, ("cua",))
+        self.assertTrue(any("an toàn" in n for n in r.notes))

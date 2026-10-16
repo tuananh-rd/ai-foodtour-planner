@@ -97,15 +97,24 @@ _ALLERGY_TRIGGER = re.compile(
 _AVOID_TRIGGER = re.compile(r"\b(?:không|khong|ko)\s+(?:ăn|an)\s+(?:được\s+|duoc\s+)?([^.;!?,\n]+)")
 _TERM_SPLIT = re.compile(r",|\bvà\b|\bva\b|\bhoặc\b|\bhoac\b|\bvới\b|\bvoi\b|\bnhưng\b|\bnhung\b|\bcòn\b|\bcon\b")
 _FILLER = re.compile(r"^(?:các|cac|món|mon|đồ|do|những|nhung|loại|loai|thịt|thit)\s+")
-_TRAILING = re.compile(r"\s+(?:nữa|nua|nhé|nhe|nha|thôi|thoi|ạ|a|đấy|day|luôn|luon)$")
+_TRAILING = re.compile(r"\s+(?:nữa|nua|nhé|nhe|nha|thôi|thoi|ạ|a|đấy|day|luôn|luon|rồi|roi|xong|đó|do)$")
 _NOT_A_TERM = re.compile(r"\d|người|nguoi|nhóm|nhom|\bk\b|đồng|dong|ngân|ngan|tiền|tien")
+
+
+_NEGATOR = re.compile(r"(?:không|khong|chẳng|chang|chưa|chua|ko|hết|het)\s*(?:còn|con|bị|bi|có|co)?\s*$")
+_REMOVER = re.compile(r"(?:hết|het|không còn|khong con|chẳng còn|chang con)\s*(?:bị |bi )?$")
+_TAGS = re.compile(r"<[^>]*>")
+_STOP_AT = re.compile(r"\s+(?=\d|(?:người|nguoi|nhóm|nhom|ngân|ngan|mỗi|moi|cả|ca nhom|khoảng|khoang|lúc|luc|trong|quanh|"
+                      r"tại|tai|muốn|muon|đi|di|ăn|an)\b)")
 
 
 def _allergy_terms(chunk: str) -> list:
     out = []
+    chunk = _STOP_AT.split(_TAGS.sub(" ", chunk), maxsplit=1)[0]  # "cua 4 người" -> "cua"
     for raw in _TERM_SPLIT.split(chunk):
+        raw = re.sub(r"[^\w\s-]", "", raw)  # no markup/punctuation ever reaches user-visible notes
         term = _TRAILING.sub("", _FILLER.sub("", raw.strip(" \t-:")).strip()).strip()
-        if not term or _NOT_A_TERM.search(term):
+        if not term or _NOT_A_TERM.search(term) or term in ("gì", "gi", "gì cả", "gi ca"):
             continue
         term = " ".join(term.split()[:3])[:allergens.MAX_TERM_CHARS].strip()
         if term and term not in out:
@@ -116,11 +125,24 @@ def _allergy_terms(chunk: str) -> list:
 class MockExtractor:
     def _allergies(self, t, u, prior, upd, notes):
         """Allergy / avoidance statements must never be dropped silently (C0-HF)."""
-        found = []
+        found, cleared = [], []
         for m in _ALLERGY_TRIGGER.finditer(t):
-            found += _allergy_terms(m.group(1))
+            before = t[max(0, m.start() - 16):m.start()]
+            terms = _allergy_terms(m.group(1))
+            if _REMOVER.search(before):
+                cleared += terms  # "hết dị ứng cua rồi": user retracts it
+            elif _NEGATOR.search(before):
+                continue  # "không dị ứng …" states the absence of an allergy; nothing to record
+            else:
+                found += terms
+        if cleared:
+            keep = [a for a in prior.allergies
+                    if all(allergens.fold_uncached(a) != allergens.fold_uncached(c) for c in cleared)]
+            if len(keep) != len(prior.allergies):
+                upd["allergies"] = tuple(keep)
+                notes.append("Đã bỏ khỏi danh sách dị ứng: " + ", ".join(cleared) + ". Bạn có thể thêm lại bất cứ lúc nào.")
         if found:
-            merged = list(prior.allergies)
+            merged = list(upd.get("allergies", prior.allergies))
             for term in found:
                 if all(allergens.fold_uncached(term) != allergens.fold_uncached(x) for x in merged):
                     merged.append(term)
