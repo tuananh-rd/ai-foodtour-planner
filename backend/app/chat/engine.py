@@ -175,7 +175,15 @@ class ChatEngine:
         if t == "pick_option":
             if not a.get("option_id") or not st.pending:
                 return Understanding("AMBIGUOUS_ACK", {}, [], 1.0, "action") if not st.pending else None
-            return Understanding("ANSWER_PENDING", {"option": a["option_id"]}, [], 1.0, "action")
+            oid = a["option_id"]
+            if oid not in {o["option_id"] for o in st.pending.options}:
+                return Understanding("ANSWER_PENDING", {"option": None}, [], 1.0, "action", {"stale_option": True})
+            if st.pending.kind == "confirm_plan":  # only an explicit confirm_yes can ever plan
+                if oid == "confirm_yes":
+                    return Understanding("CONFIRM_YES", {}, [], 1.0, "action")
+                if oid == "confirm_no":
+                    return Understanding("CONFIRM_NO", {}, [], 1.0, "action")
+            return Understanding("ANSWER_PENDING", {"option": oid}, [], 1.0, "action")
         if t in ("confirm_yes", "confirm_no"):
             return Understanding(t.upper(), {}, [], 1.0, "action")
         if t == "set_location":
@@ -534,6 +542,10 @@ class ChatEngine:
         if pend is None:
             self._do_ambiguous_ack(R, u)
             return
+        if u.extra.get("stale_option"):
+            R.blocks.append(text_b("Lựa chọn đó không còn hiệu lực với câu hỏi hiện tại; bạn chọn lại ở các nút mới nhất nhé."))
+            R.tools.append("nudge")
+            return
         if pend.kind == "clarify_slot":
             patch = dict(u.patch)
             opt = patch.pop("option", None)
@@ -584,19 +596,31 @@ class ChatEngine:
                 R.blocks.append(text_b("Mình chưa hiểu lựa chọn đó; bạn nói lại giúp mình nhé."))
             R.tools.append("answer_pending")
         elif pend.kind == "pick_venue":
-            ids, bad = self._refs(u.refs or ([f"id:{u.patch['option']}"] if u.patch.get("option") else []), st, "results")
+            cands = [c for c in (pend.context.get("candidates") or []) if c in self.by_id]
+            ids = []
+            if u.patch.get("option") in cands:
+                ids = [u.patch["option"]]
+            else:
+                got, _bad = self._refs(u.refs, st, "results") if u.refs else ([], [])
+                ids = [i for i in got if i in cands]  # only venues that were actually offered
+                for r in u.refs:
+                    if r.isdigit() and 1 <= int(r) <= len(cands) and cands[int(r) - 1] not in ids and not got:
+                        ids.append(cands[int(r) - 1])
             if not ids:
-                cands = pend.context.get("candidates") or []
-                pick = next((c for c in cands if c == u.patch.get("option")), None)
-                ids = [pick] if pick in self.by_id else []
-            if not ids:
-                R.blocks.append(text_b("Mình chưa rõ bạn chọn quán nào; hãy chọn một nút hoặc nói \"quán A\"."))
+                R.blocks.append(text_b("Mình chưa rõ bạn chọn quán nào trong các quán vừa đưa ra; hãy bấm một nút hoặc nói \"quán A\"."))
+                R.tools.append("nudge")
                 return
             st.pending = None
             self._add_ids(R, ids)
             R.tools.append("shortlist_add")
         elif pend.kind == "confirm_plan":
-            self._do_confirm_yes(R, u)
+            opt = u.patch.get("option") or ""
+            if opt.startswith("scope:"):
+                self._apply_patch(R, {"budget_scope": opt.split(":", 1)[1]})
+                self._present_summary(R)
+            else:
+                R.blocks.append(text_b("Để lập lịch trình, bạn bấm \"Xác nhận và tạo lịch trình\" hoặc nói rõ \"xác nhận\"; mình chưa tạo gì."))
+                R.tools.append("nudge")
 
     def _option_to_patch(self, opt: str, patch: dict) -> dict:
         if opt.startswith("district:"):

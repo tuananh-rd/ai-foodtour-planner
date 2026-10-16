@@ -78,3 +78,44 @@ class StaleNotice(unittest.TestCase):
         self.assertEqual(r.state.phase, "planned")
         self.assertTrue(r.state.tour_stale)
         self.assertTrue([b for b in r.blocks if b["type"] == "notice" and b["code"] == "tour_stale"])
+
+
+class CodexReviewC1High(unittest.TestCase):
+    def setUp(self):
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        self.eng = ChatEngine(data.venues)
+
+    def drive(self, steps):
+        st, pr = ChatState(), Preferences()
+        r = None
+        for kw in steps:
+            r = self.eng.handle(st, pr, **kw)
+            st, pr = r.state, r.prefs
+        return r
+
+    BASE = [{"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán phở"}, {"text": "Thêm A"},
+            {"action": {"type": "edit_profile", "patch": {"start_time": "10:00", "duration_min": 240, "vehicle": "walk"}}}, {"text": "tạo lịch đi"}]
+
+    def test_unrelated_option_can_never_confirm_a_plan(self):
+        r = self.drive(self.BASE)
+        self.assertEqual(r.state.pending.kind, "confirm_plan")
+        for oid in ("scope:group", "district:Cầu Giấy", "geo", "veh:car", "nonsense"):
+            r2 = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": oid})
+            self.assertIsNone(r2.plan_request, oid)
+        r3 = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": "confirm_yes"})
+        self.assertIsNotNone(r3.plan_request)  # the offered confirm option does plan
+
+    def test_pick_venue_only_accepts_offered_candidates(self):
+        r = self.drive([{"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán chè"}, {"text": "thêm một quán"}])
+        self.assertEqual(r.state.pending.kind, "pick_venue")
+        offered = {o["option_id"] for o in r.state.pending.options}
+        for bad in ({"action": {"type": "pick_option", "option_id": "CHT-144"}}, {"text": "cái thứ 8"}, {"text": "quán thứ 9"}):
+            r2 = self.eng.handle(r.state, r.prefs, **bad)
+            self.assertEqual(r2.state.shortlist, [])
+        good = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": sorted(offered)[0]})
+        self.assertEqual(len(good.state.shortlist), 1)
+
+    def test_large_ordinals_never_crash(self):
+        r = self.drive([{"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán phở"}])
+        for t in ("bỏ quán thứ 12", "thêm quán thứ 99", "so sánh quán thứ 7 và quán thứ 8", "giữ quán thứ 0"):
+            self.eng.handle(r.state, r.prefs, text=t)
