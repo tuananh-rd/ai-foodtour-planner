@@ -157,6 +157,7 @@ Normative for Codex (server) and Antigravity (browser). Field names are fixed. I
                 "resets_at": "ISO-8601 UTC", "window": "pacific_midnight" }
 ```
 Default `limit` = 18 (`FOODTOUR_LLM_DAILY_BUDGET`, configurable; the free tier allows 20 and 2 are reserved). The daily window resets at **midnight US Pacific time** (matches the provider's quota reset); an HTTP 429 from the provider is authoritative: it marks the budget `exhausted` until the next reset regardless of the local counter. No key material is ever included.
+Persistence: the counter and the exhausted flag live in a dedicated SQLite file (`<FOODTOUR_SESSION_DB>.budget.sqlite`, override `FOODTOUR_BUDGET_DB`; in-process when no session DB is configured) using short transactions, separate from the session store, so it never contends with session transactions held across a provider call. The counter is monotonic within a window.
 
 ### Messages response (additive)
 `extraction_source: "rules" | "llm" | "cache"` (adds `cache`), `llm_calls: 0 | 1` (1 = the model was invoked for THIS message, including when it then failed and the rule result was returned; a purely local budget refusal is 0; the daily budget `used` counts every transport attempt once, so a transient-5xx retry can raise `used` by 2 while `llm_calls` stays 1), `llm_budget: {limit, remaining, exhausted} | null`. The rule extractor answers without any provider call when the required slots (origin and duration) are present and nothing needs the model (see UPGRADE_PLAN §5.3).

@@ -240,6 +240,7 @@ Tài khoản, thanh toán, đặt bàn, nhiều phương tiện, deploy công kh
 4. **Giải thích**: mẫu theo mặc định; Gemini chỉ khi người dùng bấm "Diễn đạt lại" **và** còn lượt.
 5. **Ngân sách**: giới hạn cứng mặc định 18/ngày (chừa 2 lượt), theo dõi theo ngày Thái Bình Dương; 429 từ Google là nguồn sự thật → khoá lượt đến lần reset kế.
 6. Khi hết: bộ luật + chip + biểu mẫu vẫn dùng được đầy đủ (không tính năng nào chỉ có ở Gemini).
+7. *Triển khai R0-3 (điều chỉnh đã duyệt):* bộ đếm và cờ "hết lượt" lưu trong **tệp SQLite riêng** (`<session_db>.budget.sqlite`, hoặc `FOODTOUR_BUDGET_DB`) với giao dịch ngắn, để không tranh chấp với giao dịch phiên giữ qua lời gọi provider; `llm_calls` = 1 khi mô hình đã được gọi (kể cả lỗi), còn `used` đếm mỗi lần truyền tải một lần. Khai báo `tzdata` trong `requirements.txt` vì Windows không có CSDL múi giờ.
 
 Cải tiến chấm điểm (`planner`): `score = relevance + w_q·chất lượng (rating, review_count có làm mượt Bayes) + w_d·đa dạng − w_w·đi bộ + w_m·khớp bữa`; vẫn **không** dùng rating để bịa độ tin cậy; trọng số cấu hình, kiểm bằng bộ đánh giá offline (4 chỉ số ở mục 8.4).
 
