@@ -112,8 +112,13 @@ class Hours(Model):
 
 class Rating(Model):
     value: float | None = Field(default=None, ge=0, le=5)
-    count: int | None = Field(default=None, ge=0)
+    count: int | None = Field(default=None, ge=0, le=10_000_000)
     source_scale_max: float | None = Field(default=None, gt=0)
+
+    @field_validator('value')
+    @classmethod
+    def round_value(cls, value):
+        return round(value, 2) if value is not None else None
 
 
 class Amenities(Model):
@@ -353,7 +358,12 @@ class PrivacyConfig(Model):
     doc: Literal['docs/PHASE4.md'] = 'docs/PHASE4.md'
 
 
+class FeaturesConfig(Model):
+    ui_v2: bool
+
+
 class ClientConfig(Model):
+    features: FeaturesConfig
     maps: MapsConfig
     geocoding: ServiceConfig
     routing: RoutingConfig

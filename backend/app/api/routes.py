@@ -148,7 +148,8 @@ def client_config(request: Request, response: Response):
     map_id = os.getenv('GOOGLE_MAPS_MAP_ID', '').strip()
     secrets = [os.getenv(name, '').strip() for name in ('GOOGLE_MAPS_SERVER_KEY', 'GEMINI_API_KEY', 'ORS_API_KEY')]
     ready = bool(key and map_id and not any(secret and (secret in key or secret in map_id) for secret in secrets))
-    return {'maps': {'provider': 'google', 'status': 'ready' if ready else 'unavailable',
+    return {'features': {'ui_v2': os.getenv('FOODTOUR_UI_V2', '').strip().casefold() in ('1', 'true', 'yes')},
+        'maps': {'provider': 'google', 'status': 'ready' if ready else 'unavailable',
         'reason': None if ready else 'not_configured', 'js_api_key': key if ready else None,
         'map_id': map_id if ready else None, 'language': 'vi', 'region': 'VN',
         'default_center': {'lat': 21.0285, 'lon': 105.8522}, 'default_zoom': 15},
