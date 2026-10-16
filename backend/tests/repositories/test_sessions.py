@@ -65,7 +65,8 @@ class DurableSessions(unittest.TestCase):
             self.assertEqual(db.execute('PRAGMA journal_mode').fetchone()[0], 'wal')
             digest, encoded = db.execute('SELECT token_hash,tour FROM sessions').fetchone()
             self.assertEqual(digest, hashlib.sha256(created['token'].encode()).digest())
-            self.assertEqual(set(json.loads(encoded)), {'dataset_version', 'stops'})
+            keys = set(json.loads(encoded))
+            self.assertTrue({'dataset_version', 'stops'} <= keys <= {'dataset_version', 'stops', 'locks'}, keys)  # locks = venue ids only
             self.assertTrue(all(set(s) == {'venue_id', 'order'} for s in json.loads(encoded)['stops']))
         raw = self.path.read_bytes()
         self.assertNotIn(created['token'].encode(), raw)
