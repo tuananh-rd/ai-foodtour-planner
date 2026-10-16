@@ -36,3 +36,5 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R0-8 loader honesty/fixtures | Codex | DONE, accepted | a2a7607: Claude re-ran 283 tests OK, drift OK; planning 1702 venues 145->120 ms |
 | GMAPS-URL-2 UI+QA | Antigravity | REQUEST CHANGES (Codex, docs/reports/CODEX_REVIEW_GMAPS_UI.md): H1 hostile URLs rendered as Google links (allowlist https://www.google.com/maps/dir/ required), M1 error banner auto-cleared (effect depends on changing queue callbacks), M2 notes/skipped reasons ignored (false "no coordinates" copy), M3 order/rel/stale tests not real mutations, L1 radio keyboard | fix round GMAPS-URL-2b queued after R1-5c (same worktree) |
 | R1-5c fixes (R2-N01, F07, R2-N02) | Antigravity | In progress | ctx_39e1569598bf |
+| R1-5c fixes | Antigravity | Done, pending Codex re-review (ctx_38b3d834cc98) | 0b4ac0c (merged): Claude re-ran test_ui_v2 26/26, components 37/37, ui_kit 11/11, maps_links 33/33 on production scratch build |
+| GMAPS-URL-2b fixes | Antigravity | In progress | ctx_2702cc359456 |
