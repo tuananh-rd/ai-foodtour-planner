@@ -46,3 +46,4 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | GMAPS-REVIEW2 (Codex, cb61c0a) | Codex | DONE: REQUEST CHANGES (narrow) | H1/M1/M2 FIXED (70/70 supplemental, 0 Google requests, 4 real-source mutations caught); remaining L1 radio arrow wrapping, conditional M3 unmount invalidation. Fix folded into R1-5e (queued after R1-5d, same worktree) |
 | R1-5d (Antigravity, c8100f1) | Antigravity | DONE, ACCEPTED by Codex (82cbecd) and Claude re-run | 128+512 routing combos 0 unsafe canonical claims; 768 hours/price 0 failures; loosened-predicate mutation caught (TC-EVID-07). R1-5 UI_V2 itself closed pending nothing; GMAPS L1+M3 in R1-5e |
 | R1-5e radio wrap + unmount invalidation | Antigravity | In progress | ctx_7777a121447d |
+| R1-5e (Antigravity, 6b53d0e) | Antigravity | Done, pending final Codex review (ctx_5d02a435f886) | Claude re-ran on production scratch build: test_maps_links_cdp 61/61, test_ui_v2 28/28, components 47/47, ui_kit 11/11 |
