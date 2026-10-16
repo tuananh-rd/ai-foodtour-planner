@@ -82,7 +82,7 @@ class ChatEngine:
         R.intent = u.intent
         pend0 = st.pending
         self._dispatch(R, u)
-        if pend0 is not None and R.state.pending is pend0 and R.intent not in ("ANSWER_PENDING", "AMBIGUOUS_ACK", "CONFIRM_YES", "CONFIRM_NO"):
+        if pend0 is not None and R.state.pending is pend0 and "nudge" not in R.tools and R.intent not in ("ANSWER_PENDING", "AMBIGUOUS_ACK", "CONFIRM_YES", "CONFIRM_NO"):
             # The user moved on: a stale question must not linger (confirm_plan survives plain profile edits only).
             if not (pend0.kind == "confirm_plan" and R.intent in ("UPDATE_PROFILE", "ASK_DETAIL")):
                 R.state.pending = None
@@ -191,6 +191,24 @@ class ChatEngine:
             return Understanding("SEARCH_VENUES", {"dish": q} if q else {}, [], 1.0, "action")
         return None
 
+    def _nudge(self, R, prefix=""):
+        """Help answering the open question without repeating it (wording alternates, buttons stay in the earlier block)."""
+        st = R.state
+        p = st.pending
+        n = sum(1 for a in st.asked if a.get("pending_id") == p.pending_id)
+        st.asked.append({"pending_id": p.pending_id, "turn": st.turn_count})
+        labels = ", ".join(o["label"] for o in p.options[:4])
+        if p.slot == "area":
+            tail = (["Nếu chưa chắc, cứ chọn một quận gần bạn (" + labels + ") hoặc bấm \"Dùng vị trí của tôi\"; sau này sửa được.",
+                     "Mình cần một khu vực để đo khoảng cách. Bạn có thể gõ tên quận/đường hoặc nói \"gợi ý món\" để xem món trước, chưa cần vị trí."][n % 2])
+        elif p.options:
+            tail = ["Bạn bấm một lựa chọn ở trên (" + labels + ") hoặc gõ câu trả lời ngắn.",
+                    "Chưa rõ câu trả lời của bạn với câu hỏi trước; chọn một trong: " + labels + "."][n % 2]
+        else:
+            tail = ["Bạn trả lời ngắn câu hỏi ở trên giúp mình nhé.", "Mình vẫn đang chờ câu trả lời cho câu hỏi trước."][n % 2]
+        R.blocks.append(text_b(prefix + tail))
+        R.tools.append("nudge")
+
     def _low_confidence(self, R, u, llm_status):
         st = R.state
         why = ""
@@ -198,6 +216,10 @@ class ChatEngine:
             why = "AI hết lượt hôm nay nên mình chưa đọc hiểu được câu dài; "
         elif llm_status == "capped":
             why = "Phiên này đã dùng hết lượt AI; "
+        if st.pending:
+            # A question is already open: never replace or repeat it, help the user answer it instead.
+            self._nudge(R, why)
+            return
         self._set_pending(st, "clarify_intent", [{"option_id": "search", "label": "Tìm quán"}, {"option_id": "discover", "label": "Gợi ý món"},
                                                  {"option_id": "plan", "label": "Lập lịch trình"}], None, {})
         R.blocks.append(text_b(why + "Mình chưa chắc hiểu đúng ý bạn trong câu này, nên mình hỏi lại thay vì đoán. "
@@ -734,13 +756,23 @@ class ChatEngine:
             return
         ids, bad = self._refs(u.refs, st, "results") if u.refs else ([], [])
         if u.refs and not ids:
-            R.blocks.append(text_b("Mình chưa thấy quán bạn nói trong danh sách vừa hiện. Hãy nhờ mình tìm quán rồi chọn theo nhãn A, B, C…"))
+            self._set_pending(st, "clarify_intent", [{"option_id": "search", "label": "Tìm quán"}, {"option_id": "discover", "label": "Gợi ý món"}], None, {})
+            R.blocks.append(text_b("Mình chưa thấy quán bạn nói trong danh sách vừa hiện (danh sách đã đổi hoặc chưa có kết quả)."))
+            R.blocks.append(self._clarify_block(st, "Bạn muốn mình tìm quán trước chứ?"))
             return
         if ids:
             self._add_ids(R, ids)
             R.tools.append("shortlist_add")
             if u.extra.get("then_search"):
                 self._do_search_venues(R, Understanding("SEARCH_VENUES", {k: v for k, v in u.patch.items() if k != "area"}))
+            return
+        if not u.patch.get("dish"):
+            if not st.last_results:
+                self._set_pending(st, "clarify_intent", [{"option_id": "search", "label": "Tìm quán"}], None, {})
+                R.blocks.append(self._clarify_block(st, "Mình chưa có danh sách quán để chọn. Bạn muốn tìm quán trước không?"))
+            else:
+                self._pick_venue_prompt(R, None)  # "thêm một quán": show the candidates, never pick silently
+            R.tools.append("shortlist_add")
             return
         # "thêm một quán chè": never pick silently - show candidates
         self._do_search_venues(R, Understanding("SEARCH_VENUES", dict(u.patch)))

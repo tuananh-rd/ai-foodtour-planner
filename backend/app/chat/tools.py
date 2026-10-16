@@ -173,7 +173,7 @@ def _cell(c: str, v: Venue, centre) -> dict:
                 "note": "khoảng giá của quán, không phải giá theo người"}
     if c == "rating":
         if v.rating is None or v.review_count is None or v.review_count < 5:
-            return {"value": "Ít đánh giá", "status": "unknown"}
+            return {"value": "Chưa rõ", "status": "unknown", "note": "ít đánh giá"}
         return {"value": f"{v.rating:.1f}/5 ({v.review_count} đánh giá)".replace(".", ","), "status": "source",
                 "note": "theo nguồn"}
     if c == "audience":

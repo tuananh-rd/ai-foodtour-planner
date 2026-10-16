@@ -285,7 +285,8 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     if re.search(r"\bdung\b\s+(?:cho\s+)?(?:quan\s+)?", f) and dish and not refs:
         return Understanding("UPDATE_PROFILE", {**patch, "dislike": dish}, refs, 0.8)
     if re.search(r"\b(?:them|lay|chon|bo sung)\b", f) and \
-            (refs or (dish and not re.search(r"tim (?:them|tiep)|xem them|cho xem them", f))):
+            (refs or (dish and not re.search(r"tim (?:them|tiep)|xem them|cho xem them", f))
+             or re.search(r"\b(?:them|lay|chon)\s+(?:mot\s+)?quan\b(?!\s+\w)", f)):
         extra = {"then_search": True} if refs and re.search(r"\btim\b", f) else {}
         return Understanding("ADD", patch, refs, 0.9, extra=extra)
     asks = re.search(r"mo cua|gio mo|may gio|\bgia\b|dia chi|co cho dau|chi tiet|menu|thuc don|ban gi|co ban\b|an toan cho|bao nhieu", f)
