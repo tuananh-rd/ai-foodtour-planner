@@ -20,6 +20,7 @@ INTENTS = ("GREET_OR_SMALLTALK", "DISCOVER_DISH", "SEARCH_VENUES", "COMPARE", "A
            "SET_ALLERGY", "SET_AVOID", "ANSWER_PENDING", "CONFIRM_YES", "CONFIRM_NO", "AMBIGUOUS_ACK", "REQUEST_PLAN",
            "MODIFY_PLAN", "ASK_DETAIL", "OUT_OF_SCOPE", "UNSAFE", "UNKNOWN")
 CONFIDENT = 0.75
+ACK_START = {"ok", "oke", "okie", "okay", "oki", "okk", "u", "um", "uhm", "uh", "ua", "uk", "o", "vang", "da", "roi", "duoc", "ro", "yes", "yeah"}
 
 
 @dataclass
@@ -170,6 +171,20 @@ def criteria_from(f: str) -> list:
     return out[:3]
 
 
+def negated_dung(text: str, f: str) -> bool:
+    """"đừng" (don't) and "đúng" (correct) fold to the same letters: decide from the original accents."""
+    low = text.casefold()
+    if "đừng" in low:
+        return True
+    if "đúng" in low:
+        return False
+    return bool(re.search(r"\bdung\b(?!\s+(?:roi|vay|nhe|r)\b)", f))
+
+
+def is_negated(text: str, f: str) -> bool:
+    return bool(re.search(r"(?<![a-z0-9])(?:khong|ko|thoi|chua|huy|khoan|de sau)(?![a-z0-9])", f)) or negated_dung(text, f)
+
+
 def has_digits(words) -> bool:
     return any(any(c.isdigit() for c in w) for w in words)
 
@@ -195,6 +210,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     prior = prior or Preferences()
     text = safety_parse.normalize_keep_case(text).strip()
     f = fold_uncached(text)
+    f = re.sub(r"\b(?:khong|chua|dung|dung vo)\s+can\s+(?:phai\s+)?(?:tim|kiem)\b", " ", f)  # "không cần tìm …" is not a search
     words = f.split()
     pending = state.pending
 
@@ -237,7 +253,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         return Understanding("OUT_OF_SCOPE", {"reason": "off_topic"})
 
     # --- safety statements first
-    if sp.mentioned and not (sp.allergies or sp.avoid or sp.removed or sp.issues):
+    if sp.negated and not (sp.allergies or sp.avoid or sp.avoid_any or sp.removed or sp.issues):
         return Understanding("GREET_OR_SMALLTALK", {"no_allergy": True}, confidence=0.9)  # "không bị dị ứng gì"
     if sp.allergies or sp.removed or "empty" in sp.issues or "people" in sp.issues or "long" in sp.issues or "example" in sp.issues:
         extra = {"safety": sp}
@@ -245,7 +261,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         if conf and refs:
             extra["venue_confirmation"] = refs[0]
         return Understanding("SET_ALLERGY", {**patch}, refs, 0.95, extra=extra)
-    if sp.avoid and not pending:
+    if (sp.avoid or sp.avoid_any) and not pending:
         return Understanding("SET_AVOID", patch, refs, 0.9, extra={"safety": sp})
 
     # --- pending answers
@@ -258,14 +274,14 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     ACK_FILL = {"nha", "nhe", "nhi", "ban", "roi", "vay", "di", "luon", "a", "do", "oi", "ne", "thoi", "o", "ke", "nao", "cung", "duoc"}
     ack = bool(words) and len(words) <= 5 and all(w in ACK_BASE or w in ACK_FILL for w in words) and any(w in ACK_BASE for w in words) \
         and not has_digits(words)
-    no = (re.match(r"(?:khong|ko|chua|thoi|dung|that khong)\b", f) and len(words) <= 5
+    no = (re.match(r"(?:khong|ko|chua|thoi|that khong)\b", f) and len(words) <= 5
           and not re.search(r"khong (?:an|thich|muon|qua)|\d", f))
 
     # --- action verbs
     has_plan = re.search(r"\b(?:tao|lap|xep|sap|len|ghep)\b(?:\s+\w+){0,3}?\s+(?:lich|tour|lich trinh|hanh trinh|ke hoach)\b|"
                         r"\bcho minh lich\b|\blap tour\b|\btao tour\b", f)
     if has_plan:
-        if re.search(r"(?<![a-z0-9])(?:khong|ko|dung|thoi|chua|huy|khoan|de sau)(?![a-z0-9])", f):
+        if is_negated(text, f):
             return Understanding("CONFIRM_NO" if pending else "AMBIGUOUS_ACK", patch, refs, 0.9)  # negated plan request
         if pending and pending.kind == "confirm_plan":
             return Understanding("CONFIRM_YES", patch, refs, 0.9)
@@ -281,14 +297,18 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         if only_unsup and not refs and not state.last_results and "so sanh" not in f:
             return Understanding("SEARCH_VENUES", {**patch, "unsupported": crit}, refs, 0.8)
         return Understanding("COMPARE", {**patch, "criteria": crit}, refs, 0.9)
-    if re.search(r"\b(?:bo|xoa|loai)\b", f) and not re.search(r"\bbo qua\b", f) and (refs or "danh sach" in f or "quan nay" in f):
+    low = text.casefold()
+    rem = re.search(r"(?<!coi )\b(?:bo|xoa|loai|go)\b", f)
+    add_v = re.search(r"\b(?:them|lay|chon|bo sung)\b|\bvao (?:danh sach|tour|list)\b|\bcho\b.*\bvao\b", f)
+    if rem and not re.search(r"\bbo qua\b", f) and (refs or "danh sach" in f or "quan nay" in f) and not (add_v and add_v.start() < rem.start()):
         return Understanding("REMOVE", patch, refs, 0.9)
     if re.search(r"\bkhong lay\b", f) and ("nua" in f):
         return Understanding("REMOVE", patch, refs, 0.8)
-    if re.search(r"\bgiu\b|nhat dinh phai co|luon giu|phai co trong tour", f):
-        return Understanding("KEEP", patch, refs, 0.9)
-    if re.search(r"\b(?:doi|thay)\b", f) and (refs or "tour" in f) and not re.search(r"\bthay\b.*\b(?:bun|pho)\b", f):
+    if re.search(r"(?<![a-zà-ỹ])(?:đổi|doi|thay thế|thay)(?![a-zà-ỹ])", low) and (refs or "tour" in f) and \
+            not re.search(r"\bthay\b.*\b(?:bun|pho)\b", f):
         return Understanding("MODIFY_PLAN", patch, refs, 0.8)
+    if re.search(r"\bgiu\b|\bkhoa\b|\bghim\b|nhat dinh phai co|luon giu|phai co trong tour|luu lai", f):
+        return Understanding("KEEP", patch, refs, 0.9)
     if re.search(r"\bbot\b.*\bdiem dung\b|\bbot mot diem\b", f):
         return Understanding("MODIFY_PLAN", patch, refs, 0.8)
     dish = dish_in(f)
@@ -318,7 +338,8 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
 
     # --- discover vs search vs profile
     discover = re.search(r"\ban gi\b|\bmon gi\b|\bmon nao\b|goi y mon|nen an|dang thu|\bla gi\b|co mon nao|\bdoi qua\b|an vat gi|"
-                         r"mon (?:mat|am|nhe)|an sang|an trua|an toi|muon an gi|an gi do|di an dau|an dau\b|y tuong (?:mon|an)|mon an", f)
+                         r"mon (?:mat|am|nhe)|an sang|an trua|an toi|muon an gi|an gi do|di an dau|an dau\b|y tuong (?:mon|an)|mon an|dac san|"
+                         r"\bke (?:cho|mon|ve)\b", f)
     mood = ("cool" if re.search(r"\bnong\b|\bmat\b", f) else "warm" if re.search(r"\blanh\b|\bam\b", f) else
             "light" if re.search(r"nhe nhe|\bnhe\b", f) else None)
     if mood:
@@ -367,13 +388,15 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         return Understanding("DISCOVER_DISH", patch, refs, 0.7)
     if re.search(r"\bdoi\b|\bdoi qua\b|\bdoi bung\b|\bdoi lam\b", f) or "an gi" in f:
         return Understanding("DISCOVER_DISH", patch, refs, 0.6)
+    if words and words[0] in ACK_START and len(words) <= 10 and not has_digits(words) and not refs and not dish:
+        return Understanding("AMBIGUOUS_ACK", confidence=0.7)  # "ừm cũng được á, để tui nghĩ thêm"
     return Understanding("UNKNOWN", patch, refs, 0.2)
 
 
 def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
     """Bind a reply to the open question; returns None when it is not an answer."""
     if pending.kind == "confirm_plan":
-        negated = re.search(r"(?<![a-z0-9])(?:khong|ko|dung|thoi|chua|huy|bo|khoan|de sau|chan)(?![a-z0-9])", f)
+        negated = is_negated(text, f) or re.search(r"(?<![a-z0-9])(?:bo|chan)(?![a-z0-9])", f)
         if re.fullmatch(r"(?:co|ok|oke|okay|dung roi|xac nhan|dong y|chot|duoc|u|um|vang|da|tao di|ok tao di|u tao di|tao luon)", f) \
                 or (not negated and len(f.split()) <= 7 and re.search(r"\b(?:dong y|chap nhan|xac nhan|chot|ok|oke|duoc roi|dung roi)\b", f)
                     and not re.search(r"\d|sua|doi|them|bo\b", f)):

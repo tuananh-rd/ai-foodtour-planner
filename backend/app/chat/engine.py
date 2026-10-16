@@ -498,8 +498,18 @@ class ChatEngine:
             self._do_update_profile(R, Understanding("UPDATE_PROFILE", {"dislike": u.patch["dislike"]}, u.refs, u.confidence))
             return
         sp = u.extra.get("safety")
-        self._ask_avoid(R, sp.avoid)
-        R.tools.append("clarify")
+        other = [t for t in getattr(sp, "avoid_any", []) if t not in sp.avoid]
+        if other:  # taste-level avoidance of a non-allergen term: filter only when the dataset actually has such dishes
+            hit = [t for t in other if any(tools.matches(v, tools.dish_phrases(t)) for v in self.venues)]
+            miss = [t for t in other if t not in hit]
+            if hit:
+                R.prefs = replace(R.prefs, exclusions=tuple(dict.fromkeys(R.prefs.exclusions + tuple(tools.clean_text(t, 40) for t in hit)))[:10])
+                R.blocks.append(text_b(f"Đã ghi nhận bạn muốn tránh: {', '.join(hit)} (sở thích, không phải dị ứng). Nếu là dị ứng hãy nói \"dị ứng …\"."))
+            if miss:
+                R.blocks.append(text_b(f"Mình chưa thấy {', '.join(miss)} trong dữ liệu quán nên chưa lọc được."))
+        if sp.avoid:
+            self._ask_avoid(R, sp.avoid)
+        R.tools.append("clarify" if sp.avoid else "set_profile")
 
     def _do_update_profile(self, R, u):
         st = R.state

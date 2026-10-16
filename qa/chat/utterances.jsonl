@@ -158,7 +158,7 @@
 {"text":"muốn ăn gì đó nhẹ nhẹ","intent":"DISCOVER_DISH","patch":{"mood":"light"}}
 {"text":"quanh đây có gì ăn vặt","intent":"SEARCH_VENUES","patch":{"dish":"ăn vặt"}}
 {"text":"chỉ ăn phở thay bún","intent":"UPDATE_PROFILE","patch":{"dish_replace":{"from":"bún","to":"phở"}}}
-{"text":"đừng cho quán lẩu nữa","intent":"UPDATE_PROFILE","patch":{"dislike":"lẩu"}}
+{"text":"đừng cho quán lẩu nữa","intent":"SET_AVOID","patch":{"dislike":"lẩu"}}
 {"text":"xem chi tiết quán C","intent":"ASK_DETAIL","refs":["C"],"patch":{"field":"detail"}}
 {"text":"quán nào gần nhất","intent":"COMPARE","patch":{"criteria":["distance"]}}
 {"text":"bỏ hết danh sách","intent":"REMOVE","refs":["all"]}
