@@ -75,6 +75,8 @@ class ChatEngine:
                 cand = self._from_llm(out.data, st) if out.data else None
                 if cand:
                     u, R.understanding = cand, ("cache" if out.calls == 0 else "llm")
+            if u.intent == "UNKNOWN" and not st.pending:
+                u = self._fragment(text or "", st, u)  # dish-name-only / "A thôi"-style fragments
             st.remember("user", text or "", u.intent)
             if u.source == "rules" and u.confidence < LOW_CONFIDENCE:
                 R.intent = "UNKNOWN"
@@ -199,6 +201,16 @@ class ChatEngine:
             q = (a.get("query") or "").strip()[:200]
             return Understanding("SEARCH_VENUES", {"dish": q} if q else {}, [], 1.0, "action")
         return None
+
+    def _fragment(self, text: str, st: ChatState, u: Understanding) -> Understanding:
+        """A very short message that is just a dish present in the data ("Chả cá") means a search for it."""
+        f = fold_uncached(text)
+        words = f.split()
+        if 1 <= len(words) <= 3 and not any(c.isdigit() for c in f):
+            phrase = " ".join(words)
+            if any(tools.matches(v, (phrase,)) for v in self.venues):
+                return Understanding("SEARCH_VENUES", {"dish": text.strip()[:40]}, [], 0.7)
+        return u
 
     def _nudge(self, R, prefix=""):
         """Help answering the open question without repeating it (wording alternates, buttons stay in the earlier block)."""

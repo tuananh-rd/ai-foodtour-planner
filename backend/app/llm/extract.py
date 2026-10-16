@@ -183,7 +183,8 @@ class MockExtractor:
                 notes.append("Số điểm dừng phải từ 1 đến 5; không được áp dụng.")
         party = (re.search(r"(?:nhom|di|cho|ban|gia dinh)\s*(\d+)\s*nguoi", u)
                  or re.search(r"(?:doi thanh|doi sang|chinh thanh|chinh lai|con lai|con|co|la|gom|toi|minh|tui)\s*(\d+)\s*nguoi\b", u)
-                 or re.search(r"(?<![\d/.,])\b(\d{1,3})\s*nguoi\b", u))
+                 or re.search(r"(?<![\d/.,])\b(\d{1,3})\s*nguoi\b", u)
+                 or re.search(r"\bso nguoi\s*(?:la|thanh|=|:)?\s*(\d{1,2})\b", u))
         party_n = int(party.group(1)) if party else None
         if party_n is None:
             word = re.search(r"(?:doi thanh|doi sang|chinh thanh|nhom|di|cho|gom|con|la)\s*(hai|ba|bon|nam|sau|bay|tam|chin|muoi)\s*nguoi\b", u)
