@@ -16,10 +16,19 @@ function formatVnd(val) {
 /**
  * Escapes / ensures safe string rendering (no raw HTML injection)
  */
-function SafeText({ text, className, style }) {
+function SafeText({ text, className = '', style = {} }) {
   if (!text) return null;
   return (
-    <span className={className} style={style}>
+    <span
+      className={className}
+      dir="auto"
+      style={{
+        overflowWrap: 'break-word',
+        wordBreak: 'break-word',
+        unicodeBidi: 'plaintext',
+        ...style,
+      }}
+    >
       {String(text)}
     </span>
   );
@@ -646,29 +655,23 @@ export default function BlockRenderer({
       if (!tour) return null;
       return (
         <div data-testid="tour-ready-block" style={{ marginBottom: 20 }}>
-          <div style={{ marginBottom: 12 }}>
-            <EvidenceStrip
-              status={tour.status}
-              reasons={tour.reasons}
-              proposedChanges={tour.proposed_changes}
-              unknowns={tour.unknowns}
-              isMock={Boolean(tour.is_mock)}
-            />
-          </div>
           <div data-testid="itinerary-view">
             <ItineraryView
               tour={tour}
-              highlightedStopId={null}
-              onSelectStop={() => {}}
-              onInitiateReplace={() => {}}
-              busy={busy}
-            />
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <MapsLinksBlock
               sessionId={sessionId}
               sessionToken={sessionToken}
-              tour={tour}
+              highlightedStopId={null}
+              onSelectStop={() => {}}
+              onInitiateReplace={(stop) => {
+                if (onAction) {
+                  onAction({
+                    type: 'replace_stop',
+                    venue_id: stop?.venue_id,
+                    order: stop?.order,
+                    text: `đổi quán thứ ${stop?.order || 1}`,
+                  });
+                }
+              }}
               busy={busy}
             />
           </div>

@@ -2,7 +2,9 @@
 
 ## Executive Summary
 - Executed TASK C6a: Real-API E2E test suite for Chatbot V2 with a real browser driven via Chrome DevTools Protocol (CDP), testing directly against the live FastAPI backend on port 18000 (with SQLite session DB and synthetic venues fixture) and the production Next.js frontend on port 13000 in an isolated scratch build. Zero frontend mocks were used in this acceptance suite.
-- Verified all 10 required user interaction scenarios plus the full PLAN flow (CH-09): 17 of 17 tests passed in `qa/e2e/test_chat_v2.mjs`. In addition, all regression suites (`test_components.mjs`, `test_ui_kit.mjs`, `test_ui_v2.mjs`, and `test_maps_links_cdp.mjs`) passed 100% (164/164 tests passing across the entire repository).
+- Addressed all items from Codex's independent review (`docs/reports/CODEX_REVIEW_C3_FRONTEND.md`), including typed `patch_profile` schemas, 409 revision synchronization and single-retry, accessible profile modal with focus trap, hostile text wrapping, tour null-safety, and composer double-submit guards.
+- Verified all 10 required user interaction scenarios plus the full PLAN flow (CH-09): 18 of 18 tests passed in `qa/e2e/test_chat_v2.mjs`. In addition, all regression suites (`test_components.mjs`, `test_ui_kit.mjs`, `test_ui_v2.mjs`, and `test_maps_links_cdp.mjs`) passed 100% (165/165 tests passing across the entire repository).
+- Verified the independent mutation test gates (`qa/chat/review_c3_frontend.mjs`), confirming that both fallback and allergy mutations fail with exit code 1 as expected.
 - Captured 18 high-resolution screenshots at both 1280x800 (desktop 3-zone workspace) and 390x844 (mobile stacked tabs) under `qa/screenshots/chat-v2/` validating visual layout, honesty copy, allergy notices, and itinerary presentation.
 
 ---
@@ -39,6 +41,7 @@ In strict compliance with Orca guidelines and Task C6a setup instructions:
 | **CH-08b-STREET** | Street Name Geocoding Approximation | User input *"đường Xuân Thủy"* resolves with approximate indicator *"xấp xỉ"*. | **PASS** | `xuanThuy: true`, `xapXi: true` |
 | **CH-08b** | Location Resolution to Workspace | User input *"ở Cầu Giấy"* resolves location, updates profile, and opens main 3-zone workspace. | **PASS** | `cauGiayResolved: true`, `inWorkspace: true` |
 | **CH-08-DOUBLECLICK** | Add Button Double-Click Guard | Rapid double-click on *"Thêm vào food tour"* sends exactly ONE network request. | **PASS** | `sentCalls: 1` |
+| **CH-08-COMPOSER-DOUBLECLICK** | Composer Form Double-Submit Guard | Rapid double-submit on chat composer form sends exactly ONE network request. | **PASS** | `sentCalls: 1` |
 | **CH-08-409-DETECT** | Revision Conflict (409) Handling | Sending stale revision to `POST /v1/sessions/{id}/chat` triggers HTTP 409 Conflict from backend, recovered via StatusQueue. | **PASS** | `status: 409` |
 | **CH-08-RELOAD** | Mid-Conversation Page Reload | Reloading page mid-conversation restores full chat state (shortlist and pending clarify options) from backend session. | **PASS** | `shortlistRestored: 1/1`, `inWorkspace: true` |
 | **CH-09-A11Y** | Accessibility & Responsive Viewports | Full keyboard navigation (Tab, Enter, Space), 1280x800 three side-by-side zones, 390x844 stacked tabs, all interactive buttons >= 44px. | **PASS** | `threeZones: true`, `mobileTabs: 3 (minH: 50px)`, `smallButtons: 0` |
@@ -54,7 +57,7 @@ All screenshots are stored under `qa/screenshots/chat-v2/` at both 1280x800 (des
 
 1. `01_start_screen_denied_1280.png` & `01_start_screen_denied_390.png`: Start screen showing geolocation fallback notice, district chips, and location input.
 2. `02_dish_suggestions_no_weather_1280.png` & `02_dish_suggestions_no_weather_390.png`: Suggestion cards showing `NO_WEATHER` disclaimer and culinary dishes.
-3. `03_search_cards_and_compare_1280.png` & `03_search_cards_and_compare_390.png`: Venue cards labeled A & B and detailed comparison table.
+3. `03_search_cards_and_compare_1280.png` & `03_search_cards_and_compare_390.png`: Venue cards labeled A & B and detailed comparison table with "Chưa rõ" fallbacks.
 4. `04_shortlist_sync_buttons_and_text_1280.png` & `04_shortlist_sync_buttons_and_text_390.png`: Shortlist panel synchronized across button clicks and natural language text commands.
 5. `05_typed_ok_clarify_buttons_1280.png` & `05_typed_ok_clarify_buttons_390.png`: Ambiguous "ok" response showing clarification option buttons without premature tour creation.
 6. `06_allergy_crab_prominent_notice_1280.png` & `06_allergy_crab_prominent_notice_390.png`: Safety flow with prominent crab allergy chip, venue disclaimer banners, and zero "an toàn" claims.
@@ -64,25 +67,41 @@ All screenshots are stored under `qa/screenshots/chat-v2/` at both 1280x800 (des
 
 ---
 
-## 4. Frontend UX Fixes Implemented
+## 4. Codex Independent Review Items Resolved
 
-1. **Session Restoration & Reset Isolation (`frontend/app/page.js`):**
-   - Corrected `sessionStorage` persistence to only activate when `ChatV2` is active.
-   - Ensured explicit reset actions (`onResetSession={() => initSession({ isReset: true })}`) immediately purge `sessionStorage` keys (`foodtour_chat_session_id`, `foodtour_chat_session_token`), preventing stale tours from reappearing after resetting in `V2Layout` or legacy mode.
-2. **State Reload Resilience (`frontend/app/components/v2/chat/ChatV2Layout.jsx`):**
-   - Enhanced `ChatV2Layout` to cleanly restore chat history turns, shortlist venues, and pending clarification buttons upon page reload using `getSession()`.
-3. **Selector & Testability Hooks (`frontend/app/components/v2/MapsLinksBlock.jsx` & `StopCard.jsx`):**
-   - Added standard `data-testid="maps-links-block"` to `MapsLinksBlock.jsx` and `data-testid="stop-card"` to `StopCard.jsx`, standardizing DOM selection across all test runners.
-4. **Action Target Size & Accessibility:**
-   - Ensured all buttons in `BlockRenderer.jsx` (including `btn-confirm-yes`, `btn-confirm-no`, and clarification option chips) adhere strictly to the >= 44px touch target minimum.
+In response to Codex's review report (`docs/reports/CODEX_REVIEW_C3_FRONTEND.md`), the following fixes were implemented:
+
+1. **HIGH 1: Typed `patch_profile` schema parsing (`frontend/app/components/v2/chat/ProfileBar.jsx`):**
+   - Implemented `parseProfileField` mapping user inputs to contract-compliant types:
+     - `party_size`: parsed as integer `1..20`.
+     - `budget`: parsed into `{ budget_vnd: number, budget_scope: 'per_person' | 'total' }`.
+     - `start_time`: parsed into `HH:MM` time string or `max_leg_min: number`.
+     - `vehicle`: mapped strictly to `"walking" | "taxi" | "motorbike"`.
+   - Freeform inputs for `allergies` and `tastes` are dispatched as natural language turns (`dị ứng ...`, `tôi muốn ăn ...`) so the backend engine records them with full safety disclaimers.
+2. **HIGH 2: Revision synchronisation and automatic single-retry (`frontend/lib/api.js` & `ChatV2Layout.jsx`):**
+   - Updated `getChatState` to preserve and expose `session.revision` on the returned chat object.
+   - In `ChatV2Layout.jsx`, added `revisionRef` to track live server revision.
+   - Upon encountering HTTP 409 Conflict, the client automatically synchronizes its revision with the server and retries the action once before showing a manual retry banner.
+3. **MEDIUM: Composer double-submit guard (`frontend/app/components/v2/chat/ChatColumn.jsx`):**
+   - Added synchronous `isSubmittingRef` guard in `handleSubmit` preventing multiple in-flight turn dispatches from rapid enter/click actions. Verified by `CH-08-COMPOSER-DOUBLECLICK`.
+4. **MEDIUM: Accessible profile editing modal (`frontend/app/components/v2/chat/ProfileBar.jsx`):**
+   - Added `role="dialog"`, `aria-modal="true"`, `aria-labelledby`, and `<label htmlFor="profile-edit-input">`.
+   - Implemented keyboard focus trap (Tab / Shift+Tab), Escape key listener to close, and automatic focus restoration to the triggering chip button.
+5. **MEDIUM: Hostile text wrapping (`frontend/app/components/v2/chat/BlockRenderer.jsx`):**
+   - Enhanced `SafeText` with `overflowWrap: 'break-word'`, `wordBreak: 'break-word'`, `unicodeBidi: 'plaintext'`, and `dir="auto"`, preventing 5,000-character single-token strings from breaking flex column layouts.
+6. **MEDIUM: Tour null-safety (`frontend/app/components/v2/chat/ChatV2Layout.jsx`):**
+   - Explicitly handled `tour === null` in response processing, purging any stale `tour_ready` blocks from the workspace.
+7. **LOW: Reused `ItineraryView` & replacement wiring (`frontend/app/components/v2/chat/BlockRenderer.jsx`):**
+   - Streamlined `tour_ready` rendering to delegate to `ItineraryView` with `sessionId` and `sessionToken`, and wired `onInitiateReplace` to trigger replacement actions.
 
 ---
 
-## 5. Backend / Engine / Contract Verification Observations
+## 5. Mutation Gate Verification
 
-- **C4-API PLAN Integration:** The merged backend already fully supports the PLAN flow (`action: { type: "confirm_yes" }` creates an itinerary with `tour_ready`, stops, and Maps links). The test recorded `CH-09-PLAN` as verified and passing against the real backend.
-- **Deterministic Revision Conflict (409):** The FastAPI backend accurately detects stale revisions and returns HTTP 409 Conflict with the current revision, allowing the frontend client to recover reliably without corrupting state.
-- **Coverage Boundary:** Backend correctly enforces the Hà Nội geographical boundary and issues `outside_coverage` with clear explanatory copy.
+Ran the mutation test runner (`qa/chat/review_c3_frontend.mjs`) against intentionally mutated branches:
+- **Fallback Mutation Gate:** Ran `node qa/chat/review_c3_frontend.mjs fallback`. The runner intentionally mutated venue cards to hide "Chưa rõ" fallback cells. The test suite caught the omission and failed with exit code 1 (`CH-03b chuaRo: false`), proving mutation sensitivity.
+- **Allergy Mutation Gate:** Ran `node qa/chat/review_c3_frontend.mjs allergy`. The runner injected an unsafe "an toàn" claim into allergy copy. The test suite caught the forbidden phrase and failed with exit code 1, confirming zero-tolerance for unsafe health/allergy claims.
+- **Normal Verification:** Unmutated codebase passes all assertions cleanly.
 
 ---
 
@@ -90,12 +109,12 @@ All screenshots are stored under `qa/screenshots/chat-v2/` at both 1280x800 (des
 
 | Suite Name | Command | Test Count | Status |
 |---|---|---|---|
-| **Chatbot V2 Real-API CDP Suite** | `node qa/e2e/test_chat_v2.mjs` | 17 / 17 | **PASS** |
+| **Chatbot V2 Real-API CDP Suite** | `node qa/e2e/test_chat_v2.mjs` | 18 / 18 | **PASS** |
 | **Component DOM & Accessibility** | `node qa/e2e/test_components.mjs` | 47 / 47 | **PASS** |
 | **UI Kit Tokens & Primitives** | `node qa/e2e/test_ui_kit.mjs` | 11 / 11 | **PASS** |
 | **UI V2 Real-Browser CDP Acceptance** | `node qa/e2e/test_ui_v2.mjs` | 28 / 28 | **PASS** |
 | **Google Maps URLs CDP Suite** | `node qa/e2e/test_maps_links_cdp.mjs` | 61 / 61 | **PASS** |
-| **Total Test Count** | Across all 5 suites | **164 / 164** | **100% PASS** |
+| **Total Test Count** | Across all 5 suites | **165 / 165** | **100% PASS** |
 
 ---
 

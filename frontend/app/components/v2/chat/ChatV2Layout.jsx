@@ -56,6 +56,8 @@ export default function ChatV2Layout({
   const [inFlight, setInFlight] = useState(false);
   const inFlightRef = useRef(false);
   const requestTokenRef = useRef(0);
+  const revisionRef = useRef(revision);
+  revisionRef.current = revision;
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'shortlist' | 'explore'
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280);
 
@@ -207,24 +209,25 @@ export default function ChatV2Layout({
   }, [llmBudget]);
 
   // Dispatch turn action or message
-  const handleTurn = async (body, isRetry = false) => {
-    if (inFlightRef.current || inFlight || busy) return;
+  const handleTurn = async (body, isRetry = false, overrideRev = null) => {
+    if (inFlightRef.current || busy) return;
 
     inFlightRef.current = true;
     setInFlight(true);
     setBusy(true);
     const token = ++requestTokenRef.current;
 
-    // Optimistically append user message if text is present
-    if (body.text) {
+    // Optimistically append user message if text is present and not a retry
+    if (body.text && !isRetry) {
       setMessages((prev) => [...prev, { role: 'user', text: body.text, time: new Date() }]);
     }
 
     try {
+      const currentRev = overrideRev !== null ? overrideRev : (revisionRef.current ?? revision);
       const payload = {
         text: body.text || null,
         action: body.action || null,
-        revision,
+        revision: currentRev,
       };
 
       const res = await chatTurn(sessionId, payload, sessionToken);
@@ -235,12 +238,16 @@ export default function ChatV2Layout({
       // Update revision and state
       if (res.revision !== undefined) {
         setRevision(res.revision);
+        revisionRef.current = res.revision;
       }
       if (res.chat) {
         setChatState(res.chat);
       }
-      if (res.tour) {
+      if (res.tour !== undefined) {
         setTour(res.tour);
+        if (!res.tour) {
+          setLatestExploreBlocks((prev) => prev.filter((b) => b.type !== 'tour_ready'));
+        }
       }
 
       // Record any venues into local venuesMap for fast lookup
@@ -297,15 +304,34 @@ export default function ChatV2Layout({
       if (token !== requestTokenRef.current) return;
 
       if (err.status === 409 || err.code === 'revision_conflict') {
-        // Revision conflict 409 -> refetch latest session state & allow user to retry
+        // Revision conflict 409 -> refetch latest session state & adopt server revision
         try {
           const freshSession = await getSession(sessionId, sessionToken);
+          let serverRev = revisionRef.current;
           if (freshSession) {
-            if (freshSession.revision !== undefined) setRevision(freshSession.revision);
+            if (freshSession.revision !== undefined) {
+              serverRev = freshSession.revision;
+              setRevision(freshSession.revision);
+              revisionRef.current = freshSession.revision;
+            }
             if (freshSession.chat) setChatState(freshSession.chat);
-            if (freshSession.tour) setTour(freshSession.tour);
+            if (freshSession.tour !== undefined) {
+              setTour(freshSession.tour);
+              if (!freshSession.tour) {
+                setLatestExploreBlocks((prev) => prev.filter((b) => b.type !== 'tour_ready'));
+              }
+            }
           }
-          // Recover with accessible retry banner
+
+          // If first attempt, automatically retry ONCE adopting the server revision
+          if (!isRetry) {
+            inFlightRef.current = false;
+            setInFlight(false);
+            setBusy(false);
+            return await handleTurn(body, true, serverRev);
+          }
+
+          // If retry still fails or user interaction desired, show accessible retry banner
           enqueue({
             id: '409_conflict',
             type: 'warning',
@@ -315,7 +341,7 @@ export default function ChatV2Layout({
               label: 'Thử lại',
               onClick: () => {
                 dismiss('409_conflict');
-                handleTurn(body, true);
+                handleTurn(body, true, revisionRef.current);
               },
             },
           });
@@ -330,7 +356,7 @@ export default function ChatV2Layout({
             label: 'Thử lại',
             onClick: () => {
               dismiss('chat_error');
-              handleTurn(body, true);
+              handleTurn(body, true, revisionRef.current);
             },
           },
         });
@@ -349,7 +375,12 @@ export default function ChatV2Layout({
   };
 
   const handleAction = (action) => {
-    handleTurn({ text: null, action });
+    if (!action) return;
+    if (action.type === 'text') {
+      handleTurn({ text: action.text, action: null });
+    } else {
+      handleTurn({ text: null, action });
+    }
   };
 
   // Determine whether to show StartScreen or 3-Zone Workspace

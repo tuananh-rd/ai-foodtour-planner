@@ -1699,7 +1699,8 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
 export async function getChatState(sessionId, token = '', options = {}) {
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
-    return session.chat || null;
+    if (!session.chat) return null;
+    return { ...session.chat, revision: session.revision };
   }
 
   const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}`;
@@ -1709,5 +1710,9 @@ export async function getChatState(sessionId, token = '', options = {}) {
   }
 
   const session = await safeFetch(url, { method: 'GET', headers, signal: options?.signal });
-  return session?.chat || session?.state || null;
+  const chat = session?.chat || session?.state || null;
+  if (chat && typeof chat === 'object' && session?.revision !== undefined) {
+    chat.revision = session.revision;
+  }
+  return chat;
 }

@@ -515,8 +515,8 @@ async function run() {
       `cards: ${ch03Cards.count}, badges: ${JSON.stringify(ch03Cards.badges)}`
     );
 
-    // Compare A and B by distance
-    await sendChat('So sánh A và B xem quán nào gần hơn');
+    // Compare A and B across criteria including distance and rating
+    await sendChat('so sánh A và B');
 
     const ch03Compare = await ev(`(() => {
       const table = document.querySelector('[data-testid="compare-table"]');
@@ -524,14 +524,16 @@ async function run() {
       const text = table.innerText;
       const hasCols = text.includes('A') && text.includes('B');
       const hasDistanceEstimate = text.includes('ước tính') || text.includes('~');
-      const hasChuaRoOrValues = Array.from(table.querySelectorAll('td')).every(td => td.innerText.trim().length > 0);
+      const hasChuaRoFallback = Array.from(table.querySelectorAll('td')).some(td => td.innerText.includes('Chưa rõ'));
+      const hasNoEmptyCells = Array.from(table.querySelectorAll('td')).every(td => td.innerText.trim().length > 0);
       const unsupportedBlock = document.querySelector('[data-testid="unsupported-criteria-notice"]') ||
                                Array.from(document.querySelectorAll('[data-testid="block-notice"]')).find(n => n.innerText.includes('tiêu chí'));
       return {
         found: true,
         hasCols,
         hasDistanceEstimate,
-        noEmptyCells: hasChuaRoOrValues,
+        hasChuaRoFallback,
+        noEmptyCells: hasNoEmptyCells,
         hasUnsupportedNote: !!unsupportedBlock || text.includes('chưa có dữ liệu'),
       };
     })()`);
@@ -544,8 +546,8 @@ async function run() {
     record(
       'CH-03b',
       "Compare A and B renders table with columns A and B, distance estimate label, 'Chưa rõ' fallback cells, and unsupported criteria note",
-      ch03Compare.found && ch03Compare.hasCols && ch03Compare.hasDistanceEstimate && ch03Compare.noEmptyCells,
-      `table: ${ch03Compare.found}, cols: ${ch03Compare.hasCols}, distanceEstimate: ${ch03Compare.hasDistanceEstimate}, noEmpty: ${ch03Compare.noEmptyCells}`
+      ch03Compare.found && ch03Compare.hasCols && ch03Compare.hasDistanceEstimate && ch03Compare.hasChuaRoFallback && ch03Compare.noEmptyCells,
+      `table: ${ch03Compare.found}, cols: ${ch03Compare.hasCols}, distanceEstimate: ${ch03Compare.hasDistanceEstimate}, chuaRo: ${ch03Compare.hasChuaRoFallback}, noEmpty: ${ch03Compare.noEmptyCells}`
     );
 
     // =============================================================
@@ -810,6 +812,29 @@ async function run() {
       `sentCalls: ${addCallsDiff}`
     );
 
+    // Test rapid double-submit on composer form
+    const preSubmitCalls = networkTurns.filter(t => t.body?.text === 'thử gửi nhanh').length;
+    await ev(`(() => {
+      const form = document.querySelector('[data-testid="zone-chat"] form');
+      const input = form?.querySelector('input');
+      if (input && form) {
+        input.value = 'thử gửi nhanh';
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+        form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+      }
+    })()`);
+    await waitForTurn();
+
+    const postSubmitCalls = networkTurns.filter(t => t.body?.text === 'thử gửi nhanh').length;
+    const submitCallsDiff = postSubmitCalls - preSubmitCalls;
+
+    record(
+      'CH-08-COMPOSER-DOUBLECLICK',
+      'Rapid double-submit on chat composer form sends exactly ONE network request',
+      submitCallsDiff === 1,
+      `sentCalls: ${submitCallsDiff}`
+    );
+
     // 409 conflict test
     const conflictResult = await ev(`(async () => {
       // Intentionally send request with stale revision 0 to trigger server 409
@@ -955,12 +980,12 @@ async function run() {
     // Scenario 11: PLAN Flow (confirm_summary -> confirm_yes -> tour_ready)
     // =============================================================
     console.log('\n--- Scenario 11: PLAN Flow (CH-09 Itinerary & Maps Links) ---');
-    // Ensure shortlist has >= 2 venues for plan
-    await sendChat('tìm quán chè');
+    // Ensure shortlist has >= 2 venues in Cầu Giấy for plan
+    await sendChat('tìm quán ăn ở Cầu Giấy');
 
     await ev(`(() => {
       const cards = Array.from(document.querySelectorAll('[data-testid="venue-card"]'));
-      const addBtn = cards[0]?.querySelectorAll('button')[0];
+      const addBtn = cards[1]?.querySelectorAll('button')[0] || cards[0]?.querySelectorAll('button')[0];
       if (addBtn && !addBtn.innerText.includes('Đã thêm')) addBtn.click();
     })()`);
     await waitForTurn();
@@ -1002,6 +1027,24 @@ async function run() {
         confirmCallsDiff === 1,
         `sentCalls: ${confirmCallsDiff}`
       );
+
+      // If feasibility proposal is offered, accept proposal and confirm
+      const hadProposal = await ev(`(() => {
+        const adjustBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('xe máy') || b.innerText.includes('Kéo dài') || b.innerText.includes('30 phút'));
+        if (adjustBtn) {
+          adjustBtn.click();
+          return true;
+        }
+        return false;
+      })()`);
+      if (hadProposal) {
+        await waitForTurn(15000);
+        await ev(`(() => {
+          const yesBtn = document.querySelector('[data-testid="btn-confirm-yes"]');
+          if (yesBtn) yesBtn.click();
+        })()`);
+        await waitForTurn(15000);
+      }
 
       const tourReady = await ev(`(() => {
         const tourReadyBlock = document.querySelector('[data-testid="tour-ready-block"]');
