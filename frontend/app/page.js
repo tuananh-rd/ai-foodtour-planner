@@ -9,6 +9,8 @@ import TourTimeline from './components/TourTimeline';
 import MapView from './components/MapView';
 import ReplaceDiffModal from './components/ReplaceDiffModal';
 import RevisionConflictAlert from './components/RevisionConflictAlert';
+import { StatusQueueProvider } from './ui/StatusQueue';
+import V2Layout from './components/v2/V2Layout';
 import {
   isMockMode,
   setRuntimeMockMode,
@@ -51,6 +53,28 @@ export default function Home() {
   
   // Client config from GET /v1/client-config (Google Maps key, map_id, privacy info)
   const [clientConfig, setClientConfig] = useState(null);
+
+  // UI_V2 activation: features.ui_v2=true or URL ?ui=v2 (Scope Goal)
+  const [isUiV2, setIsUiV2] = useState(false);
+  const [isDevMode, setIsDevMode] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('ui') === 'v2') {
+        setIsUiV2(true);
+      }
+      if (params.get('dev') === '1') {
+        setIsDevMode(true);
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    if (clientConfig?.features?.ui_v2) {
+      setIsUiV2(true);
+    }
+  }, [clientConfig]);
 
   // Data provenance & server notes
   const [datasetSource, setDatasetSource] = useState('synthetic');
@@ -439,6 +463,48 @@ export default function Home() {
   const lockedVenueIds = (stops.filter((s) => s.venue_id !== replaceTargetStop?.venue_id) || []).map(
     (s) => s.name || s.venue_id
   );
+
+  if (isUiV2) {
+    return (
+      <StatusQueueProvider>
+        <V2Layout
+          sessionId={sessionId}
+          sessionToken={sessionToken}
+          sessionEpoch={sessionEpoch}
+          revision={revision}
+          preferences={preferences}
+          onUpdatePreferences={handleUpdatePreferences}
+          onResetSession={initSession}
+          tour={tour}
+          onPlanTour={handlePlanTour}
+          onSendMessage={handleSendMessage}
+          onInitiateReplace={handleInitiateReplace}
+          onConfirmReplace={handleConfirmReplace}
+          onCloseReplaceModal={handleCloseReplaceModal}
+          isReplaceModalOpen={isReplaceModalOpen}
+          replaceTargetStop={replaceTargetStop}
+          replaceResultDiff={replaceResultDiff}
+          lockedVenueIds={lockedVenueIds}
+          health={health}
+          clientConfig={clientConfig}
+          datasetSource={datasetSource}
+          datasetVersion={datasetVersion}
+          isMock={isMock}
+          onToggleMockMode={handleToggleMockMode}
+          busy={busy}
+          error={error}
+          conflictError={conflictError}
+          noCandidatesError={noCandidatesError}
+          authError={authError}
+          rateLimitError={rateLimitError}
+          providerUnavailableError={providerUnavailableError}
+          notes={notes}
+          messages={messages}
+          isDevMode={isDevMode}
+        />
+      </StatusQueueProvider>
+    );
+  }
 
   return (
     <div style={{ maxWidth: 1280, margin: '0 auto', padding: '12px' }}>
