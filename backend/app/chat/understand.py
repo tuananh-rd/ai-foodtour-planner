@@ -136,7 +136,7 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
         patch["audience"] = p.audience
     if re.search(r"tre nho|em be|tre con|con nho|tre em", f):
         patch["audience"] = "family"
-    if re.search(r"\b(mot|1) (?:minh|nguoi)\b|\bmot minh\b", f):
+    if re.search(r"\b(?:mot|1) minh\b|\bdi le\b|\bsolo\b", f):  # "một người" appears in per-person budgets and must not mean solo
         patch["audience"] = "solo"
     tastes = re.findall(r"\b(?:it|bot|khong)\s+(?:ngot|cay|man|dau|duong|beo)\b|\ban nhat\b", f)
     if tastes:

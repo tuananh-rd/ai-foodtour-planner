@@ -210,3 +210,13 @@ class FinalReviewFixes(unittest.TestCase):
                 return {"intent": "SEARCH_VENUES"}
         GeminiUnderstandingProvider(Client()).understand("x", {}, deadline_s=3)
         self.assertIs(seen.get("retry"), False)
+
+
+class PerPersonWording(unittest.TestCase):
+    def test_per_person_budget_does_not_set_audience_solo(self):
+        from app.chat.understand import parse_slots
+        from app.planner.relevance import fold_uncached
+        for text in ("ngân sách 300k cho một người", "mỗi người 150k", "tính theo 1 người"):
+            patch = parse_slots(text, fold_uncached(text), Preferences())
+            self.assertNotIn("audience", patch, text)
+        self.assertEqual(parse_slots("đi một mình", "di mot minh", Preferences()).get("audience"), "solo")
