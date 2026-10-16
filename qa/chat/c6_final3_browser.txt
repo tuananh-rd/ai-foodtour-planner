@@ -1,0 +1,49 @@
+    // Independent profile boundary probes; native controls and actual API traffic.
+    const final3=[];
+    function f3(id,passed,details){final3.push({id,passed,details});results.push({id,passed,details});console.log('FINAL3',id,passed?'PASS':'FAIL',JSON.stringify(details));}
+    async function close3(){if(await ev(`!!document.querySelector('[role="dialog"]')`)){await sendCDP('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await sleep(80);}}
+    async function field3(selector,value,tamper=false){await ev(`(()=>{const n=document.querySelector(${JSON.stringify(selector)});if(!n)throw Error('missing control');if(${tamper}&&n.tagName==='SELECT'){n.options[0].value=${JSON.stringify(value)};}const proto=n.tagName==='SELECT'?HTMLSelectElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(n,${JSON.stringify(value)});n.dispatchEvent(new Event('input',{bubbles:true}));n.dispatchEvent(new Event('change',{bubbles:true}));})()`);await sleep(40);}
+    async function probe3(id,chip,fields,want){
+      await close3();await ev(`document.querySelector('[data-testid="chip-profile-${chip}"]').click()`);await sleep(80);
+      for(const args of fields)await field3(...args);
+      const controls=await ev(`[...document.querySelectorAll('[role="dialog"] input,[role="dialog"] select')].map(n=>({id:n.id,value:n.value,valid:n.checkValidity()}))`);
+      const start=networkTurns.length;await ev(`document.querySelector('[data-testid="btn-profile-edit-save"]').click()`);await sleep(180);if(networkTurns.length>start)await waitForTurn();
+      const turns=networkTurns.slice(start).map(t=>({body:t.body,status:t.status}));
+      const alert=await ev(`document.querySelector('[data-testid="profile-edit-error"]')?.innerText||''`);
+      const blocked=!!(alert||controls.some(n=>!n.valid));
+      const good=want ? turns.length===1&&turns[0].status===200&&Object.entries(want).every(([k,v])=>turns[0].body.action?.patch?.[k]===v) : turns.length===0&&blocked;
+      f3(id,good,{controls,turns,alert});await close3();
+    }
+    await setViewport(1280,800);
+    const b=(amount,unit='1000',scope='group',tamper=false)=>[['#profile-budget-amount',amount],['#profile-budget-unit',unit,tamper],['#profile-budget-scope',scope]];
+    for(const [id,fields,want] of [
+      ['budget-250k',b('250','1000','per_person'),{budget_vnd:250000,budget_scope:'per_person'}],
+      ['budget-600k-group',b('600'),{budget_vnd:600000,budget_scope:'group'}],
+      ['budget-decimal-dot',b('1.5','1000000'),null],['budget-decimal-comma',b('1,5','1000000'),null],
+      ['budget-negative',b('-250'),null],['budget-party-text',b('600k cả nhóm 3 người'),null],['budget-alternatives',b('250k mỗi người hoặc 600k cả nhóm'),null],
+      ['budget-30-digits',b('9'.repeat(30)),null],['budget-400-digits',b('9'.repeat(400)),null],
+      ['budget-over-limit',b('100000001','1'),null],['budget-wrong-unit',b('600000','1000000'),null],
+      ['budget-missing-scope',b('600','1000',''),null],['budget-zero',b('0'),null],
+      ['budget-max',b('100','1000000'),{budget_vnd:100000000,budget_scope:'group'}],
+      ['budget-tampered-unit',b('600','garbage','group',true),null],
+    ])await probe3(id,'budget',fields,want);
+    for(const value of ['walk','motorbike','car','taxi','máy bay','bộ đàm','tàu bay','xe đạp','xe hơi'])await probe3('vehicle-'+value,'vehicle',[['#profile-vehicle-select',value,true]],['walk','motorbike','car','taxi'].includes(value)?{vehicle:value}:null);
+    for(const value of ['0','21','-1','1','20'])await probe3('party-'+value,'party',[['#profile-party-input',value]],['1','20'].includes(value)?{party_size:Number(value)}:null);
+    for(const value of ['00:00','23:59','24:00','12:60','','18:30:59'])await probe3('time-'+value,'time',[['#profile-time-input',value]],['00:00','23:59'].includes(value)?{start_time:value}:null);
+    await ev(`document.querySelector('[data-testid="chip-profile-budget"]').click()`);await sleep(100);
+    const initialFocus=await ev(`document.activeElement.id`);
+    await ev(`document.querySelector('[data-testid="btn-profile-edit-save"]').focus()`);
+    await sendCDP('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});
+    const tabFocus=await ev(`document.activeElement.id`);
+    await sendCDP('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9,modifiers:8});
+    const reverse=await ev(`document.activeElement.dataset.testid`);await close3();
+    const returned=await ev(`document.activeElement.dataset.testid`);
+    f3('dialog-focus-trap-escape',initialFocus==='profile-budget-amount'&&tabFocus===initialFocus&&reverse==='btn-profile-edit-save'&&returned==='chip-profile-budget',{initialFocus,tabFocus,reverse,returned});
+    f3('max-leg-reachable',false,{reason:'No rendered profile chip calls handleOpenEdit(max_leg_min); max-leg controls are unreachable through production UI, so UI values 2/61 cannot be exercised.'});
+    for(const width of [1280,390]){
+      await setViewport(width,width===390?844:800);if(width===390)await ev(`document.querySelectorAll('[data-testid="mobile-tab"]')[2]?.click()`);await sleep(100);
+      const d=await ev(`(()=>{const n=document.querySelector('[data-testid="itinerary-view"]');return {text:n?.innerText||'',width:innerWidth,scroll:document.documentElement.scrollWidth,visible:!!n?.getClientRects().length,client:n?.clientWidth,blockScroll:n?.scrollWidth}})()`);
+      f3('maps-dom-'+width,d.visible&&!!d.text&&!/Links contain|The schedule|Tour origin|Skipped stops|An isolated|Google Maps links|Unavailable|Partial|Open in|Walking|Driving/.test(d.text)&&d.scroll<=width&&d.blockScroll<=d.client,d);
+      await captureScreenshot('final3-maps-'+width+'.png');
+    }
+    fs.mkdirSync(path.join(REPO_ROOT,'qa/reports/c6-final3'),{recursive:true});fs.writeFileSync(path.join(REPO_ROOT,'qa/reports/c6-final3/boundaries.json'),JSON.stringify(final3,null,2));

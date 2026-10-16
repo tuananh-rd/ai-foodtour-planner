@@ -1,0 +1,70 @@
+﻿[
+    {
+        "mode":  "allergy",
+        "passed":  6,
+        "total":  7,
+        "failures":  [
+                         {
+                             "id":  "CH-06",
+                             "title":  "Allergy flow sets prominent chip, every card displays \u0027Chưa đủ thông tin về dị ứng\u0027, excludes crab, zero \u0027an toàn\u0027 claims",
+                             "passed":  false,
+                             "details":  "prominentChip: true, cardsWarned: false, containsCrab: false, unsafeClaims: false"
+                         }
+                     ]
+    },
+    {
+        "mode":  "fallback",
+        "passed":  3,
+        "total":  4,
+        "failures":  [
+                         {
+                             "id":  "CH-03b",
+                             "title":  "Compare A and B renders table with columns A and B, distance estimate label, \u0027Chưa rõ\u0027 fallback cells, and unsupported criteria note",
+                             "passed":  false,
+                             "details":  "table: true, cols: true, distanceEstimate: true, chuaRo: true, noEmpty: false, injectedCell: "
+                         }
+                     ]
+    },
+    {
+        "mode":  "guard",
+        "passed":  10,
+        "total":  11,
+        "failures":  [
+                         {
+                             "id":  "CH-08-DOUBLECLICK",
+                             "title":  "Rapid double-click on Add button sends exactly ONE network request",
+                             "passed":  false,
+                             "details":  "sentCalls: 2"
+                         }
+                     ]
+    },
+    {
+        "mode":  "budget",
+        "passed":  23,
+        "total":  24,
+        "failures":  [
+                         {
+                             "id":  "CH-13a-BUDGET-VALIDATION",
+                             "title":  "ProfileBar budget structured editor requires scope (\u0027cả nhóm\u0027/\u0027mỗi người\u0027), blocks submission with inline error when scope is missing, patches {budget_vnd: 600000, budget_scope: \u0027group\u0027}",
+                             "passed":  false,
+                             "details":  "controls: {\"hasAmount\":true,\"hasUnit\":true,\"hasScope\":true}, alert: ⛔\nLỗi gửi yêu cầu\nYêu cầu không hợp lệ.\nThử lại\n✕, noReqSent: false, validReq: undefined"
+                         }
+                     ]
+    },
+    {
+        "mode":  "hostile",
+        "passed":  2,
+        "total":  2,
+        "failures":  [
+
+                     ]
+    },
+    {
+        "mode":  "flagoff",
+        "passed":  5,
+        "total":  5,
+        "failures":  [
+
+                     ]
+    }
+]
