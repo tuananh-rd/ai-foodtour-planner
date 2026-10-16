@@ -1,0 +1,817 @@
+{
+  "scenarios": [
+    {
+      "id": "CH-01",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-02",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-03",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-04",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 6,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-05",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-06",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-07",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-08",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-09",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 6,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 7,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 8,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-10",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-11",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "CH-12",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-01",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-02",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-03",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-04",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-05",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 6,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 7,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-06",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-07",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-08",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-09",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 5,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 6,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 7,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 8,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-10",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-11",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-12",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-13",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ADV-14",
+      "status": "unavailable",
+      "reason": "features.chat_v2 absent/disabled; /chat not implemented",
+      "turns": [
+        {
+          "turn": 1,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 2,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 3,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        },
+        {
+          "turn": 4,
+          "status": "unavailable",
+          "errors": [
+            "features.chat_v2 absent/disabled; /chat not implemented"
+          ]
+        }
+      ]
+    }
+  ],
+  "passed": false
+}

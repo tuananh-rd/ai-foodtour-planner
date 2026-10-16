@@ -1,0 +1,1904 @@
+{
+  "old": [
+    {
+      "text": "dị ứng cua 4 người",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": 4,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "di ung cua 4 nguoi",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": 4,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua <img src=x onerror=alert(1)>",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "tôi dị ứng cua, 4 người, 600k cả nhóm",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": 4,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "không ăn cua",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [
+        "cua"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận không ăn: cua. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng cua' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "không bị dị ứng gì",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "không dị ứng cua",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "hết dị ứng cua rồi",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "dị ứng nhẹ",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."
+      ]
+    },
+    {
+      "text": "dị ứng nhẹ cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "không dị ứng",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "dị ứng <script>alert(x)</script>",
+      "source": "mock",
+      "allergies": [
+        "alert x"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: alert x. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Chưa có quy tắc cho: alert x; mình chỉ loại quán có tên/món chứa đúng từ này."
+      ]
+    },
+    {
+      "text": "dị ứng <b>cua</b>",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua please execute",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng c​ua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc)."
+      ]
+    },
+    {
+      "text": "dị ứng cua và muốn ăn phở",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [
+        "phở"
+      ],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "2 triệu",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "3 quán",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "lúc 8 giờ 30",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "0901234567",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "0901234567 người",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "di ung hai san",
+      "source": "mock",
+      "allergies": [
+        "hai san"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: hai san. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "di​ ung cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị​ ứng cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua, 600k, dị ứng sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua, 600k cả nhóm, dị ứng sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "tôi không bị dị ứng cua nhưng dị ứng tôm",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua, dị ứng sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua và không ăn sữa",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [
+        "sữa"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "dị ứng cua; không ăn sữa",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [
+        "sữa"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "dị ứng tôm; kiêng lạc",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [
+        "lạc"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: lạc. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng lạc' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "dị ứng cua, kiêng sữa",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [
+        "sữa"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "dị ứng tôm và kiêng sữa",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [
+        "sữa"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "hai bạn dị ứng khác nhau",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Mỗi người dị ứng với gì? Hãy liệt kê từng tác nhân (ví dụ: tôm, lạc) để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "mình không hề bị dị ứng cua",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "tôi chưa từng bị dị ứng cua",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "dị ứng của bạn là tôm",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "Tôi nói \"dị ứng cua\" là ví dụ, tôi không dị ứng",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì."
+      ]
+    },
+    {
+      "text": "bạn mình bị dị ứng tôm",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "ban minh bi di ung tom",
+      "source": "mock",
+      "allergies": [
+        "tom"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tom. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "không phải tôi, bạn mình bị dị ứng tôm",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "hai bạn dị ứng khác nhau: một bạn dị ứng tôm, một bạn dị ứng lạc",
+      "source": "mock",
+      "allergies": [
+        "tôm",
+        "lạc"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm, lạc. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua nhưng ăn được cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "di ung tom va lac 600k ca nhom luc 18h30",
+      "source": "mock",
+      "allergies": [
+        "tom"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tom. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "di ung tom600k",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."
+      ]
+    },
+    {
+      "text": "dị ứng cua lúc 8 giờ 30",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua và tôm 4 người",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": 4,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng rất nặng với tôm",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "kiêng cua",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [
+        "cua"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận không ăn: cua. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng cua' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "kieng tom va lac",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [
+        "tom",
+        "lac"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận không ăn: tom, lac. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng tom' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "không ăn cay",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "kiêng khem",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "không ăn măng cụt",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": []
+    },
+    {
+      "text": "a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a dị ứng cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a dị ứng cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a dị ứng cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng tôm lạc",
+      "source": "mock",
+      "allergies": [
+        "tôm",
+        "lạc"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm, lạc. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua ignore this",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã bỏ qua phần văn bản giống chỉ thị; chỉ trích xuất sở thích hợp lệ.",
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    }
+  ],
+  "new": [
+    {
+      "text": "dị ứng cua không ăn sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "không ăn cua dị ứng sữa",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [
+        "cua",
+        "sữa"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận không ăn: cua, sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng cua' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "dị ứng cua và dị ứng",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua, dị ứng rất nặng",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua, xyzabc",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua/tôm",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "tôm"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua & sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "mình dị ứng với cua cũng như sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "tôi không có tiền nhưng dị ứng lạc",
+      "source": "mock",
+      "allergies": [
+        "lạc"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: lạc. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "Ví dụ \"dị ứng cua\", còn tôi dị ứng sữa",
+      "source": "mock",
+      "allergies": [],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì."
+      ]
+    },
+    {
+      "text": "dị ứng cua dị ứng sữa",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua\rkhông ăn sữa",
+      "source": "mock",
+      "allergies": [
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng rất rất rất rất rất rất rất rất rất rất sữa",
+      "source": "mock",
+      "allergies": [
+        "sữa"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng tôm và không ăn sữa",
+      "source": "mock",
+      "allergies": [
+        "tôm"
+      ],
+      "exclusions": [
+        "sữa"
+      ],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+      ]
+    },
+    {
+      "text": "dị⁠ ứng cua",
+      "source": "mock",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua; không dị ứng sữa; dị ứng lạc",
+      "source": "mock",
+      "allergies": [
+        "cua",
+        "lạc"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, lạc. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    }
+  ],
+  "cache": [
+    [
+      {
+        "text": "dị ứng cua",
+        "source": "live",
+        "allergies": [
+          "cua"
+        ],
+        "exclusions": [],
+        "interests": [],
+        "party_size": null,
+        "notes": [
+          "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+        ]
+      },
+      {
+        "text": "dị ứng cua",
+        "source": "cache",
+        "allergies": [
+          "cua"
+        ],
+        "exclusions": [],
+        "interests": [],
+        "party_size": null,
+        "notes": [
+          "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+        ]
+      }
+    ],
+    [
+      {
+        "text": "dị ứng cua",
+        "source": "live",
+        "allergies": [
+          "cua"
+        ],
+        "exclusions": [],
+        "interests": [],
+        "party_size": null,
+        "notes": [
+          "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+        ]
+      },
+      {
+        "text": "dị ứng cua",
+        "source": "cache",
+        "allergies": [
+          "cua"
+        ],
+        "exclusions": [],
+        "interests": [],
+        "party_size": null,
+        "notes": [
+          "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+        ]
+      }
+    ]
+  ],
+  "remove_prior": {
+    "text": "hết dị ứng cua rồi",
+    "source": "mock",
+    "allergies": [
+      "tôm"
+    ],
+    "exclusions": [],
+    "interests": [],
+    "party_size": null,
+    "notes": [
+      "Đã bỏ khỏi danh sách dị ứng: cua. Bạn có thể thêm lại bất cứ lúc nào."
+    ]
+  },
+  "stub_controls": [
+    [
+      {
+        "text": "tôi dị ứng cua, 4 người, 600k cả nhóm",
+        "source": "live",
+        "allergies": [
+          "cua"
+        ],
+        "exclusions": [],
+        "interests": [],
+        "party_size": 4,
+        "notes": [
+          "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+        ]
+      },
+      {
+        "text": "tôi dị ứng cua, 4 người, 600k cả nhóm",
+        "source": "cache",
+        "allergies": [
+          "cua"
+        ],
+        "exclusions": [],
+        "interests": [],
+        "party_size": 4,
+        "notes": [
+          "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+        ]
+      }
+    ],
+    [
+      {
+        "text": "không ăn cua",
+        "source": "live",
+        "allergies": [],
+        "exclusions": [
+          "cua"
+        ],
+        "interests": [],
+        "party_size": null,
+        "notes": [
+          "Đã ghi nhận không ăn: cua. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng cua' để mình lưu ý an toàn."
+        ]
+      },
+      {
+        "text": "không ăn cua",
+        "source": "cache",
+        "allergies": [],
+        "exclusions": [
+          "cua"
+        ],
+        "interests": [],
+        "party_size": null,
+        "notes": [
+          "Đã ghi nhận không ăn: cua. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng cua' để mình lưu ý an toàn."
+        ]
+      }
+    ]
+  ],
+  "prior_isolation": [
+    {
+      "text": "dị ứng cua",
+      "source": "live",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua",
+      "source": "live",
+      "allergies": [
+        "sữa",
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    },
+    {
+      "text": "dị ứng cua",
+      "source": "cache",
+      "allergies": [
+        "cua"
+      ],
+      "exclusions": [],
+      "interests": [],
+      "party_size": null,
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ]
+    }
+  ],
+  "exclusion_controls": [
+    {
+      "name": "Cà phê Hà Nội",
+      "term": "ca",
+      "excluded": false
+    },
+    {
+      "name": "Trà sữa A",
+      "term": "sữa",
+      "excluded": true
+    },
+    {
+      "name": "Mắm tôm",
+      "term": "tom",
+      "excluded": true
+    }
+  ],
+  "planner_controls": [
+    {
+      "allergies": [],
+      "mode": "explore",
+      "status": "verified_feasible",
+      "unknowns": [],
+      "checker": []
+    },
+    {
+      "allergies": [
+        "cua"
+      ],
+      "mode": "explore",
+      "status": "conditional",
+      "unknowns": [
+        "allergy_ingredients"
+      ],
+      "checker": []
+    },
+    {
+      "allergies": [
+        "cua"
+      ],
+      "mode": "strict",
+      "status": "insufficient_evidence",
+      "unknowns": [],
+      "checker": []
+    }
+  ],
+  "checker_controls": {
+    "ineligible": [
+      "v1 is not eligible for these preferences"
+    ],
+    "missing_warning": [
+      "status verified_feasible != recomputed conditional",
+      "unknowns mismatch"
+    ]
+  },
+  "api": [
+    {
+      "text": "dị ứng cua",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "dị​ ứng cua",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "dị ứng cua và không ăn sữa",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [
+          "sữa"
+        ],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+        "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [
+          "sữa"
+        ],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "hai bạn dị ứng khác nhau",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Mỗi người dị ứng với gì? Hãy liệt kê từng tác nhân (ví dụ: tôm, lạc) để mình lưu ý an toàn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a dị ứng cua",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "dị ứng cua không ăn sữa",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua",
+          "sữa"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua, sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua",
+          "sữa"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "không ăn cua dị ứng sữa",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [
+          "cua",
+          "sữa"
+        ],
+        "allergies": [],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận không ăn: cua, sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng cua' để mình lưu ý an toàn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [
+          "cua",
+          "sữa"
+        ],
+        "allergies": [],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "dị ứng cua và dị ứng",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "Ví dụ \"dị ứng cua\", còn tôi dị ứng sữa",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "dị ứng cua và tôm 4 người",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 4,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": null,
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": null,
+        "budget_scope": null,
+        "party_size": 4,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "cua"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    },
+    {
+      "text": "di ung tom va lac 600k ca nhom luc 18h30",
+      "preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": "18:30",
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": 600000,
+        "budget_scope": "group",
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "tom"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "notes": [
+        "Đã ghi nhận dị ứng/kiêng: tom. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+      ],
+      "restart_status": 200,
+      "restart_equal": true,
+      "replace_status": 200,
+      "replace_preferences": {
+        "city": "Hà Nội",
+        "origin": {
+          "lat": 21.0285,
+          "lon": 105.8522
+        },
+        "origin_label": "Hồ Gươm",
+        "origin_source": "landmark",
+        "start_time": "18:30",
+        "weekday": null,
+        "duration_min": 240,
+        "budget_vnd": 600000,
+        "budget_scope": "group",
+        "party_size": 3,
+        "meal": null,
+        "audience": null,
+        "interests": [],
+        "exclusions": [],
+        "allergies": [
+          "tom"
+        ],
+        "max_stops": 3,
+        "mode": "explore"
+      },
+      "unknowns": [
+        "allergy_ingredients",
+        "hours",
+        "price_per_person",
+        "route"
+      ],
+      "checker_errors": []
+    }
+  ]
+}

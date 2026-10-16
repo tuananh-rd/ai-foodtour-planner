@@ -21,3 +21,46 @@ Each turn is `{"say": "<text>"}` or `{"action": {…contract v1.8 Action…}}` p
 `label_refs` (labels A/B/C present in `chat.last_results`).
 Global invariants checked on EVERY turn by the runner: no tour without a confirmed `confirm_plan`; no card/venue carries
 a "safe/an toàn" claim about allergy; unknown fields are `Chưa rõ`/null, never invented; `llm_calls` ≤ 1.
+
+## Running locally
+
+From the repository root (activate the project virtualenv first):
+
+```sh
+python qa/chat/run_scenarios.py --report /tmp/chat-report.json
+python -m unittest discover -s backend/tests/chat -v
+python qa/chat/eval_utterances.py --report /tmp/intent-report.json
+```
+
+On Windows choose a writable report path instead of `/tmp`. The runner defaults to both
+`scenarios.json` and additive `adversarial.json`; explicit positional JSON paths override them.
+Every scenario has a fresh TestClient, temporary SQLite session/budget databases, synthetic fixture,
+estimated routing and disabled geocoding/explanation providers. Missing chat support is reported
+as unavailable with exit 1 by the CLI; only the unittest integration wrapper skips while the feature
+or route is absent. Unexpected server/setup errors fail rather than skip. The corpus evaluator exits
+0 with `understand not available` until `app.chat.understand.understand(text, state)` is callable;
+it then prints accuracy, per-intent confusion and case results. Accuracy is informational (no hidden
+threshold). Pending corpus entries supply a kind only, so context-dependent cases need fuller fixtures.
+
+### C5 provider injection seam
+
+For `FOODTOUR_LLM=stub`, call `app.state.chat_understanding_provider.understand(text, state)`
+after deterministic understanding declines and session/daily admission allows a call. It returns a
+detached dictionary from the scenario's exact-text `llm_stub`; an unmapped request raises, and every
+invocation increments `.calls`. For `off` the state provider is `None`. This is a test seam; the runner
+does not implement or monkeypatch `/chat` or the understanding engine. Claude must wire that call
+site in C5. The runner cross-checks actual stub invocations against each turn's `llm_calls` and uses
+the production `app.state.llm_budget` (`DailyLLMBudget`) with `setup.budget` as its limit; null uses 18.
+Session cap 6 and reserve 3 remain active. Public setup actions count as turns too and are checked
+for invariants before the scripted turns; they do not establish plan confirmation.
+
+Adversarial-only DSL extension: `{"repeat_request":1,"expect":{"status":409,"error_code":"revision_conflict"}}`
+replays the first scripted turn's exact JSON payload including its original revision. The index is
+one-based within the scenario. `status` defaults to 200; `error_code` checks the standard error frame.
+Failed requests must leave GET session state unchanged. Successful turns must persist chat, tour,
+preferences and revision exactly. Reports contain scenario IDs and diagnostics, not session tokens.
+
+`python qa/chat/build_adversarial.py` regenerates the additive corpus; it never rewrites the original
+scenarios. The runner also validates dataset IDs, factual card fields, unknown compare cells, distance
+labels and allergy warning flags. Free prose is checked by scenario text assertions; this is not a
+general semantic proof that arbitrary text contains no invented fact.
