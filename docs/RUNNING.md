@@ -94,3 +94,16 @@ Theo [Google Maps URLs](https://developers.google.com/maps/documentation/urls/ge
 
 ## Bằng chứng đã xác minh (overlay cục bộ, tuỳ chọn)
 Đặt `FOODTOUR_EVIDENCE_PATH` (đường dẫn tuyệt đối) tới JSON `{"schema":1,"entries":[...]}`; mỗi mục cần `venue_id` và, cho từng nhóm trường, `hours` (đủ 7 khóa "0".."6", "0"=Thứ Hai; danh sách rỗng = đóng cửa) + `hours_source` + `hours_verified_at` (YYYY-MM-DD), và/hoặc `price_per_person_vnd {min,max}` + `price_source` + `price_verified_at`. Mục thiếu nguồn hoặc ngày xác minh bị từ chối từng trường; tệp cấu hình mà thiếu/hỏng khiến API trả 503 (không phục vụ dữ liệu "đã xác minh" giả). Ví dụ giả lập: `contracts/fixtures/evidence.synthetic.json`. Tour chỉ thành `verified_feasible` khi giờ, giá theo người **và** tuyến (`provider_route`) đều đã xác minh.
+
+## Chat hội thoại v2 (FOODTOUR_CHAT_V2)
+
+Bật bằng `FOODTOUR_CHAT_V2=1` (mặc định tắt; `/messages` cũ không đổi). `GET /v1/client-config` trả `features.chat_v2`; `POST /v1/sessions/{id}/chat` nhận `{text|action, revision}` và trả các khối phản hồi (văn bản, thẻ quán, bảng so sánh, câu hỏi làm rõ, bản xác nhận, `tour_ready`). Chỉ khi người dùng xác nhận (`confirm_yes`) mới lập tour, từ **đúng các quán đã chọn**.
+
+| Cấu hình | Mặc định | Ý nghĩa |
+|---|---|---|
+| `FOODTOUR_LLM_SESSION_CAP` | 6 | Số lượt Gemini tối đa cho một phiên chat |
+| `FOODTOUR_LLM_RESERVE` | 3 | Số lượt/ngày dành lại, không dùng cho hiểu tin nhắn |
+
+Hiểu tin nhắn: luật cục bộ trước (0 lượt Gemini); chỉ khi luật không chắc mới gọi Gemini tối đa 1 lần/lượt, gửi văn bản lượt hiện tại và trạng thái rút gọn (không tên quán, không toạ độ, không địa chỉ). Hết lượt/lỗi: hỏi làm rõ có nút bấm. Dị ứng: không quán nào được gắn "an toàn" (dữ liệu không có nguyên liệu).
+
+Kiểm thử: `python qa/chat/run_scenarios.py` (CH-01…12 + ADV-01…14, dữ liệu mô phỏng `contracts/fixtures/venues.chat.synthetic.json`), `python qa/chat/eval_utterances.py`, `python -m unittest discover -s backend/tests`. Gemini thật (tối đa 8 lượt): `PYTHONPATH=backend python qa/live/chat_gemini_smoke.py` — chỉ chạy khi được phép vì tiêu hạn mức ngày.
