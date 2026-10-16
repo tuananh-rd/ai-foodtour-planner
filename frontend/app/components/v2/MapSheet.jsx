@@ -27,7 +27,7 @@ export default function MapSheet({
       onClose={onClose}
       title="Bản đồ hành trình ẩm thực"
     >
-      <div style={{ padding: '8px 0' }}>
+      <div data-map-view style={{ padding: '8px 0' }}>
         <MapView
           origin={origin}
           originLabel={originLabel}

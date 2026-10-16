@@ -37,8 +37,9 @@ export default function StopCard({
   // Rating presentation
   // Spec: rating line ONLY from venue.rating (value + count, labelled 'theo nguồn'; hide when count < 5 -> 'ít đánh giá')
   let ratingDisplay = null;
-  if (rating && typeof rating.count === 'number' && rating.count >= 5 && rating.value != null) {
-    const formattedScore = Number(rating.value).toFixed(1).replace('.', ',');
+  const ratingVal = rating ? (rating.value != null ? rating.value : rating.score) : null;
+  if (rating && typeof rating.count === 'number' && rating.count >= 5 && ratingVal != null) {
+    const formattedScore = Number(ratingVal).toFixed(1).replace('.', ',');
     const formattedCount = rating.count >= 1000 ? `${(rating.count / 1000).toFixed(1).replace('.', ',')}k` : rating.count;
     ratingDisplay = (
       <span data-venue-rating className="ft-tabular-nums" style={{ color: '#D97706', fontWeight: 600 }}>

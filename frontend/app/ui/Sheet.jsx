@@ -214,12 +214,13 @@ export default function Sheet({
     >
       <div
         ref={dialogRef}
+        data-sheet
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={ariaDescribedBy}
         tabIndex={-1}
-        className={`ft-sheet-panel ft-sheet-${viewportMode} ${className}`.trim()}
+        className={`ft-sheet ft-sheet-panel ft-sheet-${viewportMode} ${className}`.trim()}
         style={{
           backgroundColor: 'var(--card-bg, #FFFFFF)',
           color: 'var(--text, #1F1B16)',

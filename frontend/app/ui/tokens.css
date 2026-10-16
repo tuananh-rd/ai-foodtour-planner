@@ -1,6 +1,6 @@
 /**
  * AI FoodTour Planner — V2 Design Tokens (tokens.css)
- * Spec: docs/UPGRADE_PLAN.md §3.0, CONTRACT.md §v1.6, Task R1-1
+ * Spec: docs/UPGRADE_PLAN.md §3.0, CONTRACT.md §v1.6, Task R1-1, R1-5b (F06, F07)
  *
  * Rules:
  * - Colours: --bg #FBF8F3, --text #1F1B16, --accent #C8431A, --muted #6B6259
@@ -10,9 +10,16 @@
  * - Dark theme via prefers-color-scheme with its own tokens
  * - prefers-reduced-motion respected
  * - focus-visible ring on every interactive element
+ * - Scoped to V2 containers and sheets so flag-off presentation rollback is byte-for-byte identical (F07)
  */
 
-:root {
+[data-ui-v2],
+.ft-v2-container,
+.ft-ui-kit-root,
+.ft-sheet,
+.ft-modal,
+.ft-banner-queue,
+.ft-banner {
   /* Core Colours (Light Mode) */
   --bg: #FBF8F3;
   --card-bg: #FFFFFF;
@@ -91,7 +98,13 @@
 
 /* Dark Theme via prefers-color-scheme */
 @media (prefers-color-scheme: dark) {
-  :root {
+  [data-ui-v2],
+  .ft-v2-container,
+  .ft-ui-kit-root,
+  .ft-sheet,
+  .ft-modal,
+  .ft-banner-queue,
+  .ft-banner {
     --bg: #151311;
     --card-bg: #211E1A;
     --text: #F3EFEA;
@@ -135,7 +148,9 @@
 
 /* Explicit class or data-attribute for dark theme testing / toggling */
 [data-theme="dark"],
-.dark-theme {
+.dark-theme,
+[data-ui-v2][data-theme="dark"],
+.ft-ui-kit-root[data-theme="dark"] {
   --bg: #151311;
   --card-bg: #211E1A;
   --text: #F3EFEA;
@@ -187,30 +202,99 @@
 
 /* Body line height */
 .ft-body {
-  font-size: var(--type-16);
-  line-height: var(--line-height-body);
+  font-size: var(--type-16, 16px);
+  line-height: var(--line-height-body, 1.5);
   color: var(--text);
 }
 
-/* Focus-visible ring on interactive elements */
-:focus-visible {
-  outline: 2px solid var(--focus-ring);
+/* Focus-visible ring on interactive elements (F06) */
+[data-ui-v2] :focus-visible,
+.ft-v2-container :focus-visible,
+.ft-ui-kit-root :focus-visible,
+.ft-sheet :focus-visible,
+.ft-modal :focus-visible,
+.ft-banner :focus-visible,
+.ft-button:focus-visible,
+.ft-chip:focus-visible {
+  outline: 2px solid var(--focus-ring, #C8431A);
   outline-offset: 2px;
 }
 
-/* Touch-friendly target minimum (UX-07, Task R1-1) */
-button,
-input,
-select,
-textarea,
+[data-request-input]:focus,
+[data-request-input]:focus-visible,
+.ft-request-input:focus,
+.ft-request-input:focus-visible {
+  outline: 2px solid var(--focus-ring, #C8431A) !important;
+  outline-style: solid !important;
+  outline-width: 2px !important;
+  outline-color: var(--focus-ring, #C8431A) !important;
+  outline-offset: 2px !important;
+  border-color: var(--focus-ring, #C8431A) !important;
+  box-shadow: 0 0 0 3px rgba(200, 67, 26, 0.25) !important;
+}
+
+/* Touch-friendly target minimum (UX-07, Task R1-1, R1-F06, R1-F07) */
+[data-ui-v2] button,
+[data-ui-v2] input,
+[data-ui-v2] select,
+[data-ui-v2] textarea,
+.ft-v2-container button,
+.ft-v2-container input,
+.ft-v2-container select,
+.ft-v2-container textarea,
+.ft-ui-kit-root button,
+.ft-ui-kit-root input,
+.ft-ui-kit-root select,
+.ft-ui-kit-root textarea,
+.ft-sheet button,
+.ft-sheet input,
+.ft-sheet select,
+.ft-sheet textarea,
+.ft-sheet input[type="range"],
+.ft-modal button,
+.ft-modal input,
+.ft-modal select,
+.ft-modal textarea,
 .ft-button,
 .ft-chip {
   min-height: 44px;
   box-sizing: border-box;
 }
 
-input[type="checkbox"],
-input[type="radio"] {
+/* Enforce 44px on all controls inside open sheets and preferences panel (F06) */
+.ft-sheet input,
+.ft-sheet select,
+.ft-sheet textarea,
+.ft-sheet button,
+.ft-sheet input[type="range"],
+.ft-preferences-sheet-content input,
+.ft-preferences-sheet-content select,
+.ft-preferences-sheet-content textarea,
+.ft-preferences-sheet-content button,
+.ft-preferences-sheet-content input[type="range"],
+#pref-origin-preset,
+#pref-custom-lat,
+#pref-custom-lon,
+#pref-duration {
+  min-height: 44px !important;
+  box-sizing: border-box !important;
+}
+
+.ft-sheet button,
+.ft-preferences-sheet-content button {
+  min-width: 44px !important;
+}
+
+[data-ui-v2] input[type="checkbox"],
+[data-ui-v2] input[type="radio"],
+.ft-v2-container input[type="checkbox"],
+.ft-v2-container input[type="radio"],
+.ft-ui-kit-root input[type="checkbox"],
+.ft-ui-kit-root input[type="radio"],
+.ft-sheet input[type="checkbox"],
+.ft-sheet input[type="radio"],
+.ft-modal input[type="checkbox"],
+.ft-modal input[type="radio"] {
   min-width: 44px;
   min-height: 44px;
 }
@@ -248,4 +332,3 @@ input[type="radio"] {
     opacity: 0.6;
   }
 }
-

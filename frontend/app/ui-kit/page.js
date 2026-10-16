@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
-import UIKitGalleryClient from './UIKitGalleryClient.jsx';
+import dynamic from 'next/dynamic';
+
+const UIKitGalleryClient = dynamic(() => import('./UIKitGalleryClient.jsx'));
 
 export const metadata = {
   title: 'Thư viện thành phần UI Kit · AI FoodTour',

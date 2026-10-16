@@ -1,4 +1,5 @@
 import './globals.css';
+import './ui/tokens.css';
 
 export const metadata = {
   title: 'AI FoodTour Planner · Hà Nội',
