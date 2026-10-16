@@ -1,4 +1,4 @@
-"""Generate contracts/fixtures/venues.chat.synthetic.json (deterministic, 72 clearly synthetic venues).
+"""Generate contracts/fixtures/venues.chat.synthetic.json (deterministic, 144 clearly synthetic venues).
 
 Used only by chat scenarios/tests. Real street/district names are public geography; venue names are fictional.
 Run: python tools/gen_chat_fixture.py
@@ -35,9 +35,9 @@ AUD = [["Ăn gia đình"], ["Họp nhóm"], ["Ăn gia đình", "Họp nhóm"], [
 def build():
     rows, n = [], 0
     for di, (district, (lat, lon, streets)) in enumerate(DISTRICTS.items()):
-        for k, (tags, stem, price, meals) in enumerate(DISHES):
+        for k, (tags, stem, price, meals) in enumerate(d for d in DISHES for _ in (0, 1)):
             n += 1
-            i = di * 7 + k * 3
+            i = di * 7 + k * 3 + (k % 2) * 5
             street = streets[(di + k) % len(streets)]
             count = [1, 3, 8, 22, 47, 130, 260][(di + k * 2) % 7]
             rating10 = [None, 6.5, 7.4, 8.1, 8.8, 9.3][(di * 5 + k) % 6]
