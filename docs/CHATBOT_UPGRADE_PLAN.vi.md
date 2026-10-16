@@ -291,3 +291,20 @@ Cũng cần xác nhận: đợt 1 bắt đầu bằng **C0-HF** (sửa lỗi nu�
 ## 10. Tài liệu/nguồn tham chiếu nội bộ
 
 Tài liệu UX cập nhật (docx, 16/10/2026); `contracts/v1/CONTRACT.md` v1.6–v1.7; `docs/UPGRADE_PLAN.md`; `docs/reports/CODEX_REVIEW_R0.md`; `backend/app/api/routes.py`, `backend/app/llm/{extract,provider,explain}.py`, `backend/app/providers/gemini.py`, `backend/app/planner/{engine,quality,maps_url}.py`, `backend/app/repositories/sessions.py`, `frontend/app/components/{ChatPanel,v2/*}.jsx`. Số liệu dữ liệu là tổng hợp từ CSV riêng; **không có dòng/tên quán nào trong tài liệu này**, CSV và `.env` không vào Git.
+
+---
+
+## 11. Trạng thái triển khai (cập nhật 17/10/2026)
+
+| Pha | Kết quả | Bằng chứng chính |
+|---|---|---|
+| C0-HF (dị ứng/đổi số người) | Hoàn tất, Codex ACCEPT | trình phân tích mệnh đề `llm/safety_parse.py`, `Preferences.allergies`, hợp đồng v1.6.1; `docs/reports/CODEX_REVIEW_C0HF*.md` |
+| C0-1 / C0-2 | Hoàn tất | hợp đồng v1.8; 165 câu chuẩn + 5 bộ held-out mù (heldout…heldout6), 12+14 kịch bản CH/ADV, fixture tổng hợp 144 quán |
+| C1 (state/hiểu lượt/`/chat`) | Hoàn tất | `backend/app/chat/*`, `/v1/sessions/{id}/chat`, lưu SQLite, 424 test backend |
+| C2 (tìm/so sánh/khám phá/địa danh/dị ứng) | Hoàn tất | `tools.py`, `gazetteer.py`, `knowledge.py`; chạy trên dữ liệu riêng: 40 hội thoại, 0 lỗi, p95 ≈70 ms (`docs/reports/PRIVATE_AGG_CHAT.md`) |
+| C3 (giao diện chat v2 desktop) | Hoàn tất trừ 2 điểm nhỏ (C6j) | `frontend/app/components/v2/chat/*`; E2E API thật 29/29 |
+| C4 (từ danh sách chọn → tour) | Hoàn tất | `planning.plan_selected`, xung đột có phương án, thay quán, khoá |
+| C5 (Gemini hiểu lượt) | Hoàn tất | `llm_understand.py`, trần 6 lượt/phiên, dự trữ 3, cache, 1 lần thử; smoke thật 11 lượt (2 lần chạy) |
+| C6 (nghiệm thu) | Codex C6-final-3: REQUEST CHANGES do 2 tồn đọng nhỏ ở giao diện | `docs/reports/CODEX_C6_FINAL*.md`; C6j bị chặn bởi Antigravity (xem TASK_BOARD) |
+
+Giới hạn trung thực: độ chính xác hiểu ý định của **luật cục bộ** trên bộ held-out mù lần đầu chạy chỉ ~69–84% (trung bình ~77%), "an toàn" (không đổi trạng thái khi sai) ~80–90%; sau mỗi vòng sửa tổng quát hoá, bộ đã dùng đạt 96–99% nhưng số đo mù thật vẫn ở mức trên. Giảm thiểu: nút bấm xác định (không qua luật), chỉ lập tour sau xác nhận tường minh, dị ứng bảo thủ (không bao giờ "an toàn"), câu giả định/trích dẫn/mỉa mai/thiếu chắc chắn không bao giờ hành động, Gemini hỗ trợ khi luật không chắc (trong ngân sách). Chưa đo chất lượng Gemini trên tập lớn (hạn mức 20 lượt/ngày).
