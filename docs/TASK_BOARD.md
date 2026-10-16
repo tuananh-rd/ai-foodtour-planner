@@ -90,3 +90,5 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C6b (Codex) | Codex | DONE: engine decision REQUEST CHANGES at review time (all items FIXED after aa34d9d/156eaa1/cdc049b — final addendum pending), heldout3 blind 76.9% → Claude generalised (now dev 103/104; heldout4 blind pending), frontend REQUEST CHANGES (2 HIGH: profile patches 422, 409 retry; 4 MEDIUM) forwarded to Antigravity C6a; private-data aggregate skipped (FOODTOUR_DATA_PATH unset in Codex env) |
 | Private aggregate run (Claude 321b63d) | Claude | DONE | docs/reports/PRIVATE_AGG_CHAT.md: 40 conversations on the private dataset, 0 errors, 0 zero-result searches, p95 ≈70 ms, 3/39 plans honest conflicts |
 | C6c heldout4 blind + final engine addendum | Codex | In progress | ctx_d68bc27931e1 |
+| C6c (Codex) | Codex | DONE: heldout4 blind 78.9% (2 dangerous) → Claude fixed (dev 97/104) | decision REQUEST CHANGES at review time |
+| C6d heldout5 blind + final engine verdict | Codex | In progress | ctx_f70c2944637c; acceptance: dangerous = 0 AND (accuracy ≥85% OR safe-accuracy ≥92%) |
