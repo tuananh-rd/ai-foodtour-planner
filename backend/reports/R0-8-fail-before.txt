@@ -1,0 +1,208 @@
+test_default_fixture_varied_rating_and_fit_evidence (tests.data.test_r0_8.ConfiguredDatasetTests.test_default_fixture_varied_rating_and_fit_evidence) ... ERROR
+test_empty_wrapper_and_canonical_private_file (tests.data.test_r0_8.ConfiguredDatasetTests.test_empty_wrapper_and_canonical_private_file) ... ERROR
+test_explicit_evidence_wrapper_loads_canonical_fields (tests.data.test_r0_8.ConfiguredDatasetTests.test_explicit_evidence_wrapper_loads_canonical_fields) ... ERROR
+test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) ... 
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document=[{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]) ... FAIL
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document={'_label': 'private input', 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]}) ... ERROR
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='synthetic', document=[{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)', 'synthetic': True}]) ... FAIL
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='synthetic', document={'synthetic': True, 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]}) ... ERROR
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='synthetic', document={'_label': 'SYNTHETIC test fixtures.', 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]}) ... ERROR
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document=[{'id': 'A', 'foody_id': 'A', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/A', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)', 'synthetic': True}, {'id': 'B', 'foody_id': 'B', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/B', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]) ... FAIL
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document=[{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)', 'synthetic': 'true'}]) ... FAIL
+  test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document={'_label': 'not synthetic', 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]}) ... ERROR
+test_relative_environment_path_is_repo_relative (tests.data.test_r0_8.ConfiguredDatasetTests.test_relative_environment_path_is_repo_relative) ... ERROR
+test_expired_entries_purged_on_miss_even_when_provider_fails (tests.planner.test_r0_8_privacy.PreferenceCacheTests.test_expired_entries_purged_on_miss_even_when_provider_fails) ... FAIL
+test_interest_and_exclusion_terms_are_not_memoized (tests.planner.test_r0_8_privacy.PreferenceCacheTests.test_interest_and_exclusion_terms_are_not_memoized) ... FAIL
+test_phrases_cannot_cross_dish_tag_boundaries (tests.planner.test_r0_8_privacy.PreferenceCacheTests.test_phrases_cannot_cross_dish_tag_boundaries) ... ok
+test_budget_and_source (test_planner.PlannerTests.test_budget_and_source) ... FAIL
+
+======================================================================
+ERROR: test_default_fixture_varied_rating_and_fit_evidence (tests.data.test_r0_8.ConfiguredDatasetTests.test_default_fixture_varied_rating_and_fit_evidence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 84, in test_default_fixture_varied_rating_and_fit_evidence
+    ds = load_dataset(SYNTHETIC_PATH)
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_empty_wrapper_and_canonical_private_file (tests.data.test_r0_8.ConfiguredDatasetTests.test_empty_wrapper_and_canonical_private_file)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 72, in test_empty_wrapper_and_canonical_private_file
+    self.assertEqual(load_dataset(path).dataset_source, 'private')
+                     ~~~~~~~~~~~~^^^^^^
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_explicit_evidence_wrapper_loads_canonical_fields (tests.data.test_r0_8.ConfiguredDatasetTests.test_explicit_evidence_wrapper_loads_canonical_fields)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 19, in test_explicit_evidence_wrapper_loads_canonical_fields
+    ds = load_dataset(ROOT / 'contracts/fixtures/venues.evidence.synthetic.json')
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document={'_label': 'private input', 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 49, in test_provenance_across_health_session_and_venue_mapping
+    ds = load_dataset(path)
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='synthetic', document={'synthetic': True, 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 49, in test_provenance_across_health_session_and_venue_mapping
+    ds = load_dataset(path)
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='synthetic', document={'_label': 'SYNTHETIC test fixtures.', 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 49, in test_provenance_across_health_session_and_venue_mapping
+    ds = load_dataset(path)
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document={'_label': 'not synthetic', 'venues': [{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}]})
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 49, in test_provenance_across_health_session_and_venue_mapping
+    ds = load_dataset(path)
+  File "backend/app/data/loader.py", line 183, in load_dataset
+    except OSError:
+       ^^^^^^^^^^^^
+  File "backend/app/data/loader.py", line 148, in _parse
+    wrapper_synthetic = (rows.get("synthetic") is True
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: invalid_document_shape
+
+======================================================================
+ERROR: test_relative_environment_path_is_repo_relative (tests.data.test_r0_8.ConfiguredDatasetTests.test_relative_environment_path_is_repo_relative)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 29, in test_relative_environment_path_is_repo_relative
+    self.assertEqual(load_dataset().dataset_source, 'synthetic')
+                     ~~~~~~~~~~~~^^
+  File "backend/app/data/loader.py", line 165, in load_dataset
+    Current source formats have no verified weekday mapping: hours stay None.
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+app.data.loader.DatasetLoadError: Dataset could not be loaded: path_not_absolute
+
+======================================================================
+FAIL: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document=[{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 50, in test_provenance_across_health_session_and_venue_mapping
+    self.assertEqual(ds.dataset_source, source)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'json' != 'private'
+- json
++ private
+
+
+======================================================================
+FAIL: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='synthetic', document=[{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)', 'synthetic': True}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 50, in test_provenance_across_health_session_and_venue_mapping
+    self.assertEqual(ds.dataset_source, source)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'json' != 'synthetic'
+- json
++ synthetic
+
+
+======================================================================
+FAIL: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document=[{'id': 'A', 'foody_id': 'A', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/A', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)', 'synthetic': True}, {'id': 'B', 'foody_id': 'B', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/B', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)'}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 50, in test_provenance_across_health_session_and_venue_mapping
+    self.assertEqual(ds.dataset_source, source)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'json' != 'private'
+- json
++ private
+
+
+======================================================================
+FAIL: test_provenance_across_health_session_and_venue_mapping (tests.data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) (source='private', document=[{'id': 'TEST-001', 'foody_id': 'TEST-001', 'name': '[SYNTHETIC] Loader test', 'lat': 21.03, 'lon': 105.85, 'geo_status': 'ok', 'city': 'Hà Nội', 'source_url': 'https://example.invalid/TEST-001', 'venue_types': 'Food', 'price_status': 'ok', 'price_min_vnd_norm': 10000, 'price_max_vnd_norm': 20000, 'dish_groups': ' bún | bánh | bún ', 'hours_status': 'day_mapping_unknown', 'hours_displayed': '06:00-22:00 (unverified)', 'synthetic': 'true'}])
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\data\test_r0_8.py", line 50, in test_provenance_across_health_session_and_venue_mapping
+    self.assertEqual(ds.dataset_source, source)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'json' != 'private'
+- json
++ private
+
+
+======================================================================
+FAIL: test_expired_entries_purged_on_miss_even_when_provider_fails (tests.planner.test_r0_8_privacy.PreferenceCacheTests.test_expired_entries_purged_on_miss_even_when_provider_fails)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\planner\test_r0_8_privacy.py", line 46, in test_expired_entries_purged_on_miss_even_when_provider_fails
+    self.assertEqual(len(extractor._cache), 0)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 1 != 0
+
+======================================================================
+FAIL: test_interest_and_exclusion_terms_are_not_memoized (tests.planner.test_r0_8_privacy.PreferenceCacheTests.test_interest_and_exclusion_terms_are_not_memoized)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\planner\test_r0_8_privacy.py", line 26, in test_interest_and_exclusion_terms_are_not_memoized
+    self.assertEqual(after.misses - before.misses, 2)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 2
+
+======================================================================
+FAIL: test_budget_and_source (test_planner.PlannerTests.test_budget_and_source)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\test_planner.py", line 12, in test_budget_and_source
+    self.assertTrue(result['stops'])
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+AssertionError: [] is not true
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.019s
+
+FAILED (failures=7, errors=8)

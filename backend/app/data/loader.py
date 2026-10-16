@@ -129,9 +129,10 @@ def _timestamp(value):
         return None
 
 
-def _parse(blob: bytes, suffix: str, synthetic: bool) -> list:
+def _parse(blob: bytes, suffix: str) -> tuple[list, bool]:
     try:
         text = blob.decode("utf-8-sig")
+        wrapper_synthetic = False
         if suffix == ".csv":
             reader = csv.DictReader(io.StringIO(text), strict=True)
             fields = reader.fieldnames or []
@@ -142,11 +143,15 @@ def _parse(blob: bytes, suffix: str, synthetic: bool) -> list:
                 raise DatasetLoadError("invalid_csv_row")
         else:
             rows = json.loads(text)
-            if synthetic and isinstance(rows, dict):
+            if isinstance(rows, dict):
+                # Only explicit metadata marks a wrapper synthetic; never infer from its path.
+                label = _text(rows.get("_label")).casefold()
+                wrapper_synthetic = (rows.get("synthetic") is True
+                    or label == "synthetic" or label.startswith(("synthetic ", "synthetic:")))
                 rows = rows.get("venues")
         if not isinstance(rows, list):
             raise DatasetLoadError("invalid_document_shape")
-        return rows
+        return rows, wrapper_synthetic
     except (UnicodeError, json.JSONDecodeError, csv.Error):
         raise DatasetLoadError("malformed_document") from None
 
@@ -154,13 +159,16 @@ def _parse(blob: bytes, suffix: str, synthetic: bool) -> list:
 def load_dataset(path: str | Path | None = None) -> Dataset:
     """Read FOODTOUR_DATA_PATH or the default snapshot, falling back only if absent.
 
-    Explicit/environment paths must be absolute. The version hashes the bytes
+    Explicit paths must be absolute; relative environment paths use the repo root.
+    The version hashes the bytes
     actually loaded, including the fixture bytes when fallback is necessary.
     Duplicate winners are chosen by canonical row order, then ID, then URL.
     Current source formats have no verified weekday mapping: hours stay None.
     """
     configured = path if path is not None else (os.environ.get("FOODTOUR_DATA_PATH", "").strip() or None)
     source_path = Path(configured) if configured is not None else DEFAULT_PATH
+    if path is None and configured is not None and not source_path.is_absolute():
+        source_path = ROOT / source_path
     if not source_path.is_absolute():
         raise DatasetLoadError("path_not_absolute")
     synthetic = False
@@ -180,14 +188,17 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
     suffix = source_path.suffix.lower()
     if suffix not in (".csv", ".json"):
         raise DatasetLoadError("unsupported_format")
-    rows = _parse(blob, suffix, synthetic)
+    rows, wrapper_synthetic = _parse(blob, suffix)
+    wrapper_synthetic = wrapper_synthetic or synthetic
+    synthetic = wrapper_synthetic or (bool(rows) and all(
+        isinstance(row, dict) and row.get("synthetic") is True for row in rows))
     rejected = Counter()
     candidates = []
     for row in rows:
         if not isinstance(row, dict):
             rejected["invalid_row_shape"] += 1
             continue
-        identity = _text(row.get("id") if synthetic else row.get("id", row.get("foody_id")))
+        identity = _text(row.get("id", row.get("foody_id")))
         if not identity:
             rejected["missing_id"] += 1
             continue
@@ -224,21 +235,23 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
             seen_urls.add(url)
         else:
             flags["missing_source_url"] += 1
-        low = _price(row.get("price_min_vnd" if synthetic else "price_min_vnd_norm"))
-        high = _price(row.get("price_max_vnd" if synthetic else "price_max_vnd_norm"))
-        if (not synthetic and row.get("price_status") != "ok") or low is None or high is None or low > high:
+        # Format and provenance are independent: synthetic import rows use source columns too.
+        canonical = any(key in row for key in ("dish_tags", "geo_ok", "price_min_vnd"))
+        low = _price(row.get("price_min_vnd" if canonical else "price_min_vnd_norm"))
+        high = _price(row.get("price_max_vnd" if canonical else "price_max_vnd_norm"))
+        if (not canonical and row.get("price_status") != "ok") or low is None or high is None or low > high:
             low = high = None
             flags["unknown_price"] += 1
-        online = row.get("online_only") is True if synthetic else "Shop Online" in _tags(row.get("venue_types"))
-        geo_ok = row.get("geo_ok") is True if synthetic else row.get("geo_status") == "ok"
+        online = row.get("online_only") is True if canonical else "Shop Online" in _tags(row.get("venue_types"))
+        geo_ok = row.get("geo_ok") is True if canonical else row.get("geo_status") == "ok"
         if online:
             flags["online_only"] += 1
         if not geo_ok:
             flags["unverified_geo_status"] += 1
-        tags = _tags(row.get("dish_tags" if synthetic else "dish_groups"))
+        tags = _tags(row.get("dish_tags" if canonical else "dish_groups"))
         if not tags:
             flags["missing_dish_tags"] += 1
-        rating, scale = _rating(row.get("rating_value"), row.get("rating_scale_max"))
+        rating, scale = _rating(row.get("rating_value", row.get("rating")), row.get("rating_scale_max"))
         reviews = _count(row.get("review_count"))
         meals = _tags(row.get("suitable_meals"))
         if rating is None:
@@ -254,12 +267,13 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
             address=_text(row.get("address")), source_url=url, dish_tags=tags,
             online_only=online, geo_ok=geo_ok, price_min_vnd=low,
             price_max_vnd=high, price_evidence="estimate", hours=None,
-            hours_display=_text(row.get("hours_display" if synthetic else "hours_displayed")) or None,
-            synthetic=synthetic, rating=rating, rating_scale_max=scale, review_count=reviews,
+            hours_display=_text(row.get("hours_display" if canonical else "hours_displayed")) or None,
+            synthetic=wrapper_synthetic or row.get("synthetic") is True,
+            rating=rating, rating_scale_max=scale, review_count=reviews,
             suitable_meals=meals, audiences=_tags(row.get("audiences")),
             cuisine_styles=_tags(row.get("cuisine_styles")),
             amenities_yes=_tags(row.get("amenities_yes")), amenities_no=_tags(row.get("amenities_no")),
-            source_fetched_at=_timestamp(row.get("fetched_at")),
+            source_fetched_at=_timestamp(row.get("fetched_at", row.get("source_fetched_at"))),
         ))
     try:
         merged, version, evidence_counts, evidence_rejections = apply_overlay(
@@ -271,5 +285,5 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
     for before, after in zip(venues, merged):
         if before.price_min_vnd is None and after.price_evidence == 'verified':
             flags['unknown_price'] -= 1
-    return Dataset(merged, version, "synthetic" if synthetic else suffix[1:], len(rows),
+    return Dataset(merged, version, "synthetic" if synthetic else "private", len(rows),
                    dict(rejected), dict(flags), evidence_counts, evidence_rejections)

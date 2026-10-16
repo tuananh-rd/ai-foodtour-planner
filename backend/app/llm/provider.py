@@ -345,6 +345,8 @@ class RulesFirstExtractor:
         key = self._key(text, prior)
         now = self.clock()
         with self._lock:
+            for k in [k for k, (t, _) in self._cache.items() if now - t > self.ttl_s]:
+                del self._cache[k]  # purge even on misses whose provider call later fails
             hit = self._cache.get(key)
             if hit and now - hit[0] <= self.ttl_s:
                 self._cache.move_to_end(key)

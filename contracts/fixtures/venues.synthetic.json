@@ -21,7 +21,20 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.6,
+   "rating_scale_max": 5,
+   "review_count": 2,
+   "suitable_meals": [
+    "sáng"
+   ],
+   "audiences": [
+    "gia đình"
+   ],
+   "cuisine_styles": [],
+   "amenities_yes": [],
+   "amenities_no": [],
+   "source_fetched_at": null
   },
   {
    "id": "SYN-002",
@@ -42,7 +55,27 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.3,
+   "rating_scale_max": 5,
+   "review_count": 120,
+   "suitable_meals": [
+    "trưa",
+    "tối"
+   ],
+   "audiences": [
+    "bạn bè"
+   ],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [
+    "wifi"
+   ],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-003",
@@ -63,7 +96,20 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": null,
+   "rating_scale_max": 5,
+   "review_count": null,
+   "suitable_meals": [],
+   "audiences": [],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-004",
@@ -85,7 +131,22 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 3.8,
+   "rating_scale_max": 5,
+   "review_count": 4,
+   "suitable_meals": [
+    "xế"
+   ],
+   "audiences": [
+    "cặp đôi"
+   ],
+   "cuisine_styles": [],
+   "amenities_yes": [
+    "wifi"
+   ],
+   "amenities_no": [],
+   "source_fetched_at": null
   },
   {
    "id": "SYN-005",
@@ -106,7 +167,24 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.1,
+   "rating_scale_max": 5,
+   "review_count": 24,
+   "suitable_meals": [
+    "tối"
+   ],
+   "audiences": [
+    "một mình"
+   ],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-006",
@@ -128,7 +206,26 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.6,
+   "rating_scale_max": 5,
+   "review_count": 2,
+   "suitable_meals": [
+    "sáng"
+   ],
+   "audiences": [
+    "gia đình"
+   ],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [
+    "wifi"
+   ],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-007",
@@ -156,7 +253,21 @@
     ]
    },
    "hours_display": "06:00-10:00 (giả lập)",
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.3,
+   "rating_scale_max": 5,
+   "review_count": 120,
+   "suitable_meals": [
+    "trưa",
+    "tối"
+   ],
+   "audiences": [
+    "bạn bè"
+   ],
+   "cuisine_styles": [],
+   "amenities_yes": [],
+   "amenities_no": [],
+   "source_fetched_at": null
   },
   {
    "id": "SYN-008",
@@ -184,7 +295,22 @@
     ]
    },
    "hours_display": "07:00-23:00 (giả lập)",
-   "synthetic": true
+   "synthetic": true,
+   "rating": null,
+   "rating_scale_max": 5,
+   "review_count": null,
+   "suitable_meals": [],
+   "audiences": [],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [
+    "wifi"
+   ],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-009",
@@ -205,7 +331,24 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 3.8,
+   "rating_scale_max": 5,
+   "review_count": 4,
+   "suitable_meals": [
+    "xế"
+   ],
+   "audiences": [
+    "cặp đôi"
+   ],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-010",
@@ -226,7 +369,22 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.1,
+   "rating_scale_max": 5,
+   "review_count": 24,
+   "suitable_meals": [
+    "tối"
+   ],
+   "audiences": [
+    "một mình"
+   ],
+   "cuisine_styles": [],
+   "amenities_yes": [
+    "wifi"
+   ],
+   "amenities_no": [],
+   "source_fetched_at": null
   },
   {
    "id": "SYN-011",
@@ -248,7 +406,24 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.6,
+   "rating_scale_max": 5,
+   "review_count": 2,
+   "suitable_meals": [
+    "sáng"
+   ],
+   "audiences": [
+    "gia đình"
+   ],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-012",
@@ -270,7 +445,27 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": 4.3,
+   "rating_scale_max": 5,
+   "review_count": 120,
+   "suitable_meals": [
+    "trưa",
+    "tối"
+   ],
+   "audiences": [
+    "bạn bè"
+   ],
+   "cuisine_styles": [
+    "Việt"
+   ],
+   "amenities_yes": [
+    "wifi"
+   ],
+   "amenities_no": [
+    "đỗ xe"
+   ],
+   "source_fetched_at": "2026-10-15T08:00:00+00:00"
   },
   {
    "id": "SYN-013",
@@ -291,7 +486,16 @@
    "price_evidence": "estimate",
    "hours": null,
    "hours_display": null,
-   "synthetic": true
+   "synthetic": true,
+   "rating": null,
+   "rating_scale_max": 5,
+   "review_count": null,
+   "suitable_meals": [],
+   "audiences": [],
+   "cuisine_styles": [],
+   "amenities_yes": [],
+   "amenities_no": [],
+   "source_fetched_at": null
   }
  ]
 }

@@ -45,9 +45,9 @@ class LoaderTests(unittest.TestCase):
         self.assertEqual(v.price_evidence, "estimate")
         self.assertIsNone(v.hours)
         self.assertEqual(v.hours_display, "06:00-22:00 (unverified)")
-        self.assertFalse(v.synthetic)
+        self.assertTrue(v.synthetic)
         self.assertTrue(v.geo_ok)
-        self.assertEqual(ds.dataset_source, "json")
+        self.assertEqual(ds.dataset_source, "synthetic")
         self.assertEqual(ds.dataset_version, hashlib.sha256(self.path.read_bytes()).hexdigest())
 
     def test_null_zero_malformed_nonfinite_and_bounds_coordinates(self):
@@ -141,7 +141,7 @@ class LoaderTests(unittest.TestCase):
         self.assertEqual(caught.exception.report, {"errors_by_reason": {"path_not_absolute": 1}})
 
     def test_malformed_json_and_wrong_shape_do_not_fallback(self):
-        for text in ('{broken', '{"venues": []}', 'null'):
+        for text in ('{broken', '{"venues": null}', 'null'):
             with self.subTest(text=text):
                 self.path.write_text(text, encoding="utf-8")
                 with self.assertRaises(DatasetLoadError) as caught:
@@ -164,7 +164,7 @@ class LoaderTests(unittest.TestCase):
             writer.writerow(r)
         ds = load_dataset(path)
         self.assertEqual(ds.venues, expected.venues)
-        self.assertEqual(ds.dataset_source, "csv")
+        self.assertEqual(ds.dataset_source, "private")
         self.assertEqual(ds.dataset_version, hashlib.sha256(path.read_bytes()).hexdigest())
 
     def test_malformed_csv_rejected(self):
