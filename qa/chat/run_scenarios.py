@@ -154,7 +154,7 @@ def evaluate(body, expect, *, status=200, previous=None, turn=None, history=None
             check((typ in types) == positive, f"{key}: {typ}")
     for key, positive in (("text_contains", True), ("text_not_contains", False)):
         for phrase in expect.get(key, []):
-            check((fold(phrase) in text) == positive, f"{key}: {phrase}")
+            check((re.search(r"(?<!\w)" + re.escape(fold(phrase)) + r"(?!\w)", text) is not None) == positive, f"{key}: {phrase}")
     for path, wanted in expect.get("state", {}).items():
         check(at(chat, path) == wanted, f"chat.{path}: {at(chat, path)!r} != {wanted!r}")
     for path in expect.get("state_absent", []):
@@ -305,7 +305,7 @@ def run_scenario(scenario):
                         if restored.json().get(key) != body.get(key):
                             errors.append(f"persisted {key} differs from response")
             result["turns"].append({"turn": index, "status": "failed" if errors else "passed", "http_status": response.status_code,
-                                    "intent": at(body, "turn.intent", None), "llm_calls_observed": provider.calls - before_calls, "errors": errors})
+                                    "request": payload, "response": body, "intent": at(body, "turn.intent", None), "llm_calls_observed": provider.calls - before_calls, "errors": errors})
         if any(t["errors"] for t in result["turns"]):
             result["status"] = "failed"
     return result

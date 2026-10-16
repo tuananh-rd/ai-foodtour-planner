@@ -1,0 +1,4 @@
+Command: python tools/export_openapi.py --check
+OpenAPI matches server schema
+
+Exit: 0

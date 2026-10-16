@@ -3,17 +3,20 @@ from dataclasses import asdict, replace as domain_replace
 import os
 from typing import Literal
 
-from fastapi import APIRouter, Header, Query, Request, Response
+from fastapi import APIRouter, Depends, Header, Query, Request, Response
 from pydantic import ValidationError
 
 from app.api import legacy
 from app.api.errors import APIError
 from app.api.schemas import (
-    ErrorResponse, Health, Hours, LegView, MessageRequest, MessageBudget, PreferencesRequest,
+    ChatRequest, ChatTurn, ErrorResponse, Health, Hours, LegView, MessageRequest, MessageBudget, PreferencesRequest,
     PreferencesSchema, Price, ReplaceRequest, RevisionRequest, SessionCreated,
     SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
     GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig, MapsLinksResponse,
 )
+from app.chat.engine import ChatEngine
+from app.chat.planning import plan_selected, routing_for
+from app.repositories.sessions import encode_chat
 from app.data import DatasetLoadError
 from app.llm.explain import explain
 from app.llm.extract import QUESTIONS, UnavailableExtractor
@@ -112,6 +115,7 @@ def commit(session, prefs, tour, data, request, notes=()):
     revision = session.revision + 1
     view = state_view(prefs, tour, data, revision, request.app.state.routing, request.app.state.explainer)
     view.notes = list(dict.fromkeys((*session.notes, *notes)))
+    session.tour_preferences, session.tour_vehicle, session.tour_selected_ids = prefs, None, ()
     session.preferences, session.tour, session.snapshot = prefs, tour, data
     session.revision = revision
     return view
@@ -129,7 +133,7 @@ def health(request: Request):
                   ) if isinstance(routing, (HttpRouteProvider, WalkingRouteProvider)) else "straight_line_estimate"
     info = request.app.state.provider_info
     return Health(ranking={"quality_weight": request.app.state.quality_weight},
-                  llm_budget=budget_snapshot(request),
+                  llm_budget=health_budget(request),
                   status="ok", dataset_loaded=bool(data.venues),
                   llm=llm_mode, llm_configured=(llm_mode != "unavailable" and not (
                       isinstance(extractor, RulesFirstExtractor) and isinstance(extractor.llm, UnavailableExtractor))),
@@ -150,7 +154,7 @@ def client_config(request: Request, response: Response):
     map_id = os.getenv('GOOGLE_MAPS_MAP_ID', '').strip()
     secrets = [os.getenv(name, '').strip() for name in ('GOOGLE_MAPS_SERVER_KEY', 'GEMINI_API_KEY', 'ORS_API_KEY')]
     ready = bool(key and map_id and not any(secret and (secret in key or secret in map_id) for secret in secrets))
-    return {'features': {'ui_v2': os.getenv('FOODTOUR_UI_V2', '').strip().casefold() in ('1', 'true', 'yes')},
+    return {'features': {'chat_v2': chat_enabled(), 'ui_v2': os.getenv('FOODTOUR_UI_V2', '').strip().casefold() in ('1', 'true', 'yes')},
         'maps': {'provider': 'google', 'status': 'ready' if ready else 'unavailable',
         'reason': None if ready else 'not_configured', 'js_api_key': key if ready else None,
         'map_id': map_id if ready else None, 'language': 'vi', 'region': 'VN',
@@ -248,14 +252,15 @@ def read_session(session_id: str, request: Request,
             if data.dataset_version != session.snapshot.dataset_version:
                 tour, notes = None, (CHANGED,)
             elif tour.stops:
-                rebuilt, why = engine.build_tour(data.venues, session.preferences,
-                    [s.venue_id for s in tour.stops], request.app.state.routing)
+                rebuilt, why = engine.build_tour(data.venues, (session.tour_preferences or session.preferences),
+                    [s.venue_id for s in tour.stops], routing_for(session.tour_vehicle, request.app.state.routing))
                 tour = rebuilt.with_locks(tour.locks) if rebuilt is not None and not why else None
                 if tour is None:
                     notes = (CHANGED,)
-        view = state_view(session.preferences, tour, data, session.revision, request.app.state.routing,
-                          request.app.state.explainer)
+        view = session_view(session, tour, data, request)
         view.notes = list(notes)
+        if chat_enabled():
+            view.chat = session.chat.to_json()
         return view
 
 
@@ -354,3 +359,83 @@ def replace(session_id: str, body: ReplaceRequest, request: Request,
         if not preserves_others:
             raise APIError(500, "internal_validation_failed", "Phương án thay thế không giữ các điểm đã khoá.")
         return commit(session, session.preferences, result.tour, data, request)
+
+
+def chat_enabled():
+    return os.getenv('FOODTOUR_CHAT_V2', '').strip().casefold() in ('1', 'true', 'yes')
+
+
+def health_budget(request):
+    info = budget_snapshot(request)
+    if info is not None:
+        info = dict(info, session_cap=request.app.state.llm_session_cap, reserve=request.app.state.llm_reserve)
+    return info
+
+
+def session_view(session, tour, data, request):
+    # A stale tour retains its original validation context until explicit replanning.
+    view = state_view(session.tour_preferences or session.preferences, tour, data, session.revision,
+                      routing_for(session.tour_vehicle, request.app.state.routing), request.app.state.explainer)
+    view.preferences = PreferencesSchema.from_domain(session.preferences)
+    view.missing_slots = engine.missing_slots(session.preferences)
+    view.questions = [QUESTIONS[m] for m in view.missing_slots if m in QUESTIONS]
+    return view
+
+
+def require_chat():
+    if not chat_enabled():
+        raise APIError(404, 'not_found', 'Chat is unavailable.')
+
+
+@router.post('/v1/sessions/{session_id}/chat', response_model=ChatTurn, response_model_exclude_unset=True,
+             dependencies=[Depends(require_chat)])
+def chat(session_id: str, body: ChatRequest, request: Request,
+         x_session_token: str | None = Header(default=None)):
+    with request.app.state.sessions.owned(session_id, x_session_token) as session:
+        request.app.state.sessions.check_revision(session, body.revision)
+        data = snapshot(request)
+        cached = request.app.state.chat_engine_cache
+        key = (data.dataset_version, data.dataset_source)
+        if cached is None or cached[0] != key:
+            cached = (key, ChatEngine(data.venues))
+            request.app.state.chat_engine_cache = cached
+        budget = budget_snapshot(request)
+        try:
+            try:
+                result = cached[1].handle(session.chat, session.preferences, text=body.text,
+                    action=body.action.model_dump(exclude_none=True) if body.action else None,
+                    llm=None, llm_status='exhausted' if budget and budget['exhausted'] else None)
+            except Exception:
+                raise APIError(500, 'internal_validation_failed', 'Unable to validate chat result.') from None
+            if result.error:
+                raise APIError(422, 'validation_error', 'Invalid chat action.')
+            prefs = PreferencesSchema.from_domain(result.prefs).domain()
+            encode_chat(result.state)
+            if result.plan_request:
+                ids = result.plan_request['venue_ids']
+                vehicle = result.state.profile['vehicle'].value
+                planned = plan_selected({v.id: v for v in data.venues}, ids, prefs, request.app.state.routing,
+                    vehicle=vehicle, quality_weight=request.app.state.quality_weight)
+                # plan_selected deliberately plans only the confirmed pool, without discovery filters.
+                plan_prefs = domain_replace(prefs, interests=(), max_stops=min(5, len(ids)))
+                if planned.stops and {s.venue_id for s in planned.stops} != set(ids):
+                    raise APIError(500, 'internal_validation_failed', 'Planner changed the selected venues.')
+                session.tour, session.snapshot = planned, data
+                session.tour_preferences, session.tour_vehicle = plan_prefs, vehicle
+                session.tour_selected_ids = tuple(ids)
+                result.blocks.append({'type': 'tour_ready', 'revision': session.revision + 1})
+            session.preferences, session.chat = prefs, result.state
+            session.revision += 1
+            view = session_view(session, session.tour, session.snapshot or data, request)
+            values = view.model_dump()
+            values.update(chat=result.state.to_json(), reply={'blocks': result.blocks},
+                turn={'intent': result.intent, 'tools': result.tools, 'understanding': result.understanding},
+                llm_calls=0, extraction_source='rules')
+            if budget:
+                values['llm_budget'] = {k: budget[k] for k in ('limit', 'remaining', 'exhausted')}
+            # Validate the entire output before the unit of work can commit.
+            return ChatTurn.model_validate(values)
+        except APIError:
+            raise
+        except Exception:
+            raise APIError(500, 'internal_validation_failed', 'Unable to validate chat result.') from None

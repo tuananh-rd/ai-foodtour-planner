@@ -34,6 +34,10 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     except ValueError:
         quality_weight = 1.0
     app.state.quality_weight = quality_weight if math.isfinite(quality_weight) and quality_weight >= 0 else 1.0
+    app.state.chat_understanding_provider = None  # C5 provider admission seam; C1 remains rules only.
+    app.state.chat_engine_cache = None
+    app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 6)
+    app.state.llm_reserve = setting("FOODTOUR_LLM_RESERVE", 3)
     app.state.venues = VenueRepository(data_path)
     llm_mode = os.getenv("FOODTOUR_LLM", "mock").strip().casefold()
     info = {"llm_provider": "rules", "llm_model": None, "explanation_provider": "template",

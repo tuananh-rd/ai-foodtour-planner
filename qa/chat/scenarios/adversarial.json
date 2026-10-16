@@ -449,7 +449,7 @@
         {
           "say": "đổi sang đi ô tô",
           "expect": {
-            "tour": "none",
+            "tour": "present",
             "llm_calls_max": 0,
             "state": {
               "profile.vehicle.value": "car"

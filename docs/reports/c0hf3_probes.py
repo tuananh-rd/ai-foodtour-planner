@@ -116,7 +116,7 @@ def main():
             report['api'].append(item)
         finally:
             test.doCleanups()
-    target = ROOT / 'docs/reports/CODEX_REVIEW_C0HF_3.probes.json'
+    target = ROOT / (sys.argv[1] if len(sys.argv) > 1 else 'docs/reports/CODEX_REVIEW_C0HF_3.probes.json')
     target.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding='utf-8')
     for key in ('old','new'):
         for row in report[key]:

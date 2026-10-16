@@ -1,6 +1,138 @@
 {
   "components": {
     "schemas": {
+      "Action": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "distance",
+                    "price",
+                    "rating",
+                    "audience",
+                    "meal",
+                    "parking_car",
+                    "outdoor",
+                    "capacity",
+                    "prep_time",
+                    "hours",
+                    "quiet",
+                    "crowd",
+                    "elderly"
+                  ],
+                  "type": "string"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteria"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatLocation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "option_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Option Id"
+          },
+          "patch": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatPatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "query": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "type": {
+            "enum": [
+              "add",
+              "remove",
+              "keep",
+              "compare",
+              "pick_option",
+              "confirm_yes",
+              "confirm_no",
+              "edit_profile",
+              "set_location",
+              "request_plan",
+              "search"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "venue_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue Id"
+          },
+          "venue_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 4,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue Ids"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "Action",
+        "type": "object"
+      },
       "Amenities": {
         "additionalProperties": false,
         "properties": {
@@ -20,6 +152,557 @@
           }
         },
         "title": "Amenities",
+        "type": "object"
+      },
+      "ChatLocation": {
+        "additionalProperties": false,
+        "properties": {
+          "district": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "District"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "maxLength": 60,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          }
+        },
+        "title": "ChatLocation",
+        "type": "object"
+      },
+      "ChatOption": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "option_id": {
+            "title": "Option Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "option_id",
+          "label"
+        ],
+        "title": "ChatOption",
+        "type": "object"
+      },
+      "ChatPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "audience": {
+            "anyOf": [
+              {
+                "enum": [
+                  "solo",
+                  "friends",
+                  "family"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience"
+          },
+          "budget_scope": {
+            "anyOf": [
+              {
+                "enum": [
+                  "per_person",
+                  "group"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Scope"
+          },
+          "budget_vnd": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Vnd"
+          },
+          "duration_min": {
+            "anyOf": [
+              {
+                "maximum": 720.0,
+                "minimum": 30.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Min"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "max_leg_min": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 3.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Leg Min"
+          },
+          "party_size": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Party Size"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time"
+          },
+          "vehicle": {
+            "anyOf": [
+              {
+                "enum": [
+                  "walk",
+                  "motorbike",
+                  "car",
+                  "taxi"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle"
+          }
+        },
+        "title": "ChatPatch",
+        "type": "object"
+      },
+      "ChatReply": {
+        "additionalProperties": false,
+        "properties": {
+          "blocks": {
+            "items": {
+              "discriminator": {
+                "mapping": {
+                  "clarify": "#/components/schemas/ClarifyBlock",
+                  "compare_table": "#/components/schemas/CompareTableBlock",
+                  "confirm_summary": "#/components/schemas/ConfirmSummaryBlock",
+                  "dish_suggestions": "#/components/schemas/DishSuggestionsBlock",
+                  "notice": "#/components/schemas/NoticeBlock",
+                  "text": "#/components/schemas/TextBlock",
+                  "tour_ready": "#/components/schemas/TourReadyBlock",
+                  "venue_cards": "#/components/schemas/VenueCardsBlock"
+                },
+                "propertyName": "type"
+              },
+              "oneOf": [
+                {
+                  "$ref": "#/components/schemas/TextBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/NoticeBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/DishSuggestionsBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/VenueCardsBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/CompareTableBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ClarifyBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/ConfirmSummaryBlock"
+                },
+                {
+                  "$ref": "#/components/schemas/TourReadyBlock"
+                }
+              ]
+            },
+            "title": "Blocks",
+            "type": "array"
+          }
+        },
+        "required": [
+          "blocks"
+        ],
+        "title": "ChatReply",
+        "type": "object"
+      },
+      "ChatRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Action"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision": {
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "required": [
+          "revision"
+        ],
+        "title": "ChatRequest",
+        "type": "object"
+      },
+      "ChatTurn": {
+        "additionalProperties": false,
+        "properties": {
+          "chat": {
+            "additionalProperties": true,
+            "title": "Chat",
+            "type": "object"
+          },
+          "dataset_source": {
+            "enum": [
+              "private",
+              "synthetic"
+            ],
+            "title": "Dataset Source",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          },
+          "extraction_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "rules",
+                  "llm",
+                  "cache"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Extraction Source"
+          },
+          "llm_budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MessageBudget"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "llm_calls": {
+            "default": 0,
+            "enum": [
+              0,
+              1
+            ],
+            "title": "Llm Calls",
+            "type": "integer"
+          },
+          "missing_slots": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing Slots",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "preferences": {
+            "$ref": "#/components/schemas/PreferencesSchema"
+          },
+          "questions": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Questions",
+            "type": "array"
+          },
+          "reply": {
+            "$ref": "#/components/schemas/ChatReply"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "tour": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TourView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "turn": {
+            "$ref": "#/components/schemas/ChatTurnInfo"
+          }
+        },
+        "required": [
+          "chat",
+          "preferences",
+          "missing_slots",
+          "questions",
+          "tour",
+          "revision",
+          "dataset_source",
+          "dataset_version",
+          "reply",
+          "turn"
+        ],
+        "title": "ChatTurn",
+        "type": "object"
+      },
+      "ChatTurnInfo": {
+        "additionalProperties": false,
+        "properties": {
+          "intent": {
+            "title": "Intent",
+            "type": "string"
+          },
+          "tools": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Tools",
+            "type": "array"
+          },
+          "understanding": {
+            "enum": [
+              "rules",
+              "llm",
+              "cache",
+              "action"
+            ],
+            "title": "Understanding",
+            "type": "string"
+          }
+        },
+        "required": [
+          "intent",
+          "tools",
+          "understanding"
+        ],
+        "title": "ChatTurnInfo",
+        "type": "object"
+      },
+      "ChatVenue": {
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "dish_tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dish Tags",
+            "type": "array"
+          },
+          "district": {
+            "title": "District",
+            "type": "string"
+          },
+          "hours": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Hours"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Price"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Rating"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "district",
+          "address",
+          "dish_tags",
+          "price",
+          "hours",
+          "rating"
+        ],
+        "title": "ChatVenue",
+        "type": "object"
+      },
+      "ClarifyBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "options": {
+            "items": {
+              "$ref": "#/components/schemas/ChatOption"
+            },
+            "maxItems": 4,
+            "title": "Options",
+            "type": "array"
+          },
+          "pending_id": {
+            "title": "Pending Id",
+            "type": "string"
+          },
+          "question": {
+            "title": "Question",
+            "type": "string"
+          },
+          "type": {
+            "const": "clarify",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "pending_id",
+          "question",
+          "options"
+        ],
+        "title": "ClarifyBlock",
         "type": "object"
       },
       "ClientConfig": {
@@ -49,6 +732,291 @@
           "privacy"
         ],
         "title": "ClientConfig",
+        "type": "object"
+      },
+      "CodeText": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "text"
+        ],
+        "title": "CodeText",
+        "type": "object"
+      },
+      "CompareCell": {
+        "additionalProperties": false,
+        "properties": {
+          "note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Note"
+          },
+          "status": {
+            "enum": [
+              "source",
+              "estimate",
+              "unknown"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "value",
+          "status"
+        ],
+        "title": "CompareCell",
+        "type": "object"
+      },
+      "CompareColumn": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "venue_id": {
+            "title": "Venue Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "label",
+          "venue_id",
+          "name"
+        ],
+        "title": "CompareColumn",
+        "type": "object"
+      },
+      "CompareCriterion": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "label"
+        ],
+        "title": "CompareCriterion",
+        "type": "object"
+      },
+      "CompareRow": {
+        "additionalProperties": false,
+        "properties": {
+          "cells": {
+            "items": {
+              "$ref": "#/components/schemas/CompareCell"
+            },
+            "title": "Cells",
+            "type": "array"
+          },
+          "criterion_id": {
+            "title": "Criterion Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "criterion_id",
+          "cells"
+        ],
+        "title": "CompareRow",
+        "type": "object"
+      },
+      "CompareTableBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "columns": {
+            "items": {
+              "$ref": "#/components/schemas/CompareColumn"
+            },
+            "title": "Columns",
+            "type": "array"
+          },
+          "criteria": {
+            "items": {
+              "$ref": "#/components/schemas/CompareCriterion"
+            },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "rows": {
+            "items": {
+              "$ref": "#/components/schemas/CompareRow"
+            },
+            "title": "Rows",
+            "type": "array"
+          },
+          "type": {
+            "const": "compare_table",
+            "title": "Type",
+            "type": "string"
+          },
+          "unsupported": {
+            "items": {
+              "$ref": "#/components/schemas/UnsupportedCriterion"
+            },
+            "title": "Unsupported",
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "criteria",
+          "columns",
+          "rows",
+          "unsupported"
+        ],
+        "title": "CompareTableBlock",
+        "type": "object"
+      },
+      "ConfirmSummaryBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/SummaryItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "missing": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Missing",
+            "type": "array"
+          },
+          "shortlist": {
+            "items": {
+              "$ref": "#/components/schemas/SummaryVenue"
+            },
+            "title": "Shortlist",
+            "type": "array"
+          },
+          "type": {
+            "const": "confirm_summary",
+            "title": "Type",
+            "type": "string"
+          },
+          "warnings": {
+            "items": {
+              "$ref": "#/components/schemas/CodeText"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "items",
+          "shortlist",
+          "missing",
+          "warnings"
+        ],
+        "title": "ConfirmSummaryBlock",
+        "type": "object"
+      },
+      "DishSuggestion": {
+        "additionalProperties": false,
+        "properties": {
+          "blurb": {
+            "title": "Blurb",
+            "type": "string"
+          },
+          "dish_group": {
+            "title": "Dish Group",
+            "type": "string"
+          },
+          "kind": {
+            "const": "general_knowledge",
+            "title": "Kind",
+            "type": "string"
+          },
+          "radius_m": {
+            "title": "Radius M",
+            "type": "integer"
+          },
+          "venue_count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue Count"
+          }
+        },
+        "required": [
+          "dish_group",
+          "blurb",
+          "venue_count",
+          "radius_m",
+          "kind"
+        ],
+        "title": "DishSuggestion",
+        "type": "object"
+      },
+      "DishSuggestionsBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/DishSuggestion"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "type": {
+            "const": "dish_suggestions",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "items"
+        ],
+        "title": "DishSuggestionsBlock",
         "type": "object"
       },
       "ErrorDetail": {
@@ -133,6 +1101,11 @@
       "FeaturesConfig": {
         "additionalProperties": false,
         "properties": {
+          "chat_v2": {
+            "default": false,
+            "title": "Chat V2",
+            "type": "boolean"
+          },
           "ui_v2": {
             "title": "Ui V2",
             "type": "boolean"
@@ -457,9 +1430,31 @@
             "title": "Remaining",
             "type": "integer"
           },
+          "reserve": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reserve"
+          },
           "resets_at": {
             "title": "Resets At",
             "type": "string"
+          },
+          "session_cap": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Session Cap"
           },
           "used": {
             "minimum": 0.0,
@@ -921,6 +1916,41 @@
         "title": "MessageRequest",
         "type": "object"
       },
+      "NoticeBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "level": {
+            "enum": [
+              "info",
+              "warning",
+              "safety"
+            ],
+            "title": "Level",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "notice",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "level",
+          "code",
+          "text"
+        ],
+        "title": "NoticeBlock",
+        "type": "object"
+      },
       "Origin": {
         "additionalProperties": false,
         "properties": {
@@ -1119,6 +2149,13 @@
             "maxItems": 10,
             "title": "Interests",
             "type": "array"
+          },
+          "max_leg_min": {
+            "default": 20,
+            "maximum": 60.0,
+            "minimum": 3.0,
+            "title": "Max Leg Min",
+            "type": "integer"
           },
           "max_stops": {
             "default": 3,
@@ -1487,6 +2524,18 @@
       "SessionView": {
         "additionalProperties": false,
         "properties": {
+          "chat": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Chat"
+          },
           "dataset_source": {
             "enum": [
               "private",
@@ -1692,6 +2741,101 @@
         "title": "StopView",
         "type": "object"
       },
+      "SummaryItem": {
+        "additionalProperties": false,
+        "properties": {
+          "editable": {
+            "title": "Editable",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "user",
+              "inferred",
+              "default",
+              "missing"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "value",
+          "status",
+          "editable"
+        ],
+        "title": "SummaryItem",
+        "type": "object"
+      },
+      "SummaryVenue": {
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "considering",
+              "kept"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "venue_id": {
+            "title": "Venue Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "venue_id",
+          "name",
+          "status"
+        ],
+        "title": "SummaryVenue",
+        "type": "object"
+      },
+      "TextBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "text": {
+            "title": "Text",
+            "type": "string"
+          },
+          "type": {
+            "const": "text",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "text"
+        ],
+        "title": "TextBlock",
+        "type": "object"
+      },
       "Totals": {
         "additionalProperties": false,
         "properties": {
@@ -1742,6 +2886,26 @@
           "leg_source"
         ],
         "title": "Totals",
+        "type": "object"
+      },
+      "TourReadyBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "type": {
+            "const": "tour_ready",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "revision"
+        ],
+        "title": "TourReadyBlock",
         "type": "object"
       },
       "TourView": {
@@ -1844,6 +3008,119 @@
           "locks"
         ],
         "title": "TourView",
+        "type": "object"
+      },
+      "UnsupportedCriterion": {
+        "additionalProperties": false,
+        "properties": {
+          "criterion": {
+            "title": "Criterion",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "criterion",
+          "text"
+        ],
+        "title": "UnsupportedCriterion",
+        "type": "object"
+      },
+      "VenueCard": {
+        "additionalProperties": false,
+        "properties": {
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M"
+          },
+          "distance_source": {
+            "enum": [
+              "straight_line_estimate",
+              "unknown"
+            ],
+            "title": "Distance Source",
+            "type": "string"
+          },
+          "flags": {
+            "items": {
+              "$ref": "#/components/schemas/CodeText"
+            },
+            "title": "Flags",
+            "type": "array"
+          },
+          "in_shortlist": {
+            "title": "In Shortlist",
+            "type": "boolean"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "venue": {
+            "$ref": "#/components/schemas/ChatVenue"
+          },
+          "why": {
+            "items": {
+              "$ref": "#/components/schemas/CodeText"
+            },
+            "title": "Why",
+            "type": "array"
+          }
+        },
+        "required": [
+          "label",
+          "venue",
+          "distance_m",
+          "distance_source",
+          "why",
+          "flags",
+          "in_shortlist"
+        ],
+        "title": "VenueCard",
+        "type": "object"
+      },
+      "VenueCardsBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "cards": {
+            "items": {
+              "$ref": "#/components/schemas/VenueCard"
+            },
+            "title": "Cards",
+            "type": "array"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "const": "venue_cards",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "cards"
+        ],
+        "title": "VenueCardsBlock",
         "type": "object"
       },
       "VenueList": {
@@ -3116,6 +4393,171 @@
           }
         },
         "summary": "Read Session"
+      }
+    },
+    "/v1/sessions/{session_id}/chat": {
+      "post": {
+        "operationId": "chat_v1_sessions__session_id__chat_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-session-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChatTurn"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Method Not Allowed"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Chat"
       }
     },
     "/v1/sessions/{session_id}/messages": {
