@@ -15,6 +15,7 @@ from app.api.schemas import (
     GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig, MapsLinksResponse,
 )
 from app.chat.engine import ChatEngine
+from app.chat.llm_understand import LLMUnderstander
 from app.chat.planning import plan_selected, routing_for
 from app.repositories.sessions import encode_chat
 from app.data import DatasetLoadError
@@ -398,13 +399,20 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         key = (data.dataset_version, data.dataset_source)
         if cached is None or cached[0] != key:
             cached = (key, ChatEngine(data.venues))
+            provider = request.app.state.chat_understanding_provider
+            if provider is not None and not request.app.state.chat_understander_injected:
+                request.app.state.chat_understander = LLMUnderstander.from_env(
+                    provider, provider.client.budget, gazetteer=cached[1].gz)
             request.app.state.chat_engine_cache = cached
         budget = budget_snapshot(request)
+        understander = request.app.state.chat_understander
+        exhausted = bool(budget and (budget["exhausted"] or budget["remaining"] <= request.app.state.llm_reserve))
         try:
             try:
                 result = cached[1].handle(session.chat, session.preferences, text=body.text,
                     action=body.action.model_dump(exclude_none=True) if body.action else None,
-                    llm=None, llm_status='exhausted' if budget and budget['exhausted'] else None)
+                    llm=understander.understand if understander is not None else None,
+                    llm_status='exhausted' if exhausted else None)
             except Exception:
                 raise APIError(500, 'internal_validation_failed', 'Unable to validate chat result.') from None
             if result.error:
@@ -430,7 +438,9 @@ def chat(session_id: str, body: ChatRequest, request: Request,
             values = view.model_dump()
             values.update(chat=result.state.to_json(), reply={'blocks': result.blocks},
                 turn={'intent': result.intent, 'tools': result.tools, 'understanding': result.understanding},
-                llm_calls=0, extraction_source='rules')
+                llm_calls=result.llm_calls,
+                extraction_source=result.understanding if result.understanding in ('llm', 'cache') else 'rules')
+            budget = budget_snapshot(request)
             if budget:
                 values['llm_budget'] = {k: budget[k] for k in ('limit', 'remaining', 'exhausted')}
             # Validate the entire output before the unit of work can commit.
