@@ -341,7 +341,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     if no and pending:
         return Understanding("CONFIRM_NO", confidence=0.85)
     crit = criteria_from(f)
-    if re.search(r"so sanh|\bso (?:ve|theo|voi)\b|\bdat\b.*\bcanh\b", f) or (len(refs) >= 2 and re.search(r"hon\b|hay\b|nao", f)) or \
+    if re.search(r"so sanh|\bso (?:ve|theo|voi)\b|\bdat\b.*\bcanh\b", f) or (len(refs) >= 2 and re.search(r"hon\b|hay\b|nao|\bso\b", f)) or \
             re.search(r"(?<!co )\bquan nao\b.*\b(?:gan|re|mat|tot|ngon|nhanh|yen|dong|it|nhieu)\b", f):
         only_unsup = crit and all(c in tools.UNSUPPORTED for c in crit)
         if only_unsup and not refs and not state.last_results and "so sanh" not in f:
