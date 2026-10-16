@@ -70,3 +70,14 @@ def allergen_excluded(v: Venue, allergies: tuple) -> bool:
 
 def unrecognised(allergies: tuple) -> list:
     return [a for a in allergies if not recognised(a)]
+
+
+def core_term(term: str):
+    """Longest lexicon phrase inside a user term, keeping the user's own spelling ("nhẹ cua" -> "cua")."""
+    words = term.split()
+    folded = [fold_uncached(w) for w in words]
+    for size in range(len(words), 0, -1):
+        for i in range(len(words) - size + 1):
+            if " ".join(folded[i:i + size]) in _BY_WORD:
+                return " ".join(words[i:i + size])
+    return None

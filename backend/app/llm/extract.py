@@ -92,9 +92,9 @@ def _money(u: str) -> Optional[int]:
 
 
 _ALLERGY_TRIGGER = re.compile(
-    r"(?:bị\s+|bi\s+)?(?:dị ứng|di ung|kiêng|kieng|không ăn được|khong an duoc|không thể ăn|khong the an)"
-    r"(?:\s+(?:với|voi))?\s+([^.;!?\n]+)")
-_AVOID_TRIGGER = re.compile(r"\b(?:không|khong|ko)\s+(?:ăn|an)\s+(?:được\s+|duoc\s+)?([^.;!?,\n]+)")
+    r"(?:bị\s+|bi\s+)?(?:dị ứng|di ung)(?:\s+(?:với|voi))?\s*([^.;!?\n]*)")
+# Taste-level avoidance ("không ăn (được) X", "kiêng X"): applied to diacritic-stripped text.
+_AVOID_TRIGGER = re.compile(r"\b(?:(?:khong|ko)\s+(?:the\s+)?an\s+(?:duoc\s+)?|kieng\s+)([^.;!?,\n]+)")
 _TERM_SPLIT = re.compile(r",|\bvà\b|\bva\b|\bhoặc\b|\bhoac\b|\bvới\b|\bvoi\b|\bnhưng\b|\bnhung\b|\bcòn\b|\bcon\b")
 _FILLER = re.compile(r"^(?:các|cac|món|mon|đồ|do|những|nhung|loại|loai|thịt|thit)\s+")
 _TRAILING = re.compile(r"\s+(?:nữa|nua|nhé|nhe|nha|thôi|thoi|ạ|a|đấy|day|luôn|luon|rồi|roi|xong|đó|do)$")
@@ -108,15 +108,26 @@ _STOP_AT = re.compile(r"\s+(?=\d|(?:người|nguoi|nhóm|nhom|ngân|ngan|mỗi|m
                       r"tại|tai|muốn|muon|đi|di|ăn|an)\b)")
 
 
-def _allergy_terms(chunk: str) -> list:
+_SEVERITY = re.compile(r"^(?:(?:nhẹ|nhe|nặng|nang|vừa|vua|ít|it|một chút|mot chut|chút|chut|hơi|hoi|rất|rat|bị|bi)\s+)+|"
+                       r"(?:\s+(?:nhẹ|nhe|nặng|nang|lắm|lam|một chút|mot chut|chút|chut))+$")
+
+
+def _allergy_terms(chunk: str, issues=None) -> list:
     out = []
     chunk = _STOP_AT.split(_TAGS.sub(" ", chunk), maxsplit=1)[0]  # "cua 4 người" -> "cua"
     for raw in _TERM_SPLIT.split(chunk):
         raw = re.sub(r"[^\w\s-]", "", raw)  # no markup/punctuation ever reaches user-visible notes
         term = _TRAILING.sub("", _FILLER.sub("", raw.strip(" \t-:")).strip()).strip()
-        if not term or _NOT_A_TERM.search(term) or term in ("gì", "gi", "gì cả", "gi ca"):
+        term = _SEVERITY.sub("", term).strip()
+        if not term or _NOT_A_TERM.search(term) or term in ("gì", "gi", "gì cả", "gi ca", "nhẹ", "nhe", "nặng", "nang", "vừa", "vua", "lắm", "lam", "ít", "it"):
             continue
-        term = " ".join(term.split()[:3])[:allergens.MAX_TERM_CHARS].strip()
+        core = allergens.core_term(term)  # "cua please execute" -> "cua"
+        if core:
+            term = core
+        elif len(term.split()) > 3 or len(term) > allergens.MAX_TERM_CHARS:
+            if issues is not None:
+                issues.append("long")
+            continue
         if term and term not in out:
             out.append(term)
     return out
@@ -125,16 +136,24 @@ def _allergy_terms(chunk: str) -> list:
 class MockExtractor:
     def _allergies(self, t, u, prior, upd, notes):
         """Allergy / avoidance statements must never be dropped silently (C0-HF)."""
-        found, cleared = [], []
+        found, cleared, issues = [], [], []
         for m in _ALLERGY_TRIGGER.finditer(t):
             before = t[max(0, m.start() - 16):m.start()]
-            terms = _allergy_terms(m.group(1))
+            terms = _allergy_terms(m.group(1), issues)
             if _REMOVER.search(before):
                 cleared += terms  # "hết dị ứng cua rồi": user retracts it
             elif _NEGATOR.search(before):
                 continue  # "không dị ứng …" states the absence of an allergy; nothing to record
             else:
                 found += terms
+                if not terms:
+                    issues.append("empty")
+        if "long" in issues:
+            notes.append("Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ "
+                         "(ví dụ: cua, tôm, lạc).")
+        elif "empty" in issues and not found:
+            notes.append("Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên "
+                         "(ví dụ: cua, tôm, sữa).")
         if cleared:
             keep = [a for a in prior.allergies
                     if all(allergens.fold_uncached(a) != allergens.fold_uncached(c) for c in cleared)]

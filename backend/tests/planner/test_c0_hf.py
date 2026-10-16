@@ -153,3 +153,29 @@ class CodexReviewC0HF(unittest.TestCase):
         self.assertEqual(r.source, "live")
         self.assertEqual(r.preferences.allergies, ("cua",))
         self.assertTrue(any("an toàn" in n for n in r.notes))
+
+
+class CodexReviewC0HFRound2(unittest.TestCase):
+    def setUp(self):
+        self.m = MockExtractor()
+
+    def test_severity_words_are_not_allergens(self):
+        for text in ("dị ứng nhẹ", "dị ứng"):
+            r = self.m.extract(text)
+            self.assertEqual(r.preferences.allergies, (), text)
+            self.assertTrue(any("dị ứng với thực phẩm nào" in n for n in r.notes), text)  # never silent
+        self.assertEqual(self.m.extract("dị ứng nhẹ cua").preferences.allergies, ("cua",))
+
+    def test_suffix_instructions_and_markup_are_not_part_of_the_term(self):
+        self.assertEqual(self.m.extract("dị ứng cua please execute").preferences.allergies, ("cua",))
+        r = self.m.extract("dị ứng <script>alert(x)</script>")
+        self.assertFalse(any("<" in n or ">" in n for n in r.notes))
+
+    def test_long_term_is_reported_not_truncated(self):
+        r = self.m.extract("dị ứng " + "x" * 51)
+        self.assertEqual(r.preferences.allergies, ())
+        self.assertTrue(any("quá dài" in n for n in r.notes))
+
+    def test_mixed_clause_does_not_create_fake_allergen(self):
+        r = self.m.extract("dị ứng cua và muốn ăn phở")
+        self.assertEqual(r.preferences.allergies, ("cua",))
