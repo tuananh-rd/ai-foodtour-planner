@@ -38,3 +38,8 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R1-5c fixes (R2-N01, F07, R2-N02) | Antigravity | In progress | ctx_39e1569598bf |
 | R1-5c fixes | Antigravity | Done, pending Codex re-review (ctx_38b3d834cc98) | 0b4ac0c (merged): Claude re-ran test_ui_v2 26/26, components 37/37, ui_kit 11/11, maps_links 33/33 on production scratch build |
 | GMAPS-URL-2b fixes | Antigravity | In progress | ctx_2702cc359456 |
+| Recovery 2026-10-16 (machine/network restart) | Claude | Done | Run rebound to coordinator terminal term_dafccc6b (consumer_generation 2); inbox 0; all earlier dispatches settled (none live); git clean at e165ac1 |
+| R1-REVIEW3 (Codex, 377f634) | Codex | DONE: REQUEST CHANGES | R2-N01 routing: provider total overrides explicit estimate/unknown stop legs (14/128 unsafe); F07 and R2-N02 FIXED; hours/price 768 combos 0 failures |
+| GMAPS-URL-2b (Antigravity, 97fbb55) | Antigravity | Done, pending Codex re-review | Claude re-ran test_maps_links_cdp 53/53, test_ui_v2 26/26, components 41/41, ui_kit 11/11 on production scratch build |
+| R1-5d routing evidence | Antigravity | In progress | ctx_787b3317690f (single task) |
+| GMAPS-REVIEW2 | Codex | In progress | first start ctx_734eaddfc1d3 failed at agent_readiness (Codex CLI update prompt; chose "Skip until next version", did NOT install updates); retry ctx_b9ba22972bcc turn observed |
