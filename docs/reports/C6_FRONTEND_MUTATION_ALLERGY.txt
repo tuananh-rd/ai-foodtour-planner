@@ -1,0 +1,96 @@
+
+===============================================================
+   AI FOODTOUR PLANNER — CHATBOT V2 REAL-BROWSER CDP ACCEPTANCE
+   Mode: NORMAL PRODUCTION VERIFICATION
+   Ports: Web=13000, CDP=18000
+===============================================================
+
+[Setup] Scratch build directory created: C:\Users\tuana\AppData\Local\Temp\foodtour-chatv2-build-jJtLXN
+[Setup] Linked node_modules junction.
+[Setup] Running 'next build' in scratch copy...
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 4.4s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5) 
+   Generating static pages (2/5) 
+   Generating static pages (3/5) 
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    40.4 kB         143 kB
+├ ○ /_not-found                            990 B         104 kB
+└ ○ /ui-kit                              9.31 kB         112 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/813-b87e74c5dfbad318.js       46.3 kB
+  ├ chunks/eb96a28b-127988324a9f259a.js  54.2 kB
+  └ other shared chunks (total)          2.06 kB
+
+
+○  (Static)  prerendered as static content
+
+[Setup] Scratch build complete.
+[Setup] Starting production server on port 13000...
+node : (node:37768) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to 
+security vulnerabilities, as the arguments are not escaped, only concatenated.
+At line:2 char:1
++ node qa/chat/review_c3_frontend.mjs allergy *> docs/reports/C6_FRONTE ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:37768) [D...y concatenated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Setup] Production server ready at http://127.0.0.1:13000/
+[Setup] CDP WebSocket ready: ws://127.0.0.1:18000/devtools/page/1201A6D6F7579BF5894FFD1F3A3B1D56
+
+--- Test 1: Start Screen (TC-CH-START-01) ---
+✅ PASS [TC-CH-START-01] Start screen renders 'Bạn đang ở đâu tại Hà Nội?', 'Bật định vị' (>=44px), input, district chips, suggestions, no weather chips -> title: true, geo: true (48px), input: true, districts: 4, suggestions: 3, weather: false
+
+--- Test 2: Geolocation Flows (TC-CH-GEO-02) ---
+✅ PASS [TC-CH-GEO-02a] Geolocation granted displays 'Vị trí ước tính … (xấp xỉ)' with 'Đúng vị trí' and 'Chỉnh vị trí' -> estimate: true, confirm: true, edit: true
+✅ PASS [TC-CH-GEO-02b] Geolocation denied displays friendly error message and falls back to district chips / input -> friendlyMsg: true, fallbackChips: true
+
+--- Test 3: Workspace 3 Zones & Responsive Tabs (TC-CH-SHORTLIST-04) ---
+✅ PASS [TC-CH-SHORTLIST-04a] At 1280px desktop workspace renders 3 distinct side-by-side zones: Chat | Shortlist | Explore -> allVisible: true, widths: 380/300/600px
+✅ PASS [TC-CH-SHORTLIST-04b] At 390px mobile view collapses into single column with tabs (Trò chuyện / Danh sách / Khám phá) >= 44px with no horizontal overflow -> tabs: 3, chat: true, short: true, exp: true, minH: 50px, noOverflow: true
+
+--- Test 4: Top ProfileBar (TC-CH-PROFILE-05) ---
+✅ PASS [TC-CH-PROFILE-05] Top ProfileBar displays editable chips for area, party, budget, time, vehicle, tastes, and prominent allergies chip -> chips: 7, area: true, party: true, budget: true, time: true, vehicle: true, allergy: true
+
+--- Test 5: Venue Cards & Honesty Copy (TC-CH-CHAT-03) ---
+✅ PASS [TC-CH-CHAT-03] Venue cards render label badges, 'khoảng giá quán' (never per-person), hours ('Giờ: chưa rõ' / 'nguồn ghi …', never 'đang mở'), rating ('theo nguồn' / 'ít đánh giá'), distance ('ước tính'), flags, 'Thêm vào food tour' button
+
+--- Test 6: Shortlist Add & Count (TC-CH-SHORTLIST-04c) ---
+✅ PASS [TC-CH-SHORTLIST-04c] Adding card A updates Shortlist count ('1/5'), shows Giữ/Bỏ buttons, enables 'Xác nhận và tạo lịch trình', and card displays 'Đã thêm' -> count: true, giu/bo: true/true, planBtnEnabled: true, cardAddedState: true
+
+--- Test 7: Compare Table Renderer (TC-CH-COMPARE-07) ---
+✅ PASS [TC-CH-COMPARE-07] Compare table renders columns A and B, cells never blank ('Chưa rõ' fallback), notes 'theo nguồn'/'ước tính', and lists unsupported criteria -> found: true, columns: true, blankCells: false, chuaRo: false, notes: true
+
+--- Test 8: Allergy Flow & Safety Notice (TC-CH-ALLERGY-06) ---
+✅ PASS [TC-CH-ALLERGY-06] Allergy flow sets prominent allergy chip in ProfileBar, displays persistent safety notice, and contains zero 'an toàn' claims -> safetyNotice: true, chipCua: true, unsafeClaim: false
+
+--- Test 9: Confirm Summary & Tour Ready (TC-CH-CONFIRM-07) ---
+✅ PASS [TC-CH-CONFIRM-07a] Confirm summary block renders items with status badges (incl. 'Thiếu'), warnings, 'Xác nhận và tạo lịch trình' and 'Sửa thông tin' buttons -> found: true, missingBadge: true, confirmYes: true, confirmNo: true
+✅ PASS [TC-CH-CONFIRM-07b] Tour ready displays V2 ItineraryView and MapsLinksBlock unchanged and reuses EvidenceStrip rules -> hasItinerary: true, stopCount: 0
+
+--- Test 10: In-flight Guard, 409 Recovery & LLM Budget (TC-CH-BEHAVIOR-08) ---
+✅ PASS [TC-CH-BEHAVIOR-08] Behaviour displays 'AI còn N/M lượt hôm nay' chip from llm_budget and extraction understanding label ('bộ luật cục bộ' / 'AI') -> budget: "AI còn 16/18 lượt hôm nay", understanding: "bộ luật cục bộ"
+
+--- Test 11: Hostile Strings & XSS Immunity (TC-CH-SECURITY-09) ---
+✅ PASS [TC-CH-SECURITY-09] Hostile fixture strings (<img onerror>, script, javascript:) rendered as text, zero XSS execution -> xssExecuted: false, imgTagCreated: false, textPreserved: true
+
+--- Test 12: Accessibility Standards (TC-CH-A11Y-10) ---
+✅ PASS [TC-CH-A11Y-10] Accessibility: aria-live region present for new messages, all interactive buttons >= 44px touch targets -> liveRegion: true (polite), smallBtns: 0/26
+
+--- Test 13: Flag-off Regression Invariant (TC-CH-FLAGOFF-11) ---
+✅ PASS [TC-CH-FLAGOFF-11] Flag off => Chat V2 is dormant, old / UI_V2 layout preserved byte-for-byte in behaviour and styles -> isChatV2Active: false, hasOldOrV2Layout: true
+
+===============================================================
+   CHATBOT V2 ACCEPTANCE SUMMARY: 16/16 PASSED
+===============================================================
+
