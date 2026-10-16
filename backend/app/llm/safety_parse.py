@@ -85,7 +85,7 @@ def _clean_words(rest: str) -> list:
 
 
 _TAIL_STOP = {"vao", "trong", "nha", "nhe", "nhen", "giup", "dum", "vi", "boi", "do", "hom", "nua", "di", "a", "ạ", "nhé", "nghen", "với",
-              "voi", "cho", "phan", "luon", "thoi", "nua"}
+              "voi", "cho", "phan", "luon", "thoi", "nua", "suot", "chuyen", "toan", "het", "dip", "tuan", "ngay"}
 
 
 def _cut_tail(rest: str) -> str:
