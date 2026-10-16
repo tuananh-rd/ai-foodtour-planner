@@ -57,3 +57,11 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C0-HF allergy/party hotfix in /messages | Claude + Codex | Proposed, awaiting approval |
 | C0-1 contract v1.8, C0-2 scenario corpus | Claude / Codex | Proposed |
 | C1 state+/chat, C2 tools+gazetteer+allergen map, C3 chat UI v2, C4 planner integration, C5 Gemini turn understanding, C6 E2E | Claude / Codex / Antigravity | Proposed |
+
+### Chatbot upgrade — IMPLEMENTATION STARTED (user approved plan + Q1–Q9, 2026-10-16)
+| ID | Owner | Status | Evidence |
+|---|---|---|---|
+| C0-HF-A allergy/party domain+extractor+planner | Claude | DONE (pending Codex review) | 90a419d: `Preferences.allergies`, `planner/allergens.py`, extractor allergy/avoid/party rules, engine unknown `allergy_ingredients`, contract v1.6.1; 16 new tests, full suite 299 OK; pre-change archive fails (module absent) |
+| C0-HF-B API schema + persistence + independent review + API tests | Codex | In progress | ctx_799eec8f21ff; gate: Claude re-runs suite on merged branch, behavioural fail-before; C0-1/C0-2 start only after acceptance |
+| C0-1 contract v1.8, C0-2 scenario corpus | Claude / Codex | Blocked on C0-HF acceptance | — |
+| C3 chat UI | Antigravity | Not started (by user decision; no early worker) | — |
