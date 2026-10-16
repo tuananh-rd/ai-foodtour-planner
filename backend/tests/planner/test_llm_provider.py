@@ -296,5 +296,20 @@ class RulesFirst(unittest.TestCase):
         self.assertEqual(remote.llm_calls, 1)
 
 
+class AdapterReportedAttempt(unittest.TestCase):
+    def test_provider_error_llm_calls_attribute_wins(self):
+        from app.llm.provider import RulesFirstExtractor
+
+        class RetryThenLocalQuota:
+            def complete(self, *a, **k):
+                e = ProviderError("quota")  # status None looks like a local refusal...
+                e.llm_calls = 1             # ...but the adapter already spent a transport attempt
+                raise e
+
+        r = RulesFirstExtractor(MockExtractor(), LLMExtractor(RetryThenLocalQuota())).extract(
+            "ăn bún chả quanh chợ Đồng Xuân 2 giờ")
+        self.assertEqual(r.llm_calls, 1)
+
+
 if __name__ == "__main__":
     unittest.main()

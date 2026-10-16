@@ -202,7 +202,11 @@ class LLMExtractor:
             raw = self.provider.complete(cleaned, _prior_json(p), deadline_s=self.deadline_s)
         except ProviderError as e:
             # A local budget refusal never reached the provider; anything else counts as one call.
-            calls = 0 if (e.kind == "quota" and e.status is None) else 1
+            attempted = getattr(e, "llm_calls", None)  # set by an adapter that already spent an attempt
+            if attempted is not None:
+                calls = 1 if attempted else 0
+            else:
+                calls = 0 if (e.kind == "quota" and e.status is None) else 1
             return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + (f"Nhà cung cấp LLM lỗi: {e.kind}.",),
                                     llm_calls=calls)
         except Exception:  # never leak provider internals or crash the request
