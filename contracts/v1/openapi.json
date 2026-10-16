@@ -3187,6 +3187,20 @@
             "title": "Audiences",
             "type": "array"
           },
+          "capacity_value": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Capacity Value"
+          },
           "city": {
             "title": "City",
             "type": "string"
@@ -3284,6 +3298,34 @@
             "title": "Online Only",
             "type": "boolean"
           },
+          "prep_time_max": {
+            "anyOf": [
+              {
+                "maximum": 1440.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Prep Time Max"
+          },
+          "prep_time_min": {
+            "anyOf": [
+              {
+                "maximum": 1440.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Prep Time Min"
+          },
           "price": {
             "$ref": "#/components/schemas/Price"
           },
@@ -3328,6 +3370,76 @@
           },
           "rating": {
             "$ref": "#/components/schemas/Rating"
+          },
+          "rating_location": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Location"
+          },
+          "rating_price": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Price"
+          },
+          "rating_quality": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Quality"
+          },
+          "rating_service": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Service"
+          },
+          "rating_space": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Space"
           },
           "source_fetched_at": {
             "anyOf": [
@@ -3414,6 +3526,20 @@
             "title": "Audiences",
             "type": "array"
           },
+          "capacity_value": {
+            "anyOf": [
+              {
+                "maximum": 100000.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Capacity Value"
+          },
           "city": {
             "title": "City",
             "type": "string"
@@ -3475,11 +3601,109 @@
             "title": "Online Only",
             "type": "boolean"
           },
+          "prep_time_max": {
+            "anyOf": [
+              {
+                "maximum": 1440.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Prep Time Max"
+          },
+          "prep_time_min": {
+            "anyOf": [
+              {
+                "maximum": 1440.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Prep Time Min"
+          },
           "price": {
             "$ref": "#/components/schemas/Price"
           },
           "rating": {
             "$ref": "#/components/schemas/Rating"
+          },
+          "rating_location": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Location"
+          },
+          "rating_price": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Price"
+          },
+          "rating_quality": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Quality"
+          },
+          "rating_service": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Service"
+          },
+          "rating_space": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "theo ngu?n",
+            "title": "Rating Space"
           },
           "source_fetched_at": {
             "anyOf": [

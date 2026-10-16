@@ -43,7 +43,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-002",
@@ -86,7 +92,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-003",
@@ -130,7 +142,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-004",
@@ -171,7 +189,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-005",
@@ -213,7 +237,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-006",
@@ -255,7 +285,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-007",
@@ -298,7 +334,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-008",
@@ -341,7 +383,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-009",
@@ -385,7 +433,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-010",
@@ -426,7 +480,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-011",
@@ -469,7 +529,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-012",
@@ -512,7 +578,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-013",
@@ -555,7 +627,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-014",
@@ -598,7 +676,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-015",
@@ -642,7 +726,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-016",
@@ -683,7 +773,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-017",
@@ -725,7 +821,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-018",
@@ -767,7 +869,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-019",
@@ -810,7 +918,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-020",
@@ -853,7 +967,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-021",
@@ -897,7 +1017,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-022",
@@ -938,7 +1064,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-023",
@@ -980,7 +1112,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-024",
@@ -1022,7 +1160,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-025",
@@ -1065,7 +1209,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-026",
@@ -1109,7 +1259,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-027",
@@ -1150,7 +1306,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-028",
@@ -1193,7 +1355,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-029",
@@ -1235,7 +1403,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-030",
@@ -1277,7 +1451,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-031",
@@ -1320,7 +1500,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-032",
@@ -1364,7 +1550,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-033",
@@ -1405,7 +1597,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-034",
@@ -1448,7 +1646,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-035",
@@ -1491,7 +1695,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-036",
@@ -1534,7 +1744,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-037",
@@ -1577,7 +1793,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-038",
@@ -1621,7 +1843,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-039",
@@ -1662,7 +1890,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-040",
@@ -1705,7 +1939,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-041",
@@ -1747,7 +1987,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-042",
@@ -1789,7 +2035,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-043",
@@ -1832,7 +2084,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-044",
@@ -1876,7 +2134,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-045",
@@ -1917,7 +2181,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-046",
@@ -1960,7 +2230,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-047",
@@ -2002,7 +2278,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-048",
@@ -2044,7 +2326,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-049",
@@ -2088,7 +2376,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-050",
@@ -2129,7 +2423,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-051",
@@ -2172,7 +2472,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-052",
@@ -2215,7 +2521,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-053",
@@ -2257,7 +2569,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-054",
@@ -2299,7 +2617,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-055",
@@ -2343,7 +2667,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-056",
@@ -2384,7 +2714,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-057",
@@ -2427,7 +2763,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-058",
@@ -2470,7 +2812,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-059",
@@ -2513,7 +2861,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-060",
@@ -2556,7 +2910,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-061",
@@ -2600,7 +2960,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-062",
@@ -2641,7 +3007,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-063",
@@ -2684,7 +3056,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-064",
@@ -2727,7 +3105,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-065",
@@ -2769,7 +3153,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-066",
@@ -2811,7 +3201,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-067",
@@ -2855,7 +3251,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-068",
@@ -2896,7 +3298,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-069",
@@ -2939,7 +3347,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-070",
@@ -2982,7 +3396,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-071",
@@ -3024,7 +3444,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-072",
@@ -3066,7 +3492,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-073",
@@ -3107,7 +3539,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-074",
@@ -3150,7 +3588,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-075",
@@ -3193,7 +3637,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-076",
@@ -3236,7 +3686,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-077",
@@ -3278,7 +3734,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-078",
@@ -3321,7 +3783,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-079",
@@ -3362,7 +3830,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-080",
@@ -3405,7 +3879,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-081",
@@ -3448,7 +3928,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-082",
@@ -3491,7 +3977,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-083",
@@ -3534,7 +4026,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-084",
@@ -3578,7 +4076,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-085",
@@ -3619,7 +4123,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-086",
@@ -3662,7 +4172,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-087",
@@ -3705,7 +4221,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-088",
@@ -3748,7 +4270,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-089",
@@ -3790,7 +4318,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-090",
@@ -3833,7 +4367,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-091",
@@ -3874,7 +4414,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-092",
@@ -3917,7 +4463,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-093",
@@ -3960,7 +4512,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-094",
@@ -4003,7 +4561,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-095",
@@ -4045,7 +4609,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-096",
@@ -4088,7 +4658,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-097",
@@ -4131,7 +4707,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-098",
@@ -4174,7 +4756,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-099",
@@ -4217,7 +4805,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-100",
@@ -4260,7 +4854,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-101",
@@ -4303,7 +4903,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-102",
@@ -4343,7 +4949,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-103",
@@ -4386,7 +4998,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-104",
@@ -4429,7 +5047,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-105",
@@ -4472,7 +5096,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-106",
@@ -4515,7 +5145,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-107",
@@ -4559,7 +5195,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-108",
@@ -4600,7 +5242,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-109",
@@ -4643,7 +5291,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-110",
@@ -4686,7 +5340,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-111",
@@ -4729,7 +5389,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-112",
@@ -4772,7 +5438,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-113",
@@ -4815,7 +5487,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-114",
@@ -4855,7 +5533,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-115",
@@ -4898,7 +5582,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-116",
@@ -4941,7 +5631,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-117",
@@ -4984,7 +5680,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-118",
@@ -5027,7 +5729,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-119",
@@ -5070,7 +5778,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-120",
@@ -5110,7 +5824,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-121",
@@ -5153,7 +5873,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-122",
@@ -5196,7 +5922,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-123",
@@ -5239,7 +5971,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-124",
@@ -5283,7 +6021,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-125",
@@ -5323,7 +6067,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-126",
@@ -5365,7 +6115,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-127",
@@ -5408,7 +6164,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-128",
@@ -5451,7 +6213,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-129",
@@ -5494,7 +6262,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-130",
@@ -5538,7 +6312,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-131",
@@ -5579,7 +6359,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-132",
@@ -5622,7 +6408,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-133",
@@ -5665,7 +6457,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-134",
@@ -5708,7 +6506,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-135",
@@ -5751,7 +6555,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-136",
@@ -5795,7 +6605,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-137",
@@ -5835,7 +6651,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-138",
@@ -5877,7 +6699,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   },
   {
    "id": "CHT-139",
@@ -5920,7 +6748,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 6.1,
+   "rating_location": 6.3,
+   "rating_service": 6.5,
+   "rating_space": 6.7,
+   "rating_price": 6.9
   },
   {
    "id": "CHT-140",
@@ -5963,7 +6797,13 @@
    "amenities_no": [],
    "capacity_value": null,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": 7.0,
+   "rating_location": 7.2,
+   "rating_service": 7.4,
+   "rating_space": 7.6,
+   "rating_price": 7.8
   },
   {
    "id": "CHT-141",
@@ -6006,7 +6846,13 @@
    "amenities_no": [],
    "capacity_value": 20,
    "prep_time_min": 5,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 15,
+   "rating_quality": 7.7,
+   "rating_location": 7.9,
+   "rating_service": 8.1,
+   "rating_space": 8.3,
+   "rating_price": 8.5
   },
   {
    "id": "CHT-142",
@@ -6050,7 +6896,13 @@
    "amenities_no": [],
    "capacity_value": 40,
    "prep_time_min": 10,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 20,
+   "rating_quality": 8.4,
+   "rating_location": 8.6,
+   "rating_service": 8.8,
+   "rating_space": 9.0,
+   "rating_price": 9.2
   },
   {
    "id": "CHT-143",
@@ -6090,7 +6942,13 @@
    "amenities_no": [],
    "capacity_value": 80,
    "prep_time_min": 15,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": 25,
+   "rating_quality": 8.9,
+   "rating_location": 9.1,
+   "rating_service": 9.3,
+   "rating_space": 9.5,
+   "rating_price": 9.7
   },
   {
    "id": "CHT-144",
@@ -6132,7 +6990,13 @@
    "amenities_no": [],
    "capacity_value": 120,
    "prep_time_min": null,
-   "source_fetched_at": "2026-10-01T00:00:00Z"
+   "source_fetched_at": "2026-10-01T00:00:00Z",
+   "prep_time_max": null,
+   "rating_quality": null,
+   "rating_location": null,
+   "rating_service": null,
+   "rating_space": null,
+   "rating_price": null
   }
  ]
 }

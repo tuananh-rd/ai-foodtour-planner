@@ -192,6 +192,14 @@ class VenueView(Model):
     source_url: str
     dish_tags: list[str]
     rating: Rating = Field(default_factory=Rating)
+    capacity_value: int | None = Field(default=None, ge=1, le=100000, description="theo ngu?n")
+    prep_time_min: int | None = Field(default=None, ge=0, le=1440, description="theo ngu?n")
+    prep_time_max: int | None = Field(default=None, ge=0, le=1440, description="theo ngu?n")
+    rating_quality: float | None = Field(default=None, ge=0, le=5, description="theo ngu?n")
+    rating_location: float | None = Field(default=None, ge=0, le=5, description="theo ngu?n")
+    rating_service: float | None = Field(default=None, ge=0, le=5, description="theo ngu?n")
+    rating_space: float | None = Field(default=None, ge=0, le=5, description="theo ngu?n")
+    rating_price: float | None = Field(default=None, ge=0, le=5, description="theo ngu?n")
     suitable_meals: list[str] = Field(default_factory=list)
     audiences: list[str] = Field(default_factory=list)
     cuisine_styles: list[str] = Field(default_factory=list)
