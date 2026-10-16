@@ -1025,6 +1025,375 @@ async function runComponentTests() {
     'Mutation sensitivity mathematically demonstrated'
   );
 
+  // Helpers for route verification assertions:
+  const hasProviderClaim = (html) =>
+    html.includes('Bằng chứng đầy đủ') ||
+    html.includes('tuyến đường thực tế') ||
+    html.includes(COPY_ROUTE_PROVIDER);
+
+  const hasEstimateDisclosure = (html) =>
+    html.includes(COPY_ROUTE_ESTIMATE) &&
+    html.includes('tuyến đi thực tế') &&
+    !html.includes('Bằng chứng đầy đủ') &&
+    !html.includes('tuyến đường thực tế') &&
+    !html.includes(COPY_ROUTE_PROVIDER);
+
+  // TC-EVID-07: Contradictory total-vs-stop sources
+  // When totals.leg_source disagrees with stops' leg sources, stay conservative.
+  const tourTotalEstimateStopsProvider = {
+    status: 'verified_feasible',
+    unknowns: [],
+    totals: { leg_source: 'straight_line_estimate' },
+    stops: [
+      {
+        venue_id: 'SYN-001',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 5, km: 0.3, source: 'provider_route' }
+      },
+      {
+        venue_id: 'SYN-002',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 7, km: 0.4, source: 'provider_route' }
+      }
+    ]
+  };
+  const htmlTotalEstimateStopsProvider = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourTotalEstimateStopsProvider, initialExpanded: true })
+  );
+
+  const tourTotalUnknownStopsProvider = {
+    ...tourTotalEstimateStopsProvider,
+    totals: { leg_source: 'unknown' }
+  };
+  const htmlTotalUnknownStopsProvider = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourTotalUnknownStopsProvider, initialExpanded: true })
+  );
+
+  const tourTotalProviderStopsEstimate = {
+    status: 'verified_feasible',
+    unknowns: [],
+    totals: { leg_source: 'provider_route' },
+    stops: [
+      {
+        venue_id: 'SYN-001',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 5, km: 0.3, source: 'straight_line_estimate' }
+      },
+      {
+        venue_id: 'SYN-002',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 7, km: 0.4, source: 'straight_line_estimate' }
+      }
+    ]
+  };
+  const htmlTotalProviderStopsEstimate = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourTotalProviderStopsEstimate, initialExpanded: true })
+  );
+
+  record(
+    'TC-EVID-07',
+    'Contradictory total-vs-stop sources stay conservative (never claim verified route)',
+    hasEstimateDisclosure(htmlTotalEstimateStopsProvider) &&
+      hasEstimateDisclosure(htmlTotalUnknownStopsProvider) &&
+      hasEstimateDisclosure(htmlTotalProviderStopsEstimate),
+    'Total-vs-stop contradictions properly reject provider route claims'
+  );
+
+  // TC-EVID-08: Mixed stop sources & exact Codex reproduction
+  // Total is provider_route, stop 0 is provider_route, but stop 1 is straight_line_estimate or unknown.
+  const tourCodexReproEstimate = {
+    status: 'verified_feasible',
+    unknowns: [],
+    totals: { leg_source: 'provider_route' },
+    stops: [
+      {
+        venue_id: 'SYN-001',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 5, km: 0.3, source: 'provider_route' }
+      },
+      {
+        venue_id: 'SYN-002',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 7, km: 0.4, source: 'straight_line_estimate' }
+      }
+    ]
+  };
+  const htmlCodexReproEstimate = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourCodexReproEstimate, initialExpanded: true })
+  );
+
+  const tourCodexReproUnknown = {
+    ...tourCodexReproEstimate,
+    stops: [
+      tourCodexReproEstimate.stops[0],
+      {
+        ...tourCodexReproEstimate.stops[1],
+        leg_from_previous: { minutes: null, km: 0.4, source: 'unknown' }
+      }
+    ]
+  };
+  const htmlCodexReproUnknown = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourCodexReproUnknown, initialExpanded: true })
+  );
+
+  record(
+    'TC-EVID-08',
+    'Mixed stop sources (exact Codex reproduction) reject provider claims and render estimate disclosure',
+    hasEstimateDisclosure(htmlCodexReproEstimate) &&
+      hasEstimateDisclosure(htmlCodexReproUnknown),
+    'Codex reproduction mixed stop cases properly rendered as conservative estimates'
+  );
+
+  // TC-EVID-09: First-leg fallback (origin -> first stop leg)
+  // Stop 0 leg source must not be bypassed when totals are omitted or stops.slice(1) is inspected.
+  const tourFirstLegEstimate = {
+    status: 'verified_feasible',
+    unknowns: [],
+    totals: {}, // total omitted
+    stops: [
+      {
+        venue_id: 'SYN-001',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 5, km: 0.3, source: 'straight_line_estimate' }
+      },
+      {
+        venue_id: 'SYN-002',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: { minutes: 7, km: 0.4, source: 'provider_route' }
+      }
+    ]
+  };
+  const htmlFirstLegEstimate = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourFirstLegEstimate, initialExpanded: true })
+  );
+
+  const tourFirstLegUnknown = {
+    ...tourFirstLegEstimate,
+    stops: [
+      {
+        ...tourFirstLegEstimate.stops[0],
+        leg_from_previous: { minutes: null, km: 0.3, source: 'unknown' }
+      },
+      tourFirstLegEstimate.stops[1]
+    ]
+  };
+  const htmlFirstLegUnknown = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourFirstLegUnknown, initialExpanded: true })
+  );
+
+  record(
+    'TC-EVID-09',
+    'First-leg fallback: origin-to-first-stop leg is strictly verified and never skipped',
+    hasEstimateDisclosure(htmlFirstLegEstimate) &&
+      hasEstimateDisclosure(htmlFirstLegUnknown),
+    'Origin-to-first-stop leg conservatively enforced'
+  );
+
+  // TC-EVID-10: Missing-only handling
+  // If totals and stop legs are missing/empty, never claim provider route.
+  const tourMissingLegSources = {
+    status: 'verified_feasible',
+    unknowns: [],
+    totals: {},
+    stops: [
+      {
+        venue_id: 'SYN-001',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: {}
+      },
+      {
+        venue_id: 'SYN-002',
+        hours: { status: 'verified', open_at_arrival: true },
+        price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+        leg_from_previous: {}
+      }
+    ]
+  };
+  const htmlMissingLegSources = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourMissingLegSources, initialExpanded: true })
+  );
+
+  const tourEmptyStops = {
+    status: 'verified_feasible',
+    unknowns: [],
+    totals: {},
+    stops: []
+  };
+  const htmlEmptyStops = renderToStaticMarkup(
+    React.createElement(EvidenceStrip, { tour: tourEmptyStops, initialExpanded: true })
+  );
+
+  record(
+    'TC-EVID-10',
+    'Missing-only handling: missing total and stop leg sources safely default to conservative copy',
+    !hasProviderClaim(htmlMissingLegSources) &&
+      !hasProviderClaim(htmlEmptyStops),
+    'Missing-only evidence safely defaults to unverified'
+  );
+
+  // TC-EVID-11: 4x4x4x2 matrix (total x first stop x second stop x route-unknown)
+  // 128 combinations with ZERO unsafe claims.
+  const TOTAL_SOURCES = ['provider_route', 'straight_line_estimate', 'unknown', undefined];
+  const STOP0_SOURCES = ['provider_route', 'straight_line_estimate', 'unknown', undefined];
+  const STOP1_SOURCES = ['provider_route', 'straight_line_estimate', 'unknown', undefined];
+  const ROUTE_UNKNOWNS = [false, true];
+
+  let matrixTotalCases = 0;
+  let unsafeClaims = 0;
+  let safeProviderClaims = 0;
+  let safeConservativeFallbacks = 0;
+
+  for (const totalSrc of TOTAL_SOURCES) {
+    for (const s0Src of STOP0_SOURCES) {
+      for (const s1Src of STOP1_SOURCES) {
+        for (const routeUnk of ROUTE_UNKNOWNS) {
+          matrixTotalCases++;
+          const tour = {
+            status: 'verified_feasible',
+            unknowns: routeUnk ? ['route'] : [],
+            totals: totalSrc !== undefined ? { leg_source: totalSrc } : {},
+            stops: [
+              {
+                venue_id: 'SYN-001',
+                hours: { status: 'verified', open_at_arrival: true },
+                price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+                ...(s0Src !== undefined ? { leg_from_previous: { source: s0Src } } : { leg_from_previous: {} })
+              },
+              {
+                venue_id: 'SYN-002',
+                hours: { status: 'verified', open_at_arrival: true },
+                price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+                ...(s1Src !== undefined ? { leg_from_previous: { source: s1Src } } : { leg_from_previous: {} })
+              }
+            ],
+            // Non-frozen tour.legs is intentionally present with provider_route to assert it is IGNORED:
+            legs: [
+              { minutes: 5, km: 0.3, source: 'provider_route' },
+              { minutes: 7, km: 0.4, source: 'provider_route' }
+            ]
+          };
+
+          const html = renderToStaticMarkup(
+            React.createElement(EvidenceStrip, { tour, initialExpanded: true })
+          );
+          const claimsProvider = hasProviderClaim(html);
+
+          // Codex report definition of unsafe claim (CODEX_REVIEW_R1_FRONTEND_3 line 69):
+          // "Unsafe means provider copy despite at least one explicit estimate/unknown source or aggregate route unknown."
+          const hasExplicitEstimateOrUnknown =
+            totalSrc === 'straight_line_estimate' ||
+            totalSrc === 'unknown' ||
+            s0Src === 'straight_line_estimate' ||
+            s0Src === 'unknown' ||
+            s1Src === 'straight_line_estimate' ||
+            s1Src === 'unknown';
+
+          if (claimsProvider && (routeUnk || hasExplicitEstimateOrUnknown)) {
+            unsafeClaims++;
+          } else if (claimsProvider) {
+            safeProviderClaims++;
+          } else {
+            safeConservativeFallbacks++;
+          }
+        }
+      }
+    }
+  }
+
+  record(
+    'TC-EVID-11',
+    '4x4x4x2 matrix (128 combinations): zero unsafe claims across all routing combinations',
+    matrixTotalCases === 128 &&
+      unsafeClaims === 0 &&
+      safeProviderClaims === 2 &&
+      safeConservativeFallbacks === 126,
+    `128 matrix cases: ${matrixTotalCases} evaluated, unsafeClaims=${unsafeClaims}, safeProviderClaims=${safeProviderClaims}, safeFallbacks=${safeConservativeFallbacks}`
+  );
+
+  // TC-EVID-12: Mutation check & fail-before verification for routing logic
+  // Proves that loosening the predicate (e.g. 97fbb55 logic or checking totals only) fails the suite.
+  const loosened97fbb55Predicate = (tour) => {
+    const unknowns = Array.isArray(tour?.unknowns) ? tour.unknowns : [];
+    const stops = Array.isArray(tour?.stops) ? tour.stops : [];
+    const legs = Array.isArray(tour?.legs) ? tour.legs : [];
+    const routeUnknown =
+      unknowns.includes('route') ||
+      tour?.totals?.leg_source === 'straight_line_estimate' ||
+      tour?.totals?.leg_source === 'unknown';
+    return (
+      !routeUnknown &&
+      (tour?.totals?.leg_source === 'provider_route' ||
+        (legs.length > 0 && legs.every((l) => l.source === 'provider_route')) ||
+        (stops.length > 1 && stops.slice(1).every((s) => s.leg_from_previous?.source === 'provider_route')))
+    );
+  };
+
+  // Evaluate loosened 97fbb55 logic against Codex reproduction:
+  const loosenedReproClaimsProvider = loosened97fbb55Predicate(tourCodexReproEstimate);
+
+  // Evaluate loosened 97fbb55 logic against 128 matrix:
+  let loosenedUnsafeCount = 0;
+  for (const totalSrc of TOTAL_SOURCES) {
+    for (const s0Src of STOP0_SOURCES) {
+      for (const s1Src of STOP1_SOURCES) {
+        for (const routeUnk of ROUTE_UNKNOWNS) {
+          const tour = {
+            unknowns: routeUnk ? ['route'] : [],
+            totals: totalSrc !== undefined ? { leg_source: totalSrc } : {},
+            stops: [
+              { leg_from_previous: s0Src !== undefined ? { source: s0Src } : {} },
+              { leg_from_previous: s1Src !== undefined ? { source: s1Src } : {} }
+            ]
+          };
+          const claims = loosened97fbb55Predicate(tour);
+          const hasExplicitEstimateOrUnknown =
+            totalSrc === 'straight_line_estimate' ||
+            totalSrc === 'unknown' ||
+            s0Src === 'straight_line_estimate' ||
+            s0Src === 'unknown' ||
+            s1Src === 'straight_line_estimate' ||
+            s1Src === 'unknown';
+          if (claims && (routeUnk || hasExplicitEstimateOrUnknown)) {
+            loosenedUnsafeCount++;
+          }
+        }
+      }
+    }
+  }
+
+  // Strict predicate used in current EvidenceStrip:
+  const strictPredicate = (tour) => {
+    const unknowns = Array.isArray(tour?.unknowns) ? tour.unknowns : [];
+    const stops = Array.isArray(tour?.stops) ? tour.stops : [];
+    const totalLegSource = tour?.totals?.leg_source;
+    const totalIsPresent = totalLegSource != null && totalLegSource !== '';
+    const totalIsProvider = totalLegSource === 'provider_route';
+    const totalMatches = !totalIsPresent || totalIsProvider;
+    const allStopsLegProvider =
+      stops.length > 0 &&
+      stops.every((s) => s?.leg_from_previous?.source === 'provider_route');
+    return !unknowns.includes('route') && totalMatches && allStopsLegProvider;
+  };
+  const strictReproClaimsProvider = strictPredicate(tourCodexReproEstimate);
+
+  record(
+    'TC-EVID-12',
+    'Mutation check: loosened 97fbb55 predicate produces 14 unsafe claims and fails Codex repro, while strict predicate passes',
+    loosenedReproClaimsProvider === true &&
+      loosenedUnsafeCount === 14 &&
+      strictReproClaimsProvider === false,
+    `Loosened logic unsafe count=${loosenedUnsafeCount} (fails on 97fbb55); strict predicate safe=true`
+  );
+
   console.log('\n===============================================================');
   console.log(`   COMPONENT TESTS SUMMARY: ${results.filter((r) => r.passed).length}/${results.length} PASSED`);
   console.log('===============================================================\n');

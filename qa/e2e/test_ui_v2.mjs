@@ -669,6 +669,133 @@ async function run() {
       `headerHasUnknownHours: ${stripContradictoryDOM.headerHasUnknownHours}, detailsHasVerifiedClaim: ${stripContradictoryDOM.detailsHasVerifiedClaim}`
     );
 
+    // Exact Codex browser reproduction (TC-V2-09e5):
+    // Provider total + first stop provider_route + second stop straight_line_estimate
+    await ev(`(() => {
+      window.__MOCK_NEXT_TOUR = {
+        revision: 5,
+        tour: {
+          status: 'verified_feasible',
+          unknowns: [],
+          totals: { leg_source: 'provider_route', walk_minutes: 12, venue_range_upper_sum_vnd: 80000 },
+          stops: [
+            {
+              id: 'STOP-1',
+              venue_id: 'SYN-001',
+              name: '[SYNTHETIC] Quán 1',
+              hours: { status: 'verified', display: '08:00 - 22:00', open_at_arrival: true },
+              price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+              leg_from_previous: { minutes: 5, km: 0.3, source: 'provider_route' }
+            },
+            {
+              id: 'STOP-2',
+              venue_id: 'SYN-002',
+              name: '[SYNTHETIC] Quán 2',
+              hours: { status: 'verified', display: '08:00 - 22:00', open_at_arrival: true },
+              price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+              leg_from_previous: { minutes: 7, km: 0.4, source: 'straight_line_estimate' }
+            }
+          ]
+        }
+      };
+      document.querySelector('[data-plan-tour-button]')?.click();
+    })()`);
+    await sleep(400);
+
+    // Ensure evidence strip details are expanded
+    await ev(`(() => {
+      const btn = document.querySelector('[data-evidence-strip] button');
+      if (btn && btn.getAttribute('aria-expanded') !== 'true') {
+        btn.click();
+      }
+    })()`);
+    await sleep(250);
+
+    const stripCodexReproDOM = await ev(`(() => {
+      const strip = document.querySelector('[data-evidence-strip]');
+      const headerText = strip?.querySelector('button')?.innerText || '';
+      const details = document.querySelector('#evidence-strip-details')?.innerText || '';
+      return {
+        headerHasUnknownRoute: headerText.includes('tuyến đi thực tế'),
+        headerHasVerifiedClaim: headerText.includes('Bằng chứng đầy đủ') || headerText.includes('tuyến đường thực tế'),
+        detailsHasProviderClaim: details.includes('Tuyến đường và thời gian đi bộ thực tế được tính toán từ dịch vụ bản đồ số.'),
+        detailsHasEstimateNotice: details.includes('Khoảng cách và thời gian di chuyển là ước tính đường chim bay nội bộ của hệ thống (chưa có tuyến thực tế).'),
+      };
+    })()`);
+
+    record(
+      'TC-V2-09e5',
+      'DOM EvidenceStrip exact Codex browser repro (provider total + second leg estimate) rejects verified claim (R2-N01)',
+      stripCodexReproDOM.headerHasUnknownRoute &&
+        !stripCodexReproDOM.headerHasVerifiedClaim &&
+        !stripCodexReproDOM.detailsHasProviderClaim &&
+        stripCodexReproDOM.detailsHasEstimateNotice,
+      `headerHasUnknownRoute: ${stripCodexReproDOM.headerHasUnknownRoute}, headerHasVerifiedClaim: ${stripCodexReproDOM.headerHasVerifiedClaim}, detailsHasProviderClaim: ${stripCodexReproDOM.detailsHasProviderClaim}`
+    );
+
+    // Exact Codex browser reproduction with unknown second leg (TC-V2-09e6)
+    await ev(`(() => {
+      window.__MOCK_NEXT_TOUR = {
+        revision: 6,
+        tour: {
+          status: 'verified_feasible',
+          unknowns: [],
+          totals: { leg_source: 'provider_route', walk_minutes: 12, venue_range_upper_sum_vnd: 80000 },
+          stops: [
+            {
+              id: 'STOP-1',
+              venue_id: 'SYN-001',
+              name: '[SYNTHETIC] Quán 1',
+              hours: { status: 'verified', display: '08:00 - 22:00', open_at_arrival: true },
+              price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+              leg_from_previous: { minutes: 5, km: 0.3, source: 'provider_route' }
+            },
+            {
+              id: 'STOP-2',
+              venue_id: 'SYN-002',
+              name: '[SYNTHETIC] Quán 2',
+              hours: { status: 'verified', display: '08:00 - 22:00', open_at_arrival: true },
+              price: { min_vnd: 40000, max_vnd: 40000, semantics: 'per_person', evidence: 'verified' },
+              leg_from_previous: { minutes: null, km: 0.4, source: 'unknown' }
+            }
+          ]
+        }
+      };
+      document.querySelector('[data-plan-tour-button]')?.click();
+    })()`);
+    await sleep(400);
+
+    // Ensure evidence strip details are expanded
+    await ev(`(() => {
+      const btn = document.querySelector('[data-evidence-strip] button');
+      if (btn && btn.getAttribute('aria-expanded') !== 'true') {
+        btn.click();
+      }
+    })()`);
+    await sleep(250);
+
+    const stripCodexReproUnknownDOM = await ev(`(() => {
+      const strip = document.querySelector('[data-evidence-strip]');
+      const headerText = strip?.querySelector('button')?.innerText || '';
+      const details = document.querySelector('#evidence-strip-details')?.innerText || '';
+      return {
+        headerHasUnknownRoute: headerText.includes('tuyến đi thực tế'),
+        headerHasVerifiedClaim: headerText.includes('Bằng chứng đầy đủ') || headerText.includes('tuyến đường thực tế'),
+        detailsHasProviderClaim: details.includes('Tuyến đường và thời gian đi bộ thực tế được tính toán từ dịch vụ bản đồ số.'),
+        detailsHasEstimateNotice: details.includes('Khoảng cách và thời gian di chuyển là ước tính đường chim bay nội bộ của hệ thống (chưa có tuyến thực tế).'),
+      };
+    })()`);
+
+    record(
+      'TC-V2-09e6',
+      'DOM EvidenceStrip exact Codex browser repro (provider total + second leg unknown) rejects verified claim (R2-N01)',
+      stripCodexReproUnknownDOM.headerHasUnknownRoute &&
+        !stripCodexReproUnknownDOM.headerHasVerifiedClaim &&
+        !stripCodexReproUnknownDOM.detailsHasProviderClaim &&
+        stripCodexReproUnknownDOM.detailsHasEstimateNotice,
+      `headerHasUnknownRoute: ${stripCodexReproUnknownDOM.headerHasUnknownRoute}, headerHasVerifiedClaim: ${stripCodexReproUnknownDOM.headerHasVerifiedClaim}, detailsHasProviderClaim: ${stripCodexReproUnknownDOM.detailsHasProviderClaim}`
+    );
+
     // Now re-plan a valid tour to test StopCards & ItineraryView
     // Injects 3-stop conditional tour with null walk_minutes & null upper sum to test F04 & F08
     await ev(`(() => {
