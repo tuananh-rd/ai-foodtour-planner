@@ -201,5 +201,100 @@ class PriorPrivacy(unittest.TestCase):
         self.assertEqual(f2.calls[0][1]["origin_label"], "Hồ Gươm")
 
 
+class RulesFirst(unittest.TestCase):
+    """R0-4: the scarce LLM is used only when rules cannot finish; answers are cached."""
+
+    def setUp(self):
+        from app.llm.provider import RulesFirstExtractor
+        self.calls = []
+
+        class Counting:
+            def __init__(inner, outer):
+                inner.outer = outer
+
+            def complete(inner, text, prior, *, deadline_s):
+                inner.outer.calls.append(text)
+                return json.dumps({"origin_text": "chợ Đồng Xuân", "duration_min": 120})
+
+        self.llm = LLMExtractor(Counting(self))
+        self.make = lambda **k: RulesFirstExtractor(MockExtractor(), self.llm, **k)
+
+    def test_complete_requests_never_call_the_model(self):
+        rf = self.make()
+        r = rf.extract("Ăn bún chè quanh Hồ Gươm 3 giờ, 200k mỗi người, 3 quán")
+        self.assertEqual((r.status, r.source, r.llm_calls), ("ok", "mock", 0))
+        self.assertEqual(self.calls, [])
+        # a follow-up edit on a complete prior also stays local
+        r2 = rf.extract("đổi sang 4 quán", r.preferences)
+        self.assertEqual((r2.llm_calls, r2.preferences.max_stops), (0, 4))
+        self.assertEqual(self.calls, [])
+
+    def test_missing_origin_with_place_cue_calls_model_once_then_cache(self):
+        rf = self.make()
+        text = "ăn bún chả quanh chợ Đồng Xuân 2 giờ"
+        a = rf.extract(text)
+        self.assertEqual((a.source, a.llm_calls, a.origin_text), ("live", 1, "chợ Đồng Xuân"))
+        b = rf.extract(text)
+        self.assertEqual((b.source, b.llm_calls), ("cache", 0))
+        self.assertEqual(len(self.calls), 1)
+        # a different prior is a different cache key
+        c = rf.extract(text, Preferences(budget_vnd=100000, budget_scope="per_person"))
+        self.assertEqual(c.source, "live")
+        self.assertEqual(len(self.calls), 2)
+
+    def test_cache_expires(self):
+        t = [0.0]
+        rf = self.make(ttl_s=10, clock=lambda: t[0])
+        text = "ăn phở gần chợ Hôm 2 giờ"
+        rf.extract(text)
+        t[0] = 5
+        self.assertEqual(rf.extract(text).source, "cache")
+        t[0] = 50
+        self.assertEqual(rf.extract(text).source, "live")
+        self.assertEqual(len(self.calls), 2)
+
+    def test_out_of_range_values_are_not_sent_to_the_model(self):
+        rf = self.make()
+        r = rf.extract("đi 5 phút quanh chợ Đồng Xuân nhé")
+        self.assertEqual(r.llm_calls, 0)
+        self.assertIn("duration_min", r.rejected_fields)
+        self.assertEqual(self.calls, [])
+
+    def test_short_messages_skip_the_model(self):
+        rf = self.make()
+        self.assertEqual(rf.extract("phở").llm_calls, 0)
+        self.assertEqual(rf.extract("ăn bún").llm_calls, 0)
+        self.assertEqual(self.calls, [])
+
+    def test_model_failure_falls_back_to_rules_and_counts_the_call(self):
+        from app.llm.provider import RulesFirstExtractor
+
+        class Boom:
+            def complete(self, *a, **k):
+                raise ProviderError("timeout")
+
+        rf = RulesFirstExtractor(MockExtractor(), LLMExtractor(Boom()))
+        r = rf.extract("ăn bún chả quanh chợ Đồng Xuân 2 giờ")
+        self.assertEqual((r.status, r.source, r.llm_calls), ("ok", "mock", 1))
+        self.assertTrue(any("bộ luật" in n for n in r.notes))
+
+    def test_local_budget_refusal_is_not_a_provider_call(self):
+        from app.llm.provider import RulesFirstExtractor
+
+        class Budget:
+            def complete(self, *a, **k):
+                raise ProviderError("quota")  # status None: refused locally, no HTTP call
+
+        class Quota429:
+            def complete(self, *a, **k):
+                raise ProviderError("quota", status=429)
+
+        text = "ăn bún chả quanh chợ Đồng Xuân 2 giờ"
+        local = RulesFirstExtractor(MockExtractor(), LLMExtractor(Budget())).extract(text)
+        self.assertEqual(local.llm_calls, 0)
+        remote = RulesFirstExtractor(MockExtractor(), LLMExtractor(Quota429())).extract(text)
+        self.assertEqual(remote.llm_calls, 1)
+
+
 if __name__ == "__main__":
     unittest.main()

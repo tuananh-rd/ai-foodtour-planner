@@ -33,7 +33,7 @@ QUESTIONS = {
 @dataclass(frozen=True)
 class ExtractionResult:
     status: str  # ok | unavailable
-    source: str  # mock | live | none
+    source: str  # mock (rules) | live (LLM answered) | cache (earlier LLM answer) | none
     preferences: Preferences
     updated_fields: tuple = ()
     missing_slots: tuple = ()
@@ -44,6 +44,9 @@ class ExtractionResult:
     # The API layer resolves it with the server-side geocoder (Google) or asks the user; the
     # extractor never invents coordinates for it.
     origin_text: Optional[str] = None
+    # Provider (LLM) calls consumed by producing THIS result: 0 for rules/cache, 1 when the model
+    # was invoked (even if it then failed). A purely local refusal (no budget left) is not a call.
+    llm_calls: int = 0
 
 
 class PreferenceExtractor(Protocol):

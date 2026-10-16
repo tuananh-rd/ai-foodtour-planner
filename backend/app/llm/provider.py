@@ -8,9 +8,13 @@ also yields "unavailable" - never fabricated success.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 import re
+import time
+from collections import OrderedDict
 from dataclasses import replace
+from threading import Lock
 from typing import Optional, Protocol
 
 import unicodedata
@@ -197,12 +201,17 @@ class LLMExtractor:
         try:
             raw = self.provider.complete(cleaned, _prior_json(p), deadline_s=self.deadline_s)
         except ProviderError as e:
-            return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + (f"Nhà cung cấp LLM lỗi: {e.kind}.",))
+            # A local budget refusal never reached the provider; anything else counts as one call.
+            calls = 0 if (e.kind == "quota" and e.status is None) else 1
+            return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + (f"Nhà cung cấp LLM lỗi: {e.kind}.",),
+                                    llm_calls=calls)
         except Exception:  # never leak provider internals or crash the request
-            return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Nhà cung cấp LLM không khả dụng.",))
+            return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Nhà cung cấp LLM không khả dụng.",),
+                                    llm_calls=1)
         updates, rejected, error = parse_and_validate(raw, cleaned, self.allow_raw_origin)
         if error:
-            return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Phản hồi LLM không hợp lệ.",))
+            return ExtractionResult("unavailable", "none", p, notes=tuple(notes) + ("Phản hồi LLM không hợp lệ.",),
+                                    llm_calls=1)
         if rejected:
             notes.append("Một số trường từ mô hình không hợp lệ nên bị bỏ qua: " + ", ".join(sorted(set(rejected))) + ".")
         origin_text = updates.pop("origin_text", None)
@@ -219,7 +228,7 @@ class LLMExtractor:
             miss = tuple(miss)  # origin stays missing until the API geocodes origin_text or the user answers
         return ExtractionResult("ok", "live", merged, tuple(sorted(updates)), miss,
                                 tuple(QUESTIONS[m] for m in miss if m in QUESTIONS), tuple(notes),
-                                tuple(sorted(set(rejected))), origin_text)
+                                tuple(sorted(set(rejected))), origin_text, 1)
 
 
 class FallbackExtractor:
@@ -237,3 +246,74 @@ class FallbackExtractor:
             return first
         note = "Mô hình ngôn ngữ chưa phản hồi được; đã dùng bộ luật trích xuất cục bộ."
         return replace(second, notes=tuple(second.notes) + (note,))
+
+
+# Words that suggest the user named a place the built-in landmarks do not cover.
+_PLACE_CUES = ("quanh", "gan", "o ", "tai", "tu ", "xuat phat", "ngo ", "pho ", "cho ", "duong ", "khu ")
+
+
+class RulesFirstExtractor:
+    """Answer with the local rule extractor; call the LLM only when the rules cannot finish the job.
+
+    The free LLM tier is scarce (see docs/UPGRADE_PLAN.md 5.3). Order of preference:
+      1. rules (0 calls) when both required slots (origin, duration) are known after merging,
+         or when the rules failed only because a value was rejected as out of range (the model
+         cannot repair a deterministic range problem);
+      2. cache of an earlier model answer for the same message+prior (0 calls);
+      3. the model (1 call), whose answer is cached; if it fails the rule result is returned and the
+         response says so.
+    """
+
+    def __init__(self, rules, llm, *, cache_size: int = 256, ttl_s: float = 3600.0, clock=time.monotonic,
+                 min_words: int = 3):
+        self.rules, self.llm = rules, llm
+        self.cache_size, self.ttl_s, self.clock, self.min_words = cache_size, ttl_s, clock, min_words
+        self._cache: "OrderedDict[str, tuple]" = OrderedDict()
+        self._lock = Lock()
+        self.stats = {"rules": 0, "cache": 0, "llm": 0, "fallback": 0}
+
+    def needs_llm(self, text: str, rules_result: ExtractionResult) -> bool:
+        if rules_result.status != "ok":
+            return False
+        missing = set(rules_result.missing_slots) & {"origin", "duration_min"}
+        if not missing:
+            return False
+        if rules_result.rejected_fields:
+            return False  # out-of-range values must be corrected by the user, not guessed by a model
+        words = fold(text).split()
+        if len(words) < self.min_words:
+            return False  # too short to carry information a model could add
+        if "origin" in missing:
+            folded = " " + " ".join(words) + " "
+            return any(cue in folded or folded.startswith(" " + cue) for cue in _PLACE_CUES) or "duration_min" in missing
+        return True
+
+    def _key(self, text: str, prior: Optional[Preferences]) -> str:
+        cleaned, _ = _clean(text[:MAX_TEXT])
+        body = fold(cleaned) + "|" + repr(prior)
+        return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
+    def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
+        base = self.rules.extract(text, prior)
+        if not self.needs_llm(text, base):
+            self.stats["rules"] += 1
+            return replace(base, llm_calls=0)
+        key = self._key(text, prior)
+        now = self.clock()
+        with self._lock:
+            hit = self._cache.get(key)
+            if hit and now - hit[0] <= self.ttl_s:
+                self._cache.move_to_end(key)
+                self.stats["cache"] += 1
+                return replace(hit[1], source="cache", llm_calls=0)
+        out = self.llm.extract(text, prior)
+        if out.status == "ok":
+            with self._lock:
+                self._cache[key] = (now, out)
+                while len(self._cache) > self.cache_size:
+                    self._cache.popitem(last=False)
+                self.stats["llm"] += 1
+            return replace(out, llm_calls=max(1, out.llm_calls))
+        self.stats["fallback"] += 1
+        note = "Mô hình ngôn ngữ chưa phản hồi được; đã dùng bộ luật trích xuất cục bộ."
+        return replace(base, notes=tuple(base.notes) + (note,), llm_calls=out.llm_calls)
