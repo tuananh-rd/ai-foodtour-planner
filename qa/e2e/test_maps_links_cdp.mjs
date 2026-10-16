@@ -12,8 +12,9 @@
  * - M3: Exact decoded waypoint array comparison; exact split link URL sequence comparison; real delayed out-of-order responses
  *       (older success/error after newer; reset invalidating in-flight requests); real application mutation proofs (remove rel => fail,
  *       reorder waypoints => fail, drop disclaimer => fail).
- * - L1: WAI-ARIA radio group roving tabindex & keyboard navigation (ArrowLeft, ArrowRight, ArrowUp, ArrowDown) with real key events.
- * - Fail-before mode on commit 554a548.
+ * - L1: WAI-ARIA radio group roving tabindex & trusted browser key navigation (8-case arrow matrix with wrap-around and focus).
+ * - M3: In-flight generation/unmount guards against non-cooperative delayed responses after session reset.
+ * - Fail-before mode on commit c8100f1.
  */
 
 import { spawn, execSync } from 'node:child_process';
@@ -70,7 +71,7 @@ function killProcessTree(pid) {
 async function run() {
   console.log('\n===============================================================');
   console.log('   AI FOODTOUR PLANNER — GOOGLE MAPS URLS REAL-BROWSER CDP');
-  console.log(`   Mode: ${FAIL_BEFORE ? 'FAIL-BEFORE EVIDENCE PROOF (commit 554a548)' : 'NORMAL PRODUCTION VERIFICATION'}`);
+  console.log(`   Mode: ${FAIL_BEFORE ? 'FAIL-BEFORE EVIDENCE PROOF (commit c8100f1)' : 'NORMAL PRODUCTION VERIFICATION'}`);
   console.log(`   Ports: Web=${PORT_WEB}, CDP=${PORT_CDP}`);
   console.log('===============================================================\n');
 
@@ -86,11 +87,20 @@ async function run() {
     console.log(`[Setup] Scratch build directory created: ${scratchDir}`);
 
     if (FAIL_BEFORE) {
-      console.log(`[Setup] Extracting commit 554a548:frontend into scratch build for fail-before proof...`);
-      const tarPath = path.join(os.tmpdir(), `554a548-frontend-${Date.now()}.tar`);
-      execSync(`git archive --format=tar 554a548:frontend -o "${tarPath}"`, { cwd: REPO_ROOT });
+      console.log(`[Setup] Extracting commit c8100f1:frontend into scratch build for fail-before proof...`);
+      const tarPath = path.join(os.tmpdir(), `c8100f1-frontend-${Date.now()}.tar`);
+      execSync(`git archive --format=tar c8100f1:frontend -o "${tarPath}"`, { cwd: REPO_ROOT });
       execSync(`tar -xf "${tarPath}" -C "${scratchDir}"`, { cwd: REPO_ROOT });
       try { fs.unlinkSync(tarPath); } catch (_) {}
+
+      // Inject the non-cooperative abort check bypass hook into scratch build's lib/api.js
+      const scratchApiJs = path.join(scratchDir, 'lib', 'api.js');
+      let apiSrc = fs.readFileSync(scratchApiJs, 'utf8');
+      apiSrc = apiSrc.replace(
+        'if (options?.signal?.aborted) {',
+        'const ignoreAbort = typeof window !== \'undefined\' && Boolean(window.__MOCK_MAPS_IGNORE_ABORT || window.__MOCK_MAPS_NON_COOPERATIVE);\n  if (options?.signal?.aborted && !ignoreAbort) {'
+      );
+      fs.writeFileSync(scratchApiJs, apiSrc, 'utf8');
     } else {
       // Copy frontend files (excluding node_modules and .next)
       fs.cpSync(FRONTEND_DIR, scratchDir, {
@@ -251,11 +261,49 @@ async function run() {
       await sleep(300);
     }
 
+    async function dispatchArrowKey(key) {
+      const codeMap = {
+        ArrowLeft: { code: 'ArrowLeft', keyCode: 37 },
+        ArrowUp: { code: 'ArrowUp', keyCode: 38 },
+        ArrowRight: { code: 'ArrowRight', keyCode: 39 },
+        ArrowDown: { code: 'ArrowDown', keyCode: 40 },
+      };
+      const info = codeMap[key];
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyDown',
+        key,
+        code: info.code,
+        windowsVirtualKeyCode: info.keyCode,
+      });
+      await send('Input.dispatchKeyEvent', {
+        type: 'keyUp',
+        key,
+        code: info.code,
+        windowsVirtualKeyCode: info.keyCode,
+      });
+      await sleep(150);
+    }
+
+    async function getRadioState() {
+      return await ev(`(() => {
+        const walking = document.querySelector('[data-testid="toggle-walking"]');
+        const driving = document.querySelector('[data-testid="toggle-driving"]');
+        return {
+          walkingChecked: walking?.getAttribute('aria-checked'),
+          walkingTab: walking?.getAttribute('tabindex'),
+          drivingChecked: driving?.getAttribute('aria-checked'),
+          drivingTab: driving?.getAttribute('tabindex'),
+          activeIsWalking: document.activeElement === walking,
+          activeIsDriving: document.activeElement === driving,
+        };
+      })()`);
+    }
+
     // -----------------------------------------------------------------
-    // FAIL-BEFORE PROOF (on commit 554a548)
+    // FAIL-BEFORE PROOF (on commit c8100f1)
     // -----------------------------------------------------------------
     if (FAIL_BEFORE) {
-      console.log('--- EXECUTING FAIL-BEFORE PROBES ON COMMIT 554a548 ---');
+      console.log('--- EXECUTING FAIL-BEFORE PROBES ON COMMIT c8100f1 ---');
       await setViewport(390, 844);
       await navigateTo(`http://127.0.0.1:${PORT_WEB}/?ui=v2`);
 
@@ -263,23 +311,68 @@ async function run() {
       await ev(`document.querySelector('[data-suggestion-chip]')?.click()`);
       await sleep(200);
       await ev(`document.querySelector('[data-plan-tour-button]')?.click()`);
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 40; i++) {
         await sleep(200);
-        const hasCard = await ev(`!!document.querySelector('[data-stop-card]')`);
-        if (hasCard) break;
+        const hasBlock = await ev(`!!document.querySelector('[data-maps-links-block]') && !document.querySelector('[data-maps-loading]')`);
+        if (hasBlock) break;
       }
 
-      // Check whether MapsLinksBlock exists on 554a548
-      const hasMapsBlock = await ev(`!!document.querySelector('[data-maps-links-block]')`);
+      // Probe 1: L1 radio arrow wrap on c8100f1
+      // Select driving radio and focus it
+      await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+      await sleep(250);
+      await ev(`document.querySelector('[data-testid="toggle-driving"]')?.focus()`);
+      // Dispatch trusted browser ArrowRight key event via Input.dispatchKeyEvent
+      await dispatchArrowKey('ArrowRight');
+      const wrapState = await getRadioState();
+      // On c8100f1, driving + ArrowRight remained driving (did NOT wrap to walking)
       record(
-        'FB-GMAPS-EXISTS',
-        'Pre-change code contains MapsLinksBlock (must fail on 554a548)',
-        hasMapsBlock === true,
-        hasMapsBlock ? 'Maps block found' : 'Maps block NOT present on 554a548 as expected'
+        'FB-L1-RADIO-WRAP',
+        'ArrowRight on driving wraps to walking on c8100f1 (expected to FAIL on c8100f1)',
+        wrapState.activeIsWalking && wrapState.walkingChecked === 'true' && wrapState.walkingTab === '0',
+        wrapState.activeIsWalking ? 'Wrapped to walking' : `Failed to wrap on c8100f1 (driving checked=${wrapState.drivingChecked}, activeIsDriving=${wrapState.activeIsDriving})`
+      );
+
+      // Probe 2: M3 non-cooperative delayed error arriving after session reset on c8100f1
+      await ev(`(() => {
+        window.__MOCK_NEXT_MAPS_DELAY_MS = 600;
+        window.__MOCK_NEXT_MAPS_LINKS_ERROR = { message: 'NONCOOPERATIVE delayed reset error' };
+        window.__MOCK_MAPS_IGNORE_ABORT = true;
+      })()`);
+      // Toggle to walking to initiate request (mode was driving after probe 1)
+      await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+      await sleep(100);
+
+      // Reset session in UI
+      await ev(`(() => {
+        const resetBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Tạo mới') || b.innerText.includes('Làm mới'));
+        if (resetBtn) resetBtn.click();
+      })()`);
+      await sleep(200);
+
+      // Wait 750ms for non-cooperative 600ms delayed error to finish and deliver
+      await sleep(750);
+
+      const postResetNoncoop = await ev(`(() => {
+        const block = document.querySelector('[data-maps-links-block]');
+        const banner = document.querySelector('[role="alert"]');
+        return {
+          blockHidden: !block,
+          noBanner: !banner,
+          bannerText: banner?.innerText || '',
+        };
+      })()`);
+      await ev(`delete window.__MOCK_MAPS_IGNORE_ABORT`);
+
+      record(
+        'FB-M3-NONCOOP-RESET-ERROR',
+        'Non-cooperative delayed error after reset does not leak banner into StatusQueue (expected to FAIL on c8100f1)',
+        postResetNoncoop.blockHidden && postResetNoncoop.noBanner,
+        postResetNoncoop.noBanner ? 'No banner leaked' : `Stale banner leaked into StatusQueue on c8100f1: "${postResetNoncoop.bannerText}"`
       );
 
       console.log('\n===============================================================');
-      console.log('   FAIL-BEFORE EVIDENCE COMPLETE: FEATURE ABSENT ON 554a548');
+      console.log('   FAIL-BEFORE EVIDENCE COMPLETE: c8100f1 FAILS L1 & M3 AS EXPECTED');
       console.log('===============================================================\n');
       return;
     }
@@ -540,55 +633,86 @@ async function run() {
       `walking=${rovingTabIndex.walkingTab}, driving=${rovingTabIndex.drivingTab}`
     );
 
-    // L1: Keyboard arrow navigation test (ArrowRight moves selection and focus to driving)
-    await ev(`(() => {
-      const walkingBtn = document.querySelector('[data-testid="toggle-walking"]');
-      walkingBtn.focus();
-      walkingBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
-    })()`);
-    await sleep(250);
-
-    const arrowRightNav = await ev(`(() => {
-      const drivingBtn = document.querySelector('[data-testid="toggle-driving"]');
-      return {
-        activeElementIsDriving: document.activeElement === drivingBtn,
-        drivingChecked: drivingBtn?.getAttribute('aria-checked'),
-        drivingTab: drivingBtn?.getAttribute('tabindex'),
-      };
-    })()`);
-
+    // L1: Trusted browser key navigation test matrix (8 cases): all four arrows from both options with wrap-around
+    // Case 1: walking + ArrowRight -> driving
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.focus()`);
+    await dispatchArrowKey('ArrowRight');
+    const c1 = await getRadioState();
     record(
-      'TC-MAPS-RADIO-KEYBOARD-ARROWS',
-      'ArrowRight keydown switches selection and focus to driving radio',
-      arrowRightNav.activeElementIsDriving &&
-        arrowRightNav.drivingChecked === 'true' &&
-        arrowRightNav.drivingTab === '0',
-      `focus on driving: ${arrowRightNav.activeElementIsDriving}, driving checked: ${arrowRightNav.drivingChecked}`
+      'TC-MAPS-KEY-WALKING-RIGHT',
+      'Trusted ArrowRight from walking moves selection and focus to driving (aria-checked=true, tabIndex=0)',
+      c1.activeIsDriving && c1.drivingChecked === 'true' && c1.drivingTab === '0' && c1.walkingChecked === 'false' && c1.walkingTab === '-1',
+      `drivingChecked=${c1.drivingChecked}, activeIsDriving=${c1.activeIsDriving}, drivingTab=${c1.drivingTab}`
     );
 
-    // ArrowLeft back to walking
-    await ev(`(() => {
-      const drivingBtn = document.querySelector('[data-testid="toggle-driving"]');
-      drivingBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
-    })()`);
-    await sleep(250);
-
-    const arrowLeftNav = await ev(`(() => {
-      const walkingBtn = document.querySelector('[data-testid="toggle-walking"]');
-      return {
-        activeElementIsWalking: document.activeElement === walkingBtn,
-        walkingChecked: walkingBtn?.getAttribute('aria-checked'),
-        walkingTab: walkingBtn?.getAttribute('tabindex'),
-      };
-    })()`);
-
+    // Case 2: driving + ArrowRight -> walking (WRAP)
+    await dispatchArrowKey('ArrowRight');
+    const c2 = await getRadioState();
     record(
-      'TC-MAPS-RADIO-KEYBOARD-ARROW-LEFT',
-      'ArrowLeft keydown switches selection and focus back to walking radio',
-      arrowLeftNav.activeElementIsWalking &&
-        arrowLeftNav.walkingChecked === 'true' &&
-        arrowLeftNav.walkingTab === '0',
-      `focus on walking: ${arrowLeftNav.activeElementIsWalking}, walking checked: ${arrowLeftNav.walkingChecked}`
+      'TC-MAPS-KEY-DRIVING-RIGHT-WRAP',
+      'Trusted ArrowRight from driving wraps selection and focus back to walking (aria-checked=true, tabIndex=0)',
+      c2.activeIsWalking && c2.walkingChecked === 'true' && c2.walkingTab === '0' && c2.drivingChecked === 'false' && c2.drivingTab === '-1',
+      `walkingChecked=${c2.walkingChecked}, activeIsWalking=${c2.activeIsWalking}, walkingTab=${c2.walkingTab}`
+    );
+
+    // Case 3: walking + ArrowDown -> driving
+    await dispatchArrowKey('ArrowDown');
+    const c3 = await getRadioState();
+    record(
+      'TC-MAPS-KEY-WALKING-DOWN',
+      'Trusted ArrowDown from walking moves selection and focus to driving (aria-checked=true, tabIndex=0)',
+      c3.activeIsDriving && c3.drivingChecked === 'true' && c3.drivingTab === '0' && c3.walkingChecked === 'false' && c3.walkingTab === '-1',
+      `drivingChecked=${c3.drivingChecked}, activeIsDriving=${c3.activeIsDriving}, drivingTab=${c3.drivingTab}`
+    );
+
+    // Case 4: driving + ArrowDown -> walking (WRAP)
+    await dispatchArrowKey('ArrowDown');
+    const c4 = await getRadioState();
+    record(
+      'TC-MAPS-KEY-DRIVING-DOWN-WRAP',
+      'Trusted ArrowDown from driving wraps selection and focus back to walking (aria-checked=true, tabIndex=0)',
+      c4.activeIsWalking && c4.walkingChecked === 'true' && c4.walkingTab === '0' && c4.drivingChecked === 'false' && c4.drivingTab === '-1',
+      `walkingChecked=${c4.walkingChecked}, activeIsWalking=${c4.activeIsWalking}, walkingTab=${c4.walkingTab}`
+    );
+
+    // Case 5: walking + ArrowLeft -> driving (WRAP)
+    await dispatchArrowKey('ArrowLeft');
+    const c5 = await getRadioState();
+    record(
+      'TC-MAPS-KEY-WALKING-LEFT-WRAP',
+      'Trusted ArrowLeft from walking wraps selection and focus to driving (aria-checked=true, tabIndex=0)',
+      c5.activeIsDriving && c5.drivingChecked === 'true' && c5.drivingTab === '0' && c5.walkingChecked === 'false' && c5.walkingTab === '-1',
+      `drivingChecked=${c5.drivingChecked}, activeIsDriving=${c5.activeIsDriving}, drivingTab=${c5.drivingTab}`
+    );
+
+    // Case 6: driving + ArrowLeft -> walking
+    await dispatchArrowKey('ArrowLeft');
+    const c6 = await getRadioState();
+    record(
+      'TC-MAPS-KEY-DRIVING-LEFT',
+      'Trusted ArrowLeft from driving moves selection and focus to walking (aria-checked=true, tabIndex=0)',
+      c6.activeIsWalking && c6.walkingChecked === 'true' && c6.walkingTab === '0' && c6.drivingChecked === 'false' && c6.drivingTab === '-1',
+      `walkingChecked=${c6.walkingChecked}, activeIsWalking=${c6.activeIsWalking}, walkingTab=${c6.walkingTab}`
+    );
+
+    // Case 7: walking + ArrowUp -> driving (WRAP)
+    await dispatchArrowKey('ArrowUp');
+    const c7 = await getRadioState();
+    record(
+      'TC-MAPS-KEY-WALKING-UP-WRAP',
+      'Trusted ArrowUp from walking wraps selection and focus to driving (aria-checked=true, tabIndex=0)',
+      c7.activeIsDriving && c7.drivingChecked === 'true' && c7.drivingTab === '0' && c7.walkingChecked === 'false' && c7.walkingTab === '-1',
+      `drivingChecked=${c7.drivingChecked}, activeIsDriving=${c7.activeIsDriving}, drivingTab=${c7.drivingTab}`
+    );
+
+    // Case 8: driving + ArrowUp -> walking (WRAP)
+    await dispatchArrowKey('ArrowUp');
+    const c8 = await getRadioState();
+    record(
+      'TC-MAPS-KEY-DRIVING-UP-WRAP',
+      'Trusted ArrowUp from driving wraps selection and focus to walking (aria-checked=true, tabIndex=0)',
+      c8.activeIsWalking && c8.walkingChecked === 'true' && c8.walkingTab === '0' && c8.drivingChecked === 'false' && c8.drivingTab === '-1',
+      `walkingChecked=${c8.walkingChecked}, activeIsWalking=${c8.activeIsWalking}, walkingTab=${c8.walkingTab}`
     );
 
     // -------------------------------------------------------------
@@ -1197,6 +1321,101 @@ async function run() {
       'In-flight request resolving after session reset does NOT render stale link or banner',
       immediateResetHidden && postResetBlockState.blockHidden && postResetBlockState.noBanner,
       `Immediate hidden: ${immediateResetHidden}, Post-delay hidden: ${postResetBlockState.blockHidden}`
+    );
+
+    // Race 4: Non-cooperative delayed error arriving after session reset (transport ignores abort)
+    await ev(`document.querySelector('[data-suggestion-chip]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-plan-tour-button]')?.click()`);
+    for (let i = 0; i < 40; i++) {
+      await sleep(200);
+      const ready = await ev(`!!document.querySelector('[data-maps-links-block]') && !document.querySelector('[data-maps-loading]')`);
+      if (ready) break;
+    }
+
+    // Inject non-cooperative 600ms delayed error with abort-ignore enabled
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 600;
+      window.__MOCK_NEXT_MAPS_LINKS_ERROR = { message: 'NONCOOPERATIVE delayed reset error' };
+      window.__MOCK_MAPS_IGNORE_ABORT = true;
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(100);
+
+    // Click Reset session in UI to unmount MapsLinksBlock and reset session
+    await ev(`(() => {
+      const resetBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Tạo mới') || b.innerText.includes('Làm mới'));
+      if (resetBtn) resetBtn.click();
+    })()`);
+    await sleep(200);
+
+    // Wait 750ms so non-cooperative delayed error completes and is delivered
+    await sleep(750);
+
+    const postNoncoopErrorState = await ev(`(() => {
+      const block = document.querySelector('[data-maps-links-block]');
+      const banner = document.querySelector('[role="alert"]');
+      const bannerText = banner?.innerText || '';
+      return {
+        blockHidden: !block,
+        noBanner: !banner,
+        bannerText,
+      };
+    })()`);
+    await ev(`delete window.__MOCK_MAPS_IGNORE_ABORT`);
+
+    record(
+      'TC-MAPS-NONCOOP-DELAYED-ERROR-RESET',
+      'Non-cooperative delayed error arriving after reset/unmount never enqueues stale banner or sets state',
+      postNoncoopErrorState.blockHidden && postNoncoopErrorState.noBanner,
+      `Block hidden: ${postNoncoopErrorState.blockHidden}, No banner: ${postNoncoopErrorState.noBanner}${postNoncoopErrorState.bannerText ? `, Stale banner: "${postNoncoopErrorState.bannerText}"` : ''}`
+    );
+
+    // Race 5: Non-cooperative delayed success arriving after session reset (transport ignores abort)
+    await ev(`document.querySelector('[data-suggestion-chip]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-plan-tour-button]')?.click()`);
+    for (let i = 0; i < 40; i++) {
+      await sleep(200);
+      const ready = await ev(`!!document.querySelector('[data-maps-links-block]') && !document.querySelector('[data-maps-loading]')`);
+      if (ready) break;
+    }
+
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 600;
+      window.__MOCK_NEXT_MAPS_LINKS = {
+        status: 'ok',
+        links: [{ index: 1, of: 1, url: '${validGoogleDirUrl}' }],
+        notes: []
+      };
+      window.__MOCK_MAPS_IGNORE_ABORT = true;
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(100);
+
+    await ev(`(() => {
+      const resetBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Tạo mới') || b.innerText.includes('Làm mới'));
+      if (resetBtn) resetBtn.click();
+    })()`);
+    await sleep(200);
+
+    await sleep(750);
+
+    const postNoncoopSuccessState = await ev(`(() => {
+      const block = document.querySelector('[data-maps-links-block]');
+      const links = document.querySelectorAll('a[data-maps-link], a[data-primary-maps-link]');
+      return {
+        blockHidden: !block,
+        noLinks: links.length === 0,
+      };
+    })()`);
+    await ev(`delete window.__MOCK_MAPS_IGNORE_ABORT`);
+
+    record(
+      'TC-MAPS-NONCOOP-DELAYED-SUCCESS-RESET',
+      'Non-cooperative delayed success arriving after reset/unmount never renders stale link or sets state',
+      postNoncoopSuccessState.blockHidden && postNoncoopSuccessState.noLinks,
+      `Block hidden: ${postNoncoopSuccessState.blockHidden}, Links count: ${postNoncoopSuccessState.noLinks ? 0 : 'present'}`
     );
 
     // -------------------------------------------------------------

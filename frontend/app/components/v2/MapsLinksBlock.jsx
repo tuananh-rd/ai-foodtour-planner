@@ -39,6 +39,7 @@ export default function MapsLinksBlock({
   const [loading, setLoading] = useState(false);
   const [mapsData, setMapsData] = useState(initialMapsData);
 
+  const isMountedRef = useRef(true);
   const generationRef = useRef(0);
   const abortControllerRef = useRef(null);
   const sessionEpochRef = useRef(sessionEpoch);
@@ -63,6 +64,18 @@ export default function MapsLinksBlock({
     tour.status !== 'insufficient_evidence'
   );
 
+  // Lifetime unmount guard: invalidate pending generation, cancel abort controller, mark unmounted
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+      generationRef.current++;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   // Reset state when session resets or epoch changes (stable dependencies: never depends on dismiss callback)
   useEffect(() => {
     generationRef.current++;
@@ -75,7 +88,7 @@ export default function MapsLinksBlock({
   }, [sessionId, sessionEpoch]);
 
   const fetchLinks = useCallback(async (currentMode) => {
-    if (!isSuccessTour) {
+    if (!isMountedRef.current || !isSuccessTour) {
       setMapsData(null);
       return;
     }
@@ -97,8 +110,8 @@ export default function MapsLinksBlock({
         signal: abortCtrl.signal,
       });
 
-      // Generation and session epoch guard: ignore stale responses if another fetch or reset occurred
-      if (currentGen !== generationRef.current || currentEpoch !== sessionEpochRef.current) {
+      // Generation, mount, and session epoch guard: ignore stale responses if another fetch, reset, or unmount occurred
+      if (!isMountedRef.current || currentGen !== generationRef.current || currentEpoch !== sessionEpochRef.current) {
         return;
       }
 
@@ -107,7 +120,7 @@ export default function MapsLinksBlock({
       dismissRef.current('maps_links_error');
     } catch (err) {
       if (err?.name === 'AbortError') return;
-      if (currentGen !== generationRef.current || currentEpoch !== sessionEpochRef.current) return;
+      if (!isMountedRef.current || currentGen !== generationRef.current || currentEpoch !== sessionEpochRef.current) return;
 
       setLoading(false);
       setMapsData(null);
@@ -120,6 +133,7 @@ export default function MapsLinksBlock({
         action: {
           label: 'Thử lại',
           onClick: () => {
+            if (!isMountedRef.current) return;
             dismissRef.current('maps_links_error');
             fetchLinks(modeRef.current);
           },
@@ -131,6 +145,10 @@ export default function MapsLinksBlock({
   // Refetch when tour revision, session revision, mode, or sessionEpoch changes
   useEffect(() => {
     if (!isSuccessTour) {
+      generationRef.current++;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
       setMapsData(null);
       dismissRef.current('maps_links_error');
       return;
@@ -139,25 +157,41 @@ export default function MapsLinksBlock({
     fetchLinks(mode);
 
     return () => {
+      generationRef.current++;
       if (abortControllerRef.current) {
         abortControllerRef.current.abort();
       }
     };
   }, [isSuccessTour, tour?.revision, revision, mode, sessionEpoch, fetchLinks]);
 
-  // Handle radio group keyboard navigation (ArrowLeft, ArrowRight, ArrowUp, ArrowDown)
-  const handleToggleKeyDown = (e, targetMode) => {
+  const MODES = ['walking', 'driving'];
+
+  // Handle radio group keyboard navigation (ArrowLeft, ArrowRight, ArrowUp, ArrowDown) with roving tabindex and wrapping
+  const handleToggleKeyDown = (e, currentOptionMode) => {
+    let targetNextMode = null;
+    const currentIndex = MODES.indexOf(currentOptionMode);
+
     if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
       e.preventDefault();
-      setMode('driving');
-      drivingBtnRef.current?.focus();
+      const nextIndex = (currentIndex + 1) % MODES.length;
+      targetNextMode = MODES[nextIndex];
     } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
       e.preventDefault();
-      setMode('walking');
-      walkingBtnRef.current?.focus();
+      const prevIndex = (currentIndex - 1 + MODES.length) % MODES.length;
+      targetNextMode = MODES[prevIndex];
     } else if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
-      setMode(targetMode);
+      setMode(currentOptionMode);
+      return;
+    }
+
+    if (targetNextMode) {
+      setMode(targetNextMode);
+      if (targetNextMode === 'walking') {
+        walkingBtnRef.current?.focus();
+      } else if (targetNextMode === 'driving') {
+        drivingBtnRef.current?.focus();
+      }
     }
   };
 

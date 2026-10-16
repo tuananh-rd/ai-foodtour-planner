@@ -1286,7 +1286,8 @@ export async function getMapsLinks(sessionId, mode = 'walking', token = '', opti
     await new Promise((r) => setTimeout(r, pendingDelay));
   }
 
-  if (options?.signal?.aborted) {
+  const ignoreAbort = typeof window !== 'undefined' && Boolean(window.__MOCK_MAPS_IGNORE_ABORT || window.__MOCK_MAPS_NON_COOPERATIVE);
+  if (options?.signal?.aborted && !ignoreAbort) {
     const err = new Error('The operation was aborted');
     err.name = 'AbortError';
     throw err;
