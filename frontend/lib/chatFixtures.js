@@ -1,0 +1,2400 @@
+/**
+ * Synthetic chat turns fixture matching contracts/fixtures/chat_turns.synthetic.json (contract v1.8).
+ */
+export const SYNTHETIC_CHAT_TURNS = {
+  "_label": "SYNTHETIC recorded chat turns (engine output; contract v1.8)",
+  "synthetic": true,
+  "conversations": [
+    {
+      "name": "discover_no_location",
+      "turns": [
+        {
+          "request": {
+            "text": "Chiều nay nóng quá, quanh đây ăn gì được?",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Bạn nói trời nóng nên mình ưu tiên món mát/đồ uống. Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+                },
+                {
+                  "type": "clarify",
+                  "pending_id": "p1",
+                  "question": "Bạn muốn tìm quanh khu vực nào ở Hà Nội? (ví dụ: Cầu Giấy, phố cổ, đường Xuân Thủy)",
+                  "options": [
+                    {
+                      "option_id": "geo",
+                      "label": "Dùng vị trí của tôi"
+                    },
+                    {
+                      "option_id": "district:Ba Đình",
+                      "label": "Ba Đình"
+                    },
+                    {
+                      "option_id": "district:Cầu Giấy",
+                      "label": "Cầu Giấy"
+                    },
+                    {
+                      "option_id": "district:Hai Bà Trưng",
+                      "label": "Hai Bà Trưng"
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": {
+                "pending_id": "p1",
+                "kind": "clarify_slot",
+                "options": [
+                  {
+                    "option_id": "geo",
+                    "label": "Dùng vị trí của tôi"
+                  },
+                  {
+                    "option_id": "district:Ba Đình",
+                    "label": "Ba Đình"
+                  },
+                  {
+                    "option_id": "district:Cầu Giấy",
+                    "label": "Cầu Giấy"
+                  },
+                  {
+                    "option_id": "district:Hai Bà Trưng",
+                    "label": "Hai Bà Trưng"
+                  }
+                ],
+                "slot": "area"
+              },
+              "turn_count": 1
+            },
+            "turn": {
+              "intent": "DISCOVER_DISH",
+              "tools": [
+                "clarify"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": null,
+            "action": {
+              "type": "set_location",
+              "location": {
+                "district": "Cầu Giấy"
+              }
+            }
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Đã cập nhật: khu vực: Cầu Giấy (xấp xỉ)."
+                },
+                {
+                  "type": "text",
+                  "text": "Bạn nói trời nóng nên mình ưu tiên món mát/đồ uống. Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+                },
+                {
+                  "type": "text",
+                  "text": "Gợi ý món quanh Cầu Giấy (xấp xỉ). Phần mô tả là kiến thức chung; số quán đếm từ dữ liệu của mình (ước tính đường chim bay):"
+                },
+                {
+                  "type": "dish_suggestions",
+                  "items": [
+                    {
+                      "dish_group": "Trà / trà sữa / nước mát",
+                      "blurb": "Đồ uống lạnh để giải khát; mức đường thường tuỳ chỉnh được ở từng quán.",
+                      "venue_count": 4,
+                      "radius_m": 1500,
+                      "kind": "general_knowledge"
+                    },
+                    {
+                      "dish_group": "Ăn vặt",
+                      "blurb": "Các món nhỏ ăn chơi (bánh, nem, đồ chiên…), hợp đi bộ và thử nhiều quán.",
+                      "venue_count": 4,
+                      "radius_m": 1500,
+                      "kind": "general_knowledge"
+                    },
+                    {
+                      "dish_group": "Bánh mì",
+                      "blurb": "Bánh mì kẹp nhân, gọn nhẹ để ăn nhanh hoặc ăn dọc đường.",
+                      "venue_count": 2,
+                      "radius_m": 1500,
+                      "kind": "general_knowledge"
+                    },
+                    {
+                      "dish_group": "Chè",
+                      "blurb": "Món ngọt nấu hoặc pha từ đậu, trái cây, thạch…; có kiểu ăn nóng và kiểu ăn lạnh.",
+                      "venue_count": 2,
+                      "radius_m": 1500,
+                      "kind": "general_knowledge"
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Cầu Giấy",
+                    "lat": 21.03765,
+                    "lon": 105.78881666666666,
+                    "district": "Cầu Giấy"
+                  },
+                  "source": "user_said",
+                  "turn": 2,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": null,
+              "turn_count": 2
+            },
+            "turn": {
+              "intent": "UPDATE_PROFILE",
+              "tools": [
+                "discover_dishes"
+              ],
+              "understanding": "action"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "search_compare_add",
+      "turns": [
+        {
+          "request": {
+            "text": null,
+            "action": {
+              "type": "set_location",
+              "location": {
+                "district": "Hoàn Kiếm"
+              }
+            }
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Đã cập nhật: khu vực: Hoàn Kiếm (xấp xỉ)."
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": null,
+              "turn_count": 1
+            },
+            "turn": {
+              "intent": "UPDATE_PROFILE",
+              "tools": [
+                "set_profile"
+              ],
+              "understanding": "action"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "tìm quán bún quanh Hoàn Kiếm",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "notice",
+                  "level": "info",
+                  "code": "criterion_unsupported",
+                  "text": "Dữ liệu chưa có tiêu chí: yên tĩnh; mình không suy diễn từ sao hay ảnh nên chưa lọc theo các tiêu chí này."
+                },
+                {
+                  "type": "text",
+                  "text": "Mình tìm thấy 2 quán món bún quanh Hoàn Kiếm (xấp xỉ) (bán kính 1500 m, khoảng cách ước tính đường chim bay)."
+                },
+                {
+                  "type": "venue_cards",
+                  "title": null,
+                  "cards": [
+                    {
+                      "label": "A",
+                      "venue": {
+                        "id": "CHT-002",
+                        "name": "[SYNTHETIC] Bún Thử 2",
+                        "district": "Hoàn Kiếm",
+                        "address": "Số 12 Hàng Gai, Hoàn Kiếm, Hà Nội",
+                        "dish_tags": [
+                          "Bún",
+                          "Món nước"
+                        ],
+                        "price": {
+                          "min_vnd": 30000,
+                          "max_vnd": 60000,
+                          "semantics": "venue_range",
+                          "evidence": "estimate"
+                        },
+                        "hours": {
+                          "status": "unknown",
+                          "display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)"
+                        },
+                        "rating": {
+                          "value": 3.25,
+                          "count": 8
+                        }
+                      },
+                      "distance_m": 570,
+                      "distance_source": "straight_line_estimate",
+                      "why": [
+                        {
+                          "code": "match_dish",
+                          "text": "Khớp món bạn hỏi: món bún"
+                        },
+                        {
+                          "code": "near",
+                          "text": "Cách khoảng 570 m (ước tính đường chim bay)"
+                        }
+                      ],
+                      "flags": [],
+                      "in_shortlist": false
+                    },
+                    {
+                      "label": "B",
+                      "venue": {
+                        "id": "CHT-001",
+                        "name": "[SYNTHETIC] Bún Thử 1",
+                        "district": "Hoàn Kiếm",
+                        "address": "Số 11 Hàng Bún, Hoàn Kiếm, Hà Nội",
+                        "dish_tags": [
+                          "Bún",
+                          "Món nước"
+                        ],
+                        "price": {
+                          "min_vnd": 30000,
+                          "max_vnd": 60000,
+                          "semantics": "venue_range",
+                          "evidence": "estimate"
+                        },
+                        "hours": {
+                          "status": "unknown",
+                          "display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)"
+                        },
+                        "rating": null
+                      },
+                      "distance_m": 650,
+                      "distance_source": "straight_line_estimate",
+                      "why": [
+                        {
+                          "code": "match_dish",
+                          "text": "Khớp món bạn hỏi: món bún"
+                        },
+                        {
+                          "code": "near",
+                          "text": "Cách khoảng 650 m (ước tính đường chim bay)"
+                        }
+                      ],
+                      "flags": [
+                        {
+                          "code": "few_reviews",
+                          "text": "Ít đánh giá"
+                        }
+                      ],
+                      "in_shortlist": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 2,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-002"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-001"
+                }
+              ],
+              "pending": null,
+              "turn_count": 2
+            },
+            "turn": {
+              "intent": "SEARCH_VENUES",
+              "tools": [
+                "search_venues"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "So sánh A và B, chỗ nào gần hơn?",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "So sánh A và B theo khoảng cách:"
+                },
+                {
+                  "type": "compare_table",
+                  "criteria": [
+                    {
+                      "id": "distance",
+                      "label": "Khoảng cách"
+                    }
+                  ],
+                  "columns": [
+                    {
+                      "label": "A",
+                      "venue_id": "CHT-002",
+                      "name": "[SYNTHETIC] Bún Thử 2"
+                    },
+                    {
+                      "label": "B",
+                      "venue_id": "CHT-001",
+                      "name": "[SYNTHETIC] Bún Thử 1"
+                    }
+                  ],
+                  "rows": [
+                    {
+                      "criterion_id": "distance",
+                      "cells": [
+                        {
+                          "value": "~570 m",
+                          "status": "estimate",
+                          "note": "ước tính đường chim bay"
+                        },
+                        {
+                          "value": "~650 m",
+                          "status": "estimate",
+                          "note": "ước tính đường chim bay"
+                        }
+                      ]
+                    }
+                  ],
+                  "unsupported": []
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 2,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-002"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-001"
+                }
+              ],
+              "pending": null,
+              "turn_count": 3
+            },
+            "turn": {
+              "intent": "COMPARE",
+              "tools": [
+                "compare"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "Thêm A",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Mình đã thêm [SYNTHETIC] Bún Thử 2 vào danh sách (1/5). Bạn muốn tìm thêm món khác hay xem tiếp một lựa chọn nữa?"
+                }
+              ]
+            },
+            "chat": {
+              "phase": "choose",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 2,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [
+                {
+                  "venue_id": "CHT-002",
+                  "status": "considering"
+                }
+              ],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-002"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-001"
+                }
+              ],
+              "pending": null,
+              "turn_count": 4
+            },
+            "turn": {
+              "intent": "ADD",
+              "tools": [
+                "shortlist_add"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "allergy_flow",
+      "turns": [
+        {
+          "request": {
+            "text": null,
+            "action": {
+              "type": "set_location",
+              "location": {
+                "district": "Hoàn Kiếm"
+              }
+            }
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Đã cập nhật: khu vực: Hoàn Kiếm (xấp xỉ)."
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": null,
+              "turn_count": 1
+            },
+            "turn": {
+              "intent": "UPDATE_PROFILE",
+              "tools": [
+                "set_profile"
+              ],
+              "understanding": "action"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "có bạn không ăn cua",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "clarify",
+                  "pending_id": "p2",
+                  "question": "Bạn không ăn cua: đây là dị ứng hay chỉ là không thích?",
+                  "options": [
+                    {
+                      "option_id": "allergy",
+                      "label": "Dị ứng"
+                    },
+                    {
+                      "option_id": "dislike",
+                      "label": "Chỉ là không thích"
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": {
+                "pending_id": "p2",
+                "kind": "clarify_intent",
+                "options": [
+                  {
+                    "option_id": "allergy",
+                    "label": "Dị ứng"
+                  },
+                  {
+                    "option_id": "dislike",
+                    "label": "Chỉ là không thích"
+                  }
+                ]
+              },
+              "turn_count": 2
+            },
+            "turn": {
+              "intent": "SET_AVOID",
+              "tools": [
+                "clarify"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "dị ứng",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "notice",
+                  "level": "safety",
+                  "code": "allergy_unknown",
+                  "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [
+                {
+                  "term": "cua",
+                  "family": "crustacean",
+                  "source": "user_said",
+                  "venue_confirmations": []
+                }
+              ],
+              "shortlist": [],
+              "last_results": [],
+              "pending": null,
+              "turn_count": 3
+            },
+            "turn": {
+              "intent": "ANSWER_PENDING",
+              "tools": [
+                "answer_pending"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "tìm quán chè",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "notice",
+                  "level": "info",
+                  "code": "criterion_unsupported",
+                  "text": "Dữ liệu chưa có tiêu chí: yên tĩnh; mình không suy diễn từ sao hay ảnh nên chưa lọc theo các tiêu chí này."
+                },
+                {
+                  "type": "text",
+                  "text": "Mình tìm thấy 2 quán chè quanh Hoàn Kiếm (xấp xỉ) (bán kính 1500 m, khoảng cách ước tính đường chim bay)."
+                },
+                {
+                  "type": "notice",
+                  "level": "safety",
+                  "code": "allergy_unknown",
+                  "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+                },
+                {
+                  "type": "venue_cards",
+                  "title": null,
+                  "cards": [
+                    {
+                      "label": "A",
+                      "venue": {
+                        "id": "CHT-011",
+                        "name": "[SYNTHETIC] Chè Thử 11",
+                        "district": "Hoàn Kiếm",
+                        "address": "Số 21 Lò Sũ, Hoàn Kiếm, Hà Nội",
+                        "dish_tags": [
+                          "Chè",
+                          "Tráng miệng"
+                        ],
+                        "price": {
+                          "min_vnd": 15000,
+                          "max_vnd": 45000,
+                          "semantics": "venue_range",
+                          "evidence": "estimate"
+                        },
+                        "hours": {
+                          "status": "unknown",
+                          "display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)"
+                        },
+                        "rating": {
+                          "value": 4.4,
+                          "count": 260
+                        }
+                      },
+                      "distance_m": 200,
+                      "distance_source": "straight_line_estimate",
+                      "why": [
+                        {
+                          "code": "match_dish",
+                          "text": "Khớp món bạn hỏi: chè"
+                        },
+                        {
+                          "code": "near",
+                          "text": "Cách khoảng 200 m (ước tính đường chim bay)"
+                        },
+                        {
+                          "code": "well_rated",
+                          "text": "Điểm 4.4/5 theo 260 đánh giá trên nguồn"
+                        }
+                      ],
+                      "flags": [
+                        {
+                          "code": "allergy_unknown",
+                          "text": "Chưa đủ thông tin về dị ứng; hãy hỏi quán trước khi ăn"
+                        }
+                      ],
+                      "in_shortlist": false
+                    },
+                    {
+                      "label": "B",
+                      "venue": {
+                        "id": "CHT-012",
+                        "name": "[SYNTHETIC] Chè Thử 12",
+                        "district": "Hoàn Kiếm",
+                        "address": "Số 22 Tạ Hiện, Hoàn Kiếm, Hà Nội",
+                        "dish_tags": [
+                          "Chè",
+                          "Tráng miệng"
+                        ],
+                        "price": {
+                          "min_vnd": 15000,
+                          "max_vnd": 45000,
+                          "semantics": "venue_range",
+                          "evidence": "estimate"
+                        },
+                        "hours": {
+                          "status": "unknown",
+                          "display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)"
+                        },
+                        "rating": {
+                          "value": 4.65,
+                          "count": 3
+                        }
+                      },
+                      "distance_m": 250,
+                      "distance_source": "straight_line_estimate",
+                      "why": [
+                        {
+                          "code": "match_dish",
+                          "text": "Khớp món bạn hỏi: chè"
+                        },
+                        {
+                          "code": "near",
+                          "text": "Cách khoảng 250 m (ước tính đường chim bay)"
+                        }
+                      ],
+                      "flags": [
+                        {
+                          "code": "allergy_unknown",
+                          "text": "Chưa đủ thông tin về dị ứng; hãy hỏi quán trước khi ăn"
+                        },
+                        {
+                          "code": "few_reviews",
+                          "text": "Ít đánh giá"
+                        }
+                      ],
+                      "in_shortlist": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [
+                {
+                  "term": "cua",
+                  "family": "crustacean",
+                  "source": "user_said",
+                  "venue_confirmations": []
+                }
+              ],
+              "shortlist": [],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-011"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-012"
+                }
+              ],
+              "pending": null,
+              "turn_count": 4
+            },
+            "turn": {
+              "intent": "SEARCH_VENUES",
+              "tools": [
+                "search_venues"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "plan_confirm",
+      "turns": [
+        {
+          "request": {
+            "text": null,
+            "action": {
+              "type": "set_location",
+              "location": {
+                "district": "Hoàn Kiếm"
+              }
+            }
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Đã cập nhật: khu vực: Hoàn Kiếm (xấp xỉ)."
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": null,
+              "turn_count": 1
+            },
+            "turn": {
+              "intent": "UPDATE_PROFILE",
+              "tools": [
+                "set_profile"
+              ],
+              "understanding": "action"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "tìm quán chè gần đây",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "notice",
+                  "level": "info",
+                  "code": "criterion_unsupported",
+                  "text": "Dữ liệu chưa có tiêu chí: yên tĩnh; mình không suy diễn từ sao hay ảnh nên chưa lọc theo các tiêu chí này."
+                },
+                {
+                  "type": "text",
+                  "text": "Mình tìm thấy 2 quán chè quanh Hoàn Kiếm (xấp xỉ) (bán kính 1500 m, khoảng cách ước tính đường chim bay)."
+                },
+                {
+                  "type": "venue_cards",
+                  "title": null,
+                  "cards": [
+                    {
+                      "label": "A",
+                      "venue": {
+                        "id": "CHT-011",
+                        "name": "[SYNTHETIC] Chè Thử 11",
+                        "district": "Hoàn Kiếm",
+                        "address": "Số 21 Lò Sũ, Hoàn Kiếm, Hà Nội",
+                        "dish_tags": [
+                          "Chè",
+                          "Tráng miệng"
+                        ],
+                        "price": {
+                          "min_vnd": 15000,
+                          "max_vnd": 45000,
+                          "semantics": "venue_range",
+                          "evidence": "estimate"
+                        },
+                        "hours": {
+                          "status": "unknown",
+                          "display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)"
+                        },
+                        "rating": {
+                          "value": 4.4,
+                          "count": 260
+                        }
+                      },
+                      "distance_m": 200,
+                      "distance_source": "straight_line_estimate",
+                      "why": [
+                        {
+                          "code": "match_dish",
+                          "text": "Khớp món bạn hỏi: chè"
+                        },
+                        {
+                          "code": "near",
+                          "text": "Cách khoảng 200 m (ước tính đường chim bay)"
+                        },
+                        {
+                          "code": "well_rated",
+                          "text": "Điểm 4.4/5 theo 260 đánh giá trên nguồn"
+                        }
+                      ],
+                      "flags": [],
+                      "in_shortlist": false
+                    },
+                    {
+                      "label": "B",
+                      "venue": {
+                        "id": "CHT-012",
+                        "name": "[SYNTHETIC] Chè Thử 12",
+                        "district": "Hoàn Kiếm",
+                        "address": "Số 22 Tạ Hiện, Hoàn Kiếm, Hà Nội",
+                        "dish_tags": [
+                          "Chè",
+                          "Tráng miệng"
+                        ],
+                        "price": {
+                          "min_vnd": 15000,
+                          "max_vnd": 45000,
+                          "semantics": "venue_range",
+                          "evidence": "estimate"
+                        },
+                        "hours": {
+                          "status": "unknown",
+                          "display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)"
+                        },
+                        "rating": {
+                          "value": 4.65,
+                          "count": 3
+                        }
+                      },
+                      "distance_m": 250,
+                      "distance_source": "straight_line_estimate",
+                      "why": [
+                        {
+                          "code": "match_dish",
+                          "text": "Khớp món bạn hỏi: chè"
+                        },
+                        {
+                          "code": "near",
+                          "text": "Cách khoảng 250 m (ước tính đường chim bay)"
+                        }
+                      ],
+                      "flags": [
+                        {
+                          "code": "few_reviews",
+                          "text": "Ít đánh giá"
+                        }
+                      ],
+                      "in_shortlist": false
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-011"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-012"
+                }
+              ],
+              "pending": null,
+              "turn_count": 2
+            },
+            "turn": {
+              "intent": "SEARCH_VENUES",
+              "tools": [
+                "search_venues"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "Thêm A",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Mình đã thêm [SYNTHETIC] Chè Thử 11 vào danh sách (1/5). Bạn muốn tìm thêm món khác hay xem tiếp một lựa chọn nữa?"
+                }
+              ]
+            },
+            "chat": {
+              "phase": "choose",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [
+                {
+                  "venue_id": "CHT-011",
+                  "status": "considering"
+                }
+              ],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-011"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-012"
+                }
+              ],
+              "pending": null,
+              "turn_count": 3
+            },
+            "turn": {
+              "intent": "ADD",
+              "tools": [
+                "shortlist_add"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "tạo lịch đi",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "clarify",
+                  "pending_id": "p4",
+                  "question": "Bạn muốn bắt đầu lúc nào, kết thúc trước mấy giờ và đi bằng phương tiện gì?",
+                  "options": [
+                    {
+                      "option_id": "veh:walk",
+                      "label": "Đi bộ"
+                    },
+                    {
+                      "option_id": "veh:motorbike",
+                      "label": "Xe máy"
+                    },
+                    {
+                      "option_id": "veh:car",
+                      "label": "Ô tô"
+                    },
+                    {
+                      "option_id": "veh:taxi",
+                      "label": "Taxi/Grab"
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "choose",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [
+                {
+                  "venue_id": "CHT-011",
+                  "status": "considering"
+                }
+              ],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-011"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-012"
+                }
+              ],
+              "pending": {
+                "pending_id": "p4",
+                "kind": "clarify_slot",
+                "options": [
+                  {
+                    "option_id": "veh:walk",
+                    "label": "Đi bộ"
+                  },
+                  {
+                    "option_id": "veh:motorbike",
+                    "label": "Xe máy"
+                  },
+                  {
+                    "option_id": "veh:car",
+                    "label": "Ô tô"
+                  },
+                  {
+                    "option_id": "veh:taxi",
+                    "label": "Taxi/Grab"
+                  }
+                ],
+                "slot": "plan_slots"
+              },
+              "turn_count": 4
+            },
+            "turn": {
+              "intent": "REQUEST_PLAN",
+              "tools": [
+                "clarify"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        },
+        {
+          "request": {
+            "text": "16 giờ đến 18 giờ, đi bộ",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "text",
+                  "text": "Đã cập nhật: bắt đầu 16:00; kết thúc trước 18:00; đi bộ."
+                },
+                {
+                  "type": "text",
+                  "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+                },
+                {
+                  "type": "confirm_summary",
+                  "items": [
+                    {
+                      "id": "area",
+                      "label": "Điểm xuất phát",
+                      "value": "Hoàn Kiếm",
+                      "status": "user_said",
+                      "editable": true
+                    },
+                    {
+                      "id": "start_time",
+                      "label": "Bắt đầu",
+                      "value": "16:00",
+                      "status": "user_said",
+                      "editable": true
+                    },
+                    {
+                      "id": "end_time",
+                      "label": "Kết thúc trước",
+                      "value": "18:00",
+                      "status": "user_said",
+                      "editable": true
+                    },
+                    {
+                      "id": "party_size",
+                      "label": "Số người",
+                      "value": null,
+                      "status": "missing",
+                      "editable": true
+                    },
+                    {
+                      "id": "vehicle",
+                      "label": "Phương tiện",
+                      "value": "đi bộ",
+                      "status": "user_said",
+                      "editable": true
+                    },
+                    {
+                      "id": "budget",
+                      "label": "Ngân sách",
+                      "value": null,
+                      "status": "missing",
+                      "editable": true
+                    },
+                    {
+                      "id": "tastes",
+                      "label": "Khẩu vị",
+                      "value": null,
+                      "status": "missing",
+                      "editable": true
+                    },
+                    {
+                      "id": "allergies",
+                      "label": "Dị ứng",
+                      "value": null,
+                      "status": "missing",
+                      "editable": true
+                    },
+                    {
+                      "id": "max_leg_min",
+                      "label": "Đi bộ tối đa mỗi chặng",
+                      "value": null,
+                      "status": "missing",
+                      "editable": true
+                    }
+                  ],
+                  "shortlist": [
+                    {
+                      "venue_id": "CHT-011",
+                      "name": "[SYNTHETIC] Chè Thử 11",
+                      "status": "considering"
+                    }
+                  ],
+                  "missing": [],
+                  "warnings": [
+                    {
+                      "code": "price_not_per_person",
+                      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+                    },
+                    {
+                      "code": "hours_unknown",
+                      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "confirm",
+              "profile": {
+                "area": {
+                  "value": {
+                    "kind": "district",
+                    "label": "Hoàn Kiếm",
+                    "lat": 21.028499999999998,
+                    "lon": 105.85241666666667,
+                    "district": "Hoàn Kiếm"
+                  },
+                  "source": "user_said",
+                  "turn": 1,
+                  "confirmed": true
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": "16:00",
+                  "source": "user_said",
+                  "turn": 5,
+                  "confirmed": true
+                },
+                "end_time": {
+                  "value": "18:00",
+                  "source": "user_said",
+                  "turn": 5,
+                  "confirmed": true
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": "walk",
+                  "source": "user_said",
+                  "turn": 5,
+                  "confirmed": true
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [
+                {
+                  "venue_id": "CHT-011",
+                  "status": "considering"
+                }
+              ],
+              "last_results": [
+                {
+                  "label": "A",
+                  "venue_id": "CHT-011"
+                },
+                {
+                  "label": "B",
+                  "venue_id": "CHT-012"
+                }
+              ],
+              "pending": {
+                "pending_id": "p5",
+                "kind": "confirm_plan",
+                "options": [
+                  {
+                    "option_id": "confirm_yes",
+                    "label": "Xác nhận và tạo lịch trình"
+                  },
+                  {
+                    "option_id": "confirm_no",
+                    "label": "Sửa thông tin"
+                  }
+                ]
+              },
+              "turn_count": 5
+            },
+            "turn": {
+              "intent": "ANSWER_PENDING",
+              "tools": [
+                "answer_pending"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        }
+      ]
+    },
+    {
+      "name": "ambiguous_ok",
+      "turns": [
+        {
+          "request": {
+            "text": "ok",
+            "action": null
+          },
+          "response": {
+            "reply": {
+              "blocks": [
+                {
+                  "type": "clarify",
+                  "pending_id": "p1",
+                  "question": "Bạn muốn mình làm gì tiếp?",
+                  "options": [
+                    {
+                      "option_id": "search",
+                      "label": "Tìm quán gần tôi"
+                    },
+                    {
+                      "option_id": "discover",
+                      "label": "Gợi ý món"
+                    }
+                  ]
+                }
+              ]
+            },
+            "chat": {
+              "phase": "discover",
+              "profile": {
+                "area": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "party_size": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "audience": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "budget": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "start_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "end_time": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "duration_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "vehicle": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "tastes": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                }
+              },
+              "allergies": [],
+              "shortlist": [],
+              "last_results": [],
+              "pending": {
+                "pending_id": "p1",
+                "kind": "clarify_intent",
+                "options": [
+                  {
+                    "option_id": "search",
+                    "label": "Tìm quán gần tôi"
+                  },
+                  {
+                    "option_id": "discover",
+                    "label": "Gợi ý món"
+                  }
+                ]
+              },
+              "turn_count": 1
+            },
+            "turn": {
+              "intent": "AMBIGUOUS_ACK",
+              "tools": [
+                "clarify"
+              ],
+              "understanding": "rules"
+            },
+            "llm_calls": 0,
+            "plan_request": false
+          }
+        }
+      ]
+    }
+  ]
+};

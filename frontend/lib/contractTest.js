@@ -17,6 +17,8 @@ import {
   planTourLegacy,
   getVenuesMap,
   getMapsLinks,
+  chatTurn,
+  getChatState,
   ApiError
 } from './api.js';
 
@@ -276,7 +278,54 @@ async function runTests() {
   assert(caughtRealMapsErr === true, "Real mode must propagate errors without fabricating URLs");
   console.log("  ✓ Real mode getMapsLinks error propagation passed");
 
-  console.log("\n🎉 ALL 17 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
+  // 18. chatTurn and getChatState (contract v1.8)
+  console.log("Test 18: POST /v1/sessions/{id}/chat and getChatState (contract v1.8)");
+  const chatSession = await createSession();
+  assert(chatSession.session_id, "session_id required");
+
+  // Turn 1: discover without location
+  const turn1 = await chatTurn(chatSession.session_id, {
+    text: "Chiều nay nóng quá, quanh đây ăn gì được?",
+    action: null,
+    revision: 0
+  }, chatSession.token);
+
+  assert(turn1.reply && Array.isArray(turn1.reply.blocks), "turn1 must have reply.blocks");
+  assert(turn1.reply.blocks.some(b => b.type === 'text'), "turn1 must have text block");
+  assert(turn1.reply.blocks.some(b => b.type === 'clarify'), "turn1 must have clarify block");
+  assert(turn1.chat && turn1.chat.phase === 'discover', "turn1 chat phase must be discover");
+  assert(turn1.revision === 1, "revision must increment to 1");
+
+  // Verify getChatState returns same chat state
+  const state1 = await getChatState(chatSession.session_id, chatSession.token);
+  assert(state1 && state1.phase === 'discover', "getChatState must return matching chat state");
+
+  // Turn 2: 409 revision conflict check
+  let caughtChatConflict = false;
+  try {
+    await chatTurn(chatSession.session_id, {
+      text: "Quán phở",
+      action: null,
+      revision: 0 // out of date!
+    }, chatSession.token);
+  } catch (err) {
+    caughtChatConflict = true;
+    assert(err.status === 409 || err.code === 'revision_conflict', "Expected 409 revision conflict");
+  }
+  assert(caughtChatConflict === true, "Must catch 409 revision conflict on stale revision");
+
+  // Turn 3: Action set_location with current revision
+  const turn3 = await chatTurn(chatSession.session_id, {
+    text: null,
+    action: { type: "set_location", location: { district: "Cầu Giấy" } },
+    revision: 1
+  }, chatSession.token);
+  assert(turn3.revision === 2, "revision must increment to 2");
+  const areaVal = turn3.chat.profile.area.value;
+  assert(areaVal === "Cầu Giấy" || areaVal?.label === "Cầu Giấy" || areaVal?.district === "Cầu Giấy", "profile.area must be updated to Cầu Giấy");
+  console.log("  ✓ Conversational chat turn and getChatState contract v1.8 verified");
+
+  console.log("\n🎉 ALL 18 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
 }
 
 runTests().catch(err => {

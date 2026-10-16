@@ -1068,7 +1068,8 @@ export async function getClientConfig(options = {}) {
         doc: "docs/PHASE4.md"
       },
       features: {
-        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || process.env.NEXT_PUBLIC_UI_V2 === '1' || false
+        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || process.env.NEXT_PUBLIC_UI_V2 === '1' || false,
+        chat_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat') === 'v2') || process.env.NEXT_PUBLIC_CHAT_V2 === '1' || false
       },
       is_mock: true
     };
@@ -1082,8 +1083,13 @@ export async function getClientConfig(options = {}) {
     });
     if (res && !res.features) {
       res.features = {
-        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || false
+        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || false,
+        chat_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat') === 'v2') || false
       };
+    } else if (res?.features) {
+      if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat') === 'v2') {
+        res.features.chat_v2 = true;
+      }
     }
     return res;
   } catch (err) {
@@ -1347,5 +1353,334 @@ export async function getMapsLinks(sessionId, mode = 'walking', token = '', opti
   });
 }
 
+export { SYNTHETIC_CHAT_TURNS } from './chatFixtures.js';
+import { SYNTHETIC_CHAT_TURNS } from './chatFixtures.js';
 
+/**
+ * 14. Conversational Chat Turn (contract v1.8, TASK C3-1)
+ * POST /v1/sessions/{id}/chat
+ * 
+ * Supports both real mode (POST /v1/sessions/{id}/chat with X-Session-Token and revision)
+ * and mock mode (replaying recorded turns by matching request text/action, else generic labelled mock block).
+ */
+export async function chatTurn(sessionId, body, token = '', options = {}) {
+  if (!sessionId) throw new ApiError(400, 'Thiếu sessionId.');
+  if (!body) throw new ApiError(400, 'Thiếu body cho lượt chat.');
+  if (body.text === undefined && body.action === undefined) {
+    throw new ApiError(422, 'Cần có text hoặc action.');
+  }
 
+  if (isMockMode()) {
+    const session = getOrCreateMockSession(sessionId);
+
+    if (options?.signal?.aborted) {
+      const err = new Error('The operation was aborted');
+      err.name = 'AbortError';
+      throw err;
+    }
+
+    if (body.revision !== undefined && body.revision !== session.revision) {
+      throw new ApiError(
+        'revision_conflict',
+        `Xung đột phiên bản: Dữ liệu hiện tại trên máy chủ là bản #${session.revision}, nhưng bạn gửi yêu cầu từ bản #${body.revision}. Vui lòng làm mới để đồng bộ.`,
+        { current_revision: session.revision, requested_revision: body.revision },
+        409
+      );
+    }
+
+    // Initialize mock chat state if empty
+    if (!session.chat) {
+      session.chat = {
+        phase: 'discover',
+        profile: {
+          area: { value: null, source: 'missing', turn: 0, confirmed: false },
+          party_size: { value: null, source: 'missing', turn: 0, confirmed: false },
+          audience: { value: null, source: 'missing', turn: 0, confirmed: false },
+          budget: { value: null, source: 'missing', turn: 0, confirmed: false },
+          start_time: { value: null, source: 'missing', turn: 0, confirmed: false },
+          end_time: { value: null, source: 'missing', turn: 0, confirmed: false },
+          duration_min: { value: null, source: 'missing', turn: 0, confirmed: false },
+          vehicle: { value: null, source: 'missing', turn: 0, confirmed: false },
+          tastes: { value: null, source: 'missing', turn: 0, confirmed: false },
+          max_leg_min: { value: null, source: 'missing', turn: 0, confirmed: false }
+        },
+        allergies: [],
+        shortlist: [],
+        last_results: [],
+        pending: null,
+        turn_count: 0
+      };
+    }
+
+    session.chat.turn_count = (session.chat.turn_count || 0) + 1;
+
+    // Handle local deterministic actions
+    if (body.action?.type === 'add' && body.action.venue_id) {
+      if (!session.chat.shortlist.some((s) => s.venue_id === body.action.venue_id)) {
+        session.chat.shortlist.push({
+          venue_id: body.action.venue_id,
+          status: 'considering',
+          note: ''
+        });
+      }
+    } else if (body.action?.type === 'remove' && body.action.venue_id) {
+      session.chat.shortlist = session.chat.shortlist.filter((s) => s.venue_id !== body.action.venue_id);
+    } else if (body.action?.type === 'keep' && body.action.venue_id) {
+      const item = session.chat.shortlist.find((s) => s.venue_id === body.action.venue_id);
+      if (item) item.status = 'kept';
+    } else if (body.action?.type === 'set_location' && body.action.location) {
+      const loc = body.action.location;
+      const val = loc.district || loc.label || (loc.lat && loc.lon ? `Vị trí ước tính ${loc.lat.toFixed(4)}, ${loc.lon.toFixed(4)}` : 'Hà Nội');
+      session.chat.profile.area = {
+        value: val,
+        source: 'user_said',
+        turn: session.chat.turn_count,
+        confirmed: true
+      };
+    } else if (body.action?.type === 'confirm_yes') {
+      session.chat.phase = 'planned';
+      if (!session.tour) {
+        session.tour = createMockTour(session.preferences, session.revision + 1);
+      }
+      session.revision = (session.revision || 0) + 1;
+      return {
+        reply: {
+          blocks: [
+            {
+              type: 'notice',
+              level: 'info',
+              code: 'tour_generated',
+              text: 'Lịch trình đã được xác nhận và khởi tạo thành công từ danh sách quán bạn đã chọn.'
+            },
+            {
+              type: 'tour_ready',
+              revision: session.revision
+            }
+          ]
+        },
+        chat: session.chat,
+        turn: { intent: 'CONFIRM_YES', tools: ['generate_tour'], understanding: 'action' },
+        tour: session.tour,
+        revision: session.revision,
+        extraction_source: 'action',
+        llm_calls: 0,
+        llm_budget: { limit: 18, used: 2, remaining: 16, exhausted: false },
+        is_mock: true
+      };
+    }
+
+    // Search for matching turn in SYNTHETIC_CHAT_TURNS
+    let matchedTurn = null;
+
+    // Helper to check match
+    const isMatch = (req) => {
+      if (body.text && req.text) {
+        const normUser = body.text.trim().toLowerCase();
+        const normReq = req.text.trim().toLowerCase();
+        if (normUser === normReq || normUser.includes(normReq) || normReq.includes(normUser)) {
+          return true;
+        }
+      }
+      if (body.action && req.action) {
+        if (body.action.type === req.action.type) {
+          if (body.action.location?.district && req.action.location?.district) {
+            return body.action.location.district.toLowerCase() === req.action.location.district.toLowerCase();
+          }
+          if (body.action.option_id && req.action.option_id) {
+            return body.action.option_id === req.action.option_id;
+          }
+          return true;
+        }
+      }
+      // Action-to-text bridge for recorded turns
+      if (body.action && req.text) {
+        const normReq = req.text.trim().toLowerCase();
+        if (body.action.type === 'pick_option') {
+          if (body.action.option_id === 'allergy' && (normReq === 'dị ứng' || normReq.includes('dị ứng'))) return true;
+          if (body.action.option_id === 'dislike' && (normReq === 'không thích' || normReq.includes('không thích'))) return true;
+          if (body.action.option_id?.toLowerCase() === normReq) return true;
+        }
+        if (body.action.type === 'request_plan' && (normReq.includes('tạo lịch') || normReq.includes('lập tour'))) {
+          return true;
+        }
+        if (body.action.type === 'add' && normReq.includes('thêm')) {
+          return true;
+        }
+        if (body.action.type === 'set_location' && body.action.location?.district) {
+          if (normReq.includes(body.action.location.district.toLowerCase())) return true;
+        }
+      }
+      return false;
+    };
+
+    // 1. Check next turn in active conversation sequence
+    if (session._chatConvName && session._chatNextTurnIdx !== undefined) {
+      const conv = SYNTHETIC_CHAT_TURNS.conversations.find((c) => c.name === session._chatConvName);
+      if (conv && conv.turns[session._chatNextTurnIdx]) {
+        const candidate = conv.turns[session._chatNextTurnIdx];
+        if (isMatch(candidate.request)) {
+          matchedTurn = candidate;
+          session._chatNextTurnIdx++;
+        }
+      }
+    }
+
+    // 2. If not matched, search all conversations
+    if (!matchedTurn) {
+      for (const conv of SYNTHETIC_CHAT_TURNS.conversations) {
+        for (let i = 0; i < conv.turns.length; i++) {
+          const candidate = conv.turns[i];
+          if (isMatch(candidate.request)) {
+            matchedTurn = candidate;
+            session._chatConvName = conv.name;
+            session._chatNextTurnIdx = i + 1;
+            break;
+          }
+        }
+        if (matchedTurn) break;
+      }
+    }
+
+    session.revision = (session.revision || 0) + 1;
+
+    if (matchedTurn) {
+      const respChat = JSON.parse(JSON.stringify(matchedTurn.response.chat));
+      // Merge profile and shortlist
+      session.chat.phase = respChat.phase || session.chat.phase;
+      if (respChat.profile) {
+        session.chat.profile = { ...session.chat.profile, ...respChat.profile };
+      }
+      if (respChat.allergies && respChat.allergies.length > 0) {
+        session.chat.allergies = respChat.allergies;
+      }
+      if (respChat.last_results && respChat.last_results.length > 0) {
+        session.chat.last_results = respChat.last_results;
+      }
+      session.chat.pending = respChat.pending !== undefined ? respChat.pending : session.chat.pending;
+
+      if (matchedTurn.response.tour) {
+        session.tour = JSON.parse(JSON.stringify(matchedTurn.response.tour));
+      }
+
+      // Check if tour_ready should be attached
+      const hasTourReady = matchedTurn.response.reply?.blocks?.some((b) => b.type === 'tour_ready');
+      if (hasTourReady && !session.tour) {
+        session.tour = createMockTour(session.preferences, session.revision);
+      }
+
+      return {
+        reply: JSON.parse(JSON.stringify(matchedTurn.response.reply)),
+        chat: session.chat,
+        turn: matchedTurn.response.turn || { intent: 'MOCK_INTENT', tools: [], understanding: 'rules' },
+        tour: session.tour,
+        revision: session.revision,
+        extraction_source: matchedTurn.response.turn?.understanding || 'rules',
+        llm_calls: matchedTurn.response.llm_calls || 0,
+        llm_budget: { limit: 18, used: 2, remaining: 16, exhausted: false },
+        is_mock: true
+      };
+    }
+
+    // Handler for confirm_yes -> tour_ready
+    if (
+      body.action?.type === 'confirm_yes' ||
+      body.action?.option_id === 'confirm_yes' ||
+      (body.text && (body.text.toLowerCase().includes('xác nhận và tạo lịch trình') || body.text.toLowerCase() === 'xác nhận'))
+    ) {
+      if (!session.tour) {
+        session.tour = createMockTour(session.preferences || { mode: 'explore', city: 'Hà Nội' }, session.revision);
+      }
+      return {
+        reply: {
+          blocks: [
+            {
+              type: 'text',
+              text: 'Lịch trình tour ẩm thực của bạn đã sẵn sàng! Bạn có thể xem lộ trình chi tiết bên dưới.'
+            },
+            {
+              type: 'tour_ready',
+              revision: session.revision
+            }
+          ]
+        },
+        chat: {
+          ...session.chat,
+          phase: 'tour_ready',
+          pending: null
+        },
+        turn: {
+          intent: 'CONFIRM_PLAN',
+          tools: ['build_tour'],
+          understanding: 'rules'
+        },
+        tour: session.tour,
+        revision: session.revision,
+        extraction_source: 'rules',
+        llm_calls: 0,
+        llm_budget: { limit: 18, used: 2, remaining: 16, exhausted: false },
+        is_mock: true
+      };
+    }
+
+    // Generic fallback mock response
+    return {
+      reply: {
+        blocks: [
+          {
+            type: 'text',
+            text: `[MOCK] Phản hồi giả lập cho: "${body.text || body.action?.type || 'lượt trò chuyện'}"`
+          }
+        ]
+      },
+      chat: session.chat,
+      turn: {
+        intent: 'MOCK_FALLBACK',
+        tools: [],
+        understanding: 'rules'
+      },
+      tour: session.tour,
+      revision: session.revision,
+      extraction_source: 'rules',
+      llm_calls: 0,
+      llm_budget: { limit: 18, used: 2, remaining: 16, exhausted: false },
+      is_mock: true
+    };
+  }
+
+  // Real Mode
+  const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}/chat`;
+  const headers = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json'
+  };
+  if (token) {
+    headers['X-Session-Token'] = token;
+  }
+
+  return await safeFetch(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(body),
+    signal: options?.signal
+  });
+}
+
+/**
+ * 15. Get Chat State (contract v1.8, TASK C3-1)
+ * Reads chat state from session.
+ */
+export async function getChatState(sessionId, token = '', options = {}) {
+  if (isMockMode()) {
+    const session = getOrCreateMockSession(sessionId);
+    return session.chat || null;
+  }
+
+  const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}`;
+  const headers = { 'Accept': 'application/json' };
+  if (token) {
+    headers['X-Session-Token'] = token;
+  }
+
+  const session = await safeFetch(url, { method: 'GET', headers, signal: options?.signal });
+  return session?.chat || session?.state || null;
+}
