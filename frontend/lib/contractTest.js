@@ -16,6 +16,7 @@ import {
   replaceTourStop,
   planTourLegacy,
   getVenuesMap,
+  getMapsLinks,
   ApiError
 } from './api.js';
 
@@ -220,7 +221,62 @@ async function runTests() {
   assert(caughtAbort === true, "Must propagate AbortError when signal is aborted");
   console.log("  ✓ AbortError properly propagated without being swallowed");
 
-  console.log("\n🎉 ALL 15 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
+  // 16. getMapsLinks contract v1.7 (mock mode, travelmode, limits, 409 no_tour)
+  console.log("Test 16: GET /v1/sessions/{id}/tour/maps-links (contract v1.7)");
+  const emptySession = await createSession();
+  let caughtNoTour = false;
+  try {
+    await getMapsLinks(emptySession.session_id, 'walking', emptySession.token);
+  } catch (err) {
+    caughtNoTour = true;
+    assert(err.code === 'no_tour' || err.status === 409, `Expected 409 no_tour, got ${err.code}`);
+  }
+  assert(caughtNoTour === true, "Must throw 409 no_tour when session has no tour stops");
+
+  // Switch session back to explore mode and plan valid tour:
+  await updatePreferences(session.session_id, strictRes.revision, { mode: "explore" }, session.token);
+  const validPlan = await planTour(session.session_id, strictRes.revision + 1, session.token);
+  assert(validPlan.tour.stops.length > 0, "tour must have stops");
+
+  // With full tour generated in session:
+  const walkingLinks = await getMapsLinks(session.session_id, 'walking', session.token);
+  assert(walkingLinks.status === 'ok', "status must be ok");
+  assert(walkingLinks.travelmode === 'walking', "travelmode must be walking");
+  assert(walkingLinks.provider === 'google_maps_urls', "provider must be google_maps_urls");
+  assert(walkingLinks.uses_api === false, "uses_api must be false");
+  assert(Array.isArray(walkingLinks.links) && walkingLinks.links.length > 0, "links must be a non-empty array");
+  for (const l of walkingLinks.links) {
+    assert(l.url.startsWith('https://www.google.com/maps/dir/'), "url origin and path");
+    assert(l.url.includes('api=1'), "api=1 must be present");
+    assert(!l.url.includes('dir_action'), "dir_action must NEVER be present");
+    assert(l.waypoint_count <= 3, "waypoint_count must be <= 3");
+    assert(l.url_length <= 2048 && l.url.length <= 2048, "url_length must be <= 2048");
+  }
+
+  // Driving mode toggle
+  const drivingLinks = await getMapsLinks(session.session_id, 'driving', session.token);
+  assert(drivingLinks.travelmode === 'driving', "travelmode must be driving");
+  assert(drivingLinks.links[0].url.includes('travelmode=driving'), "url travelmode driving");
+  console.log("  ✓ Free Google Maps URLs contract v1.7 verified in mock mode");
+
+  // 17. getMapsLinks real mode error propagation
+  console.log("Test 17: GET /v1/sessions/{id}/tour/maps-links (real mode error propagation)");
+  setRuntimeMockMode(false);
+  let caughtRealMapsErr = false;
+  try {
+    process.env.NEXT_PUBLIC_API_URL = 'http://127.0.0.1:19999';
+    await getMapsLinks(session.session_id, 'walking', session.token);
+  } catch (err) {
+    caughtRealMapsErr = true;
+    assert(err instanceof ApiError || err.name === 'TypeError', "Must throw error");
+  } finally {
+    delete process.env.NEXT_PUBLIC_API_URL;
+    setRuntimeMockMode(true);
+  }
+  assert(caughtRealMapsErr === true, "Real mode must propagate errors without fabricating URLs");
+  console.log("  ✓ Real mode getMapsLinks error propagation passed");
+
+  console.log("\n🎉 ALL 17 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
 }
 
 runTests().catch(err => {

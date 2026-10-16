@@ -3,8 +3,8 @@
 import React from 'react';
 import EvidenceStrip from './EvidenceStrip';
 import StopCard from './StopCard';
-import TourStatusBanner from '../TourStatusBanner';
 import Button from '../../ui/Button';
+import MapsLinksBlock from './MapsLinksBlock';
 
 /**
  * ItineraryView for UI_V2 (Scope 3).
@@ -12,11 +12,17 @@ import Button from '../../ui/Button';
  * Includes:
  * - Summary line: stops count, ~walk minutes, price range upper sum labelled as a range
  * - One collapsed EvidenceStrip
+ * - Free Google Maps URLs (GMAPS-URL-2)
  * - Ordered StopCard list with connecting leg lines
  * - Action controls (View Map, Reset, Preferences)
  */
 export default function ItineraryView({
   tour,
+  sessionId = null,
+  sessionToken = '',
+  sessionEpoch = 0,
+  revision = 0,
+  originLabel = null,
   lockedIds = [],
   onInitiateReplace,
   onResetTour,
@@ -124,16 +130,18 @@ export default function ItineraryView({
         </div>
       </div>
 
-      {/* Tour feasibility status banner if status/reasons/proposed changes present */}
-      {tour?.status && (
-        <TourStatusBanner
-          tour={tour}
-          onAdjustPreferences={onOpenPreferences}
-        />
-      )}
-
       {/* ONE collapsed EvidenceStrip */}
       <EvidenceStrip tour={tour} />
+
+      {/* Free Google Maps URLs Itinerary Block (Contract v1.7, GMAPS-URL-2) */}
+      <MapsLinksBlock
+        tour={tour}
+        sessionId={sessionId}
+        sessionToken={sessionToken}
+        sessionEpoch={sessionEpoch}
+        revision={revision}
+        originLabel={originLabel}
+      />
 
       {/* List of StopCards */}
       <div data-stops-list style={{ width: '100%' }}>

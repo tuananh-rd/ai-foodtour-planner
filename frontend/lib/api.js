@@ -1237,4 +1237,74 @@ export async function geocodeAddress(queryText, token = "", options = {}) {
   });
 }
 
+export { SYNTHETIC_MAPS_LINKS } from './mapsFixtures.js';
+import { SYNTHETIC_MAPS_LINKS } from './mapsFixtures.js';
+
+/**
+ * 13. Free Google Maps URLs for tour itinerary (contract v1.7)
+ * GET /v1/sessions/{id}/tour/maps-links?mode=walking|driving
+ * 
+ * Uses no Google Maps API, no API key, and makes no backend calls to Google.
+ * Returns public Google Maps dir URLs with travelmode, up to 3 waypoints per link,
+ * and <= 2048 chars.
+ */
+export async function getMapsLinks(sessionId, mode = 'walking', token = '', options = {}) {
+  const validModes = ['walking', 'driving'];
+  const targetMode = validModes.includes(mode) ? mode : 'walking';
+
+  if (typeof window !== 'undefined' && window.__MOCK_NEXT_MAPS_LINKS_ERROR) {
+    const errData = window.__MOCK_NEXT_MAPS_LINKS_ERROR;
+    window.__MOCK_NEXT_MAPS_LINKS_ERROR = null;
+    throw new ApiError(
+      errData.code || 'error',
+      errData.message || 'Lỗi tạo liên kết bản đồ giả lập',
+      errData.details || null,
+      errData.status || 500
+    );
+  }
+
+  if (typeof window !== 'undefined' && window.__MOCK_NEXT_MAPS_LINKS) {
+    const customRes = window.__MOCK_NEXT_MAPS_LINKS;
+    window.__MOCK_NEXT_MAPS_LINKS = null;
+    return { ...customRes, is_mock: true };
+  }
+
+  if (isMockMode()) {
+    if (typeof window !== 'undefined' && window.__MOCK_MAPS_CASE && SYNTHETIC_MAPS_LINKS[window.__MOCK_MAPS_CASE]) {
+      return { ...SYNTHETIC_MAPS_LINKS[window.__MOCK_MAPS_CASE], is_mock: true };
+    }
+
+    const session = getOrCreateMockSession(sessionId);
+    if (!session.tour || !session.tour.stops || session.tour.stops.length === 0) {
+      throw new ApiError('no_tour', 'Phiên chưa có lịch trình để tạo liên kết bản đồ.', null, 409);
+    }
+    if (session.tour.status === 'insufficient_evidence' || session.tour.status === 'no_solution') {
+      throw new ApiError('no_tour', 'Phiên chưa có lịch trình để tạo liên kết bản đồ.', null, 409);
+    }
+
+    if (targetMode === 'driving') {
+      return { ...SYNTHETIC_MAPS_LINKS['single_driving'], is_mock: true };
+    }
+    if (session.tour.stops.length > 5) {
+      return { ...SYNTHETIC_MAPS_LINKS['split_mobile'], is_mock: true };
+    }
+    return { ...SYNTHETIC_MAPS_LINKS['single_walking'], is_mock: true };
+  }
+
+  const headers = {
+    'Accept': 'application/json'
+  };
+  if (token) {
+    headers['X-Session-Token'] = token;
+  }
+
+  const query = new URLSearchParams({ mode: targetMode });
+  return await safeFetch(`${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}/tour/maps-links?${query.toString()}`, {
+    method: 'GET',
+    headers,
+    signal: options?.signal
+  });
+}
+
+
 

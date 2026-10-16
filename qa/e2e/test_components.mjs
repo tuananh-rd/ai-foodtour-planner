@@ -73,6 +73,8 @@ const Sheet = loadComponent('../../frontend/app/ui/Sheet.jsx');
 const Skeleton = loadComponent('../../frontend/app/ui/Skeleton.jsx');
 const EvidenceChip = loadComponent('../../frontend/app/ui/EvidenceChip.jsx');
 const Toast = loadComponent('../../frontend/app/ui/Toast.jsx');
+const MapsLinksBlock = loadComponent('../../frontend/app/components/v2/MapsLinksBlock.jsx');
+import { SYNTHETIC_MAPS_LINKS } from '../../frontend/lib/mapsFixtures.js';
 
 const results = [];
 function record(id, title, passed, details = '') {
@@ -601,6 +603,144 @@ async function runComponentTests() {
       htmlToast.includes('aria-label="Đóng thông báo"') &&
       htmlToast.includes('min-height:44px'),
     'Toast notification confirmed'
+  );
+
+  // -------------------------------------------------------------
+  // Test 7: MapsLinksBlock Free Google Maps URLs (Contract v1.7)
+  // -------------------------------------------------------------
+  console.log('\n--- Test 7: MapsLinksBlock Free Google Maps URLs (GMAPS-URL-2) ---');
+
+  const tourSuccess = {
+    status: 'conditional',
+    revision: 2,
+    stops: [
+      { order: 1, venue_id: 'SYN-001', name: 'Quán 1 - Bún chả' },
+      { order: 2, venue_id: 'SYN-002', name: 'Quán 2 - Phở bò' },
+      { order: 3, venue_id: 'SYN-003', name: 'Quán 3 - Chè khúc bạch' },
+    ],
+  };
+
+  const tourInfeasible = {
+    status: 'insufficient_evidence',
+    stops: [],
+  };
+
+  // TC-MAPS-01: Hidden for non-success tour
+  const htmlInfeasible = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourInfeasible,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+    })
+  );
+  record(
+    'TC-MAPS-01',
+    'MapsLinksBlock returns null/empty for non-success tour',
+    htmlInfeasible === '',
+    'Hidden for non-success tour confirmed'
+  );
+
+  // TC-MAPS-02: Single link primary button with target="_blank" and rel="noopener noreferrer"
+  const htmlSingle = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: SYNTHETIC_MAPS_LINKS['single_walking'],
+    })
+  );
+  record(
+    'TC-MAPS-02',
+    'MapsLinksBlock single link renders primary button with required attributes',
+    htmlSingle.includes('Xem lịch trình trên Google Maps') &&
+      htmlSingle.includes('target="_blank"') &&
+      htmlSingle.includes('rel="noopener noreferrer"') &&
+      htmlSingle.includes('https://www.google.com/maps/dir/?api=1') &&
+      !htmlSingle.includes('dir_action') &&
+      htmlSingle.includes('min-height:44px'),
+    'Single link primary button attributes confirmed'
+  );
+
+  // TC-MAPS-03: Segmented toggle touch target >= 44px and default walking
+  record(
+    'TC-MAPS-03',
+    'MapsLinksBlock renders walking/driving segmented toggle with >= 44px touch targets',
+    htmlSingle.includes('data-testid="maps-mode-toggle"') &&
+      htmlSingle.includes('data-testid="toggle-walking"') &&
+      htmlSingle.includes('data-testid="toggle-driving"') &&
+      htmlSingle.includes('Đi bộ') &&
+      htmlSingle.includes('Lái xe') &&
+      htmlSingle.includes('aria-checked="true"'),
+    'Segmented toggle accessibility confirmed'
+  );
+
+  // TC-MAPS-04: Split cases (n > 1) render ordered Chặng i/n: <from> → <to>
+  const htmlSplit = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: SYNTHETIC_MAPS_LINKS['split_mobile'],
+    })
+  );
+  record(
+    'TC-MAPS-04',
+    'MapsLinksBlock split links render Chặng i/n format in order',
+    htmlSplit.includes('Chặng 1/3') &&
+      htmlSplit.includes('Chặng 2/3') &&
+      htmlSplit.includes('Chặng 3/3') &&
+      htmlSplit.includes('→'),
+    'Split links format confirmed'
+  );
+
+  // TC-MAPS-05: Partial status renders honest disclosure
+  const htmlPartial = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: SYNTHETIC_MAPS_LINKS['partial_gap'],
+    })
+  );
+  record(
+    'TC-MAPS-05',
+    'MapsLinksBlock partial status renders honest disclosure',
+    htmlPartial.includes('data-maps-status="partial"') &&
+      htmlPartial.includes('Một số quán chưa có toạ độ nên không đưa vào liên kết'),
+    'Partial status honest notice confirmed'
+  );
+
+  // TC-MAPS-06: Unavailable status renders honest notice and 0 links
+  const htmlUnavailable = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: SYNTHETIC_MAPS_LINKS['unavailable'],
+    })
+  );
+  record(
+    'TC-MAPS-06',
+    'MapsLinksBlock unavailable status renders honest notice without links',
+    htmlUnavailable.includes('data-maps-status="unavailable"') &&
+      !htmlUnavailable.includes('<a '),
+    'Unavailable status confirmed'
+  );
+
+  // TC-MAPS-07: Disclaimers rendered without claiming Google times or distances
+  record(
+    'TC-MAPS-07',
+    'MapsLinksBlock renders privacy and schedule proposal disclaimers',
+    htmlSingle.includes('sent to Google only when the user opens them') &&
+      htmlSingle.includes('Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác') &&
+      !htmlSingle.includes('khoảng cách Google') &&
+      !htmlSingle.includes('thời gian Google tính'),
+    'Disclaimers confirmed'
   );
 
   console.log('\n===============================================================');
