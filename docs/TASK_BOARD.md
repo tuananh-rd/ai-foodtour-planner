@@ -26,6 +26,7 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R0-7 backend follow-up | Codex | DONE, accepted | aaa67d2 merged; Claude re-ran 265 tests OK, OpenAPI drift OK; open: user text still enters global fold LRU in `relevance._phrases`, extraction-cache TTL purge is lazy (low) |
 | R1-5 UI_V2 itinerary-first | Antigravity | DONE, accepted (CDP) | a2735e8 (merge 82f05de); Claude re-ran on production build: test_ui_v2 15/15, test_components 24/24, test_ui_kit 11/11. test_cold_bootstrap not re-run (needs the fake Google config harness; flag-off layout covered by TC-V2-15 and components). Codex frontend review pending |
 | GMAPS-URL contract v1.7 | Claude | DONE | e659608; free Maps URLs, no API/key/billing/backend Google call |
-| GMAPS-URL-1 backend | Codex | In progress | dispatch ctx_df8ee56186c7 |
-| GMAPS-URL-2 UI + browser QA | Antigravity | Queued after GMAPS-URL-1 | uses fixtures/real endpoint |
+| GMAPS-URL-1 backend | Codex | DONE, accepted | 519b0ac (merged): Claude re-ran 274 tests OK, OpenAPI drift OK; independent probe 7 stops driving -> 2 links (3+2 waypoints, join stop 4, 205/180 chars, api=1, no dir_action) |
+| GMAPS-URL-2 UI + browser QA | Antigravity | Queued after R1-9 (single worker; no duplicate) | fixtures contracts/fixtures/maps_links.synthetic.json |
+| R1-REVIEW frontend review of R1-5 | Codex | In progress | dispatch ctx_c41b51f063d7 (term_653be71d); Enter sent once for unsent draft |
 | R1-9 black-box API+UI QA v1.6 | Antigravity | In progress | reuse of a settled worker's terminal failed at agent_readiness (ctx_c30ca3f008c1, released/retained); fresh Antigravity worker ctx_d6bd5e161f9d (term_899cd8c8) turn observed |
