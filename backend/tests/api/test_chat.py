@@ -151,12 +151,11 @@ class ChatAPI(unittest.TestCase):
     def test_conflicting_plan_never_drops_stop(self):
         self.prepare(duration=30)
         view=self.action('confirm_yes')
-        self.assertEqual(view['tour']['status'],'no_solution')
-        self.assertEqual(view['tour']['stops'],[])
-        self.assertTrue(view['tour']['proposed_changes'])
+        self.assertIsNone(view['tour'])
+        self.assertIn('plan_conflict',[b.get('code') for b in view['reply']['blocks']])
         self.restart()
-        self.assertEqual(self.get()['tour']['status'],'no_solution')
-        self.assertEqual(self.get()['tour']['stops'],[])
+        self.assertIsNone(self.get()['tour'])
+        self.assertIsNotNone(self.get()['chat']['pending'])
 
     def test_state_cap_and_exception_roll_back(self):
         self.action('search',query='phở')
@@ -280,10 +279,10 @@ class ChatAPI(unittest.TestCase):
     def test_no_solution_survives_exploration_restart(self):
         self.prepare(duration=30)
         view=self.action('confirm_yes')
-        self.assertEqual(view['tour']['status'],'no_solution')
+        self.assertIsNone(view['tour'])
         self.action('search',query='chè')
         self.restart()
-        self.assertEqual(self.get()['tour'],view['tour'] | {'revision':self.revision})
+        self.assertIsNone(self.get()['tour'])
 
 
     def test_strict_mode_is_not_relaxed(self):
@@ -295,10 +294,10 @@ class ChatAPI(unittest.TestCase):
         self.revision=response.json()['revision']
         view=self.action('confirm_yes')
         self.assertEqual(view['preferences']['mode'],'strict')
-        self.assertEqual(view['tour']['status'],'insufficient_evidence')
-        self.assertEqual(view['tour']['stops'],[])
+        self.assertIsNone(view['tour'])
+        self.assertIn('plan_conflict',[b.get('code') for b in view['reply']['blocks']])
         self.restart()
-        self.assertEqual(self.get()['tour']['status'],'insufficient_evidence')
+        self.assertIsNone(self.get()['tour'])
 
     def test_exclusions_are_not_relaxed(self):
         self.prepare()
@@ -308,6 +307,5 @@ class ChatAPI(unittest.TestCase):
         self.assertEqual(response.status_code,200,response.text)
         self.revision=response.json()['revision']
         view=self.action('confirm_yes')
-        self.assertEqual(view['tour']['status'],'no_solution')
-        self.assertEqual(view['tour']['stops'],[])
-        self.assertTrue(view['tour']['proposed_changes'])
+        self.assertIsNone(view['tour'])
+        self.assertIn('plan_conflict',[b.get('code') for b in view['reply']['blocks']])
