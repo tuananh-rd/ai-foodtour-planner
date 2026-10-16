@@ -84,3 +84,5 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C4-API + heldout2 (blind ≥85%) + C1 re-review | Codex | In progress | ctx_4adbdeac00eb |
 | C3-1 chat v2 UI (Antigravity 56b70a2) | Antigravity | Done, pending Codex review | Claude re-ran on production scratch build: test_chat_v2 16/16, ui_v2 28/28, components 47/47, ui_kit 11/11, maps_links 61/61 |
 | C6a real-API E2E + UX fixes | Antigravity | In progress | ctx_009b1107dab4 |
+| C4-API (Codex ad55802, 7981a91) | Codex | DONE, accepted by Claude | conflict persistence, validated replace, locks in SQLite; full suite 422 OK; heldout2 gate 84% → Claude generalised rules (96–98% now dev) |
+| C6b verdict + heldout3 (blind ≥85%) + frontend review + private aggregates | Codex | In progress | ctx_0e382c40e394 |
