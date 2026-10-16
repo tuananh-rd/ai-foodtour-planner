@@ -1,5 +1,23 @@
 # Codex independent C1 engine review
 
+## C6b FINAL verdict — merged c3213c2, 2026-10-16
+
+**FINAL decision for backend/app/chat/*: REQUEST CHANGES.** The remaining original correctness findings are FIXED after `aa34d9d` and `156eaa1`; the new blind API quality gate remains below the required 85%. This section supersedes earlier final decisions and does not authorize integration or a self-approved merge. Claude reviews this Codex evidence.
+
+| Item | Final status | Fresh evidence |
+|---|---|---|
+| Hostile `1đ/người` and instruction clauses in cards/add prose | FIXED | Original synthetic hostile search/add repro emits no instruction/open/safety/per-person source claim |
+| Same hostile name in confirm_summary and allergy conflict reasons | FIXED | Expanded six-turn CHT-005 add/allergy/request/confirm probe: summary uses cleaned label; no instruction echo in any block or conflict reason |
+| Gemini understanding 503→200 retry | FIXED | First stub transport attempt raises 503; no second request; Outcome calls=1, status=error, shared daily used=1 |
+| Cancellation, stale/unoffered options, ordinal overflow, reset quota, malformed refs, zero prep | FIXED | All 17 original fresh API scenarios pass; direct probes preserve earlier fixes |
+| Heldout v1 | FIXED relative to initial review; limited harness | 64/70 (91.43%) in the unchanged original fresh-session API harness with kind-only pending injection; no claim of equivalence to full-context evaluation |
+| Heldout2 | FIXED original gate | 98/100 (98.00%), zero setup/invariant failures; now development data |
+| New heldout3 gate | NOT FIXED | 80/104 (76.92%), one invariant failure; frozen labels and denominator retained; details only in aggregate CODEX_HELDOUT3.md |
+
+Fresh honesty scan covers **548 emitted replies** from all 26 current scenarios (90 turns), original fresh reproductions, all heldout v1 turns, heldout2 including public setup turns, direct engine surfaces and expanded hostile planning. All **104 phrase hits** were inspected: they are negative/uncertain statements or explicit source/estimate labels; no positive hostile source echo, unsupported opening, per-person price, allergy-safety or weather claim remains in this finite scan. There are zero instruction echoes across hostile search/add and expanded planning blocks. Privacy checks remain: compact state contains no synthetic private marker or venue/person/location/history fields; after ten further turns the marker is absent and eight recent turn records remain. Initial private retention still stores current text truncated; this is not general PII redaction.
+
+Validation: `review_c1_engine.py docs/reports/C6_ENGINE_REPROBE.json`; `run_scenarios.py --report docs/reports/C6_SCENARIOS.json`; `eval_heldout.py --report <temporary file>`; `review_c6_engine.py`; `python -m unittest discover -s backend/tests/chat -v` (**53 passed**); `tools/export_openapi.py --check` (matches). Use project `.venv/Scripts/python.exe`, PYTHONPATH=backend and PYTHONUTF8=1. Durable fresh artifacts: C6_ENGINE_REPROBE.json, C6_SCENARIOS.json, C6_HONESTY.json, C6_ENGINE_SUMMARY.txt, C6_CHAT_TEST_OUTPUT.txt and C6_CONTRACT_OUTPUT.txt. All data is synthetic, providers disabled or local stub transports; live Gemini, DB and private data were not validated. No production engine changes were made.
+
 ## Final re-review addendum — 2026-10-16
 
 **Final engine decision: REQUEST CHANGES.** This addendum supersedes the earlier decision details below. Reviewed coordinator tree `20294f5`, merged first, plus Codex API wiring `ad55802` and lock regression checks `7981a91`. Codex has not edited chat/LLM/planner production modules. Claude is the requested independent reviewer for the Codex API/repository changes; that review is not self-approved here.
