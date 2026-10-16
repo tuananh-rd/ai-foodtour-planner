@@ -34,6 +34,5 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R1-5b fixes | Antigravity | Codex re-review (7b97825): REQUEST CHANGES — F01,F03-F06,F08,F09 FIXED; F02 (evidence strip claims verification from object presence; price enum `verified_exact` not in API), F07 (global #pref-* 44px !important leaks into flag-off) NOT FIXED; new R2-N02 quick-answer sent but input not cleared (duplicate /messages) | R1-5c fix round queued after GMAPS-URL-2 (same worktree, one Antigravity worker at a time) |
 | GMAPS-URL-2 UI+QA | Antigravity | In progress | ctx_8460d9fdf320 |
 | R0-8 loader honesty/fixtures | Codex | DONE, accepted | a2a7607: Claude re-ran 283 tests OK, drift OK; planning 1702 venues 145->120 ms |
-| GMAPS-URL-2 UI+QA | Antigravity | DONE pending Codex review | 6027bdf (merge d465cee): Claude re-ran test_maps_links_cdp 33/33, test_ui_v2 23/23, components 31/31, ui_kit 11/11 on production scratch build |
+| GMAPS-URL-2 UI+QA | Antigravity | REQUEST CHANGES (Codex, docs/reports/CODEX_REVIEW_GMAPS_UI.md): H1 hostile URLs rendered as Google links (allowlist https://www.google.com/maps/dir/ required), M1 error banner auto-cleared (effect depends on changing queue callbacks), M2 notes/skipped reasons ignored (false "no coordinates" copy), M3 order/rel/stale tests not real mutations, L1 radio keyboard | fix round GMAPS-URL-2b queued after R1-5c (same worktree) |
 | R1-5c fixes (R2-N01, F07, R2-N02) | Antigravity | In progress | ctx_39e1569598bf |
-| GMAPS-REVIEW | Codex | In progress | ctx_e0e0cc86f296; Enter sent once |
