@@ -8,7 +8,7 @@ import ShortlistColumn from './ShortlistColumn';
 import ExploreColumn from './ExploreColumn';
 import { useStatusQueue, StatusQueueProvider } from '../../../ui/StatusQueue';
 import { BannerQueue } from '../../../ui/Banner';
-import { chatTurn, getChatState, createSession, ApiError } from '../../../../lib/api';
+import { chatTurn, getChatState, getSession, createSession, SYNTHETIC_VENUES, ApiError } from '../../../../lib/api';
 
 /**
  * Main ChatV2 Shell & Layout (TASK C3-1)
@@ -40,13 +40,24 @@ export default function ChatV2Layout({
   const [chatState, setChatState] = useState(null);
   const [messages, setMessages] = useState([]);
   const [latestExploreBlocks, setLatestExploreBlocks] = useState([]);
-  const [venuesMap, setVenuesMap] = useState({});
+  const [venuesMap, setVenuesMap] = useState(() => {
+    const initial = {};
+    if (Array.isArray(SYNTHETIC_VENUES)) {
+      SYNTHETIC_VENUES.forEach((v) => {
+        if (v?.id) initial[v.id] = v;
+      });
+    }
+    return initial;
+  });
   const [tour, setTour] = useState(null);
 
   // In-flight guard & Status
   const [busy, setBusy] = useState(false);
   const [inFlight, setInFlight] = useState(false);
+  const inFlightRef = useRef(false);
   const requestTokenRef = useRef(0);
+  const revisionRef = useRef(revision);
+  revisionRef.current = revision;
   const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'shortlist' | 'explore'
   const [windowWidth, setWindowWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1280);
 
@@ -61,15 +72,104 @@ export default function ChatV2Layout({
 
   const isDesktop = windowWidth >= 1024;
 
-  // Initialize session if not provided
+  // Initialize session or restore existing session on reload
   useEffect(() => {
-    if (!sessionId) {
+    const storedId = typeof window !== 'undefined'
+      ? (sessionStorage.getItem('foodtour_chat_session_id') || new URLSearchParams(window.location.search).get('session_id'))
+      : null;
+    const storedToken = typeof window !== 'undefined'
+      ? (sessionStorage.getItem('foodtour_chat_session_token') || '')
+      : '';
+    const targetId = sessionId || storedId;
+    const targetToken = sessionToken || storedToken;
+
+    if (targetId && !chatState) {
+      setBusy(true);
+      getSession(targetId, targetToken)
+        .then((s) => {
+          setSessionId(s.session_id || targetId);
+          setSessionToken(s.token || targetToken);
+          setRevision(s.revision || 0);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('foodtour_chat_session_id', s.session_id || targetId);
+            if (s.token || targetToken) sessionStorage.setItem('foodtour_chat_session_token', s.token || targetToken);
+          }
+          if (s.chat) {
+            setChatState(s.chat);
+            const restoredMessages = [];
+            if (Array.isArray(s.chat.turns) && s.chat.turns.length > 0) {
+              s.chat.turns.forEach((t) => {
+                restoredMessages.push({
+                  role: t.role,
+                  text: t.text,
+                  time: new Date(),
+                });
+              });
+            }
+            if (s.chat.pending) {
+              restoredMessages.push({
+                role: 'assistant',
+                reply: {
+                  blocks: [
+                    {
+                      type: 'clarify',
+                      prompt: s.chat.pending.kind === 'confirm_plan'
+                        ? 'Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé.'
+                        : 'Bạn hãy chọn một phương án bên dưới:',
+                      options: s.chat.pending.options || [],
+                    },
+                  ],
+                },
+                chat: s.chat,
+                time: new Date(),
+              });
+            }
+            if (restoredMessages.length > 0) {
+              setMessages(restoredMessages);
+            }
+          }
+          if (s.tour) {
+            setTour(s.tour);
+          }
+          setBusy(false);
+        })
+        .catch(() => {
+          if (!sessionId) {
+            createSession()
+              .then((s) => {
+                setSessionId(s.session_id);
+                setSessionToken(s.token);
+                setRevision(s.revision || 0);
+                if (typeof window !== 'undefined') {
+                  sessionStorage.setItem('foodtour_chat_session_id', s.session_id);
+                  sessionStorage.setItem('foodtour_chat_session_token', s.token);
+                }
+                setBusy(false);
+              })
+              .catch((err) => {
+                setBusy(false);
+                enqueue({
+                  id: 'init_error',
+                  type: 'error',
+                  title: 'Lỗi khởi tạo phiên',
+                  message: err.message || 'Không thể tạo phiên làm việc mới.',
+                });
+              });
+          } else {
+            setBusy(false);
+          }
+        });
+    } else if (!targetId) {
       setBusy(true);
       createSession()
         .then((s) => {
           setSessionId(s.session_id);
           setSessionToken(s.token);
           setRevision(s.revision || 0);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('foodtour_chat_session_id', s.session_id);
+            sessionStorage.setItem('foodtour_chat_session_token', s.token);
+          }
           setBusy(false);
         })
         .catch((err) => {
@@ -81,8 +181,13 @@ export default function ChatV2Layout({
             message: err.message || 'Không thể tạo phiên làm việc mới.',
           });
         });
+    } else if (sessionId) {
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('foodtour_chat_session_id', sessionId);
+        if (sessionToken) sessionStorage.setItem('foodtour_chat_session_token', sessionToken);
+      }
     }
-  }, [sessionId]);
+  }, [sessionId, sessionToken, chatState]);
 
   // Extract latest LLM budget and last turn understanding
   const lastAssistant = [...messages].reverse().find((m) => m.role === 'assistant');
@@ -104,23 +209,25 @@ export default function ChatV2Layout({
   }, [llmBudget]);
 
   // Dispatch turn action or message
-  const handleTurn = async (body, isRetry = false) => {
-    if (inFlight || busy) return;
+  const handleTurn = async (body, isRetry = false, overrideRev = null) => {
+    if (inFlightRef.current || busy) return;
 
+    inFlightRef.current = true;
     setInFlight(true);
     setBusy(true);
     const token = ++requestTokenRef.current;
 
-    // Optimistically append user message if text is present
-    if (body.text) {
+    // Optimistically append user message if text is present and not a retry
+    if (body.text && !isRetry) {
       setMessages((prev) => [...prev, { role: 'user', text: body.text, time: new Date() }]);
     }
 
     try {
+      const currentRev = overrideRev !== null ? overrideRev : (revisionRef.current ?? revision);
       const payload = {
         text: body.text || null,
         action: body.action || null,
-        revision,
+        revision: currentRev,
       };
 
       const res = await chatTurn(sessionId, payload, sessionToken);
@@ -131,12 +238,16 @@ export default function ChatV2Layout({
       // Update revision and state
       if (res.revision !== undefined) {
         setRevision(res.revision);
+        revisionRef.current = res.revision;
       }
       if (res.chat) {
         setChatState(res.chat);
       }
-      if (res.tour) {
+      if (res.tour !== undefined) {
         setTour(res.tour);
+        if (!res.tour) {
+          setLatestExploreBlocks((prev) => prev.filter((b) => b.type !== 'tour_ready'));
+        }
       }
 
       // Record any venues into local venuesMap for fast lookup
@@ -157,7 +268,17 @@ export default function ChatV2Layout({
       const exploreTypes = ['dish_suggestions', 'venue_cards', 'compare_table', 'confirm_summary', 'tour_ready'];
       const exploreBlocks = blocks.filter((b) => exploreTypes.includes(b.type));
       if (exploreBlocks.length > 0) {
-        setLatestExploreBlocks(exploreBlocks);
+        setLatestExploreBlocks((prev) => {
+          const hasVenueCards = exploreBlocks.some((b) => b.type === 'venue_cards');
+          const hasCompare = exploreBlocks.some((b) => b.type === 'compare_table');
+          if (hasCompare && !hasVenueCards) {
+            const prevCards = prev.filter((b) => b.type === 'venue_cards');
+            if (prevCards.length > 0) {
+              return [...exploreBlocks, ...prevCards];
+            }
+          }
+          return exploreBlocks;
+        });
         // On mobile, auto-switch to explore tab if venue cards or compare table arrived
         if (!isDesktop) {
           setActiveTab('explore');
@@ -183,11 +304,34 @@ export default function ChatV2Layout({
       if (token !== requestTokenRef.current) return;
 
       if (err.status === 409 || err.code === 'revision_conflict') {
-        // Revision conflict 409 -> refetch latest chat state & retry once
+        // Revision conflict 409 -> refetch latest session state & adopt server revision
         try {
-          const freshState = await getChatState(sessionId, sessionToken);
-          if (freshState) setChatState(freshState);
-          // Recover with accessible retry banner
+          const freshSession = await getSession(sessionId, sessionToken);
+          let serverRev = revisionRef.current;
+          if (freshSession) {
+            if (freshSession.revision !== undefined) {
+              serverRev = freshSession.revision;
+              setRevision(freshSession.revision);
+              revisionRef.current = freshSession.revision;
+            }
+            if (freshSession.chat) setChatState(freshSession.chat);
+            if (freshSession.tour !== undefined) {
+              setTour(freshSession.tour);
+              if (!freshSession.tour) {
+                setLatestExploreBlocks((prev) => prev.filter((b) => b.type !== 'tour_ready'));
+              }
+            }
+          }
+
+          // If first attempt, automatically retry ONCE adopting the server revision
+          if (!isRetry) {
+            inFlightRef.current = false;
+            setInFlight(false);
+            setBusy(false);
+            return await handleTurn(body, true, serverRev);
+          }
+
+          // If retry still fails or user interaction desired, show accessible retry banner
           enqueue({
             id: '409_conflict',
             type: 'warning',
@@ -197,7 +341,7 @@ export default function ChatV2Layout({
               label: 'Thử lại',
               onClick: () => {
                 dismiss('409_conflict');
-                handleTurn(body, true);
+                handleTurn(body, true, revisionRef.current);
               },
             },
           });
@@ -212,13 +356,14 @@ export default function ChatV2Layout({
             label: 'Thử lại',
             onClick: () => {
               dismiss('chat_error');
-              handleTurn(body, true);
+              handleTurn(body, true, revisionRef.current);
             },
           },
         });
       }
     } finally {
       if (token === requestTokenRef.current) {
+        inFlightRef.current = false;
         setInFlight(false);
         setBusy(false);
       }
@@ -230,7 +375,12 @@ export default function ChatV2Layout({
   };
 
   const handleAction = (action) => {
-    handleTurn({ text: null, action });
+    if (!action) return;
+    if (action.type === 'text') {
+      handleTurn({ text: action.text, action: null });
+    } else {
+      handleTurn({ text: null, action });
+    }
   };
 
   // Determine whether to show StartScreen or 3-Zone Workspace
@@ -242,6 +392,8 @@ export default function ChatV2Layout({
     <div
       data-ui-v2="true"
       data-testid="chat-v2-container"
+      aria-busy={busy}
+      data-busy={busy ? 'true' : undefined}
       className="ft-v2-container"
       style={{
         minHeight: '100vh',
@@ -334,6 +486,11 @@ export default function ChatV2Layout({
             onSendMessage={handleSendMessage}
             busy={busy || inFlight}
             clarifyOptions={chatState?.pending?.options || []}
+            outsideNotice={
+              lastAssistant?.reply?.blocks?.find(
+                (b) => b.type === 'notice' && (b.code === 'outside_hanoi' || b.level === 'warning')
+              )?.text || null
+            }
           />
         </div>
       ) : (

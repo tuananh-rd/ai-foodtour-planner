@@ -27,6 +27,7 @@ import {
   getHealth,
   getClientConfig,
   createSession,
+  getSession,
   sendMessage,
   updatePreferences,
   planTour,
@@ -243,12 +244,13 @@ export default function Home() {
   }
 
   // Atomically create or reset session, clearing all session-owned state
-  async function initSession() {
+  async function initSession(options = {}) {
+    const isReset = options?.isReset === true;
     const token = cancelAllPendingActions();
     setSessionEpoch((prev) => prev + 1);
     setBusy(true);
     clearAllErrors();
-    // Synchronously reset all session-owned state
+    // Synchronously reset session-owned state in React memory
     setSessionId(null);
     setSessionToken('');
     setRevision(0);
@@ -263,12 +265,63 @@ export default function Home() {
     setReplaceTargetStop(null);
     setReplaceResultDiff(null);
 
+    if (isReset && typeof window !== 'undefined') {
+      try {
+        sessionStorage.removeItem('foodtour_chat_session_id');
+        sessionStorage.removeItem('foodtour_chat_session_token');
+      } catch (_) {}
+    }
+
     try {
+      const chatV2Active = Boolean(
+        isChatV2 ||
+        (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_CHAT_V2 === '1') ||
+        (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat_v2') === '1')
+      );
+
+      if (!isReset && chatV2Active && typeof window !== 'undefined') {
+        const storedId = sessionStorage.getItem('foodtour_chat_session_id');
+        const storedToken = sessionStorage.getItem('foodtour_chat_session_token');
+        if (storedId && storedToken) {
+          try {
+            const restored = await getSession(storedId, storedToken);
+            if (restored && (restored.session_id || storedId)) {
+              if (token !== requestTokenRef.current) return;
+              setSessionId(restored.session_id || storedId);
+              setSessionToken(storedToken);
+              setRevision(restored.revision || 0);
+              applySessionWrapper(restored);
+              try {
+                const health = await getHealth();
+                if (token !== requestTokenRef.current) return;
+                setHealth(health);
+                if (health.dataset_source) setDatasetSource(health.dataset_source);
+                if (health.dataset_version) setDatasetVersion(health.dataset_version);
+              } catch (_) {}
+              try {
+                const config = await getClientConfig();
+                if (token !== requestTokenRef.current) return;
+                setClientConfig(config);
+              } catch (_) {}
+              return;
+            }
+          } catch (_) {
+            // Expired or invalid stored session, fall through to createSession
+          }
+        }
+      }
+
       const session = await createSession();
       if (token !== requestTokenRef.current) return;
       setSessionId(session.session_id);
       setSessionToken(session.token);
       setRevision(session.revision);
+      if (chatV2Active && typeof window !== 'undefined') {
+        try {
+          sessionStorage.setItem('foodtour_chat_session_id', session.session_id);
+          sessionStorage.setItem('foodtour_chat_session_token', session.token);
+        } catch (_) {}
+      }
 
       try {
         const health = await getHealth();
@@ -492,7 +545,7 @@ export default function Home() {
           clientConfig={clientConfig}
           isMock={isMock}
           isDevMode={isDevMode}
-          onResetSession={initSession}
+          onResetSession={() => initSession({ isReset: true })}
         />
       </StatusQueueProvider>
     );
@@ -508,7 +561,7 @@ export default function Home() {
           revision={revision}
           preferences={preferences}
           onUpdatePreferences={handleUpdatePreferences}
-          onResetSession={initSession}
+          onResetSession={() => initSession({ isReset: true })}
           tour={tour}
           onPlanTour={handlePlanTour}
           onSendMessage={handleSendMessage}
@@ -594,7 +647,7 @@ export default function Home() {
         <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
           <button
             type="button"
-            onClick={initSession}
+            onClick={() => initSession({ isReset: true })}
             disabled={busy}
             style={{
               fontSize: 12,

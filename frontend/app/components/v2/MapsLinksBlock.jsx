@@ -231,6 +231,7 @@ export default function MapsLinksBlock({
   return (
     <section
       data-maps-links-block
+      data-testid="maps-links-block"
       aria-label="Liên kết Google Maps"
       className={`ft-maps-links-block ${className}`.trim()}
       style={{

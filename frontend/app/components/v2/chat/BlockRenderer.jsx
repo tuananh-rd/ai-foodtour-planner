@@ -16,10 +16,19 @@ function formatVnd(val) {
 /**
  * Escapes / ensures safe string rendering (no raw HTML injection)
  */
-function SafeText({ text, className, style }) {
+function SafeText({ text, className = '', style = {} }) {
   if (!text) return null;
   return (
-    <span className={className} style={style}>
+    <span
+      className={className}
+      dir="auto"
+      style={{
+        overflowWrap: 'break-word',
+        wordBreak: 'break-word',
+        unicodeBidi: 'plaintext',
+        ...style,
+      }}
+    >
       {String(text)}
     </span>
   );
@@ -86,7 +95,8 @@ export default function BlockRenderer({
 
       return (
         <div
-          data-testid={isSafety ? 'notice-safety' : `notice-${block.level || 'info'}`}
+          data-testid={block.code === 'outside_hanoi' ? 'outside-hanoi-notice' : (isSafety ? 'notice-safety' : `notice-${block.level || 'info'}`)}
+          data-notice-code={block.code}
           className={isSafety ? 'notice-safety' : ''}
           role={isNew && isSafety ? 'alert' : 'status'}
           style={{
@@ -456,9 +466,9 @@ export default function BlockRenderer({
           </table>
 
           {unsupported.length > 0 && (
-            <div style={{ marginTop: 12, padding: '8px 10px', background: '#FBF8F3', borderRadius: 6, fontSize: 12, color: '#6B6259' }}>
+            <div data-testid="unsupported-criteria-notice" style={{ marginTop: 12, padding: '8px 10px', background: '#FBF8F3', borderRadius: 6, fontSize: 12, color: '#6B6259' }}>
               <strong>Tiêu chí chưa có dữ liệu:</strong>{' '}
-              {unsupported.map((u) => u.criterion || u.text).join(', ')}
+              {unsupported.map((u) => u.text || u.criterion).join(', ')}
             </div>
           )}
         </div>
@@ -645,29 +655,23 @@ export default function BlockRenderer({
       if (!tour) return null;
       return (
         <div data-testid="tour-ready-block" style={{ marginBottom: 20 }}>
-          <div style={{ marginBottom: 12 }}>
-            <EvidenceStrip
-              status={tour.status}
-              reasons={tour.reasons}
-              proposedChanges={tour.proposed_changes}
-              unknowns={tour.unknowns}
-              isMock={Boolean(tour.is_mock)}
-            />
-          </div>
           <div data-testid="itinerary-view">
             <ItineraryView
               tour={tour}
-              highlightedStopId={null}
-              onSelectStop={() => {}}
-              onInitiateReplace={() => {}}
-              busy={busy}
-            />
-          </div>
-          <div style={{ marginTop: 16 }}>
-            <MapsLinksBlock
               sessionId={sessionId}
               sessionToken={sessionToken}
-              tour={tour}
+              highlightedStopId={null}
+              onSelectStop={() => {}}
+              onInitiateReplace={(stop) => {
+                if (onAction) {
+                  onAction({
+                    type: 'replace_stop',
+                    venue_id: stop?.venue_id,
+                    order: stop?.order,
+                    text: `đổi quán thứ ${stop?.order || 1}`,
+                  });
+                }
+              }}
               busy={busy}
             />
           </div>

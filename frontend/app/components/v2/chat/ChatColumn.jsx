@@ -23,16 +23,25 @@ export default function ChatColumn({
 }) {
   const [inputText, setInputText] = useState('');
   const messagesEndRef = useRef(null);
+  const isSubmittingRef = useRef(false);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+  useEffect(() => {
+    if (!busy) {
+      isSubmittingRef.current = false;
+    }
+  }, [busy]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    const inputEl = e.currentTarget.querySelector('input');
+    if (isSubmittingRef.current || busy) return;
+    const inputEl = e.currentTarget?.querySelector('input');
     const val = (inputText || inputEl?.value || '').trim();
-    if (busy || !val) return;
+    if (!val) return;
+    isSubmittingRef.current = true;
     if (onSendMessage) {
       onSendMessage(val);
       setInputText('');
