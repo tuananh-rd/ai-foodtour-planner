@@ -3198,7 +3198,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Capacity Value"
           },
           "city": {
@@ -3309,7 +3309,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Prep Time Max"
           },
           "prep_time_min": {
@@ -3323,7 +3323,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Prep Time Min"
           },
           "price": {
@@ -3382,7 +3382,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Location"
           },
           "rating_price": {
@@ -3396,7 +3396,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Price"
           },
           "rating_quality": {
@@ -3410,7 +3410,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Quality"
           },
           "rating_service": {
@@ -3424,7 +3424,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Service"
           },
           "rating_space": {
@@ -3438,7 +3438,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Space"
           },
           "source_fetched_at": {
@@ -3537,7 +3537,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Capacity Value"
           },
           "city": {
@@ -3612,7 +3612,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Prep Time Max"
           },
           "prep_time_min": {
@@ -3626,7 +3626,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Prep Time Min"
           },
           "price": {
@@ -3646,7 +3646,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Location"
           },
           "rating_price": {
@@ -3660,7 +3660,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Price"
           },
           "rating_quality": {
@@ -3674,7 +3674,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Quality"
           },
           "rating_service": {
@@ -3688,7 +3688,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Service"
           },
           "rating_space": {
@@ -3702,7 +3702,7 @@
                 "type": "null"
               }
             ],
-            "description": "theo ngu?n",
+            "description": "theo nguồn",
             "title": "Rating Space"
           },
           "source_fetched_at": {
