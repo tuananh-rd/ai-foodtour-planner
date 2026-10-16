@@ -1,0 +1,12 @@
+    async function readState(){return ev(`(async()=>{const id=sessionStorage.getItem('foodtour_chat_session_id'),token=sessionStorage.getItem('foodtour_chat_session_token');return (await fetch('http://127.0.0.1:18000/v1/sessions/'+id,{headers:{'X-Session-Token':token}})).json()})()`);}
+    const beforeReplace=await readState();
+    await sendChat('đổi quán thứ hai');const afterReplace=await readState();
+    const beforeIds=beforeReplace.tour.stops.map(s=>s.venue_id),afterIds=afterReplace.tour.stops.map(s=>s.venue_id);
+    record('ORDINAL-REPLACEMENT','Ordinal replacement preserves first stop and changes second stop',beforeIds[0]===afterIds[0]&&beforeIds[1]!==afterIds[1]&&afterIds.length===beforeIds.length,JSON.stringify({beforeIds,afterIds}));
+    for(const width of [1280,390]){
+      await setViewport(width,width===390?844:800);
+      if(width===390){await ev(`document.querySelectorAll('[data-testid="mobile-tab"]')[2].click()`);await sleep(200);}
+      const result=await ev(`(()=>{const node=document.querySelector('[data-testid="itinerary-view"]');node?.scrollIntoView({block:'start'});const strips=[...node.querySelectorAll('[data-evidence-strip]')];return {strips:strips.length,text:strips.map(s=>s.innerText).join(' '),stops:node.querySelectorAll('[data-stop-card]').length,links:node.querySelectorAll('a[href*="google.com/maps"]').length,visible:!!node.getClientRects().length}})()`);
+      record('ITINERARY-EVIDENCE-'+width,'Populated visible itinerary has one evidence strip, stops and Maps links',result.strips===1&&result.stops>=2&&result.links>=1&&result.visible,JSON.stringify(result));
+      await captureScreenshot('final_visible_itinerary_'+width+'.png');
+    }

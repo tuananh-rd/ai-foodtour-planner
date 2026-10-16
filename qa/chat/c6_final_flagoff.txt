@@ -1,0 +1,11 @@
+    await setViewport(1280,800);await navigateTo('http://127.0.0.1:13000/');
+    const off=await ev(`(async()=>{const base='http://127.0.0.1:18000';const c=await(await fetch(base+'/v1/client-config')).json();const s=await(await fetch(base+'/v1/sessions',{method:'POST'})).json();const r=await fetch(base+'/v1/sessions/'+s.session_id+'/chat',{method:'POST',headers:{'Content-Type':'application/json','X-Session-Token':s.token},body:JSON.stringify({revision:0,text:'synthetic flag probe'})});return {feature:c.features.chat_v2,status:r.status}})()`);
+    record('FLAGOFF-API','Unset backend flag disables feature and chat route',off.feature===false&&off.status===404,JSON.stringify(off));
+    for(const width of [1280,390]){
+      await setViewport(width,width===390?844:800);
+      for(const route of ['/','/?ui=v2']){
+        await navigateTo('http://127.0.0.1:13000'+route);await sleep(200);
+        const d=await ev(`({chat:!!document.querySelector('[data-testid="chat-v2-container"]'),legacy:!!document.querySelector('[aria-label="Nội dung tin nhắn yêu cầu tour"]'),uiV2:!!document.querySelector('[data-request-input]'),rootBg:getComputedStyle(document.documentElement).getPropertyValue('--bg')})`);
+        record('FLAGOFF-WEB-'+width+route,'Legacy and UI-v2 remain reachable with chat disabled',!d.chat&&(route==='/'?d.legacy:d.uiV2)&&d.rootBg==='',JSON.stringify(d));
+      }
+    }

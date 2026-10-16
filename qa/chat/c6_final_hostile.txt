@@ -1,0 +1,28 @@
+    // Fault injection changes synthetic response labels only; requests still
+    // reach the real backend. This probes the actual production shell boundary.
+    await setViewport(1280,800);await navigateTo('http://127.0.0.1:13000/?chat=v2');
+    await sendChat('ở Hoàn Kiếm');
+    let injected=0;
+    ws.addEventListener('message',async event=>{
+      const data=JSON.parse(event.data);if(data.method!=='Fetch.requestPaused')return;
+      const id=data.params.requestId;
+      try{
+        if(data.params.responseStatusCode===200&&data.params.request.method==='POST'){
+          const r=await sendCDP('Fetch.getResponseBody',{requestId:id});
+          const body=JSON.parse(r.base64Encoded?Buffer.from(r.body,'base64').toString():r.body);
+          for(const block of body.reply?.blocks||[])for(const card of block.cards||[]){if(card.venue){card.venue.name='<img src=x onerror="window.__xss=1">javascript:alert(1)\u202e'+'N'.repeat(5000);card.venue.address=card.venue.name;injected++;}}
+          await sendCDP('Fetch.fulfillRequest',{requestId:id,responseCode:200,responseHeaders:data.params.responseHeaders.filter(h=>!['content-length','content-encoding'].includes(h.name.toLowerCase())),body:Buffer.from(JSON.stringify(body)).toString('base64')});return;
+        }
+      }catch(e){console.log('HOSTILE injection error',e.message);}
+      await sendCDP('Fetch.continueRequest',{requestId:id});
+    });
+    await sendCDP('Fetch.enable',{patterns:[{urlPattern:'*/chat',requestStage:'Response'}]});
+    await sendChat('tìm quán phở');await sendCDP('Fetch.disable');
+    for(const width of [1280,390]){
+      await setViewport(width,width===390?844:800);
+      if(width===390){await ev(`document.querySelectorAll('[data-testid="mobile-tab"]')[2].click()`);await sleep(100);}
+      const d=await ev(`(()=>{const z=document.querySelector('[data-testid="zone-explore"]');return {viewport:innerWidth,document:document.documentElement.scrollWidth,zone:z?.clientWidth,zoneScroll:z?.scrollWidth,xss:!!window.__xss,images:document.querySelectorAll('img').length,jsLinks:document.querySelectorAll('a[href^="javascript:"]').length,cards:document.querySelectorAll('[data-testid="venue-card"]').length}})()`);
+      const passed=injected>0&&d.cards>0&&d.document<=width&&!d.xss&&!d.images&&!d.jsLinks&&d.zoneScroll<=d.zone+1;
+      results.push({id:'HOSTILE-SHELL-'+width,passed,details:d});console.log('FINAL HOSTILE-SHELL-'+width+' '+(passed?'PASS':'FAIL')+' '+JSON.stringify({injected,...d}));
+      await captureScreenshot('final_hostile_shell_'+width+'.png');
+    }
