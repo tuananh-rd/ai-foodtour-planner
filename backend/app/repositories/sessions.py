@@ -29,7 +29,7 @@ class SessionStoreInterface(Protocol):
     """Stores yield an isolated unit of work; only successful contexts commit."""
 
     def create(self) -> dict: ...
-    def owned(self, identity: str, token: str) -> ContextManager[Session]: ...
+    def owned(self, identity: str, token: str, *, restore_tour: bool = True) -> ContextManager[Session]: ...
     def check_revision(self, session: Session, expected: int) -> None: ...
     def authorize_token(self, token: str) -> None: ...
 
@@ -67,7 +67,7 @@ class SessionStore:
             return {"session_id": identity, "token": token, "revision": 0}
 
     @contextmanager
-    def owned(self, identity, token):
+    def owned(self, identity, token, *, restore_tour=True):
         # Serializes auth, rate checks, optimistic revisions and commit together.
         # A single lock is deliberately simple for this bounded local prototype.
         with self._lock:

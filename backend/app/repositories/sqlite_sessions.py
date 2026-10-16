@@ -11,6 +11,7 @@ from app.api.errors import APIError
 from app.api.schemas import PreferencesSchema
 from app.data import DatasetLoadError
 from app.planner import engine
+from app.planner.types import Leg, Stop, Tour
 from app.repositories.sessions import Session, SessionStore
 
 CHANGED = 'dữ liệu đã đổi, hãy lập lại lịch trình'
@@ -84,7 +85,7 @@ class SQLiteSessionStore:
                        (identity, hashlib.sha256(token.encode()).digest(), prefs, 0, now + self.ttl_seconds))
         return {'session_id': identity, 'token': token, 'revision': 0}
 
-    def _restore(self, row):
+    def _restore(self, row, *, restore_tour=True):
         digest, encoded, revision, expiry, encoded_tour = row
         if not isinstance(digest, bytes) or len(digest) != 32 or type(revision) is not int or revision < 0:
             raise ValueError('invalid session')
@@ -102,6 +103,8 @@ class SQLiteSessionStore:
             return session
         stops = record['stops']
         if not stops:
+            if not restore_tour:
+                return session
             # Failure diagnoses are regenerated; never persist free-form venue text.
             session.tour = engine.plan_tour(data.venues, prefs, self.routing, quality_weight=self.quality_weight)
             return session
@@ -110,6 +113,11 @@ class SQLiteSessionStore:
         ordered = sorted(stops, key=lambda s: s['order'])
         if [s['order'] for s in ordered] != list(range(1, len(stops) + 1)):
             raise ValueError('invalid order')
+        if not restore_tour:
+            # URL export needs stored identities/sequence, never routing or feasibility claims.
+            session.tour = Tour('conditional', stops=tuple(
+                Stop(s['venue_id'], s['order'], Leg(None, 0, 'unknown')) for s in ordered))
+            return session
         rebuilt, violation = engine.build_tour(data.venues, prefs,
                                                [s['venue_id'] for s in ordered], self.routing)
         if violation or rebuilt is None or engine.validate_tour(rebuilt, data.venues, prefs, self.routing):
@@ -119,7 +127,7 @@ class SQLiteSessionStore:
         return session
 
     @contextmanager
-    def owned(self, identity, token):
+    def owned(self, identity, token, *, restore_tour=True):
         with self._transaction() as db:
             now = self.clock()
             # Use the shared constant-time comparison even for expired rows.
@@ -137,7 +145,7 @@ class SQLiteSessionStore:
                 db.commit()
                 raise APIError(410, 'session_expired', 'Phiên đã hết hạn; hãy tạo phiên mới.')
             self._purge(db, now)
-            session = self._restore(row)
+            session = self._restore(row, restore_tour=restore_tour)
             # Only hashes/expiry and rate counters are kept here, no preferences/tours.
             with self._rates._lock:
                 self._rates._expire(now)

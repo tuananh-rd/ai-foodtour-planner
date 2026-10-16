@@ -84,5 +84,11 @@ Các test này dùng bản giả của Google chỉ trong trình duyệt kiểm 
 - Toạ độ chưa được geoverify; `geo_audit.py` chỉ gắn cờ bất thường.
 - Chưa có DB/PostGIS thật (SQLite cho phiên), chưa chạy CI từ xa, chưa có đánh giá của người dùng thật về chất lượng tour.
 
+## Google Maps URLs miễn phí (không cần key)
+
+`GET /v1/sessions/{id}/tour/maps-links?mode=walking|driving` cần `X-Session-Token` và tour có điểm dừng; mặc định `walking`, thiếu tour trả `409 no_tour`. Backend chỉ tạo URL, không gọi Google API, không cần key, cấu hình hay billing. Ví dụ giả lập cho frontend: `contracts/fixtures/maps_links.synthetic.json`.
+
+Theo [Google Maps URLs](https://developers.google.com/maps/documentation/urls/get-started), mỗi URL giới hạn 2.048 ký tự và dùng tối đa 3 waypoint để phù hợp trình duyệt di động; một số client có thể bỏ qua waypoint. Các link liên tiếp trong cùng đoạn lặp lại điểm nối, giữ thứ tự tour; địa chỉ thay thế có thể được Google hiểu khác. `partial`/`unavailable`, `skipped` và `notes` giải thích điểm không dùng được; không nối qua khoảng trống. Link gửi tọa độ/địa chỉ tới Google chỉ khi người dùng mở. Lịch trình là đề xuất của ứng dụng; Google có thể hiển thị thời gian khác, backend không xác nhận thời gian hay khoảng cách của Google. UI mở link với `target="_blank" rel="noopener noreferrer"` và hiển thị mọi ghi chú.
+
 ## Bằng chứng đã xác minh (overlay cục bộ, tuỳ chọn)
 Đặt `FOODTOUR_EVIDENCE_PATH` (đường dẫn tuyệt đối) tới JSON `{"schema":1,"entries":[...]}`; mỗi mục cần `venue_id` và, cho từng nhóm trường, `hours` (đủ 7 khóa "0".."6", "0"=Thứ Hai; danh sách rỗng = đóng cửa) + `hours_source` + `hours_verified_at` (YYYY-MM-DD), và/hoặc `price_per_person_vnd {min,max}` + `price_source` + `price_verified_at`. Mục thiếu nguồn hoặc ngày xác minh bị từ chối từng trường; tệp cấu hình mà thiếu/hỏng khiến API trả 503 (không phục vụ dữ liệu "đã xác minh" giả). Ví dụ giả lập: `contracts/fixtures/evidence.synthetic.json`. Tour chỉ thành `verified_feasible` khi giờ, giá theo người **và** tuyến (`provider_route`) đều đã xác minh.
