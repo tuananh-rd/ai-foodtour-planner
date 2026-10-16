@@ -16,6 +16,11 @@ const V2Layout = dynamic(() => import('./components/v2/V2Layout'), {
   ssr: false,
   loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FBF8F3' }} />,
 });
+
+const ChatV2Layout = dynamic(() => import('./components/v2/chat/ChatV2Layout'), {
+  ssr: false,
+  loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FBF8F3' }} />,
+});
 import {
   isMockMode,
   setRuntimeMockMode,
@@ -61,11 +66,15 @@ export default function Home() {
 
   // UI_V2 activation: features.ui_v2=true or URL ?ui=v2 (Scope Goal)
   const [isUiV2, setIsUiV2] = useState(false);
+  const [isChatV2, setIsChatV2] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      if (params.get('chat') === 'v2') {
+        setIsChatV2(true);
+      }
       if (params.get('ui') === 'v2') {
         setIsUiV2(true);
       }
@@ -76,6 +85,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (clientConfig?.features?.chat_v2) {
+      setIsChatV2(true);
+    }
     if (clientConfig?.features?.ui_v2) {
       setIsUiV2(true);
     }
@@ -468,6 +480,23 @@ export default function Home() {
   const lockedVenueIds = (stops.filter((s) => s.venue_id !== replaceTargetStop?.venue_id) || []).map(
     (s) => s.name || s.venue_id
   );
+
+  if (isChatV2) {
+    return (
+      <StatusQueueProvider>
+        <ChatV2Layout
+          sessionId={sessionId}
+          sessionToken={sessionToken}
+          revision={revision}
+          health={health}
+          clientConfig={clientConfig}
+          isMock={isMock}
+          isDevMode={isDevMode}
+          onResetSession={initSession}
+        />
+      </StatusQueueProvider>
+    );
+  }
 
   if (isUiV2) {
     return (
