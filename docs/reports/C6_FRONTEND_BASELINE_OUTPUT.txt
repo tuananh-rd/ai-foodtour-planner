@@ -1,53 +1,53 @@
-
-===============================================================
-   AI FOODTOUR PLANNER — CHATBOT V2 REAL-BROWSER CDP ACCEPTANCE
-   Mode: NORMAL PRODUCTION VERIFICATION
-   Ports: Web=13000, CDP=18000
-===============================================================
-
-[Setup] Scratch build directory created: C:\Users\tuana\AppData\Local\Temp\foodtour-chatv2-build-HMmJIj
-[Setup] Linked node_modules junction.
-[Setup] Running 'next build' in scratch copy...
-   ▲ Next.js 15.5.28
-
-   Creating an optimized production build ...
- ✓ Compiled successfully in 5.1s
-   Linting and checking validity of types ...
-   Collecting page data ...
-   Generating static pages (0/5) ...
-   Generating static pages (1/5) 
-   Generating static pages (2/5) 
-   Generating static pages (3/5) 
- ✓ Generating static pages (5/5)
-   Finalizing page optimization ...
-   Collecting build traces ...
-
-Route (app)                                 Size  First Load JS
-┌ ○ /                                    40.4 kB         143 kB
-├ ○ /_not-found                            990 B         104 kB
-└ ○ /ui-kit                              9.32 kB         112 kB
-+ First Load JS shared by all             103 kB
-  ├ chunks/813-b87e74c5dfbad318.js       46.3 kB
-  ├ chunks/eb96a28b-127988324a9f259a.js  54.2 kB
-  └ other shared chunks (total)          2.06 kB
-
-
-○  (Static)  prerendered as static content
-
-[Setup] Scratch build complete.
-[Setup] Starting production server on port 13000...
-node : (node:23616) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to 
-security vulnerabilities, as the arguments are not escaped, only concatenated.
-At line:2 char:1
-+ node qa/e2e/test_chat_v2.mjs *> docs/reports/C6_FRONTEND_BASELINE_OUT ...
-+ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    + CategoryInfo          : NotSpecified: ((node:23616) [D...y concatenated.:String) [], RemoteException
-    + FullyQualifiedErrorId : NativeCommandError
- 
-(Use `node --trace-deprecation ...` to show where the warning was created)
-[Setup] Production server ready at http://127.0.0.1:13000/
-
-Test suite failed with unexpected error:
- Error: Browser CDP not available on port 18000
-    at run 
-(file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend/qa/e2e/test_chat_v2.mjs:196:13)
+
+===============================================================
+   AI FOODTOUR PLANNER — CHATBOT V2 REAL-BROWSER CDP ACCEPTANCE
+   Mode: NORMAL PRODUCTION VERIFICATION
+   Ports: Web=13000, CDP=18000
+===============================================================
+
+[Setup] Scratch build directory created: C:\Users\tuana\AppData\Local\Temp\foodtour-chatv2-build-HMmJIj
+[Setup] Linked node_modules junction.
+[Setup] Running 'next build' in scratch copy...
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.1s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/5) ...
+   Generating static pages (1/5)
+   Generating static pages (2/5)
+   Generating static pages (3/5)
+ ✓ Generating static pages (5/5)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    40.4 kB         143 kB
+├ ○ /_not-found                            990 B         104 kB
+└ ○ /ui-kit                              9.32 kB         112 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/813-b87e74c5dfbad318.js       46.3 kB
+  ├ chunks/eb96a28b-127988324a9f259a.js  54.2 kB
+  └ other shared chunks (total)          2.06 kB
+
+
+○  (Static)  prerendered as static content
+
+[Setup] Scratch build complete.
+[Setup] Starting production server on port 13000...
+node : (node:23616) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to
+security vulnerabilities, as the arguments are not escaped, only concatenated.
+At line:2 char:1
++ node qa/e2e/test_chat_v2.mjs *> docs/reports/C6_FRONTEND_BASELINE_OUT ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:23616) [D...y concatenated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Setup] Production server ready at http://127.0.0.1:13000/
+
+Test suite failed with unexpected error:
+ Error: Browser CDP not available on port 18000
+    at run
+(file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-codex-backend/qa/e2e/test_chat_v2.mjs:196:13)

@@ -1,70 +1,70 @@
-
-> foodtour-web@0.1.0 test
-> node lib/contractTest.js
-
-=== Testing API Client in MOCK MODE against CONTRACT v1 ===
-Test 1: GET /health
-  ✓ Health passed: {
-  status: 'ok',
-  dataset_loaded: true,
-  llm: 'mock',
-  routing: 'straight_line_estimate',
-  dataset_source: 'synthetic',
-  dataset_version: 'v1.0-mock',
-  llm_budget: {
-    limit: 18,
-    used: 4,
-    remaining: 14,
-    exhausted: false,
-    resets_at: '2026-10-17T02:09:49.985Z',
-    window: 'pacific_midnight'
-  },
-  is_mock: true
-}
-Test 2: GET /v1/venues
-  ✓ Venues list passed: 5 items
-Test 3: GET /v1/venues/{id}
-  ✓ Venue detail passed: [SYNTHETIC] Quán thử 1 - Bún chả Phố Cổ
-Test 4: POST /v1/sessions
-  ✓ Session created: mock-session-1792166989987 revision: 0
-Test 5: POST /v1/sessions/{id}/messages (missing slot)
-  ✓ Missing slot handled properly. Missing: [ 'duration_min' ] Questions: [
-  'Bạn có khoảng bao nhiêu thời gian cho chuyến đi (ví dụ: 60 phút, 90 phút hay 180 phút)?'
-]
-Test 6: POST /v1/sessions/{id}/messages (full preferences -> Tour)
-  ✓ Full tour generated properly. Stops: [SYNTHETIC] Quán thử 1 - Bún chả Phố Cổ -> [SYNTHETIC] Quán thử 2 - Phở Gia Truyền -> [SYNTHETIC] Quán thử 5 - Chè Bốn Mùa
-Test 7: PUT /v1/sessions/{id}/preferences (409 Revision Conflict)
-  ✓ Expected 409 revision conflict caught successfully: Xung đột phiên bản: Dữ liệu hiện tại trên máy chủ là bản #2, nhưng bạn gửi yêu cầu từ bản #0. Vui lòng tải lại để đồng bộ.
-Test 7b: PUT /v1/sessions/{id}/preferences (Valid update)
-  ✓ Preferences updated successfully. Revision: 3
-Test 8: POST /v1/sessions/{id}/tour
-  ✓ Plan tour succeeded. Revision: 4
-Test 9: POST /v1/sessions/{id}/tour/replace
-  ✓ Replace stop succeeded with locks!
-    Before: [ 'SYN-001', 'SYN-002', 'SYN-005' ]
-    After:  [ 'SYN-001', 'SYN-003', 'SYN-005' ]
-    Locks:  [ 'SYN-001', 'SYN-005' ]
-Test 10: Impossible budget request check
-  ✓ Impossible request handled properly. Reasons: [
-  'Ngân sách 10.000 ₫ quá thấp (mức tối thiểu tham khảo từ 20.000 ₫/quán).'
-]
-Test 11: Strict mode insufficient evidence check
-  ✓ Strict mode insufficient evidence handled properly. Reasons: [
-  'Chế độ nghiêm ngặt cần giờ mở cửa, giá theo người và tuyến đường đã xác minh; chưa có đủ bằng chứng.'
-]
-Test 12: POST /v1/plans (legacy)
-  ✓ Legacy endpoint passed: 3 stops
-Test 13: GET /v1/venues/map (mock mode contract)
-  ✓ Mock map venues passed: 8 items, truncated: false
-Test 14: GET /v1/venues/map (real mode error propagation, no silent fallback)
-  ✓ Real mode getVenuesMap properly propagated error without synthetic fallback
-Test 15: GET /v1/venues/map (AbortSignal handling)
-  ✓ AbortError properly propagated without being swallowed
-Test 16: GET /v1/sessions/{id}/tour/maps-links (contract v1.7)
-  ✓ Free Google Maps URLs contract v1.7 verified in mock mode
-Test 17: GET /v1/sessions/{id}/tour/maps-links (real mode error propagation)
-  ✓ Real mode getMapsLinks error propagation passed
-Test 18: POST /v1/sessions/{id}/chat and getChatState (contract v1.8)
-  ✓ Conversational chat turn and getChatState contract v1.8 verified
-
-🎉 ALL 18 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!
+
+> foodtour-web@0.1.0 test
+> node lib/contractTest.js
+
+=== Testing API Client in MOCK MODE against CONTRACT v1 ===
+Test 1: GET /health
+  ✓ Health passed: {
+  status: 'ok',
+  dataset_loaded: true,
+  llm: 'mock',
+  routing: 'straight_line_estimate',
+  dataset_source: 'synthetic',
+  dataset_version: 'v1.0-mock',
+  llm_budget: {
+    limit: 18,
+    used: 4,
+    remaining: 14,
+    exhausted: false,
+    resets_at: '2026-10-17T02:09:49.985Z',
+    window: 'pacific_midnight'
+  },
+  is_mock: true
+}
+Test 2: GET /v1/venues
+  ✓ Venues list passed: 5 items
+Test 3: GET /v1/venues/{id}
+  ✓ Venue detail passed: [SYNTHETIC] Quán thử 1 - Bún chả Phố Cổ
+Test 4: POST /v1/sessions
+  ✓ Session created: mock-session-1792166989987 revision: 0
+Test 5: POST /v1/sessions/{id}/messages (missing slot)
+  ✓ Missing slot handled properly. Missing: [ 'duration_min' ] Questions: [
+  'Bạn có khoảng bao nhiêu thời gian cho chuyến đi (ví dụ: 60 phút, 90 phút hay 180 phút)?'
+]
+Test 6: POST /v1/sessions/{id}/messages (full preferences -> Tour)
+  ✓ Full tour generated properly. Stops: [SYNTHETIC] Quán thử 1 - Bún chả Phố Cổ -> [SYNTHETIC] Quán thử 2 - Phở Gia Truyền -> [SYNTHETIC] Quán thử 5 - Chè Bốn Mùa
+Test 7: PUT /v1/sessions/{id}/preferences (409 Revision Conflict)
+  ✓ Expected 409 revision conflict caught successfully: Xung đột phiên bản: Dữ liệu hiện tại trên máy chủ là bản #2, nhưng bạn gửi yêu cầu từ bản #0. Vui lòng tải lại để đồng bộ.
+Test 7b: PUT /v1/sessions/{id}/preferences (Valid update)
+  ✓ Preferences updated successfully. Revision: 3
+Test 8: POST /v1/sessions/{id}/tour
+  ✓ Plan tour succeeded. Revision: 4
+Test 9: POST /v1/sessions/{id}/tour/replace
+  ✓ Replace stop succeeded with locks!
+    Before: [ 'SYN-001', 'SYN-002', 'SYN-005' ]
+    After:  [ 'SYN-001', 'SYN-003', 'SYN-005' ]
+    Locks:  [ 'SYN-001', 'SYN-005' ]
+Test 10: Impossible budget request check
+  ✓ Impossible request handled properly. Reasons: [
+  'Ngân sách 10.000 ₫ quá thấp (mức tối thiểu tham khảo từ 20.000 ₫/quán).'
+]
+Test 11: Strict mode insufficient evidence check
+  ✓ Strict mode insufficient evidence handled properly. Reasons: [
+  'Chế độ nghiêm ngặt cần giờ mở cửa, giá theo người và tuyến đường đã xác minh; chưa có đủ bằng chứng.'
+]
+Test 12: POST /v1/plans (legacy)
+  ✓ Legacy endpoint passed: 3 stops
+Test 13: GET /v1/venues/map (mock mode contract)
+  ✓ Mock map venues passed: 8 items, truncated: false
+Test 14: GET /v1/venues/map (real mode error propagation, no silent fallback)
+  ✓ Real mode getVenuesMap properly propagated error without synthetic fallback
+Test 15: GET /v1/venues/map (AbortSignal handling)
+  ✓ AbortError properly propagated without being swallowed
+Test 16: GET /v1/sessions/{id}/tour/maps-links (contract v1.7)
+  ✓ Free Google Maps URLs contract v1.7 verified in mock mode
+Test 17: GET /v1/sessions/{id}/tour/maps-links (real mode error propagation)
+  ✓ Real mode getMapsLinks error propagation passed
+Test 18: POST /v1/sessions/{id}/chat and getChatState (contract v1.8)
+  ✓ Conversational chat turn and getChatState contract v1.8 verified
+
+🎉 ALL 18 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!
