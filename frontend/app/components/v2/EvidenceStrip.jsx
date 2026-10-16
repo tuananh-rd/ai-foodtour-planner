@@ -30,20 +30,29 @@ export default function EvidenceStrip({
 
   const unknowns = Array.isArray(tour?.unknowns) ? tour.unknowns : [];
   const stops = Array.isArray(tour?.stops) ? tour.stops : [];
-  const legs = Array.isArray(tour?.legs) ? tour.legs : [];
-
   // Route evidence evaluation:
-  // Must have provider routes without unresolved route unknowns or straight-line fallbacks.
-  const routeUnknown =
-    unknowns.includes('route') ||
-    tour?.totals?.leg_source === 'straight_line_estimate' ||
-    tour?.totals?.leg_source === 'unknown';
+  // Reconcile canonical totals.leg_source AND every stop's leg_from_previous.source (including origin leg).
+  // Provider route claims are allowed ONLY when total (if present) and ALL stop legs are 'provider_route',
+  // and aggregate unknowns do not include 'route'.
+  // Any explicit estimate/unknown source or disagreement => conservative fallback (never verified).
+  // Ignore non-frozen tour.legs fallback for verification claims.
+  const totalLegSource = tour?.totals?.leg_source;
+  const totalIsPresent = totalLegSource != null && totalLegSource !== '';
+  const totalIsProvider = totalLegSource === 'provider_route';
+  const totalMatches = !totalIsPresent || totalIsProvider;
+
+  const allStopsLegProvider =
+    stops.length > 0 &&
+    stops.every((s) => s?.leg_from_previous?.source === 'provider_route');
+
+  const aggregateRouteUnknown = unknowns.includes('route');
 
   const hasProviderRoute =
-    !routeUnknown &&
-    (tour?.totals?.leg_source === 'provider_route' ||
-      (legs.length > 0 && legs.every((l) => l.source === 'provider_route')) ||
-      (stops.length > 1 && stops.slice(1).every((s) => s.leg_from_previous?.source === 'provider_route')));
+    !aggregateRouteUnknown &&
+    totalMatches &&
+    allStopsLegProvider;
+
+  const routeUnknown = !hasProviderRoute;
 
   // Hours evidence evaluation:
   // Never claim verified from object presence.
