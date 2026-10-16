@@ -44,3 +44,5 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R1-5d routing evidence | Antigravity | In progress | ctx_787b3317690f (single task) |
 | GMAPS-REVIEW2 | Codex | In progress | first start ctx_734eaddfc1d3 failed at agent_readiness (Codex CLI update prompt; chose "Skip until next version", did NOT install updates); retry ctx_b9ba22972bcc turn observed |
 | GMAPS-REVIEW2 (Codex, cb61c0a) | Codex | DONE: REQUEST CHANGES (narrow) | H1/M1/M2 FIXED (70/70 supplemental, 0 Google requests, 4 real-source mutations caught); remaining L1 radio arrow wrapping, conditional M3 unmount invalidation. Fix folded into R1-5e (queued after R1-5d, same worktree) |
+| R1-5d (Antigravity, c8100f1) | Antigravity | Done, pending Codex re-review (ctx_6835c0e820f7) | Claude re-ran on production scratch build: test_ui_v2 28/28, components 47/47, ui_kit 11/11, maps_links 53/53 |
+| R1-5e radio wrap + unmount invalidation | Antigravity | In progress | ctx_7777a121447d |
