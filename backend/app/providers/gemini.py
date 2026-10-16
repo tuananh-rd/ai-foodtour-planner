@@ -3,20 +3,19 @@
 - Key comes only from the server environment (GEMINI_API_KEY); it is sent in the
   `x-goog-api-key` header and never logged, echoed or stored.
 - Output is untrusted: callers validate it (app.llm.provider / app.llm.explain).
-- A per-process daily call budget bounds spend; exceeding it is a `quota` ProviderError.
+- A Pacific-midnight daily call budget bounds spend; exceeding it is a `quota` ProviderError.
 """
 from __future__ import annotations
 
-import datetime as _dt
 import json
 import os
 import re
 import time
-from threading import Lock
 
 from app.llm.extract import ANCHORS
 from app.llm.provider import ProviderError
 from .http_transport import allow_host, request_bytes
+from app.repositories.llm_budget import DailyLLMBudget
 
 GEMINI_HOST = "generativelanguage.googleapis.com"
 OFFICIAL_BASE = "https://" + GEMINI_HOST
@@ -28,17 +27,21 @@ TRANSIENT_STATUS = (500, 502, 503, 504)
 
 class GeminiClient:
     def __init__(self, model: str | None = None, *, base_url: str = OFFICIAL_BASE,
-                 api_key_env: str = "GEMINI_API_KEY", daily_budget: int | None = None):
+                 api_key_env: str = "GEMINI_API_KEY", daily_budget: int | None = None,
+                 budget_clock=None, budget_db=None):
         self.model = (model or os.getenv("FOODTOUR_GEMINI_MODEL", "").strip() or DEFAULT_MODEL)
         self.base_url = base_url.rstrip("/")
         self.api_key_env = api_key_env
-        budget = daily_budget if daily_budget is not None else os.getenv("FOODTOUR_LLM_DAILY_BUDGET", "200")
+        budget = daily_budget if daily_budget is not None else os.getenv("FOODTOUR_LLM_DAILY_BUDGET", "18")
         try:
-            self.daily_budget = max(0, int(budget))
-        except (TypeError, ValueError):
-            self.daily_budget = 200
-        self._lock = Lock()
-        self._day, self.calls_today = None, 0
+            self.daily_budget = (int(str(budget)) if not isinstance(budget, bool)
+                                 and re.fullmatch(r"[0-9]+", str(budget).strip()) else 18)
+        except ValueError:
+            self.daily_budget = 18
+        session_db = os.getenv("FOODTOUR_SESSION_DB", "").strip()
+        persistent = (budget_db or os.getenv("FOODTOUR_BUDGET_DB", "").strip()
+                      or (session_db + ".budget.sqlite" if session_db else None))
+        self.budget = DailyLLMBudget(self.daily_budget, clock=budget_clock, db_path=persistent)
         self.last_usage: dict = {}
         if self.base_url == OFFICIAL_BASE:
             allow_host(GEMINI_HOST)  # only because this provider was explicitly enabled
@@ -47,20 +50,31 @@ class GeminiClient:
     def configured(self) -> bool:
         return bool(MODEL_RE.match(self.model)) and bool(os.getenv(self.api_key_env, "").strip())
 
+    @property
+    def calls_today(self):
+        return self.budget.snapshot()["used"]
+
     def _admit(self):
-        today = _dt.datetime.now(_dt.timezone.utc).date()
-        with self._lock:
-            if self._day != today:
-                self._day, self.calls_today = today, 0
-            if self.calls_today >= self.daily_budget:
-                raise ProviderError("quota")
-            self.calls_today += 1
+        return self.budget.admit()
+
+    def _request(self, url, payload, headers, deadline_s):
+        try:
+            window = self._admit()
+        except ProviderError as error:
+            error.llm_calls = 0  # admission/storage refusal never reached transport
+            raise
+        try:
+            return request_bytes(url, body=payload, headers=headers, deadline_s=deadline_s,
+                                 max_bytes=MAX_RESPONSE_BYTES)
+        except ProviderError as error:
+            if error.status == 429:
+                self.budget.exhaust(window)
+            raise
 
     def generate_json(self, system: str, user_text: str, schema: dict, *, deadline_s: float,
                       max_output_tokens: int = 512) -> dict:
         if not self.configured:
             raise ProviderError("unavailable")
-        self._admit()
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
             "contents": [{"role": "user", "parts": [{"text": user_text}]}],
@@ -77,8 +91,7 @@ class GeminiClient:
         payload = json.dumps(body, ensure_ascii=False).encode("utf-8")
         end = time.monotonic() + deadline_s
         try:
-            raw = request_bytes(url, body=payload, headers=headers, deadline_s=deadline_s,
-                                max_bytes=MAX_RESPONSE_BYTES)
+            raw = self._request(url, payload, headers, deadline_s)
         except ProviderError as error:
             # One retry only for a transient server error (e.g. overloaded); never for quota (429),
             # client errors, timeouts or bad bodies. The retry counts against the daily budget.
@@ -86,9 +99,11 @@ class GeminiClient:
             if error.status not in TRANSIENT_STATUS or remaining < 1.5:
                 raise
             time.sleep(0.5)
-            self._admit()
-            raw = request_bytes(url, body=payload, headers=headers, deadline_s=end - time.monotonic(),
-                                max_bytes=MAX_RESPONSE_BYTES)
+            try:
+                raw = self._request(url, payload, headers, end - time.monotonic())
+            except ProviderError as retry_error:
+                retry_error.llm_calls = 1  # first transport already consumed a call
+                raise
         try:
             data = json.loads(raw.decode("utf-8"))
             if not isinstance(data, dict):

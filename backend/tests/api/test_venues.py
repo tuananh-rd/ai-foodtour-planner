@@ -88,4 +88,4 @@ class VenueListTests(unittest.TestCase):
             self.assertIsNone(first["items"][0]["price_max_vnd_norm"])
             self.assertEqual(first["items"][1]["venue_types"], "Shop Online")
             self.assertTrue(first["items"][1]["online_only"])
-            self.assertIsNone(first["items"][0]["cuisine_styles"])
+            self.assertEqual(first["items"][0]["cuisine_styles"], [])  # v1.6 unknown tags

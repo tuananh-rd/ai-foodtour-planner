@@ -108,6 +108,29 @@ class Hours(Model):
     open_at_arrival: bool | None = None
 
 
+class Rating(Model):
+    value: float | None = Field(default=None, ge=0, le=5)
+    count: int | None = Field(default=None, ge=0)
+    source_scale_max: float | None = Field(default=None, gt=0)
+
+
+class Amenities(Model):
+    yes: list[str] = Field(default_factory=list)
+    no: list[str] = Field(default_factory=list)
+
+
+class MessageBudget(Model):
+    limit: int = Field(ge=0)
+    remaining: int = Field(ge=0)
+    exhausted: bool
+
+
+class LLMBudget(MessageBudget):
+    used: int = Field(ge=0)
+    resets_at: str
+    window: Literal["pacific_midnight"] = "pacific_midnight"
+
+
 class VenueView(Model):
     id: str
     name: str
@@ -118,6 +141,12 @@ class VenueView(Model):
     lon: float
     source_url: str
     dish_tags: list[str]
+    rating: Rating = Field(default_factory=Rating)
+    suitable_meals: list[str] = Field(default_factory=list)
+    audiences: list[str] = Field(default_factory=list)
+    cuisine_styles: list[str] = Field(default_factory=list)
+    amenities: Amenities = Field(default_factory=Amenities)
+    source_fetched_at: str | None = None
     online_only: bool
     geo_ok: bool
     synthetic: bool
@@ -131,7 +160,6 @@ class VenueListItem(VenueView):
     """Explicit legacy aliases over validated snapshot fields, never raw rows."""
     foody_id: str
     dish_groups: str
-    cuisine_styles: None = None  # The canonical snapshot does not retain this field.
     venue_types: Literal["Shop Online"] | None
     geo_status: Literal["ok", "unknown"]
     price_min_vnd_norm: int | None
@@ -160,6 +188,7 @@ class LegView(Model):
 
 
 class StopView(Model):
+    venue: VenueView | None = None
     venue_id: str
     name: str
     address: str
@@ -207,7 +236,9 @@ class SessionView(Model):
     revision: int
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
-    extraction_source: Literal["rules", "llm"] | None = None
+    extraction_source: Literal["rules", "llm", "cache"] | None = None
+    llm_calls: Literal[0, 1] = 0
+    llm_budget: MessageBudget | None = None
 
 
 class EvidenceOverlayCounts(Model):
@@ -223,6 +254,7 @@ class GeocodingHealth(Model):
 
 
 class Health(Model):
+    llm_budget: LLMBudget | None = None
     status: str
     dataset_loaded: bool
     llm: Literal["mock", "live", "unavailable"]

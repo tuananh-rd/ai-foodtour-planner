@@ -1,6 +1,27 @@
 {
   "components": {
     "schemas": {
+      "Amenities": {
+        "additionalProperties": false,
+        "properties": {
+          "no": {
+            "items": {
+              "type": "string"
+            },
+            "title": "No",
+            "type": "array"
+          },
+          "yes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Yes",
+            "type": "array"
+          }
+        },
+        "title": "Amenities",
+        "type": "object"
+      },
       "ClientConfig": {
         "additionalProperties": false,
         "properties": {
@@ -266,6 +287,16 @@
             "title": "Llm",
             "type": "string"
           },
+          "llm_budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/LLMBudget"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "llm_configured": {
             "default": true,
             "title": "Llm Configured",
@@ -385,6 +416,49 @@
           "display"
         ],
         "title": "Hours",
+        "type": "object"
+      },
+      "LLMBudget": {
+        "additionalProperties": false,
+        "properties": {
+          "exhausted": {
+            "title": "Exhausted",
+            "type": "boolean"
+          },
+          "limit": {
+            "minimum": 0.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "remaining": {
+            "minimum": 0.0,
+            "title": "Remaining",
+            "type": "integer"
+          },
+          "resets_at": {
+            "title": "Resets At",
+            "type": "string"
+          },
+          "used": {
+            "minimum": 0.0,
+            "title": "Used",
+            "type": "integer"
+          },
+          "window": {
+            "const": "pacific_midnight",
+            "default": "pacific_midnight",
+            "title": "Window",
+            "type": "string"
+          }
+        },
+        "required": [
+          "limit",
+          "remaining",
+          "exhausted",
+          "used",
+          "resets_at"
+        ],
+        "title": "LLMBudget",
         "type": "object"
       },
       "LegView": {
@@ -620,6 +694,32 @@
           "default_center"
         ],
         "title": "MapsConfig",
+        "type": "object"
+      },
+      "MessageBudget": {
+        "additionalProperties": false,
+        "properties": {
+          "exhausted": {
+            "title": "Exhausted",
+            "type": "boolean"
+          },
+          "limit": {
+            "minimum": 0.0,
+            "title": "Limit",
+            "type": "integer"
+          },
+          "remaining": {
+            "minimum": 0.0,
+            "title": "Remaining",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "limit",
+          "remaining",
+          "exhausted"
+        ],
+        "title": "MessageBudget",
         "type": "object"
       },
       "MessageRequest": {
@@ -989,6 +1089,50 @@
         "title": "PrivacyConfig",
         "type": "object"
       },
+      "Rating": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "source_scale_max": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Scale Max"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "maximum": 5.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "title": "Rating",
+        "type": "object"
+      },
       "ReplaceRequest": {
         "additionalProperties": false,
         "properties": {
@@ -1117,7 +1261,8 @@
               {
                 "enum": [
                   "rules",
-                  "llm"
+                  "llm",
+                  "cache"
                 ],
                 "type": "string"
               },
@@ -1126,6 +1271,25 @@
               }
             ],
             "title": "Extraction Source"
+          },
+          "llm_budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/MessageBudget"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "llm_calls": {
+            "default": 0,
+            "enum": [
+              0,
+              1
+            ],
+            "title": "Llm Calls",
+            "type": "integer"
           },
           "missing_slots": {
             "items": {
@@ -1243,6 +1407,16 @@
           "synthetic": {
             "title": "Synthetic",
             "type": "boolean"
+          },
+          "venue": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VenueView"
+              },
+              {
+                "type": "null"
+              }
+            ]
           },
           "venue_id": {
             "title": "Venue Id",
@@ -1476,13 +1650,26 @@
             "title": "Address",
             "type": "string"
           },
+          "amenities": {
+            "$ref": "#/components/schemas/Amenities"
+          },
+          "audiences": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Audiences",
+            "type": "array"
+          },
           "city": {
             "title": "City",
             "type": "string"
           },
           "cuisine_styles": {
+            "items": {
+              "type": "string"
+            },
             "title": "Cuisine Styles",
-            "type": "null"
+            "type": "array"
           },
           "dataset_source": {
             "enum": [
@@ -1612,9 +1799,30 @@
             "title": "Price Status",
             "type": "string"
           },
+          "rating": {
+            "$ref": "#/components/schemas/Rating"
+          },
+          "source_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Fetched At"
+          },
           "source_url": {
             "title": "Source Url",
             "type": "string"
+          },
+          "suitable_meals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Suitable Meals",
+            "type": "array"
           },
           "synthetic": {
             "title": "Synthetic",
@@ -1669,9 +1877,26 @@
             "title": "Address",
             "type": "string"
           },
+          "amenities": {
+            "$ref": "#/components/schemas/Amenities"
+          },
+          "audiences": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Audiences",
+            "type": "array"
+          },
           "city": {
             "title": "City",
             "type": "string"
+          },
+          "cuisine_styles": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Cuisine Styles",
+            "type": "array"
           },
           "dataset_source": {
             "enum": [
@@ -1726,9 +1951,30 @@
           "price": {
             "$ref": "#/components/schemas/Price"
           },
+          "rating": {
+            "$ref": "#/components/schemas/Rating"
+          },
+          "source_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Fetched At"
+          },
           "source_url": {
             "title": "Source Url",
             "type": "string"
+          },
+          "suitable_meals": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Suitable Meals",
+            "type": "array"
           },
           "synthetic": {
             "title": "Synthetic",

@@ -8,7 +8,7 @@ from pydantic import ValidationError
 from app.api import legacy
 from app.api.errors import APIError
 from app.api.schemas import (
-    ErrorResponse, Health, Hours, LegView, MessageRequest, PreferencesRequest,
+    ErrorResponse, Health, Hours, LegView, MessageRequest, MessageBudget, PreferencesRequest,
     PreferencesSchema, Price, ReplaceRequest, RevisionRequest, SessionCreated,
     SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
     GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig,
@@ -16,7 +16,7 @@ from app.api.schemas import (
 from app.data import DatasetLoadError
 from app.llm.explain import explain
 from app.llm.extract import QUESTIONS, UnavailableExtractor
-from app.llm.provider import FallbackExtractor, LLMExtractor
+from app.llm.provider import FallbackExtractor, LLMExtractor, RulesFirstExtractor, ProviderError
 from app.providers.routing import HttpRouteProvider
 from app.providers.walking import WalkingRouteProvider
 from app.planner import engine
@@ -31,6 +31,14 @@ def snapshot(request):
         return request.app.state.venues.snapshot()
     except DatasetLoadError:
         raise APIError(503, "provider_unavailable", "Không thể đọc bộ dữ liệu địa điểm.") from None
+
+
+def budget_snapshot(request):
+    try:
+        budget = request.app.state.llm_budget
+        return budget.snapshot() if budget is not None else None
+    except ProviderError:
+        raise APIError(503, "provider_unavailable", "Ngân sách AI tạm thời không khả dụng.") from None
 
 
 def price(v):
@@ -63,6 +71,7 @@ def render_tour(tour, data, prefs, revision, routes, explainer=None):
         if lines is not None and stop.leg_from_previous.source == "provider_route":
             leg["geometry"] = [[round(lat, 6), round(lon, 6)] for lat, lon in lines[index]]
         stops.append(StopView(
+            venue=venue_view(venue, data),
             venue_id=venue.id, name=venue.name, address=venue.address,
             district=venue.district, lat=venue.lat, lon=venue.lon,
             source_url=venue.source_url, order=stop.order,
@@ -111,12 +120,16 @@ def health(request: Request):
     data = snapshot(request)
     extractor, routing = request.app.state.extractor, request.app.state.routing
     llm_mode = "unavailable" if isinstance(extractor, UnavailableExtractor) else (
-        "live" if isinstance(extractor, (LLMExtractor, FallbackExtractor)) else "mock")
+        "live" if isinstance(extractor, (LLMExtractor, FallbackExtractor, RulesFirstExtractor)) else "mock")
+    if isinstance(extractor, RulesFirstExtractor) and isinstance(extractor.llm, UnavailableExtractor):
+        llm_mode = "mock"
     route_mode = ("provider_route" if routing.configured and routing.reachable else "unknown"
                   ) if isinstance(routing, (HttpRouteProvider, WalkingRouteProvider)) else "straight_line_estimate"
     info = request.app.state.provider_info
-    return Health(status="ok", dataset_loaded=bool(data.venues),
-                  llm=llm_mode, llm_configured=llm_mode != "unavailable",
+    return Health(llm_budget=budget_snapshot(request),
+                  status="ok", dataset_loaded=bool(data.venues),
+                  llm=llm_mode, llm_configured=(llm_mode != "unavailable" and not (
+                      isinstance(extractor, RulesFirstExtractor) and isinstance(extractor.llm, UnavailableExtractor))),
                   routing=route_mode, routing_configured=getattr(routing, "configured", True),
                   dataset_source=public_source(data),
                   dataset_version=data.dataset_version, evidence_overlay=data.evidence_overlay,
@@ -168,6 +181,11 @@ def map_venues(request: Request, min_lat: float = Query(ge=-90, le=90), min_lon:
 
 def venue_view(v, data):
     return VenueView(
+        rating={"value": v.rating, "count": v.review_count, "source_scale_max": v.rating_scale_max},
+        suitable_meals=list(v.suitable_meals), audiences=list(v.audiences),
+        cuisine_styles=list(v.cuisine_styles),
+        amenities={"yes": list(v.amenities_yes), "no": list(v.amenities_no)},
+        source_fetched_at=v.source_fetched_at,
         id=v.id, name=v.name, city=v.city, address=v.address, district=v.district,
         lat=v.lat, lon=v.lon, source_url=v.source_url, dish_tags=list(v.dish_tags),
         online_only=v.online_only, geo_ok=v.geo_ok, synthetic=v.synthetic,
@@ -264,7 +282,11 @@ def message(session_id: str, body: MessageRequest, request: Request,
         data = snapshot(request)
         tour = None if engine.missing_slots(prefs) or result.rejected_fields else engine.plan_tour(data.venues, prefs, request.app.state.routing)
         view = commit(session, prefs, tour, data, request, notes)
-        view.extraction_source = "llm" if result.source == "live" else "rules"
+        view.extraction_source = {"live": "llm", "cache": "cache"}.get(result.source, "rules")
+        view.llm_calls = result.llm_calls
+        if request.app.state.llm_budget:
+            budget = budget_snapshot(request)
+            view.llm_budget = MessageBudget(**{k: budget[k] for k in ("limit", "remaining", "exhausted")})
         return view
 
 

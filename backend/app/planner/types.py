@@ -34,6 +34,16 @@ class Venue:
     hours: Optional[Hours] = None  # None = unknown
     hours_display: Optional[str] = None
     synthetic: bool = False
+    # Source metadata only; not feasibility evidence (v1.6).
+    rating: Optional[float] = None
+    rating_scale_max: Optional[float] = None
+    review_count: Optional[int] = None
+    suitable_meals: tuple = ()
+    audiences: tuple = ()
+    cuisine_styles: tuple = ()
+    amenities_yes: tuple = ()
+    amenities_no: tuple = ()
+    source_fetched_at: Optional[str] = None
 
 
 @dataclass(frozen=True)

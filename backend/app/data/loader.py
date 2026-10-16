@@ -6,6 +6,7 @@ explicitly, with count-only diagnostics. No paths or source values enter reports
 from __future__ import annotations
 
 import csv
+from datetime import datetime
 import hashlib
 import io
 import json
@@ -85,6 +86,46 @@ def _price(value) -> int | None:
 def _tags(value) -> tuple[str, ...]:
     values = value.split("|") if isinstance(value, str) else value if isinstance(value, list) else []
     return tuple(sorted({_text(v) for v in values if _text(v)}))
+
+
+def _rating(value, scale):
+    try:
+        if isinstance(scale, bool):
+            return None, None
+        scale = float(scale)
+        if not math.isfinite(scale) or scale <= 0:
+            return None, None
+    except (TypeError, ValueError, OverflowError):
+        return None, None
+    try:
+        if isinstance(value, bool):
+            return None, scale
+        value = float(value)
+        if not math.isfinite(value) or not 0 <= value <= scale:
+            return None, scale
+        return value / scale * 5, scale
+    except (TypeError, ValueError, OverflowError):
+        return None, scale
+
+
+def _count(value):
+    if isinstance(value, bool) or value is None:
+        return None
+    try:
+        number = Decimal(str(value))
+        return int(number) if number.is_finite() and number >= 0 and number == number.to_integral_value() else None
+    except (InvalidOperation, ValueError, OverflowError):
+        return None
+
+
+def _timestamp(value):
+    value = _text(value)
+    try:
+        if 'T' not in value and ' ' not in value:
+            return None
+        return datetime.fromisoformat(value.replace('Z', '+00:00')).isoformat()
+    except ValueError:
+        return None
 
 
 def _parse(blob: bytes, suffix: str, synthetic: bool) -> list:
@@ -196,6 +237,15 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
         tags = _tags(row.get("dish_tags" if synthetic else "dish_groups"))
         if not tags:
             flags["missing_dish_tags"] += 1
+        rating, scale = _rating(row.get("rating_value"), row.get("rating_scale_max"))
+        reviews = _count(row.get("review_count"))
+        meals = _tags(row.get("suitable_meals"))
+        if rating is None:
+            flags["missing_rating"] += 1
+        if reviews is None:
+            flags["missing_review_count"] += 1
+        if not meals:
+            flags["missing_suitable_meals"] += 1
         flags["unknown_hours"] += 1
         venues.append(Venue(
             id=identity, name=_text(row.get("name")), lat=lat, lon=lon,
@@ -204,7 +254,11 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
             online_only=online, geo_ok=geo_ok, price_min_vnd=low,
             price_max_vnd=high, price_evidence="estimate", hours=None,
             hours_display=_text(row.get("hours_display" if synthetic else "hours_displayed")) or None,
-            synthetic=synthetic,
+            synthetic=synthetic, rating=rating, rating_scale_max=scale, review_count=reviews,
+            suitable_meals=meals, audiences=_tags(row.get("audiences")),
+            cuisine_styles=_tags(row.get("cuisine_styles")),
+            amenities_yes=_tags(row.get("amenities_yes")), amenities_no=_tags(row.get("amenities_no")),
+            source_fetched_at=_timestamp(row.get("fetched_at")),
         ))
     try:
         merged, version, evidence_counts, evidence_rejections = apply_overlay(

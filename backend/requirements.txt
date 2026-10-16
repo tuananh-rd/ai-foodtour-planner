@@ -1,3 +1,6 @@
 fastapi>=0.115,<1
 uvicorn>=0.30,<1
 httpx>=0.27,<1
+
+# Windows has no system IANA timezone database; required for Pacific DST quota resets.
+tzdata>=2026.1

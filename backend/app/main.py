@@ -13,7 +13,7 @@ from app.api.routes import router
 from app.api.security import SecurityMiddleware, configure_access_logging, setting
 from app.llm.extract import MockExtractor, UnavailableExtractor
 from app.llm.explain import CheckedExplainer
-from app.llm.provider import FallbackExtractor, LLMExtractor
+from app.llm.provider import LLMExtractor, RulesFirstExtractor
 from app.providers.extraction import HttpExtractionProvider
 from app.providers.routing import HttpRouteProvider
 from app.providers.gemini import GeminiClient, GeminiExplanationProvider, GeminiExtractionProvider
@@ -40,10 +40,9 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     elif llm_mode == "gemini":
         gemini = GeminiClient()
         info.update(llm_provider="gemini", llm_model=gemini.model)
-        # Gemini first; if it fails the rule extractor answers and the response says so.
-        app.state.extractor = (FallbackExtractor(LLMExtractor(GeminiExtractionProvider(gemini), deadline_s=15.0),
-                                                 MockExtractor())
-                               if gemini.configured else UnavailableExtractor())
+        app.state.extractor = RulesFirstExtractor(MockExtractor(),
+            LLMExtractor(GeminiExtractionProvider(gemini), deadline_s=15.0)
+            if gemini.configured else UnavailableExtractor())
     elif llm_mode == "live":
         provider = HttpExtractionProvider(os.getenv("FOODTOUR_LLM_ENDPOINT"))
         info["llm_provider"] = "http"
@@ -59,6 +58,7 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
         app.state.explainer = CheckedExplainer(GeminiExplanationProvider(gemini) if gemini.configured else None)
     else:
         app.state.explainer = CheckedExplainer(None)
+    app.state.llm_budget = gemini.budget if gemini is not None and gemini.configured else None
     routing_mode = os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold()
     if routing_mode == "google":
         app.state.routing = GoogleRoutesProvider()
