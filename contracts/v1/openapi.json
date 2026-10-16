@@ -718,6 +718,167 @@
         "title": "MapsConfig",
         "type": "object"
       },
+      "MapsLink": {
+        "additionalProperties": false,
+        "properties": {
+          "from_stop": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "From Stop"
+          },
+          "index": {
+            "minimum": 1.0,
+            "title": "Index",
+            "type": "integer"
+          },
+          "of": {
+            "minimum": 1.0,
+            "title": "Of",
+            "type": "integer"
+          },
+          "point_kinds": {
+            "items": {
+              "enum": [
+                "latlng",
+                "address"
+              ],
+              "type": "string"
+            },
+            "title": "Point Kinds",
+            "type": "array"
+          },
+          "to_stop": {
+            "title": "To Stop",
+            "type": "integer"
+          },
+          "url": {
+            "maxLength": 2048,
+            "title": "Url",
+            "type": "string"
+          },
+          "url_length": {
+            "maximum": 2048.0,
+            "title": "Url Length",
+            "type": "integer"
+          },
+          "waypoint_count": {
+            "maximum": 3.0,
+            "minimum": 0.0,
+            "title": "Waypoint Count",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "index",
+          "of",
+          "url",
+          "from_stop",
+          "to_stop",
+          "waypoint_count",
+          "url_length",
+          "point_kinds"
+        ],
+        "title": "MapsLink",
+        "type": "object"
+      },
+      "MapsLinksResponse": {
+        "additionalProperties": false,
+        "properties": {
+          "links": {
+            "items": {
+              "$ref": "#/components/schemas/MapsLink"
+            },
+            "title": "Links",
+            "type": "array"
+          },
+          "notes": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Notes",
+            "type": "array"
+          },
+          "provider": {
+            "const": "google_maps_urls",
+            "default": "google_maps_urls",
+            "title": "Provider",
+            "type": "string"
+          },
+          "skipped": {
+            "items": {
+              "$ref": "#/components/schemas/MapsSkippedStop"
+            },
+            "title": "Skipped",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "partial",
+              "unavailable"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "travelmode": {
+            "enum": [
+              "walking",
+              "driving"
+            ],
+            "title": "Travelmode",
+            "type": "string"
+          },
+          "uses_api": {
+            "const": false,
+            "default": false,
+            "title": "Uses Api",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "status",
+          "travelmode",
+          "links",
+          "skipped",
+          "notes"
+        ],
+        "title": "MapsLinksResponse",
+        "type": "object"
+      },
+      "MapsSkippedStop": {
+        "additionalProperties": false,
+        "properties": {
+          "reason": {
+            "enum": [
+              "no_usable_point",
+              "url_too_long"
+            ],
+            "title": "Reason",
+            "type": "string"
+          },
+          "stop_order": {
+            "title": "Stop Order",
+            "type": "integer"
+          },
+          "venue_id": {
+            "title": "Venue Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stop_order",
+          "venue_id",
+          "reason"
+        ],
+        "title": "MapsSkippedStop",
+        "type": "object"
+      },
       "MessageBudget": {
         "additionalProperties": false,
         "properties": {
@@ -3440,6 +3601,175 @@
           }
         },
         "summary": "Tour"
+      }
+    },
+    "/v1/sessions/{session_id}/tour/maps-links": {
+      "get": {
+        "operationId": "maps_links_v1_sessions__session_id__tour_maps_links_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "mode",
+            "required": false,
+            "schema": {
+              "default": "walking",
+              "enum": [
+                "walking",
+                "driving"
+              ],
+              "title": "Mode",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-session-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapsLinksResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unauthorized"
+          },
+          "403": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Forbidden"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Not Found"
+          },
+          "405": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Method Not Allowed"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Conflict"
+          },
+          "410": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Gone"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Content Too Large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Unprocessable Content"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Too Many Requests"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Internal Server Error"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Service Unavailable"
+          }
+        },
+        "summary": "Maps Links"
       }
     },
     "/v1/sessions/{session_id}/tour/replace": {

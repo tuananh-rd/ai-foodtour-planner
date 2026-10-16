@@ -19,6 +19,33 @@ class Origin(Model):
     lon: float = Field(ge=-180, le=180, strict=True)
 
 
+class MapsLink(Model):
+    index: int = Field(ge=1)
+    of: int = Field(ge=1)
+    url: str = Field(max_length=2048)
+    from_stop: int | None
+    to_stop: int
+    waypoint_count: int = Field(ge=0, le=3)
+    url_length: int = Field(le=2048)
+    point_kinds: list[Literal['latlng', 'address']]
+
+
+class MapsSkippedStop(Model):
+    stop_order: int
+    venue_id: str
+    reason: Literal['no_usable_point', 'url_too_long']
+
+
+class MapsLinksResponse(Model):
+    status: Literal['ok', 'partial', 'unavailable']
+    travelmode: Literal['walking', 'driving']
+    provider: Literal['google_maps_urls'] = 'google_maps_urls'
+    uses_api: Literal[False] = False
+    links: list[MapsLink]
+    skipped: list[MapsSkippedStop]
+    notes: list[str]
+
+
 class PreferencesSchema(Model):
     city: str = Field(default="Hà Nội", max_length=100)
     origin: Origin | None = None

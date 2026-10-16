@@ -1,6 +1,7 @@
 """Contract-v1 endpoints. All session mutations are atomic and checked."""
 from dataclasses import asdict, replace as domain_replace
 import os
+from typing import Literal
 
 from fastapi import APIRouter, Header, Query, Request, Response
 from pydantic import ValidationError
@@ -11,7 +12,7 @@ from app.api.schemas import (
     ErrorResponse, Health, Hours, LegView, MessageRequest, MessageBudget, PreferencesRequest,
     PreferencesSchema, Price, ReplaceRequest, RevisionRequest, SessionCreated,
     SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
-    GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig,
+    GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig, MapsLinksResponse,
 )
 from app.data import DatasetLoadError
 from app.llm.explain import explain
@@ -20,6 +21,7 @@ from app.llm.provider import FallbackExtractor, LLMExtractor, RulesFirstExtracto
 from app.providers.routing import HttpRouteProvider
 from app.providers.walking import WalkingRouteProvider
 from app.planner import engine
+from app.planner.maps_url import build_maps_links
 
 router = APIRouter(responses={
     code: {"model": ErrorResponse} for code in (401, 403, 404, 405, 409, 410, 413, 422, 429, 500, 503)
@@ -255,6 +257,17 @@ def read_session(session_id: str, request: Request,
                           request.app.state.explainer)
         view.notes = list(notes)
         return view
+
+
+@router.get('/v1/sessions/{session_id}/tour/maps-links', response_model=MapsLinksResponse)
+def maps_links(session_id: str, request: Request, mode: Literal['walking', 'driving'] = 'walking',
+               x_session_token: str | None = Header(default=None)):
+    with request.app.state.sessions.owned(session_id, x_session_token, restore_tour=False) as session:
+        if session.tour is None or not session.tour.stops:
+            raise APIError(409, 'no_tour', 'Chưa có lịch trình với điểm dừng.')
+        data = session.snapshot
+        return build_maps_links(session.preferences.origin, session.preferences.origin_label,
+                                session.tour.stops, data.venues if data else (), mode)
 
 
 @router.post("/v1/sessions/{session_id}/messages", response_model=SessionView)

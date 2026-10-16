@@ -1,0 +1,772 @@
+{
+  "synthetic": true,
+  "description": "Invented URL-only fixtures; no real venues or Google calls.",
+  "cases": [
+    {
+      "name": "single_walking",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "walking",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          },
+          {
+            "venue_id": "synthetic-maps-2",
+            "order": 2
+          },
+          {
+            "venue_id": "synthetic-maps-3",
+            "order": 3
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": 21.001,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-2",
+            "name": "Synthetic stop 2",
+            "lat": 21.002,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-3",
+            "name": "Synthetic stop 3",
+            "lat": 21.003,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "ok",
+        "travelmode": "walking",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [
+          {
+            "index": 1,
+            "of": 1,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000&travelmode=walking",
+            "from_stop": null,
+            "to_stop": 3,
+            "waypoint_count": 2,
+            "url_length": 180,
+            "point_kinds": [
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng"
+            ]
+          }
+        ],
+        "skipped": [],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times."
+        ]
+      }
+    },
+    {
+      "name": "single_driving",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "driving",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          },
+          {
+            "venue_id": "synthetic-maps-2",
+            "order": 2
+          },
+          {
+            "venue_id": "synthetic-maps-3",
+            "order": 3
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": 21.001,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-2",
+            "name": "Synthetic stop 2",
+            "lat": 21.002,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-3",
+            "name": "Synthetic stop 3",
+            "lat": 21.003,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "ok",
+        "travelmode": "driving",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [
+          {
+            "index": 1,
+            "of": 1,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000&travelmode=driving",
+            "from_stop": null,
+            "to_stop": 3,
+            "waypoint_count": 2,
+            "url_length": 180,
+            "point_kinds": [
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng"
+            ]
+          }
+        ],
+        "skipped": [],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times."
+        ]
+      }
+    },
+    {
+      "name": "split_mobile",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "walking",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          },
+          {
+            "venue_id": "synthetic-maps-2",
+            "order": 2
+          },
+          {
+            "venue_id": "synthetic-maps-3",
+            "order": 3
+          },
+          {
+            "venue_id": "synthetic-maps-4",
+            "order": 4
+          },
+          {
+            "venue_id": "synthetic-maps-5",
+            "order": 5
+          },
+          {
+            "venue_id": "synthetic-maps-6",
+            "order": 6
+          },
+          {
+            "venue_id": "synthetic-maps-7",
+            "order": 7
+          },
+          {
+            "venue_id": "synthetic-maps-8",
+            "order": 8
+          },
+          {
+            "venue_id": "synthetic-maps-9",
+            "order": 9
+          },
+          {
+            "venue_id": "synthetic-maps-10",
+            "order": 10
+          },
+          {
+            "venue_id": "synthetic-maps-11",
+            "order": 11
+          },
+          {
+            "venue_id": "synthetic-maps-12",
+            "order": 12
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": 21.001,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-2",
+            "name": "Synthetic stop 2",
+            "lat": 21.002,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-3",
+            "name": "Synthetic stop 3",
+            "lat": 21.003,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-4",
+            "name": "Synthetic stop 4",
+            "lat": 21.004,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-5",
+            "name": "Synthetic stop 5",
+            "lat": 21.005,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-6",
+            "name": "Synthetic stop 6",
+            "lat": 21.006,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-7",
+            "name": "Synthetic stop 7",
+            "lat": 21.007,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-8",
+            "name": "Synthetic stop 8",
+            "lat": 21.008,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-9",
+            "name": "Synthetic stop 9",
+            "lat": 21.009,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-10",
+            "name": "Synthetic stop 10",
+            "lat": 21.01,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-11",
+            "name": "Synthetic stop 11",
+            "lat": 21.011,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-12",
+            "name": "Synthetic stop 12",
+            "lat": 21.012,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "ok",
+        "travelmode": "walking",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [
+          {
+            "index": 1,
+            "of": 3,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.004000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000%7C21.003000%2C105.850000&travelmode=walking",
+            "from_stop": null,
+            "to_stop": 4,
+            "waypoint_count": 3,
+            "url_length": 205,
+            "point_kinds": [
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng"
+            ]
+          },
+          {
+            "index": 2,
+            "of": 3,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.004000%2C105.850000&destination=21.008000%2C105.850000&waypoints=21.005000%2C105.850000%7C21.006000%2C105.850000%7C21.007000%2C105.850000&travelmode=walking",
+            "from_stop": 4,
+            "to_stop": 8,
+            "waypoint_count": 3,
+            "url_length": 205,
+            "point_kinds": [
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng"
+            ]
+          },
+          {
+            "index": 3,
+            "of": 3,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.008000%2C105.850000&destination=21.012000%2C105.850000&waypoints=21.009000%2C105.850000%7C21.010000%2C105.850000%7C21.011000%2C105.850000&travelmode=walking",
+            "from_stop": 8,
+            "to_stop": 12,
+            "waypoint_count": 3,
+            "url_length": 205,
+            "point_kinds": [
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng",
+              "latlng"
+            ]
+          }
+        ],
+        "skipped": [],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times."
+        ]
+      }
+    },
+    {
+      "name": "address_fallback",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "walking",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          },
+          {
+            "venue_id": "synthetic-maps-2",
+            "order": 2
+          },
+          {
+            "venue_id": "synthetic-maps-3",
+            "order": 3
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": null,
+            "lon": 105.85,
+            "address": "12 Phố Huế & Bún + Chè #1, Synthetic Hà Nội",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-2",
+            "name": "Synthetic stop 2",
+            "lat": 21.002,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-3",
+            "name": "Synthetic stop 3",
+            "lat": 21.003,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "ok",
+        "travelmode": "walking",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [
+          {
+            "index": 1,
+            "of": 1,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=12+Ph%E1%BB%91+Hu%E1%BA%BF+%26+B%C3%BAn+%2B+Ch%C3%A8+%231%2C+Synthetic+H%C3%A0+N%E1%BB%99i%7C21.002000%2C105.850000&travelmode=walking",
+            "from_stop": null,
+            "to_stop": 3,
+            "waypoint_count": 2,
+            "url_length": 248,
+            "point_kinds": [
+              "latlng",
+              "address",
+              "latlng",
+              "latlng"
+            ]
+          }
+        ],
+        "skipped": [],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times."
+        ]
+      }
+    },
+    {
+      "name": "partial_gap",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "walking",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          },
+          {
+            "venue_id": "synthetic-maps-2",
+            "order": 2
+          },
+          {
+            "venue_id": "synthetic-maps-3",
+            "order": 3
+          },
+          {
+            "venue_id": "synthetic-maps-4",
+            "order": 4
+          },
+          {
+            "venue_id": "synthetic-maps-5",
+            "order": 5
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": 21.001,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-2",
+            "name": "Synthetic stop 2",
+            "lat": 21.002,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-3",
+            "name": "Synthetic stop 3",
+            "lat": null,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-4",
+            "name": "Synthetic stop 4",
+            "lat": 21.004,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-5",
+            "name": "Synthetic stop 5",
+            "lat": 21.005,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "partial",
+        "travelmode": "walking",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [
+          {
+            "index": 1,
+            "of": 2,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.002000%2C105.850000&waypoints=21.001000%2C105.850000&travelmode=walking",
+            "from_stop": null,
+            "to_stop": 2,
+            "waypoint_count": 1,
+            "url_length": 155,
+            "point_kinds": [
+              "latlng",
+              "latlng",
+              "latlng"
+            ]
+          },
+          {
+            "index": 2,
+            "of": 2,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.004000%2C105.850000&destination=21.005000%2C105.850000&travelmode=walking",
+            "from_stop": 4,
+            "to_stop": 5,
+            "waypoint_count": 0,
+            "url_length": 122,
+            "point_kinds": [
+              "latlng",
+              "latlng"
+            ]
+          }
+        ],
+        "skipped": [
+          {
+            "stop_order": 3,
+            "venue_id": "synthetic-maps-3",
+            "reason": "no_usable_point"
+          }
+        ],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times.",
+          "Skipped stops break the itinerary into separate usable runs; missing legs are not connected. Reasons are listed in skipped, including adjacent points that exceed the encoded URL limit."
+        ]
+      }
+    },
+    {
+      "name": "unavailable",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "walking",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": null,
+            "lon": 105.85,
+            "address": "",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "unavailable",
+        "travelmode": "walking",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [],
+        "skipped": [
+          {
+            "stop_order": 1,
+            "venue_id": "synthetic-maps-1",
+            "reason": "no_usable_point"
+          }
+        ],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times.",
+          "Skipped stops break the itinerary into separate usable runs; missing legs are not connected. Reasons are listed in skipped, including adjacent points that exceed the encoded URL limit."
+        ]
+      }
+    },
+    {
+      "name": "long_addresses",
+      "input": {
+        "origin": [
+          21.0,
+          105.85
+        ],
+        "origin_address": null,
+        "mode": "walking",
+        "stops": [
+          {
+            "venue_id": "synthetic-maps-1",
+            "order": 1
+          },
+          {
+            "venue_id": "synthetic-maps-2",
+            "order": 2
+          },
+          {
+            "venue_id": "synthetic-maps-3",
+            "order": 3
+          },
+          {
+            "venue_id": "synthetic-maps-4",
+            "order": 4
+          },
+          {
+            "venue_id": "synthetic-maps-5",
+            "order": 5
+          }
+        ],
+        "venues": [
+          {
+            "id": "synthetic-maps-1",
+            "name": "Synthetic stop 1",
+            "lat": null,
+            "lon": 105.85,
+            "address": "ếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếế0",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-2",
+            "name": "Synthetic stop 2",
+            "lat": null,
+            "lon": 105.85,
+            "address": "ếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếế1",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-3",
+            "name": "Synthetic stop 3",
+            "lat": null,
+            "lon": 105.85,
+            "address": "ếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếế2",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-4",
+            "name": "Synthetic stop 4",
+            "lat": null,
+            "lon": 105.85,
+            "address": "ếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếế3",
+            "synthetic": true
+          },
+          {
+            "id": "synthetic-maps-5",
+            "name": "Synthetic stop 5",
+            "lat": null,
+            "lon": 105.85,
+            "address": "ếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếếế4",
+            "synthetic": true
+          }
+        ]
+      },
+      "response": {
+        "status": "ok",
+        "travelmode": "walking",
+        "provider": "google_maps_urls",
+        "uses_api": false,
+        "links": [
+          {
+            "index": 1,
+            "of": 4,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF1&waypoints=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF0&travelmode=walking",
+            "from_stop": null,
+            "to_stop": 2,
+            "waypoint_count": 1,
+            "url_length": 1463,
+            "point_kinds": [
+              "latlng",
+              "address",
+              "address"
+            ]
+          },
+          {
+            "index": 2,
+            "of": 4,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF1&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF2&travelmode=walking",
+            "from_stop": 2,
+            "to_stop": 3,
+            "waypoint_count": 0,
+            "url_length": 1430,
+            "point_kinds": [
+              "address",
+              "address"
+            ]
+          },
+          {
+            "index": 3,
+            "of": 4,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF2&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF3&travelmode=walking",
+            "from_stop": 3,
+            "to_stop": 4,
+            "waypoint_count": 0,
+            "url_length": 1430,
+            "point_kinds": [
+              "address",
+              "address"
+            ]
+          },
+          {
+            "index": 4,
+            "of": 4,
+            "url": "https://www.google.com/maps/dir/?api=1&origin=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF3&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF4&travelmode=walking",
+            "from_stop": 4,
+            "to_stop": 5,
+            "waypoint_count": 0,
+            "url_length": 1430,
+            "point_kinds": [
+              "address",
+              "address"
+            ]
+          }
+        ],
+        "skipped": [],
+        "notes": [
+          "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
+          "The schedule is the app's proposal; Google may show different times."
+        ]
+      }
+    }
+  ]
+}
