@@ -1032,6 +1032,16 @@
       "PreferencesSchema": {
         "additionalProperties": false,
         "properties": {
+          "allergies": {
+            "items": {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Allergies",
+            "type": "array"
+          },
           "audience": {
             "anyOf": [
               {
