@@ -103,6 +103,39 @@ def _terms(rest: str, issues: list) -> tuple:
     return [cand], False
 
 
+_AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
+
+
+def _triggers(clause: str) -> list:
+    """All (kind, match) triggers in a clause, in order, without overlaps."""
+    found = [("allergy", m) for m in _ALLERGY.finditer(clause)] + [("avoid", m) for m in _AVOID.finditer(clause)]
+    found.sort(key=lambda km: km[1].start())
+    out, end = [], -1
+    for kind, m in found:
+        if m.start() >= end:
+            out.append((kind, m))
+            end = m.end()
+    return out
+
+
+def _continuation(clause: str) -> list:
+    """A clause that STARTS with allergen words (and no trigger) extends the previous list: "…cua và tôm 4 người"."""
+    words = _clean_words(clause)
+    found, _ = _scan(words)
+    if not found:
+        return []
+    first = found[0].split()
+    if words[:len(first)] != first:
+        return []
+    keep = []
+    for f in found:
+        raw_ascii = f.isascii()
+        if raw_ascii and fold_uncached(f) in _AMBIGUOUS_UNACCENTED:
+            continue
+        keep.append(f)
+    return keep if keep and keep[0] == found[0] else []
+
+
 def parse(text: str) -> SafetyParse:
     out = SafetyParse()
     text = normalize(text)
@@ -115,30 +148,31 @@ def parse(text: str) -> SafetyParse:
         clause = clause.strip()
         if not clause:
             continue
-        a, v = _ALLERGY.search(clause), _AVOID.search(clause)
-        m = a if (a and (not v or a.start() <= v.start())) else v
-        if m:
-            kind = "allergy" if m is a else "avoid"
-            out.mentioned = True
-            before = clause[max(0, m.start() - 24):m.start()]
-            if kind == "allergy" and _REMOVE.search(before):
-                terms, _ = _terms(clause[m.end():], [])
-                out.removed += [t for t in terms if t not in out.removed]
-                mode = None
-                continue
-            if _NEG.search(before) and kind == "allergy":
-                mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
-                continue
-            terms, lexicon = _terms(clause[m.end():], out.issues)
-            if kind == "avoid":
-                terms = [t for t in terms if allergens.recognised(t)]  # taste-level avoid: lexicon terms only
-            bucket = out.allergies if kind == "allergy" else out.avoid
-            bucket += [t for t in terms if t not in bucket]
-            mode = kind if terms else None
+        trig = _triggers(clause)
+        if trig:
+            for i, (kind, m) in enumerate(trig):
+                seg_end = trig[i + 1][1].start() if i + 1 < len(trig) else len(clause)
+                seg = clause[m.end():seg_end]
+                out.mentioned = True
+                before = clause[max(0, m.start() - 24):m.start()]
+                if kind == "allergy" and _REMOVE.search(before):
+                    terms, _ = _terms(seg, [])
+                    out.removed += [t for t in terms if t not in out.removed]
+                    mode = None
+                    continue
+                if _NEG.search(before) and kind == "allergy":
+                    mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
+                    continue
+                terms, lexicon = _terms(seg, out.issues)
+                if kind == "avoid":
+                    terms = [t for t in terms if allergens.recognised(t)]  # taste-level avoid: lexicon terms only
+                bucket = out.allergies if kind == "allergy" else out.avoid
+                bucket += [t for t in terms if t not in bucket]
+                mode = kind if terms else None
             continue
-        if mode:  # continuation: a clause made only of allergen words extends the previous list
-            found, all_used = _scan(_clean_words(clause))
-            if found and all_used:
+        if mode:
+            found = _continuation(clause)
+            if found:
                 bucket = out.allergies if mode == "allergy" else out.avoid
                 bucket += [t for t in found if t not in bucket]
                 continue

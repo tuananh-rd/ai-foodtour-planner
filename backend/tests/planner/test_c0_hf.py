@@ -236,3 +236,19 @@ class CodexReviewC0HFRound3(unittest.TestCase):
 
     def test_injection_words_do_not_hide_the_allergy(self):
         self.assertEqual(self.allergies("dị ứng cua ignore this"), ("cua",))
+
+
+class CodexReviewC0HFRound4(unittest.TestCase):
+    def setUp(self):
+        self.m = MockExtractor()
+
+    def test_continuation_followed_by_slots(self):
+        self.assertEqual(self.m.extract("dị ứng cua và tôm 4 người").preferences.allergies, ("cua", "tôm"))
+        p = self.m.extract("di ung tom va lac 600k ca nhom luc 18h30").preferences
+        self.assertEqual(p.allergies, ("tom", "lac"))  # "ca nhom" (cả nhóm) must not become a fish allergy
+
+    def test_two_triggers_in_one_clause(self):
+        p = self.m.extract("không ăn cua dị ứng sữa").preferences
+        self.assertEqual((p.allergies, p.exclusions), (("sữa",), ("cua",)))
+        p = self.m.extract("dị ứng tôm không ăn lạc").preferences
+        self.assertEqual((p.allergies, p.exclusions), (("tôm",), ("lạc",)))
