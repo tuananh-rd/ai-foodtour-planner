@@ -741,11 +741,10 @@ async function run() {
     const disclaimerText = await ev(`document.querySelector('[data-maps-disclaimer]')?.innerText || ''`);
     record(
       'TC-MAPS-PRIVACY-NOTE',
-      'Privacy note rendered: coordinates sent only when user opens link',
-      disclaimerText.includes('Links contain the origin/venue coordinates') ||
-        disclaimerText.includes('sent to Google only when the user opens them') ||
-        disclaimerText.includes('chỉ được gửi tới Google khi bạn mở liên kết'),
-      'Privacy note present'
+      'Privacy note rendered in Vietnamese with zero raw English parentheticals',
+      disclaimerText.includes('chỉ được gửi tới Google khi bạn mở liên kết') &&
+        !/Links contain/i.test(disclaimerText),
+      'Privacy note present in Vietnamese'
     );
 
     record(
@@ -899,7 +898,7 @@ async function run() {
       !urlTooLongPartial.bannerText.includes('thiếu toạ độ') &&
         (urlTooLongPartial.bannerText.includes('vượt quá giới hạn') ||
           urlTooLongPartial.bannerText.includes('độ dài liên kết')) &&
-        urlTooLongPartial.notesText.includes('SYNTHETIC: address exceeds URL limit'),
+        (urlTooLongPartial.notesText.includes('Ghi chú thêm từ máy chủ') || urlTooLongPartial.notesText.includes('SYNTHETIC: address exceeds URL limit')),
       `Banner: "${urlTooLongPartial.bannerText.slice(0, 70)}...", Notes: "${urlTooLongPartial.notesText}"`
     );
 
@@ -969,8 +968,8 @@ async function run() {
       'Unavailable status with url_too_long explains URL limit and NEVER says "thiếu toạ độ"',
       !urlTooLongUnavailable.bannerText.includes('thiếu toạ độ') &&
         urlTooLongUnavailable.bannerText.includes('giới hạn độ dài liên kết') &&
-        urlTooLongUnavailable.notesText.includes('SYNTHETIC: entire route exceeds URL limit'),
-      `Banner: "${urlTooLongUnavailable.bannerText.slice(0, 70)}..."`
+        (urlTooLongUnavailable.notesText.includes('Ghi chú thêm từ máy chủ') || urlTooLongUnavailable.notesText.includes('SYNTHETIC: entire route exceeds URL limit')),
+      `Banner: "${urlTooLongUnavailable.bannerText.slice(0, 70)}...", Notes: "${urlTooLongUnavailable.notesText}"`
     );
 
     // Clear mock case
@@ -1518,7 +1517,8 @@ async function run() {
     // Suite Acceptance Predicate 3: Disclaimer presence and text
     const disclaimerPredicate = (text) =>
       typeof text === 'string' &&
-      text.includes('Links contain the origin/venue coordinates') &&
+      text.includes('chỉ được gửi tới Google khi bạn mở liên kết') &&
+      !/Links contain|The schedule|Tour origin|Skipped stops|An isolated/i.test(text) &&
       text.includes('Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác');
 
     const initialDiscText = await ev(`document.querySelector('[data-maps-disclaimer]')?.innerText || ''`);

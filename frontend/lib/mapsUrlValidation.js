@@ -44,8 +44,9 @@ export function translateSkippedReason(reason) {
 }
 
 export function translateServerNote(note) {
-  if (typeof note !== 'string') return String(note || '');
+  if (typeof note !== 'string') return 'Ghi chú thêm từ máy chủ';
   const trimmed = note.trim();
+  if (!trimmed) return '';
 
   // Known server notes from backend/app/planner/maps_url.py
   if (trimmed === 'Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.') {
@@ -60,9 +61,15 @@ export function translateServerNote(note) {
   if (trimmed === 'An isolated usable stop has identical origin and destination; no missing leg is inferred.') {
     return 'Điểm dừng đơn lẻ có điểm đi và điểm đến giống nhau; không tự suy diễn chặng đường còn thiếu.';
   }
-  if (trimmed.startsWith('Skipped stops break the itinerary into separate usable runs')) {
+  if (
+    trimmed.startsWith('Skipped stops break the itinerary into separate usable runs') ||
+    trimmed === 'Skipped stops break the itinerary into separate usable runs; missing legs are not connected. Reasons are listed in skipped, including adjacent points that exceed the encoded URL limit.'
+  ) {
     return 'Các điểm dừng bị bỏ qua chia lịch trình thành các chặng riêng biệt; các chặng thiếu không được tự động nối. Lý do được liệt kê trong danh sách bỏ qua, bao gồm các điểm vượt quá giới hạn độ dài liên kết.';
   }
-  return note;
+  if (/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(trimmed)) {
+    return trimmed;
+  }
+  return 'Ghi chú thêm từ máy chủ';
 }
 

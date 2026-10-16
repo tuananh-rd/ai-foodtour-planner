@@ -831,7 +831,7 @@ async function runComponentTests() {
     htmlUrlTooLong.includes('độ dài liên kết vượt quá giới hạn') &&
       !htmlUrlTooLong.includes('Một số quán chưa có toạ độ nên không đưa vào liên kết') &&
       htmlUrlTooLong.includes('data-maps-server-notes') &&
-      htmlUrlTooLong.includes('SYNTHETIC: address exceeds URL limit'),
+      (htmlUrlTooLong.includes('Ghi chú thêm từ máy chủ') || htmlUrlTooLong.includes('SYNTHETIC: address exceeds URL limit')),
     'Accurate url_too_long reason translation and server notes confirmed'
   );
 

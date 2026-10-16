@@ -2,106 +2,22 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 
-function parseProfileField(fieldKey, rawVal) {
-  const val = rawVal.trim();
-  if (!val) return { error: 'Vui lòng nhập giá trị.' };
-
-  if (fieldKey === 'area') {
-    return { action: { type: 'set_location', location: { district: val, label: val } } };
-  }
-
-  if (fieldKey === 'party_size') {
-    const num = parseInt(val.replace(/\D/g, ''), 10);
-    if (isNaN(num) || num < 1 || num > 20) {
-      return { error: 'Số người phải là số nguyên từ 1 đến 20.' };
-    }
-    return { action: { type: 'edit_profile', patch: { party_size: num } } };
-  }
-
-  if (fieldKey === 'budget') {
-    const lower = val.toLowerCase();
-    const isPerPerson = lower.includes('người') || lower.includes('mỗi') || lower.includes('/người');
-    const isGroup = lower.includes('cả nhóm') || lower.includes('tổng') || lower.includes('nhóm');
-    let digits = parseInt(val.replace(/[^\d]/g, ''), 10);
-    if (isNaN(digits) || digits <= 0) {
-      return { error: 'Ngân sách không hợp lệ (ví dụ: 250k mỗi người hoặc 600k cả nhóm).' };
-    }
-    if (lower.includes('k') && digits < 10000) {
-      digits = digits * 1000;
-    } else if (digits > 0 && digits < 1000) {
-      digits = digits * 1000;
-    }
-    if (!isPerPerson && !isGroup) {
-      return { error: 'Vui lòng chỉ rõ phạm vi ngân sách: mỗi người hay cả nhóm (ví dụ: 250k mỗi người hoặc 600k cả nhóm).' };
-    }
-    return {
-      action: {
-        type: 'edit_profile',
-        patch: {
-          budget_vnd: digits,
-          budget_scope: isPerPerson ? 'per_person' : 'group',
-        },
-      },
-    };
-  }
-
-  if (fieldKey === 'start_time' || fieldKey === 'time') {
-    const timeMatch = val.match(/^([01]?[0-9]|2[0-3]):([0-5][0-9])$/);
-    if (timeMatch) {
-      const hh = timeMatch[1].padStart(2, '0');
-      const mm = timeMatch[2];
-      return { action: { type: 'edit_profile', patch: { start_time: `${hh}:${mm}` } } };
-    }
-    const digits = parseInt(val.replace(/\D/g, ''), 10);
-    if (!isNaN(digits) && digits > 0) {
-      const isHours = val.toLowerCase().includes('tiếng') || val.toLowerCase().includes('h');
-      const min = isHours ? digits * 60 : digits;
-      return { action: { type: 'edit_profile', patch: { max_leg_min: min } } };
-    }
-    return { error: 'Định dạng giờ không hợp lệ (ví dụ: 18:30 hoặc 45 phút).' };
-  }
-
-  if (fieldKey === 'vehicle') {
-    const lower = val.toLowerCase();
-    let v = null;
-    if (lower.includes('bộ') || lower.includes('walk')) {
-      v = 'walk';
-    } else if (lower.includes('máy') || lower.includes('motor') || lower.includes('bike')) {
-      v = 'motorbike';
-    } else if (lower.includes('ô tô') || lower.includes('oto') || lower.includes('car')) {
-      v = 'car';
-    } else if (lower.includes('taxi') || lower.includes('grab')) {
-      v = 'taxi';
-    }
-    if (!v) {
-      return { error: 'Phương tiện không hợp lệ. Vui lòng chọn: đi bộ, xe máy, ô tô hoặc taxi/grab.' };
-    }
-    return { action: { type: 'edit_profile', patch: { vehicle: v } } };
-  }
-
-  if (fieldKey === 'allergies') {
-    // Allergies is NOT an edit_profile key -> send as natural language text turn
-    return { action: { type: 'text', text: `dị ứng ${val}` } };
-  }
-
-  if (fieldKey === 'tastes') {
-    // Tastes is NOT an edit_profile key -> send as natural language text turn
-    return { action: { type: 'text', text: `tôi muốn ăn ${val}` } };
-  }
-
-  return { action: { type: 'edit_profile', patch: { [fieldKey]: val } } };
-}
-
 /**
- * Top ProfileBar (Workspace Top Row, TASK C3-1 & C6a)
+ * Top ProfileBar (Workspace Top Row, Contract v1.8, GMAPS-URL-2).
  *
- * Requirements:
- * - area, party, budget (+scope), time, vehicle, tastes, allergies
- * - source styling: user_said vs inferred/default vs missing
- * - allergies chip is visually prominent (safety)
- * - clicking chips allows quick editing / actions
- * - accessible modal with focus trap, aria-modal, Escape key, and focus return
- * - client-side validation mapping to Contract v1.8 (party_size int, budget_vnd int, etc.)
+ * Rules:
+ * - NO client-side free-text parsing. Structured controls only.
+ * - Party size: number input 1..20
+ * - Budget: amount number input (digits only, 1..100,000,000 VND) + unit select + REQUIRED scope select
+ * - Vehicle: select of the four supported values (walk, motorbike, car, taxi)
+ * - Times: <input type=time> -> HH:MM
+ * - Max leg: number 3..60
+ * - Audience: select
+ * - Allergies & tastes: TEXT turns (sent through server parser)
+ * - Validate before sending: no NaN, no negatives, no overflow, no 30-digit numbers
+ * - Inline error messages in Vietnamese with role="alert"
+ * - Labels for every control with matching htmlFor
+ * - Focus trap and Escape key handler
  */
 export default function ProfileBar({
   chatState,
@@ -109,11 +25,23 @@ export default function ProfileBar({
   busy = false,
 }) {
   const [editingField, setEditingField] = useState(null);
-  const [editVal, setEditVal] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
 
+  // Structured field states
+  const [partySize, setPartySize] = useState(2);
+  const [budgetAmount, setBudgetAmount] = useState('');
+  const [budgetUnit, setBudgetUnit] = useState('1000'); // '1' | '1000' | '1000000'
+  const [budgetScope, setBudgetScope] = useState(''); // '' | 'per_person' | 'group'
+  const [vehicle, setVehicle] = useState('walk'); // 'walk' | 'motorbike' | 'car' | 'taxi'
+  const [startTime, setStartTime] = useState('18:00');
+  const [maxLeg, setMaxLeg] = useState(15);
+  const [audience, setAudience] = useState('friends');
+  const [allergiesText, setAllergiesText] = useState('');
+  const [tastesText, setTastesText] = useState('');
+  const [areaText, setAreaText] = useState('');
+
   const triggerRef = useRef(null);
-  const inputRef = useRef(null);
+  const dialogContainerRef = useRef(null);
   const cancelBtnRef = useRef(null);
   const saveBtnRef = useRef(null);
 
@@ -161,7 +89,12 @@ export default function ProfileBar({
       color: textCol,
       fontSize: 13,
       cursor: busy ? 'not-allowed' : 'pointer',
-      whiteSpace: 'nowrap',
+      whiteSpace: 'normal',
+      minWidth: 0,
+      maxWidth: '100%',
+      overflowWrap: 'anywhere',
+      wordBreak: 'break-word',
+      boxSizing: 'border-box',
       transition: 'all 0.15s ease',
       boxShadow: '0 1px 2px rgba(0,0,0,0.04)',
     };
@@ -179,29 +112,30 @@ export default function ProfileBar({
     return String(val);
   };
 
-  const areaText = profile.area?.value 
-    ? (typeof profile.area.value === 'object' ? (profile.area.value.label || profile.area.value.district || 'Hà Nội') : profile.area.value) 
+  const areaDisplayText = profile.area?.value
+    ? (typeof profile.area.value === 'object' ? (profile.area.value.label || profile.area.value.district || 'Hà Nội') : profile.area.value)
     : 'Chưa chọn';
 
   const partyText = profile.party_size?.value ? `${profile.party_size.value} người` : 'Chưa rõ';
   const budgetText = formatBudgetString(profile.budget);
-  
-  const timeText = profile.start_time?.value 
+
+  const timeText = profile.start_time?.value
     ? `${profile.start_time.value}${profile.end_time?.value ? ` → ${profile.end_time.value}` : profile.duration_min?.value ? ` (${profile.duration_min.value}p)` : ''}`
     : 'Chưa rõ';
 
-  const vehicleText = profile.vehicle?.value === 'walk' || profile.vehicle?.value === 'walking' ? 'Đi bộ' 
-    : profile.vehicle?.value === 'motorbike' ? 'Xe máy' 
-    : profile.vehicle?.value === 'car' || profile.vehicle?.value === 'taxi' ? 'Ô tô / Taxi' 
+  const vehicleText = profile.vehicle?.value === 'walk' || profile.vehicle?.value === 'walking' ? 'Đi bộ'
+    : profile.vehicle?.value === 'motorbike' ? 'Xe máy'
+    : profile.vehicle?.value === 'car' ? 'Ô tô'
+    : profile.vehicle?.value === 'taxi' ? 'Taxi / Grab'
     : profile.vehicle?.value || 'Chưa rõ';
 
-  const tastesText = profile.tastes?.value 
-    ? (Array.isArray(profile.tastes.value) ? profile.tastes.value.join(', ') : String(profile.tastes.value)) 
+  const tastesDisplayText = profile.tastes?.value
+    ? (Array.isArray(profile.tastes.value) ? profile.tastes.value.join(', ') : String(profile.tastes.value))
     : 'Chưa rõ';
 
   const hasAllergies = allergies.length > 0;
-  const allergyListText = hasAllergies 
-    ? allergies.map((a) => a.term).join(', ') 
+  const allergyListText = hasAllergies
+    ? allergies.map((a) => a.term).join(', ')
     : 'Không có / Chưa rõ';
 
   const handleOpenEdit = (fieldKey, currentVal, e) => {
@@ -209,7 +143,52 @@ export default function ProfileBar({
     triggerRef.current = e?.currentTarget || null;
     setEditingField(fieldKey);
     setErrorMsg('');
-    setEditVal(currentVal === 'Chưa rõ' || currentVal === 'Chưa chọn' || currentVal === 'Không có / Chưa rõ' ? '' : currentVal);
+
+    if (fieldKey === 'party_size') {
+      const existing = profile.party_size?.value;
+      setPartySize(typeof existing === 'number' && existing >= 1 && existing <= 20 ? existing : 2);
+    } else if (fieldKey === 'budget') {
+      const existingVal = profile.budget?.value;
+      const existingScope = profile.budget?.scope;
+      setBudgetScope(existingScope === 'per_person' || existingScope === 'group' ? existingScope : '');
+      if (typeof existingVal === 'number' && existingVal > 0) {
+        if (existingVal >= 1000000 && existingVal % 1000000 === 0) {
+          setBudgetAmount(String(existingVal / 1000000));
+          setBudgetUnit('1000000');
+        } else if (existingVal >= 1000 && existingVal % 1000 === 0) {
+          setBudgetAmount(String(existingVal / 1000));
+          setBudgetUnit('1000');
+        } else {
+          setBudgetAmount(String(existingVal));
+          setBudgetUnit('1');
+        }
+      } else {
+        setBudgetAmount('');
+        setBudgetUnit('1000');
+      }
+    } else if (fieldKey === 'vehicle') {
+      const existingVeh = profile.vehicle?.value;
+      const valid = ['walk', 'motorbike', 'car', 'taxi'];
+      setVehicle(valid.includes(existingVeh) ? existingVeh : 'walk');
+    } else if (fieldKey === 'start_time' || fieldKey === 'time') {
+      const existingTime = profile.start_time?.value;
+      setStartTime(existingTime && /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(existingTime) ? existingTime : '18:00');
+    } else if (fieldKey === 'max_leg_min') {
+      const existingLeg = profile.max_leg_min?.value;
+      setMaxLeg(typeof existingLeg === 'number' && existingLeg >= 3 && existingLeg <= 60 ? existingLeg : 15);
+    } else if (fieldKey === 'audience') {
+      const existingAud = profile.audience?.value;
+      setAudience(existingAud || 'friends');
+    } else if (fieldKey === 'allergies') {
+      setAllergiesText(allergies.length > 0 ? allergies.map((a) => a.term).join(', ') : '');
+    } else if (fieldKey === 'tastes') {
+      const existingTastes = profile.tastes?.value;
+      setTastesText(Array.isArray(existingTastes) ? existingTastes.join(', ') : (existingTastes || ''));
+    } else if (fieldKey === 'area') {
+      const existingArea = profile.area?.value;
+      const str = typeof existingArea === 'object' ? (existingArea.district || existingArea.label || '') : (existingArea || '');
+      setAreaText(str);
+    }
   };
 
   const handleCloseEdit = () => {
@@ -224,16 +203,157 @@ export default function ProfileBar({
     e.preventDefault();
     if (!editingField || busy) return;
 
-    const result = parseProfileField(editingField, editVal);
-    if (result.error) {
-      setErrorMsg(result.error);
+    if (editingField === 'party_size') {
+      const raw = String(partySize).trim();
+      if (!/^\d+$/.test(raw)) {
+        setErrorMsg('Số người phải là số nguyên từ 1 đến 20.');
+        return;
+      }
+      const num = parseInt(raw, 10);
+      if (isNaN(num) || num < 1 || num > 20) {
+        setErrorMsg('Số người phải là số nguyên từ 1 đến 20.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'edit_profile', patch: { party_size: num } });
+      }
+      handleCloseEdit();
       return;
     }
 
-    if (onAction && result.action) {
-      onAction(result.action);
+    if (editingField === 'budget') {
+      const raw = String(budgetAmount).trim();
+      if (!raw || !/^\d+$/.test(raw)) {
+        setErrorMsg('Vui lòng nhập số tiền hợp lệ (chỉ nhập chữ số).');
+        return;
+      }
+      if (raw.length > 15) {
+        setErrorMsg('Số tiền vượt quá giới hạn cho phép (tối đa 100.000.000 ₫).');
+        return;
+      }
+      const amountNum = parseInt(raw, 10);
+      if (isNaN(amountNum) || amountNum <= 0) {
+        setErrorMsg('Số tiền phải lớn hơn 0.');
+        return;
+      }
+      const unitNum = parseInt(budgetUnit, 10) || 1000;
+      const totalVnd = amountNum * unitNum;
+      if (isNaN(totalVnd) || !isFinite(totalVnd) || totalVnd < 1 || totalVnd > 100000000) {
+        setErrorMsg('Ngân sách phải là số từ 1 đến 100.000.000 ₫.');
+        return;
+      }
+      if (!budgetScope || (budgetScope !== 'per_person' && budgetScope !== 'group')) {
+        setErrorMsg('Vui lòng chọn phạm vi ngân sách: mỗi người hay cả nhóm.');
+        return;
+      }
+      if (onAction) {
+        onAction({
+          type: 'edit_profile',
+          patch: {
+            budget_vnd: totalVnd,
+            budget_scope: budgetScope,
+          },
+        });
+      }
+      handleCloseEdit();
+      return;
     }
-    handleCloseEdit();
+
+    if (editingField === 'vehicle') {
+      const valid = ['walk', 'motorbike', 'car', 'taxi'];
+      if (!valid.includes(vehicle)) {
+        setErrorMsg('Vui lòng chọn phương tiện hợp lệ: Đi bộ, Xe máy, Ô tô hoặc Taxi-Grab.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'edit_profile', patch: { vehicle } });
+      }
+      handleCloseEdit();
+      return;
+    }
+
+    if (editingField === 'start_time' || editingField === 'time') {
+      const raw = String(startTime).trim();
+      if (!/^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(raw)) {
+        setErrorMsg('Định dạng giờ không hợp lệ (ví dụ: 18:30).');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'edit_profile', patch: { start_time: raw } });
+      }
+      handleCloseEdit();
+      return;
+    }
+
+    if (editingField === 'max_leg_min') {
+      const raw = String(maxLeg).trim();
+      if (!/^\d+$/.test(raw)) {
+        setErrorMsg('Thời gian di chuyển tối đa phải từ 3 đến 60 phút.');
+        return;
+      }
+      const num = parseInt(raw, 10);
+      if (isNaN(num) || num < 3 || num > 60) {
+        setErrorMsg('Thời gian di chuyển tối đa phải từ 3 đến 60 phút.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'edit_profile', patch: { max_leg_min: num } });
+      }
+      handleCloseEdit();
+      return;
+    }
+
+    if (editingField === 'audience') {
+      const valid = ['solo', 'couple', 'friends', 'family'];
+      if (!audience || !valid.includes(audience)) {
+        setErrorMsg('Vui lòng chọn đối tượng hợp lệ.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'edit_profile', patch: { audience } });
+      }
+      handleCloseEdit();
+      return;
+    }
+
+    if (editingField === 'allergies') {
+      const raw = allergiesText.trim();
+      if (!raw) {
+        setErrorMsg('Vui lòng nhập dị ứng cần tránh.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'text', text: `dị ứng ${raw}` });
+      }
+      handleCloseEdit();
+      return;
+    }
+
+    if (editingField === 'tastes') {
+      const raw = tastesText.trim();
+      if (!raw) {
+        setErrorMsg('Vui lòng nhập khẩu vị mong muốn.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'text', text: `tôi muốn ăn ${raw}` });
+      }
+      handleCloseEdit();
+      return;
+    }
+
+    if (editingField === 'area') {
+      const raw = areaText.trim();
+      if (!raw) {
+        setErrorMsg('Vui lòng nhập khu vực.');
+        return;
+      }
+      if (onAction) {
+        onAction({ type: 'set_location', location: { district: raw, label: raw } });
+      }
+      handleCloseEdit();
+      return;
+    }
   };
 
   const handleKeyDownDialog = (e) => {
@@ -243,7 +363,10 @@ export default function ProfileBar({
       return;
     }
     if (e.key === 'Tab') {
-      const focusables = [inputRef.current, cancelBtnRef.current, saveBtnRef.current].filter(Boolean);
+      const focusables = Array.from(
+        dialogContainerRef.current?.querySelectorAll('input, select, button') || []
+      ).filter((el) => !el.disabled && el.tabIndex !== -1);
+
       if (focusables.length === 0) return;
       const first = focusables[0];
       const last = focusables[focusables.length - 1];
@@ -262,10 +385,39 @@ export default function ProfileBar({
   };
 
   useEffect(() => {
-    if (editingField && inputRef.current) {
-      inputRef.current.focus();
+    if (editingField && dialogContainerRef.current) {
+      const firstInput = dialogContainerRef.current.querySelector('input, select');
+      if (firstInput) {
+        firstInput.focus();
+      }
     }
   }, [editingField]);
+
+  const getFieldTitle = (key) => {
+    switch (key) {
+      case 'party_size':
+        return 'Số người';
+      case 'budget':
+        return 'Ngân sách';
+      case 'vehicle':
+        return 'Phương tiện di chuyển';
+      case 'start_time':
+      case 'time':
+        return 'Giờ khởi hành';
+      case 'max_leg_min':
+        return 'Thời gian di chuyển tối đa';
+      case 'audience':
+        return 'Đối tượng';
+      case 'allergies':
+        return 'Dị ứng cần tránh';
+      case 'tastes':
+        return 'Khẩu vị mong muốn';
+      case 'area':
+        return 'Khu vực';
+      default:
+        return key;
+    }
+  };
 
   return (
     <div
@@ -277,8 +429,10 @@ export default function ProfileBar({
         display: 'flex',
         alignItems: 'center',
         gap: 8,
-        overflowX: 'auto',
-        whiteSpace: 'nowrap',
+        flexWrap: 'wrap',
+        minWidth: 0,
+        maxWidth: '100%',
+        boxSizing: 'border-box',
       }}
     >
       <span style={{ fontSize: 12, fontWeight: 700, color: '#6B6259', display: 'flex', alignItems: 'center', gap: 4 }}>
@@ -290,11 +444,11 @@ export default function ProfileBar({
         type="button"
         disabled={busy}
         data-testid="chip-profile-area"
-        onClick={(e) => handleOpenEdit('area', areaText, e)}
+        onClick={(e) => handleOpenEdit('area', areaDisplayText, e)}
         style={getChipStyle(profile.area)}
       >
         <span>📍</span>
-        <span>Khu vực: <strong>{areaText}</strong></span>
+        <span>Khu vực: <strong>{areaDisplayText}</strong></span>
         {getSourceBadge(profile.area?.source)}
       </button>
 
@@ -355,11 +509,11 @@ export default function ProfileBar({
         type="button"
         disabled={busy}
         data-testid="chip-profile-tastes"
-        onClick={(e) => handleOpenEdit('tastes', tastesText, e)}
+        onClick={(e) => handleOpenEdit('tastes', tastesDisplayText, e)}
         style={getChipStyle(profile.tastes)}
       >
         <span>🍜</span>
-        <span>Khẩu vị: <strong>{tastesText}</strong></span>
+        <span>Khẩu vị: <strong>{tastesDisplayText}</strong></span>
         {getSourceBadge(profile.tastes?.source)}
       </button>
 
@@ -382,7 +536,7 @@ export default function ProfileBar({
         )}
       </button>
 
-      {/* Accessible Inline Edit Dialog */}
+      {/* Accessible Structured Edit Dialog */}
       {editingField && (
         <div
           role="dialog"
@@ -403,57 +557,413 @@ export default function ProfileBar({
           }}
         >
           <div
+            ref={dialogContainerRef}
             style={{
               background: '#FFFFFF',
               borderRadius: 12,
               padding: 20,
-              width: 320,
+              width: 360,
+              maxWidth: '90vw',
               boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+              boxSizing: 'border-box',
             }}
           >
             <h4
               id="dialog-title-profile"
-              style={{ margin: '0 0 12px', fontSize: 15, fontWeight: 700, color: '#1F1B16' }}
+              style={{ margin: '0 0 14px', fontSize: 16, fontWeight: 700, color: '#1F1B16' }}
             >
-              Chỉnh sửa: {editingField}
+              Chỉnh sửa: {getFieldTitle(editingField)}
             </h4>
             <form onSubmit={handleSaveEdit}>
-              <label
-                htmlFor="profile-edit-input"
-                id="profile-edit-label"
-                style={{ display: 'block', fontSize: 12, color: '#6B6259', marginBottom: 6 }}
-              >
-                Nhập thông tin mới cho {editingField}:
-              </label>
-              <input
-                id="profile-edit-input"
-                data-testid="profile-edit-input"
-                aria-labelledby="profile-edit-label"
-                ref={inputRef}
-                type="text"
-                value={editVal}
-                onChange={(e) => {
-                  setEditVal(e.target.value);
-                  setErrorMsg('');
-                }}
-                placeholder="Nhập giá trị mới..."
-                style={{
-                  width: '100%',
-                  minHeight: 44,
-                  padding: '8px 12px',
-                  borderRadius: 8,
-                  border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
-                  fontSize: 14,
-                  marginBottom: errorMsg ? 6 : 12,
-                  boxSizing: 'border-box',
-                }}
-              />
+              {/* PARTY SIZE: Number input 1..20 */}
+              {editingField === 'party_size' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-party-input"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Số người trong nhóm (1–20):
+                  </label>
+                  <input
+                    id="profile-party-input"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-party-input"
+                    type="number"
+                    min="1"
+                    max="20"
+                    step="1"
+                    value={partySize}
+                    onChange={(e) => {
+                      setPartySize(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* BUDGET: Amount number + unit select + REQUIRED scope select */}
+              {editingField === 'budget' && (
+                <div style={{ marginBottom: 12, display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  <div>
+                    <label
+                      htmlFor="profile-budget-amount"
+                      id="profile-edit-label"
+                      style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                    >
+                      Số tiền ngân sách (1–100.000.000 ₫):
+                    </label>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <input
+                        id="profile-budget-amount"
+                        data-testid="profile-edit-input"
+                        data-testid-alt="profile-budget-amount"
+                        type="number"
+                        min="1"
+                        max="100000000"
+                        step="1"
+                        value={budgetAmount}
+                        onChange={(e) => {
+                          setBudgetAmount(e.target.value);
+                          setErrorMsg('');
+                        }}
+                        placeholder="Ví dụ: 250 hoặc 600..."
+                        style={{
+                          flex: 1,
+                          minHeight: 44,
+                          padding: '8px 12px',
+                          borderRadius: 8,
+                          border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                          fontSize: 14,
+                          boxSizing: 'border-box',
+                        }}
+                      />
+                      <select
+                        id="profile-budget-unit"
+                        data-testid="profile-budget-unit"
+                        aria-label="Đơn vị tiền tệ"
+                        value={budgetUnit}
+                        onChange={(e) => {
+                          setBudgetUnit(e.target.value);
+                          setErrorMsg('');
+                        }}
+                        style={{
+                          minHeight: 44,
+                          padding: '8px 10px',
+                          borderRadius: 8,
+                          border: '1px solid #DFD5C6',
+                          fontSize: 13,
+                          backgroundColor: '#FBF8F3',
+                          boxSizing: 'border-box',
+                        }}
+                      >
+                        <option value="1000">nghìn (k / 1.000 ₫)</option>
+                        <option value="1000000">triệu (1.000.000 ₫)</option>
+                        <option value="1">đồng (₫)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="profile-budget-scope"
+                      style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                    >
+                      Phạm vi chi tiêu (bắt buộc):
+                    </label>
+                    <select
+                      id="profile-budget-scope"
+                      data-testid="profile-budget-scope"
+                      value={budgetScope}
+                      onChange={(e) => {
+                        setBudgetScope(e.target.value);
+                        setErrorMsg('');
+                      }}
+                      style={{
+                        width: '100%',
+                        minHeight: 44,
+                        padding: '8px 12px',
+                        borderRadius: 8,
+                        border: errorMsg && !budgetScope ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                        fontSize: 14,
+                        backgroundColor: '#FFFFFF',
+                        boxSizing: 'border-box',
+                      }}
+                    >
+                      <option value="">-- Chọn phạm vi (bắt buộc) --</option>
+                      <option value="per_person">Mỗi người (per_person)</option>
+                      <option value="group">Cả nhóm (group)</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+
+              {/* VEHICLE: Select of four allowed values */}
+              {editingField === 'vehicle' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-vehicle-select"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Phương tiện di chuyển:
+                  </label>
+                  <select
+                    id="profile-vehicle-select"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-vehicle-select"
+                    value={vehicle}
+                    onChange={(e) => {
+                      setVehicle(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <option value="walk">Đi bộ (walk)</option>
+                    <option value="motorbike">Xe máy (motorbike)</option>
+                    <option value="car">Ô tô (car)</option>
+                    <option value="taxi">Taxi / Grab (taxi)</option>
+                  </select>
+                </div>
+              )}
+
+              {/* START TIME: <input type=time> -> HH:MM */}
+              {(editingField === 'start_time' || editingField === 'time') && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-time-input"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Giờ khởi hành (HH:MM):
+                  </label>
+                  <input
+                    id="profile-time-input"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-time-input"
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => {
+                      setStartTime(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* MAX LEG: Number 3..60 */}
+              {editingField === 'max_leg_min' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-max-leg-input"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Thời gian di chuyển tối đa mỗi chặng (3–60 phút):
+                  </label>
+                  <input
+                    id="profile-max-leg-input"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-max-leg-input"
+                    type="number"
+                    min="3"
+                    max="60"
+                    step="1"
+                    value={maxLeg}
+                    onChange={(e) => {
+                      setMaxLeg(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* AUDIENCE: Select */}
+              {editingField === 'audience' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-audience-select"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Đối tượng tham gia:
+                  </label>
+                  <select
+                    id="profile-audience-select"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-audience-select"
+                    value={audience}
+                    onChange={(e) => {
+                      setAudience(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      backgroundColor: '#FFFFFF',
+                      boxSizing: 'border-box',
+                    }}
+                  >
+                    <option value="solo">Đi một mình</option>
+                    <option value="couple">Cặp đôi</option>
+                    <option value="friends">Nhóm bạn</option>
+                    <option value="family">Gia đình</option>
+                  </select>
+                </div>
+              )}
+
+              {/* ALLERGIES: Text turn */}
+              {editingField === 'allergies' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-allergies-input"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Dị ứng cần tránh:
+                  </label>
+                  <input
+                    id="profile-allergies-input"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-allergies-input"
+                    type="text"
+                    value={allergiesText}
+                    onChange={(e) => {
+                      setAllergiesText(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    placeholder="Ví dụ: lạc, cua, tôm..."
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                  <span style={{ display: 'block', fontSize: 11, color: '#6B6259', marginTop: 4 }}>
+                    Thông tin dị ứng sẽ được gửi để máy chủ xử lý an toàn thực phẩm.
+                  </span>
+                </div>
+              )}
+
+              {/* TASTES: Text turn */}
+              {editingField === 'tastes' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-tastes-input"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Khẩu vị mong muốn:
+                  </label>
+                  <input
+                    id="profile-tastes-input"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-tastes-input"
+                    type="text"
+                    value={tastesText}
+                    onChange={(e) => {
+                      setTastesText(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    placeholder="Ví dụ: phở bò, bún chả, cà phê..."
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* AREA: Set location */}
+              {editingField === 'area' && (
+                <div style={{ marginBottom: 12 }}>
+                  <label
+                    htmlFor="profile-area-input"
+                    id="profile-edit-label"
+                    style={{ display: 'block', fontSize: 13, fontWeight: 600, color: '#1F1B16', marginBottom: 6 }}
+                  >
+                    Khu vực tại Hà Nội:
+                  </label>
+                  <input
+                    id="profile-area-input"
+                    data-testid="profile-edit-input"
+                    data-testid-alt="profile-area-input"
+                    type="text"
+                    value={areaText}
+                    onChange={(e) => {
+                      setAreaText(e.target.value);
+                      setErrorMsg('');
+                    }}
+                    placeholder="Ví dụ: Hoàn Kiếm, Cầu Giấy..."
+                    style={{
+                      width: '100%',
+                      minHeight: 44,
+                      padding: '8px 12px',
+                      borderRadius: 8,
+                      border: errorMsg ? '1px solid #DC2626' : '1px solid #DFD5C6',
+                      fontSize: 14,
+                      boxSizing: 'border-box',
+                    }}
+                  />
+                </div>
+              )}
+
               {errorMsg && (
                 <div role="alert" data-testid="profile-edit-error" style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>
                   ⚠️ {errorMsg}
                 </div>
               )}
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 14 }}>
                 <button
                   ref={cancelBtnRef}
                   type="button"

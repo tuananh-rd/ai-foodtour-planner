@@ -243,6 +243,10 @@ export default function MapsLinksBlock({
         boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(31, 27, 22, 0.08))',
         boxSizing: 'border-box',
         width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
+        overflowWrap: 'anywhere',
+        wordBreak: 'break-word',
         ...style,
       }}
     >
@@ -255,9 +259,11 @@ export default function MapsLinksBlock({
           justifyContent: 'space-between',
           gap: '12px',
           marginBottom: '12px',
+          minWidth: 0,
+          maxWidth: '100%',
         }}
       >
-        <div>
+        <div style={{ minWidth: 0, maxWidth: '100%', flex: '1 1 auto' }}>
           <h4
             style={{
               margin: '0 0 2px 0',
@@ -267,16 +273,24 @@ export default function MapsLinksBlock({
               display: 'flex',
               alignItems: 'center',
               gap: '6px',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
             }}
           >
-            <span>🧭</span>
-            <span>Mở trên Google Maps</span>
+            <span style={{ flexShrink: 0 }}>🧭</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Mở trên Google Maps</span>
           </h4>
           <p
             style={{
               margin: 0,
               fontSize: '12px',
               color: 'var(--muted, #6B6259)',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
             }}
           >
             Chỉ đường miễn phí, mở trực tiếp ứng dụng khi bạn nhấn liên kết.
@@ -515,10 +529,14 @@ export default function MapsLinksBlock({
             color: 'var(--muted, #6B6259)',
             border: '1px solid var(--border, #DFD5C6)',
             boxSizing: 'border-box',
+            minWidth: 0,
+            maxWidth: '100%',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
           }}
         >
           {serverNotes.map((note, idx) => (
-            <div key={idx} data-maps-note style={{ marginBottom: idx < serverNotes.length - 1 ? '4px' : 0 }}>
+            <div key={idx} data-maps-note style={{ marginBottom: idx < serverNotes.length - 1 ? '4px' : 0, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               ℹ️ {translateServerNote(String(note))}
             </div>
           ))}
@@ -528,7 +546,7 @@ export default function MapsLinksBlock({
       {/* Links Rendering - only valid accepted links rendered verbatim */}
       {!loading && effectiveStatus !== 'unavailable' && validLinks.length === 1 && (
         /* Exactly ONE link: Primary Button / Link */
-        <div>
+        <div style={{ minWidth: 0, maxWidth: '100%' }}>
           <a
             href={validLinks[0].url}
             target="_blank"
@@ -552,12 +570,16 @@ export default function MapsLinksBlock({
               textDecoration: 'none',
               boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(31, 27, 22, 0.08))',
               width: '100%',
+              maxWidth: '100%',
               boxSizing: 'border-box',
               textAlign: 'center',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
+              whiteSpace: 'normal',
             }}
           >
-            <span aria-hidden="true">🗺️</span>
-            <span>Xem lịch trình trên Google Maps</span>
+            <span aria-hidden="true" style={{ flexShrink: 0 }}>🗺️</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Xem lịch trình trên Google Maps</span>
           </a>
         </div>
       )}
@@ -571,6 +593,8 @@ export default function MapsLinksBlock({
             flexDirection: 'column',
             gap: '8px',
             width: '100%',
+            maxWidth: '100%',
+            minWidth: 0,
           }}
         >
           {validLinks.map((link, idx) => {
@@ -594,7 +618,8 @@ export default function MapsLinksBlock({
                   justifyContent: 'space-between',
                   gap: '8px',
                   minHeight: '44px',
-                  minWidth: '44px',
+                  minWidth: 0,
+                  maxWidth: '100%',
                   padding: '10px 14px',
                   backgroundColor: '#FFFFFF',
                   color: 'var(--text, #1F1B16)',
@@ -606,7 +631,7 @@ export default function MapsLinksBlock({
                   boxSizing: 'border-box',
                 }}
               >
-                <span style={{ flex: 1 }}>{legLabel}</span>
+                <span style={{ flex: '1 1 auto', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{legLabel}</span>
                 <span
                   style={{
                     color: 'var(--accent, #E65100)',
@@ -636,12 +661,17 @@ export default function MapsLinksBlock({
           display: 'flex',
           flexDirection: 'column',
           gap: '3px',
+          minWidth: 0,
+          maxWidth: '100%',
+          boxSizing: 'border-box',
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
         }}
       >
-        <div>
-          🔒 Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới Google khi bạn mở liên kết (Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them).
+        <div style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+          🔒 Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới Google khi bạn mở liên kết.
         </div>
-        <div>
+        <div style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
           ⏱️ Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác.
         </div>
       </div>

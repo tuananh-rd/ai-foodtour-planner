@@ -55,7 +55,11 @@ export default function ItineraryView({
       aria-label="Hành trình ẩm thực của bạn"
       style={{
         width: '100%',
+        maxWidth: '100%',
+        minWidth: 0,
         boxSizing: 'border-box',
+        overflowWrap: 'anywhere',
+        wordBreak: 'break-word',
         ...style,
       }}
     >
@@ -74,15 +78,25 @@ export default function ItineraryView({
           justifyContent: 'space-between',
           gap: '12px',
           boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(31, 27, 22, 0.08))',
+          boxSizing: 'border-box',
+          width: '100%',
+          maxWidth: '100%',
+          minWidth: 0,
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
         }}
       >
-        <div>
+        <div style={{ minWidth: 0, maxWidth: '100%', flex: '1 1 auto' }}>
           <h3
             style={{
               fontSize: 'var(--type-18, 18px)',
               fontWeight: 700,
               color: 'var(--text, #1F1B16)',
               margin: '0 0 4px 0',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
             }}
           >
             Hành trình của bạn
@@ -97,23 +111,27 @@ export default function ItineraryView({
               flexWrap: 'wrap',
               gap: '6px',
               alignItems: 'center',
+              minWidth: 0,
+              maxWidth: '100%',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
             }}
           >
-            <span>{stopsCount} quán</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{stopsCount} quán</span>
             <span>·</span>
-            <span>{walkText}</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{walkText}</span>
             <span>·</span>
-            <span>{priceText}</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{priceText}</span>
           </div>
         </div>
 
         {/* Secondary Map & Action triggers */}
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', minWidth: 0, maxWidth: '100%' }}>
           {onOpenMap && (
             <Button
               variant="secondary"
               onClick={onOpenMap}
-              style={{ minHeight: '44px', padding: '8px 14px', fontSize: '13px' }}
+              style={{ minHeight: '44px', padding: '8px 14px', fontSize: '13px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'normal' }}
             >
               📍 Xem bản đồ
             </Button>
@@ -122,7 +140,7 @@ export default function ItineraryView({
             <Button
               variant="ghost"
               onClick={onOpenPreferences}
-              style={{ minHeight: '44px', padding: '8px 12px', fontSize: '13px' }}
+              style={{ minHeight: '44px', padding: '8px 12px', fontSize: '13px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'normal' }}
             >
               ⚙️ Tuỳ chọn
             </Button>
@@ -144,7 +162,7 @@ export default function ItineraryView({
       />
 
       {/* List of StopCards */}
-      <div data-stops-list style={{ width: '100%' }}>
+      <div data-stops-list style={{ width: '100%', maxWidth: '100%', minWidth: 0, boxSizing: 'border-box' }}>
         {stops.map((stop, idx) => (
           <StopCard
             key={stop.venue_id || idx}

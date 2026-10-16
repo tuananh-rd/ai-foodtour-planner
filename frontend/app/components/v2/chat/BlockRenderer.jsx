@@ -134,6 +134,11 @@ export default function BlockRenderer({
             borderRadius: 12,
             padding: 14,
             marginBottom: 12,
+            minWidth: 0,
+            maxWidth: '100%',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
+            boxSizing: 'border-box',
           }}
         >
           {items.map((item, idx) => {
@@ -145,10 +150,14 @@ export default function BlockRenderer({
                   borderBottom: idx < items.length - 1 ? '1px solid #F0EAE1' : 'none',
                   paddingBottom: idx < items.length - 1 ? 10 : 0,
                   marginBottom: idx < items.length - 1 ? 10 : 0,
+                  minWidth: 0,
+                  maxWidth: '100%',
+                  overflowWrap: 'anywhere',
+                  wordBreak: 'break-word',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-                  <strong style={{ fontSize: 14, color: '#C8431A' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4, minWidth: 0, maxWidth: '100%', flexWrap: 'wrap' }}>
+                  <strong style={{ fontSize: 14, color: '#C8431A', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     <SafeText text={item.dish_group} />
                   </strong>
                   <span
@@ -158,16 +167,17 @@ export default function BlockRenderer({
                       color: '#6B6259',
                       padding: '2px 6px',
                       borderRadius: 4,
+                      flexShrink: 0,
                     }}
                   >
                     kiến thức chung
                   </span>
                 </div>
-                <p style={{ margin: '0 0 6px', fontSize: 13, color: '#1F1B16' }}>
+                <p style={{ margin: '0 0 6px', fontSize: 13, color: '#1F1B16', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                   <SafeText text={item.blurb} />
                 </p>
                 {hasCount && (
-                  <div style={{ fontSize: 12, color: '#6B6259' }}>
+                  <div style={{ fontSize: 12, color: '#6B6259', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     📍 {item.venue_count} quán trong {item.radius_m || 1500} m
                   </div>
                 )}
@@ -378,22 +388,27 @@ export default function BlockRenderer({
                   )}
 
                   {/* Action Buttons (Touch targets >= 44px) */}
-                  <div style={{ display: 'flex', gap: 8, marginTop: 6 }}>
+                  <div style={{ display: 'flex', gap: 8, marginTop: 6, minWidth: 0, maxWidth: '100%' }}>
                     <button
                       type="button"
                       disabled={busy || inShortlist}
                       onClick={() => onAction && onAction({ type: 'add', venue_id: v.id })}
                       style={{
-                        flex: 1,
+                        flex: '1 1 auto',
                         minHeight: 44,
+                        minWidth: 0,
+                        maxWidth: '100%',
                         padding: '10px 14px',
                         borderRadius: 8,
                         border: 'none',
                         background: inShortlist ? '#E5E7EB' : '#C8431A',
-                        color: inShortlist ? '#4B5563' : '#FFFFFF',
+                        color: '#FFFFFF',
                         fontWeight: 700,
                         fontSize: 13,
                         cursor: inShortlist || busy ? 'not-allowed' : 'pointer',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
                       }}
                     >
                       {inShortlist ? 'Đã thêm' : 'Thêm vào food tour'}
@@ -404,6 +419,8 @@ export default function BlockRenderer({
                       onClick={() => onAction && onAction({ type: 'compare', venue_ids: [v.id] })}
                       style={{
                         minHeight: 44,
+                        minWidth: 0,
+                        maxWidth: '100%',
                         padding: '10px 14px',
                         borderRadius: 8,
                         border: '1px solid #DFD5C6',
@@ -412,6 +429,9 @@ export default function BlockRenderer({
                         fontWeight: 600,
                         fontSize: 13,
                         cursor: busy ? 'not-allowed' : 'pointer',
+                        whiteSpace: 'normal',
+                        overflowWrap: 'anywhere',
+                        wordBreak: 'break-word',
                       }}
                     >
                       So sánh
@@ -449,7 +469,7 @@ export default function BlockRenderer({
           <h4 style={{ margin: '0 0 10px', fontSize: 14, fontWeight: 700, color: '#1F1B16' }}>
             Bảng so sánh quán
           </h4>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 0 }}>
+          <table style={{ width: '100%', tableLayout: 'fixed', borderCollapse: 'collapse', fontSize: 13, minWidth: 0 }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #DFD5C6', textAlign: 'left' }}>
                 <th style={{ padding: '8px 6px', color: '#6B6259', fontWeight: 600, minWidth: 0, maxWidth: '140px', overflowWrap: 'anywhere' }}>Tiêu chí</th>
@@ -541,6 +561,7 @@ export default function BlockRenderer({
                   fontSize: 13,
                   cursor: busy ? 'not-allowed' : 'pointer',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  whiteSpace: 'normal',
                   overflowWrap: 'anywhere',
                   wordBreak: 'break-word',
                 }}
@@ -640,15 +661,17 @@ export default function BlockRenderer({
           )}
 
           {/* Action Buttons >= 44px */}
-          <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+          <div style={{ display: 'flex', gap: 8, marginTop: 12, minWidth: 0, maxWidth: '100%' }}>
             <button
               type="button"
               disabled={busy}
               data-testid="btn-confirm-yes"
               onClick={() => onAction && onAction({ type: 'confirm_yes' })}
               style={{
-                flex: 1,
+                flex: '1 1 auto',
                 minHeight: 44,
+                minWidth: 0,
+                maxWidth: '100%',
                 padding: '10px 16px',
                 borderRadius: 8,
                 border: 'none',
@@ -657,6 +680,9 @@ export default function BlockRenderer({
                 fontWeight: 700,
                 fontSize: 14,
                 cursor: busy ? 'not-allowed' : 'pointer',
+                whiteSpace: 'normal',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
               }}
             >
               Xác nhận và tạo lịch trình
@@ -668,6 +694,8 @@ export default function BlockRenderer({
               onClick={() => onAction && onAction({ type: 'confirm_no' })}
               style={{
                 minHeight: 44,
+                minWidth: 0,
+                maxWidth: '100%',
                 padding: '10px 16px',
                 borderRadius: 8,
                 border: '1px solid #DFD5C6',
@@ -676,6 +704,9 @@ export default function BlockRenderer({
                 fontWeight: 600,
                 fontSize: 14,
                 cursor: busy ? 'not-allowed' : 'pointer',
+                whiteSpace: 'normal',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
               }}
             >
               Sửa thông tin
@@ -689,8 +720,8 @@ export default function BlockRenderer({
       const currentTour = block.tour || tour;
       if (!currentTour) return null;
       return (
-        <div data-testid="tour-ready-block" style={{ marginBottom: 20, minWidth: 0, maxWidth: '100%' }}>
-          <div data-testid="itinerary-view" style={{ minWidth: 0, maxWidth: '100%' }}>
+        <div data-testid="tour-ready-block" style={{ marginBottom: 20, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word', boxSizing: 'border-box' }}>
+          <div data-testid="itinerary-view" style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word', boxSizing: 'border-box' }}>
             <ItineraryView
               tour={currentTour}
               sessionId={sessionId}

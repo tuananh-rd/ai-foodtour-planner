@@ -94,6 +94,10 @@ export default function StopCard({
         boxShadow: 'var(--shadow-sm, 0 1px 3px rgba(31, 27, 22, 0.08))',
         position: 'relative',
         boxSizing: 'border-box',
+        minWidth: 0,
+        maxWidth: '100%',
+        overflowWrap: 'anywhere',
+        wordBreak: 'break-word',
         ...style,
       }}
     >
@@ -113,10 +117,16 @@ export default function StopCard({
             padding: '4px 10px',
             borderRadius: 'var(--radius-full, 9999px)',
             border: '1px solid var(--border, #DFD5C6)',
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
+            whiteSpace: 'normal',
           }}
         >
-          <span>🚶</span>
-          <span>
+          <span style={{ flexShrink: 0 }}>🚶</span>
+          <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
             {index === 0 ? 'Từ điểm xuất phát: ' : ''}
             Ước tính ~{legMinutes} phút {legKm ? `(${legKm} km)` : ''}
           </span>
@@ -125,7 +135,7 @@ export default function StopCard({
 
       {/* Main Stop Header */}
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', minWidth: 0, maxWidth: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1, minWidth: 0, maxWidth: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: '1 1 auto', minWidth: 0, maxWidth: '100%' }}>
           {/* Order Badge */}
           <div
             style={{
@@ -147,7 +157,7 @@ export default function StopCard({
           </div>
 
           {/* Name & District & Rating */}
-          <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
+          <div style={{ flex: '1 1 auto', minWidth: 0, maxWidth: '100%' }}>
             <h4
               style={{
                 fontSize: 'var(--type-16, 16px)',
@@ -163,7 +173,7 @@ export default function StopCard({
             >
               {stop.name}
             </h4>
-            <div style={{ fontSize: '13px', color: 'var(--muted, #6B6259)', marginBottom: '4px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere' }}>
+            <div style={{ fontSize: '13px', color: 'var(--muted, #6B6259)', marginBottom: '4px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               {stop.district ? `${stop.district} · ` : ''}
               {ratingDisplay}
             </div>
@@ -176,7 +186,7 @@ export default function StopCard({
         </div>
 
         {/* Locked badge or Replace Button */}
-        <div style={{ flexShrink: 0 }}>
+        <div style={{ flexShrink: 0, maxWidth: '100%' }}>
           {isLocked ? (
             <span
               style={{
@@ -187,6 +197,10 @@ export default function StopCard({
                 backgroundColor: '#F3F4F6',
                 color: '#4B5563',
                 border: '1px solid #D1D5DB',
+                display: 'inline-block',
+                whiteSpace: 'normal',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
               }}
             >
               🔒 Giữ nguyên
@@ -202,6 +216,11 @@ export default function StopCard({
                 fontSize: '13px',
                 minHeight: '44px',
                 fontWeight: 600,
+                whiteSpace: 'normal',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
+                minWidth: 0,
+                maxWidth: '100%',
               }}
             >
               Đổi quán
@@ -212,7 +231,7 @@ export default function StopCard({
 
       {/* Why reasons chips */}
       {whyReasons.length > 0 && (
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '8px 0' }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '8px 0', minWidth: 0, maxWidth: '100%' }}>
           {whyReasons.map((why, wIdx) => (
             <span
               key={wIdx}
@@ -229,17 +248,23 @@ export default function StopCard({
                 borderRadius: 'var(--radius-sm, 6px)',
                 padding: '3px 8px',
                 lineHeight: 1.3,
+                minWidth: 0,
+                maxWidth: '100%',
+                boxSizing: 'border-box',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
+                whiteSpace: 'normal',
               }}
             >
-              <span>💡</span>
-              <span>{why.text}</span>
+              <span style={{ flexShrink: 0 }}>💡</span>
+              <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{why.text}</span>
             </span>
           ))}
         </div>
       )}
 
       {/* Price and Hours Info Chips */}
-      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px' }}>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px', marginTop: '10px', minWidth: 0, maxWidth: '100%' }}>
         {/* Price range chip */}
         <span
           data-price-chip
@@ -255,10 +280,16 @@ export default function StopCard({
             backgroundColor: '#FFF7ED',
             color: '#9A3412',
             border: '1px solid #FED7AA',
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
+            whiteSpace: 'normal',
           }}
         >
-          <span>💸</span>
-          <span>{priceText}</span>
+          <span style={{ flexShrink: 0 }}>💸</span>
+          <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{priceText}</span>
         </span>
 
         {/* Hours chip */}
@@ -275,10 +306,16 @@ export default function StopCard({
             backgroundColor: '#F9FAFB',
             color: '#4B5563',
             border: '1px solid #E5E7EB',
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
+            whiteSpace: 'normal',
           }}
         >
-          <span>🕒</span>
-          <span>{hoursText}</span>
+          <span style={{ flexShrink: 0 }}>🕒</span>
+          <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{hoursText}</span>
         </span>
       </div>
     </div>

@@ -136,6 +136,11 @@ export default function EvidenceStrip({
         borderRadius: 'var(--radius-md, 8px)',
         marginBottom: '16px',
         overflow: 'hidden',
+        minWidth: 0,
+        maxWidth: '100%',
+        boxSizing: 'border-box',
+        overflowWrap: 'anywhere',
+        wordBreak: 'break-word',
         ...style,
       }}
     >
@@ -147,6 +152,8 @@ export default function EvidenceStrip({
         aria-controls="evidence-strip-details"
         style={{
           width: '100%',
+          maxWidth: '100%',
+          minWidth: 0,
           minHeight: '44px',
           padding: '10px 14px',
           display: 'flex',
@@ -160,13 +167,17 @@ export default function EvidenceStrip({
           fontWeight: 600,
           textAlign: 'left',
           gap: '8px',
+          boxSizing: 'border-box',
+          whiteSpace: 'normal',
+          overflowWrap: 'anywhere',
+          wordBreak: 'break-word',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <span style={{ fontSize: '16px' }}>{theme.icon}</span>
-          <span>{titleText}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', minWidth: 0, maxWidth: '100%', flex: '1 1 auto', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+          <span style={{ fontSize: '16px', flexShrink: 0 }}>{theme.icon}</span>
+          <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{titleText}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: theme.accentColor }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px', fontSize: '12px', color: theme.accentColor, flexShrink: 0 }}>
           <span>{isExpanded ? 'Thu gọn' : 'Xem chi tiết'}</span>
           <span style={{ fontSize: '14px', transform: isExpanded ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s' }}>
             ▼
@@ -185,22 +196,27 @@ export default function EvidenceStrip({
             fontSize: '13px',
             color: isVerified ? '#14532D' : '#451A03',
             lineHeight: 1.6,
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
+            overflowWrap: 'anywhere',
+            wordBreak: 'break-word',
           }}
         >
-          <ul style={{ margin: 0, paddingLeft: '20px' }}>
-            <li style={{ marginBottom: '6px' }}>
+          <ul style={{ margin: 0, paddingLeft: '20px', minWidth: 0, maxWidth: '100%' }}>
+            <li style={{ marginBottom: '6px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               <strong>Giờ mở cửa:</strong>{' '}
               {hoursUnknown
                 ? 'Dữ liệu nguồn chưa có lịch chi tiết theo từng thứ trong tuần. Bạn nên liên hệ xác nhận với quán trước khi tới.'
                 : 'Đã xác thực theo lịch hoạt động thực tế của từng quán trong hành trình.'}
             </li>
-            <li style={{ marginBottom: '6px' }}>
+            <li style={{ marginBottom: '6px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               <strong>Khoảng giá:</strong>{' '}
               {priceUnknown
                 ? 'Mức giá hiển thị là khoảng giá chung do quán công bố, không phải hoá đơn tính theo từng người.'
                 : 'Mức giá và định mức chi tiêu đã được xác thực.'}
             </li>
-            <li>
+            <li style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               <strong>Đường đi:</strong>{' '}
               {hasProviderRoute
                 ? 'Tuyến đường và thời gian đi bộ thực tế được tính toán từ dịch vụ bản đồ số.'

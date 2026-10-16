@@ -1215,8 +1215,64 @@ async function run() {
       })()`);
 
       await captureScreenshot('09_tour_ready_itinerary_maps_1280.png');
+
+      // DOM assertions: English Maps translations and containment at 1280 & 390
+      const mapsTranslation1280 = await ev(`(() => {
+        const text = document.querySelector('[data-testid="itinerary-view"], [data-itinerary-view]')?.innerText || '';
+        const bodyText = document.body.innerText || '';
+        const hasVietnamese = text.includes('Liên kết chứa') || bodyText.includes('Liên kết chứa');
+        const englishRegex = /Links contain|The schedule|Tour origin|Skipped stops|An isolated/i;
+        const hasEnglish = englishRegex.test(bodyText);
+        const docScroll = document.documentElement.scrollWidth;
+        const innerW = window.innerWidth;
+        const blocks = Array.from(document.querySelectorAll('[data-testid="tour-ready-block"], [data-testid="itinerary-view"], [data-testid="maps-links-block"], [data-testid="stop-card"]'));
+        const blocksContained = blocks.every(b => b.scrollWidth <= b.clientWidth + 1);
+        return {
+          hasVietnamese,
+          hasEnglish,
+          docContained: docScroll <= innerW,
+          blocksContained,
+          docScroll,
+          innerW,
+        };
+      })()`);
+
+      record(
+        'CH-09b-MAPS-TRANSLATION-1280',
+        'MapsLinksBlock user-visible text is completely in Vietnamese with zero ASCII English server notes, contained at 1280px',
+        mapsTranslation1280.hasVietnamese && !mapsTranslation1280.hasEnglish && mapsTranslation1280.docContained && mapsTranslation1280.blocksContained,
+        JSON.stringify(mapsTranslation1280)
+      );
+
       await setViewport(390, 844);
       await captureScreenshot('09_tour_ready_itinerary_maps_390.png');
+
+      const mapsTranslation390 = await ev(`(() => {
+        const bodyText = document.body.innerText || '';
+        const hasVietnamese = bodyText.includes('Liên kết chứa');
+        const englishRegex = /Links contain|The schedule|Tour origin|Skipped stops|An isolated/i;
+        const hasEnglish = englishRegex.test(bodyText);
+        const docScroll = document.documentElement.scrollWidth;
+        const innerW = window.innerWidth;
+        const blocks = Array.from(document.querySelectorAll('[data-testid="tour-ready-block"], [data-testid="itinerary-view"], [data-testid="maps-links-block"], [data-testid="stop-card"]'));
+        const blocksContained = blocks.every(b => b.scrollWidth <= b.clientWidth + 1);
+        return {
+          hasVietnamese,
+          hasEnglish,
+          docContained: docScroll <= innerW,
+          blocksContained,
+          docScroll,
+          innerW,
+        };
+      })()`);
+
+      record(
+        'CH-09c-MAPS-TRANSLATION-390',
+        'MapsLinksBlock user-visible text is completely in Vietnamese with zero ASCII English server notes, contained at 390px',
+        mapsTranslation390.hasVietnamese && !mapsTranslation390.hasEnglish && mapsTranslation390.docContained && mapsTranslation390.blocksContained,
+        JSON.stringify(mapsTranslation390)
+      );
+
       await setViewport(1280, 800);
 
       record(
@@ -1278,12 +1334,23 @@ async function run() {
     }
 
     // =============================================================
-    // Scenario 13: CH-13 ProfileBar Budget & Vehicle Validation
+    // Scenario 13: CH-13 ProfileBar Structured Controls Validation
     // =============================================================
-    console.log('\n--- Scenario 13: CH-13 ProfileBar Budget & Vehicle Validation ---');
-    async function setProfileEditInput(val) {
+    console.log('\n--- Scenario 13: CH-13 ProfileBar Structured Controls Validation ---');
+    async function setSelectValue(selector, val) {
       await ev(`(() => {
-        const input = document.querySelector('[data-testid="profile-edit-input"]');
+        const select = document.querySelector(${JSON.stringify(selector)});
+        if (select) {
+          select.value = ${JSON.stringify(val)};
+          select.dispatchEvent(new Event('change', { bubbles: true }));
+          select.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      })()`);
+    }
+
+    async function setInputValue(selector, val) {
+      await ev(`(() => {
+        const input = document.querySelector(${JSON.stringify(selector)});
         if (input) {
           const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
           if (setter) setter.call(input, ${JSON.stringify(val)});
@@ -1301,85 +1368,184 @@ async function run() {
       })()`);
     }
 
-    // 1. Budget edit without scope -> inline error, no network request
+    // 1. Budget edit: structured controls (amount number input, unit select, required scope select)
     const preBudgetCalls = networkTurns.length;
     await ev(`(() => {
       const budgetChip = document.querySelector('[data-testid="chip-profile-budget"]');
       if (budgetChip) budgetChip.click();
     })()`);
-    await sleep(300);
+    await sleep(200);
 
-    // Type 600k without scope
-    await setProfileEditInput('600k');
+    // Verify structured controls exist in DOM
+    const budgetControlsCheck = await ev(`(() => {
+      const amount = document.querySelector('#profile-budget-amount');
+      const unit = document.querySelector('#profile-budget-unit');
+      const scope = document.querySelector('#profile-budget-scope');
+      return {
+        hasAmount: !!amount && amount.type === 'number',
+        hasUnit: !!unit && unit.tagName.toLowerCase() === 'select',
+        hasScope: !!scope && scope.tagName.toLowerCase() === 'select',
+      };
+    })()`);
+
+    // Enter amount 600 without selecting scope -> inline error, no request sent
+    await setInputValue('#profile-budget-amount', '600');
+    await setSelectValue('#profile-budget-unit', '1000');
+    await setSelectValue('#profile-budget-scope', '');
     await submitProfileEdit();
-    await sleep(300);
+    await sleep(200);
 
-    const budgetValidation = await ev(`(() => {
-      const err = document.querySelector('[role="alert"]');
-      const text = err ? err.innerText : '';
+    const budgetValidationNoScope = await ev(`(() => {
+      const err = document.querySelector('[data-testid="profile-edit-error"], [role="alert"]');
       return {
         hasAlert: !!err,
-        text,
+        text: err ? err.innerText : '',
         dialogOpen: !!document.querySelector('[role="dialog"]'),
       };
     })()`);
 
     const noBudgetRequestSent = networkTurns.length === preBudgetCalls;
 
-    // Now type valid budget with scope: '600k cả nhóm'
-    await setProfileEditInput('600k cả nhóm');
+    // Now select scope 'group' ('cả nhóm') with amount 600 nghìn (600.000 VND)
+    await setSelectValue('#profile-budget-scope', 'group');
     await submitProfileEdit();
     await waitForTurn(15000);
 
     const postValidBudgetCalls = networkTurns.slice(preBudgetCalls);
-    const validBudgetReq = postValidBudgetCalls.find(t => t.body?.action?.type === 'edit_profile' && t.body?.action?.patch?.budget_scope === 'group');
+    const validBudgetReq = postValidBudgetCalls.find(t =>
+      t.body?.action?.type === 'edit_profile' &&
+      t.body?.action?.patch?.budget_vnd === 600000 &&
+      t.body?.action?.patch?.budget_scope === 'group'
+    );
 
     record(
       'CH-13a-BUDGET-VALIDATION',
-      "ProfileBar budget edit requires scope ('cả nhóm'/'mỗi người'), shows inline alert for '600k', patches 'group' for '600k cả nhóm'",
-      budgetValidation.hasAlert && noBudgetRequestSent && !!validBudgetReq,
-      `alert: ${budgetValidation.text}, noReqSent: ${noBudgetRequestSent}, validReq: ${JSON.stringify(validBudgetReq?.body?.action?.patch)}`
+      "ProfileBar budget structured editor requires scope ('cả nhóm'/'mỗi người'), blocks submission with inline error when scope is missing, patches {budget_vnd: 600000, budget_scope: 'group'}",
+      budgetControlsCheck.hasAmount && budgetControlsCheck.hasScope && budgetValidationNoScope.hasAlert && noBudgetRequestSent && !!validBudgetReq,
+      `controls: ${JSON.stringify(budgetControlsCheck)}, alert: ${budgetValidationNoScope.text}, noReqSent: ${noBudgetRequestSent}, validReq: ${JSON.stringify(validBudgetReq?.body?.action?.patch)}`
     );
 
-    // 2. Vehicle edit with invalid vehicle -> inline error, no network request
+    // 2. Vehicle edit: structured select of exactly 4 options (walk, motorbike, car, taxi)
     const preVehicleCalls = networkTurns.length;
     await ev(`(() => {
       const vehChip = document.querySelector('[data-testid="chip-profile-vehicle"]');
       if (vehChip) vehChip.click();
     })()`);
-    await sleep(300);
+    await sleep(200);
 
-    // Type unknown vehicle 'tàu bay'
-    await setProfileEditInput('tàu bay');
-    await submitProfileEdit();
-    await sleep(300);
-
-    const vehValidation = await ev(`(() => {
-      const err = document.querySelector('[role="alert"]');
-      const text = err ? err.innerText : '';
+    const vehicleControlsCheck = await ev(`(() => {
+      const select = document.querySelector('#profile-vehicle-select');
+      if (!select) return { found: false, options: [] };
+      const options = Array.from(select.options).map(o => o.value);
       return {
-        hasAlert: !!err,
-        text,
-        dialogOpen: !!document.querySelector('[role="dialog"]'),
+        found: true,
+        options,
+        isOnlyAllowed4: options.length === 4 && ['walk', 'motorbike', 'car', 'taxi'].every(v => options.includes(v)),
       };
     })()`);
 
-    const noVehicleRequestSent = networkTurns.length === preVehicleCalls;
-
-    // Now type valid vehicle: 'xe máy' -> patches 'motorbike'
-    await setProfileEditInput('xe máy');
+    // Select motorbike
+    await setSelectValue('#profile-vehicle-select', 'motorbike');
     await submitProfileEdit();
     await waitForTurn(15000);
 
     const postValidVehCalls = networkTurns.slice(preVehicleCalls);
-    const validVehReq = postValidVehCalls.find(t => t.body?.action?.type === 'edit_profile' && t.body?.action?.patch?.vehicle === 'motorbike');
+    const validVehReq = postValidVehCalls.find(t =>
+      t.body?.action?.type === 'edit_profile' &&
+      t.body?.action?.patch?.vehicle === 'motorbike'
+    );
 
     record(
       'CH-13b-VEHICLE-VALIDATION',
-      "ProfileBar vehicle edit shows inline error for unknown vehicle 'tàu bay', maps 'xe máy' to 'motorbike'",
-      vehValidation.hasAlert && noVehicleRequestSent && !!validVehReq,
-      `alert: ${vehValidation.text}, noReqSent: ${noVehicleRequestSent}, validReq: ${JSON.stringify(validVehReq?.body?.action?.patch)}`
+      "ProfileBar vehicle editor is a structured select restricted to the four supported values (walk, motorbike, car, taxi), patches 'motorbike'",
+      vehicleControlsCheck.found && vehicleControlsCheck.isOnlyAllowed4 && !!validVehReq,
+      `controls: ${JSON.stringify(vehicleControlsCheck)}, validReq: ${JSON.stringify(validVehReq?.body?.action?.patch)}`
     );
+
+    // =============================================================
+    // Scenario 14: CH-14 Eight-Block Hostile Page & Shell Containment (1280 and 390)
+    // =============================================================
+    console.log('\n--- Scenario 14: CH-14 Eight-Block Hostile Page & Shell Containment ---');
+    // 1. Eight-block hostile review page
+    await navigateTo(`http://127.0.0.1:${PORT_WEB}/review`);
+    await sleep(300);
+
+    for (const width of [1280, 390]) {
+      const height = width === 390 ? 844 : 800;
+      await setViewport(width, height);
+      await sleep(200);
+
+      const d = await ev(`(() => {
+        const sections = Array.from(document.querySelectorAll('[data-review]')).map(n => ({
+          type: n.dataset.review,
+          client: n.clientWidth,
+          scroll: n.scrollWidth,
+          contained: n.scrollWidth <= n.clientWidth + 1,
+        }));
+        const docScroll = document.documentElement.scrollWidth;
+        const innerW = window.innerWidth;
+        const xss = !!window.__xss;
+        const images = document.querySelectorAll('img').length;
+        const jsLinks = document.querySelectorAll('a[href^="javascript:"]').length;
+        const allSectionsContained = sections.length === 8 && sections.every(s => s.contained);
+        return {
+          width: innerW,
+          scroll: docScroll,
+          docContained: docScroll <= innerW + 1,
+          blocks: sections.length,
+          allSectionsContained,
+          sections,
+          xss,
+          images,
+          jsLinks,
+        };
+      })()`);
+
+      await captureScreenshot(`14_hostile_eight_blocks_${width}.png`);
+
+      const passed = d.blocks === 8 && d.docContained && d.allSectionsContained && !d.xss && d.images === 0 && d.jsLinks === 0;
+      record(
+        `CH-14-HOSTILE-EIGHT-BLOCKS-${width}`,
+        `Eight-block hostile boundary page (5k chars) has document.scrollWidth <= innerWidth AND each block scrollWidth <= clientWidth at ${width}px`,
+        passed,
+        JSON.stringify({ docContained: d.docContained, allSectionsContained: d.allSectionsContained, scroll: d.scroll, width: d.width, sections: d.sections.map(s => ({ type: s.type, client: s.client, scroll: s.scroll })) })
+      );
+    }
+
+    // 2. Production Shell Containment at 1280 and 390
+    await navigateTo(`http://127.0.0.1:${PORT_WEB}/?chat=v2`);
+    await sleep(300);
+
+    for (const width of [1280, 390]) {
+      const height = width === 390 ? 844 : 800;
+      await setViewport(width, height);
+      await sleep(200);
+
+      const dShell = await ev(`(() => {
+        const docScroll = document.documentElement.scrollWidth;
+        const innerW = window.innerWidth;
+        const blocks = Array.from(document.querySelectorAll('[data-testid="chat-v2-container"], [data-testid="profile-bar"], [data-testid="zone-chat"], [data-testid="zone-explore"], [data-testid="zone-shortlist"]'));
+        const allBlocksContained = blocks.every(b => b.scrollWidth <= b.clientWidth + 1);
+        return {
+          width: innerW,
+          scroll: docScroll,
+          docContained: docScroll <= innerW + 1,
+          blocksCount: blocks.length,
+          allBlocksContained,
+        };
+      })()`);
+
+      await captureScreenshot(`14_production_shell_${width}.png`);
+
+      const passed = dShell.docContained && dShell.allBlocksContained;
+      record(
+        `CH-14-PRODUCTION-SHELL-${width}`,
+        `Actual production shell has document.scrollWidth <= innerWidth AND all core blocks scrollWidth <= clientWidth at ${width}px`,
+        passed,
+        JSON.stringify(dShell)
+      );
+    }
+
 
   } finally {
     if (ws) {

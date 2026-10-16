@@ -402,6 +402,11 @@ export default function ChatV2Layout({
         background: '#FBF8F3',
         color: '#1F1B16',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+        minWidth: 0,
+        maxWidth: '100%',
+        width: '100%',
+        boxSizing: 'border-box',
+        overflowX: 'hidden',
       }}
     >
       {/* Top Header */}
