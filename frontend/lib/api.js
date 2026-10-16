@@ -1259,21 +1259,54 @@ export async function getMapsLinks(sessionId, mode = 'walking', token = '', opti
   const validModes = ['walking', 'driving'];
   const targetMode = validModes.includes(mode) ? mode : 'walking';
 
-  if (typeof window !== 'undefined' && window.__MOCK_NEXT_MAPS_LINKS_ERROR) {
-    const errData = window.__MOCK_NEXT_MAPS_LINKS_ERROR;
-    window.__MOCK_NEXT_MAPS_LINKS_ERROR = null;
+  let pendingDelay = 0;
+  let pendingError = null;
+  let pendingOverride = null;
+  let pendingCustomRes = null;
+
+  if (typeof window !== 'undefined') {
+    window.__MAPS_FETCH_COUNT = (window.__MAPS_FETCH_COUNT || 0) + 1;
+    if (window.__MOCK_NEXT_MAPS_DELAY_MS) {
+      pendingDelay = window.__MOCK_NEXT_MAPS_DELAY_MS;
+      window.__MOCK_NEXT_MAPS_DELAY_MS = null;
+    }
+    if (window.__MOCK_NEXT_MAPS_LINKS_ERROR || window.__MOCK_PERSISTENT_MAPS_LINKS_ERROR) {
+      pendingError = window.__MOCK_NEXT_MAPS_LINKS_ERROR || window.__MOCK_PERSISTENT_MAPS_LINKS_ERROR;
+      window.__MOCK_NEXT_MAPS_LINKS_ERROR = null;
+    }
+    if (window.__MOCK_MAPS_LINKS_OVERRIDE) {
+      pendingOverride = window.__MOCK_MAPS_LINKS_OVERRIDE;
+    } else if (window.__MOCK_NEXT_MAPS_LINKS) {
+      pendingCustomRes = window.__MOCK_NEXT_MAPS_LINKS;
+      window.__MOCK_NEXT_MAPS_LINKS = null;
+    }
+  }
+
+  if (pendingDelay > 0) {
+    await new Promise((r) => setTimeout(r, pendingDelay));
+  }
+
+  if (options?.signal?.aborted) {
+    const err = new Error('The operation was aborted');
+    err.name = 'AbortError';
+    throw err;
+  }
+
+  if (pendingError) {
     throw new ApiError(
-      errData.code || 'error',
-      errData.message || 'Lỗi tạo liên kết bản đồ giả lập',
-      errData.details || null,
-      errData.status || 500
+      pendingError.code || 'error',
+      pendingError.message || 'Lỗi tạo liên kết bản đồ giả lập',
+      pendingError.details || null,
+      pendingError.status || 500
     );
   }
 
-  if (typeof window !== 'undefined' && window.__MOCK_NEXT_MAPS_LINKS) {
-    const customRes = window.__MOCK_NEXT_MAPS_LINKS;
-    window.__MOCK_NEXT_MAPS_LINKS = null;
-    return { ...customRes, is_mock: true };
+  if (pendingOverride) {
+    return { ...pendingOverride, is_mock: true };
+  }
+
+  if (pendingCustomRes) {
+    return { ...pendingCustomRes, is_mock: true };
   }
 
   if (isMockMode()) {

@@ -744,6 +744,106 @@ async function runComponentTests() {
     'Disclaimers confirmed'
   );
 
+  // TC-MAPS-08: Hostile URLs rejected by allowlist; disclosure rendered; treated as unavailable when all rejected
+  const hostileData = {
+    status: 'ok',
+    links: [
+      { index: 1, of: 2, url: 'https://evil.example/maps/dir/?api=1' },
+      { index: 2, of: 2, url: 'http://www.google.com/maps/dir/?api=1' },
+    ],
+    skipped: [],
+    notes: [],
+  };
+  const htmlHostile = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: hostileData,
+    })
+  );
+  record(
+    'TC-MAPS-08',
+    'Hostile URLs are rejected by allowlist, disclosed, and treated as unavailable',
+    htmlHostile.includes('Một liên kết không hợp lệ đã bị bỏ qua') &&
+      htmlHostile.includes('data-maps-status="unavailable"') &&
+      !htmlHostile.includes('evil.example') &&
+      !htmlHostile.includes('<a '),
+    'Hostile links safely rejected and treated as unavailable'
+  );
+
+  // TC-MAPS-08b: Split response with mixed valid and hostile URLs
+  const mixedData = {
+    status: 'ok',
+    links: [
+      { index: 1, of: 2, url: 'https://evil.example/maps/dir/?api=1', from_stop: null, to_stop: 1 },
+      { index: 2, of: 2, url: 'https://www.google.com/maps/dir/?api=1&origin=21.0,105.8&destination=21.1,105.9', from_stop: 1, to_stop: 2 },
+    ],
+    skipped: [],
+    notes: [],
+  };
+  const htmlMixed = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: mixedData,
+    })
+  );
+  record(
+    'TC-MAPS-08b',
+    'Mixed response renders only valid URL verbatim and discloses rejected link',
+    htmlMixed.includes('Một liên kết không hợp lệ đã bị bỏ qua') &&
+      !htmlMixed.includes('evil.example') &&
+      (htmlMixed.includes('https://www.google.com/maps/dir/?api=1&amp;origin=21.0,105.8&amp;destination=21.1,105.9') ||
+        htmlMixed.includes('https://www.google.com/maps/dir/?api=1&origin=21.0,105.8&destination=21.1,105.9')) &&
+      htmlMixed.includes('rel="noopener noreferrer"'),
+    'Mixed links handled safely with verbatim valid link'
+  );
+
+  // TC-MAPS-09: url_too_long skipped reason does not say missing coordinates
+  const urlTooLongPartial = {
+    status: 'partial',
+    links: [
+      { index: 1, of: 1, url: 'https://www.google.com/maps/dir/?api=1&origin=21.0,105.8&destination=21.1,105.9' }
+    ],
+    skipped: [
+      { stop_order: 2, venue_id: 'SYN-002', reason: 'url_too_long' }
+    ],
+    notes: ['SYNTHETIC: address exceeds URL limit'],
+  };
+  const htmlUrlTooLong = renderToStaticMarkup(
+    React.createElement(MapsLinksBlock, {
+      tour: tourSuccess,
+      sessionId: 'test-session',
+      sessionToken: 'test-token',
+      originLabel: 'Hồ Hoàn Kiếm',
+      initialMapsData: urlTooLongPartial,
+    })
+  );
+  record(
+    'TC-MAPS-09',
+    'url_too_long skipped reason accurately translated without saying missing coordinates',
+    htmlUrlTooLong.includes('độ dài liên kết vượt quá giới hạn') &&
+      !htmlUrlTooLong.includes('Một số quán chưa có toạ độ nên không đưa vào liên kết') &&
+      htmlUrlTooLong.includes('data-maps-server-notes') &&
+      htmlUrlTooLong.includes('SYNTHETIC: address exceeds URL limit'),
+    'Accurate url_too_long reason translation and server notes confirmed'
+  );
+
+  // TC-MAPS-10: Toggle implements roving tabindex
+  record(
+    'TC-MAPS-10',
+    'Toggle buttons implement roving tabindex (selected tabIndex=0, unselected tabIndex=-1)',
+    htmlSingle.includes('data-testid="toggle-walking"') &&
+      htmlSingle.includes('tabindex="0"') &&
+      htmlSingle.includes('data-testid="toggle-driving"') &&
+      htmlSingle.includes('tabindex="-1"'),
+    'Roving tabindex verified on toggle buttons'
+  );
+
   // -------------------------------------------------------------
   // Test 9: EvidenceStrip Synthetic Evidence & Conservatism (R2-N01)
   // -------------------------------------------------------------

@@ -1,21 +1,19 @@
 /**
  * Real-Browser CDP Acceptance Suite for Free Google Maps URLs (GMAPS-URL-2)
  *
- * Verifies against PRODUCTION scratch build (ports 13170/9370; never 3000/8000):
- * - Link attributes (target="_blank", rel="noopener noreferrer")
- * - URL shape: https://www.google.com/maps/dir/?api=1, no dir_action
- * - Mode toggle changes travelmode between walking and driving
- * - Order of waypoints equals stop order
- * - 1 link vs split case with 'Chặng i/n: <from> → <to>'
- * - Partial status & unavailable status honest rendering
- * - At most 3 waypoints per link and url_length <= 2048
- * - Click handler opens nothing automatically (window.open not called, no auto navigation)
- * - Zero requests to google.* / gstatic.* (CDP network interception)
- * - Stale response after mode change/reset ignored (generation guard)
- * - 390px mobile viewport: buttons reachable inside viewport and >= 44px
- * - Keyboard accessibility: focus indicator & Enter activation
- * - Mutation proofs: remove rel => fail; swap order => fail
- * - Fail-before mode on commit 554a548
+ * Verifies against PRODUCTION scratch build (ports 13000/18000; never 3000/8000):
+ * - H1: URL allowlist before rendering ANY anchor (https, exact www.google.com host, no creds, default port, /maps/dir/ path);
+ *       accepted URLs rendered verbatim; rejected links disclosed ('Một liên kết không hợp lệ đã bị bỏ qua'); all-rejected treated as unavailable;
+ *       hostile single and split tests.
+ * - M1: Stable StatusQueue callbacks; error banner stays visible with exactly 1 real HTML 'Thử lại' button (>=44px, keyboard usable);
+ *       only user retry or relevant state change restarts request; persistent failure request count measured (does not loop).
+ * - M2: Server notes rendered as escaped text; accurate skipped[].reason translation (no_usable_point vs url_too_long);
+ *       never says 'thiếu toạ độ' for url_too_long; privacy + schedule proposal disclaimers kept; tests for url_too_long partial & unavailable.
+ * - M3: Exact decoded waypoint array comparison; exact split link URL sequence comparison; real delayed out-of-order responses
+ *       (older success/error after newer; reset invalidating in-flight requests); real application mutation proofs (remove rel => fail,
+ *       reorder waypoints => fail, drop disclaimer => fail).
+ * - L1: WAI-ARIA radio group roving tabindex & keyboard navigation (ArrowLeft, ArrowRight, ArrowUp, ArrowDown) with real key events.
+ * - Fail-before mode on commit 554a548.
  */
 
 import { spawn, execSync } from 'node:child_process';
@@ -29,8 +27,8 @@ const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../..');
 const FRONTEND_DIR = path.join(REPO_ROOT, 'frontend');
 
-const PORT_WEB = Number(process.env.MAPS_WEB_PORT || 13170);
-const PORT_CDP = Number(process.env.MAPS_CDP_PORT || 9370);
+const PORT_WEB = Number(process.env.MAPS_WEB_PORT || 13000);
+const PORT_CDP = Number(process.env.MAPS_CDP_PORT || 18000);
 const FAIL_BEFORE = process.argv.includes('--fail-before');
 
 const CANDIDATES = [
@@ -73,6 +71,7 @@ async function run() {
   console.log('\n===============================================================');
   console.log('   AI FOODTOUR PLANNER — GOOGLE MAPS URLS REAL-BROWSER CDP');
   console.log(`   Mode: ${FAIL_BEFORE ? 'FAIL-BEFORE EVIDENCE PROOF (commit 554a548)' : 'NORMAL PRODUCTION VERIFICATION'}`);
+  console.log(`   Ports: Web=${PORT_WEB}, CDP=${PORT_CDP}`);
   console.log('===============================================================\n');
 
   let scratchDir = null;
@@ -117,7 +116,7 @@ async function run() {
     });
     console.log('[Setup] Production build in scratch directory complete.');
 
-    // 3. Start Next.js production server on isolated port (13170)
+    // 3. Start Next.js production server on isolated port
     console.log(`[Setup] Starting production server on port ${PORT_WEB}...`);
     serverProc = spawn('npx', ['next', 'start', '-p', String(PORT_WEB)], {
       cwd: scratchDir,
@@ -149,30 +148,35 @@ async function run() {
       [
         `--remote-debugging-port=${PORT_CDP}`,
         `--user-data-dir=${profile}`,
-        '--headless=new',
         '--no-first-run',
+        '--no-default-browser-check',
+        '--headless=new',
         '--disable-gpu',
-        '--disable-extensions',
+        '--disable-background-networking',
         'about:blank',
       ],
       { stdio: 'ignore' }
     );
 
-    // Connect to CDP
+    // Wait for browser CDP endpoint
     let wsUrl = null;
-    for (let i = 0; i < 60; i++) {
+    for (let i = 0; i < 40; i++) {
       try {
         const list = await (await fetch(`http://127.0.0.1:${PORT_CDP}/json`)).json();
         const page = list.find((t) => t.type === 'page');
-        if (page) {
+        if (page?.webSocketDebuggerUrl) {
           wsUrl = page.webSocketDebuggerUrl;
           break;
         }
       } catch (_) {}
-      await sleep(200);
+      await sleep(250);
     }
-    if (!wsUrl) throw new Error('CDP not reachable on port ' + PORT_CDP);
+    if (!wsUrl) {
+      throw new Error(`Browser CDP not available on port ${PORT_CDP}`);
+    }
+    console.log(`[Setup] CDP WebSocket ready: ${wsUrl}`);
 
+    // 5. Connect WebSocket client using Node 22 global WebSocket
     ws = new WebSocket(wsUrl);
     await new Promise((res, rej) => {
       ws.onopen = res;
@@ -181,19 +185,31 @@ async function run() {
 
     let nextId = 1;
     const pending = new Map();
-    ws.onmessage = (m) => {
-      const d = JSON.parse(m.data);
-      if (d.method === 'Network.requestWillBeSent') {
-        const reqUrl = d.params?.request?.url || '';
-        if (reqUrl.includes('google.') || reqUrl.includes('gstatic.') || reqUrl.includes('maps.google')) {
-          interceptedGoogleRequests.push(reqUrl);
-        }
+
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.id && pending.has(data.id)) {
+        const { res, rej } = pending.get(data.id);
+        pending.delete(data.id);
+        if (data.error) rej(new Error(data.error.message));
+        else res(data.result);
       }
-      if (d.id && pending.has(d.id)) {
-        const { res, rej } = pending.get(d.id);
-        pending.delete(d.id);
-        if (d.error) rej(new Error(d.error.message));
-        else res(d.result);
+
+      // CDP Network interception: track any outbound requests to google / gstatic
+      if (data.method === 'Network.requestWillBeSent') {
+        const reqUrl = data.params?.request?.url || '';
+        if (
+          reqUrl.includes('google.com') ||
+          reqUrl.includes('googleapis.com') ||
+          reqUrl.includes('gstatic.com') ||
+          reqUrl.includes('googleusercontent.com')
+        ) {
+          interceptedGoogleRequests.push({
+            url: reqUrl,
+            initiator: data.params?.initiator?.type,
+            time: new Date().toISOString(),
+          });
+        }
       }
     };
 
@@ -386,7 +402,7 @@ async function run() {
     );
 
     // -------------------------------------------------------------
-    // Test 4: Limits & Waypoints Order Invariant
+    // Test 4: Limits & Waypoints Order Invariant (Exact Decoded Array Comparison)
     // -------------------------------------------------------------
     console.log('\n--- Test 4: Limits & Waypoints Order Invariant ---');
     const waypointsParam = parsedUrl.searchParams.get('waypoints');
@@ -405,13 +421,17 @@ async function run() {
       `Length: ${href.length} chars`
     );
 
-    // Waypoints order equals stop order
-    const waypointsOrderOk = waypointsParam ? waypointsParam.includes('21.001') && waypointsParam.includes('21.002') : true;
+    // Waypoints order equals stop order: compare decoded array elements exactly in sequence
+    const decodedWaypoints = waypointsParam ? waypointsParam.split('|').map(decodeURIComponent) : [];
+    const expectedWaypoints = ['21.001000,105.850000', '21.002000,105.850000'];
+    const waypointsOrderOk =
+      decodedWaypoints.length === expectedWaypoints.length &&
+      decodedWaypoints.every((wp, i) => wp === expectedWaypoints[i]);
     record(
       'TC-MAPS-ORDER',
-      'Waypoints preserve stop order (order of waypoints equals stop order)',
+      'Waypoints preserve stop order (order of waypoints equals stop order exactly in sequence)',
       waypointsOrderOk,
-      `Waypoints: ${waypointsParam}`
+      `Decoded waypoints: ${JSON.stringify(decodedWaypoints)} vs expected: ${JSON.stringify(expectedWaypoints)}`
     );
 
     // -------------------------------------------------------------
@@ -461,9 +481,9 @@ async function run() {
     );
 
     // -------------------------------------------------------------
-    // Test 6: 390px Mobile Viewport & Touch Target (>= 44px)
+    // Test 6: 390px Mobile Viewport & Touch Target (>= 44px) & Keyboard Navigation (L1)
     // -------------------------------------------------------------
-    console.log('\n--- Test 6: 390px Mobile Viewport, Touch Targets & Keyboard ---');
+    console.log('\n--- Test 6: 390px Mobile Viewport, Touch Targets & Radio Keyboard Pattern (L1) ---');
     await setViewport(390, 844);
 
     const touchTargets = await ev(`(() => {
@@ -504,18 +524,71 @@ async function run() {
       `Primary button top: ${touchTargets.primary.t}px vs 844px`
     );
 
-    // Keyboard activation test (focus toggle and press Enter)
-    const keyboardFocusOk = await ev(`(() => {
-      const btn = document.querySelector('[data-testid="toggle-driving"]');
-      if (!btn) return false;
-      btn.focus();
-      return document.activeElement === btn;
+    // L1: Roving TabIndex verification
+    const rovingTabIndex = await ev(`(() => {
+      const walking = document.querySelector('[data-testid="toggle-walking"]');
+      const driving = document.querySelector('[data-testid="toggle-driving"]');
+      return {
+        walkingTab: walking?.getAttribute('tabindex'),
+        drivingTab: driving?.getAttribute('tabindex'),
+      };
     })()`);
     record(
-      'TC-MAPS-KEYBOARD-FOCUS',
-      'Toggle buttons can receive keyboard focus',
-      keyboardFocusOk,
-      'Keyboard focus confirmed'
+      'TC-MAPS-RADIO-ROVING-TABINDEX',
+      'Radio toggle implements roving tabindex (selected tabIndex=0, unselected tabIndex=-1)',
+      rovingTabIndex.walkingTab === '0' && rovingTabIndex.drivingTab === '-1',
+      `walking=${rovingTabIndex.walkingTab}, driving=${rovingTabIndex.drivingTab}`
+    );
+
+    // L1: Keyboard arrow navigation test (ArrowRight moves selection and focus to driving)
+    await ev(`(() => {
+      const walkingBtn = document.querySelector('[data-testid="toggle-walking"]');
+      walkingBtn.focus();
+      walkingBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }));
+    })()`);
+    await sleep(250);
+
+    const arrowRightNav = await ev(`(() => {
+      const drivingBtn = document.querySelector('[data-testid="toggle-driving"]');
+      return {
+        activeElementIsDriving: document.activeElement === drivingBtn,
+        drivingChecked: drivingBtn?.getAttribute('aria-checked'),
+        drivingTab: drivingBtn?.getAttribute('tabindex'),
+      };
+    })()`);
+
+    record(
+      'TC-MAPS-RADIO-KEYBOARD-ARROWS',
+      'ArrowRight keydown switches selection and focus to driving radio',
+      arrowRightNav.activeElementIsDriving &&
+        arrowRightNav.drivingChecked === 'true' &&
+        arrowRightNav.drivingTab === '0',
+      `focus on driving: ${arrowRightNav.activeElementIsDriving}, driving checked: ${arrowRightNav.drivingChecked}`
+    );
+
+    // ArrowLeft back to walking
+    await ev(`(() => {
+      const drivingBtn = document.querySelector('[data-testid="toggle-driving"]');
+      drivingBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowLeft', bubbles: true }));
+    })()`);
+    await sleep(250);
+
+    const arrowLeftNav = await ev(`(() => {
+      const walkingBtn = document.querySelector('[data-testid="toggle-walking"]');
+      return {
+        activeElementIsWalking: document.activeElement === walkingBtn,
+        walkingChecked: walkingBtn?.getAttribute('aria-checked'),
+        walkingTab: walkingBtn?.getAttribute('tabindex'),
+      };
+    })()`);
+
+    record(
+      'TC-MAPS-RADIO-KEYBOARD-ARROW-LEFT',
+      'ArrowLeft keydown switches selection and focus back to walking radio',
+      arrowLeftNav.activeElementIsWalking &&
+        arrowLeftNav.walkingChecked === 'true' &&
+        arrowLeftNav.walkingTab === '0',
+      `focus on walking: ${arrowLeftNav.activeElementIsWalking}, walking checked: ${arrowLeftNav.walkingChecked}`
     );
 
     // -------------------------------------------------------------
@@ -569,7 +642,7 @@ async function run() {
     // -------------------------------------------------------------
     // Test 9: Split Cases (n > 1) with 'Chặng i/n: <from> → <to>'
     // -------------------------------------------------------------
-    console.log('\n--- Test 9: Split Cases (n > 1) with "Chặng i/n" ---');
+    console.log('\n--- Test 9: Split Cases (n > 1) with "Chặng i/n" & Exact Sequence ---');
     // Inject split_mobile fixture via mock hook
     await ev(`window.__MOCK_MAPS_CASE = 'split_mobile'`);
     // Toggle mode to trigger refetch
@@ -612,10 +685,26 @@ async function run() {
       'All leg links have required attributes'
     );
 
+    // M3: Exact URL sequence comparison against injected response
+    const expectedSplitUrls = [
+      "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.004000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000%7C21.003000%2C105.850000&travelmode=walking",
+      "https://www.google.com/maps/dir/?api=1&origin=21.004000%2C105.850000&destination=21.008000%2C105.850000&waypoints=21.005000%2C105.850000%7C21.006000%2C105.850000%7C21.007000%2C105.850000&travelmode=walking",
+      "https://www.google.com/maps/dir/?api=1&origin=21.008000%2C105.850000&destination=21.012000%2C105.850000&waypoints=21.009000%2C105.850000%7C21.010000%2C105.850000%7C21.011000%2C105.850000&travelmode=walking",
+    ];
+    const splitUrlsMatchExact =
+      splitLinksData.length === expectedSplitUrls.length &&
+      splitLinksData.every((l, i) => l.href === expectedSplitUrls[i]);
+    record(
+      'TC-MAPS-SPLIT-EXACT-SEQUENCE',
+      'Rendered split link URLs match injected response URLs in exact sequence',
+      splitUrlsMatchExact,
+      'Exact sequence match confirmed'
+    );
+
     // -------------------------------------------------------------
-    // Test 10: Partial Status Rendering
+    // Test 10: Partial Status Rendering & url_too_long Reason Honesty (M2)
     // -------------------------------------------------------------
-    console.log('\n--- Test 10: Partial Status Rendering ---');
+    console.log('\n--- Test 10: Partial Status & url_too_long Reason Honesty (M2) ---');
     await ev(`window.__MOCK_MAPS_CASE = 'partial_gap'`);
     await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
     await sleep(200);
@@ -646,10 +735,53 @@ async function run() {
       `Links count: ${partialStatus.linksCount}`
     );
 
+    // M2: Partial status with url_too_long skipped reason & server notes
+    await ev(`(() => {
+      delete window.__MOCK_MAPS_CASE;
+      window.__MOCK_MAPS_LINKS_OVERRIDE = {
+        status: 'partial',
+        links: [
+          {
+            index: 1,
+            of: 1,
+            url: 'https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&travelmode=walking'
+          }
+        ],
+        skipped: [
+          { stop_order: 2, venue_id: 'SYN-002', reason: 'url_too_long' }
+        ],
+        notes: ['SYNTHETIC: address exceeds URL limit']
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+    await sleep(400);
+
+    const urlTooLongPartial = await ev(`(() => {
+      const banner = document.querySelector('[data-maps-status="partial"]');
+      const notes = document.querySelector('[data-maps-server-notes]');
+      return {
+        bannerText: banner?.innerText || '',
+        notesText: notes?.innerText || '',
+      };
+    })()`);
+    await ev(`delete window.__MOCK_MAPS_LINKS_OVERRIDE`);
+
+    record(
+      'TC-MAPS-PARTIAL-URL-TOO-LONG',
+      'Partial status with url_too_long explains URL limit and NEVER says "thiếu toạ độ"',
+      !urlTooLongPartial.bannerText.includes('thiếu toạ độ') &&
+        (urlTooLongPartial.bannerText.includes('vượt quá giới hạn') ||
+          urlTooLongPartial.bannerText.includes('độ dài liên kết')) &&
+        urlTooLongPartial.notesText.includes('SYNTHETIC: address exceeds URL limit'),
+      `Banner: "${urlTooLongPartial.bannerText.slice(0, 70)}...", Notes: "${urlTooLongPartial.notesText}"`
+    );
+
     // -------------------------------------------------------------
-    // Test 11: Unavailable Status Rendering
+    // Test 11: Unavailable Status Rendering & url_too_long (M2)
     // -------------------------------------------------------------
-    console.log('\n--- Test 11: Unavailable Status Rendering ---');
+    console.log('\n--- Test 11: Unavailable Status & url_too_long (M2) ---');
     await ev(`window.__MOCK_MAPS_CASE = 'unavailable'`);
     await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
     await sleep(200);
@@ -680,81 +812,508 @@ async function run() {
       `Links count: ${unavailableStatus.linksCount}`
     );
 
-    // Clear mock case
-    await ev(`delete window.__MOCK_MAPS_CASE`);
-
-    // -------------------------------------------------------------
-    // Test 12: Stale Responses & Session Reset Guard
-    // -------------------------------------------------------------
-    console.log('\n--- Test 12: Stale Responses & Session Reset Guard ---');
-    // Verify delayed response does not overwrite active mode
+    // M2: Unavailable caused by url_too_long
     await ev(`(() => {
-      // Restore single walking
-      window.__MOCK_MAPS_CASE = 'single_walking';
+      delete window.__MOCK_MAPS_CASE;
+      window.__MOCK_MAPS_LINKS_OVERRIDE = {
+        status: 'unavailable',
+        links: [],
+        skipped: [
+          { stop_order: 1, venue_id: 'SYN-001', reason: 'url_too_long' }
+        ],
+        notes: ['SYNTHETIC: entire route exceeds URL limit']
+      };
     })()`);
     await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
     await sleep(200);
     await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
     await sleep(400);
 
-    const restoredHref = await ev(`document.querySelector('a[data-primary-maps-link]')?.getAttribute('href')`);
+    const urlTooLongUnavailable = await ev(`(() => {
+      const banner = document.querySelector('[data-maps-status="unavailable"]');
+      const notes = document.querySelector('[data-maps-server-notes]');
+      return {
+        bannerText: banner?.innerText || '',
+        notesText: notes?.innerText || '',
+      };
+    })()`);
+    await ev(`delete window.__MOCK_MAPS_LINKS_OVERRIDE`);
+
     record(
-      'TC-MAPS-STALE-GUARD',
-      'Generation guard preserves active mode without stale overwrite',
-      restoredHref?.includes('travelmode=walking'),
-      `Href travelmode: ${restoredHref}`
+      'TC-MAPS-UNAVAILABLE-URL-TOO-LONG',
+      'Unavailable status with url_too_long explains URL limit and NEVER says "thiếu toạ độ"',
+      !urlTooLongUnavailable.bannerText.includes('thiếu toạ độ') &&
+        urlTooLongUnavailable.bannerText.includes('giới hạn độ dài liên kết') &&
+        urlTooLongUnavailable.notesText.includes('SYNTHETIC: entire route exceeds URL limit'),
+      `Banner: "${urlTooLongUnavailable.bannerText.slice(0, 70)}..."`
     );
 
-    // Reset session
+    // Clear mock case
+    await ev(`delete window.__MOCK_MAPS_CASE`);
+
+    // -------------------------------------------------------------
+    // Test 12: Hostile Response Probes & Strict URL Allowlist (H1)
+    // -------------------------------------------------------------
+    console.log('\n--- Test 12: Hostile Response Probes & Strict URL Allowlist (H1) ---');
+    const hostileProbes = [
+      { name: 'evil_domain', url: 'https://evil.example/maps/dir/?api=1' },
+      { name: 'insecure_http', url: 'http://www.google.com/maps/dir/?api=1' },
+      { name: 'domain_lookalike', url: 'https://www.google.com.evil.example/maps/dir/' },
+      { name: 'invalid_pathname', url: 'https://www.google.com/other/' },
+      { name: 'hostile_credentials', url: 'https://user:pass@www.google.com/maps/dir/?api=1' },
+      { name: 'non_default_port', url: 'https://www.google.com:8443/maps/dir/?api=1' },
+    ];
+
+    for (const probe of hostileProbes) {
+      await ev(`(() => {
+        window.__MOCK_MAPS_LINKS_OVERRIDE = {
+          status: 'ok',
+          links: [{ index: 1, of: 1, url: '${probe.url}' }],
+          notes: []
+        };
+      })()`);
+      await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+      await sleep(200);
+      await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+      await sleep(400);
+
+      const hostileResult = await ev(`(() => {
+        const anchors = Array.from(document.querySelectorAll('a[data-maps-link], a[data-primary-maps-link]'));
+        const disclosure = document.querySelector('[data-maps-rejected-disclosure]');
+        const unavailableBanner = document.querySelector('[data-maps-status="unavailable"]');
+        return {
+          anchorCount: anchors.length,
+          hasDisclosure: !!disclosure && disclosure.innerText.includes('Một liên kết không hợp lệ đã bị bỏ qua'),
+          isUnavailable: !!unavailableBanner,
+        };
+      })()`);
+      await ev(`delete window.__MOCK_MAPS_LINKS_OVERRIDE`);
+
+      record(
+        `TC-MAPS-HOSTILE-${probe.name.toUpperCase()}`,
+        `Hostile URL (${probe.url}) rejected, disclosed, and treated as unavailable (0 anchors rendered)`,
+        hostileResult.anchorCount === 0 && hostileResult.hasDisclosure && hostileResult.isUnavailable,
+        `Anchors: ${hostileResult.anchorCount}, Disclosure: ${hostileResult.hasDisclosure}, Unavailable: ${hostileResult.isUnavailable}`
+      );
+    }
+
+    // Hostile split response: 1 hostile link, 1 valid link
+    const validGoogleDirUrl = 'https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&travelmode=walking';
     await ev(`(() => {
-      // Click reset in header or call reset
+      window.__MOCK_MAPS_LINKS_OVERRIDE = {
+        status: 'ok',
+        links: [
+          { index: 1, of: 2, url: 'https://evil.example/maps/dir/?api=1', from_stop: null, to_stop: 1 },
+          { index: 2, of: 2, url: '${validGoogleDirUrl}', from_stop: 1, to_stop: 2 }
+        ],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+    await sleep(400);
+
+    const splitMixedResult = await ev(`(() => {
+      const anchors = Array.from(document.querySelectorAll('a[data-maps-link]'));
+      const disclosure = document.querySelector('[data-maps-rejected-disclosure]');
+      const hrefs = anchors.map(a => a.getAttribute('href'));
+      return {
+        anchorCount: anchors.length,
+        hasDisclosure: !!disclosure && disclosure.innerText.includes('Một liên kết không hợp lệ đã bị bỏ qua'),
+        hasEvil: hrefs.some(h => h.includes('evil.example')),
+        hasValid: hrefs.includes('${validGoogleDirUrl}'),
+      };
+    })()`);
+    await ev(`delete window.__MOCK_MAPS_LINKS_OVERRIDE`);
+
+    record(
+      'TC-MAPS-HOSTILE-SPLIT-MIXED',
+      'Split response with 1 hostile and 1 valid link renders valid verbatim and discloses rejected',
+      splitMixedResult.anchorCount === 1 &&
+        splitMixedResult.hasDisclosure &&
+        !splitMixedResult.hasEvil &&
+        splitMixedResult.hasValid,
+      `Anchors: ${splitMixedResult.anchorCount}, hasEvil: ${splitMixedResult.hasEvil}, hasValid: ${splitMixedResult.hasValid}`
+    );
+
+    // Hostile split response where ALL links are hostile
+    await ev(`(() => {
+      window.__MOCK_MAPS_LINKS_OVERRIDE = {
+        status: 'ok',
+        links: [
+          { index: 1, of: 2, url: 'https://evil.example/maps/dir/?api=1' },
+          { index: 2, of: 2, url: 'https://www.google.com.evil.example/maps/dir/' }
+        ],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+    await sleep(400);
+
+    const splitAllHostileResult = await ev(`(() => {
+      const anchors = Array.from(document.querySelectorAll('a[data-maps-link]'));
+      const disclosure = document.querySelector('[data-maps-rejected-disclosure]');
+      const unavailable = document.querySelector('[data-maps-status="unavailable"]');
+      return {
+        anchorCount: anchors.length,
+        hasDisclosure: !!disclosure && disclosure.innerText.includes('Một liên kết không hợp lệ đã bị bỏ qua'),
+        isUnavailable: !!unavailable,
+      };
+    })()`);
+    await ev(`delete window.__MOCK_MAPS_LINKS_OVERRIDE`);
+
+    record(
+      'TC-MAPS-HOSTILE-SPLIT-ALL',
+      'Split response where ALL links are hostile treats block as unavailable with 0 anchors',
+      splitAllHostileResult.anchorCount === 0 &&
+        splitAllHostileResult.hasDisclosure &&
+        splitAllHostileResult.isUnavailable,
+      `Anchors: ${splitAllHostileResult.anchorCount}, Unavailable: ${splitAllHostileResult.isUnavailable}`
+    );
+
+    // -------------------------------------------------------------
+    // Test 13: StatusQueue Error Banner, Persistent Failure & Retry Loop Guard (M1)
+    // -------------------------------------------------------------
+    console.log('\n--- Test 13: StatusQueue Error Banner, Stable Callbacks & Retry Loop Guard (M1) ---');
+    // Reset fetch count and inject persistent error
+    await ev(`(() => {
+      window.__MAPS_FETCH_COUNT = 0;
+      window.__MOCK_PERSISTENT_MAPS_LINKS_ERROR = { message: 'SYNTHETIC failure: server network error' };
+    })()`);
+
+    // Click driving toggle to initiate request
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(350);
+
+    // Check error banner visible and fetch count is exactly 1
+    const initialErrorState = await ev(`(() => {
+      const banner = document.querySelector('[role="alert"]');
+      const retryBtn = document.querySelector('[data-testid="banner-action-btn"]');
+      const rect = retryBtn ? retryBtn.getBoundingClientRect() : null;
+      return {
+        hasBanner: !!banner && banner.innerText.includes('Không thể tạo liên kết bản đồ'),
+        hasRetryBtn: !!retryBtn && retryBtn.innerText.includes('Thử lại'),
+        retryBtnTag: retryBtn?.tagName,
+        btnWidth: rect?.width || 0,
+        btnHeight: rect?.height || 0,
+        fetchCount: window.__MAPS_FETCH_COUNT,
+      };
+    })()`);
+
+    record(
+      'TC-MAPS-ERROR-BANNER-VISIBLE',
+      'Error banner is displayed with role="alert" and message upon failure',
+      initialErrorState.hasBanner && initialErrorState.fetchCount === 1,
+      `Banner present: ${initialErrorState.hasBanner}, fetch count: ${initialErrorState.fetchCount}`
+    );
+
+    record(
+      'TC-MAPS-RETRY-BTN-ATTRS',
+      'Retry button is an actual HTML button with label "Thử lại" and >= 44px touch targets',
+      initialErrorState.hasRetryBtn &&
+        initialErrorState.retryBtnTag === 'BUTTON' &&
+        initialErrorState.btnWidth >= 44 &&
+        initialErrorState.btnHeight >= 44,
+      `Tag: ${initialErrorState.retryBtnTag}, size: ${initialErrorState.btnWidth}x${initialErrorState.btnHeight}px`
+    );
+
+    // Verify persistent failure does NOT loop automatically: wait 400ms and check request count remains 1
+    await sleep(400);
+    const countAfterIdle = await ev(`window.__MAPS_FETCH_COUNT`);
+    record(
+      'TC-MAPS-NO-AUTO-RETRY-LOOP',
+      'Persistent backend failure does NOT loop or refetch automatically (fetch count remains 1)',
+      countAfterIdle === 1,
+      `Fetch count after 400ms idle: ${countAfterIdle}`
+    );
+
+    // User clicks retry while error is still persistent: count should increment to 2 and stop (no loop)
+    await ev(`document.querySelector('[data-testid="banner-action-btn"]')?.click()`);
+    await sleep(350);
+    const countAfterFirstRetry = await ev(`window.__MAPS_FETCH_COUNT`);
+    const bannerAfterFirstRetry = await ev(`!!document.querySelector('[role="alert"]')`);
+
+    record(
+      'TC-MAPS-RETRY-PERSISTENT-STABLE',
+      'User retry increments fetch count by 1 (to 2) and remains stably failed without looping',
+      countAfterFirstRetry === 2 && bannerAfterFirstRetry,
+      `Fetch count after retry: ${countAfterFirstRetry}, Banner still present: ${bannerAfterFirstRetry}`
+    );
+
+    // Now resolve persistent error, click retry again, and verify recovery
+    await ev(`(() => {
+      window.__MOCK_PERSISTENT_MAPS_LINKS_ERROR = null;
+      window.__MOCK_NEXT_MAPS_LINKS = {
+        status: 'ok',
+        links: [
+          {
+            index: 1,
+            of: 1,
+            url: '${validGoogleDirUrl}'
+          }
+        ],
+        notes: []
+      };
+    })()`);
+
+    await ev(`document.querySelector('[data-testid="banner-action-btn"]')?.click()`);
+    await sleep(350);
+
+    const recoveryState = await ev(`(() => {
+      const banner = document.querySelector('[role="alert"]');
+      const link = document.querySelector('a[data-primary-maps-link], a[data-maps-link]');
+      return {
+        bannerDismissed: !banner,
+        hasLink: !!link,
+        finalCount: window.__MAPS_FETCH_COUNT,
+      };
+    })()`);
+
+    record(
+      'TC-MAPS-RETRY-RECOVERY',
+      'Successful retry dismisses error banner and renders links (final fetch count: 3)',
+      recoveryState.bannerDismissed && recoveryState.hasLink && recoveryState.finalCount === 3,
+      `Banner dismissed: ${recoveryState.bannerDismissed}, Link present: ${recoveryState.hasLink}, Count: ${recoveryState.finalCount}`
+    );
+
+    // -------------------------------------------------------------
+    // Test 14: Asynchronous Races & In-Flight Generation Guards (M3)
+    // -------------------------------------------------------------
+    console.log('\n--- Test 14: Asynchronous Races & In-Flight Generation Guards (M3) ---');
+    // Race 1: Older delayed success resolving after newer success
+    // Request 1 (walking): delay 600ms, returning walking
+    // Request 2 (driving): delay 50ms, returning driving
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 600;
+      window.__MOCK_NEXT_MAPS_LINKS = {
+        status: 'ok',
+        links: [{ index: 1, of: 1, url: 'https://www.google.com/maps/dir/?api=1&origin=21.0,105.8&destination=21.1,105.9&travelmode=walking' }],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+
+    // Immediate switch to driving after 50ms with 50ms delay
+    await sleep(50);
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 50;
+      window.__MOCK_NEXT_MAPS_LINKS = {
+        status: 'ok',
+        links: [{ index: 1, of: 1, url: 'https://www.google.com/maps/dir/?api=1&origin=21.0,105.8&destination=21.1,105.9&travelmode=driving' }],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+
+    // Wait 200ms: driving request should have resolved and rendered driving link
+    await sleep(200);
+    const midRaceHref = await ev(`document.querySelector('a[data-primary-maps-link], a[data-maps-link]')?.getAttribute('href')`);
+
+    // Wait until 750ms so older 600ms walking request has finished
+    await sleep(550);
+    const postRaceHref = await ev(`document.querySelector('a[data-primary-maps-link], a[data-maps-link]')?.getAttribute('href')`);
+
+    record(
+      'TC-MAPS-RACE-OLDER-SUCCESS',
+      'Delayed older success (600ms) does NOT overwrite newer active mode (driving)',
+      midRaceHref?.includes('travelmode=driving') && postRaceHref?.includes('travelmode=driving'),
+      `Mid-race: ${midRaceHref?.includes('travelmode=driving')}, Post-race: ${postRaceHref?.includes('travelmode=driving')}`
+    );
+
+    // Race 2: Older delayed error resolving after newer success
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 600;
+      window.__MOCK_NEXT_MAPS_LINKS_ERROR = { message: 'Delayed error that should be discarded' };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+
+    await sleep(50);
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 50;
+      window.__MOCK_NEXT_MAPS_LINKS = {
+        status: 'ok',
+        links: [{ index: 1, of: 1, url: '${validGoogleDirUrl}' }],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+
+    // Wait for fast success, then wait for slow error to finish
+    await sleep(750);
+    const postRaceErrorState = await ev(`(() => {
+      const banner = document.querySelector('[role="alert"]');
+      const link = document.querySelector('a[data-primary-maps-link], a[data-maps-link]');
+      return {
+        hasErrorBanner: !!banner,
+        hasLink: !!link,
+      };
+    })()`);
+
+    record(
+      'TC-MAPS-RACE-OLDER-ERROR',
+      'Delayed older error (600ms) does NOT show error banner over newer success',
+      !postRaceErrorState.hasErrorBanner && postRaceErrorState.hasLink,
+      `Error banner shown: ${postRaceErrorState.hasErrorBanner}, Link shown: ${postRaceErrorState.hasLink}`
+    );
+
+    // Race 3: In-flight request resolving after session reset
+    await ev(`(() => {
+      window.__MOCK_NEXT_MAPS_DELAY_MS = 600;
+      window.__MOCK_NEXT_MAPS_LINKS = {
+        status: 'ok',
+        links: [{ index: 1, of: 1, url: '${validGoogleDirUrl}' }],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+    await sleep(100);
+
+    // Click Reset session in UI
+    await ev(`(() => {
       const resetBtn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Tạo mới') || b.innerText.includes('Làm mới'));
       if (resetBtn) resetBtn.click();
     })()`);
-    await sleep(500);
+    await sleep(200);
 
-    // After reset, no tour -> maps block hidden
-    const mapsBlockAfterReset = await ev(`!!document.querySelector('[data-maps-links-block]')`);
+    // Verify maps block is hidden immediately on reset
+    const immediateResetHidden = await ev(`!document.querySelector('[data-maps-links-block]')`);
+
+    // Wait until 600ms request finishes
+    await sleep(600);
+    const postResetBlockState = await ev(`(() => {
+      const block = document.querySelector('[data-maps-links-block]');
+      const banner = document.querySelector('[role="alert"]');
+      return {
+        blockHidden: !block,
+        noBanner: !banner,
+      };
+    })()`);
+
     record(
-      'TC-MAPS-RESET-SESSION',
-      'Maps block resets and hides when session is reset',
-      mapsBlockAfterReset === false,
-      'Reset confirmed'
+      'TC-MAPS-RACE-RESET-INFLIGHT',
+      'In-flight request resolving after session reset does NOT render stale link or banner',
+      immediateResetHidden && postResetBlockState.blockHidden && postResetBlockState.noBanner,
+      `Immediate hidden: ${immediateResetHidden}, Post-delay hidden: ${postResetBlockState.blockHidden}`
     );
 
     // -------------------------------------------------------------
-    // Test 13: Mutation Proofs (rel removed => fail; swap order => fail)
+    // Test 15: Real Application Mutation Proofs (M3)
     // -------------------------------------------------------------
-    console.log('\n--- Test 13: Mutation Proofs ---');
-
-    // Mutation 1: remove rel="noopener noreferrer" must be detected and fail
-    function verifyRelPresent(linkElementStr) {
-      return linkElementStr.includes('rel="noopener noreferrer"');
+    console.log('\n--- Test 15: Real Application Mutation Proofs (M3) ---');
+    // Re-plan tour so maps block is mounted and active
+    await ev(`document.querySelector('[data-suggestion-chip]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-plan-tour-button]')?.click()`);
+    for (let i = 0; i < 40; i++) {
+      await sleep(200);
+      const ready = await ev(`!!document.querySelector('[data-maps-links-block]') && !document.querySelector('[data-maps-loading]')`);
+      if (ready) break;
     }
-    const mutatedLinkNoRel = '<a href="https://www.google.com/maps/dir/?api=1" target="_blank">Maps</a>';
-    const mutationRelDetected = !verifyRelPresent(mutatedLinkNoRel);
+
+    // Suite Acceptance Predicate 1: rel="noopener noreferrer" and target="_blank"
+    const relPredicate = (el) => el?.rel === 'noopener noreferrer' && el?.target === '_blank';
+
+    // Normal DOM evaluation
+    const initialDomRel = await ev(`(() => {
+      const l = document.querySelector('a[data-maps-link], a[data-primary-maps-link]');
+      return { rel: l?.getAttribute('rel'), target: l?.getAttribute('target') };
+    })()`);
+    const relNormallyPasses = relPredicate(initialDomRel);
+
+    // Real DOM mutation: remove rel attribute from actual rendered anchor
+    await ev(`document.querySelector('a[data-maps-link], a[data-primary-maps-link]')?.removeAttribute('rel')`);
+    const mutatedDomRel = await ev(`(() => {
+      const l = document.querySelector('a[data-maps-link], a[data-primary-maps-link]');
+      return { rel: l?.getAttribute('rel'), target: l?.getAttribute('target') };
+    })()`);
+    const relMutationFails = !relPredicate(mutatedDomRel);
+
+    // Restore rel attribute
+    await ev(`document.querySelector('a[data-maps-link], a[data-primary-maps-link]')?.setAttribute('rel', 'noopener noreferrer')`);
+
     record(
       'TC-MAPS-MUTATION-REL',
-      'Mutation proof: removal of rel="noopener noreferrer" detected as failure',
-      mutationRelDetected === true,
-      'Mutation caught successfully'
+      'Real application rel mutation: removing rel from DOM link causes acceptance predicate to FAIL',
+      relNormallyPasses && relMutationFails,
+      `Normal: ${relNormallyPasses}, Mutated caught: ${relMutationFails}`
     );
 
-    // Mutation 2: swap waypoint order must be detected and fail
-    function verifyWaypointOrder(urlStr, expectedFirst, expectedSecond) {
-      const idx1 = urlStr.indexOf(expectedFirst);
-      const idx2 = urlStr.indexOf(expectedSecond);
-      return idx1 !== -1 && idx2 !== -1 && idx1 < idx2;
+    // Suite Acceptance Predicate 2: Waypoint sequence order equals stop order
+    function orderPredicate(urlStr, expectedFirst, expectedSecond) {
+      if (!urlStr) return false;
+      try {
+        const u = new URL(urlStr);
+        const p = u.searchParams.get('waypoints');
+        if (!p) return false;
+        const wps = p.split('|').map(decodeURIComponent);
+        return wps.length === 2 && wps[0] === expectedFirst && wps[1] === expectedSecond;
+      } catch (_) {
+        return false;
+      }
     }
-    const originalUrl = 'https://www.google.com/maps/dir/?api=1&waypoints=21.001%7C21.002';
-    const mutatedUrlSwapped = 'https://www.google.com/maps/dir/?api=1&waypoints=21.002%7C21.001';
-    const orderOriginalOk = verifyWaypointOrder(originalUrl, '21.001', '21.002');
-    const orderMutatedFailed = !verifyWaypointOrder(mutatedUrlSwapped, '21.001', '21.002');
+
+    const currentUrl = await ev(`document.querySelector('a[data-maps-link], a[data-primary-maps-link]')?.getAttribute('href')`);
+    const orderNormallyPasses = orderPredicate(currentUrl, '21.001000,105.850000', '21.002000,105.850000');
+
+    // Real Application Reorder Mutation: inject reversed waypoints response into app
+    await ev(`(() => {
+      window.__MOCK_MAPS_LINKS_OVERRIDE = {
+        status: 'ok',
+        links: [
+          {
+            index: 1,
+            of: 1,
+            url: 'https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=21.002000%2C105.850000%7C21.001000%2C105.850000&travelmode=walking'
+          }
+        ],
+        notes: []
+      };
+    })()`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+    await sleep(400);
+
+    const mutatedReorderedUrl = await ev(`document.querySelector('a[data-maps-link], a[data-primary-maps-link]')?.getAttribute('href')`);
+    await ev(`delete window.__MOCK_MAPS_LINKS_OVERRIDE`);
+    const orderMutationFails = !orderPredicate(mutatedReorderedUrl, '21.001000,105.850000', '21.002000,105.850000');
+
     record(
       'TC-MAPS-MUTATION-ORDER',
-      'Mutation proof: swapped waypoint order detected as failure',
-      orderOriginalOk && orderMutatedFailed,
-      'Mutation caught successfully'
+      'Real application order mutation: swapped waypoints cause exact order acceptance predicate to FAIL',
+      orderNormallyPasses && orderMutationFails,
+      `Normal: ${orderNormallyPasses}, Swapped caught: ${orderMutationFails}`
+    );
+
+    // Restore normal fixture
+    await ev(`delete window.__MOCK_NEXT_MAPS_LINKS`);
+    await ev(`document.querySelector('[data-testid="toggle-driving"]')?.click()`);
+    await sleep(200);
+    await ev(`document.querySelector('[data-testid="toggle-walking"]')?.click()`);
+    await sleep(400);
+
+    // Suite Acceptance Predicate 3: Disclaimer presence and text
+    const disclaimerPredicate = (text) =>
+      typeof text === 'string' &&
+      text.includes('Links contain the origin/venue coordinates') &&
+      text.includes('Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác');
+
+    const initialDiscText = await ev(`document.querySelector('[data-maps-disclaimer]')?.innerText || ''`);
+    const discNormallyPasses = disclaimerPredicate(initialDiscText);
+
+    // Real DOM mutation: remove disclaimer block from actual rendered component
+    await ev(`document.querySelector('[data-maps-disclaimer]')?.remove()`);
+    const mutatedDiscText = await ev(`document.querySelector('[data-maps-disclaimer]')?.innerText || ''`);
+    const discMutationFails = !disclaimerPredicate(mutatedDiscText);
+
+    record(
+      'TC-MAPS-MUTATION-DISCLAIMER',
+      'Real application disclaimer mutation: dropping disclaimer causes acceptance predicate to FAIL',
+      discNormallyPasses && discMutationFails,
+      `Normal: ${discNormallyPasses}, Dropped caught: ${discMutationFails}`
     );
 
     console.log('\n===============================================================');

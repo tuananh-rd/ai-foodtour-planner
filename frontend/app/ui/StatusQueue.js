@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, useMemo, useCallback } from 'react';
 
 const PRIORITY_MAP = {
   error: 30,
@@ -118,15 +118,19 @@ export function StatusQueueProvider({ children, manager = globalStatusQueue }) {
     return unsubscribe;
   }, [manager]);
 
+  const enqueue = useCallback((item) => manager.enqueue(item), [manager]);
+  const dismiss = useCallback((id) => manager.dismiss(id), [manager]);
+  const clear = useCallback(() => manager.clear(), [manager]);
+
   const value = useMemo(
     () => ({
       activeBanner,
-      enqueue: (item) => manager.enqueue(item),
-      dismiss: (id) => manager.dismiss(id),
-      clear: () => manager.clear(),
+      enqueue,
+      dismiss,
+      clear,
       queueCount,
     }),
-    [activeBanner, queueCount, manager]
+    [activeBanner, queueCount, enqueue, dismiss, clear]
   );
 
   return (
