@@ -45,11 +45,14 @@ def parse_refs(text: str, folded: str) -> list:
     for m in re.finditer(r"(?<![A-Za-zÀ-ỹ])([A-E])(?![A-Za-zÀ-ỹ])", text):
         if m.group(1) not in refs:
             refs.append(m.group(1))
-    for m in re.finditer(r"(?:quan|cai|diem|cho)\s+thu\s+(nhat|hai|ba|bon|tu|nam|\d)\b", folded):
-        refs.append(str(ORD[m.group(1)]))
-    for m in re.finditer(r"(?:^|\s)(?:thu)\s+(nhat|hai|ba|bon|nam|\d)\b", folded):
-        if len(folded.split()) <= 6 and str(ORD[m.group(1)]) not in refs:
-            refs.append(str(ORD[m.group(1)]))
+    def num(w: str) -> str:
+        return str(ORD[w]) if w in ORD else str(int(w))
+
+    for m in re.finditer(r"(?:quan|cai|diem|cho)\s+thu\s+(nhat|hai|ba|bon|tu|nam|\d{1,2})\b", folded):
+        refs.append(num(m.group(1)))
+    for m in re.finditer(r"(?:^|\s)(?:thu)\s+(nhat|hai|ba|bon|nam|\d{1,2})\b", folded):
+        if len(folded.split()) <= 6 and num(m.group(1)) not in refs:
+            refs.append(num(m.group(1)))
     if re.search(r"(?:quan|cai|diem)\s+(?:dau tien|dau)\b|\bcai (?:dau|nhat)\b|\bdau tien\b", folded):
         refs.append("1")
     if re.search(r"(?:quan|cai|diem)\s+(?:cuoi cung|cuoi)\b|\bcuoi cung\b", folded):

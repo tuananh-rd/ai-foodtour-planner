@@ -78,3 +78,48 @@ class HardPreferences(unittest.TestCase):
         self.assertNotEqual(t.status, "verified_feasible")
         self.assertIn(t.status, ("insufficient_evidence", "no_solution"))
         self.assertEqual(t.stops, ())
+
+
+class AfterPlan(unittest.TestCase):
+    def setUp(self):
+        from app.chat.engine import ChatEngine
+        from app.chat.state import ChatState
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        self.eng = ChatEngine(data.venues)
+        self.by = {v.id: v for v in data.venues}
+        st, pr = ChatState(), Preferences()
+        for kw in ({"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán chè"}, {"text": "Thêm A"},
+                   {"text": "tìm quán phở"}, {"text": "Thêm B"}, {"text": "tạo lịch đi"}, {"text": "16 giờ đến 16 giờ 50, đi bộ"}):
+            r = self.eng.handle(st, pr, **kw)
+            st, pr = r.state, r.prefs
+        self.st, self.pr = st, pr
+
+    def test_conflict_offers_options_and_never_changes_silently(self):
+        from app.planner.types import Tour
+        before = self.st.to_json()["profile"]["max_leg_min"]
+        tour = Tour("no_solution", reasons=("Không đủ thời gian",), proposed_changes=("x",))
+        blocks = self.eng.after_plan(self.st, tour)
+        clar = next(b for b in blocks if b["type"] == "clarify")
+        self.assertTrue(any(o["option_id"].startswith("drop:") for o in clar["options"]))
+        self.assertEqual(self.st.to_json()["profile"]["max_leg_min"], before)
+        self.assertEqual(self.st.pending.kind, "clarify_intent")
+        r = self.eng.handle(self.st, self.pr, action={"type": "pick_option", "option_id": "vehicle:motorbike"})
+        self.assertEqual(r.state.profile["vehicle"].value, "motorbike")
+        self.assertEqual(r.state.pending.kind, "confirm_plan")  # re-confirmation required
+        self.assertIsNone(r.plan_request)
+
+    def test_success_text_is_honest(self):
+        from app.chat.planning import plan_selected
+        pr = self.eng._to_prefs(self.st, self.pr)
+        pr = Preferences(origin=pr.origin, start_time_min=16 * 60, duration_min=240)
+        t = plan_selected(self.by, [s.venue_id for s in self.st.shortlist], pr, StraightLineEstimator())
+        txt = " ".join(b.get("text", "") for b in self.eng.after_plan(self.st, t))
+        self.assertIn("chưa được xác minh", txt)
+        self.assertNotIn("đang mở", txt)
+
+    def test_modify_plan_requests_a_replacement_only_after_planning(self):
+        r = self.eng.handle(self.st, self.pr, text="đổi quán thứ hai trong tour")
+        self.assertIsNone(r.replace_request)
+        self.st.phase = "planned"
+        r = self.eng.handle(self.st, self.pr, text="đổi quán thứ hai trong tour")
+        self.assertEqual(r.replace_request, {"refs": ["2"]})
