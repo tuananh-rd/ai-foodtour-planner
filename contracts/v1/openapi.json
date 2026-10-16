@@ -324,6 +324,9 @@
             "title": "Llm Provider",
             "type": "string"
           },
+          "ranking": {
+            "$ref": "#/components/schemas/RankingHealth"
+          },
           "routing": {
             "enum": [
               "straight_line_estimate",
@@ -366,6 +369,7 @@
           }
         },
         "required": [
+          "ranking",
           "status",
           "dataset_loaded",
           "llm",
@@ -849,6 +853,22 @@
       "PreferencesSchema": {
         "additionalProperties": false,
         "properties": {
+          "audience": {
+            "anyOf": [
+              {
+                "enum": [
+                  "solo",
+                  "friends",
+                  "family"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience"
+          },
           "budget_scope": {
             "anyOf": [
               {
@@ -917,6 +937,24 @@
             "minimum": 1.0,
             "title": "Max Stops",
             "type": "integer"
+          },
+          "meal": {
+            "anyOf": [
+              {
+                "enum": [
+                  "breakfast",
+                  "lunch",
+                  "snack",
+                  "dinner",
+                  "late"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Meal"
           },
           "mode": {
             "default": "explore",
@@ -1087,6 +1125,21 @@
           "sent_to_google"
         ],
         "title": "PrivacyConfig",
+        "type": "object"
+      },
+      "RankingHealth": {
+        "additionalProperties": false,
+        "properties": {
+          "quality_weight": {
+            "minimum": 0.0,
+            "title": "Quality Weight",
+            "type": "number"
+          }
+        },
+        "required": [
+          "quality_weight"
+        ],
+        "title": "RankingHealth",
         "type": "object"
       },
       "Rating": {
@@ -1421,6 +1474,13 @@
           "venue_id": {
             "title": "Venue Id",
             "type": "string"
+          },
+          "why": {
+            "items": {
+              "$ref": "#/components/schemas/WhyReason"
+            },
+            "title": "Why",
+            "type": "array"
           }
         },
         "required": [
@@ -2000,6 +2060,33 @@
           "dataset_version"
         ],
         "title": "VenueView",
+        "type": "object"
+      },
+      "WhyReason": {
+        "additionalProperties": false,
+        "properties": {
+          "code": {
+            "enum": [
+              "match_interest",
+              "near_origin",
+              "short_walk",
+              "well_rated",
+              "fits_meal",
+              "diverse"
+            ],
+            "title": "Code",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "text"
+        ],
+        "title": "WhyReason",
         "type": "object"
       }
     }

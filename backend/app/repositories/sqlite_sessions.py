@@ -30,8 +30,9 @@ class SQLiteSessionStore:
     check_revision = staticmethod(SessionStore.check_revision)
 
     def __init__(self, path, venues, routing, ttl_seconds=3600, max_sessions=256,
-                 rate_limit=60, rate_window=60, clock=time.time, timeout=0.2):
+                 rate_limit=60, rate_window=60, clock=time.time, timeout=0.2, quality_weight=1.0):
         self.path = Path(path)
+        self.quality_weight = quality_weight
         self.venues, self.routing = venues, routing
         self.ttl_seconds, self.max_sessions = ttl_seconds, max_sessions
         self.clock, self.timeout = clock, timeout
@@ -102,7 +103,7 @@ class SQLiteSessionStore:
         stops = record['stops']
         if not stops:
             # Failure diagnoses are regenerated; never persist free-form venue text.
-            session.tour = engine.plan_tour(data.venues, prefs, self.routing)
+            session.tour = engine.plan_tour(data.venues, prefs, self.routing, quality_weight=self.quality_weight)
             return session
         if any(set(s) != {'venue_id', 'order'} or type(s['order']) is not int for s in stops):
             raise ValueError('invalid stops')
