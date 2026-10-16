@@ -95,3 +95,10 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C6d (Codex): heldout5 blind 68.6% (safe 89.5%, 4 dangerous: quoted drafts, sarcasm, bé→taxi) | Codex | DONE → Claude fixed (a8b8716, dev 83/105) | |
 | C6e heldout6 blind (last gate) + final engine verdict | Codex | In progress | ctx_a001c39e9e68; acceptance dangerous=0 AND (acc ≥85% OR safe ≥92%) |
 | C6e (Codex): heldout6 blind 74.8% (safe 80.7%, dangerous 2 = audience=solo from "một người" budgets, FIXED 9ed482f); all prior dangerous patterns fixed; engine decision at review time REQUEST CHANGES for the accuracy gate only | Codex | DONE | blind first-run accuracies across 5 independent sets: 84 / 77 / 79 / 69 / 75 % (mean ≈ 77 %); each time Claude generalised the rules afterwards (dev 96–99 %) → **coordinator decision: accept with documented limitation** (rules-only blind accuracy ≈ 75–80 %, safe accuracy 80–90 %; mitigations: buttons are deterministic, plan only after explicit confirmation, allergy conservative, hedges/quotes/sarcasm never act, Gemini fallback when rules unsure) |
+
+### Gate đóng C6 (theo yêu cầu người dùng)
+| Bước | Owner | Trạng thái | Bằng chứng / điều kiện |
+|---|---|---|---|
+| Xác nhận Codex không còn task active | Orca | Đã xác nhận: C0-HF, C0-2, C1-API, C5-API, C2-DATA, C4, C6b, C6c, C6d, C6e đều settled; chỉ Antigravity C6a (`ctx_009b1107dab4`) đang active | `worker-list` |
+| **C6-final (Codex, độc lập)** | Codex | **Chưa dispatch — xếp hàng**: chỉ giao SAU khi C6a `worker_done` và Claude đã merge + chạy lại test, để không chạy song song khi frontend chưa ổn định, không tạo worker trùng | Phạm vi: review API↔frontend `/chat` thật (build production + backend thật, cổng 13000/18000), chạy acceptance E2E cuối (CH-01…12 + ADV trên UI), regression/security check, báo cáo `docs/reports/CODEX_C6_FINAL.md` + quyết định ACCEPT/REQUEST CHANGES |
+| Claude integration/full suite → đóng C6 | Claude | Sau C6-final ACCEPT | backend full suite + drift + e2e suites + báo cáo cuối |
