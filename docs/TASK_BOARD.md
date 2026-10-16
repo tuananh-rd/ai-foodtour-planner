@@ -1,13 +1,13 @@
-# Task board — phase 4 (Google Maps platform), Run run_95a2350b2712, see docs/PHASE4.md and docs/HANDOVER_P4.md
-worker_done is not an integrated product; evidence is Claude's re-run on the merged branch.
+# Task board — upgrade R0 + R1-lite (docs/UPGRADE_PLAN.md), Run run_6b3e047f1a69
+Defaults chốt: D1 UI_V2 sau cờ; D5 Gemini 18/ngày + giải thích template; D6 rating/review theo nguồn, trọng số nhỏ. D2/D3/D4/D7 hoãn.
 
 | ID | Owner | Status | Evidence |
 |---|---|---|---|
-| PH4-ARCH plan + contract v1.5 | Claude | DONE | docs/PHASE4.md, CONTRACT.md |
-| PH4-BE Routes/geocode/client-config/venue map | Codex | DONE, accepted | 3e6c0a3, 3e33c9c |
-| PH4-AI planner/Gemini origin trust | Claude | DONE | 2d55dc1, 1fc3880, ced11e9 |
-| PH4-QA black-box integration | Antigravity | DONE, accepted | 189df89 (162/162 re-run) |
-| PH4-FE Google Maps UI + fixes | Antigravity | ACCEPTED (merged through 6158034) | Claude re-run on production build: cold-bootstrap 15/15, component 15/15, browser 28/28, API 36/36; independent Codex closure be90b28. Real Google (keys) still unverified |
-| PH4-FINAL-VERIFY-FE | Codex | DONE | ab58162: N1-N4 closed, F1/F2 -> FIX-3 |
-| PH4-LAST-LOOK F1/F2 closure | Codex | DONE: MERGE | be90b28: TC-COLD-15 fails on 045db0e, strengthened TC-COLD-11 fails on b4f9c2b, no blocking regressions |
-| PH4-LIVE real Google smoke | Claude | BLOCKED: needs GOOGLE_MAPS_BROWSER_KEY + MAP_ID + GOOGLE_MAPS_SERVER_KEY | qa/live/google_smoke.py ready |
+| R0-1 contract v1.6 | Claude | DONE | 43f5fee (+ clarification) |
+| R0-2 CSV evidence fields | Codex | In progress | dispatch ctx_a6468868f5e6 (prompt unsent -> Enter -> Working) |
+| R0-3 LLM daily budget (Pacific reset) | Codex | In progress | same dispatch |
+| R0-4 rules-first + cache + llm_calls | Claude | DONE (module) | b7c89c3: 218 tests OK; wiring in main.py by Codex |
+| R0-5 quality/meal scoring + why[] | Claude | Queued (needs R0-2 Venue fields) | - |
+| R1-1 tokens + base UI components | Antigravity | In progress | dispatch ctx_ece0f501f38b (heartbeat phase=investigating) |
+| R1-5 itinerary-first screen (UI_V2) | Antigravity | Queued (after R0-5 merge) | - |
+| R1-9 black-box API QA v1.6 | Antigravity | Queued | - |
