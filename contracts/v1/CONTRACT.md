@@ -180,7 +180,7 @@ Each stop may carry a nested optional `venue` object (the venue evidence view ab
 `why: [{ "code": "match_interest"|"near_origin"|"short_walk"|"well_rated"|"fits_meal"|"diverse", "text": string }]` — text is generated from validated facts by templates (no LLM needed); `well_rated` appears only when `rating.count >= 20`.
 
 ### Preferences (additive)
-`meal: "breakfast"|"lunch"|"snack"|"dinner"|null` (defaults from `start_time`, user-editable, display + soft ranking only), `audience: "solo"|"friends"|"family"|null` (soft ranking only). Neither is a hard constraint and neither changes `validate_tour`.
+`meal: "breakfast"|"lunch"|"snack"|"dinner"|"late"|null` (`late` = after 22:00 / before 05:00; source label "Buổi khuya") (defaults from `start_time`, user-editable, display + soft ranking only), `audience: "solo"|"friends"|"family"|null` (soft ranking only). Neither is a hard constraint and neither changes `validate_tour`.
 
 ### `/v1/client-config` (additive)
 `"features": {"ui_v2": bool}` — from server env `FOODTOUR_UI_V2=1`; the frontend may also honour `?ui=v2` for development. When false the existing layout is shown (rollback switch).
