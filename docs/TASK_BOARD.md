@@ -31,6 +31,6 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R1-REVIEW frontend review of R1-5 | Codex | In progress | dispatch ctx_c41b51f063d7 (term_653be71d); Enter sent once for unsent draft |
 | R1-9 black-box API+UI QA v1.6 | Antigravity | In progress | reuse of a settled worker's terminal failed at agent_readiness (ctx_c30ca3f008c1, released/retained); fresh Antigravity worker ctx_d6bd5e161f9d (term_899cd8c8) turn observed |
 | R1-9 black-box QA v1.6 | Antigravity | DONE (report), 5de6950 | 48/48 own assertions; 3 loader discrepancies -> Codex R0-8 (dispatch ctx_d1710c046c37). Claude to re-run test_api_v16 on merged branch |
-| R1-5b fixes | Antigravity | Done, pending Codex re-review (ctx_3165c00bfc42) | 554a548: Claude re-ran test_ui_v2 23/23, components 24/24, ui_kit 11/11 on production scratch build |
+| R1-5b fixes | Antigravity | Codex re-review (7b97825): REQUEST CHANGES — F01,F03-F06,F08,F09 FIXED; F02 (evidence strip claims verification from object presence; price enum `verified_exact` not in API), F07 (global #pref-* 44px !important leaks into flag-off) NOT FIXED; new R2-N02 quick-answer sent but input not cleared (duplicate /messages) | R1-5c fix round queued after GMAPS-URL-2 (same worktree, one Antigravity worker at a time) |
 | GMAPS-URL-2 UI+QA | Antigravity | In progress | ctx_8460d9fdf320 |
 | R0-8 loader honesty/fixtures | Codex | DONE, accepted | a2a7607: Claude re-ran 283 tests OK, drift OK; planning 1702 venues 145->120 ms |
