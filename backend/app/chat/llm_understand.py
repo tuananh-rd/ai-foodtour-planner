@@ -207,4 +207,5 @@ class GeminiUnderstandingProvider:
 
     def understand(self, text: str, compact: dict, *, deadline_s: float) -> dict:
         user = json.dumps({"trang_thai": compact, "tin_nhan": text}, ensure_ascii=False)
-        return self.client.generate_json(UNDERSTAND_SYSTEM, user, response_schema(), deadline_s=deadline_s, max_output_tokens=300)
+        return self.client.generate_json(UNDERSTAND_SYSTEM, user, response_schema(), deadline_s=deadline_s, max_output_tokens=300,
+                                          retry=False)  # one call per turn: a transient error degrades to a clarification

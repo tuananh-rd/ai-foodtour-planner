@@ -72,7 +72,7 @@ class GeminiClient:
             raise
 
     def generate_json(self, system: str, user_text: str, schema: dict, *, deadline_s: float,
-                      max_output_tokens: int = 512) -> dict:
+                      max_output_tokens: int = 512, retry: bool = True) -> dict:
         if not self.configured:
             raise ProviderError("unavailable")
         body = {
@@ -96,7 +96,7 @@ class GeminiClient:
             # One retry only for a transient server error (e.g. overloaded); never for quota (429),
             # client errors, timeouts or bad bodies. The retry counts against the daily budget.
             remaining = end - time.monotonic()
-            if error.status not in TRANSIENT_STATUS or remaining < 1.5:
+            if not retry or error.status not in TRANSIENT_STATUS or remaining < 1.5:
                 raise
             time.sleep(0.5)
             try:

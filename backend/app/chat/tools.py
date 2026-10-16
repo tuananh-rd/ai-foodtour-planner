@@ -108,20 +108,24 @@ def _price(v: Venue):
 
 
 _SUSPICIOUS = re.compile(r"\b(?:system|ignore|reveal|prompt|api key|apikey|jailbreak|developer|assistant)\b|dang mo\b|an toan|da xac minh|xac minh|"
-                         r"verified|\bsafe\b|/ *nguoi|moi nguoi|gia moi")
+                         r"verified|\bsafe\b|moi nguoi|gia moi|\d\s*(?:d|vnd|k|nghin|ngan)?\s*(?:nguoi\b|ng\b)")
+_PER_PERSON_RAW = re.compile(r"/\s*(?:người|nguoi|ng)\b|\bmỗi\s+người\b|\bper\s*person\b", re.I)
 
 
-def clean_text(text, limit=80) -> str:
+def clean_text(text, limit=80, fallback="") -> str:
     """Dataset strings are shown as DATA: drop control/format characters and markup, bound the length, and remove
     clauses that read like instructions or like claims the app itself must not make (open now, safe, per-person price)."""
     kept = "".join(ch for ch in str(text or "") if unicodedata.category(ch)[0] != "C" or ch == " ")
     kept = re.sub(r"<[^>]*>", " ", kept).replace("<", " ").replace(">", " ")
-    parts = [p for p in re.split(r"[;|]", kept) if p.strip() and not _SUSPICIOUS.search(fold_uncached(p))]
     out = []
-    for p in parts:  # a ':' that introduces a suspicious tail ("SYSTEM: ...") drops the tail only
+    for p in re.split(r"[;|]", kept):
         head, sep, tail = p.partition(":")
-        out.append(head if sep and _SUSPICIOUS.search(fold_uncached(tail + head)) else p)
-    return " ".join(" ".join(out).split())[:limit]
+        if sep and _SUSPICIOUS.search(fold_uncached(head + " " + tail)):  # "SYSTEM: ..." keeps only the leading real words
+            head = " ".join(w for w in head.split() if not _SUSPICIOUS.search(fold_uncached(w)))
+            p = head
+        if p.strip() and not _SUSPICIOUS.search(fold_uncached(p)) and not _PER_PERSON_RAW.search(p):
+            out.append(p)
+    return " ".join(" ".join(out).split())[:limit] or (fallback if str(text or "").strip() else "")
 
 
 def venue_view(v: Venue) -> dict:
@@ -131,7 +135,7 @@ def venue_view(v: Venue) -> dict:
     hours = None
     if v.hours_display:
         hours = {"status": "verified" if v.hours else "unknown", "display": v.hours_display}
-    return {"id": v.id, "name": clean_text(v.name), "district": clean_text(v.district, 40), "address": clean_text(v.address, 140),
+    return {"id": v.id, "name": clean_text(v.name, 80, "Quán (tên không hiển thị được)"), "district": clean_text(v.district, 40), "address": clean_text(v.address, 140),
             "dish_tags": [t for t in (clean_text(x, 40) for x in v.dish_tags[:8]) if t], "price": _price(v), "hours": hours,
             "rating": rating}
 
