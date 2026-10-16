@@ -949,9 +949,11 @@ class ChatEngine:
             return "planned"
         if st.pending and st.pending.kind == "confirm_plan":
             return "confirm"
+        if st.phase == "planned":
+            return "planned"  # stays planned until the user starts over; tour_stale tells the UI it needs recomputing
         if st.shortlist:
             return "choose"
-        return "discover" if st.phase != "planned" else "planned"
+        return "discover"
 
     # ---- detail / modify / unknown
     def _do_ask_detail(self, R, u):

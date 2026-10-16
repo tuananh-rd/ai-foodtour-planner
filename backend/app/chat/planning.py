@@ -32,9 +32,11 @@ def plan_selected(venues_by_id: dict, ids: list, prefs: Preferences, routing, ve
     if blocked:
         return Tour("no_solution", reasons=("Quán " + ", ".join(blocked) + " có tên/nhóm món liên quan tới tác nhân dị ứng bạn nêu.",),
                     proposed_changes=("Bỏ quán đó khỏi danh sách hoặc kiểm tra lại với quán trước khi quyết định.",))
-    p = replace(prefs, interests=(), exclusions=(), max_stops=min(5, len(pool)), mode="explore")
+    p = replace(prefs, interests=(), max_stops=min(5, len(pool)))  # discovery interests are irrelevant; every hard preference stays (mode, exclusions, allergies, budget)
     r = routing_for(vehicle, routing)
     tour = engine.plan_tour(pool, p, r, quality_weight=quality_weight)
+    if tour.status == "insufficient_evidence" and not tour.stops:
+        return tour  # strict mode: the planner states what evidence is missing; never relaxed here
     if tour.status == "no_solution" or len(tour.stops) < len(pool):
         got = len(tour.stops)
         reasons = (f"Không thể xếp đủ {len(pool)} quán bạn đã chọn trong các ràng buộc hiện tại (chỉ xếp được {got}).",) + tuple(tour.reasons)

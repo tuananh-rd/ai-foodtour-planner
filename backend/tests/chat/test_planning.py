@@ -58,3 +58,23 @@ class SummaryContract(unittest.TestCase):
             st, pr = r.state, r.prefs
         summ = next(b for b in r.blocks if b["type"] == "confirm_summary")
         self.assertTrue({i["status"] for i in summ["items"]} <= {"user", "inferred", "default", "missing"})
+
+
+class HardPreferences(unittest.TestCase):
+    def setUp(self):
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        self.by = {v.id: v for v in data.venues}
+        near = sorted((v for v in data.venues if v.district == "Hoàn Kiếm"), key=lambda v: v.id)
+        self.ids = [v.id for v in near[:3]]
+        self.base = dict(origin=(21.0285, 105.8522), start_time_min=16 * 60, duration_min=240)
+
+    def test_exclusion_added_after_selection_is_reported_not_ignored(self):
+        word = self.by[self.ids[0]].dish_tags[0]
+        t = plan_selected(self.by, self.ids, Preferences(**self.base, exclusions=(word,)), StraightLineEstimator())
+        self.assertEqual((t.status, t.stops), ("no_solution", ()))
+
+    def test_strict_mode_is_not_relaxed(self):
+        t = plan_selected(self.by, self.ids, Preferences(**self.base, mode="strict"), StraightLineEstimator())
+        self.assertNotEqual(t.status, "verified_feasible")
+        self.assertIn(t.status, ("insufficient_evidence", "no_solution"))
+        self.assertEqual(t.stops, ())

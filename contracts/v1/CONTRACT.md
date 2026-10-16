@@ -252,3 +252,8 @@ Response: the existing `SessionView` **plus** `"reply": {"blocks": Block[]}` and
 5. LLM budget: ≤1 call per turn, per-session cap (`FOODTOUR_LLM_SESSION_CAP`, default 6), daily reserve (`FOODTOUR_LLM_RESERVE`, default 3) — when refused, the turn is answered by rules + a `clarify` block and `turn.understanding` stays `rules`.
 6. Errors reuse the existing error frame; `422 invalid_action` for unknown/ill-formed actions; `409 no_tour`-style errors are not used for exploration.
 7. `GET /v1/sessions/{id}` returns `chat` (read-only) when the flag is on, so the UI can restore after a reload.
+
+### v1.8 addendum — Preferences and planning (conversation)
+- `Preferences.max_leg_min: int 3..60` (default 20) — maximum minutes of any single leg (was a planner-internal default; now round-trips so "không đi bộ quá 10 phút mỗi chặng" survives reloads). Additive.
+- Confirmed plan: the planner receives **only the shortlisted venues** as its pool, keeps every hard preference (mode, exclusions, allergies, budget, `max_leg_min`) and only drops discovery `interests`; if all shortlisted venues cannot be scheduled the response is `no_solution` with `reasons` + `proposed_changes` (never a smaller tour); strict mode keeps its `insufficient_evidence` semantics. Vehicle changes the ETA estimate (average speeds, still labelled `straight_line_estimate`), never the label.
+- `confirm_summary.items[].status` ∈ `user|inferred|default|missing`; `compare_table` unknown cells have `value:"Chưa rõ"` (optional `note`, e.g. "ít đánh giá"); `dish_suggestions.items[].venue_count` is `int|null`.
