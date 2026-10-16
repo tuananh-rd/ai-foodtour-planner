@@ -70,3 +70,7 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C0-1 contract v1.8 | Claude | DONE | b2a11fc |
 | C0-2 corpus | Claude | DONE (runner by Codex in progress) | 624df8c: 144-venue synthetic chat fixture, 165 labelled utterances, CH-01..12 |
 | C1 engine (state/gazetteer/knowledge/tools) | Claude | In progress | backend/app/chat/* (state, gazetteer, knowledge, tools committed; understand/engine next) |
+| C0-2 runner (Codex f660b9f) | Codex | DONE (merged) | API runner qa/chat/run_scenarios.py, 14 adversarial scenarios, intent evaluator; Claude re-ran backend: 341 tests OK (1 skip until /chat) |
+| C0-HF | Claude/Codex | Round-4 fixes d7ff7c3; Codex final verification in C1-API Part A | acceptance pending |
+| C1 engine | Claude | DONE (pending API wiring + review) | backend/app/chat/*: rules-first understanding 100% on dev corpus (held-out via Codex adversarial), engine scenarios 11/12 + plan_request; plan_selected (never drops a selected venue); fixtures chat_turns.synthetic.json |
+| C1-API | Codex | In progress | ctx_92a5468c2fb8 |
