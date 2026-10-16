@@ -1,4 +1,4 @@
-﻿"""C6 recheck using fresh C6 artifacts; never publishes blind row-level failures."""
+"""C6 recheck using fresh C6 artifacts; never publishes blind row-level failures."""
 import json
 import logging
 import os
@@ -33,4 +33,3 @@ for blocks in all_blocks:
             report['instruction_echoes'].append(value)
 report_path.write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps({k:report[k] for k in ('retry','heldout_v1','hostile_claim_hits','instruction_echoes')},ensure_ascii=False))
-

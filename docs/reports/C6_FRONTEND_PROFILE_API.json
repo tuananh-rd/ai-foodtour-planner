@@ -1,0 +1,57 @@
+{
+  "synthetic": true,
+  "profile_actions": [
+    {
+      "action": {
+        "type": "edit_profile",
+        "patch": {
+          "party_size": "3"
+        }
+      },
+      "status": 422,
+      "error": {
+        "code": "validation_error",
+        "message": "Yêu cầu không hợp lệ."
+      }
+    },
+    {
+      "action": {
+        "type": "edit_profile",
+        "patch": {
+          "budget": "250k mỗi người"
+        }
+      },
+      "status": 422,
+      "error": {
+        "code": "validation_error",
+        "message": "Yêu cầu không hợp lệ."
+      }
+    },
+    {
+      "action": {
+        "type": "edit_profile",
+        "patch": {
+          "allergies": "cua"
+        }
+      },
+      "status": 422,
+      "error": {
+        "code": "validation_error",
+        "message": "Yêu cầu không hợp lệ."
+      }
+    },
+    {
+      "action": {
+        "type": "edit_profile",
+        "patch": {
+          "tastes": "ít cay"
+        }
+      },
+      "status": 422,
+      "error": {
+        "code": "validation_error",
+        "message": "Yêu cầu không hợp lệ."
+      }
+    }
+  ]
+}

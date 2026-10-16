@@ -1,0 +1,57 @@
+
+===============================================================
+   AI FOODTOUR PLANNER — CHATBOT V2 REAL-BROWSER CDP ACCEPTANCE
+   Mode: NORMAL PRODUCTION VERIFICATION
+   Ports: Web=13000, CDP=18000
+===============================================================
+
+[Setup] Scratch build directory created: C:\Users\tuana\AppData\Local\Temp\foodtour-chatv2-build-8j2CeV
+[Setup] Linked node_modules junction.
+[Setup] Running 'next build' in scratch copy...
+   ▲ Next.js 15.5.28
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully in 5.1s
+   Linting and checking validity of types ...
+   Collecting page data ...
+   Generating static pages (0/8) ...
+   Generating static pages (2/8)
+   Generating static pages (4/8)
+   Generating static pages (6/8)
+ ✓ Generating static pages (8/8)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    26.4 kB         143 kB
+├ ○ /_not-found                            990 B         104 kB
+├ ○ /review                                878 B         129 kB
+├ ○ /review/layoutcheck                  10.3 kB         138 kB
+├ ○ /review/profile                      2.59 kB         105 kB
+└ ○ /ui-kit                              10.5 kB         113 kB
++ First Load JS shared by all             103 kB
+  ├ chunks/813-b87e74c5dfbad318.js       46.3 kB
+  ├ chunks/eb96a28b-127988324a9f259a.js  54.2 kB
+  └ other shared chunks (total)          2.14 kB
+
+
+○  (Static)  prerendered as static content
+
+[Setup] Scratch build complete.
+[Setup] Starting production server on port 13000...
+node : (node:19012) [DEP0190] DeprecationWarning: Passing args to a child process with shell option true can lead to
+security vulnerabilities, as the arguments are not escaped, only concatenated.
+At line:2 char:1
++ node qa/chat/review_c3_frontend.mjs diagnostics *> docs/reports/C6_FR ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:19012) [D...y concatenated.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-deprecation ...` to show where the warning was created)
+[Setup] Production server ready at http://127.0.0.1:13000/
+[Setup] CDP WebSocket ready: ws://127.0.0.1:18000/devtools/page/D35AB0E2EA88A32E32861E8B5CC85FBE
+Independent browser diagnostics saved for diagnostics
+
+===============================================================
+   CHATBOT V2 ACCEPTANCE SUMMARY: 0/0 PASSED
+===============================================================
