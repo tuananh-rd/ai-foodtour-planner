@@ -1,0 +1,42 @@
+[
+  {
+    "venue": "Cà phê Hà Nội",
+    "term": "ca",
+    "excluded": false
+  },
+  {
+    "venue": "Trà sữa A",
+    "term": "sữa",
+    "excluded": true
+  },
+  {
+    "venue": "Bún sứa",
+    "term": "sữa",
+    "excluded": true
+  },
+  {
+    "venue": "Cá hấp",
+    "term": "ca",
+    "excluded": false
+  },
+  {
+    "venue": "Bún riêu",
+    "term": "cua",
+    "excluded": false
+  },
+  {
+    "venue": "Mắm tôm",
+    "term": "tom",
+    "excluded": true
+  },
+  {
+    "text": "di un cua",
+    "allergies": [],
+    "notes": []
+  },
+  {
+    "text": "dị ưng cua",
+    "allergies": [],
+    "notes": []
+  }
+]

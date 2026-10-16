@@ -1,0 +1,1408 @@
+Command: python -m unittest discover -s backend/tests -v
+C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_bounded_search_assumptions_are_exposed (api.test_api.APITests.test_bounded_search_assumptions_are_exposed) ... {"request_id": "2712de31054c4f168e1efe1fdfc0beea", "route": "/v1/sessions", "status": 200, "latency_ms": 43.426}
+{"request_id": "597236eeb57d4575a4090822eb0f10e6", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 25.168}
+ok
+test_concurrent_same_revision_exactly_one_commit (api.test_api.APITests.test_concurrent_same_revision_exactly_one_commit) ... {"request_id": "0ff3ae6fe26b44d2b0355636af59216f", "route": "/v1/sessions", "status": 200, "latency_ms": 40.195}
+{"request_id": "3b4cb077c2ff494ba0b4b385d03b9c9a", "route": "/v1/sessions/{session_id}/preferences", "status": 409, "latency_ms": 5.204}
+{"request_id": "47c73bd195184633a5c267611984181b", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 6.25}
+ok
+test_cors_allows_revision_and_token_header (api.test_api.APITests.test_cors_allows_revision_and_token_header) ... {"request_id": "6a459f8ef74d4b3fadc657c3494e2da4", "route": "<unmatched>", "status": 200, "latency_ms": 0.138}
+ok
+test_cross_midnight_has_no_invalid_clock_and_guard_is_atomic (api.test_api.APITests.test_cross_midnight_has_no_invalid_clock_and_guard_is_atomic) ... {"request_id": "9b18986c875142df986a37d8a20dc108", "route": "/v1/sessions", "status": 200, "latency_ms": 52.006}
+{"request_id": "be190795d281453bab6dcaca16e2ef4b", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 18.443}
+{"request_id": "dce6aa6409d9466585158b3b4c09b375", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 4.876}
+{"request_id": "86106de640db48f490afab0b5573bddb", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 4.292}
+{"request_id": "6bd5a10f6305437f9137aed63311a7d1", "route": "/v1/sessions", "status": 200, "latency_ms": 1.995}
+{"request_id": "019052e3929f4ca59af81640cc1bf3aa", "route": "/v1/sessions/{session_id}/messages", "status": 422, "latency_ms": 18.486}
+ok
+test_expired_tombstones_are_bounded (api.test_api.APITests.test_expired_tombstones_are_bounded) ... {"request_id": "8f5444d77784428b955572aff7b9d730", "route": "/v1/sessions", "status": 200, "latency_ms": 102.272}
+{"request_id": "7169afe224c44e79bcb7d1857fbc63a7", "route": "/v1/sessions", "status": 200, "latency_ms": 1.327}
+{"request_id": "e1feffe5334f40f78f41cf0f5c13cfb1", "route": "/v1/sessions", "status": 200, "latency_ms": 1.115}
+{"request_id": "62ed888d91fb499ea087df43536246c9", "route": "/v1/sessions", "status": 200, "latency_ms": 1.348}
+{"request_id": "31aae6c135b14c919197c98b7d152e4a", "route": "/v1/sessions", "status": 200, "latency_ms": 1.15}
+{"request_id": "db8e44f10fdd4d6986332e81ef7990c7", "route": "/v1/sessions", "status": 200, "latency_ms": 0.952}
+{"request_id": "af9c7170da1149c49dae5103b6f43a9e", "route": "/v1/sessions", "status": 200, "latency_ms": 0.973}
+ok
+test_expiry_and_wrong_token_does_not_disclose_expiry (api.test_api.APITests.test_expiry_and_wrong_token_does_not_disclose_expiry) ... {"request_id": "e30fe9ce97e64635918e8d7165e661e6", "route": "/v1/sessions", "status": 200, "latency_ms": 41.982}
+{"request_id": "b7a94cdc2446472cbd537fc614162217", "route": "/v1/sessions/{session_id}/tour", "status": 403, "latency_ms": 1.426}
+{"request_id": "98668d802b584867838cbf5e37bfa9a2", "route": "/v1/sessions/{session_id}/tour", "status": 410, "latency_ms": 1.295}
+ok
+test_fail_closed_tampered_planner_result_and_no_commit (api.test_api.APITests.test_fail_closed_tampered_planner_result_and_no_commit) ... {"request_id": "71e1d84e9e3c4173bd38dbb1e22236bb", "route": "/v1/sessions", "status": 200, "latency_ms": 50.385}
+{"request_id": "fe1301502b524af1b5e7b944e8fc75b6", "route": "/v1/sessions/{session_id}/messages", "status": 500, "latency_ms": 22.991}
+ok
+test_health_detail_labels_and_repository_version_cache (api.test_api.APITests.test_health_detail_labels_and_repository_version_cache) ... {"request_id": "57f3a35486fc402cb6e48c1ab0801c13", "route": "/health", "status": 200, "latency_ms": 44.927}
+{"request_id": "ed64a871cde14446a267d9e0f88a2a2e", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.178}
+{"request_id": "c0c2e20e63f64ee1b7bbfc005b64ba15", "route": "/v1/venues/{venue_id}", "status": 404, "latency_ms": 1.659}
+ok
+test_legacy_exports_and_response_unchanged (api.test_api.APITests.test_legacy_exports_and_response_unchanged) ... {"request_id": "60a24fc8361d49b4b8c8ce56f412fe5f", "route": "/v1/plans", "status": 200, "latency_ms": 39.919}
+{"request_id": "ccc014e10955434ab05ee5cc4bea3c73", "route": "/v1/plans", "status": 200, "latency_ms": 0.843}
+{"request_id": "464df11e27a5479a9d052665457ec349", "route": "/v1/plans", "status": 422, "latency_ms": 0.407}
+ok
+test_malformed_snapshot_is_service_error_not_empty_success (api.test_api.APITests.test_malformed_snapshot_is_service_error_not_empty_success) ... {"request_id": "d6586220cd7d49d1a40e8220c8801a69", "route": "/health", "status": 503, "latency_ms": 41.704}
+ok
+test_missing_slots_then_message_tour_and_followup_retention (api.test_api.APITests.test_missing_slots_then_message_tour_and_followup_retention) ... {"request_id": "99b75ad8b4e946c4ae0641ddb0a95f3f", "route": "/v1/sessions", "status": 200, "latency_ms": 39.759}
+{"request_id": "d67e67bd61d64c8e9514dd2ce4e0c944", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 3.176}
+{"request_id": "7e1b1f2bb8ef45fca24cca3895ac4888", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 19.485}
+{"request_id": "04fa61a82e51431b89f18990d97181a8", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 16.949}
+{"request_id": "205ffb1994dd482ea06fb99bfb7d9803", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 17.76}
+ok
+test_preferences_clear_old_tour_revision_and_strict (api.test_api.APITests.test_preferences_clear_old_tour_revision_and_strict) ... {"request_id": "4ea53d96e16d4105b4bd85bb4fb93225", "route": "/v1/sessions", "status": 200, "latency_ms": 42.888}
+{"request_id": "2e0eecc14b2f4c709f1064f551ebc31a", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 17.611}
+{"request_id": "d319fd8cadca4cb6871b499e7da4b08a", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 3.411}
+{"request_id": "b7e3980685344e23be1f1352767b1530", "route": "/v1/sessions/{session_id}/preferences", "status": 409, "latency_ms": 1.782}
+{"request_id": "1ebf6101e162452794716d17c818429d", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 15.304}
+ok
+test_prompt_injection_cannot_change_mode_or_budget (api.test_api.APITests.test_prompt_injection_cannot_change_mode_or_budget) ... {"request_id": "a191a83d46bc41faaaaa50186c684095", "route": "/v1/sessions", "status": 200, "latency_ms": 39.535}
+{"request_id": "6b3ac2e0f3104ccdbf972f7905fbdf08", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 15.459}
+{"request_id": "f9c324de87ed49218f8b9eee40b20f8a", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 16.969}
+ok
+test_rate_limit_resets_and_bounded_session_capacity (api.test_api.APITests.test_rate_limit_resets_and_bounded_session_capacity) ... {"request_id": "eb480ed13413431ea774afa897a38a58", "route": "/v1/sessions", "status": 200, "latency_ms": 53.659}
+{"request_id": "90f0f06766964ec5a418166ad204a60d", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 3.191}
+{"request_id": "b7910195303f41f6a01114acd941e1c4", "route": "/v1/sessions/{session_id}/messages", "status": 429, "latency_ms": 1.353}
+{"request_id": "9664bc886db04cf5aa2041848989cfb6", "route": "/v1/sessions/{session_id}/messages", "status": 429, "latency_ms": 2.487}
+{"request_id": "6d2b0fbe1c2b42a0b640606ced216111", "route": "/v1/sessions/{session_id}/messages", "status": 410, "latency_ms": 1.147}
+{"request_id": "a70021016ef84f559efe816705fa7ee8", "route": "/v1/sessions", "status": 200, "latency_ms": 0.972}
+{"request_id": "1adb62bba14341acaa923e93ce05e28f", "route": "/v1/sessions", "status": 429, "latency_ms": 0.665}
+ok
+test_rate_window_recovery_before_ttl (api.test_api.APITests.test_rate_window_recovery_before_ttl) ... {"request_id": "5f7a5ac9dada4b3ba06c183e130f77cc", "route": "/v1/sessions", "status": 200, "latency_ms": 56.151}
+{"request_id": "077db8da5a9444a4a60e756604020ad4", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 3.099}
+{"request_id": "b7f34a59328f416b92325d25d7b7ca3c", "route": "/v1/sessions/{session_id}/messages", "status": 429, "latency_ms": 1.054}
+{"request_id": "57bdd82dd1e348aa9da05c8947011133", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 3.2}
+ok
+test_rejected_extracted_constraints_do_not_replan_with_old_values (api.test_api.APITests.test_rejected_extracted_constraints_do_not_replan_with_old_values) ... {"request_id": "bdc227728c6244488963702ee06c0570", "route": "/v1/sessions", "status": 200, "latency_ms": 64.135}
+{"request_id": "1cfcb46c882d4f2bb35fbe24c563c6b2", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 16.388}
+{"request_id": "59505fd7840e44c7b623032cf73ced56", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 3.147}
+ok
+test_replace_lock_claim_is_checked_before_commit (api.test_api.APITests.test_replace_lock_claim_is_checked_before_commit) ... {"request_id": "ac3e709aa4ee495bbdedf9b75ad9df4c", "route": "/v1/sessions", "status": 200, "latency_ms": 46.695}
+{"request_id": "1a0fa81707f94ed9811035a008508451", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 17.305}
+{"request_id": "849065f25ada45e7a68589366221060b", "route": "/v1/sessions/{session_id}/tour/replace", "status": 500, "latency_ms": 2.943}
+ok
+test_replace_preserves_other_stops_and_stale_conflicts (api.test_api.APITests.test_replace_preserves_other_stops_and_stale_conflicts) ... {"request_id": "57826e05b0ba434fbd148f027b8f1d72", "route": "/v1/sessions", "status": 200, "latency_ms": 60.681}
+{"request_id": "1824606e2c38471fb684ec2f5842bdd8", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 17.663}
+{"request_id": "1e24c396d0cf421e9cf0543d8839f283", "route": "/v1/sessions/{session_id}/tour/replace", "status": 200, "latency_ms": 3.0}
+{"request_id": "b7ea87b58fab4b5b86243f7e9aa3837b", "route": "/v1/sessions/{session_id}/tour/replace", "status": 409, "latency_ms": 2.122}
+{"request_id": "8774632b339d41748019d84bf4a56a34", "route": "/v1/sessions/{session_id}/tour/replace", "status": 409, "latency_ms": 1.686}
+ok
+test_session_tokens_hashed_and_cross_session_isolated (api.test_api.APITests.test_session_tokens_hashed_and_cross_session_isolated) ... {"request_id": "91c6ab694a4042dabf5773e309fe669a", "route": "/v1/sessions", "status": 200, "latency_ms": 39.641}
+{"request_id": "5ed63f5473564fdc97d3f941b5756089", "route": "/v1/sessions", "status": 200, "latency_ms": 0.836}
+{"request_id": "1301f7f2bb854a59b0de26f20e83da91", "route": "/v1/sessions/{session_id}/tour", "status": 401, "latency_ms": 0.919}
+{"request_id": "67b6b92f02f24acfb6db9ad97c446629", "route": "/v1/sessions/{session_id}/tour", "status": 403, "latency_ms": 1.116}
+ok
+test_snapshot_versions_change_and_replace_stays_pinned (api.test_api.APITests.test_snapshot_versions_change_and_replace_stays_pinned) ... {"request_id": "2260514df62c48148fe85342403b8f74", "route": "/v1/sessions", "status": 200, "latency_ms": 43.647}
+{"request_id": "17865f76cfe1438687d0108900cb2e3e", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 16.375}
+{"request_id": "6cbae49db2f44f9f91501f915d5eefc1", "route": "/health", "status": 200, "latency_ms": 1.954}
+{"request_id": "2947c870c8b04e0dad5ce5d8314a123b", "route": "/v1/sessions/{session_id}/tour/replace", "status": 200, "latency_ms": 3.34}
+ok
+test_unavailable_llm_health_and_no_session_mutation (api.test_api.APITests.test_unavailable_llm_health_and_no_session_mutation) ... {"request_id": "9c2b626cb490403baffa1b8174b6d8ac", "route": "/health", "status": 200, "latency_ms": 42.884}
+{"request_id": "b383395a5a1d471e8a6884d1a832daf9", "route": "/v1/sessions", "status": 200, "latency_ms": 0.693}
+{"request_id": "355e0b5d18d44f2d9cd32bda119bbfe8", "route": "/v1/sessions/{session_id}/messages", "status": 503, "latency_ms": 0.915}
+ok
+test_untrusted_extractor_output_is_validated (api.test_api.APITests.test_untrusted_extractor_output_is_validated) ... {"request_id": "cd3a816ed9b04bb4a0a866bd31691c9a", "route": "/v1/sessions", "status": 200, "latency_ms": 57.412}
+{"request_id": "899229dd44f74b209aa5a18349e42815", "route": "/v1/sessions/{session_id}/messages", "status": 422, "latency_ms": 1.999}
+ok
+test_validation_envelope_redacts_private_input (api.test_api.APITests.test_validation_envelope_redacts_private_input) ... {"request_id": "4215960e293c43bf94c2a9be40f47ad0", "route": "/v1/sessions", "status": 200, "latency_ms": 41.755}
+{"request_id": "891dcb74d37946a89ef00db88b9a9676", "route": "/v1/sessions/{session_id}/messages", "status": 422, "latency_ms": 0.449}
+{"request_id": "6156adcc47fa47fc9d952fb067c31e5d", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.421}
+{"request_id": "2aedaf988d31447593d8d938aaa8f59f", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.45}
+{"request_id": "49be36949364466ba0f2644113cef89d", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.424}
+{"request_id": "bccacfe7298a4c7f91ceafae54343aaf", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.395}
+{"request_id": "c75f7d91b7fc42e8914f1f918b6580d7", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.728}
+{"request_id": "3c2a3b288890459cb8e6ed9cd6718090", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.548}
+{"request_id": "443f54e57aa34992b78eba6148cf36af", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.471}
+{"request_id": "04861400a5734ebc8e72d195866a98aa", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.488}
+ok
+test_generated_openapi_matches_versioned_export (api.test_api.OpenAPIDriftTests.test_generated_openapi_matches_versioned_export) ... ok
+test_bare_avoidance_clarifies (api.test_c0_hf.AllergyAPI.test_bare_avoidance_clarifies) ... {"request_id": "8f2976be2d664baf9ba2f728dfa9c26f", "route": "/v1/sessions", "status": 200, "latency_ms": 62.308}
+{"request_id": "612575f9f07b478bb0e487a6c49fe338", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 11.313}
+ok
+test_message_allergy_party_budget_and_warning (api.test_c0_hf.AllergyAPI.test_message_allergy_party_budget_and_warning) ... {"request_id": "468d862a8925426f96833ccabead6029", "route": "/v1/sessions", "status": 200, "latency_ms": 83.326}
+{"request_id": "36e01336c09b4cbaa77c719fe7e66c31", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 42.124}
+{"request_id": "d52c502111594903bb3320b308a42bf3", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 25.944}
+ok
+test_old_session_without_allergies_loads (api.test_c0_hf.AllergyAPI.test_old_session_without_allergies_loads) ... {"request_id": "79e774ef6ee14efead5d41351e0e11dc", "route": "/v1/sessions", "status": 200, "latency_ms": 59.576}
+{"request_id": "d4a800d6e36041a3b95845cc15f92783", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 29.408}
+{"request_id": "852331de77654c0fade7880b5c8f785e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 47.917}
+ok
+test_party_edit (api.test_c0_hf.AllergyAPI.test_party_edit) ... {"request_id": "b60121a71ee44de596d21507b2f8af3a", "route": "/v1/sessions", "status": 200, "latency_ms": 92.937}
+{"request_id": "0d0068bdc9594ab8aa75971df20c2602", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 38.828}
+{"request_id": "1fe767fef8fd48bfa8036dc2958c08a9", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 37.093}
+ok
+test_put_allergies_round_trip_and_strip (api.test_c0_hf.AllergyAPI.test_put_allergies_round_trip_and_strip) ... {"request_id": "aebf3873adfc49689050c29199bf9783", "route": "/v1/sessions", "status": 200, "latency_ms": 167.91}
+{"request_id": "6e4523c9ada04bbfaa6b017eae4a5247", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 24.088}
+{"request_id": "84b3bf9d36d04cdfb3ef389c91da8dcd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 166.849}
+ok
+test_put_invalid_allergies_returns_422 (api.test_c0_hf.AllergyAPI.test_put_invalid_allergies_returns_422) ... {"request_id": "8dc20306295646568bde661f197413fc", "route": "/v1/sessions", "status": 200, "latency_ms": 74.247}
+{"request_id": "6bb9ddd900c84f7cb5bfa3323c0232a9", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.598}
+{"request_id": "2d281f09573045eeab48d185b5bf1117", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.485}
+{"request_id": "f98ec5c25d2f4ead8034a75a3171a0e8", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.72}
+{"request_id": "61f35f9320e7496aa5ed2d115f232f51", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.559}
+{"request_id": "74f7b66ce5cb474683816a4441f5a7c0", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.591}
+{"request_id": "11265d9330544082b73721568f79e9de", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.501}
+{"request_id": "dc1c578e02fe4a2f95d9cff43569d719", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.518}
+{"request_id": "982d4eb9d9d04d7fa3a3ee55f8f47ba4", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.868}
+{"request_id": "3fbc7474a164453a954166c6c69d7901", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.783}
+{"request_id": "9027ff0cc86948c99ede8bdf4dcad953", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.942}
+{"request_id": "423114b312cc479284809f5f72c7453f", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.468}
+{"request_id": "02123640afdd494e848ed0a291e9ae88", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.624}
+ok
+test_replace_excludes_allergen_candidates (api.test_c0_hf.AllergyAPI.test_replace_excludes_allergen_candidates) ... {"request_id": "c38af543d7e24499b69664fde3df15e9", "route": "/v1/sessions", "status": 200, "latency_ms": 60.892}
+{"request_id": "03e4b667edd64be49ad9160f5b8602d6", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 33.8}
+{"request_id": "9161acb81dd04672bec6926d935ecc40", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 34.34}
+{"request_id": "3e0e6404471142cd9a4e595a2ab8fe11", "route": "/v1/sessions/{session_id}/tour/replace", "status": 200, "latency_ms": 23.359}
+ok
+test_restart_retains_allergy_and_validates_restored_tour (api.test_c0_hf.AllergyAPI.test_restart_retains_allergy_and_validates_restored_tour) ... {"request_id": "997edfa9a3f341f2ab56512af122db63", "route": "/v1/sessions", "status": 200, "latency_ms": 69.059}
+{"request_id": "9ebe31a5f5a5497397f8abc292eb1f7a", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 30.998}
+{"request_id": "2ec4e9070da1449aae9bb5d9764d8703", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 32.047}
+{"request_id": "f35c4ceb8b7645d9950dc78ee7d76c0b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 61.866}
+ok
+test_budget_status_and_no_provider_call (api.test_chat.ChatAPI.test_budget_status_and_no_provider_call) ... {"request_id": "51bfc8518d2f4511bd7c71df66d26044", "route": "/v1/sessions", "status": 200, "latency_ms": 57.964}
+{"request_id": "4959e14a889c4221818101662140681b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 44.26}
+{"request_id": "c179c21f832a4f029a8df156bf30e9cd", "route": "/health", "status": 200, "latency_ms": 9.899}
+ok
+test_chat_expires_with_preferences (api.test_chat.ChatAPI.test_chat_expires_with_preferences) ... {"request_id": "2238e09daa0c4afeb7b65a1b2149851c", "route": "/v1/sessions", "status": 200, "latency_ms": 58.017}
+{"request_id": "8f8fca66ae724b3189d754fa34ee0250", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.348}
+{"request_id": "389f6154f5c94aa5b9d02a240b679164", "route": "/v1/sessions/{session_id}", "status": 410, "latency_ms": 12.996}
+ok
+test_concurrent_revision_has_one_winner (api.test_chat.ChatAPI.test_concurrent_revision_has_one_winner) ... {"request_id": "fda22d6b39464cf4a5a9128aa04005f7", "route": "/v1/sessions", "status": 200, "latency_ms": 72.513}
+{"request_id": "68284bf39ae94d83820620531bf6499a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.796}
+{"request_id": "d5c1885430aa4e22b38c9760f6eec51f", "route": "/v1/sessions/{session_id}/chat", "status": 409, "latency_ms": 22.888}
+{"request_id": "f575c6c6a5c441c4a8befdd5d0999ac1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 11.376}
+ok
+test_confirm_exact_selection_and_stale_tour (api.test_chat.ChatAPI.test_confirm_exact_selection_and_stale_tour) ... {"request_id": "6db1b1c62f0d4d07aea394c97e6abeec", "route": "/v1/sessions", "status": 200, "latency_ms": 54.81}
+{"request_id": "ec79b25b871749ac9ca429c6f53e964f", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 17.978}
+{"request_id": "9a9815dfb2824c22ae2a17c8b1b68b47", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 20.776}
+{"request_id": "3c26b9dd22c445c483180b6fec2a89c4", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 16.441}
+{"request_id": "13b203a34428405581a94671c3662136", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 17.041}
+{"request_id": "ccc968214cf343d490e7aa5aa042e163", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.433}
+{"request_id": "058d1ac20ede4de99e9176db94fcb054", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 23.63}
+{"request_id": "3bcc2167c86f478a9c4990c57f2b7f86", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 20.656}
+{"request_id": "769905eb3ec24818ba991fdfa92ec894", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 27.659}
+{"request_id": "264cea60e2da44ce8322e71924d4751d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 60.095}
+ok
+test_conflicting_plan_never_drops_stop (api.test_chat.ChatAPI.test_conflicting_plan_never_drops_stop) ... {"request_id": "a7fe7807360b4f7d82cf41db92d592f1", "route": "/v1/sessions", "status": 200, "latency_ms": 69.391}
+{"request_id": "fb89fefaae0b45a08bc85aa33004491d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.553}
+{"request_id": "e36b8cdc38f140f6ac4fdf93e1168290", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 31.392}
+{"request_id": "0ebb4f28b4584186a50f4a2cc8e09c81", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 59.529}
+{"request_id": "5e960b9bcc9f4eb49e2584e4c9287456", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 30.025}
+{"request_id": "5fde2efb049440c8810b97ec8e9c4906", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.777}
+{"request_id": "16a4c1d21a754895bba71fdd2f4fa5ab", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.174}
+{"request_id": "b66bdaf39b2242b781196258e03ad3fd", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.291}
+{"request_id": "9d775db44ef5406190a77238eb45064f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 159.108}
+{"request_id": "a165dddae989428398e77ba7be97a153", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 43.364}
+ok
+test_engine_cached_per_snapshot (api.test_chat.ChatAPI.test_engine_cached_per_snapshot) ... {"request_id": "4bb6a439fb7849e296a158d5ac7cb0b2", "route": "/v1/sessions", "status": 200, "latency_ms": 85.69}
+{"request_id": "01b482fc763447d29f6be14a60b80087", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 33.863}
+{"request_id": "fc1df85fdad24dedafb214e224914852", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.307}
+ok
+test_exclusions_are_not_relaxed (api.test_chat.ChatAPI.test_exclusions_are_not_relaxed) ... {"request_id": "7b60132863754a2f9d7bf5b150f56dda", "route": "/v1/sessions", "status": 200, "latency_ms": 82.749}
+{"request_id": "ca912a068d7b47388d6996ae2b97f238", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.917}
+{"request_id": "3ca5bc6a7a8f4457840cc3714f2eb696", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.746}
+{"request_id": "818887389d2346b8b3f792833a45e40e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 23.486}
+{"request_id": "fa6d7d4a19214b9fa5519799fe0a50ef", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.772}
+{"request_id": "b0fd85c20cfb44c3aa1910a37116a6cb", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.023}
+{"request_id": "48934484e0454dad8d516998d0dca934", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.5}
+{"request_id": "188eda081b664909b95e93a6acbd1277", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.416}
+{"request_id": "52d89e904a2f4e7baef0bb4828b79f0f", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 16.266}
+{"request_id": "4977f81229dd4da49c4a5f6331043f26", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 17.011}
+ok
+test_flag_and_config (api.test_chat.ChatAPI.test_flag_and_config) ... {"request_id": "bb6085f7d56947c4b957fe0092f3ce5d", "route": "/v1/sessions", "status": 200, "latency_ms": 69.384}
+{"request_id": "af00fac0a798431e836788cd5600a77c", "route": "/v1/client-config", "status": 200, "latency_ms": 1.991}
+{"request_id": "f6d66698bfd343bc916c9620a03d408b", "route": "/v1/client-config", "status": 200, "latency_ms": 1.322}
+{"request_id": "c236e69a7358489db25cb2dcc4a1c4da", "route": "/v1/sessions/{session_id}/chat", "status": 404, "latency_ms": 1.528}
+{"request_id": "b0650c94aaca427fa168cd316ee20f4b", "route": "/v1/sessions/{session_id}/chat", "status": 404, "latency_ms": 2.032}
+{"request_id": "e14b26d76a5c4e598ab46296ec77a798", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 17.834}
+ok
+test_memory_store_rolls_back (api.test_chat.ChatAPI.test_memory_store_rolls_back) ... {"request_id": "aacd1728d7a94d0293ad0f20a413dc42", "route": "/v1/sessions", "status": 200, "latency_ms": 86.283}
+{"request_id": "9b907d8c47314b9eabda6acb763f1352", "route": "/v1/sessions", "status": 200, "latency_ms": 50.677}
+{"request_id": "65142d5b1db646f7818ad4a7af31d5fe", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 10.915}
+{"request_id": "d02abfb539db45369cad4ce4d52ff577", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 8.594}
+{"request_id": "900c0b394986459e913f740c2b3bc034", "route": "/v1/sessions/{session_id}/chat", "status": 500, "latency_ms": 8.714}
+{"request_id": "5e54949b716b4dcba87037d8616c941c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 33.802}
+{"request_id": "0ec15d3af127450a9d14bee447871141", "route": "/v1/sessions/{session_id}/chat", "status": 500, "latency_ms": 7.413}
+{"request_id": "fbd60959d92a4ff7af09d9b4d8fa2e98", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 8.2}
+{"request_id": "f0df74c2b7514cc28596446223822231", "route": "/v1/sessions/{session_id}/chat", "status": 500, "latency_ms": 7.74}
+{"request_id": "65aa398bd959446c952e681fa4d2ff26", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 8.536}
+ok
+test_no_solution_survives_exploration_restart (api.test_chat.ChatAPI.test_no_solution_survives_exploration_restart) ... {"request_id": "90b5279c9d3f4174b91a58d0ed0d055b", "route": "/v1/sessions", "status": 200, "latency_ms": 65.721}
+{"request_id": "d059a187428b43299da3baa4a86f3fd5", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.199}
+{"request_id": "a64cdbe26aa64399b2469850aaa196e8", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 37.337}
+{"request_id": "8ba5e75ea4354d428e218ec32abf5885", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.601}
+{"request_id": "9b45ca497e5641f98985e5e3ae7b616e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.769}
+{"request_id": "7e0616ad74964055ad22cbba98fc06ae", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.419}
+{"request_id": "41cbc26e59c14f22bf90027e85a1649b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.684}
+{"request_id": "8e6adc7996bc410ca825662eca513702", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.249}
+{"request_id": "3506c737f04141a7bedaba16e18cfc9b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 26.877}
+{"request_id": "99c711758b5548d1962c37fab84a84db", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 61.506}
+ok
+test_no_text_in_logs (api.test_chat.ChatAPI.test_no_text_in_logs) ... {"request_id": "a30cb5d3855e4fbdb8f5e32fc48b4430", "route": "/v1/sessions", "status": 200, "latency_ms": 56.63}
+ok
+test_nonwalking_plan_survives_restart (api.test_chat.ChatAPI.test_nonwalking_plan_survives_restart) ... {"request_id": "2bba98bf06d54161b3e11f3470932f38", "route": "/v1/sessions", "status": 200, "latency_ms": 70.651}
+{"request_id": "9bafeda48ff74843a2cd64e4c1a4a571", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.317}
+{"request_id": "da9f8305a2a74cb491c62adacdf071f7", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.514}
+{"request_id": "2c825232f0354582a6444f06000ee2f8", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 17.611}
+{"request_id": "ddbca8710cda4ecaae6bfd51923f79fc", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.235}
+{"request_id": "e06b703cb300493a9996303acb080b68", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.922}
+{"request_id": "f05c099d6807415b8c54a92faea8bb3e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 35.759}
+{"request_id": "a84440faf54b4a36b990d1bd4dae1070", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 23.795}
+{"request_id": "e205f0458c2d43d382a9e1043b73ce9a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 27.473}
+{"request_id": "6d48dc839ad04360845fc307b4ffeac1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 77.159}
+ok
+test_old_database_migration (api.test_chat.ChatAPI.test_old_database_migration) ... {"request_id": "664ef12045a14af5bb699114ba43f6cf", "route": "/v1/sessions", "status": 200, "latency_ms": 62.756}
+{"request_id": "8796378d80b6424c8fcf98faba50448f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 79.581}
+{"request_id": "468c6b7f59204a7f896937957aa4ac83", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 16.663}
+ok
+test_ownership (api.test_chat.ChatAPI.test_ownership) ... {"request_id": "a28886c95b334eabb05cb41752281215", "route": "/v1/sessions", "status": 200, "latency_ms": 135.493}
+{"request_id": "92c79acccca043d5803bc2f2998314d7", "route": "/v1/sessions/{session_id}/chat", "status": 401, "latency_ms": 9.853}
+{"request_id": "b9389ec6329b4dacbfd7912bff427532", "route": "/v1/sessions", "status": 200, "latency_ms": 15.76}
+{"request_id": "fe9b0379ece3431890bec6b0997ded68", "route": "/v1/sessions/{session_id}/chat", "status": 403, "latency_ms": 19.528}
+ok
+test_rate_limit (api.test_chat.ChatAPI.test_rate_limit) ... {"request_id": "de0912b989574f2785e26dc4a93e573d", "route": "/v1/sessions", "status": 200, "latency_ms": 111.568}
+{"request_id": "0db96bbaeff245f38f9adedb2229c5eb", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 29.01}
+{"request_id": "6d6fc236777c4597bde614c0bad13177", "route": "/v1/sessions/{session_id}/chat", "status": 429, "latency_ms": 5.185}
+ok
+test_restart_shortlist_pending_results_allergy (api.test_chat.ChatAPI.test_restart_shortlist_pending_results_allergy) ... {"request_id": "5a2f0590193b404eb7f8645f0339a589", "route": "/v1/sessions", "status": 200, "latency_ms": 60.18}
+{"request_id": "e055e4099f36405794456ccf939273a5", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.598}
+{"request_id": "ec0dc48ebecc4cc3abbc629968bbe285", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 17.901}
+{"request_id": "67c0b94bc6d648d789d5a95f04f3f06e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.873}
+{"request_id": "ca4bd9696de74daba18e8e8c9b4d9863", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 17.651}
+{"request_id": "6118edf7401c4212b92162f947ddd9ac", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 20.873}
+{"request_id": "de0089510cc646359e2aa9faf72253f9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 17.34}
+{"request_id": "359268ce3fd748eab56e052e69b5046d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 66.63}
+{"request_id": "82af7517d6af465ba6d4ccfd4e194c97", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 16.022}
+{"request_id": "594f5456806c4b6ca82058549b85b021", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 56.943}
+ok
+test_revision_once_and_conflict (api.test_chat.ChatAPI.test_revision_once_and_conflict) ... {"request_id": "579f40c653234d66ad6aff28b24466d2", "route": "/v1/sessions", "status": 200, "latency_ms": 66.618}
+{"request_id": "cad35160009d44d1873837bb1f405c2d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 20.347}
+{"request_id": "4791beca0d4f403887d2d78f80349db6", "route": "/v1/sessions/{session_id}/chat", "status": 409, "latency_ms": 5.563}
+{"request_id": "a91a236366734ee4bb72fcc3c840c60f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 16.314}
+ok
+test_snapshot_change_rebuilds_engine (api.test_chat.ChatAPI.test_snapshot_change_rebuilds_engine) ... {"request_id": "d2794796a86a4fd792328ece8c4a4ea8", "route": "/v1/sessions", "status": 200, "latency_ms": 68.278}
+{"request_id": "19b4a970a38d4969bbc6e5319ab0a191", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 25.651}
+{"request_id": "720e21ffad984ddb9d82d64a4c1d3859", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 20.5}
+ok
+test_state_cap_and_exception_roll_back (api.test_chat.ChatAPI.test_state_cap_and_exception_roll_back) ... {"request_id": "684dd9d091cb4c99aab6498c1a502ea2", "route": "/v1/sessions", "status": 200, "latency_ms": 109.433}
+{"request_id": "f7e61d0980284973badf292e383f7b0f", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 26.309}
+{"request_id": "1493cf49867a48a6b046e956842c4511", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 26.369}
+{"request_id": "8a4c2562248849fbb7193de9fbfa81fd", "route": "/v1/sessions/{session_id}/chat", "status": 500, "latency_ms": 30.268}
+{"request_id": "1aca51a3db6f4ca28ddb8bfceea2ee29", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.343}
+{"request_id": "08d27dfa8bd84408900eea01e2fe843e", "route": "/v1/sessions/{session_id}/chat", "status": 500, "latency_ms": 22.369}
+{"request_id": "534d982cd16147fb8ccf6f74cd0b88d7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 26.963}
+{"request_id": "0f8d3f9fe5e4479a95802c141663a6d1", "route": "/v1/sessions/{session_id}/chat", "status": 500, "latency_ms": 44.351}
+{"request_id": "2d23f78510df4e34b2498c569eaf2817", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 18.787}
+ok
+test_strict_input (api.test_chat.ChatAPI.test_strict_input) ... {"request_id": "63f8c3f25ef44e958dd0141c214f95c2", "route": "/v1/sessions", "status": 200, "latency_ms": 105.359}
+{"request_id": "d7c3b4d4ecd4425e97c3d163f48d3564", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.588}
+{"request_id": "ef9b84e590bf4d68ae9e5312ccc526f2", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.363}
+{"request_id": "3bd4f53c21f04f688d2dab5eb02ad83c", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.279}
+{"request_id": "00e008c4d624404ea208c2f5bec0dac6", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.337}
+{"request_id": "bf84ed7e01d44ae6825b6c9db672095e", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 2.061}
+{"request_id": "52f5cf40ffe64daa9e3f53092b885ee2", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.42}
+{"request_id": "96ffe85e48fa43cfa75d6ab4c1b18b6a", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.221}
+{"request_id": "f82dc26bc0a741c39b7e6c09c29482ff", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 3.062}
+{"request_id": "440d81afbc324ca9a3800512832aa81a", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.1}
+{"request_id": "006755f7dfd84a819bd726359e0a203d", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.084}
+{"request_id": "1b4420f1ad39413bbbbcd9339990ba94", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.98}
+{"request_id": "cd68f4cc7d4b4226acdf75d2f4cf6907", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.987}
+{"request_id": "c4b6f301fc104d9292bc956cda4681b0", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.964}
+{"request_id": "c0dba7b09aa84175a1a90d2716728c12", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.008}
+{"request_id": "5b2d4a33143d4f1bbc4a126d232c7d98", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.931}
+{"request_id": "db6b3d14ab144c138764c13d1973dd63", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.845}
+{"request_id": "910a0a037bc24c4aa1f085d8a879d31e", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.295}
+{"request_id": "31c232ea460a49389c659666291c23dc", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.268}
+{"request_id": "ea355357893e44179f0c83c27eba323e", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.307}
+{"request_id": "7072061d6c1f4a2baa9799bd38cb03a2", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 3.406}
+{"request_id": "152fc78ef2594a15bc73e6561b09a105", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.018}
+{"request_id": "9a31975877dd45f5bfcec690cbd5f0a7", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.973}
+{"request_id": "6c76e1001b2b4aea8e6b984b4e0101b4", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.848}
+{"request_id": "08e344ff6a6a4074a92ed30e82958e8b", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.005}
+{"request_id": "2d3b6838ddfa4366a4e5c541b4e07fef", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.981}
+{"request_id": "a7ebf78994a04b12b610bec7b195945f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.296}
+ok
+test_strict_mode_is_not_relaxed (api.test_chat.ChatAPI.test_strict_mode_is_not_relaxed) ... {"request_id": "4313a425f417410496e8abb5fc1d9161", "route": "/v1/sessions", "status": 200, "latency_ms": 67.269}
+{"request_id": "6f6bdbb452134f449b67351e4bf891fb", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 20.355}
+{"request_id": "ad79c7a939ff408781238cf188518240", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 28.573}
+{"request_id": "3a0b2ea41b3443ba8788a97b97b2fad4", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 24.69}
+{"request_id": "e5d37d06f3e4410f940a693aa73aafcb", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 28.936}
+{"request_id": "ed9b8ea8241440daa287241ab18f6b34", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 30.452}
+{"request_id": "a76a44d137604972acc79979d2042c62", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 35.997}
+{"request_id": "d490a5596b614a1e99a8d5c4c24c0aa0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.37}
+{"request_id": "c46d7c7b52c140978f336882b3387ccc", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 39.053}
+{"request_id": "12227ee2074a4a6a858ded34a7d07a59", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 33.857}
+{"request_id": "217c436f4619468c93eb16b429330a3b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 150.9}
+ok
+test_configured_invalid_overlay_is_redacted_503_never_cached_success (api.test_evidence.EvidenceAPI.test_configured_invalid_overlay_is_redacted_503_never_cached_success) ... {"request_id": "0513f3ec059a4bf28a7977a258ffef82", "route": "/health", "status": 200, "latency_ms": 55.362}
+{"request_id": "fb82de25e6ac401fb14e1119b355b79f", "route": "/health", "status": 503, "latency_ms": 2.28}
+{"request_id": "ace188ab719c448f8f575512eb94fecc", "route": "/v1/venues", "status": 503, "latency_ms": 2.908}
+{"request_id": "582aa1afff534291b8354653964e8699", "route": "/v1/venues/{venue_id}", "status": 503, "latency_ms": 2.295}
+ok
+test_default_estimate_stays_conditional_even_with_complete_overlay (api.test_evidence.EvidenceAPI.test_default_estimate_stays_conditional_even_with_complete_overlay) ... {"request_id": "db7fe64855be49689e0813dfcd792a1c", "route": "/v1/sessions", "status": 200, "latency_ms": 77.836}
+{"request_id": "32b8816afc7143a09da900ae9a50dc4d", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 3.687}
+{"request_id": "c261d2d05c5d4c26a3ce276a0f1360b2", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 17.101}
+ok
+test_in_memory_replace_cannot_reuse_stale_or_removed_verified_overlay (api.test_evidence.EvidenceAPI.test_in_memory_replace_cannot_reuse_stale_or_removed_verified_overlay) ... {"request_id": "ee39d31573b041029675f69547d3187a", "route": "/v1/sessions", "status": 200, "latency_ms": 60.853}
+{"request_id": "77841538a38c4391a1860b881d9ac312", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 3.003}
+{"request_id": "a10205963b304f06ac0a618761f4f9d0", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 107.607}
+{"request_id": "dc46b60e53c34c6eb21aeef87f1deca7", "route": "/v1/sessions/{session_id}/tour/replace", "status": 503, "latency_ms": 3.747}
+{"request_id": "705a985c02334b57b3a3e339812b6664", "route": "/v1/sessions/{session_id}/tour/replace", "status": 409, "latency_ms": 3.086}
+{"request_id": "17770d8b228d4bf4a24071c3c5a3390f", "route": "/v1/sessions/{session_id}/tour/replace", "status": 409, "latency_ms": 2.622}
+ok
+test_overlay_version_change_invalidates_persistent_tour_on_read (api.test_evidence.EvidenceAPI.test_overlay_version_change_invalidates_persistent_tour_on_read) ... {"request_id": "152ebd9178904fdd8aa0a748474bfa7e", "route": "/v1/sessions", "status": 200, "latency_ms": 75.489}
+{"request_id": "957b147ed53940ca82e7948b23c1b7d4", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 13.701}
+{"request_id": "72967e5ada3b4cd0ba1ed19cfc6e928a", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 99.237}
+{"request_id": "e767cf246c5d4af3a5e4e59f7c331463", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.373}
+{"request_id": "5e8e08510ef4491da54a9fc661f3048c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 7.854}
+ok
+test_strict_overlay_and_local_osrm_fake_are_verified_end_to_end (api.test_evidence.EvidenceAPI.test_strict_overlay_and_local_osrm_fake_are_verified_end_to_end) ... {"request_id": "dbd9a116bd7b486fa83ddab4422366d3", "route": "/v1/sessions", "status": 200, "latency_ms": 55.638}
+{"request_id": "0b4e1fbdf8564ac291d790bfe44dfd5b", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 4.181}
+{"request_id": "89b63fe88e0b4567a1639a4bd69b6e4d", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 88.947}
+{"request_id": "24988c00438d4d62ba81d996f101901a", "route": "/health", "status": 200, "latency_ms": 3.412}
+{"request_id": "c7042da1202f4c96bc640eb506e2c48c", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 9.881}
+{"request_id": "51970c8936fb47f0b411fca064015ad6", "route": "/v1/venues", "status": 200, "latency_ms": 6.139}
+ok
+test_api_geocode_quota_validation_and_no_key_in_logs_responses (api.test_google_maps.GoogleAPI.test_api_geocode_quota_validation_and_no_key_in_logs_responses) ... {"request_id": "509c6ee5eabc429698f0f6f43f0d4520", "route": "/v1/sessions", "status": 200, "latency_ms": 60.212}
+ok
+test_config_unavailable_null_keys_and_ready_browser_key_only (api.test_google_maps.GoogleAPI.test_config_unavailable_null_keys_and_ready_browser_key_only) ... {"request_id": "b283ebb546fe4aa59e87bcb8ca24b134", "route": "/v1/client-config", "status": 200, "latency_ms": 42.301}
+{"request_id": "8f9680bb5d93433e9604760c32bc45e2", "route": "/v1/client-config", "status": 200, "latency_ms": 0.977}
+{"request_id": "e470d227fa664c2997d4914b565e0508", "route": "/v1/client-config", "status": 200, "latency_ms": 1.004}
+ok
+test_factory_google_unconfigured_no_network (api.test_google_maps.GoogleAPI.test_factory_google_unconfigured_no_network) ... {"request_id": "f1676dc36ed1427b9e4bc86ce05c4cf0", "route": "/health", "status": 200, "latency_ms": 41.601}
+{"request_id": "655b5660e25c425f9cb28264e7a7e6a8", "route": "/health", "status": 200, "latency_ms": 2.209}
+{"request_id": "87956981ce624b82b164f1646b3b34ff", "route": "/v1/client-config", "status": 200, "latency_ms": 0.85}
+ok
+test_geocode_auth_expiry_rate_and_unavailable (api.test_google_maps.GoogleAPI.test_geocode_auth_expiry_rate_and_unavailable) ... {"request_id": "e5d2caf784a14c2186ac53cf76141b14", "route": "/v1/geocode", "status": 401, "latency_ms": 60.099}
+{"request_id": "4c605e3e7f6b49d9a1b245c59d4d09eb", "route": "/v1/geocode", "status": 403, "latency_ms": 1.207}
+{"request_id": "5ca51419d822412e9b09bb9e863485cb", "route": "/v1/sessions", "status": 200, "latency_ms": 1.185}
+{"request_id": "af1085228b744ba6862ce85cdcfcceef", "route": "/v1/geocode", "status": 200, "latency_ms": 48.7}
+{"request_id": "178f2496c15c492fbed0e4035597ffbd", "route": "/v1/geocode", "status": 429, "latency_ms": 2.25}
+{"request_id": "0ca4d29ff39f4590a4db5a8295e707d1", "route": "/v1/geocode", "status": 403, "latency_ms": 4.325}
+{"request_id": "bcbb24ac336540ddb6dae1a698a9bc72", "route": "/v1/sessions", "status": 200, "latency_ms": 3.664}
+{"request_id": "2afa67369fe64d6ca7b9db40ee91c14a", "route": "/v1/geocode", "status": 200, "latency_ms": 5.069}
+ok
+test_health_routing_and_geocoding_no_secrets (api.test_google_maps.GoogleAPI.test_health_routing_and_geocoding_no_secrets) ... {"request_id": "90c24b4b6db649409dcbd7fd59c6608e", "route": "/health", "status": 200, "latency_ms": 55.701}
+{"request_id": "c3edd46866cd4dbd860f4c27a0873f8d", "route": "/health", "status": 200, "latency_ms": 2.568}
+ok
+test_landmark_does_not_call_geocoder (api.test_google_maps.GoogleAPI.test_landmark_does_not_call_geocoder) ... {"request_id": "e67cee8280ea4ed187bd9ce7f87d12d9", "route": "/v1/sessions", "status": 200, "latency_ms": 114.706}
+{"request_id": "1a6f292f1a6949799e6290b1451ffb31", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 177.871}
+ok
+test_map_bbox_limit_truncated_q_allowlist_and_bounds (api.test_google_maps.GoogleAPI.test_map_bbox_limit_truncated_q_allowlist_and_bounds) ... {"request_id": "7c8d221613b041bd97b4bf9e807e0537", "route": "/v1/venues/map", "status": 200, "latency_ms": 86.188}
+{"request_id": "a6a86947925c4851af9ca103c5d5e449", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 3.825}
+{"request_id": "475c5f0f9a7240299ce244adf0865b91", "route": "/v1/venues/map", "status": 200, "latency_ms": 4.115}
+{"request_id": "fd6435c4736a49c3bb4a40f7cb256167", "route": "/v1/venues/map", "status": 200, "latency_ms": 8.641}
+{"request_id": "78d0521113bb45aabc824a8ac3f51072", "route": "/v1/venues/map", "status": 422, "latency_ms": 2.208}
+{"request_id": "21eb0e29a3f24c189baf1a98d29c8561", "route": "/v1/venues/map", "status": 422, "latency_ms": 1.328}
+{"request_id": "8d845b72dd1f497db6a79225f20f0833", "route": "/v1/venues/map", "status": 422, "latency_ms": 4.736}
+{"request_id": "17328f0434ea4695b47bf43f7311ce47", "route": "/v1/venues/map", "status": 422, "latency_ms": 2.066}
+ok
+test_origin_text_resolves_and_unavailable_remains_missing (api.test_google_maps.GoogleAPI.test_origin_text_resolves_and_unavailable_remains_missing) ... {"request_id": "cf520b1e16ff4ec78a44521a13a97ef0", "route": "/v1/sessions", "status": 200, "latency_ms": 109.439}
+{"request_id": "363951a1fb464b4f954b9f38eb0a8271", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 246.781}
+{"request_id": "186e51c6390b46f7adb3f8a4e3b3e930", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 86.865}
+{"request_id": "505f10165a454c3297f6e8240c2ff325", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 51.765}
+{"request_id": "b8d316a19372421ba37779f1995872cd", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 53.549}
+{"request_id": "3f92486e967d4b6a97f2fd0eb8d4ba1a", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 8.778}
+ok
+test_origin_validation_and_sqlite_restart (api.test_google_maps.GoogleAPI.test_origin_validation_and_sqlite_restart) ... {"request_id": "c88d1a4bac074969a32148bf8f3fde5d", "route": "/v1/sessions", "status": 200, "latency_ms": 262.653}
+{"request_id": "ca98a2f002864491b7df070ac3151865", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 1.011}
+{"request_id": "fee11fb610504827b56b70b61c109f4e", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 1.164}
+{"request_id": "c047617787eb4ab690dbcaa54a7023ce", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.762}
+{"request_id": "5fbf9435ca5642299d6e3fac80ec4c48", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.732}
+{"request_id": "3912725a03af4b4ba865c6e086832645", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 15.8}
+{"request_id": "c7243091f66c43f886d3e183f3921914", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 17.628}
+{"request_id": "4485fb19020e402b9b4a71aae000f997", "route": "/v1/geocode", "status": 200, "latency_ms": 54.058}
+{"request_id": "7e63f5e71b624cd595b6ebb3fdc3ad4d", "route": "/v1/geocode", "status": 403, "latency_ms": 11.602}
+ok
+test_provider_tour_geometry_warnings_and_estimate_empty (api.test_google_maps.GoogleAPI.test_provider_tour_geometry_warnings_and_estimate_empty) ... {"request_id": "356bfed5ad574f7da73eab3f3437f45f", "route": "/v1/sessions", "status": 200, "latency_ms": 148.837}
+{"request_id": "3364d1fd7cb64d609e0f9116155a289d", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 177.33}
+{"request_id": "621962477a7843b696228f7d4d464bbf", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 29.778}
+ok
+test_reflected_secret_cannot_reach_geocode_response (api.test_google_maps.GoogleAPI.test_reflected_secret_cannot_reach_geocode_response) ... {"request_id": "3e91587f6e7a451c8f2b1dafc938b19e", "route": "/v1/sessions", "status": 200, "latency_ms": 64.088}
+{"request_id": "4eeb406a77e84567903e04660f4c834f", "route": "/v1/geocode", "status": 200, "latency_ms": 37.462}
+ok
+test_address_cap_privacy_origin_fallback_and_no_network (api.test_maps_links.MapsBuilderTests.test_address_cap_privacy_origin_fallback_and_no_network) ... ok
+test_address_encoding_normalisation_and_coordinate_precedence (api.test_maps_links.MapsBuilderTests.test_address_encoding_normalisation_and_coordinate_precedence) ... ok
+test_frontend_fixtures_match_builder_and_schema (api.test_maps_links.MapsBuilderTests.test_frontend_fixtures_match_builder_and_schema) ... ok
+test_invalid_coordinates_fallback_or_explicit_skip (api.test_maps_links.MapsBuilderTests.test_invalid_coordinates_fallback_or_explicit_skip) ... ok
+test_isolated_run_and_no_usable_points (api.test_maps_links.MapsBuilderTests.test_isolated_run_and_no_usable_points) ... ok
+test_length_shrinks_waypoints_and_rejects_unencodable_pairs (api.test_maps_links.MapsBuilderTests.test_length_shrinks_waypoints_and_rejects_unencodable_pairs) ... ok
+test_order_modes_and_mobile_splitting_one_through_twelve (api.test_maps_links.MapsBuilderTests.test_order_modes_and_mobile_splitting_one_through_twelve) ... ok
+test_auth_no_tour_readonly_and_no_providers (api.test_maps_links.MapsEndpointTests.test_auth_no_tour_readonly_and_no_providers) ... {"request_id": "70912aea197e41adb4748d863902b72d", "route": "/v1/sessions", "status": 200, "latency_ms": 46.925}
+{"request_id": "25ca967b321244c08f08126024ba63fe", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 401, "latency_ms": 1.049}
+{"request_id": "8696569aa6f948a9abd4980b85b69e3b", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 403, "latency_ms": 0.546}
+{"request_id": "3d7ca4563d49472bbe4093be3b179199", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 409, "latency_ms": 0.646}
+{"request_id": "5c60b62fd3214357be642adfd3690e31", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 409, "latency_ms": 0.683}
+{"request_id": "8a4fd16456ae475b99bc2faf19e182cd", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 14.897}
+{"request_id": "accdf4bce6d0408da5955a831a692590", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 200, "latency_ms": 1.255}
+{"request_id": "7ca233bd80b54b65b0daa8f9924ccf0e", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 200, "latency_ms": 1.411}
+{"request_id": "3b39695a2ef345df8db2a0af84dce21d", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 200, "latency_ms": 1.632}
+{"request_id": "048f53126d574f0d93101b9eb28e302c", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 422, "latency_ms": 0.374}
+ok
+test_sqlite_restore_does_not_replan_or_change_persisted_tour (api.test_maps_links.MapsEndpointTests.test_sqlite_restore_does_not_replan_or_change_persisted_tour) ... {"request_id": "ba1d557ce948493f92a91a957514e518", "route": "/v1/sessions", "status": 200, "latency_ms": 54.381}
+{"request_id": "47131d9426264b2fb55fd3a07e1866c9", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 32.428}
+{"request_id": "a1c5b72eb877488a8586e8b868d6cbda", "route": "/v1/sessions/{session_id}/tour/maps-links", "status": 200, "latency_ms": 7.28}
+ok
+test_client_config_ui_v2_unset_zero_one_and_aliases (api.test_r0_boundary.BoundaryTests.test_client_config_ui_v2_unset_zero_one_and_aliases) ... {"request_id": "835184aa57a344daaef0d6fe5acc3afb", "route": "/v1/client-config", "status": 200, "latency_ms": 43.99}
+{"request_id": "1a0948e94be346178f4625d6e6aaea04", "route": "/v1/client-config", "status": 200, "latency_ms": 0.774}
+{"request_id": "62eef3bcac3847a5a234a819587e9f48", "route": "/v1/client-config", "status": 200, "latency_ms": 0.677}
+{"request_id": "ef5a97d8a33f4f609446317f6c6abd6b", "route": "/v1/client-config", "status": 200, "latency_ms": 0.547}
+{"request_id": "4f33c2b5d107418ba71fa75123049956", "route": "/v1/client-config", "status": 200, "latency_ms": 0.825}
+{"request_id": "b2013098be34413dbff4c776ab564232", "route": "/v1/client-config", "status": 200, "latency_ms": 0.951}
+{"request_id": "b218292a671a493c8355077abaa01a75", "route": "/v1/client-config", "status": 200, "latency_ms": 0.675}
+{"request_id": "9f5adf6e62c1423ca283f6725ab77e71", "route": "/v1/client-config", "status": 200, "latency_ms": 0.643}
+{"request_id": "7c2478d369cc44d7af3e74455484c2f6", "route": "/v1/client-config", "status": 200, "latency_ms": 0.475}
+ok
+test_count_bound_loader_and_api_schema (api.test_r0_boundary.BoundaryTests.test_count_bound_loader_and_api_schema) ... ok
+test_rating_rounds_in_list_detail_and_nested_stop (api.test_r0_boundary.BoundaryTests.test_rating_rounds_in_list_detail_and_nested_stop) ... {"request_id": "ca6235b0b65c4db4976a8dae5be0eaff", "route": "/v1/venues", "status": 200, "latency_ms": 40.915}
+{"request_id": "dd4ef8e68e1440dd91f0c83ee52d5810", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.706}
+{"request_id": "da60b2781df94419bb770f46c6a346d9", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.93}
+{"request_id": "3a02ceb7e92f4315928685541b1ac57b", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.902}
+{"request_id": "90640da7870b472682dc8f298e84b673", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.111}
+{"request_id": "c569eca902d44db7aa8a4c15b5adc93d", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.496}
+{"request_id": "17b6dc685d1b416ea26e3ac1c94c2479", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.516}
+{"request_id": "0c365902793d488bbbc5b0f6d17bbd7c", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.681}
+{"request_id": "2d42661ca9264c668d58b02bfffb53f8", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.634}
+{"request_id": "2206db3498ec450a82f7dca1fec22533", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.613}
+{"request_id": "1689f5fef803426d869dffbeece13f9b", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.858}
+{"request_id": "e7ea3c6df04e4a818bea550ba4f0e062", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.649}
+{"request_id": "602a42bb3f3b4d258e76ae927e489443", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.208}
+{"request_id": "dacf0a95cdaf447dbe3cffab8498747e", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.437}
+{"request_id": "00506856614b4ac58498d9186e377dfd", "route": "/v1/sessions", "status": 200, "latency_ms": 0.731}
+{"request_id": "31e51b18aaf74a8381efa72ce98f3e32", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 21.72}
+ok
+test_invalid_hints_rejected_atomically (api.test_ranking.RankingAPI.test_invalid_hints_rejected_atomically) ... {"request_id": "b595d469bbb845cab86b7d2e609e2762", "route": "/v1/sessions", "status": 200, "latency_ms": 42.587}
+{"request_id": "59840fdec2ab4253ab82752cd6971346", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 2.296}
+{"request_id": "1a4935461f51472096e3b0c25eb51828", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.512}
+{"request_id": "184dec81cdda4c12995b48d4521e35c8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 2.41}
+{"request_id": "7fbab909eb634bb8b467ee720b9f8f63", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.423}
+{"request_id": "df44755a82364d5e880c3ac57acf06b5", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 2.153}
+{"request_id": "2150df699dd04d97ac130983e11b41cb", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.359}
+{"request_id": "151371daa03d404792996029eaf51c42", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 1.914}
+{"request_id": "5de6f6665282471eb74d0405ea6eec9c", "route": "/v1/sessions/{session_id}/preferences", "status": 422, "latency_ms": 0.356}
+{"request_id": "ad3f305a89fd41429fec8a35dd73e683", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 2.161}
+ok
+test_invalid_weight_falls_back_and_setting_is_read_once (api.test_ranking.RankingAPI.test_invalid_weight_falls_back_and_setting_is_read_once) ... {"request_id": "84f0e8d6ead6447b867e91c09a55b991", "route": "/health", "status": 200, "latency_ms": 50.154}
+{"request_id": "c2d59aff94ac47a8b04cb8ec0f519250", "route": "/health", "status": 200, "latency_ms": 93.177}
+{"request_id": "52b32c2359884899b5974e81784722e9", "route": "/health", "status": 200, "latency_ms": 41.061}
+{"request_id": "9492945b28bc41a5bcf0cb798db797fe", "route": "/health", "status": 200, "latency_ms": 40.118}
+{"request_id": "71c4bf78892b47e5995a8bf2c7d22fe0", "route": "/health", "status": 200, "latency_ms": 48.375}
+{"request_id": "13cdde78a99d431d804788c3a119e0ed", "route": "/health", "status": 200, "latency_ms": 41.481}
+{"request_id": "7ffc11fadc28411ca7d2e7d81b37d821", "route": "/health", "status": 200, "latency_ms": 42.588}
+{"request_id": "a021cf7207a547afbcad4801f96a156c", "route": "/health", "status": 200, "latency_ms": 42.033}
+{"request_id": "33e1f5f627734c50b908cb44ed631a11", "route": "/health", "status": 200, "latency_ms": 53.299}
+ok
+test_planner_why_tampering_is_rejected_before_commit (api.test_ranking.RankingAPI.test_planner_why_tampering_is_rejected_before_commit) ... {"request_id": "e9095475542649988de6a3360697c1a4", "route": "/v1/sessions", "status": 200, "latency_ms": 52.12}
+{"request_id": "234103d8ebbf441f9b349cf841e3ae61", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 3.013}
+{"request_id": "bea23b1fd8204ed098a641999ad4cf0d", "route": "/v1/sessions/{session_id}/tour", "status": 500, "latency_ms": 2.812}
+{"request_id": "a9f1c832fb834b52b360cabe71fae8ec", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 3.248}
+ok
+test_preferences_persist_and_round_trip_all_enums_and_null (api.test_ranking.RankingAPI.test_preferences_persist_and_round_trip_all_enums_and_null) ... {"request_id": "64c0dee44ff9419fa9bc42abe11e3fd6", "route": "/v1/sessions", "status": 200, "latency_ms": 71.923}
+{"request_id": "73952c94058846c4a7cc1c98a621efd3", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 16.509}
+{"request_id": "481c3367e9394074865add47d093a276", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 49.501}
+{"request_id": "2f9bfd0eeee24810a8b3f663b98e3fe1", "route": "/v1/sessions", "status": 200, "latency_ms": 9.561}
+{"request_id": "84b4d2c8505e443abcac6375ed488872", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 12.937}
+{"request_id": "2ce9cfa513574c21910abbc0b12d99f8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 43.026}
+{"request_id": "559dbfccffb54766b17ad8228c853d5f", "route": "/v1/sessions", "status": 200, "latency_ms": 9.787}
+{"request_id": "e8975588cfee442d8b3567a91b8a44be", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 9.914}
+{"request_id": "daa0c66295554329b3a7c3d28071998e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 80.575}
+{"request_id": "2dc8ba147d8d49a7bf41044ee335a496", "route": "/v1/sessions", "status": 200, "latency_ms": 12.264}
+{"request_id": "a797a72d944f4cb0a9191566be757cbc", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 18.586}
+{"request_id": "faf718c92bf24d8196a5269fe5f24a7f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 107.613}
+{"request_id": "548f3c5c44cb4c36afa7ffb144307d61", "route": "/v1/sessions", "status": 200, "latency_ms": 18.433}
+{"request_id": "e0b8ee3875674167ad6007c3ceff0646", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 23.011}
+{"request_id": "1f05888624cb49d58c0768c07b1c3e62", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 144.361}
+{"request_id": "c3c3be0d0c2d4a488329cc1c040b48eb", "route": "/v1/sessions", "status": 200, "latency_ms": 12.552}
+{"request_id": "f4888324e9f840de9e7d27dbce9e030f", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 21.875}
+{"request_id": "1bb0e8cee8ec4cd8a036013163ad909b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 122.981}
+{"request_id": "992bcb7b308148dc91922cf5435659e6", "route": "/v1/sessions", "status": 200, "latency_ms": 13.814}
+{"request_id": "d0c743a24f21410ead25e74527bc721b", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 23.55}
+{"request_id": "f0e9c021257744d0ad13cb3395133a0f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 84.884}
+{"request_id": "bfd2608cfc294da29882c0657aff65e9", "route": "/v1/sessions", "status": 200, "latency_ms": 9.294}
+{"request_id": "a166cdb0635d4ee7b9bbe832afbd4956", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 12.511}
+{"request_id": "4908fae7238f47d18638d01e4d062bd9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 65.41}
+{"request_id": "2456622439bf4ddab95f90f9e49f3458", "route": "/v1/sessions", "status": 200, "latency_ms": 9.259}
+{"request_id": "88b942ff10804b62951eb42dfeca383e", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 17.243}
+{"request_id": "668acad33dc240e980418cb2cabeaa9c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 203.367}
+{"request_id": "236fed60513f481e99ad7de61cd68760", "route": "/v1/sessions", "status": 200, "latency_ms": 24.326}
+{"request_id": "d1e035b5f413457c96e3a06439881356", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 26.823}
+{"request_id": "1b6ff340b2154c5bbe91e8adb58d7626", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 95.657}
+{"request_id": "24dea79d31654cec93b5de43c344abee", "route": "/v1/sessions", "status": 200, "latency_ms": 13.508}
+{"request_id": "91edd24324b844e4afba5d9c8ad14bcf", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 17.918}
+{"request_id": "eba3f8575c6f45fbbd2ed4a41dc9d62d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 60.085}
+{"request_id": "7c44494db51e405ab6379f3d9a8ae24e", "route": "/v1/sessions", "status": 200, "latency_ms": 9.81}
+{"request_id": "cc19f57a69a94d95ae29e80bf716d50f", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 10.466}
+{"request_id": "cee4c7293b1b4d9d866fa946749553c0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 55.045}
+{"request_id": "d3367e15fc2a457991d71c5e47d5cb5f", "route": "/v1/sessions", "status": 200, "latency_ms": 10.02}
+{"request_id": "df954fa46d8b4679a5c6ae9039ad42b4", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 13.923}
+{"request_id": "b98265cd9d944613af2007bd4209222e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 63.889}
+{"request_id": "684c4635a0bb4b618d944ef6010c817a", "route": "/v1/sessions", "status": 200, "latency_ms": 8.4}
+{"request_id": "b5fa7f7bb4634758a6e422273b976cd2", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 9.985}
+{"request_id": "d655dcf3d1cc48b2b2c77f7488c44982", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 56.486}
+{"request_id": "295224cc15024d13beb2d8e798ed63ea", "route": "/v1/sessions", "status": 200, "latency_ms": 9.842}
+{"request_id": "123b0a23160c4dedaac36bf7733875d6", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 13.73}
+{"request_id": "cac80f65843d44529c3d636b386a76ec", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 97.34}
+{"request_id": "206eb6464ee94f1ba02a4b42d9208598", "route": "/v1/sessions", "status": 200, "latency_ms": 17.424}
+{"request_id": "877f7af9c3944c72bb488b7f50e7168e", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 13.411}
+{"request_id": "2149a0bc6d6a45aaa4b953d3194c87a5", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 54.944}
+{"request_id": "09255437a56d44e090f62e1a14b4bc32", "route": "/v1/sessions", "status": 200, "latency_ms": 11.58}
+{"request_id": "81821920d9f3405d876f3a020c49e0d7", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 17.886}
+{"request_id": "24ccb896b67e4b54888232ca33022367", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 57.547}
+{"request_id": "a97fa8bf9cdd48f198a58fe43bbe35e2", "route": "/v1/sessions", "status": 200, "latency_ms": 10.528}
+{"request_id": "9882abcb9aa14483a34557f9c0697dd8", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 14.223}
+{"request_id": "045cebb10fe8462fb2807af184f81f68", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 65.463}
+{"request_id": "55f4b130f35c4be199bd80d2f15a00af", "route": "/v1/sessions", "status": 200, "latency_ms": 11.116}
+{"request_id": "09f78ab38280421dbf880bed2e5b14df", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 14.099}
+{"request_id": "de254ff2cc314432b359fb078bf29182", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 62.873}
+{"request_id": "c9bd4687688d4366bdbf6f88caed79b6", "route": "/v1/sessions", "status": 200, "latency_ms": 10.63}
+{"request_id": "0f0e3288f67047c78382d34d87d7be00", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 14.069}
+{"request_id": "1e1116945ee64bbaabe53382872267a0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 64.094}
+{"request_id": "38b0cc998b87476391330e059b2bb1b3", "route": "/v1/sessions", "status": 200, "latency_ms": 9.001}
+{"request_id": "8fa4836facdf497d967172c100f85e9c", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 12.311}
+{"request_id": "1f0643c7eb4b4c83955e502ae1f03049", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 64.295}
+{"request_id": "656f46c8887944aa8b23a1715e403e9d", "route": "/v1/sessions", "status": 200, "latency_ms": 16.213}
+{"request_id": "22019f7598e6479aab0c3870f263c806", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 16.558}
+{"request_id": "ac269ba7460c4afbb7e06771a2deb156", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 117.773}
+{"request_id": "9974ae104601416f80529279a1dcf64e", "route": "/v1/sessions", "status": 200, "latency_ms": 21.805}
+{"request_id": "7142096f86284ef68686992712206196", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 25.467}
+{"request_id": "b4b263a721b6480ea9802656a7e083cd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 176.531}
+{"request_id": "139c62c6c1044b9fa65508003f42ceb0", "route": "/v1/sessions", "status": 200, "latency_ms": 21.49}
+{"request_id": "e26f4de5df66452bb2dbf9278e54b6d0", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 27.008}
+{"request_id": "313b5028ffb842c1b598390f8a887b69", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 138.808}
+ok
+test_sqlite_empty_tour_restore_receives_app_weight (api.test_ranking.RankingAPI.test_sqlite_empty_tour_restore_receives_app_weight) ... {"request_id": "52d0d78352474b1e88f30dca84784168", "route": "/v1/sessions", "status": 200, "latency_ms": 171.698}
+{"request_id": "488069ed5e5b41018bb7d93182f98dee", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 25.77}
+{"request_id": "ab619ef56a3d445283ed4fd03d2c2ea5", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 30.866}
+{"request_id": "0b7a2eb428d1434f806f3876e4314d33", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 86.814}
+ok
+test_sqlite_tour_why_is_regenerated_and_injected_text_rejected (api.test_ranking.RankingAPI.test_sqlite_tour_why_is_regenerated_and_injected_text_rejected) ... {"request_id": "20a0cc9ae7f349819855807d8027abd9", "route": "/v1/sessions", "status": 200, "latency_ms": 76.957}
+{"request_id": "b264f7fdaa3b47e1b3c8970f4fe9647c", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 12.486}
+{"request_id": "9288b96e474f42d08c0cf72b327bef38", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 13.572}
+{"request_id": "30bb2010dab54c6e92e9e3b4fcf76fa7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 56.027}
+{"request_id": "fecefa90da1a42498f85ec591cc623c9", "route": "/v1/sessions/{session_id}", "status": 503, "latency_ms": 5.379}
+ok
+test_tampered_in_memory_why_is_rebuilt_on_read (api.test_ranking.RankingAPI.test_tampered_in_memory_why_is_rebuilt_on_read) ... {"request_id": "2026bb31416b42588ebb3f63e44e2ecf", "route": "/v1/sessions", "status": 200, "latency_ms": 76.601}
+{"request_id": "88bbe36c789147098e5487d7c346118a", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 5.487}
+{"request_id": "a99ce4046b4f49e7ba998cd4a7b6c433", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 9.55}
+{"request_id": "c24fdfc1c22e4123b700551285040717", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.688}
+ok
+test_weight_changes_selection_and_all_planning_endpoints_receive_it (api.test_ranking.RankingAPI.test_weight_changes_selection_and_all_planning_endpoints_receive_it) ... {"request_id": "d9266bb9cc9f4ec0a412138c60f66809", "route": "/v1/sessions", "status": 200, "latency_ms": 147.335}
+{"request_id": "c80a05c03fe949dc95bfdc513bd2e29c", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 1.202}
+{"request_id": "c0dbc5bd984a4b7a8f1df9a6010774bd", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 1.622}
+{"request_id": "22ea7d331feb4b688d909cf3960bed5d", "route": "/v1/sessions/{session_id}/tour/replace", "status": 200, "latency_ms": 3.201}
+{"request_id": "32b00be3bf3044c0a1088a573a08c1f5", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 9.538}
+{"request_id": "3c3ad514c1944269bae1eec71c8e9f30", "route": "/v1/sessions", "status": 200, "latency_ms": 52.981}
+{"request_id": "7be7b9ea5f604095b8a21a9951f5f8a6", "route": "/v1/sessions/{session_id}/preferences", "status": 200, "latency_ms": 3.016}
+{"request_id": "a15591b729e74e478d8ab9dd1fe54c3a", "route": "/v1/sessions/{session_id}/tour", "status": 200, "latency_ms": 1.842}
+{"request_id": "da1572a7b5f94d0cb25032c0ff269c7a", "route": "/v1/sessions/{session_id}/tour/replace", "status": 200, "latency_ms": 2.371}
+{"request_id": "63bc214f85154a0a9a532c491c734ca0", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 2.369}
+ok
+test_blank_data_and_database_environment_are_unset (api.test_security.SecurityTests.test_blank_data_and_database_environment_are_unset) ... {"request_id": "ebd187ddb4964552982556419da570d2", "route": "/health", "status": 200, "latency_ms": 42.105}
+{"request_id": "03259e5fb7154515b00a8a56244e92be", "route": "/health", "status": 200, "latency_ms": 41.618}
+ok
+test_cors_comma_separated_origins_for_localhost_and_loopback (api.test_security.SecurityTests.test_cors_comma_separated_origins_for_localhost_and_loopback) ... {"request_id": "ca4ce4dc263e41a28fbde42a173d5119", "route": "/health", "status": 200, "latency_ms": 53.331}
+{"request_id": "193f838f524946b4a0108bef7ad003c8", "route": "<unmatched>", "status": 413, "latency_ms": 0.164}
+{"request_id": "a32276ad8cf64c88a53032f177307d68", "route": "/health", "status": 200, "latency_ms": 3.307}
+{"request_id": "be9fd788d86b4e1883d38c143f79ce73", "route": "<unmatched>", "status": 413, "latency_ms": 0.108}
+{"request_id": "cc91bb14adb34899a049592117894441", "route": "/health", "status": 200, "latency_ms": 5.158}
+ok
+test_cors_exact_origin_including_guard_errors (api.test_security.SecurityTests.test_cors_exact_origin_including_guard_errors) ... {"request_id": "b1264d019d6d42bbad8e69094c8ca7d2", "route": "/health", "status": 200, "latency_ms": 78.17}
+{"request_id": "978321bad38f4200a05542983aec3e61", "route": "<unmatched>", "status": 413, "latency_ms": 0.11}
+{"request_id": "51f45557319946cf9340043a8c31ee50", "route": "<unmatched>", "status": 200, "latency_ms": 0.433}
+{"request_id": "c38b4bb5181f4178b48f34d9554fc612", "route": "/health", "status": 200, "latency_ms": 5.925}
+{"request_id": "5710a6f5c0934ecd9f7e0957f3b5c811", "route": "<unmatched>", "status": 413, "latency_ms": 0.283}
+{"request_id": "6b3c89435cc840948e4cd51850e287f5", "route": "<unmatched>", "status": 400, "latency_ms": 0.274}
+ok
+test_declared_and_streamed_body_limits_precede_session_creation (api.test_security.SecurityTests.test_declared_and_streamed_body_limits_precede_session_creation) ... {"request_id": "4b6d274820e54ebc958d2593a12d87f6", "route": "<unmatched>", "status": 413, "latency_ms": 0.149}
+{"request_id": "93cbfafa290149219815cef4c79808f7", "route": "<unmatched>", "status": 413, "latency_ms": 0.129}
+{"request_id": "d8bffa3e86a4436a995d9e53d24de341", "route": "<unmatched>", "status": 413, "latency_ms": 0.129}
+ok
+test_ip_rate_limit_includes_create_and_ignores_forwarded_header (api.test_security.SecurityTests.test_ip_rate_limit_includes_create_and_ignores_forwarded_header) ... {"request_id": "05748993ec224f168d9508c31c9999d7", "route": "/v1/sessions", "status": 200, "latency_ms": 165.567}
+{"request_id": "ee0244103cb24e82b38edf127c5c5260", "route": "/v1/sessions", "status": 200, "latency_ms": 2.912}
+{"request_id": "f718387447f0472da5006e66b7fe5079", "route": "<unmatched>", "status": 429, "latency_ms": 0.182}
+ok
+test_known_and_unknown_tokens_use_constant_time_comparison (api.test_security.SecurityTests.test_known_and_unknown_tokens_use_constant_time_comparison) ... ok
+test_limit_windows_reset_and_memory_is_bounded (api.test_security.SecurityTests.test_limit_windows_reset_and_memory_is_bounded) ... ok
+test_logs_have_only_allowlisted_fields_and_route_template (api.test_security.SecurityTests.test_logs_have_only_allowlisted_fields_and_route_template) ... {"request_id": "df9d9dd26a6d407d9fbf58e8f6beb75e", "route": "/v1/sessions", "status": 200, "latency_ms": 91.729}
+ok
+test_session_headers_and_server_issued_request_ids (api.test_security.SecurityTests.test_session_headers_and_server_issued_request_ids) ... {"request_id": "b784a3a0da0c4ca48d59511a3d97ba59", "route": "/health", "status": 200, "latency_ms": 6.417}
+ok
+test_token_rate_limit_is_configurable_and_isolated (api.test_security.SecurityTests.test_token_rate_limit_is_configurable_and_isolated) ... {"request_id": "b7ca79e7357e422eaf5ea4c0dc17fd65", "route": "/v1/sessions", "status": 200, "latency_ms": 154.034}
+{"request_id": "da80c306d42e43fab453a413a0843682", "route": "/v1/sessions", "status": 200, "latency_ms": 2.069}
+{"request_id": "b079b67f7d7646f9aa64c5935b14c2ef", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 3.381}
+{"request_id": "dcf71cdd0eda4684916bf80d970a8213", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 3.504}
+{"request_id": "bf2ae75d42764f96a6120102eaf068b7", "route": "<unmatched>", "status": 429, "latency_ms": 0.136}
+{"request_id": "7033a82ebb414094a5bdb42769b9632b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 4.133}
+ok
+test_uniform_errors_no_input_echo_or_traceback (api.test_security.SecurityTests.test_uniform_errors_no_input_echo_or_traceback) ... {"request_id": "99c4c4edeb5b48108ca3b5140026fc7c", "route": "<unmatched>", "status": 404, "latency_ms": 144.466}
+{"request_id": "b422ded810cb4e7b9d5268a69e4e04e1", "route": "/v1/sessions", "status": 405, "latency_ms": 0.281}
+{"request_id": "5cb4f42e3dc0429ab83f5b719aef3eb9", "route": "/v1/sessions/{session_id}/messages", "status": 422, "latency_ms": 1.924}
+{"request_id": "4311baf19ee74b418f75040998dc7761", "route": "<unmatched>", "status": 413, "latency_ms": 0.247}
+{"request_id": "02db0b93055b44cb80e397bfd28ffde1", "route": "/crash", "status": 500, "latency_ms": 4.224}
+ok
+test_wildcard_cors_config_fails_closed (api.test_security.SecurityTests.test_wildcard_cors_config_fails_closed) ... {"request_id": "3a075f79a74e40fdba3051416e481fc2", "route": "/health", "status": 200, "latency_ms": 265.197}
+{"request_id": "63756f22d39645ecb7eb6832f41156d2", "route": "/health", "status": 200, "latency_ms": 141.466}
+{"request_id": "3cc5aaf3f40445188e9ce808892abd2c", "route": "/health", "status": 200, "latency_ms": 160.114}
+ok
+test_configured_csv_bounded_and_allowlisted_not_legacy_load (api.test_venues.VenueListTests.test_configured_csv_bounded_and_allowlisted_not_legacy_load) ... {"request_id": "6c9acf64fb344cf9bb343235aaeaed4c", "route": "/v1/venues", "status": 200, "latency_ms": 128.341}
+{"request_id": "bbbfa5f3464347ac849ad02be79c1a83", "route": "/v1/venues", "status": 200, "latency_ms": 28.056}
+{"request_id": "ee9d0745c4c34f1bae95eab982ddb4db", "route": "/v1/venues", "status": 200, "latency_ms": 35.474}
+{"request_id": "7726ff4e78e946fcb1c631f4bacd212b", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 20.971}
+{"request_id": "5632fa0f4d76494cba0e3275102ef362", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 27.211}
+{"request_id": "6e8754d8fd2a4379805fd526972c02d9", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 22.691}
+{"request_id": "d5034d1889394240917973e8692aaa56", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 34.94}
+{"request_id": "c4eefa5f0a914dbe916635da158413cb", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 40.842}
+{"request_id": "adda6a419d8144fa9bfd6edd11db7840", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 23.206}
+{"request_id": "4a630f4ce3224d6b9838efa4448f4b4a", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 21.84}
+{"request_id": "61ae5569733f4b24a5812b4394f82493", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 25.295}
+{"request_id": "846ca28c99f64e0e9c5a353502c3ead2", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 21.402}
+{"request_id": "5ab6b27389724662a4b25a2a0d60b522", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 25.114}
+{"request_id": "6d0fb536b78942ea938dbdddc8053ec3", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 34.863}
+{"request_id": "4b12d3b48ad648be8bd35ce808a32dab", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 32.726}
+{"request_id": "021727d5536f4ce8a9b541388b965bd7", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 23.045}
+{"request_id": "1a27024ae4c3435a958532d03701432d", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 15.333}
+{"request_id": "2ea7ad16666643818bd41e4394b5058b", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 24.045}
+{"request_id": "9b4803919ae043dc8396789a25a17678", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 19.906}
+{"request_id": "816607b5df7049ba9a42c551e79d57bd", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 17.065}
+{"request_id": "173230273ca94f5481b1a1f883254dd7", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 15.26}
+{"request_id": "281ff17e75794edba3cf2f38212fb0d2", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 17.221}
+{"request_id": "eb41c4d906a34dd2bf5cfdf6a7366802", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 13.524}
+{"request_id": "ea28fe21db7042ca8de012b297a9ab83", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 16.423}
+{"request_id": "39d26d3c0bbd4cf6b83d2b6ee218e5e6", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 21.601}
+{"request_id": "090c1bb5fdc847d1b4a7eb2798710f42", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 26.985}
+{"request_id": "b5ce7bab090e41709fbe5460d23a5fd6", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 31.044}
+{"request_id": "33f5b86245764cc9a004462e3621420e", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 32.61}
+{"request_id": "9894fc1b8a464d568f7031632785e59d", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 35.357}
+{"request_id": "27736281e29a442e876144eef11f7944", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 36.834}
+{"request_id": "4f24ed2faa4c443fb1f4353266cd5d43", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 31.823}
+{"request_id": "9d02830ce88a4ed397f931b59f2ccbb8", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 12.824}
+{"request_id": "08e4bc7b5ba447bfade1770ae9d41e1c", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 19.482}
+{"request_id": "71b8d0f037e1441da9c5bebc06f17a2a", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 24.748}
+{"request_id": "0b20b1f12d054eca8a7a2482a2b61c05", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 31.43}
+{"request_id": "fc43c999985740ac8a5f9b0dbba28d44", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 24.51}
+{"request_id": "a82b63ac3f514b73bd333d1ca1b02e51", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 19.761}
+{"request_id": "3c26a9818bfb428ea97857660c988f22", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 17.14}
+{"request_id": "360582ddc9b64e3f8415028cd0f0fe2d", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 16.352}
+{"request_id": "1aa7b2620e1e4e0e88341eb80912e9d7", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 12.932}
+{"request_id": "8ea13f33e8b945d1b6b6336ec74b9302", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 22.117}
+{"request_id": "c2891d7d960c4e30b74560e1878a6c4f", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 38.817}
+{"request_id": "50d58352b9784a95922352b88bfe2230", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 34.139}
+{"request_id": "7fab5010124b46468c9d654fb06ac88e", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 39.438}
+{"request_id": "89b604f44d3b4a178f87e0d758d06056", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 21.65}
+{"request_id": "9a3feaba8de94f3584e096f06d216aa7", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 12.784}
+{"request_id": "44f9232577424b669ed10fe62cc99a9a", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 20.05}
+{"request_id": "bbf4c6e680c047ed9a75ff9486daaaa5", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 15.074}
+{"request_id": "7c4f0c42e821403d9997cebac2206ea7", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 21.444}
+{"request_id": "a537150b930f4abb80b8781efafeb310", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 27.382}
+{"request_id": "8f9f639cd84d4c629d9d9c9b1741006b", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 24.29}
+{"request_id": "e7aff8c817e14d70bda86d279c1d20cc", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 19.962}
+{"request_id": "15eaaff8a98b41718d7becfa20470d40", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 13.755}
+ok
+test_pagination_and_city_filter (api.test_venues.VenueListTests.test_pagination_and_city_filter) ... {"request_id": "a6eb5283dafa47d1ae1597204507bcd9", "route": "/v1/venues", "status": 200, "latency_ms": 77.466}
+{"request_id": "2d7e86e94a554b8fbbf08ef4397bd7b8", "route": "/v1/venues", "status": 200, "latency_ms": 3.083}
+{"request_id": "1c4adbff37864bf39f1bd573377200fa", "route": "/v1/venues", "status": 200, "latency_ms": 2.157}
+{"request_id": "0e497379ac0345b4955fdd9a13e4cb63", "route": "/v1/venues", "status": 200, "latency_ms": 2.905}
+ok
+test_pagination_bounds_are_enveloped_errors (api.test_venues.VenueListTests.test_pagination_bounds_are_enveloped_errors) ... {"request_id": "91ec8edebd9f4df8a132d2d7f18b1af8", "route": "/v1/venues", "status": 422, "latency_ms": 43.133}
+{"request_id": "bb148787aa8f4ac79cb38a36328f8313", "route": "/v1/venues", "status": 422, "latency_ms": 0.437}
+{"request_id": "12cf288f16ca4c2c8469f30b9d1b1e32", "route": "/v1/venues", "status": 422, "latency_ms": 0.343}
+{"request_id": "6721bf90288646f48b32e2697e15c9ec", "route": "/v1/venues", "status": 422, "latency_ms": 0.323}
+{"request_id": "f7e0271f662348bea2c79fac72b474e3", "route": "/v1/venues", "status": 422, "latency_ms": 0.706}
+{"request_id": "66103e3e6d0b490bbe56664216310b5c", "route": "/v1/venues", "status": 422, "latency_ms": 0.277}
+{"request_id": "e2e9a59c9a2641ae980952ed40cb66ca", "route": "/v1/venues", "status": 200, "latency_ms": 3.792}
+ok
+test_synthetic_default_list_and_detail_share_snapshot (api.test_venues.VenueListTests.test_synthetic_default_list_and_detail_share_snapshot) ... {"request_id": "58c75ee4f9194c5cb7e713a2fd7d6a62", "route": "/v1/venues", "status": 200, "latency_ms": 51.371}
+{"request_id": "7e72d13b8cc842e9bd97e992612c468e", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.372}
+{"request_id": "94a0da5c584d477e8839f631989b6dcd", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.656}
+{"request_id": "aa7b8a1b8b8b42c2a2272c869af74f20", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.215}
+{"request_id": "1ff12406635b41ef84a7f033b71845eb", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.73}
+{"request_id": "5fca4343f8054fa5a4099e1e69cdff38", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 4.473}
+{"request_id": "d8f37cdbc3f2480caf154bcf1092806c", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 3.811}
+{"request_id": "25c8176f34534c37b771ba74bd684b96", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 4.772}
+{"request_id": "bc53d748664a47c6a270ac166f87b091", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 5.573}
+{"request_id": "010f07d39d3541ef9a0d9d59aaaf1cdc", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 4.462}
+{"request_id": "0c1fc03b05094f2b820b36db93e7a1c0", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 6.196}
+{"request_id": "5677c0a9c49f4fe3ba5fc0c81c3e0985", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 5.184}
+{"request_id": "1e4c18bed1b04777bc3cf350b7c1b26f", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 6.998}
+{"request_id": "8cac0087c83146f1adc7eb95a8afcee3", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 6.764}
+ok
+test_adv01_idk_never_repeats_or_replaces_the_open_question (chat.test_adversarial_engine.Adv.test_adv01_idk_never_repeats_or_replaces_the_open_question) ... ok
+test_adv04_vague_add_shows_candidates_and_ok_cannot_plan (chat.test_adversarial_engine.Adv.test_adv04_vague_add_shows_candidates_and_ok_cannot_plan) ... ok
+test_adv14_stale_label_after_empty_search_asks_instead_of_adding (chat.test_adversarial_engine.Adv.test_adv14_stale_label_after_empty_search_asks_instead_of_adding) ... ok
+test_unknown_table_cells_say_chua_ro (chat.test_adversarial_engine.Adv.test_unknown_table_cells_say_chua_ro) ... ok
+test_vehicle_change_after_plan_flags_tour_stale (chat.test_adversarial_engine.StaleNotice.test_vehicle_change_after_plan_flags_tour_stale) ... ok
+test_all_scenarios (chat.test_engine_scenarios.EngineScenarios.test_all_scenarios) ... C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_engine_scenarios.py:51: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\qa\\chat\\scenarios\\scenarios.json' mode='r' encoding='utf-8'>
+  scenarios = json.load(open(ROOT / "qa/chat/scenarios/scenarios.json", encoding="utf-8"))["scenarios"]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_confident_rules_never_call_llm (chat.test_llm_understand.EngineWithLLM.test_confident_rules_never_call_llm) ... ok
+test_llm_cannot_guess_an_allergy_without_a_term (chat.test_llm_understand.EngineWithLLM.test_llm_cannot_guess_an_allergy_without_a_term) ... ok
+test_llm_failure_degrades_to_clarification_with_reason (chat.test_llm_understand.EngineWithLLM.test_llm_failure_degrades_to_clarification_with_reason) ... ok
+test_llm_unsafe_is_honoured_and_confirm_yes_needs_pending (chat.test_llm_understand.EngineWithLLM.test_llm_unsafe_is_honoured_and_confirm_yes_needs_pending) ... ok
+test_low_confidence_text_uses_llm_once (chat.test_llm_understand.EngineWithLLM.test_low_confidence_text_uses_llm_once) ... ok
+test_bad_model_json_counts_one_call_and_yields_nothing (chat.test_llm_understand.Gate.test_bad_model_json_counts_one_call_and_yields_nothing) ... ok
+test_call_is_counted_and_cached (chat.test_llm_understand.Gate.test_call_is_counted_and_cached) ... ok
+test_prompt_input_is_name_free (chat.test_llm_understand.Gate.test_prompt_input_is_name_free) ... ok
+test_provider_failure_still_counts_when_attempted (chat.test_llm_understand.Gate.test_provider_failure_still_counts_when_attempted) ... ok
+test_session_cap_and_reserve_refuse_without_calling (chat.test_llm_understand.Gate.test_session_cap_and_reserve_refuse_without_calling) ... ok
+test_schema_has_closed_intents (chat.test_llm_understand.Sanitize.test_schema_has_closed_intents) ... ok
+test_unknown_intent_is_rejected (chat.test_llm_understand.Sanitize.test_unknown_intent_is_rejected) ... ok
+test_whitelist_and_ranges (chat.test_llm_understand.Sanitize.test_whitelist_and_ranges) ... ok
+test_exclusion_added_after_selection_is_reported_not_ignored (chat.test_planning.HardPreferences.test_exclusion_added_after_selection_is_reported_not_ignored) ... ok
+test_strict_mode_is_not_relaxed (chat.test_planning.HardPreferences.test_strict_mode_is_not_relaxed) ... ok
+test_all_selected_kept_in_one_valid_tour (chat.test_planning.PlanSelected.test_all_selected_kept_in_one_valid_tour) ... ok
+test_allergen_venue_is_reported_not_planned (chat.test_planning.PlanSelected.test_allergen_venue_is_reported_not_planned) ... ok
+test_never_returns_a_smaller_tour_silently (chat.test_planning.PlanSelected.test_never_returns_a_smaller_tour_silently) ... ok
+test_vehicle_changes_eta_label_stays_estimate (chat.test_planning.PlanSelected.test_vehicle_changes_eta_label_stays_estimate) ... ok
+test_confirm_summary_status_values_follow_the_contract (chat.test_planning.SummaryContract.test_confirm_summary_status_values_follow_the_contract) ... ok
+test_all_corpus_expectations_are_known (chat.test_runner.RunnerChecks.test_all_corpus_expectations_are_known) ... ok
+test_compare_rows_unknowns_and_unsupported (chat.test_runner.RunnerChecks.test_compare_rows_unknowns_and_unsupported) ... ok
+test_each_expectation_can_fail (chat.test_runner.RunnerChecks.test_each_expectation_can_fail) ... ok
+test_global_tour_provider_and_unknown_fact_invariants (chat.test_runner.RunnerChecks.test_global_tour_provider_and_unknown_fact_invariants) ... ok
+test_intent_evaluator_denominator_and_confusion (chat.test_runner.RunnerChecks.test_intent_evaluator_denominator_and_confusion) ... ok
+test_parallel_expectations_and_accent_folding (chat.test_runner.RunnerChecks.test_parallel_expectations_and_accent_folding) ... ok
+test_phrase_boundaries_do_not_confuse_food_with_celsius (chat.test_runner.RunnerChecks.test_phrase_boundaries_do_not_confuse_food_with_celsius) ... ok
+test_repeat_question_slot_value_changes (chat.test_runner.RunnerChecks.test_repeat_question_slot_value_changes) ... ok
+test_runner_replays_exact_revision_and_compares_only_persisted_state (chat.test_runner.RunnerChecks.test_runner_replays_exact_revision_and_compares_only_persisted_state) ... ok
+test_stub_exact_lookup_is_detached_and_counted (chat.test_runner.RunnerChecks.test_stub_exact_lookup_is_detached_and_counted) ... ok
+test_acceptance_corpus (chat.test_scenarios.ConversationScenarios.test_acceptance_corpus) ... {"request_id": "19858dc102ab4ae3a871834e76cfe796", "route": "/v1/sessions", "status": 200, "latency_ms": 105.077}
+{"request_id": "5cc140f714ca4b75877824864571218a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 23.706}
+{"request_id": "24b0ab46bcc9402d9c07d29eb3403b9d", "route": "/v1/client-config", "status": 200, "latency_ms": 2.099}
+{"request_id": "ac19f4613f04412cb2af1485a81fbcf1", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 3.443}
+{"request_id": "762d506612924ddd86b23776b66e7868", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 57.248}
+{"request_id": "4dca9b0b5e1f4596a4db134d8cbdb3d4", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 33.48}
+{"request_id": "9be6b8e74414492aa4d43ccec48671a9", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 52.408}
+{"request_id": "6bf6e7d45ea74d628f428738b91aa301", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 39.82}
+{"request_id": "a82fd2649e834c7a8a98a31755185666", "route": "/v1/sessions", "status": 200, "latency_ms": 199.602}
+{"request_id": "7f28f1fbe42846f885c1d9bf8d1df9af", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 34.399}
+{"request_id": "c90fffaac95249e2a150d69f5b0e02c8", "route": "/v1/client-config", "status": 200, "latency_ms": 2.361}
+{"request_id": "a70262c3ec8e43c98cb58132cf578efe", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 2.912}
+{"request_id": "25546fc4e7b54530b5d14da444db17ce", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 71.973}
+{"request_id": "e49be245187040f08b4040a5700e6e29", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 63.878}
+{"request_id": "789e824606c744538f61fb149226a922", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 50.937}
+{"request_id": "d2ac7064501a4bcd978a09606960039d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 74.152}
+{"request_id": "38840e3176554dbd83b8f8632f88fdbb", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 33.612}
+{"request_id": "d4b98889a0154068ad9682d3e7b9f36e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 33.495}
+{"request_id": "ec4ff165af07407a8465b5bc8a806d22", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 18.667}
+{"request_id": "78f21f0cda704d7682cb30c9fb286f80", "route": "/v1/sessions", "status": 200, "latency_ms": 131.078}
+{"request_id": "6ff00c89ca9f4a36a13478be4ffb2249", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 43.582}
+{"request_id": "5bd055cefa6746658c8771c32d57b153", "route": "/v1/client-config", "status": 200, "latency_ms": 2.919}
+{"request_id": "5d54c095726b4a869868b7d6fe868155", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 3.306}
+{"request_id": "0da3b4ba6d6b41d9b7ebff5f065bb20c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 77.224}
+{"request_id": "96d7694d1af4412789e8cc319cfbd788", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 43.378}
+{"request_id": "daef555ba10742ceb70181ce232673f8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 23.599}
+{"request_id": "6ebc405c003147cebeecfe8e816d6b7d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 47.612}
+{"request_id": "c6ad1d6e7d724d6cbdc2e1f818153394", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 22.947}
+{"request_id": "6107f975f6074c8aaa30b10960d8114d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 64.51}
+{"request_id": "e80ef7708ce345718b273406e2d948fc", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 34.619}
+{"request_id": "42787cf47ef64ab982c68ae7bd0f1065", "route": "/v1/sessions", "status": 200, "latency_ms": 167.316}
+{"request_id": "16122c4c3c14406d993314bb64eacbcc", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 25.056}
+{"request_id": "057de117d9b54ceca793a574658cc5d6", "route": "/v1/client-config", "status": 200, "latency_ms": 2.047}
+{"request_id": "93ed7e8160f14415b4514dfc77eb2d4c", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.452}
+{"request_id": "29e72a2861c0437b9adbc3c28ee787b4", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 70.189}
+{"request_id": "a8c0ad914d064d158a3b2f89ea79d578", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 42.455}
+{"request_id": "387799c579f4468d8221fa56ebe3d62e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 25.197}
+{"request_id": "63e66799e64e486f996d5239e3dabb2a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 47.948}
+{"request_id": "b0b1d197b6774afdb8875f08df092d86", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.696}
+{"request_id": "e0ac9776f5064a31ac72fabbfee414aa", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 45.821}
+{"request_id": "6a0ca44d82894f158389786da84f0e4e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 30.064}
+{"request_id": "de15a69cc29f479b80c2ff3a333a2737", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 53.431}
+{"request_id": "1fe18c35001949d1a81050ef8f5d7515", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 36.355}
+{"request_id": "4d6a9370294c4b9883108bda9eb0eeae", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 59.308}
+{"request_id": "120c85338e8543d69f403c7db2f59ab3", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 31.948}
+{"request_id": "5a50f5cfd91746478cee33c4611c4397", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 61.889}
+{"request_id": "423035f2f2294e07a1c3b74c3fed7657", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 28.877}
+{"request_id": "740cacfa6a364cba8e6f78c0d6894c47", "route": "/v1/sessions", "status": 200, "latency_ms": 168.452}
+{"request_id": "d7500a9b107e4fa287cd1ee9e645e3a3", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 61.613}
+{"request_id": "951de3f686fb45989aa22b263b0fa64e", "route": "/v1/client-config", "status": 200, "latency_ms": 2.842}
+{"request_id": "12855f16586d4115a6f39dac5318863f", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.915}
+{"request_id": "0a1f22e20f6b41a0b462a84c52fd0e05", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 102.136}
+{"request_id": "daec5dc369c44686818868a033abd995", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 35.243}
+{"request_id": "6dc893d7d5554567bf21b9d5b34e65b1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 24.199}
+{"request_id": "7c52e4db5c754fc3a2b8c9199db1d673", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 28.271}
+{"request_id": "e06ad091841d4031aee405e489b63cf3", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 18.062}
+{"request_id": "cc068ff9966d4add908dfbc28216c9b4", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 33.818}
+{"request_id": "f07e485994154b63ab879bbc31c1792e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 23.733}
+{"request_id": "e5893fe3d63a42e09955f19eaec95486", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 25.932}
+{"request_id": "b7972590ff9a4614967931eb4ad855f7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.205}
+{"request_id": "020bb414cdfd4549a178bf4e6b397b7a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.581}
+{"request_id": "b342f9cebe584cf5a38ec1047255298a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.053}
+{"request_id": "478382c7e14e4abb9ff611e42b0c6e6d", "route": "/v1/sessions", "status": 200, "latency_ms": 77.086}
+{"request_id": "194e5773badc4ffaa6cfaebe0b3f89d7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 20.757}
+{"request_id": "6ccb865ebaac4999b5ffb7f8a47a913b", "route": "/v1/client-config", "status": 200, "latency_ms": 1.37}
+{"request_id": "41b825e38f084f6192aae5b73dac54d5", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.768}
+{"request_id": "a48ae88701c24e319b8f43d27c6e7c95", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 41.051}
+{"request_id": "e268b4c4f86b46b1985ec80a786b1d3b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 48.24}
+{"request_id": "24dec50fd63144e6b2dbb8840b15c9fc", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.138}
+{"request_id": "d3055c841b7645eca6fd15fe393eda4d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 65.882}
+{"request_id": "887ad4c70e23476b8feff75d827c1908", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 46.445}
+{"request_id": "ce8c70b7edfe409e84f5d6e9013d7446", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 83.843}
+{"request_id": "8a06e7e274c647edb01c4d1edac50b89", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 33.915}
+{"request_id": "538392491e6447ab8c0a1e9a3cc37244", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 27.586}
+{"request_id": "59949babddab4ee798345408067d4df0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.952}
+{"request_id": "174cfa7172d143ee96ce1f8a79229451", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 50.216}
+{"request_id": "4db537411c3c4baba09e8a6356aed6e1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 28.05}
+{"request_id": "e074c52bb2924802a4614cb5a245ec98", "route": "/v1/sessions", "status": 200, "latency_ms": 77.034}
+{"request_id": "cc8eb37e11504b57b12e4c0588e49ad7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 15.076}
+{"request_id": "a931507fac6f4c7d97e54383f3c9b533", "route": "/v1/client-config", "status": 200, "latency_ms": 0.604}
+{"request_id": "cc717d7558964ec8a2a836c2c0777372", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.018}
+{"request_id": "dca431ec090d4d92a506f32ebf44e03e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 36.343}
+{"request_id": "3b687966609f4873bc4881edfabc9ee7", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 26.015}
+{"request_id": "6a7c9e47ca8c40f49a5563f62623e4e9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.321}
+{"request_id": "907facd9ba1e4ddb9c3e118405b95acd", "route": "/v1/sessions", "status": 200, "latency_ms": 98.673}
+{"request_id": "5a7390cd865945a38477e8f9bbd31d09", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 34.22}
+{"request_id": "e75a12b468394b9e9965a222efd534a4", "route": "/v1/client-config", "status": 200, "latency_ms": 1.668}
+{"request_id": "366e03d7c36140f6bd4bd4bed754aca1", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 2.756}
+{"request_id": "a8c965a495d549d093368bb6f4efb8aa", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 65.294}
+{"request_id": "d76840aa0bfe4b6d8b156e97fdc64300", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 34.929}
+{"request_id": "9da91ba968834eb5a1cfe7f6177634b9", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 68.825}
+{"request_id": "536b6e34397c4d90b3d5a7b80b4af3e8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 42.564}
+{"request_id": "1728e3cbb16244a58c45a47b86760218", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 59.252}
+{"request_id": "c7618f422e4042b586b99857ecc32567", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 30.965}
+{"request_id": "c5ad33722aad4d16ae9ccae067601b4c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 61.113}
+{"request_id": "2f5d7f332a734c43a9326881321ffb6d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 44.201}
+{"request_id": "9bf307f33ff2479d941d6654f081b30b", "route": "/v1/sessions", "status": 200, "latency_ms": 149.595}
+{"request_id": "2f0b29e31b3c4c46ace2e6e756249bf9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 55.143}
+{"request_id": "aaee59d94dac421ab3439db7dba4db05", "route": "/v1/client-config", "status": 200, "latency_ms": 3.123}
+{"request_id": "ddfa2b0dd7594427bf12df49514b519d", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.872}
+{"request_id": "e79e2870e37741c79364ec42fde2239b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 89.994}
+{"request_id": "18e7c7d7e8cd4c698af84238085723ca", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 64.088}
+{"request_id": "6d78309316d2455a8f462541dd56a130", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 32.871}
+{"request_id": "e7e6041790d6435dbe2b5c79119d03df", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 66.617}
+{"request_id": "6cf01027ee754c83aca70e8144c57440", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 23.952}
+{"request_id": "b6f77cb839814d6e8d9388addb6b4456", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 42.33}
+{"request_id": "e9e75ec9853744c6a3b5eb43206580f2", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 26.956}
+{"request_id": "9c5a4250c64646c78899955985f41a38", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 50.398}
+{"request_id": "4d974d6591f74cca91a2d27584a15f32", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 36.237}
+{"request_id": "8cf997c2e0ca42c588bfbd4fb6e5cf06", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 49.036}
+{"request_id": "cabf6e39b3df467a8135a6d3f4a87c16", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 58.189}
+{"request_id": "e4448c9b21bf46409f6fbce60d612c14", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 55.079}
+{"request_id": "656b8eaf140d46c1a7b6a51a92f81439", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 31.29}
+{"request_id": "a2a35042f29740208d29c5850b1e2075", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 65.186}
+{"request_id": "c6f1cd0c4713488f9267f0f40dcce3b6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 42.836}
+{"request_id": "94a184f45a7449d4952ca05754a4af68", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 68.5}
+{"request_id": "b7db1f5025fd46e0bd1547d0928da466", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 44.173}
+{"request_id": "f00039b2e6364f13a70725438adf2cc3", "route": "/v1/sessions", "status": 200, "latency_ms": 153.132}
+{"request_id": "edb6f58c328d45009854dbe6b43fe8e1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.668}
+{"request_id": "549fdfc5e944462fa90efac7b7ac13ad", "route": "/v1/client-config", "status": 200, "latency_ms": 1.139}
+{"request_id": "44162660867d4fd39478b342bf96528a", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.955}
+{"request_id": "58f3b18dd9d64a108dc97d7a365a3b26", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 33.043}
+{"request_id": "9ca32fab73bc42ab8d1cf73b074aea95", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.792}
+{"request_id": "e59dda724b61454ea1464cde173e5053", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 13.653}
+{"request_id": "e56b0b39bb914b98a3421faac2ab005b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 23.071}
+{"request_id": "ce38879e154e4aa18d1e3a48a45b12f9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 46.673}
+{"request_id": "fea89220c3b84d8f988c00f34963758c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 29.775}
+{"request_id": "83fcc3bd9322482ebf2e4917a782ed99", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 41.053}
+{"request_id": "3d2595811cc84dfd9a245b815da44f42", "route": "/v1/sessions", "status": 200, "latency_ms": 157.451}
+{"request_id": "8c60609475214518aff169c21a1020e3", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 25.994}
+{"request_id": "2b2d71448f5445cda6df17d506293bd9", "route": "/v1/client-config", "status": 200, "latency_ms": 1.933}
+{"request_id": "9a15b9b6f31f40e0a52beef407f50158", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.845}
+{"request_id": "4f2b705a3335406c8a316429c91fa068", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 47.613}
+{"request_id": "08c804d2c9cf4dfbab5222b8dfe2bb82", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 34.725}
+{"request_id": "e98af43afd7a4165ab8ed7f04d216ec4", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.943}
+{"request_id": "97b7186438d04b98b38e8e19f3ba15e6", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.523}
+{"request_id": "f89f9883f30c4a088d40c71104dd7136", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 18.729}
+{"request_id": "504c44307a96431f99196ac8232347d2", "route": "/v1/sessions", "status": 200, "latency_ms": 95.773}
+{"request_id": "66df3b3917854f6286068d18f397342b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.562}
+{"request_id": "07384c8de63245d58846416d1c9a97f8", "route": "/v1/client-config", "status": 200, "latency_ms": 1.204}
+{"request_id": "3a4e09ba91794a24a45515cdc4570703", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.795}
+{"request_id": "c3a1caa4dd0b4d6c962a46b616ae2467", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 60.468}
+{"request_id": "16bddf67f791456ba838e0505aeb6b3a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 50.169}
+{"request_id": "b837a6d741c341189196e1fb10de3cf6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.32}
+{"request_id": "ac5a4bd7a5d54d86bd2ecd5925706fc3", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 31.127}
+{"request_id": "da73ae3451c94cdb951660da63cbc063", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 20.156}
+{"request_id": "7e24f9060e6749d69023437982ee4112", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 58.258}
+{"request_id": "54c2f862d93940db8587cebc9b4263be", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.508}
+{"request_id": "d651071fb234486c8c1b26fecf00139c", "route": "/v1/sessions", "status": 200, "latency_ms": 149.038}
+{"request_id": "cfa14d653c4a4b609c70aa5a22fdbf22", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 22.813}
+{"request_id": "6abbc04aaa5a45ad9256109b4cd867e9", "route": "/v1/client-config", "status": 200, "latency_ms": 1.43}
+{"request_id": "030c9a6d07264d7090a21c0a1ae9ae14", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.107}
+{"request_id": "271ca49a3b044af4a72e47e02ba6bdaa", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 54.454}
+{"request_id": "4135390c45ff4c23abdc80fa6a4b60eb", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 42.252}
+{"request_id": "05f1d25f079849d88efb81704b6d8c84", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 73.497}
+{"request_id": "685cabd5260d4212a231a5a49ed5381d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 48.856}
+{"request_id": "73060b038da64686b6a6122d26feb87e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 74.14}
+{"request_id": "a44d02b36c464153a58e9b453b878e4c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 48.27}
+{"request_id": "040f258935df48f4b2608d819062e5c2", "route": "/v1/sessions", "status": 200, "latency_ms": 196.877}
+{"request_id": "30fceb5231ee48dcb4b4b146cb25b0a7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 33.285}
+{"request_id": "f51c5f763ae046589f449ae1f07cd90b", "route": "/v1/client-config", "status": 200, "latency_ms": 1.876}
+{"request_id": "348f0c1a17bd4d428cf49cdb0c729c5e", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.243}
+{"request_id": "7fe5374e85604e27b045d84ea299899e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 72.153}
+{"request_id": "99684e2038f34cf18e3bd31c4116e66b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 44.277}
+{"request_id": "c9dfda7dfece45c58974eff19770ba18", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 47.278}
+{"request_id": "883503465f764331bb3f7c2dcc63c470", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 42.816}
+{"request_id": "6d0ac7dda0b849c9b900c09aab39449a", "route": "/v1/sessions", "status": 200, "latency_ms": 240.293}
+{"request_id": "20cab9c794264fda8d9fe388230e6baf", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 20.404}
+{"request_id": "d74db9c3097d4f8c8fb678769eaa169d", "route": "/v1/client-config", "status": 200, "latency_ms": 3.002}
+{"request_id": "4a6c078b64a941819232ca331711154d", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.843}
+{"request_id": "9c849b80c9fe40e8ac008e0181aee46c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 56.132}
+{"request_id": "2609c059cabe4627a9718d8d5b5647d6", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.283}
+{"request_id": "5253bbc9d9024d26bee02dca2608600a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.017}
+{"request_id": "76dcb33134814b7a846750d0dc21cfd8", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.266}
+{"request_id": "2c6429beb9f0414b922804a938f1aa56", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 11.162}
+{"request_id": "245285aeb71a40a988ba22f19315cc52", "route": "/v1/sessions", "status": 200, "latency_ms": 61.959}
+{"request_id": "fa43ad69d67645909edd5e5f1e0c475d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 11.593}
+{"request_id": "c184a09355cb4e9eb3edaecb4d60b629", "route": "/v1/client-config", "status": 200, "latency_ms": 0.648}
+{"request_id": "90295b79313245058d8e5fa027687d3c", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.637}
+{"request_id": "fc891f0ea9fe42e98f00a92b164d32f9", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 30.002}
+{"request_id": "247b519550e249ef818c59ae9dde61e6", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 21.323}
+{"request_id": "ec60203a0669431089b3620af1e67b33", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.717}
+{"request_id": "e18afce3500f4a89be4b9055aad13612", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.81}
+{"request_id": "f2af8f323ba341aab5815ac02459b7de", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.575}
+{"request_id": "1e3526b1738748a4bcf95460bcd21a79", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.632}
+{"request_id": "cd3a4ca502cf40e2bf074fca4ab87701", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.462}
+{"request_id": "a87541c68bcc454cae5d003bdfaf143b", "route": "/v1/sessions", "status": 200, "latency_ms": 56.61}
+{"request_id": "a743a8e457234721af164666a6c6f013", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 8.776}
+{"request_id": "6a50cf5d75454314829e4933fe895eff", "route": "/v1/client-config", "status": 200, "latency_ms": 1.135}
+{"request_id": "4384df2ca1aa40d1af71ee2625624518", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.973}
+{"request_id": "a5bea80545ff4722bef8d0df92ec15ff", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 35.899}
+{"request_id": "ce4d6c64abd440bfa920c38408dc6b49", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.476}
+{"request_id": "7f37380d1d60403c986ec826bd5cabea", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.569}
+{"request_id": "e6cd3bcf0dcc4a158d681a971d96b7d8", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 19.411}
+{"request_id": "5750efad0bab45cfbcd68e2cc593cd63", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.967}
+{"request_id": "bcfab30bfc1045c5ae9e2f26c15edd5d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.667}
+{"request_id": "523c7374fcd54997b5ca506fb7acf10b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 18.573}
+{"request_id": "ef5b3a14f7f6468e9f53024151eb274b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 33.285}
+{"request_id": "3d98138199304fce8ad826a9dec3157d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 20.248}
+{"request_id": "fc9894fa18ff4dec9597ae1c7e633ba4", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 26.883}
+{"request_id": "f2f8beee968248629ae5222073762488", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 23.34}
+{"request_id": "0dbdbac8ed9241418db22ef99fe6e0c0", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 25.252}
+{"request_id": "ab3b20177be34e92838bf63dd03979b1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 11.729}
+{"request_id": "bddefa88c18d4681abbb24affab67f38", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 23.012}
+{"request_id": "5d465f7aa3744511a166970e1507672c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 22.105}
+{"request_id": "f910d04999444acf9df44fd9e176e451", "route": "/v1/sessions", "status": 200, "latency_ms": 57.902}
+{"request_id": "7fbe9323971f424c89af211fcbb7564f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.492}
+{"request_id": "3a82fdfaffc64917af5f40a901d0c971", "route": "/v1/client-config", "status": 200, "latency_ms": 0.825}
+{"request_id": "7af1cb3d0ed04ac7abf91b45aa0e2d93", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.141}
+{"request_id": "31b0c1fe11e24d09a97abc4790036250", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 57.209}
+{"request_id": "6088a649339c4ffd8e5c3dd395da4077", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 49.077}
+{"request_id": "fa3daf35bb5f45ada1112215885ad1a1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 32.134}
+{"request_id": "f0eda61e149d42238b67abb555c1420c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 42.715}
+{"request_id": "27d0016c3982479cb863b27560f42ae6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 29.41}
+{"request_id": "c68a00edce2648a2a2607da4e9c14d9d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 49.744}
+{"request_id": "b37229917a584200bbfbb069a38596a2", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 36.381}
+{"request_id": "077e5efa719a451ab23c430bfb1a82d5", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 54.669}
+{"request_id": "5b8984009b0a4c4890a0c8cdca7f5b75", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.211}
+{"request_id": "dd09218d08c64998868cb8f4e1784bae", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 27.784}
+{"request_id": "86b40fc4adfa4b6bb5e5b28e6b847e58", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.6}
+{"request_id": "94848cb8ea0e401b8ac94760b5419053", "route": "/v1/sessions", "status": 200, "latency_ms": 64.834}
+{"request_id": "450173e3366341de90199581902ec09a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.02}
+{"request_id": "d19549d0eec74af5853c77cb10cdc74b", "route": "/v1/client-config", "status": 200, "latency_ms": 0.911}
+{"request_id": "76241d36bad04c7bb3b53534531ce889", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.034}
+{"request_id": "beb8846740aa4f9f86cb7a3e8148d5c6", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 42.987}
+{"request_id": "233362d6fcef4b988e1683d7cb63c332", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.917}
+{"request_id": "e451cbdc4ab241348627755649f6bab2", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.673}
+{"request_id": "564f309482c34c208ceb8e48a468dceb", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 25.88}
+{"request_id": "d5a69b8f0fd54cac91fc0438dd345494", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.329}
+{"request_id": "fc09a286b1a84d4485a9a9f6480738e5", "route": "/v1/sessions", "status": 200, "latency_ms": 56.437}
+{"request_id": "f9e7a8969e1a415aaef7498d0cc2e150", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.373}
+{"request_id": "f8ace8fba54649f4b3090979acae9491", "route": "/v1/client-config", "status": 200, "latency_ms": 0.71}
+{"request_id": "e4e053498b4443c9bc30296e140de772", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.685}
+{"request_id": "3a06ebd575764a23be627c6901327d88", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 38.366}
+{"request_id": "4339384776a14b3bb0ac4e02b1a51923", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 23.725}
+{"request_id": "ff2e081b70964ccbb6b59eb6c7b50841", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 17.981}
+{"request_id": "ff3b1be3cf214193bd05b274b47c7bb7", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 43.922}
+{"request_id": "9586a0167dec42bebe4261b8a2e9b633", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 26.41}
+{"request_id": "3358299021204c7d9a28d908f3337441", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 41.5}
+{"request_id": "748f4a973b4144ab985d8b1e20c35ff6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 41.358}
+{"request_id": "89c92539dc1543febd96fb7bdc7e837a", "route": "/v1/sessions", "status": 200, "latency_ms": 159.639}
+{"request_id": "820e27c5bb5841d48caf3030604cc681", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 31.688}
+{"request_id": "d36eb750714443cebb0c49c0bc7538af", "route": "/v1/client-config", "status": 200, "latency_ms": 2.429}
+{"request_id": "51aab35ebd8a49d2927572689ef898f5", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 2.74}
+{"request_id": "9070cbae034a4a25a6dcbb1623669ec1", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 78.776}
+{"request_id": "555ca6f82d8442c893e392705cc134c3", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 34.451}
+{"request_id": "7462f1ed597b443bbd13b192f4a54896", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 28.771}
+{"request_id": "cbe5485d67d144869c4844d9500dac69", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 31.929}
+{"request_id": "77aa3022e9344137b683e45928c4607d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 21.739}
+{"request_id": "b66614a38ddc4cb684645bafb996df7e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 46.854}
+{"request_id": "92e3ddc628694f81962e07ad91760710", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 30.147}
+{"request_id": "fe21d4dc4a6a49e594df66c964268a1e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 43.825}
+{"request_id": "0d3d5fa0213943309c17cb4586579a76", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 31.588}
+{"request_id": "f5599b47702a44b5887da68daf3a019a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 26.859}
+{"request_id": "b64e07ab85dd462fa9211ef61331de98", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 31.554}
+{"request_id": "50a9f988f9a04a15849c68cfab73e673", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 61.215}
+{"request_id": "91ce38ce7c194d5c89d6ad36be1d7104", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 38.114}
+{"request_id": "c3323a3f9a964c96ac8449aa4637558f", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 53.229}
+{"request_id": "048fb9a72be540d8bdd6d2214566ae23", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 50.577}
+{"request_id": "90aa33d0c34f4318a3196279c46aec12", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 87.772}
+{"request_id": "af7611c3217e479ebac6c3283dd10f8d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 54.113}
+{"request_id": "120f49a6904e4650bab5af55cefe24d0", "route": "/v1/sessions", "status": 200, "latency_ms": 95.394}
+{"request_id": "584c999db17644788fde29d6a05a8256", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 13.521}
+{"request_id": "72b1bf518d4c47c9a93d83b3c9e5dd59", "route": "/v1/client-config", "status": 200, "latency_ms": 0.805}
+{"request_id": "ad279ede229d4f4f9050df8dc1ac33bb", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.235}
+{"request_id": "05d2bb1f830149299382ba673ea6c97c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 35.399}
+{"request_id": "4d6aa23005da46a3a869f985908e2225", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.687}
+{"request_id": "13b4ab154d7e42fabf79f4426b7a14e8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 9.709}
+{"request_id": "a7189c011280476bb3492716e1bc7858", "route": "/v1/sessions", "status": 200, "latency_ms": 59.499}
+{"request_id": "04268127a7b544b3be5d08a0bc70cbb3", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 16.864}
+{"request_id": "64fdb4804977490eafe3c9cc84b70a7d", "route": "/v1/client-config", "status": 200, "latency_ms": 1.508}
+{"request_id": "be7faf6b5c61409381eec3b20427d73a", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.962}
+{"request_id": "a1bf1ace0a194c5ca8bf6a10e300065c", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 34.437}
+{"request_id": "86bc85580c8e41a38b27cf7b98abcf3a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 34.479}
+{"request_id": "3551858670d4413d9ae63cfc55161d16", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 11.399}
+{"request_id": "80be8e71122e4b4e96b790d62fde3f7e", "route": "/v1/sessions", "status": 200, "latency_ms": 93.468}
+{"request_id": "dda50efb58a54ac8adfbbc74daad591a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 41.381}
+{"request_id": "6ef1ccef414b4acba9fa0427e415a445", "route": "/v1/client-config", "status": 200, "latency_ms": 3.5}
+{"request_id": "f280defa69cb4e98b2ab486d65cb9adb", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.766}
+{"request_id": "53e3bef075fa4a78ad04495f7934ca62", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 99.968}
+{"request_id": "a7edfca7ae0247c7b60e1a1deeaa194e", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 37.133}
+{"request_id": "2a4b3f424973468dadb84cb5cac62903", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 20.896}
+{"request_id": "5c626224789b49f785b583c1717a0c28", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 51.61}
+{"request_id": "246278ce58af4ed2bc452f165b5a783e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 33.973}
+{"request_id": "e24d6820472d4ecb838f6db753ead10b", "route": "/v1/sessions", "status": 200, "latency_ms": 89.24}
+{"request_id": "dcd8dee65a364f4f8e5cf7b88a206a6a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 13.251}
+{"request_id": "3b3fd3c031cb4d83b34c0a5c93f1516b", "route": "/v1/client-config", "status": 200, "latency_ms": 0.853}
+{"request_id": "82fa4cc912f246a78ec77372192a531d", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 0.771}
+{"request_id": "01ad94b6bbb24242972325d8143f3add", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 31.806}
+{"request_id": "8969b6991de54294b6574dc865980c9d", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 27.86}
+{"request_id": "ece0440a81c24e1389aeaf49a7df049d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 15.349}
+{"request_id": "35e3a90f4d604f03ab0ce391e748b8e2", "route": "/v1/sessions/{session_id}/chat", "status": 409, "latency_ms": 6.122}
+{"request_id": "16a980915b314e139120d49fbe73e788", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 48.015}
+{"request_id": "9385049064534a6b814069eab16750f2", "route": "/v1/sessions", "status": 200, "latency_ms": 178.043}
+{"request_id": "2c7e5d51af1f41349776280c3e4f3a00", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 21.281}
+{"request_id": "8f2fcd69672e44e89f19f6a7d129354c", "route": "/v1/client-config", "status": 200, "latency_ms": 2.041}
+{"request_id": "cb871bf70d2047deafe1c7b20342e579", "route": "/v1/sessions/{session_id}/chat", "status": 422, "latency_ms": 1.377}
+{"request_id": "5c8f59fa7fff47c084fa1ad2d97e5ac2", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 49.578}
+{"request_id": "7a660fc3e3b6460dbea323b41013273b", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 28.001}
+{"request_id": "ab39f9152bed412fa92cde4565a101f2", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 10.551}
+{"request_id": "ff2ce5129cab44d3b13bf83df747b391", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 18.169}
+{"request_id": "a7d3e8b6dbb7425b9518a88287561224", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.531}
+{"request_id": "f7bf5cbbd493493fb507c5723ec069d5", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 26.169}
+{"request_id": "e7a7f5fd8ce844ad8a9f7261d052a91e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 12.433}
+{"request_id": "c230ee83f5d442638bf6c456b0c6173a", "route": "/v1/sessions/{session_id}/chat", "status": 200, "latency_ms": 25.74}
+{"request_id": "70407b5bfdaa4a9697d3b3dd85534bff", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 14.565}
+ok
+test_intent_accuracy (chat.test_utterances.Corpus.test_intent_accuracy) ... C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_utterances.py:25: ResourceWarning: unclosed file <_io.TextIOWrapper name='C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\qa\\chat\\utterances.jsonl' mode='r' encoding='utf-8'>
+  rows = [json.loads(l) for l in open(ROOT / "qa/chat/utterances.jsonl", encoding="utf-8") if l.strip()]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_adjacent_unsorted_intervals_and_verified_closed_days (data.test_evidence.EvidenceTests.test_adjacent_unsorted_intervals_and_verified_closed_days) ... ok
+test_cache_and_version_invalidate_for_every_overlay_byte_change (data.test_evidence.EvidenceTests.test_cache_and_version_invalidate_for_every_overlay_byte_change) ... ok
+test_fields_require_independent_source_and_valid_date (data.test_evidence.EvidenceTests.test_fields_require_independent_source_and_valid_date) ... ok
+test_invalid_rows_do_not_prevent_other_entries_loading (data.test_evidence.EvidenceTests.test_invalid_rows_do_not_prevent_other_entries_loading) ... ok
+test_invalid_times_overlap_reverse_and_partial_week_rejected (data.test_evidence.EvidenceTests.test_invalid_times_overlap_reverse_and_partial_week_rejected) ... ok
+test_partial_field_is_loaded_and_rejected_without_promoting_price (data.test_evidence.EvidenceTests.test_partial_field_is_loaded_and_rejected_without_promoting_price) ... ok
+test_price_type_order_and_negative_values_rejected (data.test_evidence.EvidenceTests.test_price_type_order_and_negative_values_rejected) ... ok
+test_unknown_and_all_duplicate_id_entries_rejected_rest_loads (data.test_evidence.EvidenceTests.test_unknown_and_all_duplicate_id_entries_rejected_rest_loads) ... ok
+test_unreadable_malformed_oversized_and_relative_files_fail_closed (data.test_evidence.EvidenceTests.test_unreadable_malformed_oversized_and_relative_files_fail_closed) ... ok
+test_unset_or_blank_is_identical_to_original_dataset (data.test_evidence.EvidenceTests.test_unset_or_blank_is_identical_to_original_dataset) ... ok
+test_valid_fixture_merges_minutes_prices_and_count_only_report (data.test_evidence.EvidenceTests.test_valid_fixture_merges_minutes_prices_and_count_only_report) ... ok
+test_verified_feasibility_requires_all_three_evidence_types (data.test_evidence.EvidenceTests.test_verified_feasibility_requires_all_three_evidence_types) ... ok
+test_absent_path_fallback_label_hash_and_planner_integration (data.test_loader.LoaderTests.test_absent_path_fallback_label_hash_and_planner_integration) ... ok
+test_csv_bom_roundtrip_matches_json (data.test_loader.LoaderTests.test_csv_bom_roundtrip_matches_json) ... ok
+test_duplicate_id_then_url_and_deterministic_order (data.test_loader.LoaderTests.test_duplicate_id_then_url_and_deterministic_order) ... ok
+test_environment_and_default_path (data.test_loader.LoaderTests.test_environment_and_default_path) ... ok
+test_existing_empty_file_and_unreadable_directory_do_not_fallback (data.test_loader.LoaderTests.test_existing_empty_file_and_unreadable_directory_do_not_fallback) ... ok
+test_file_bytes_not_modified (data.test_loader.LoaderTests.test_file_bytes_not_modified) ... ok
+test_geo_status_and_online_are_flags_for_planner (data.test_loader.LoaderTests.test_geo_status_and_online_are_flags_for_planner) ... ok
+test_integral_decimal_csv_prices_supported (data.test_loader.LoaderTests.test_integral_decimal_csv_prices_supported) ... ok
+test_malformed_csv_rejected (data.test_loader.LoaderTests.test_malformed_csv_rejected) ... ok
+test_malformed_json_and_wrong_shape_do_not_fallback (data.test_loader.LoaderTests.test_malformed_json_and_wrong_shape_do_not_fallback) ... ok
+test_missing_urls_do_not_collapse_distinct_ids (data.test_loader.LoaderTests.test_missing_urls_do_not_collapse_distinct_ids) ... ok
+test_normalization_and_no_evidence_promotion (data.test_loader.LoaderTests.test_normalization_and_no_evidence_promotion) ... ok
+test_null_zero_malformed_nonfinite_and_bounds_coordinates (data.test_loader.LoaderTests.test_null_zero_malformed_nonfinite_and_bounds_coordinates) ... ok
+test_rejection_and_flags_report_contains_only_counts (data.test_loader.LoaderTests.test_rejection_and_flags_report_contains_only_counts) ... ok
+test_relative_path_rejected (data.test_loader.LoaderTests.test_relative_path_rejected) ... ok
+test_unknown_zero_negative_fractional_inverted_prices (data.test_loader.LoaderTests.test_unknown_zero_negative_fractional_inverted_prices) ... ok
+test_default_fixture_varied_rating_and_fit_evidence (data.test_r0_8.ConfiguredDatasetTests.test_default_fixture_varied_rating_and_fit_evidence) ... ok
+test_empty_wrapper_and_canonical_private_file (data.test_r0_8.ConfiguredDatasetTests.test_empty_wrapper_and_canonical_private_file) ... ok
+test_explicit_evidence_wrapper_loads_canonical_fields (data.test_r0_8.ConfiguredDatasetTests.test_explicit_evidence_wrapper_loads_canonical_fields) ... ok
+test_provenance_across_health_session_and_venue_mapping (data.test_r0_8.ConfiguredDatasetTests.test_provenance_across_health_session_and_venue_mapping) ... {"request_id": "1ac80c6eedcf4ddf9ce1f6616f3ff690", "route": "/health", "status": 200, "latency_ms": 52.432}
+{"request_id": "a7972934b5e0486194ae9a56228a5663", "route": "/v1/sessions", "status": 200, "latency_ms": 1.348}
+{"request_id": "f63e6c3e42e3466395bdd6acd9bded35", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 1.929}
+{"request_id": "68d792305a6c4cefb782a2e8cea6af34", "route": "/v1/venues", "status": 200, "latency_ms": 1.165}
+{"request_id": "46b11259ac1f4a58a1ce49158428da48", "route": "/health", "status": 200, "latency_ms": 60.817}
+{"request_id": "412d4616fc2449a1acff0affd774f0fc", "route": "/v1/sessions", "status": 200, "latency_ms": 0.773}
+{"request_id": "63d2e8b5b8f547499f41a0c86a90534a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 1.771}
+{"request_id": "24b9289de42d45d68d68c1586f86d9c2", "route": "/v1/venues", "status": 200, "latency_ms": 1.35}
+{"request_id": "8c2b557c5cf74ae5bdae2eac1628719b", "route": "/health", "status": 200, "latency_ms": 45.709}
+{"request_id": "856c8aa11e184ab8b292facdfd1f68e4", "route": "/v1/sessions", "status": 200, "latency_ms": 0.745}
+{"request_id": "1201a8c5b56045ed80b50894cea5813d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 1.775}
+{"request_id": "1b2ab92ffb2041d5b8b556b8a8c6eb3c", "route": "/v1/venues", "status": 200, "latency_ms": 1.376}
+{"request_id": "1b136c25c2b5446dbcdff666942fdac7", "route": "/health", "status": 200, "latency_ms": 45.593}
+{"request_id": "7f53a0e3be47417092f3b9ab6f16a125", "route": "/v1/sessions", "status": 200, "latency_ms": 0.609}
+{"request_id": "4bf7ff2bba83474bb267e5aa464e50c5", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 2.721}
+{"request_id": "da1d2f5c159b485bb308ec4f5a5fe951", "route": "/v1/venues", "status": 200, "latency_ms": 1.692}
+{"request_id": "94d1c55ea71d47dbb613cb4fe9867fcb", "route": "/health", "status": 200, "latency_ms": 40.401}
+{"request_id": "9d429942ed224baa8176da5f756028cb", "route": "/v1/sessions", "status": 200, "latency_ms": 0.696}
+{"request_id": "40f0b8375a394762b1b3bb034529c50b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 1.945}
+{"request_id": "1530a12f6f5648c3916d9418015b1a50", "route": "/v1/venues", "status": 200, "latency_ms": 1.277}
+{"request_id": "b331d6c893cb4957bfaf3aa87b1a296b", "route": "/health", "status": 200, "latency_ms": 45.253}
+{"request_id": "c92cc0f7d7ea4bcd9904b247ff17e793", "route": "/v1/sessions", "status": 200, "latency_ms": 0.617}
+{"request_id": "7fe2b651037f427fb8cad6ee203f0958", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 3.21}
+{"request_id": "5cfdfd0f2cb5415982bf59a93c10aeda", "route": "/v1/venues", "status": 200, "latency_ms": 1.137}
+{"request_id": "d732d19bc49d4cfd8b1c60f45b8a50f3", "route": "/health", "status": 200, "latency_ms": 65.25}
+{"request_id": "c50f81cd3ab64039b72977f558cd271c", "route": "/v1/sessions", "status": 200, "latency_ms": 2.108}
+{"request_id": "7f51c9d5b02b4b6fa94fe816c4fede42", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 4.689}
+{"request_id": "8481de264c6d4d49946ef528c78e8e09", "route": "/v1/venues", "status": 200, "latency_ms": 3.319}
+{"request_id": "41a8b746062b493bbcad978429dc4d58", "route": "/health", "status": 200, "latency_ms": 87.043}
+{"request_id": "cb9199d455f2451387de337d250abdcd", "route": "/v1/sessions", "status": 200, "latency_ms": 1.801}
+{"request_id": "3b89c2186c994026903c7ee4c7e10aac", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 9.728}
+{"request_id": "f5212dd68da94713a2817676ec6fd422", "route": "/v1/venues", "status": 200, "latency_ms": 4.308}
+{"request_id": "3206d18ad1fd4067a8d594a2bfc5afde", "route": "/health", "status": 200, "latency_ms": 53.932}
+{"request_id": "3dd99ac98f0c48eea7c72ebc24aa7b7a", "route": "/v1/sessions", "status": 200, "latency_ms": 0.786}
+{"request_id": "b015668fd53a46bfbdf74b28cd63cdd6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 1.274}
+{"request_id": "3d152e28e7004abfb1382c143247354a", "route": "/v1/venues", "status": 200, "latency_ms": 1.053}
+ok
+test_relative_environment_path_is_repo_relative (data.test_r0_8.ConfiguredDatasetTests.test_relative_environment_path_is_repo_relative) ... {"request_id": "5db272ec31c44b4a913e5928af939e42", "route": "/health", "status": 200, "latency_ms": 52.475}
+ok
+test_csv_and_json_tags_and_aggregate_only (data.test_r0_evidence.SourceEvidence.test_csv_and_json_tags_and_aggregate_only) ... ok
+test_evidence_in_list_detail_and_nested_stop (data.test_r0_evidence.SourceEvidence.test_evidence_in_list_detail_and_nested_stop) ... {"request_id": "a88807bd950148caa4b1bb5e66f6193e", "route": "/v1/venues", "status": 200, "latency_ms": 59.801}
+{"request_id": "6aaae3638d514302915563f4f6b46cfa", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.694}
+{"request_id": "8d8c4b8dc18246dea10ecf3ccbc5210a", "route": "/v1/sessions", "status": 200, "latency_ms": 1.099}
+{"request_id": "7942a7fff05c4e85a27160bad8d2208e", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 20.856}
+{"request_id": "bcf4ab8a2dc74bc19b91ed5f636fda53", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 2.076}
+{"request_id": "c5e9d1f77bf24fa4bc6c951369ec1fb8", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.407}
+{"request_id": "84f560eca640417db6f76c92db61a06d", "route": "/v1/venues/{venue_id}", "status": 200, "latency_ms": 1.461}
+ok
+test_rating_bounds_scales_and_nonfinite (data.test_r0_evidence.SourceEvidence.test_rating_bounds_scales_and_nonfinite) ... ok
+test_review_count_zero_and_invalid (data.test_r0_evidence.SourceEvidence.test_review_count_zero_and_invalid) ... ok
+test_timestamp_unknown_and_source_offset (data.test_r0_evidence.SourceEvidence.test_timestamp_unknown_and_source_offset) ... ok
+test_allergy_followed_by_count_is_not_dropped (planner.test_c0_hf.CodexReviewC0HF.test_allergy_followed_by_count_is_not_dropped) ... ok
+test_markup_never_reaches_notes (planner.test_c0_hf.CodexReviewC0HF.test_markup_never_reaches_notes) ... ok
+test_model_answer_keeps_rule_safety_note (planner.test_c0_hf.CodexReviewC0HF.test_model_answer_keeps_rule_safety_note) ... ok
+test_negated_allergy_is_not_recorded (planner.test_c0_hf.CodexReviewC0HF.test_negated_allergy_is_not_recorded) ... ok
+test_retracted_allergy_is_removed (planner.test_c0_hf.CodexReviewC0HF.test_retracted_allergy_is_removed) ... ok
+test_long_term_is_reported_not_truncated (planner.test_c0_hf.CodexReviewC0HFRound2.test_long_term_is_reported_not_truncated) ... ok
+test_mixed_clause_does_not_create_fake_allergen (planner.test_c0_hf.CodexReviewC0HFRound2.test_mixed_clause_does_not_create_fake_allergen) ... ok
+test_severity_words_are_not_allergens (planner.test_c0_hf.CodexReviewC0HFRound2.test_severity_words_are_not_allergens) ... ok
+test_suffix_instructions_and_markup_are_not_part_of_the_term (planner.test_c0_hf.CodexReviewC0HFRound2.test_suffix_instructions_and_markup_are_not_part_of_the_term) ... ok
+test_cache_cannot_discard_current_safety_fields (planner.test_c0_hf.CodexReviewC0HFRound3.test_cache_cannot_discard_current_safety_fields) ... ok
+test_injection_words_do_not_hide_the_allergy (planner.test_c0_hf.CodexReviewC0HFRound3.test_injection_words_do_not_hide_the_allergy) ... ok
+test_later_clauses_are_not_swallowed (planner.test_c0_hf.CodexReviewC0HFRound3.test_later_clauses_are_not_swallowed) ... ok
+test_list_continuation (planner.test_c0_hf.CodexReviewC0HFRound3.test_list_continuation) ... ok
+test_mixed_allergy_and_avoidance_are_separate (planner.test_c0_hf.CodexReviewC0HFRound3.test_mixed_allergy_and_avoidance_are_separate) ... ok
+test_negation_people_quotes_and_ambiguous_words (planner.test_c0_hf.CodexReviewC0HFRound3.test_negation_people_quotes_and_ambiguous_words) ... ok
+test_nfd_and_zero_width_inputs (planner.test_c0_hf.CodexReviewC0HFRound3.test_nfd_and_zero_width_inputs) ... ok
+test_continuation_followed_by_slots (planner.test_c0_hf.CodexReviewC0HFRound4.test_continuation_followed_by_slots) ... ok
+test_two_triggers_in_one_clause (planner.test_c0_hf.CodexReviewC0HFRound4.test_two_triggers_in_one_clause) ... ok
+test_second_allergy_without_a_term_is_not_silent (planner.test_c0_hf.CodexReviewC0HFRound5.test_second_allergy_without_a_term_is_not_silent) ... ok
+test_allergen_never_becomes_interest (planner.test_c0_hf.Extraction.test_allergen_never_becomes_interest) ... ok
+test_allergy_accumulates_with_prior (planner.test_c0_hf.Extraction.test_allergy_accumulates_with_prior) ... ok
+test_allergy_is_recorded_not_dropped (planner.test_c0_hf.Extraction.test_allergy_is_recorded_not_dropped) ... ok
+test_multi_term_and_no_diacritics (planner.test_c0_hf.Extraction.test_multi_term_and_no_diacritics) ... ok
+test_no_allergy_phrase_no_allergy (planner.test_c0_hf.Extraction.test_no_allergy_phrase_no_allergy) ... ok
+test_party_size_edits (planner.test_c0_hf.Extraction.test_party_size_edits) ... ok
+test_party_size_not_taken_from_prices (planner.test_c0_hf.Extraction.test_party_size_not_taken_from_prices) ... ok
+test_party_size_out_of_range_is_rejected_not_silent (planner.test_c0_hf.Extraction.test_party_size_out_of_range_is_rejected_not_silent) ... ok
+test_plain_dislike_asks_allergy_or_preference (planner.test_c0_hf.Extraction.test_plain_dislike_asks_allergy_or_preference) ... ok
+test_unrecognised_allergen_is_disclosed (planner.test_c0_hf.Extraction.test_unrecognised_allergen_is_disclosed) ... ok
+test_families (planner.test_c0_hf.Planner.test_families) ... ok
+test_seafood_family_excludes_by_name_and_dish_group (planner.test_c0_hf.Planner.test_seafood_family_excludes_by_name_and_dish_group) ... ok
+test_strict_mode_with_allergy_has_no_verified_tour (planner.test_c0_hf.Planner.test_strict_mode_with_allergy_has_no_verified_tour) ... ok
+test_tour_excludes_allergen_venues_and_is_never_verified (planner.test_c0_hf.Planner.test_tour_excludes_allergen_venues_and_is_never_verified) ... ok
+test_unrecognised_term_excludes_only_exact_name_or_tag_matches (planner.test_c0_hf.Planner.test_unrecognised_term_excludes_only_exact_name_or_tag_matches) ... ok
+test_without_allergy_nothing_changes (planner.test_c0_hf.Planner.test_without_allergy_nothing_changes) ... ok
+test_basic_vietnamese (planner.test_extract_explain.ExtractTests.test_basic_vietnamese) ... ok
+test_edit_preserves_unspecified_slots (planner.test_extract_explain.ExtractTests.test_edit_preserves_unspecified_slots) ... ok
+test_exclusion_not_interest (planner.test_extract_explain.ExtractTests.test_exclusion_not_interest) ... ok
+test_explain_flags_unknowns (planner.test_extract_explain.ExtractTests.test_explain_flags_unknowns) ... ok
+test_missing_slots_asked_not_guessed (planner.test_extract_explain.ExtractTests.test_missing_slots_asked_not_guessed) ... ok
+test_prompt_injection_is_just_text (planner.test_extract_explain.ExtractTests.test_prompt_injection_is_just_text) ... ok
+test_unavailable_never_fakes (planner.test_extract_explain.ExtractTests.test_unavailable_never_fakes) ... ok
+test_no_diacritics_and_whole_word (planner.test_extract_explain.FoldedTerms.test_no_diacritics_and_whole_word) ... ok
+test_substring_inside_other_word_is_ignored (planner.test_extract_explain.FoldedTerms.test_substring_inside_other_word_is_ignored) ... ok
+test_injection_sentence_yields_no_slots (planner.test_extract_explain.InjectionHardening.test_injection_sentence_yields_no_slots) ... ok
+test_legit_sentence_survives_next_to_injection (planner.test_extract_explain.InjectionHardening.test_legit_sentence_survives_next_to_injection) ... ok
+test_out_of_range_values_are_rejected_not_clamped (planner.test_extract_explain.NoSilentClamp.test_out_of_range_values_are_rejected_not_clamped) ... ok
+test_negative_zero_and_out_of_range_are_rejected_and_reported (planner.test_extract_explain.RangeRejection.test_negative_zero_and_out_of_range_are_rejected_and_reported) ... ok
+test_provider_error_llm_calls_attribute_wins (planner.test_llm_provider.AdapterReportedAttempt.test_provider_error_llm_calls_attribute_wins) ... ok
+test_r01_edits_on_complete_prior_are_not_silently_ignored (planner.test_llm_provider.CodexReviewR0Fixes.test_r01_edits_on_complete_prior_are_not_silently_ignored) ... ok
+test_r02_accent_changes_do_not_collide_in_cache (planner.test_llm_provider.CodexReviewR0Fixes.test_r02_accent_changes_do_not_collide_in_cache) ... ok
+test_r03_huge_review_count_does_not_crash_ranking (planner.test_llm_provider.CodexReviewR0Fixes.test_r03_huge_review_count_does_not_crash_ranking) ... ok
+test_r04_model_answer_keeps_rule_meal_and_audience (planner.test_llm_provider.CodexReviewR0Fixes.test_r04_model_answer_keeps_rule_meal_and_audience) ... ok
+test_r06_why_text_never_echoes_source_tags_or_controls (planner.test_llm_provider.CodexReviewR0Fixes.test_r06_why_text_never_echoes_source_tags_or_controls) ... ok
+test_r07_meal_audience_context_and_negation (planner.test_llm_provider.CodexReviewR0Fixes.test_r07_meal_audience_context_and_negation) ... ok
+test_r08_acknowledgement_costs_no_call (planner.test_llm_provider.CodexReviewR0Fixes.test_r08_acknowledgement_costs_no_call) ... ok
+test_prior_includes_start_time_and_weekday (planner.test_llm_provider.Hardening.test_prior_includes_start_time_and_weekday) ... ok
+test_unknown_field_names_not_reflected (planner.test_llm_provider.Hardening.test_unknown_field_names_not_reflected) ... ok
+test_bad_responses_are_unavailable_never_success (planner.test_llm_provider.LLMBoundary.test_bad_responses_are_unavailable_never_success) ... ok
+test_injection_sentences_are_not_sent_to_provider (planner.test_llm_provider.LLMBoundary.test_injection_sentences_are_not_sent_to_provider) ... ok
+test_origin_must_be_in_pilot_area (planner.test_llm_provider.LLMBoundary.test_origin_must_be_in_pilot_area) ... ok
+test_prior_slots_preserved_when_model_omits_or_nulls (planner.test_llm_provider.LLMBoundary.test_prior_slots_preserved_when_model_omits_or_nulls) ... ok
+test_provider_errors_are_unavailable (planner.test_llm_provider.LLMBoundary.test_provider_errors_are_unavailable) ... ok
+test_terms_validated (planner.test_llm_provider.LLMBoundary.test_terms_validated) ... ok
+test_unknown_and_out_of_range_dropped_not_clamped (planner.test_llm_provider.LLMBoundary.test_unknown_and_out_of_range_dropped_not_clamped) ... ok
+test_valid_output_is_applied_and_marked_live (planner.test_llm_provider.LLMBoundary.test_valid_output_is_applied_and_marked_live) ... ok
+test_free_text_place_is_carried_not_resolved (planner.test_llm_provider.OriginText.test_free_text_place_is_carried_not_resolved) ... ok
+test_landmark_sets_label_and_source (planner.test_llm_provider.OriginText.test_landmark_sets_label_and_source) ... ok
+test_model_cannot_set_label_or_source_without_landmark (planner.test_llm_provider.OriginText.test_model_cannot_set_label_or_source_without_landmark) ... ok
+test_rules_extractor_labels_landmarks (planner.test_llm_provider.OriginText.test_rules_extractor_labels_landmarks) ... ok
+test_gemini_adapter_does_not_launder_raw_origin (planner.test_llm_provider.OriginTrustBoundary.test_gemini_adapter_does_not_launder_raw_origin) ... ok
+test_landmark_must_be_mentioned_in_the_message (planner.test_llm_provider.OriginTrustBoundary.test_landmark_must_be_mentioned_in_the_message) ... ok
+test_origin_text_must_be_a_phrase_from_the_message (planner.test_llm_provider.OriginTrustBoundary.test_origin_text_must_be_a_phrase_from_the_message) ... ok
+test_raw_model_origin_label_source_are_rejected (planner.test_llm_provider.OriginTrustBoundary.test_raw_model_origin_label_source_are_rejected) ... ok
+test_raw_origin_only_for_explicitly_trusted_providers (planner.test_llm_provider.OriginTrustBoundary.test_raw_origin_only_for_explicitly_trusted_providers) ... ok
+test_unicode_control_characters_rejected_at_extraction (planner.test_llm_provider.OriginTrustBoundary.test_unicode_control_characters_rejected_at_extraction) ... ok
+test_precise_origin_never_sent_to_the_model (planner.test_llm_provider.PriorPrivacy.test_precise_origin_never_sent_to_the_model) ... ok
+test_cache_expires (planner.test_llm_provider.RulesFirst.test_cache_expires) ... ok
+test_complete_requests_never_call_the_model (planner.test_llm_provider.RulesFirst.test_complete_requests_never_call_the_model) ... ok
+test_local_budget_refusal_is_not_a_provider_call (planner.test_llm_provider.RulesFirst.test_local_budget_refusal_is_not_a_provider_call) ... ok
+test_missing_origin_with_place_cue_calls_model_once_then_cache (planner.test_llm_provider.RulesFirst.test_missing_origin_with_place_cue_calls_model_once_then_cache) ... ok
+test_model_failure_falls_back_to_rules_and_counts_the_call (planner.test_llm_provider.RulesFirst.test_model_failure_falls_back_to_rules_and_counts_the_call) ... ok
+test_out_of_range_values_are_not_sent_to_the_model (planner.test_llm_provider.RulesFirst.test_out_of_range_values_are_not_sent_to_the_model) ... ok
+test_short_messages_skip_the_model (planner.test_llm_provider.RulesFirst.test_short_messages_skip_the_model) ... ok
+test_cheap_venue_beyond_pool_cap_is_found (planner.test_planner_core.BudgetPruneBeforeCap.test_cheap_venue_beyond_pool_cap_is_found) ... ok
+test_rebuild_matches_planned_tour_and_rejects_bad_input (planner.test_planner_core.BuildTour.test_rebuild_matches_planned_tour_and_rejects_bad_input) ... ok
+test_more_stops_than_max_is_rejected (planner.test_planner_core.BuildTourMaxStops.test_more_stops_than_max_is_rejected) ... ok
+test_malformed_coordinates_do_not_raise (planner.test_planner_core.CheckedProviderMalformedInput.test_malformed_coordinates_do_not_raise) ... ok
+test_bad_provider_output_becomes_unknown_leg (planner.test_planner_core.CheckedProviderTests.test_bad_provider_output_becomes_unknown_leg) ... ok
+test_cross_midnight_is_rejected_not_wrapped (planner.test_planner_core.Midnight.test_cross_midnight_is_rejected_not_wrapped) ... ok
+test_budget_infeasible_gives_reasons (planner.test_planner_core.PlannerCore.test_budget_infeasible_gives_reasons) ... ok
+test_closed_at_arrival_is_hard_reject (planner.test_planner_core.PlannerCore.test_closed_at_arrival_is_hard_reject) ... ok
+test_conditional_tour_is_valid_and_labelled (planner.test_planner_core.PlannerCore.test_conditional_tour_is_valid_and_labelled) ... ok
+test_duration_too_short (planner.test_planner_core.PlannerCore.test_duration_too_short) ... ok
+test_excludes_online_nogeo_noprice (planner.test_planner_core.PlannerCore.test_excludes_online_nogeo_noprice) ... ok
+test_far_venue_not_chosen (planner.test_planner_core.PlannerCore.test_far_venue_not_chosen) ... ok
+test_interest_and_exclusion (planner.test_planner_core.PlannerCore.test_interest_and_exclusion) ... ok
+test_matches_exact_baseline_on_small_fixture (planner.test_planner_core.PlannerCore.test_matches_exact_baseline_on_small_fixture)
+Search must equal brute force over all permutations of the eligible pool. ... ok
+test_missing_slots (planner.test_planner_core.PlannerCore.test_missing_slots) ... ok
+test_replace_failure_returns_reason_and_unchanged_tour (planner.test_planner_core.PlannerCore.test_replace_failure_returns_reason_and_unchanged_tour) ... ok
+test_replace_keeps_other_stops (planner.test_planner_core.PlannerCore.test_replace_keeps_other_stops) ... ok
+test_strict_refuses_without_evidence (planner.test_planner_core.PlannerCore.test_strict_refuses_without_evidence) ... ok
+test_unreachable_leg (planner.test_planner_core.PlannerCore.test_unreachable_leg) ... ok
+test_validate_catches_tampering (planner.test_planner_core.PlannerCore.test_validate_catches_tampering) ... ok
+test_verified_feasible_requires_all_evidence (planner.test_planner_core.PlannerCore.test_verified_feasible_requires_all_evidence) ... ok
+test_truncation_is_disclosed (planner.test_planner_core.PoolTruncation.test_truncation_is_disclosed) ... ok
+test_replace_never_sends_more_than_45_points_to_a_provider (planner.test_planner_core.ReplaceRoutePointCap.test_replace_never_sends_more_than_45_points_to_a_provider) ... ok
+test_ineligible_venue_fails (planner.test_planner_core.ValidateRecompute.test_ineligible_venue_fails) ... ok
+test_order_swap_fails_and_clean_passes (planner.test_planner_core.ValidateRecompute.test_order_swap_fails_and_clean_passes) ... ok
+test_strict_pref_rejects_conditional_tour (planner.test_planner_core.ValidateRecompute.test_strict_pref_rejects_conditional_tour) ... ok
+test_tampered_leg_totals_and_timeline_fail (planner.test_planner_core.ValidateRecompute.test_tampered_leg_totals_and_timeline_fail) ... ok
+test_meal_from_start_time (planner.test_quality.Meals.test_meal_from_start_time) ... ok
+test_meal_and_audience_are_soft_signals (planner.test_quality.RankingIsSoftAndSafe.test_meal_and_audience_are_soft_signals) ... ok
+test_quality_breaks_ties_between_equally_relevant_venues (planner.test_quality.RankingIsSoftAndSafe.test_quality_breaks_ties_between_equally_relevant_venues) ... ok
+test_rating_never_beats_interest_relevance (planner.test_quality.RankingIsSoftAndSafe.test_rating_never_beats_interest_relevance) ... ok
+test_soft_score_is_bounded_and_zero_when_disabled (planner.test_quality.RankingIsSoftAndSafe.test_soft_score_is_bounded_and_zero_when_disabled) ... ok
+test_few_reviews_are_pulled_toward_the_mean (planner.test_quality.Smoothing.test_few_reviews_are_pulled_toward_the_mean) ... ok
+test_well_rated_needs_enough_reviews (planner.test_quality.Smoothing.test_well_rated_needs_enough_reviews) ... ok
+test_rules_extract_meal_and_audience (planner.test_quality.SoftHintExtraction.test_rules_extract_meal_and_audience) ... ok
+test_reasons_are_built_from_facts (planner.test_quality.WhyReasons.test_reasons_are_built_from_facts) ... ok
+test_replace_keeps_reasons_and_locks (planner.test_quality.WhyReasons.test_replace_keeps_reasons_and_locks) ... ok
+test_tampered_reasons_fail_validation (planner.test_quality.WhyReasons.test_tampered_reasons_fail_validation) ... ok
+test_expired_entries_purged_on_miss_even_when_provider_fails (planner.test_r0_8_privacy.PreferenceCacheTests.test_expired_entries_purged_on_miss_even_when_provider_fails) ... ok
+test_interest_and_exclusion_terms_are_not_memoized (planner.test_r0_8_privacy.PreferenceCacheTests.test_interest_and_exclusion_terms_are_not_memoized) ... ok
+test_phrases_cannot_cross_dish_tag_boundaries (planner.test_r0_8_privacy.PreferenceCacheTests.test_phrases_cannot_cross_dish_tag_boundaries) ... ok
+test_unicode_folding_keeps_original_semantics (planner.test_r0_8_privacy.PreferenceCacheTests.test_unicode_folding_keeps_original_semantics) ... ok
+test_diacritics_optional_in_query (planner.test_relevance.Relevance.test_diacritics_optional_in_query) ... ok
+test_eligible_requires_match_when_interests_set (planner.test_relevance.Relevance.test_eligible_requires_match_when_interests_set) ... ok
+test_exclusion_whole_word (planner.test_relevance.Relevance.test_exclusion_whole_word) ... ok
+test_fold_is_diacritic_insensitive (planner.test_relevance.Relevance.test_fold_is_diacritic_insensitive) ... ok
+test_relevance_beats_distance_under_pool_cap (planner.test_relevance.Relevance.test_relevance_beats_distance_under_pool_cap) ... ok
+test_synonym_sweets (planner.test_relevance.Relevance.test_synonym_sweets) ... ok
+test_whole_word_not_substring (planner.test_relevance.Relevance.test_whole_word_not_substring) ... ok
+test_failed_batch_cooldown_recovers_without_per_leg_retry (providers.test_google_maps.GoogleFakeCase.test_failed_batch_cooldown_recovers_without_per_leg_retry) ... ok
+test_failures_and_quota_never_raise_or_retry_each_leg (providers.test_google_maps.GoogleFakeCase.test_failures_and_quota_never_raise_or_retry_each_leg) ... ok
+test_geocode_errors (providers.test_google_maps.GoogleFakeCase.test_geocode_errors) ... ok
+test_geocode_fixed_country_bias_five_results_and_budget (providers.test_google_maps.GoogleFakeCase.test_geocode_fixed_country_bias_five_results_and_budget) ... ok
+test_geometry_coordinate_order_warnings_and_limits (providers.test_google_maps.GoogleFakeCase.test_geometry_coordinate_order_warnings_and_limits) ... ok
+test_geometry_malformed_and_lru_bound (providers.test_google_maps.GoogleFakeCase.test_geometry_malformed_and_lru_bound) ... ok
+test_matrix_chunk_limits_no_truncation (providers.test_google_maps.GoogleFakeCase.test_matrix_chunk_limits_no_truncation) ... ok
+test_matrix_fixed_mask_walk_duration_and_cache (providers.test_google_maps.GoogleFakeCase.test_matrix_fixed_mask_walk_duration_and_cache) ... ok
+test_secret_reflection_and_no_external_override (providers.test_google_maps.GoogleFakeCase.test_secret_reflection_and_no_external_override) ... ok
+test_status_and_not_found_never_estimated (providers.test_google_maps.GoogleFakeCase.test_status_and_not_found_never_estimated) ... ok
+test_timeout (providers.test_google_maps.GoogleFakeCase.test_timeout) ... ok
+test_api_live_uses_validation_health_and_failure_envelopes (providers.test_http.LocalProviders.test_api_live_uses_validation_health_and_failure_envelopes) ... {"request_id": "381ce072ee0d478188796e7542b22fbf", "route": "/health", "status": 200, "latency_ms": 89.177}
+{"request_id": "3103c08e60bb45b58ad7905e7ac4c5a3", "route": "/health", "status": 200, "latency_ms": 2.23}
+{"request_id": "aecea041d1424cb8a8f59b446b3a51cc", "route": "/v1/sessions", "status": 200, "latency_ms": 0.906}
+{"request_id": "e3fd962729664f279ed714df30542ccb", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 26.294}
+{"request_id": "af0730804e38456eaa0d43abe8f79a21", "route": "/v1/sessions/{session_id}/messages", "status": 503, "latency_ms": 23.55}
+ok
+test_extraction_failures_have_safe_kinds (providers.test_http.LocalProviders.test_extraction_failures_have_safe_kinds) ... ok
+test_extraction_json_post_key_from_env_and_validation (providers.test_http.LocalProviders.test_extraction_json_post_key_from_env_and_validation) ... ok
+test_health_flags_no_endpoint_no_sockets_no_secrets (providers.test_http.LocalProviders.test_health_flags_no_endpoint_no_sockets_no_secrets) ... {"request_id": "6899f644bd064a84b83a73c01952c1f0", "route": "/health", "status": 200, "latency_ms": 174.045}
+ok
+test_model_injection_output_is_schema_checked_before_planning (providers.test_http.LocalProviders.test_model_injection_output_is_schema_checked_before_planning) ... ok
+test_no_non_loopback_socket_redirect_or_proxy (providers.test_http.LocalProviders.test_no_non_loopback_socket_redirect_or_proxy) ... ok
+test_quota_is_thread_safe_and_cache_hits_cost_no_calls (providers.test_http.LocalProviders.test_quota_is_thread_safe_and_cache_hits_cost_no_calls) ... ok
+test_route_failures_never_raise_or_upgrade_evidence (providers.test_http.LocalProviders.test_route_failures_never_raise_or_upgrade_evidence) ... ok
+test_route_rejects_invalid_numbers_and_no_route (providers.test_http.LocalProviders.test_route_rejects_invalid_numbers_and_no_route) ... ok
+test_route_success_foot_units_direction_and_lru (providers.test_http.LocalProviders.test_route_success_foot_units_direction_and_lru) ... ok
+test_slow_drip_obeys_total_body_deadline (providers.test_http.LocalProviders.test_slow_drip_obeys_total_body_deadline) ... ok
+test_strict_mode_cannot_succeed_on_unavailable_routes (providers.test_http.LocalProviders.test_strict_mode_cannot_succeed_on_unavailable_routes) ... ok
+test_429_persists_until_next_window_and_late_429_does_not_poison_new_day (providers.test_llm_budget.BudgetClock.test_429_persists_until_next_window_and_late_429_does_not_poison_new_day) ... ok
+test_concurrent_reservations_never_exceed_limit (providers.test_llm_budget.BudgetClock.test_concurrent_reservations_never_exceed_limit) ... ok
+test_documented_fixed_offset_last_resort (providers.test_llm_budget.BudgetClock.test_documented_fixed_offset_last_resort) ... ok
+test_dst_short_and_long_days (providers.test_llm_budget.BudgetClock.test_dst_short_and_long_days) ... ok
+test_independent_processes_share_one_hard_limit (providers.test_llm_budget.BudgetClock.test_independent_processes_share_one_hard_limit) ... ok
+test_midnight_pacific_not_utc (providers.test_llm_budget.BudgetClock.test_midnight_pacific_not_utc) ... ok
+test_restart_preserves_used_and_limit_zero (providers.test_llm_budget.BudgetClock.test_restart_preserves_used_and_limit_zero) ... ok
+test_429_blocks_further_transport (providers.test_llm_budget.GeminiBudget.test_429_blocks_further_transport) ... ok
+test_budget_write_while_session_owned_and_restart_and_no_key_in_api_or_logs (providers.test_llm_budget.GeminiBudget.test_budget_write_while_session_owned_and_restart_and_no_key_in_api_or_logs) ... ok
+test_explicit_budget_db_and_corrupt_storage_fail_closed_without_secrets (providers.test_llm_budget.GeminiBudget.test_explicit_budget_db_and_corrupt_storage_fail_closed_without_secrets) ... {"request_id": "c793ef37312f4e37ae1fa6c8c0dd27df", "route": "/health", "status": 503, "latency_ms": 76.287}
+ok
+test_invalid_limit_defaults_to_18 (providers.test_llm_budget.GeminiBudget.test_invalid_limit_defaults_to_18) ... ok
+test_message_429_reports_attempt_and_authoritative_exhaustion (providers.test_llm_budget.GeminiBudget.test_message_429_reports_attempt_and_authoritative_exhaustion) ... {"request_id": "2bbcba1fd5354a14a599bbd85bbeeeaf", "route": "/v1/sessions", "status": 200, "latency_ms": 47.434}
+{"request_id": "7611cd82f7ea44fa8f42ae3b584231d4", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 2.975}
+{"request_id": "0726cdaf56dc47149b2655fcdee7e82a", "route": "/health", "status": 200, "latency_ms": 1.709}
+ok
+test_no_key_keeps_rules_available_without_claiming_live_provider (providers.test_llm_budget.GeminiBudget.test_no_key_keeps_rules_available_without_claiming_live_provider) ... {"request_id": "fdc329fa36e14839b31007effb00843c", "route": "/health", "status": 200, "latency_ms": 51.61}
+{"request_id": "13482b75201749c1bf5b692bac0f7b9f", "route": "/v1/sessions", "status": 200, "latency_ms": 0.821}
+{"request_id": "05d5911dfcb14a0881e1a8a40d72046d", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 22.601}
+ok
+test_retry_refused_locally_still_reports_first_attempt (providers.test_llm_budget.GeminiBudget.test_retry_refused_locally_still_reports_first_attempt) ... ok
+test_rules_cache_local_quota_message_metadata (providers.test_llm_budget.GeminiBudget.test_rules_cache_local_quota_message_metadata) ... {"request_id": "e0fb7a1d25714106af9fe3bc95480198", "route": "/v1/sessions", "status": 200, "latency_ms": 55.184}
+{"request_id": "bedd7bd345184cdf81e10fe4353ace60", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 14.54}
+{"request_id": "00e7dafe064e4e178d61677ff7270dbc", "route": "/v1/sessions", "status": 200, "latency_ms": 0.762}
+{"request_id": "29815c3a4c954ceeac9229b1c2428080", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 4.187}
+{"request_id": "d7e5540c3a3d4f92bc008e704530d06d", "route": "/v1/sessions", "status": 200, "latency_ms": 0.588}
+{"request_id": "4ecc11722b3e4dedb3ce21365d587d9b", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 2.389}
+{"request_id": "0842ea4042e64452b72cadc047b9674d", "route": "/v1/sessions", "status": 200, "latency_ms": 0.596}
+{"request_id": "691d2dc986e74f4499568a2d4078951b", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 2.607}
+ok
+test_transport_retry_and_explanation_each_count_once (providers.test_llm_budget.GeminiBudget.test_transport_retry_and_explanation_each_count_once) ... ok
+test_unbudgeted_provider_health_is_null (providers.test_llm_budget.GeminiBudget.test_unbudgeted_provider_health_is_null) ... {"request_id": "aaf436a6e76f44169c655e3fe8891e11", "route": "/health", "status": 200, "latency_ms": 47.149}
+ok
+test_estimate_mode_never_has_geometry (providers.test_phase3.ApiWithProviders.test_estimate_mode_never_has_geometry) ... {"request_id": "a1a35a93f7a848158c9330f201015682", "route": "/v1/sessions", "status": 200, "latency_ms": 43.249}
+{"request_id": "27315157743a4598af43511cfdc9224e", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 19.212}
+ok
+test_tour_legs_carry_provider_geometry_and_health_labels (providers.test_phase3.ApiWithProviders.test_tour_legs_carry_provider_geometry_and_health_labels) ... {"request_id": "ffbf892c0e7e49e2ac76188e0ffb7d89", "route": "/health", "status": 200, "latency_ms": 102.505}
+{"request_id": "ee5fd9dbda294ca382e209160d919a5b", "route": "/v1/sessions", "status": 200, "latency_ms": 1.187}
+{"request_id": "9ee72aca57eb47feb501d9c94fad581c", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 86.213}
+ok
+test_adversarial_texts_fail (providers.test_phase3.ExplanationChecker.test_adversarial_texts_fail) ... ok
+test_truthful_text_passes (providers.test_phase3.ExplanationChecker.test_truthful_text_passes) ... ok
+test_facts_sent_to_llm_contain_no_venue_identity (providers.test_phase3.ExplanationPrivacy.test_facts_sent_to_llm_contain_no_venue_identity) ... ok
+test_retry_only_when_enough_time_remains (providers.test_phase3.ExplanationTimeBudget.test_retry_only_when_enough_time_remains) ... ok
+test_daily_budget_and_missing_key (providers.test_phase3.GeminiFake.test_daily_budget_and_missing_key) ... ok
+test_explainer_uses_checked_llm_text_or_template (providers.test_phase3.GeminiFake.test_explainer_uses_checked_llm_text_or_template) ... ok
+test_failures_map_to_kinds_and_fallback_is_labelled (providers.test_phase3.GeminiFake.test_failures_map_to_kinds_and_fallback_is_labelled) ... ok
+test_model_cannot_supply_coordinates_or_unknown_landmark (providers.test_phase3.GeminiFake.test_model_cannot_supply_coordinates_or_unknown_landmark) ... ok
+test_request_shape_and_key_header (providers.test_phase3.GeminiFake.test_request_shape_and_key_header) ... ok
+test_single_retry_only_for_transient_server_errors (providers.test_phase3.GeminiFake.test_single_retry_only_for_transient_server_errors) ... ok
+test_only_project_keys_and_no_override (providers.test_phase3.LocalEnv.test_only_project_keys_and_no_override) ... ok
+test_budget_and_no_key (providers.test_phase3.ORSFake.test_budget_and_no_key) ... ok
+test_matrix_prefetch_one_call_and_geometry_split (providers.test_phase3.ORSFake.test_matrix_prefetch_one_call_and_geometry_split) ... ok
+test_replace_uses_one_bounded_matrix (providers.test_phase3.ORSFake.test_replace_uses_one_bounded_matrix) ... ok
+test_unreachable_null_and_failures_are_unknown (providers.test_phase3.ORSFake.test_unreachable_null_and_failures_are_unknown) ... ok
+test_truthful_uncertainty_still_passes (providers.test_phase3.OpeningClaimVariants.test_truthful_uncertainty_still_passes) ... ok
+test_variants_rejected (providers.test_phase3.OpeningClaimVariants.test_variants_rejected) ... ok
+test_allowlist_rules (providers.test_phase3.Transport.test_allowlist_rules) ... ok
+test_refused_destination_opens_no_socket (providers.test_phase3.Transport.test_refused_destination_opens_no_socket) ... ok
+test_capacity_and_expired_rows_bound (repositories.test_sessions.DurableSessions.test_capacity_and_expired_rows_bound) ... ok
+test_corrupt_row_and_schema_fail_closed (repositories.test_sessions.DurableSessions.test_corrupt_row_and_schema_fail_closed) ... ok
+test_dataset_change_discards_tour_keeps_preferences (repositories.test_sessions.DurableSessions.test_dataset_change_discards_tour_keeps_preferences) ... ok
+test_env_selects_store_and_new_app_reads_database (repositories.test_sessions.DurableSessions.test_env_selects_store_and_new_app_reads_database) ... {"request_id": "ef8cf59462ea4af28b1f98f541c4fe58", "route": "/v1/sessions", "status": 200, "latency_ms": 170.118}
+{"request_id": "d2c8e51e1b6d4bf2907c0f831c7c357a", "route": "/v1/sessions/{session_id}/messages", "status": 200, "latency_ms": 111.32}
+{"request_id": "02ffc89ecda04a10997ea6c281832288", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 244.555}
+ok
+test_get_stale_or_missing_venue_returns_null_note_repeatedly (repositories.test_sessions.DurableSessions.test_get_stale_or_missing_venue_returns_null_note_repeatedly) ... {"request_id": "db18a4b436ff404e84e9f86f3714aeda", "route": "/v1/sessions/{session_id}", "status": 401, "latency_ms": 174.064}
+{"request_id": "d8e11506088247e4a312bf6285a94622", "route": "/v1/sessions/{session_id}", "status": 403, "latency_ms": 11.462}
+{"request_id": "6383dbe5125240adabfc01db4cfa71e0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.975}
+{"request_id": "19fa7e50d42143b08a7604b986acbac0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.467}
+{"request_id": "26e3b82cfaff48289ab2f5a38636275a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 19.775}
+{"request_id": "f993da9ed8d6485fa6702babef6d37ec", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms": 17.888}
+ok
+test_isolation_and_expiry_survive_restart (repositories.test_sessions.DurableSessions.test_isolation_and_expiry_survive_restart) ... ok
+test_locked_and_corrupt_db_are_redacted_503 (repositories.test_sessions.DurableSessions.test_locked_and_corrupt_db_are_redacted_503) ... {"request_id": "c6b800aab44346c18b4527eb4585c080", "route": "/v1/sessions", "status": 503, "latency_ms": 387.133}
+{"request_id": "bf7104d635e04557bffa5602fbd8b145", "route": "/v1/sessions", "status": 503, "latency_ms": 118.668}
+ok
+test_restart_rebuilds_exact_order_from_ids_without_private_payload (repositories.test_sessions.DurableSessions.test_restart_rebuilds_exact_order_from_ids_without_private_payload) ... ok
+test_transaction_rollback (repositories.test_sessions.DurableSessions.test_transaction_rollback) ... ok
+test_two_writers_have_one_atomic_conflict (repositories.test_sessions.DurableSessions.test_two_writers_have_one_atomic_conflict) ... ok
+
+----------------------------------------------------------------------
+Ran 385 tests in 53.035s
+
+OK
+
+Exit: 0

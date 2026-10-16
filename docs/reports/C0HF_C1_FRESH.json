@@ -1,0 +1,252 @@
+[
+  {
+    "text": "dị ứng cua không ăn sữa dị ứng tôm",
+    "parse": {
+      "allergies": [
+        "cua",
+        "tôm"
+      ],
+      "removed": [],
+      "avoid": [
+        "sữa"
+      ],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua",
+      "tôm"
+    ],
+    "exclusions": [
+      "sữa"
+    ],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua, tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+    ]
+  },
+  {
+    "text": "không dị ứng cua dị ứng sữa không ăn lạc",
+    "parse": {
+      "allergies": [
+        "sữa"
+      ],
+      "removed": [],
+      "avoid": [
+        "lạc"
+      ],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "sữa"
+    ],
+    "exclusions": [
+      "lạc"
+    ],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Đã ghi nhận không ăn: lạc. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng lạc' để mình lưu ý an toàn."
+    ]
+  },
+  {
+    "text": "dị ứng cua và tôm 4 người, kiêng sữa dị ứng lạc",
+    "parse": {
+      "allergies": [
+        "cua",
+        "tôm",
+        "lạc"
+      ],
+      "removed": [],
+      "avoid": [
+        "sữa"
+      ],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua",
+      "tôm",
+      "lạc"
+    ],
+    "exclusions": [
+      "sữa"
+    ],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua, tôm, lạc. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+    ]
+  },
+  {
+    "text": "dị ứng cua và dị ứng",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [],
+      "avoid": [],
+      "issues": [
+        "empty"
+      ],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó."
+    ]
+  },
+  {
+    "text": "dị ứng cua, dị ứng rất nặng",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [],
+      "avoid": [],
+      "issues": [
+        "empty"
+      ],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó."
+    ]
+  },
+  {
+    "text": "dị ứng cua nhưng hết dị ứng sữa rồi",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [
+        "sữa"
+      ],
+      "avoid": [],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    ]
+  },
+  {
+    "text": "dị ứng cua và tôm nhưng không dị ứng sữa",
+    "parse": {
+      "allergies": [
+        "cua",
+        "tôm"
+      ],
+      "removed": [],
+      "avoid": [],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua",
+      "tôm"
+    ],
+    "exclusions": [],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua, tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    ]
+  },
+  {
+    "text": "dị ứng cua\rkhông ăn sữa",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [],
+      "avoid": [
+        "sữa"
+      ],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [
+      "sữa"
+    ],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+    ]
+  },
+  {
+    "text": "dị ứng cua\tkiêng sữa",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [],
+      "avoid": [
+        "sữa"
+      ],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [
+      "sữa"
+    ],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.",
+      "Đã ghi nhận không ăn: sữa. Đây là dị ứng hay chỉ là không thích? Nếu là dị ứng, hãy nói 'dị ứng sữa' để mình lưu ý an toàn."
+    ]
+  },
+  {
+    "text": "dị ứng cua, xyzabc",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [],
+      "avoid": [],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    ]
+  },
+  {
+    "text": "dị ứng cua và kiwi",
+    "parse": {
+      "allergies": [
+        "cua"
+      ],
+      "removed": [],
+      "avoid": [],
+      "issues": [],
+      "mentioned": true
+    },
+    "allergies": [
+      "cua"
+    ],
+    "exclusions": [],
+    "notes": [
+      "Đã ghi nhận dị ứng/kiêng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    ]
+  }
+]

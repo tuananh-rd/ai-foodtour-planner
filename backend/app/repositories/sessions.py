@@ -1,4 +1,6 @@
 """Bounded, single-process sessions. Only secret digests are retained."""
+import copy
+import json
 import hashlib
 import secrets
 import time
@@ -10,6 +12,14 @@ from typing import Protocol, ContextManager
 
 from app.api.errors import APIError
 from app.planner.types import Preferences
+from app.chat.state import ChatState
+
+
+def encode_chat(state):
+    encoded = json.dumps(state.to_json(private=True), ensure_ascii=False, allow_nan=False)
+    if len(encoded.encode("utf-8")) > 32768:
+        raise APIError(500, "internal_validation_failed", "Conversation state exceeds storage limit.")
+    return encoded
 
 
 @dataclass
@@ -23,6 +33,10 @@ class Session:
     window_start: float = 0
     requests: int = 0
     notes: tuple = ()
+    chat: ChatState = field(default_factory=ChatState)
+    tour_preferences: object = None
+    tour_vehicle: str | None = None
+    tour_selected_ids: tuple = ()
 
 
 class SessionStoreInterface(Protocol):
@@ -87,7 +101,10 @@ class SessionStore:
             if session.requests >= self.rate_limit:
                 raise APIError(429, "rate_limited", "Quá nhiều yêu cầu; vui lòng thử lại sau.")
             session.requests += 1
-            yield session
+            working = copy.deepcopy(session)
+            yield working
+            encode_chat(working.chat)
+            self._sessions[identity] = working
 
     @staticmethod
     def check_revision(session, expected):

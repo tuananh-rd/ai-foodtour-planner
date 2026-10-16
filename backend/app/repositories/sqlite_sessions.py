@@ -12,7 +12,9 @@ from app.api.schemas import PreferencesSchema
 from app.data import DatasetLoadError
 from app.planner import engine
 from app.planner.types import Leg, Stop, Tour
-from app.repositories.sessions import Session, SessionStore
+from app.repositories.sessions import Session, SessionStore, encode_chat
+from app.chat.state import ChatState
+from app.chat.planning import routing_for, plan_selected
 
 CHANGED = 'dữ liệu đã đổi, hãy lập lại lịch trình'
 
@@ -58,6 +60,8 @@ class SQLiteSessionStore:
                 db.execute('CREATE INDEX sessions_expiry ON sessions(expires_at)')
             elif versions != [(1,)]:
                 raise ValueError('unsupported schema')
+            if 'chat' not in {row[1] for row in db.execute('PRAGMA table_info(sessions)')}:
+                db.execute('ALTER TABLE sessions ADD COLUMN chat TEXT')
             yield db
             db.commit()
         except (sqlite3.Error, ValueError, TypeError, KeyError, IndexError, OverflowError, DatasetLoadError):
@@ -69,7 +73,7 @@ class SQLiteSessionStore:
                 db.close()
 
     def _purge(self, db, now):
-        db.execute('UPDATE sessions SET preferences=NULL,tour=NULL WHERE expires_at<=?', (now,))
+        db.execute('UPDATE sessions SET preferences=NULL,tour=NULL,chat=NULL WHERE expires_at<=?', (now,))
         db.execute('DELETE FROM sessions WHERE id IN (SELECT id FROM sessions WHERE expires_at<=? '
                    'ORDER BY expires_at DESC,id DESC LIMIT -1 OFFSET ?)', (now, self.max_sessions))
 
@@ -81,21 +85,31 @@ class SQLiteSessionStore:
                 raise APIError(429, 'rate_limited', 'Đã đạt giới hạn phiên; vui lòng thử lại sau.')
             identity, token = secrets.token_urlsafe(24), secrets.token_urlsafe(32)
             prefs = PreferencesSchema().model_dump_json()
-            db.execute('INSERT INTO sessions VALUES (?,?,?,?,?,NULL)',
+            db.execute('INSERT INTO sessions (id,token_hash,preferences,revision,expires_at,tour) VALUES (?,?,?,?,?,NULL)',
                        (identity, hashlib.sha256(token.encode()).digest(), prefs, 0, now + self.ttl_seconds))
         return {'session_id': identity, 'token': token, 'revision': 0}
 
     def _restore(self, row, *, restore_tour=True):
-        digest, encoded, revision, expiry, encoded_tour = row
+        digest, encoded, revision, expiry, encoded_tour, encoded_chat = row
         if not isinstance(digest, bytes) or len(digest) != 32 or type(revision) is not int or revision < 0:
             raise ValueError('invalid session')
         prefs = PreferencesSchema.model_validate_json(encoded).domain()
         session = Session(digest, expiry, revision, prefs)
+        if encoded_chat is not None:
+            if len(encoded_chat.encode("utf-8")) > 32768:
+                raise ValueError("oversize chat")
+            session.chat = ChatState.from_json(json.loads(encoded_chat))
         if encoded_tour is None:
             return session
         record = json.loads(encoded_tour)
-        if set(record) != {'dataset_version', 'stops'} or not isinstance(record['stops'], list):
+        if not {'dataset_version', 'stops'} <= set(record) or set(record) - {'dataset_version', 'stops', 'preferences', 'vehicle', 'selected_ids'} or not isinstance(record['stops'], list):
             raise ValueError('invalid tour record')
+        if record.get('preferences'):
+            prefs = PreferencesSchema.model_validate(record['preferences']).domain()
+            session.tour_preferences = prefs
+        session.tour_vehicle = record.get('vehicle')
+        session.tour_selected_ids = tuple(record.get('selected_ids', ()))
+        routing = routing_for(session.tour_vehicle, self.routing)
         data = self.venues.snapshot()
         session.snapshot = data
         if record['dataset_version'] != data.dataset_version:
@@ -106,7 +120,12 @@ class SQLiteSessionStore:
             if not restore_tour:
                 return session
             # Failure diagnoses are regenerated; never persist free-form venue text.
-            session.tour = engine.plan_tour(data.venues, prefs, self.routing, quality_weight=self.quality_weight)
+            if session.tour_selected_ids:
+                session.tour = plan_selected({v.id: v for v in data.venues},
+                    list(session.tour_selected_ids), prefs, self.routing,
+                    vehicle=session.tour_vehicle, quality_weight=self.quality_weight)
+            else:
+                session.tour = engine.plan_tour(data.venues, prefs, routing, quality_weight=self.quality_weight)
             return session
         if any(set(s) != {'venue_id', 'order'} or type(s['order']) is not int for s in stops):
             raise ValueError('invalid stops')
@@ -119,8 +138,8 @@ class SQLiteSessionStore:
                 Stop(s['venue_id'], s['order'], Leg(None, 0, 'unknown')) for s in ordered))
             return session
         rebuilt, violation = engine.build_tour(data.venues, prefs,
-                                               [s['venue_id'] for s in ordered], self.routing)
-        if violation or rebuilt is None or engine.validate_tour(rebuilt, data.venues, prefs, self.routing):
+                                               [s['venue_id'] for s in ordered], routing)
+        if violation or rebuilt is None or engine.validate_tour(rebuilt, data.venues, prefs, routing):
             session.notes = (CHANGED,)
             return session
         session.tour = rebuilt
@@ -133,7 +152,7 @@ class SQLiteSessionStore:
             # Use the shared constant-time comparison even for expired rows.
             if not token or len(token) > 200:
                 raise APIError(401, 'unauthorized_session', 'Thiếu thông tin xác thực phiên.')
-            row = db.execute('SELECT token_hash,preferences,revision,expires_at,tour FROM sessions WHERE id=?',
+            row = db.execute('SELECT token_hash,preferences,revision,expires_at,tour,chat FROM sessions WHERE id=?',
                              (identity,)).fetchone()
             digest = hashlib.sha256(token.encode()).digest()
             expected = row[0] if row is not None else bytes(32)
@@ -161,10 +180,13 @@ class SQLiteSessionStore:
             encoded_tour = None
             if session.tour is not None:
                 encoded_tour = json.dumps({'dataset_version': session.snapshot.dataset_version,
+                    **({'preferences': PreferencesSchema.from_domain(session.tour_preferences or session.preferences).model_dump(),
+                        'vehicle': session.tour_vehicle, 'selected_ids': list(session.tour_selected_ids)}
+                        if session.chat.turn_count else {}),
                     'stops': [{'venue_id': s.venue_id, 'order': s.order} for s in session.tour.stops]})
-            db.execute('UPDATE sessions SET preferences=?,revision=?,tour=? WHERE id=? AND revision=?',
+            db.execute('UPDATE sessions SET preferences=?,revision=?,tour=?,chat=? WHERE id=? AND revision=?',
                        (PreferencesSchema.from_domain(session.preferences).model_dump_json(),
-                        session.revision, encoded_tour, identity, row[2]))
+                        session.revision, encoded_tour, encode_chat(session.chat), identity, row[2]))
 
     def authorize_token(self, token):
         if not token or len(token) > 200:

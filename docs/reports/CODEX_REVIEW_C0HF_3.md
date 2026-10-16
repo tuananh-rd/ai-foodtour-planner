@@ -190,3 +190,125 @@ passing; NOT FIXED is reserved for unresolved fresh or previously reported behav
 | `'dị ứng tôm và không ăn sữa'` | A=['tôm']; E=['sữa']; W,D | FIXED/passing fresh probe |
 | `'dị\u2060 ứng cua'` | A=['cua']; E=[]; W | FIXED/passing fresh probe |
 | `'dị ứng cua; không dị ứng sữa; dị ứng lạc'` | A=['cua', 'lạc']; E=[]; W | FIXED/passing fresh probe |
+
+
+## Addendum on 239f28b — C1-API re-verification (2026-10-16)
+
+**Final C0-HF verdict: ACCEPT for the scoped hotfix, with the previously accepted limits unchanged.**
+
+Merged Claude round-4 and subsequent owner fixes. The first re-run on `3e9423a` found R3-M1 still unresolved; Claude fixed it in `be3d229`, independently rechecked below. No Codex edits to chat, LLM or planner modules.
+
+| Finding | Assessment | Fresh evidence |
+|---|---|---|
+| Original H1/M1/M2/M3/L2 | FIXED | Adjacent party, markup, negation, cache notes and long-term controls all retain the established results. |
+| R2-H1 | FIXED | NFD/NFC both request orders and format-character triggers retain crab; warnings survive cache. |
+| R2-H2 | FIXED | Repeated triggers after budget/party and negated crab plus positive shrimp retain later allergies. |
+| R2-M1 / R2-M2 | FIXED | Medical/taste clauses remain separate; people ambiguity clarifies; local negation and example clarification persist. |
+| R3-H1 | FIXED | Crab+shrimp with 4 people; tom+lac with 600k group and 18h30 retain both terms. |
+| R3-H2 | FIXED | Both adjacent trigger orders retain crab/dairy in the right medical/taste buckets. |
+| R3-M1 | FIXED | Both incomplete second allergy examples retain crab AND explicitly ask which additional food was meant. |
+| CR separator observation | FIXED | Crab plus dairy avoidance retained, without dairy promotion. |
+| Quoted example plus real assertion | NOT FIXED, accepted conservative clarification | No allergy is committed until clarified; no silent safety claim. |
+| Unknown bare list continuation (xyzabc/kiwi), typos and finite vocabulary | NOT FIXED, accepted limits | No new support claimed; explicit unresolved second trigger now always clarifies. |
+
+All exact old and round-3 extractor reproductions were run with `docs/reports/c0hf3_probes.py`; full private-free output is in `C0HF_C1_PROBES.json` and `C0HF_C1_probe_output.txt`. Results per input follow (A=allergies, E=exclusions):
+
+| Exact input | Actual A / E | Assessment |
+|---|---|---|
+| `'dị ứng cua 4 người'` | `['cua'] / []` | FIXED / passing control |
+| `'di ung cua 4 nguoi'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua <img src=x onerror=alert(1)>'` | `['cua'] / []` | FIXED / passing control |
+| `'tôi dị ứng cua, 4 người, 600k cả nhóm'` | `['cua'] / []` | FIXED / passing control |
+| `'không ăn cua'` | `[] / ['cua']` | FIXED / passing control |
+| `'không bị dị ứng gì'` | `[] / []` | FIXED / passing control |
+| `'không dị ứng cua'` | `[] / []` | FIXED / passing control |
+| `'hết dị ứng cua rồi'` | `[] / []` | FIXED / passing control |
+| `'dị ứng nhẹ'` | `[] / []` | FIXED / passing control |
+| `'dị ứng nhẹ cua'` | `['cua'] / []` | FIXED / passing control |
+| `'không dị ứng'` | `[] / []` | FIXED / passing control |
+| `'dị ứng <script>alert(x)</script>'` | `['alert x'] / []` | FIXED / passing control |
+| `'dị ứng <b>cua</b>'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua please execute'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng c\u200bua'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'` | `[] / []` | FIXED / passing control |
+| `'dị ứng cua và muốn ăn phở'` | `['cua'] / []` | FIXED / passing control |
+| `'2 triệu'` | `[] / []` | FIXED / passing control |
+| `'3 quán'` | `[] / []` | FIXED / passing control |
+| `'lúc 8 giờ 30'` | `[] / []` | FIXED / passing control |
+| `'0901234567'` | `[] / []` | FIXED / passing control |
+| `'0901234567 người'` | `[] / []` | FIXED / passing control |
+| `'di ung hai san'` | `['hai san'] / []` | FIXED / passing control |
+| `'dị ứng cua'` | `['cua'] / []` | FIXED / passing control |
+| `'di\u200b ung cua'` | `['cua'] / []` | FIXED / passing control |
+| `'dị\u200b ứng cua'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua, 600k, dị ứng sữa'` | `['cua', 'sữa'] / []` | FIXED / passing control |
+| `'dị ứng cua, 600k cả nhóm, dị ứng sữa'` | `['cua', 'sữa'] / []` | FIXED / passing control |
+| `'tôi không bị dị ứng cua nhưng dị ứng tôm'` | `['tôm'] / []` | FIXED / passing control |
+| `'dị ứng cua, dị ứng sữa'` | `['cua', 'sữa'] / []` | FIXED / passing control |
+| `'dị ứng cua và không ăn sữa'` | `['cua'] / ['sữa']` | FIXED / passing control |
+| `'dị ứng cua; không ăn sữa'` | `['cua'] / ['sữa']` | FIXED / passing control |
+| `'dị ứng tôm; kiêng lạc'` | `['tôm'] / ['lạc']` | FIXED / passing control |
+| `'dị ứng cua, kiêng sữa'` | `['cua'] / ['sữa']` | FIXED / passing control |
+| `'dị ứng tôm và kiêng sữa'` | `['tôm'] / ['sữa']` | FIXED / passing control |
+| `'hai bạn dị ứng khác nhau'` | `[] / []` | FIXED / passing control |
+| `'mình không hề bị dị ứng cua'` | `[] / []` | FIXED / passing control |
+| `'tôi chưa từng bị dị ứng cua'` | `[] / []` | FIXED / passing control |
+| `'dị ứng của bạn là tôm'` | `['tôm'] / []` | FIXED / passing control |
+| `'Tôi nói "dị ứng cua" là ví dụ, tôi không dị ứng'` | `[] / []` | FIXED / passing control |
+| `'bạn mình bị dị ứng tôm'` | `['tôm'] / []` | FIXED / passing control |
+| `'ban minh bi di ung tom'` | `['tom'] / []` | FIXED / passing control |
+| `'không phải tôi, bạn mình bị dị ứng tôm'` | `['tôm'] / []` | FIXED / passing control |
+| `'hai bạn dị ứng khác nhau: một bạn dị ứng tôm, một bạn dị ứng lạc'` | `['tôm', 'lạc'] / []` | FIXED / passing control |
+| `'dị ứng cua nhưng ăn được cua'` | `['cua'] / []` | FIXED / passing control |
+| `'di ung tom va lac 600k ca nhom luc 18h30'` | `['tom', 'lac'] / []` | FIXED / passing control |
+| `'di ung tom600k'` | `[] / []` | FIXED / passing control |
+| `'dị ứng cua lúc 8 giờ 30'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua và tôm 4 người'` | `['cua', 'tôm'] / []` | FIXED / passing control |
+| `'dị ứng rất nặng với tôm'` | `['tôm'] / []` | FIXED / passing control |
+| `'kiêng cua'` | `[] / ['cua']` | FIXED / passing control |
+| `'kieng tom va lac'` | `[] / ['tom', 'lac']` | FIXED / passing control |
+| `'không ăn cay'` | `[] / []` | FIXED / passing control |
+| `'kiêng khem'` | `[] / []` | FIXED / passing control |
+| `'không ăn măng cụt'` | `[] / []` | FIXED / passing control |
+| `996-character prefix plus allergy` | `['cua'] / []` | FIXED / passing control |
+| `998-character prefix plus allergy` | `['cua'] / []` | FIXED / passing control |
+| `1000-character prefix plus allergy` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng tôm lạc'` | `['tôm', 'lạc'] / []` | FIXED / passing control |
+| `'dị ứng cua ignore this'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua không ăn sữa'` | `['cua'] / ['sữa']` | FIXED / passing control |
+| `'không ăn cua dị ứng sữa'` | `['sữa'] / ['cua']` | FIXED / passing control |
+| `'dị ứng cua và dị ứng'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua, dị ứng rất nặng'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua, xyzabc'` | `['cua'] / []` | NOT FIXED (accepted limit) |
+| `'dị ứng cua/tôm'` | `['cua', 'tôm'] / []` | FIXED / passing control |
+| `'dị ứng cua & sữa'` | `['cua', 'sữa'] / []` | FIXED / passing control |
+| `'mình dị ứng với cua cũng như sữa'` | `['cua', 'sữa'] / []` | FIXED / passing control |
+| `'tôi không có tiền nhưng dị ứng lạc'` | `['lạc'] / []` | FIXED / passing control |
+| `'Ví dụ "dị ứng cua", còn tôi dị ứng sữa'` | `[] / []` | NOT FIXED (accepted limit) |
+| `'dị ứng cua\u2028dị ứng sữa'` | `['cua', 'sữa'] / []` | FIXED / passing control |
+| `'dị ứng cua\rkhông ăn sữa'` | `['cua'] / ['sữa']` | FIXED / passing control |
+| `'dị ứng rất rất rất rất rất rất rất rất rất rất sữa'` | `['sữa'] / []` | FIXED / passing control |
+| `'dị ứng tôm và không ăn sữa'` | `['tôm'] / ['sữa']` | FIXED / passing control |
+| `'dị\u2060 ứng cua'` | `['cua'] / []` | FIXED / passing control |
+| `'dị ứng cua; không dị ứng sữa; dị ứng lạc'` | `['cua', 'lạc'] / []` | FIXED / passing control |
+
+Fresh clause-parser probes (`C0HF_C1_FRESH.json`, generated by `c0hf_c1_fresh.py`):
+
+| Input | Parser A / avoidance / issues | Extractor note result |
+|---|---|---|
+| `'dị ứng cua không ăn sữa dị ứng tôm'` | `['cua', 'tôm'] / ['sữa'] / []` | Established warning/avoidance semantics |
+| `'không dị ứng cua dị ứng sữa không ăn lạc'` | `['sữa'] / ['lạc'] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua và tôm 4 người, kiêng sữa dị ứng lạc'` | `['cua', 'tôm', 'lạc'] / ['sữa'] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua và dị ứng'` | `['cua'] / [] / ['empty']` | Additional-allergy clarification present |
+| `'dị ứng cua, dị ứng rất nặng'` | `['cua'] / [] / ['empty']` | Additional-allergy clarification present |
+| `'dị ứng cua nhưng hết dị ứng sữa rồi'` | `['cua'] / [] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua và tôm nhưng không dị ứng sữa'` | `['cua', 'tôm'] / [] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua\rkhông ăn sữa'` | `['cua'] / ['sữa'] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua\tkiêng sữa'` | `['cua'] / ['sữa'] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua, xyzabc'` | `['cua'] / [] / []` | Established warning/avoidance semantics |
+| `'dị ứng cua và kiwi'` | `['cua'] / [] / []` | Established warning/avoidance semantics |
+
+Original direct L1 controls were rerun in `C0HF_C1_LIMITS.json`: coffee/ca false, milk-tea/dairy true, jellyfish/dairy true (accepted accent-folding false positive), steamed-fish/ca false (accepted vocabulary gap), bun-rieu/crab false (absent ingredient evidence), shrimp-paste/tom true. `di un cua` and `dị ưng cua` remain unsupported accepted typos.
+
+API/restart/replacement probes, local verified-route status/checker controls, prior-sensitive caching and all eight existing AllergyAPI tests were rerun. No live provider or allergy-safety validation is claimed. See the C1 delivery report and full backend output for the final suite count and OpenAPI result. Reviewer of the backend delivery is Claude; this independent C0-HF verdict does not self-approve the C1 merge.

@@ -2,7 +2,7 @@
 from typing import Annotated, Literal
 import unicodedata
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.planner.types import Preferences
 
@@ -63,6 +63,7 @@ class PreferencesSchema(Model):
     interests: list[str] = Field(default_factory=list, max_length=10)
     exclusions: list[str] = Field(default_factory=list, max_length=10)
     allergies: list[Annotated[str, Field(min_length=1, max_length=40)]] = Field(default_factory=list, max_length=10)
+    max_leg_min: int = Field(default=20, ge=3, le=60, strict=True)
     max_stops: int = Field(default=3, ge=1, le=5, strict=True)
     mode: Literal["explore", "strict"] = "explore"
 
@@ -105,7 +106,7 @@ class PreferencesSchema(Model):
             budget_scope=prefs.budget_scope, party_size=prefs.party_size,
             interests=list(prefs.interests), exclusions=list(prefs.exclusions),
             allergies=list(prefs.allergies),
-            max_stops=prefs.max_stops, mode=prefs.mode, meal=prefs.meal, audience=prefs.audience,
+            max_stops=prefs.max_stops, max_leg_min=prefs.max_leg_min, mode=prefs.mode, meal=prefs.meal, audience=prefs.audience,
         )
 
 
@@ -173,6 +174,8 @@ class MessageBudget(Model):
 
 
 class LLMBudget(MessageBudget):
+    session_cap: int | None = None
+    reserve: int | None = None
     used: int = Field(ge=0)
     resets_at: str
     window: Literal["pacific_midnight"] = "pacific_midnight"
@@ -281,6 +284,7 @@ class TourView(Model):
 
 
 class SessionView(Model):
+    chat: dict | None = None
     preferences: PreferencesSchema
     missing_slots: list[str]
     questions: list[str]
@@ -400,6 +404,7 @@ class PrivacyConfig(Model):
 
 class FeaturesConfig(Model):
     ui_v2: bool
+    chat_v2: bool = False
 
 
 class ClientConfig(Model):
@@ -418,3 +423,226 @@ class ErrorDetail(Model):
 
 class ErrorResponse(Model):
     error: ErrorDetail
+
+
+class ChatInput(Model):
+    model_config = ConfigDict(extra="forbid", strict=True, allow_inf_nan=False)
+
+    @model_validator(mode="before")
+    @classmethod
+    def safe_strings(cls, value):
+        def visit(node):
+            if isinstance(node, str) and any(unicodedata.category(c) in ('Cc', 'Cf', 'Cs') for c in node):
+                raise ValueError('invalid characters')
+            if isinstance(node, dict):
+                for key, item in node.items():
+                    visit(key)
+                    visit(item)
+            elif isinstance(node, list):
+                for item in node:
+                    visit(item)
+        visit(value)
+        return value
+
+
+class ChatPatch(ChatInput):
+    party_size: int | None = Field(default=None, ge=1, le=20)
+    budget_vnd: int | None = Field(default=None, gt=0)
+    budget_scope: Literal['per_person', 'group'] | None = None
+    start_time: str | None = Field(default=None, pattern=r'^(?:[01]\d|2[0-3]):[0-5]\d$')
+    end_time: str | None = Field(default=None, pattern=r'^(?:[01]\d|2[0-3]):[0-5]\d$')
+    duration_min: int | None = Field(default=None, ge=30, le=720)
+    vehicle: Literal['walk', 'motorbike', 'car', 'taxi'] | None = None
+    max_leg_min: int | None = Field(default=None, ge=3, le=60)
+    audience: Literal['solo', 'friends', 'family'] | None = None
+
+    @model_validator(mode='before')
+    @classmethod
+    def no_null_values(cls, value):
+        if isinstance(value, dict) and any(v is None for v in value.values()):
+            raise ValueError('patch values must have their declared type')
+        return value
+
+
+class ChatLocation(ChatInput):
+    district: str | None = Field(default=None, max_length=60)
+    label: str | None = Field(default=None, max_length=60)
+    lat: float | None = Field(default=None, ge=-90, le=90)
+    lon: float | None = Field(default=None, ge=-180, le=180)
+
+
+Criterion = Literal['distance', 'price', 'rating', 'audience', 'meal', 'parking_car', 'outdoor', 'capacity', 'prep_time', 'hours', 'quiet', 'crowd', 'elderly']
+ChatID = Annotated[str, Field(min_length=1, max_length=64)]
+
+
+class Action(ChatInput):
+    type: Literal['add', 'remove', 'keep', 'compare', 'pick_option', 'confirm_yes', 'confirm_no', 'edit_profile', 'set_location', 'request_plan', 'search']
+    venue_id: ChatID | None = None
+    venue_ids: list[ChatID] | None = Field(default=None, max_length=4)
+    option_id: ChatID | None = None
+    criteria: list[Criterion] | None = Field(default=None, max_length=3)
+    patch: ChatPatch | None = None
+    location: ChatLocation | None = None
+    query: str | None = Field(default=None, max_length=200)
+
+
+class ChatRequest(ChatInput):
+    text: str | None = Field(default=None, min_length=1, max_length=1000)
+    action: Action | None = None
+    revision: int = Field(ge=0)
+
+    @model_validator(mode='after')
+    def exclusive(self):
+        if (self.text is None) == (self.action is None):
+            raise ValueError('exactly one text/action required')
+        return self
+
+
+class TextBlock(Model):
+    type: Literal['text']
+    text: str
+
+
+class NoticeBlock(Model):
+    type: Literal['notice']
+    level: Literal['info', 'warning', 'safety']
+    code: str
+    text: str
+
+
+class DishSuggestion(Model):
+    dish_group: str
+    blurb: str
+    venue_count: int | None
+    radius_m: int
+    kind: Literal['general_knowledge']
+
+
+class DishSuggestionsBlock(Model):
+    type: Literal['dish_suggestions']
+    items: list[DishSuggestion]
+
+
+class CodeText(Model):
+    code: str
+    text: str
+
+
+class ChatVenue(Model):
+    id: str
+    name: str
+    district: str
+    address: str
+    dish_tags: list[str]
+    price: Price | None
+    hours: Hours | None
+    rating: Rating | None
+
+
+class VenueCard(Model):
+    label: str
+    venue: ChatVenue
+    distance_m: int | None
+    distance_source: Literal['straight_line_estimate', 'unknown']
+    why: list[CodeText]
+    flags: list[CodeText]
+    in_shortlist: bool
+
+
+class VenueCardsBlock(Model):
+    type: Literal['venue_cards']
+    title: str | None = None
+    cards: list[VenueCard]
+
+
+class CompareCriterion(Model):
+    id: str
+    label: str
+
+
+class CompareColumn(Model):
+    label: str
+    venue_id: str
+    name: str
+
+
+class CompareCell(Model):
+    value: str | None
+    status: Literal['source', 'estimate', 'unknown']
+    note: str | None = None
+
+
+class CompareRow(Model):
+    criterion_id: str
+    cells: list[CompareCell]
+
+
+class UnsupportedCriterion(Model):
+    criterion: str
+    text: str
+
+
+class CompareTableBlock(Model):
+    type: Literal['compare_table']
+    criteria: list[CompareCriterion]
+    columns: list[CompareColumn]
+    rows: list[CompareRow]
+    unsupported: list[UnsupportedCriterion]
+
+
+class ChatOption(Model):
+    option_id: str
+    label: str
+
+
+class ClarifyBlock(Model):
+    type: Literal['clarify']
+    pending_id: str
+    question: str
+    options: list[ChatOption] = Field(max_length=4)
+
+
+class SummaryItem(Model):
+    id: str
+    label: str
+    value: str | None
+    status: Literal['user', 'inferred', 'default', 'missing']
+    editable: bool
+
+
+class SummaryVenue(Model):
+    venue_id: str
+    name: str
+    status: Literal['considering', 'kept']
+
+
+class ConfirmSummaryBlock(Model):
+    type: Literal['confirm_summary']
+    items: list[SummaryItem]
+    shortlist: list[SummaryVenue]
+    missing: list[str]
+    warnings: list[CodeText]
+
+
+class TourReadyBlock(Model):
+    type: Literal['tour_ready']
+    revision: int
+
+
+Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock, Field(discriminator='type')]
+
+
+class ChatReply(Model):
+    blocks: list[Block]
+
+
+class ChatTurnInfo(Model):
+    intent: str
+    tools: list[str]
+    understanding: Literal['rules', 'llm', 'cache', 'action']
+
+
+class ChatTurn(SessionView):
+    chat: dict
+    reply: ChatReply
+    turn: ChatTurnInfo

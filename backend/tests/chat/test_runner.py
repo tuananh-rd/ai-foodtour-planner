@@ -123,3 +123,10 @@ class RunnerChecks(unittest.TestCase):
         calls = client.post.call_args_list
         self.assertEqual(calls[-1].kwargs['json'], calls[-2].kwargs['json'])
         self.assertEqual(calls[-1].kwargs['json']['revision'], 0)
+
+
+    def test_phrase_boundaries_do_not_confuse_food_with_celsius(self):
+        self.body['reply']['blocks']=[{'type':'text','text':'đồ chiên'}]
+        self.assertEqual(self.check_body({'text_not_contains':['độ C']}),[])
+        self.body['reply']['blocks']=[{'type':'text','text':'35 độ C'}]
+        self.assertTrue(self.check_body({'text_not_contains':['độ C']}))

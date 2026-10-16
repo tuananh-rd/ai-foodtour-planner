@@ -1,0 +1,98 @@
+Archive 3e9423a; copied test_chat.py only; production untouched.
+C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\.venv\Lib\site-packages\fastapi\testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+test_revision_once_and_conflict (test_chat.ChatAPI.test_revision_once_and_conflict) ... {"request_id": "0295610391054dee8637373e160264d2", "route": "/v1/sessions", "status": 200, "latency_ms": 60.349}
+{"request_id": "20ff54ddc1d0409e9e7f28ebe625fd7e", "route": "<unmatched>", "status": 404, "latency_ms": 0.516}
+FAIL
+test_restart_shortlist_pending_results_allergy (test_chat.ChatAPI.test_restart_shortlist_pending_results_allergy) ... {"request_id": "61abecd1fb144e1cab756e0068fd24a7", "route": "/v1/sessions", "status": 200, "latency_ms": 65.496}
+{"request_id": "4134066d311f403fae40554d3984a6e9", "route": "<unmatched>", "status": 404, "latency_ms": 0.329}
+FAIL
+test_confirm_exact_selection_and_stale_tour (test_chat.ChatAPI.test_confirm_exact_selection_and_stale_tour) ... {"request_id": "542f56b67c8b4dfe9dd637566aa7606b", "route": "/v1/sessions", "status": 200, "latency_ms": 113.161}
+{"request_id": "3d32afc755b945dc9310ab2f477f483c", "route": "<unmatched>", "status": 404, "latency_ms": 0.27}
+FAIL
+test_conflicting_plan_never_drops_stop (test_chat.ChatAPI.test_conflicting_plan_never_drops_stop) ... {"request_id": "ca66736a1eee4886b9b24a1ad94516ca", "route": "/v1/sessions", "status": 200, "latency_ms": 55.273}
+{"request_id": "c11c578ff1c34427b4f9726a2b4db8ee", "route": "<unmatched>", "status": 404, "latency_ms": 0.796}
+FAIL
+test_state_cap_and_exception_roll_back (test_chat.ChatAPI.test_state_cap_and_exception_roll_back) ... {"request_id": "201156c5215b4ebf9a55d64ba9f14722", "route": "/v1/sessions", "status": 200, "latency_ms": 71.65}
+{"request_id": "a4dac1948cf64165ba1ed4f6c4e76be9", "route": "<unmatched>", "status": 404, "latency_ms": 0.319}
+FAIL
+test_no_text_in_logs (test_chat.ChatAPI.test_no_text_in_logs) ... {"request_id": "a9feef1c76bb4c3990bbff3a0589d59f", "route": "/v1/sessions", "status": 200, "latency_ms": 53.783}
+FAIL
+
+======================================================================
+FAIL: test_revision_once_and_conflict (test_chat.ChatAPI.test_revision_once_and_conflict)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 117, in test_revision_once_and_conflict
+    self.assertEqual(response.status_code,200,response.text)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 404 != 200 : {"error":{"code":"validation_error","message":"Không thể xử lý yêu cầu."}}
+
+======================================================================
+FAIL: test_restart_shortlist_pending_results_allergy (test_chat.ChatAPI.test_restart_shortlist_pending_results_allergy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 123, in test_restart_shortlist_pending_results_allergy
+    self.action('set_location', location={'district':'Hoàn Kiếm'})
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 53, in action
+    self.assertEqual(response.status_code, 200, response.text)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 404 != 200 : {"error":{"code":"validation_error","message":"Không thể xử lý yêu cầu."}}
+
+======================================================================
+FAIL: test_confirm_exact_selection_and_stale_tour (test_chat.ChatAPI.test_confirm_exact_selection_and_stale_tour)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 140, in test_confirm_exact_selection_and_stale_tour
+    ids=self.prepare()
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 62, in prepare
+    self.action('set_location', location={'district': 'Hoàn Kiếm'})
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 53, in action
+    self.assertEqual(response.status_code, 200, response.text)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 404 != 200 : {"error":{"code":"validation_error","message":"Không thể xử lý yêu cầu."}}
+
+======================================================================
+FAIL: test_conflicting_plan_never_drops_stop (test_chat.ChatAPI.test_conflicting_plan_never_drops_stop)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 151, in test_conflicting_plan_never_drops_stop
+    self.prepare(duration=30)
+    ~~~~~~~~~~~~^^^^^^^^^^^^^
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 62, in prepare
+    self.action('set_location', location={'district': 'Hoàn Kiếm'})
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 53, in action
+    self.assertEqual(response.status_code, 200, response.text)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 404 != 200 : {"error":{"code":"validation_error","message":"Không thể xử lý yêu cầu."}}
+
+======================================================================
+FAIL: test_state_cap_and_exception_roll_back (test_chat.ChatAPI.test_state_cap_and_exception_roll_back)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 161, in test_state_cap_and_exception_roll_back
+    self.action('search',query='phở')
+    ~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 53, in action
+    self.assertEqual(response.status_code, 200, response.text)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 404 != 200 : {"error":{"code":"validation_error","message":"Không thể xử lý yêu cầu."}}
+
+======================================================================
+FAIL: test_no_text_in_logs (test_chat.ChatAPI.test_no_text_in_logs)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "<pre-change-archive>\backend\tests\api\test_chat.py", line 207, in test_no_text_in_logs
+    self.assertEqual(response.status_code,200)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 404 != 200
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.542s
+
+FAILED (failures=6)
+
+Exit: 1
