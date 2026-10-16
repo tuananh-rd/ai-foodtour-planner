@@ -26,6 +26,8 @@ export const SYNTHETIC_VENUES = [
     price_evidence: "estimate",
     hours: null,
     hours_display: null,
+    rating: { value: 4.5, count: 128, source_scale_max: 5 },
+    source_fetched_at: "2026-10-15T08:00:00Z",
     synthetic: true
   },
   {
@@ -45,6 +47,8 @@ export const SYNTHETIC_VENUES = [
     price_evidence: "estimate",
     hours: null,
     hours_display: null,
+    rating: { value: 4.8, count: 420, source_scale_max: 5 },
+    source_fetched_at: "2026-10-15T08:00:00Z",
     synthetic: true
   },
   {
@@ -64,6 +68,8 @@ export const SYNTHETIC_VENUES = [
     price_evidence: "estimate",
     hours: null,
     hours_display: null,
+    rating: { value: 4.1, count: 3, source_scale_max: 5 },
+    source_fetched_at: "2026-10-15T08:00:00Z",
     synthetic: true
   },
   {
@@ -83,6 +89,8 @@ export const SYNTHETIC_VENUES = [
     price_evidence: "estimate",
     hours: null,
     hours_display: null,
+    rating: { value: 4.2, count: 54, source_scale_max: 5 },
+    source_fetched_at: "2026-10-15T08:00:00Z",
     synthetic: true
   },
   {
@@ -102,6 +110,8 @@ export const SYNTHETIC_VENUES = [
     price_evidence: "estimate",
     hours: null,
     hours_display: null,
+    rating: { value: 4.6, count: 85, source_scale_max: 5 },
+    source_fetched_at: "2026-10-15T08:00:00Z",
     synthetic: true
   },
   {
@@ -355,6 +365,19 @@ function createMockTour(prefs, revision = 1, lockedIds = [], candidateStops = nu
         status: v.hours ? "estimate" : "unknown",
         display: v.hours_display || null,
         open_at_arrival: null // null means unknown, never true without verification
+      },
+      why: [
+        { code: idx === 0 ? "near_origin" : "match_interest", text: idx === 0 ? "Gần điểm xuất phát (~4 phút đi bộ)" : "Khớp món ăn và khẩu vị ưa thích" },
+        { code: "well_rated", text: "Được đánh giá tốt theo nguồn thu thập" }
+      ],
+      venue: {
+        id: v.id,
+        name: v.name,
+        rating: v.rating || { value: 4.5, count: 80, source_scale_max: 5 },
+        suitable_meals: ["breakfast", "lunch", "dinner"],
+        audiences: ["solo", "friends", "family"],
+        cuisine_styles: v.dish_tags || [],
+        source_fetched_at: v.source_fetched_at || "2026-10-15T08:00:00Z"
       }
     };
   });
@@ -442,6 +465,14 @@ export async function getHealth() {
       routing: "straight_line_estimate",
       dataset_source: "synthetic",
       dataset_version: "v1.0-mock",
+      llm_budget: {
+        limit: 18,
+        used: 4,
+        remaining: 14,
+        exhausted: false,
+        resets_at: new Date(Date.now() + 36000000).toISOString(),
+        window: "pacific_midnight"
+      },
       is_mock: true
     };
   }
@@ -677,6 +708,9 @@ export async function sendMessage(sessionId, text, token = "", options = {}) {
       revision: session.revision,
       dataset_source: "synthetic",
       dataset_version: "v1.0-mock",
+      extraction_source: "rules",
+      llm_calls: 0,
+      llm_budget: { limit: 18, remaining: 14, exhausted: false },
       is_mock: true
     };
   }
@@ -994,16 +1028,25 @@ export async function getClientConfig(options = {}) {
         sent_to_google: ["map_tiles", "autocomplete_text", "route_coordinates"],
         doc: "docs/PHASE4.md"
       },
+      features: {
+        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || process.env.NEXT_PUBLIC_UI_V2 === '1' || false
+      },
       is_mock: true
     };
   }
 
   try {
-    return await safeFetch(`${getApiBaseUrl()}/v1/client-config`, {
+    const res = await safeFetch(`${getApiBaseUrl()}/v1/client-config`, {
       method: 'GET',
       headers: { 'Accept': 'application/json' },
       signal: options?.signal
     });
+    if (res && !res.features) {
+      res.features = {
+        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || false
+      };
+    }
+    return res;
   } catch (err) {
     // Graceful fallback when backend endpoint is not configured / not yet deployed
     return {
@@ -1023,6 +1066,9 @@ export async function getClientConfig(options = {}) {
       privacy: {
         sent_to_google: ["map_tiles", "autocomplete_text", "route_coordinates"],
         doc: "docs/PHASE4.md"
+      },
+      features: {
+        ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || false
       }
     };
   }
