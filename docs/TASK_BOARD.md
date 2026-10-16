@@ -65,3 +65,8 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C0-HF-B API schema + persistence + independent review + API tests | Codex | In progress | ctx_799eec8f21ff; gate: Claude re-runs suite on merged branch, behavioural fail-before; C0-1/C0-2 start only after acceptance |
 | C0-1 contract v1.8, C0-2 scenario corpus | Claude / Codex | Blocked on C0-HF acceptance | — |
 | C3 chat UI | Antigravity | Not started (by user decision; no early worker) | — |
+| C0-HF-B (Codex 856f2bf) | Codex | DONE: API allergies + 8 API tests accepted by Claude (312→316 tests OK) | review rounds 1–2 found extractor gaps → Claude fixed (231c001, e9ca4ae, 933af18: clause-based safety parser) |
+| C0-HF-D final review + C0-2 runner | Codex | In progress | ctx_e1377f3efb28; C0-HF acceptance pending |
+| C0-1 contract v1.8 | Claude | DONE | b2a11fc |
+| C0-2 corpus | Claude | DONE (runner by Codex in progress) | 624df8c: 144-venue synthetic chat fixture, 165 labelled utterances, CH-01..12 |
+| C1 engine (state/gazetteer/knowledge/tools) | Claude | In progress | backend/app/chat/* (state, gazetteer, knowledge, tools committed; understand/engine next) |
