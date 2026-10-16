@@ -1,0 +1,756 @@
+{
+  "data": "SYNTHETIC fixtures only",
+  "reviewed_commit": "7107374",
+  "decision": "REQUEST CHANGES",
+  "boundary_checks": {
+    "passed": 9,
+    "total": 21,
+    "exit": 1
+  },
+  "results": [
+    {
+      "id": "BUDGET-250k mỗi người",
+      "passed": true,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 250000,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 1
+          },
+          "status": 200
+        }
+      ],
+      "input": "250k mỗi người",
+      "persisted": {
+        "budget": {
+          "value": 250000,
+          "source": "user_said",
+          "turn": 2,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        }
+      }
+    },
+    {
+      "id": "BUDGET-600k cả nhóm",
+      "passed": true,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 600000,
+                "budget_scope": "group"
+              }
+            },
+            "revision": 2
+          },
+          "status": 200
+        }
+      ],
+      "input": "600k cả nhóm",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        }
+      }
+    },
+    {
+      "id": "BUDGET-600k",
+      "passed": true,
+      "alert": "⚠️ Vui lòng chỉ rõ phạm vi ngân sách: mỗi người hay cả nhóm (ví dụ: 250k mỗi người hoặc 600k cả nhóm).",
+      "turns": [],
+      "input": "600k",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-đi bộ",
+      "passed": true,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "vehicle": "walk"
+              }
+            },
+            "revision": 3
+          },
+          "status": 200
+        }
+      ],
+      "input": "đi bộ",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 4,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-xe máy",
+      "passed": true,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "vehicle": "motorbike"
+              }
+            },
+            "revision": 4
+          },
+          "status": 200
+        }
+      ],
+      "input": "xe máy",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "motorbike",
+          "source": "user_said",
+          "turn": 5,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-ô tô",
+      "passed": true,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "vehicle": "car"
+              }
+            },
+            "revision": 5
+          },
+          "status": 200
+        }
+      ],
+      "input": "ô tô",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "car",
+          "source": "user_said",
+          "turn": 6,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-taxi",
+      "passed": true,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "vehicle": "taxi"
+              }
+            },
+            "revision": 6
+          },
+          "status": 200
+        }
+      ],
+      "input": "taxi",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "taxi",
+          "source": "user_said",
+          "turn": 7,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-tàu bay",
+      "passed": true,
+      "alert": "⚠️ Phương tiện không hợp lệ. Vui lòng chọn: đi bộ, xe máy, ô tô hoặc taxi/grab.",
+      "turns": [],
+      "input": "tàu bay",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "taxi",
+          "source": "user_said",
+          "turn": 7,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-xe đạp",
+      "passed": true,
+      "alert": "⚠️ Phương tiện không hợp lệ. Vui lòng chọn: đi bộ, xe máy, ô tô hoặc taxi/grab.",
+      "turns": [],
+      "input": "xe đạp",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "taxi",
+          "source": "user_said",
+          "turn": 7,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-máy bay",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "vehicle": "motorbike"
+              }
+            },
+            "revision": 7
+          },
+          "status": 200
+        }
+      ],
+      "input": "máy bay",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "motorbike",
+          "source": "user_said",
+          "turn": 8,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-bộ đàm",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "vehicle": "walk"
+              }
+            },
+            "revision": 8
+          },
+          "status": 200
+        }
+      ],
+      "input": "bộ đàm",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "VEHICLE-xe hơi",
+      "passed": false,
+      "alert": "⚠️ Phương tiện không hợp lệ. Vui lòng chọn: đi bộ, xe máy, ô tô hoặc taxi/grab.",
+      "turns": [],
+      "input": "xe hơi",
+      "persisted": {
+        "budget": {
+          "value": 600000,
+          "source": "user_said",
+          "turn": 3,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY-1.5 triệu cả nhóm",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 15000,
+                "budget_scope": "group"
+              }
+            },
+            "revision": 9
+          },
+          "status": 200
+        }
+      ],
+      "input": "1.5 triệu cả nhóm",
+      "persisted": {
+        "budget": {
+          "value": 15000,
+          "source": "user_said",
+          "turn": 10,
+          "confirmed": true,
+          "scope": "group"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY-1,5 triệu mỗi người",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 15000,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 10
+          },
+          "status": 200
+        }
+      ],
+      "input": "1,5 triệu mỗi người",
+      "persisted": {
+        "budget": {
+          "value": 15000,
+          "source": "user_said",
+          "turn": 11,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY--250k mỗi người",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 250000,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 11
+          },
+          "status": 200
+        }
+      ],
+      "input": "-250k mỗi người",
+      "persisted": {
+        "budget": {
+          "value": 250000,
+          "source": "user_said",
+          "turn": 12,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY-600k cả nhóm 3 người",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 6003000,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 12
+          },
+          "status": 200
+        }
+      ],
+      "input": "600k cả nhóm 3 người",
+      "persisted": {
+        "budget": {
+          "value": 6003000,
+          "source": "user_said",
+          "turn": 13,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY-250k mỗi người hoặc 600k cả nhóm",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 250600,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 13
+          },
+          "status": 200
+        }
+      ],
+      "input": "250k mỗi người hoặc 600k cả nhóm",
+      "persisted": {
+        "budget": {
+          "value": 250600,
+          "source": "user_said",
+          "turn": 14,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY-999999999999999999999999999999k mỗi người",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 1e+30,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 14
+          },
+          "status": 422
+        }
+      ],
+      "input": "999999999999999999999999999999k mỗi người",
+      "persisted": {
+        "budget": {
+          "value": 250600,
+          "source": "user_said",
+          "turn": 14,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "BUDGET-BOUNDARY-999999999999999999999999999999999999999999999",
+      "passed": false,
+      "alert": "",
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": null,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 14
+          },
+          "status": 422
+        }
+      ],
+      "input": {
+        "ascii_9_count": 400,
+        "suffix": "k mỗi người"
+      },
+      "persisted": {
+        "budget": {
+          "value": 250600,
+          "source": "user_said",
+          "turn": 14,
+          "confirmed": true,
+          "scope": "per_person"
+        },
+        "vehicle": {
+          "value": "walk",
+          "source": "user_said",
+          "turn": 9,
+          "confirmed": true
+        }
+      }
+    },
+    {
+      "id": "HOSTILE-EIGHT-BLOCKS-1280",
+      "passed": false,
+      "width": 1280,
+      "scroll": 46326,
+      "xss": false,
+      "images": 0,
+      "jsLinks": 0,
+      "blocks": 8,
+      "sections": [
+        {
+          "type": "text",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "notice",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "dish_suggestions",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "venue_cards",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "compare_table",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "clarify",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "confirm_summary",
+          "client": 1265,
+          "scroll": 1265
+        },
+        {
+          "type": "tour_ready",
+          "client": 1265,
+          "scroll": 46326
+        }
+      ]
+    },
+    {
+      "id": "HOSTILE-EIGHT-BLOCKS-390",
+      "passed": false,
+      "width": 1560,
+      "scroll": 46326,
+      "xss": false,
+      "images": 0,
+      "jsLinks": 0,
+      "blocks": 8,
+      "sections": [
+        {
+          "type": "text",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "notice",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "dish_suggestions",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "venue_cards",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "compare_table",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "clarify",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "confirm_summary",
+          "client": 390,
+          "scroll": 390
+        },
+        {
+          "type": "tour_ready",
+          "client": 390,
+          "scroll": 46326
+        }
+      ]
+    }
+  ]
+}

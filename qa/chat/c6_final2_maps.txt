@@ -1,0 +1,14 @@
+    // Extend the successful populated author tour and ordinal identity check.
+    await setViewport(1280,800);
+    const buttonBefore=await readState(),buttonStart=networkTurns.length;
+    await ev(`document.querySelectorAll('[data-replace-button]')[1].click()`);await waitForTurn();
+    const buttonAfter=await readState(),buttonTurns=networkTurns.slice(buttonStart).map(t=>({body:t.body,status:t.status}));
+    const buttonIds=s=>s.tour.stops.map(t=>t.venue_id);
+    record('REPLACE-BUTTON-IDENTITIES','Real API confirms ordinal text button changes only stop two',buttonIds(buttonBefore)[0]===buttonIds(buttonAfter)[0]&&buttonIds(buttonBefore)[1]!==buttonIds(buttonAfter)[1]&&buttonTurns.some(t=>t.status===200&&t.body.text==='đổi quán thứ 2'&&t.body.action===null),JSON.stringify({before:buttonIds(buttonBefore),after:buttonIds(buttonAfter),turns:buttonTurns}));
+    for(const width of [1280,390]){
+      await setViewport(width,width===390?844:800);if(width===390){await ev(`document.querySelectorAll('[data-testid="mobile-tab"]')[2].click()`);await sleep(100);}
+      const d=await ev(`({text:document.querySelector('[data-testid="itinerary-view"]')?.innerText||'',width:innerWidth,scroll:document.documentElement.scrollWidth})`);
+      const passed=!!d.text&&d.text.includes('Liên kết chứa')&&!/Links contain|The schedule|Tour origin|Skipped stops|An isolated/.test(d.text)&&d.scroll<=width;
+      results.push({id:'MAPS-TRANSLATION-'+width,passed,details:d});console.log('FINAL2 MAPS-TRANSLATION-'+width+' '+(passed?'PASS':'FAIL')+' '+JSON.stringify(d));
+      await captureScreenshot('final2_maps_'+width+'.png');
+    }

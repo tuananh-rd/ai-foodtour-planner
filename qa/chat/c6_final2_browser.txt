@@ -1,0 +1,34 @@
+    // Independent C6g boundary probes using the real-service author harness.
+    await setViewport(1280,800);await navigateTo('http://127.0.0.1:13100/?chat=v2');
+    await sendChat('ở Cầu Giấy');
+    async function setFinal2Input(value){await ev(`(()=>{const input=document.querySelector('[data-testid="profile-edit-input"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,${JSON.stringify(value)});input.dispatchEvent(new Event('input',{bubbles:true}));})()`);}
+    async function saveFinal2(){await ev(`document.querySelector('[data-testid="btn-profile-edit-save"]').click()`);}
+    function finding(id, passed, details) { results.push({id,passed,details}); console.log('FINAL2 '+id+' '+(passed?'PASS':'FAIL')+' '+JSON.stringify(details)); }
+    async function snapshot(){return ev(`(async()=>{const id=sessionStorage.getItem('foodtour_chat_session_id'),token=sessionStorage.getItem('foodtour_chat_session_token');return (await fetch('http://127.0.0.1:18100/v1/sessions/'+id,{headers:{'X-Session-Token':token}})).json()})()`);}
+    async function edit(chip,value){
+      await setViewport(1280,800);
+      await ev(`document.querySelector('[data-testid="chip-profile-${chip}"]').click()`); await sleep(100);
+      await setFinal2Input(value); await sleep(100);
+      const start=networkTurns.length; await saveFinal2(); await sleep(200); await waitForTurn();
+      const alert=await ev(`document.querySelector('[data-testid="profile-edit-error"]')?.innerText || ''`);
+      const turns=networkTurns.slice(start).map(t=>({body:t.body,status:t.status}));
+      const st=await snapshot();
+      if(await ev(`!!document.querySelector('[role="dialog"]')`)) {await sendCDP('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});await sleep(100);}
+      return {value,alert,turns,profile:st.chat?.profile};
+    }
+    for(const [value,scope,amount] of [['250k mỗi người','per_person',250000],['600k cả nhóm','group',600000],['600k',null,null]]){
+      const r=await edit('budget',value); finding('BUDGET-'+value,scope ? r.turns.length===1&&r.turns[0].status===200&&r.profile.budget.scope===scope&&r.profile.budget.value===amount : !!r.alert&&r.turns.length===0,r);
+    }
+    for(const [value,want] of [['đi bộ','walk'],['xe máy','motorbike'],['ô tô','car'],['taxi','taxi'],['tàu bay',null],['xe đạp',null],['máy bay',null],['bộ đàm',null],['xe hơi','car']]){
+      const r=await edit('vehicle',value); finding('VEHICLE-'+value,want ? r.turns.length===1&&r.turns[0].status===200&&r.profile.vehicle.value===want : !!r.alert&&r.turns.length===0,r);
+    }
+    for(const [value,want] of [['1.5 triệu cả nhóm',1500000],['1,5 triệu mỗi người',1500000],['-250k mỗi người',null],['600k cả nhóm 3 người',600000],['250k mỗi người hoặc 600k cả nhóm',null],['9'.repeat(30)+'k mỗi người',null],['9'.repeat(400)+'k mỗi người',null]]){
+      const r=await edit('budget',value); finding('BUDGET-BOUNDARY-'+value.slice(0,45),want===null ? !!r.alert&&r.turns.length===0 : r.turns.length===1&&r.turns[0].status===200&&r.profile.budget.value===want,r);
+    }
+    await navigateTo('http://127.0.0.1:13100/review');
+    for(const width of [1280,390]){
+      await setViewport(width,width===390?844:800);
+      const d=await ev(`({width:innerWidth,scroll:document.documentElement.scrollWidth,xss:!!window.__xss,images:document.querySelectorAll('img').length,jsLinks:document.querySelectorAll('a[href^="javascript:"]').length,blocks:document.querySelectorAll('[data-review]').length,sections:[...document.querySelectorAll('[data-review]')].map(n=>({type:n.dataset.review,client:n.clientWidth,scroll:n.scrollWidth}))})`);
+      finding('HOSTILE-EIGHT-BLOCKS-'+width,d.blocks===8&&d.width===width&&d.scroll<=width&&!d.xss&&!d.images&&!d.jsLinks,d);
+      await captureScreenshot('final2_eight_blocks_'+width+'.png');
+    }
