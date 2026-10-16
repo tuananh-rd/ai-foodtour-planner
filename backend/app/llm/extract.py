@@ -12,7 +12,7 @@ from dataclasses import dataclass, field, replace
 from typing import Optional, Protocol
 
 from app.planner.engine import missing_slots
-from app.planner.relevance import fold
+from app.planner.relevance import fold, fold_uncached
 from app.planner.types import Preferences
 
 MAX_TEXT = 1000
@@ -158,15 +158,25 @@ class MockExtractor:
                 break
         # Soft-ranking hints only (contract v1.6); the planner never treats them as constraints.
         for meal, pattern in (("late", r"\b(khuya|dem khuya|an dem)\b"), ("breakfast", r"\b(an sang|bua sang|buoi sang)\b"),
-                              ("lunch", r"\b(an trua|bua trua|buoi trua)\b"), ("snack", r"\b(buoi xe|bua xe|an chieu|chieu nay)\b"),
-                              ("dinner", r"\b(an toi|bua toi|buoi toi|toi nay)\b")):
+                              ("lunch", r"\b(an trua|bua trua|buoi trua)\b"), ("snack", r"\b(buoi xe|bua xe|an chieu)\b"),
+                              ("dinner", r"\b(an toi|bua toi|buoi toi)\b")):
             if re.search(pattern, u):
                 upd["meal"] = meal
                 break
-        for audience, pattern in (("family", r"\b(gia dinh|tre em|con nho|bo me|ong ba)\b"),
-                                  ("friends", r"\b(ban be|nhom ban|dong nghiep|hop nhom)\b"),
-                                  ("solo", r"\b(mot minh|di mot minh|di le)\b")):
-            if re.search(pattern, u):
+        else:
+            # A bare time-of-day ("toi nay") is a meal hint only together with an eating verb.
+            if re.search(r"\b(an|uong)\b", u):
+                if re.search(r"\bchieu nay\b", u):
+                    upd["meal"] = "snack"
+                elif re.search(r"\btoi nay\b", u):
+                    upd["meal"] = "dinner"
+        # Negated audience terms ("khong co tre em") are removed before matching.
+        ua = re.sub(r"\b(khong|chang|chu|dung)\s+(?:co |di voi |dan |phai )?(?:gia dinh|tre em|con nho|bo me|ong ba|"
+                    r"ban be|nhom ban|dong nghiep|hop nhom)\b", " ", u)
+        for audience, pattern in (("solo", r"\b(mot minh|di mot minh|di le)\b"),
+                                  ("family", r"\b(gia dinh|tre em|con nho|bo me|ong ba)\b"),
+                                  ("friends", r"\b(ban be|nhom ban|dong nghiep|hop nhom)\b")):
+            if re.search(pattern, ua):
                 upd["audience"] = audience
                 break
         if re.search(r"chac chan|nghiem ngat|da xac minh", u):
@@ -175,7 +185,7 @@ class MockExtractor:
             upd["mode"] = "explore"
 
         # Diacritic-insensitive, whole-word matching ("an bun" works; "oc" does not hit "hoc").
-        ft = fold(t)
+        ft = fold_uncached(t)
         excl = list(p.exclusions)
         for d in DISH_TERMS:
             fd = re.escape(fold(d))

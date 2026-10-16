@@ -4,6 +4,7 @@ No I/O, no LLM. Unknown evidence is carried through as unknown, never defaulted 
 """
 from __future__ import annotations
 
+import unicodedata
 from typing import Optional
 
 from .interfaces import RouteMatrixProvider, StraightLineEstimator, haversine_km
@@ -13,6 +14,7 @@ from .relevance import excluded, interest_score
 from .types import Leg, Preferences, ReplaceResult, Stop, Tour, Venue
 
 POOL_CAP = 14
+SEARCH_NODE_BUDGET = 40000  # prefix evaluations per plan_tour; keeps 5-stop search bounded
 REPLACE_CAP = 40
 MAX_ROUTE_POINTS = 45  # origin + current stops + candidates sent to a routing provider per replace
 
@@ -74,12 +76,19 @@ def _possible_alone(v: Venue, prefs: Preferences) -> bool:
     return True
 
 
+def _plain(text: str) -> str:
+    """User terms echoed in reasons: drop control/format characters and markup, bound length."""
+    kept = "".join(ch for ch in str(text) if unicodedata.category(ch)[0] not in "CZ" or ch == " ")
+    kept = kept.replace("<", "").replace(">", "")
+    return " ".join(kept.split())[:40]
+
+
 def _why(v: Venue, i: int, seq: list, leg: Leg, prefs: Preferences) -> tuple:
     """Reasons from validated facts only; no model involved."""
     out = []
     hit = matched_interests(v, prefs.interests)
     if hit:
-        out.append(("match_interest", "Khớp món bạn quan tâm: " + ", ".join(hit[:3])))
+        out.append(("match_interest", "Khớp món bạn quan tâm: " + ", ".join(_plain(h) for h in hit[:3])))
     if leg.minutes is not None and leg.minutes <= 8 and leg.source != "unknown":
         if i == 0:
             out.append(("near_origin", f"Gần điểm xuất phát (~{leg.minutes} phút đi bộ)"))
@@ -93,7 +102,7 @@ def _why(v: Venue, i: int, seq: list, leg: Leg, prefs: Preferences) -> tuple:
     earlier = {t.casefold() for u in seq[:i] for t in u.dish_tags}
     new = [t for t in v.dish_tags if t.casefold() not in earlier]
     if i > 0 and new:
-        out.append(("diverse", "Thêm món khác: " + new[0]))
+        out.append(("diverse", "Thêm món khác so với các quán trước"))
     return tuple(out)
 
 
@@ -217,8 +226,7 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
     limit = max(1, min(prefs.max_stops, 5))
     prior = dataset_mean_rating(venues)
 
-    def consider(seq):
-        tour, _ = _evaluate(seq, prefs, routes)
+    def consider(seq, tour):
         if tour is None or (prefs.mode == "strict" and not _strict_ok(tour)):
             return
         rel = sum(interest_score(v, prefs.interests) for v in seq)
@@ -231,22 +239,28 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
         if best["key"] is None or key < best["key"]:
             best["key"], best["tour"], best["seq"] = key, tour, list(seq)
 
-    def dfs(seq):
+    nodes = {"n": 0, "stopped": False}
+
+    def dfs(seq, tour):
         if seq:
-            consider(seq)
-        if len(seq) == limit:
+            consider(seq, tour)
+        if len(seq) == limit or nodes["stopped"]:
             return
         for v in pool:
             if v in seq:
                 continue
+            if nodes["n"] >= SEARCH_NODE_BUDGET:
+                nodes["stopped"] = True  # bounded latency; best tour found so far is kept
+                return
+            nodes["n"] += 1
             nxt = seq + [v]
             # Prune: a prefix that violates a hard constraint cannot be repaired by extending.
-            tour, _ = _evaluate(nxt, prefs, routes)
-            if tour is None:
+            t_next, _ = _evaluate(nxt, prefs, routes)
+            if t_next is None:
                 continue
-            dfs(nxt)
+            dfs(nxt, t_next)
 
-    dfs([])
+    dfs([], None)
     t = best["tour"]
     if t is not None:
         t, _ = _evaluate(best["seq"], prefs, routes, True)  # reasons only for the chosen tour
@@ -267,6 +281,10 @@ def plan_tour(venues: list, prefs: Preferences, routes: Optional[RouteMatrixProv
         t = Tour(t.status, t.stops, t.reasons, t.proposed_changes, t.unknowns, t.venue_range_upper_sum_vnd,
                  t.walk_minutes, t.leg_source, t.locks,
                  {**t.assumptions, "search_pool": len(pool), "eligible_total": len(ranked), "pool_truncated": True})
+    if nodes["stopped"]:
+        t = Tour(t.status, t.stops, t.reasons + ("Tìm kiếm dừng sớm để giữ thời gian phản hồi; có thể còn tổ hợp tốt hơn.",),
+                 t.proposed_changes, t.unknowns, t.venue_range_upper_sum_vnd, t.walk_minutes, t.leg_source,
+                 t.locks, {**t.assumptions, "search_exhausted": True})
     if len(t.stops) < MIN_PREFERRED_STOPS and limit >= MIN_PREFERRED_STOPS:
         t = Tour(t.status, t.stops, t.reasons + (f"Chỉ tìm được {len(t.stops)} điểm dừng thoả ràng buộc.",),
                  ("Tăng thời lượng hoặc ngân sách để có thêm điểm dừng.",), t.unknowns,

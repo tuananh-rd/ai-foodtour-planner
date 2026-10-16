@@ -20,7 +20,7 @@ from typing import Optional, Protocol
 import unicodedata
 
 from app.llm.extract import ANCHORS, ExtractionResult, MAX_TEXT, QUESTIONS, _clean
-from app.planner.relevance import fold
+from app.planner.relevance import fold, fold_uncached
 from app.planner.engine import missing_slots
 from app.planner.types import Preferences
 
@@ -72,7 +72,7 @@ def _place_text(v):
 
 def _grounded(phrase: str, user_text: str) -> bool:
     """True when the phrase appears as a contiguous word sequence in the (cleaned) user text."""
-    want, have = fold(phrase).split(), fold(user_text).split()
+    want, have = fold_uncached(phrase).split(), fold_uncached(user_text).split()
     n = len(want)
     return n > 0 and any(have[i:i + n] == want for i in range(len(have) - n + 1))
 
@@ -276,30 +276,70 @@ class RulesFirstExtractor:
         self._lock = Lock()
         self.stats = {"rules": 0, "cache": 0, "llm": 0, "fallback": 0}
 
-    def needs_llm(self, text: str, rules_result: ExtractionResult) -> bool:
+    _WEEKDAY = re.compile(r"\b(thu (hai|ba|tu|nam|sau|bay|[2-7])|chu nhat)\b")
+    _NUM_DURATION = re.compile(r"\b(mot|hai|ba|bon|nam|sau|bay|tam|chin|muoi|nua)\s*(tieng|gio)\b")
+    _ORIGIN_EDIT = re.compile(r"\b(xuat phat|quanh|tu (cho|pho|ngo|duong|khu)|o (cho|pho|ngo|duong|khu))\b")
+    _ACK = re.compile(r"\b(cam on|xin chao|chao ban|hello|thanks|thank you|ok|oke|okay|vang a|tam biet)\b")
+    _SWAP = re.compile(r"\b(thay|doi sang|chi an|chi muon)\b")
+
+    def _unresolved_edit(self, folded: str, res: ExtractionResult, prior: Optional[Preferences]) -> bool:
+        """Complete preferences, but does the message carry a change the rules visibly did not understand?"""
+        upd = set(res.updated_fields)
+        if self._WEEKDAY.search(folded) and "weekday" not in upd:
+            return True
+        if self._NUM_DURATION.search(folded) and "duration_min" not in upd:
+            return True
+        if self._ORIGIN_EDIT.search(folded) and "origin" not in upd and not res.origin_text:
+            return True
+        if (self._SWAP.search(folded) and prior is not None and prior.interests
+                and ("interests" in upd or not upd)):
+            return True  # "chi an pho thay bun": rules would only append, not replace
+        return False
+
+    def needs_llm(self, text: str, rules_result: ExtractionResult, prior: Optional[Preferences] = None) -> bool:
         if rules_result.status != "ok":
             return False
         missing = set(rules_result.missing_slots) & {"origin", "duration_min"}
-        if not missing:
-            return False
-        if rules_result.rejected_fields:
-            return False  # out-of-range values must be corrected by the user, not guessed by a model
-        words = fold(text).split()
+        if missing & set(rules_result.rejected_fields):
+            return False  # an out-of-range value must be corrected by the user, not guessed by a model
+        words = fold_uncached(text).split()
         if len(words) < self.min_words:
             return False  # too short to carry information a model could add
+        folded = " " + " ".join(words) + " "
+        if not missing:
+            return self._unresolved_edit(folded, rules_result, prior)
+        place = any(cue in folded for cue in _PLACE_CUES)
+        content = (place or re.search(r"\d|\btieng\b|\bgio\b|\bphut\b", folded) is not None
+                   or "interests" in rules_result.updated_fields)
+        if not content and self._ACK.search(folded):
+            return False  # pure acknowledgement: ask the missing-slot question for free
         if "origin" in missing:
-            folded = " " + " ".join(words) + " "
-            return any(cue in folded or folded.startswith(" " + cue) for cue in _PLACE_CUES) or "duration_min" in missing
+            return place or "duration_min" in missing
         return True
 
     def _key(self, text: str, prior: Optional[Preferences]) -> str:
         cleaned, _ = _clean(text[:MAX_TEXT])
-        body = fold(cleaned) + "|" + repr(prior)
+        # Accents are semantics in Vietnamese (bò/bơ): normalise case/space only, never fold.
+        body = " ".join(unicodedata.normalize("NFC", cleaned).casefold().split()) + "|" + repr(prior)
         return hashlib.sha256(body.encode("utf-8")).hexdigest()
+
+    @staticmethod
+    def _keep_rules(out: ExtractionResult, base: ExtractionResult) -> ExtractionResult:
+        """Model answer wins per field; rule-validated fields it did not set (meal, audience, ...) survive."""
+        extra = {f: getattr(base.preferences, f) for f in base.updated_fields
+                 if f not in out.updated_fields and hasattr(out.preferences, f)}
+        if not extra:
+            return out
+        origin_text = None if "origin" in extra else out.origin_text
+        merged = replace(out.preferences, **extra)
+        fields = tuple(sorted(set(out.updated_fields) | set(extra)))
+        miss = tuple(missing_slots(merged))
+        return replace(out, preferences=merged, updated_fields=fields, origin_text=origin_text,
+                       missing_slots=miss, questions=tuple(QUESTIONS[m] for m in miss if m in QUESTIONS))
 
     def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
         base = self.rules.extract(text, prior)
-        if not self.needs_llm(text, base):
+        if not self.needs_llm(text, base, prior):
             self.stats["rules"] += 1
             return replace(base, llm_calls=0)
         key = self._key(text, prior)
@@ -310,9 +350,14 @@ class RulesFirstExtractor:
                 self._cache.move_to_end(key)
                 self.stats["cache"] += 1
                 return replace(hit[1], source="cache", llm_calls=0)
+            if hit:
+                del self._cache[key]
         out = self.llm.extract(text, prior)
         if out.status == "ok":
+            out = self._keep_rules(out, base)
             with self._lock:
+                for k in [k for k, (t, _) in self._cache.items() if now - t > self.ttl_s]:
+                    del self._cache[k]  # private inputs are not retained past their TTL
                 self._cache[key] = (now, out)
                 while len(self._cache) > self.cache_size:
                     self._cache.popitem(last=False)

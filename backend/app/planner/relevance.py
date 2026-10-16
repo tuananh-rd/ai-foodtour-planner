@@ -31,6 +31,10 @@ def fold(text: str) -> str:
     return re.sub(r"[^a-z0-9]+", " ", text).strip()
 
 
+# Uncached variant for user-supplied text: never memoise private chat messages in the global LRU.
+fold_uncached = fold.__wrapped__
+
+
 def _contains_phrase(haystack_tokens: list, phrase: str) -> bool:
     words = phrase.split()
     n = len(words)

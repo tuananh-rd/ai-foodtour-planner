@@ -113,7 +113,8 @@ def _count(value):
         return None
     try:
         number = Decimal(str(value))
-        return int(number) if number.is_finite() and number >= 0 and number == number.to_integral_value() else None
+        ok = number.is_finite() and 0 <= number <= 10_000_000 and number == number.to_integral_value()
+        return int(number) if ok else None
     except (InvalidOperation, ValueError, OverflowError):
         return None
 

@@ -19,6 +19,7 @@ SMOOTHING_M = 20          # pseudo-reviews pulling toward the dataset mean
 DEFAULT_PRIOR = 3.5       # used only when the pool has no rating at all
 WELL_RATED_MIN_COUNT = 20
 WELL_RATED_MIN_SCORE = 4.0
+MAX_REVIEW_COUNT = 10_000_000   # source counts above this are data errors; treated as unknown
 
 # Source vocabulary (Vietnamese labels in the CSV) per meal / audience.
 MEAL_LABELS = {
@@ -65,8 +66,15 @@ def smoothed_rating(v: Venue, prior: float) -> Optional[float]:
     """0..5 or None when the source gave no usable rating."""
     if v.rating is None or not 0 <= v.rating <= 5:
         return None
-    n = v.review_count if isinstance(v.review_count, int) and v.review_count > 0 else 0
+    n = _count(v)
     return (n * v.rating + SMOOTHING_M * prior) / (n + SMOOTHING_M)
+
+
+def _count(v: Venue) -> int:
+    n = v.review_count
+    if isinstance(n, bool) or not isinstance(n, int) or not 0 < n <= MAX_REVIEW_COUNT:
+        return 0
+    return n
 
 
 def meal_fit(v: Venue, meal: Optional[str]) -> bool:
@@ -99,8 +107,8 @@ def soft_score(v: Venue, prefs: Preferences, prior: float, weight: float = 1.0) 
 
 
 def well_rated(v: Venue) -> bool:
-    return (v.rating is not None and isinstance(v.review_count, int)
-            and v.review_count >= WELL_RATED_MIN_COUNT and v.rating >= WELL_RATED_MIN_SCORE)
+    return (v.rating is not None and 0 <= v.rating <= 5 and v.rating >= WELL_RATED_MIN_SCORE
+            and _count(v) >= WELL_RATED_MIN_COUNT)
 
 
 def matched_interests(v: Venue, interests: tuple) -> list:

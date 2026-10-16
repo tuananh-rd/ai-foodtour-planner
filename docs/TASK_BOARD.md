@@ -9,9 +9,9 @@ Defaults chốt: D1 UI_V2 sau cờ; D5 Gemini 18/ngày + giải thích template;
 | R0-4 rules-first + cache + llm_calls | Claude | DONE | b7c89c3, c581dc6 |
 | R0-5 quality/meal/audience scoring + why[] | Claude | DONE | 887e54b: 252 tests OK; eval ds-1 p50 125 ms, 0 invalid tours |
 | R0-6 API wiring (meal/audience/why/quality weight) | Codex | DONE, accepted | c079fa2 (merged b4a5203): Claude re-ran 260 tests OK (1 documented legacy skip), drift OK; real-CSV smoke: meal=dinner, audience=family, why codes, ratings with counts; dispatch ctx_fedcc0dd5c08 released |
-| R0-REVIEW independent review of R0-4/R0-5 | Codex | In progress | dispatch ctx_53db4b841a81 (turn observed); first attempt to reuse the old terminal returned agent_unconfigured -> released dispatches, fresh Codex worker (same model/effort) |
+| R0-REVIEW independent review of R0-4/R0-5 | Codex | DONE: MERGE-AFTER-FIXES (6c2997d) | R01-R08 fixed by Claude in the next commit (7 regression tests, fail-before proven on 6c2997d; 262 tests OK; 5-stop synthetic plan 72 s -> 1.4 s with node budget). R09 (client-config features.ui_v2 missing) and rating rounding assigned to Codex backend follow-up R0-7 |
 | R1-1 tokens + base UI components | Antigravity | DONE, accepted | d62e50d merge; Claude re-ran: ui-kit CDP 11/11 on a production build, components 24/24; default build: /ui-kit -> 404 |
-| R1-5 itinerary-first UI_V2 screen | Antigravity | BLOCKED: CLI not signed in | dispatch ctx_ad191c293ca4 failed at agent_readiness (timeout); terminal term_45d767cf retained for the user to sign in; no retry, no substitute agent |
+| R1-5 itinerary-first UI_V2 screen | Antigravity | In progress | new terminal term_4f9c48c5 verified signed in; retry dispatch ctx_981a93074c80 (old failed ctx_ad191c293ca4 released); R1-9 after R1-5 |
 | R1-9 black-box API QA v1.6 | Antigravity | Queued (needs sign-in) | - |
 
 Known minor: the /ui-kit gallery chunk exists in the default build but the route returns 404 (acceptable for local-first).

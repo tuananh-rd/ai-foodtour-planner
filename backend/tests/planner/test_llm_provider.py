@@ -313,3 +313,67 @@ class AdapterReportedAttempt(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class CodexReviewR0Fixes(unittest.TestCase):
+    """Regression tests for docs/reports/CODEX_REVIEW_R0.md R01-R08 (fail before the fix commit)."""
+
+    def make(self, reply=None):
+        self.calls = []
+
+        class Stub:
+            def __init__(s, outer): s.outer = outer
+            def complete(s, text, prior, deadline_s=8.0):
+                s.outer.calls.append(text)
+                return reply or '{"duration_min":120,"origin_text":"chợ Đồng Xuân"}'
+        from app.llm.provider import LLMExtractor, RulesFirstExtractor
+        from app.llm.extract import MockExtractor
+        return RulesFirstExtractor(MockExtractor(), LLMExtractor(Stub(self)))
+
+    PRIOR = Preferences(origin=(21.0285, 105.8522), origin_label="Hồ Gươm", origin_source="landmark",
+                        duration_min=180, interests=("bún",))
+
+    def test_r01_edits_on_complete_prior_are_not_silently_ignored(self):
+        for msg in ("xuất phát từ chợ Đồng Xuân nhé", "tôi chỉ có hai tiếng", "thứ bảy lúc 18h",
+                    "chỉ ăn phở thay bún"):
+            rf = self.make()
+            r = rf.extract(msg, self.PRIOR)
+            self.assertEqual(len(self.calls), 1, msg)
+            self.assertEqual(r.llm_calls, 1, msg)
+
+    def test_r02_accent_changes_do_not_collide_in_cache(self):
+        rf = self.make('{"duration_min":120,"interests":["bò"],"origin_text":"chợ Đồng Xuân"}')
+        rf.extract("ăn bò quanh chợ Đồng Xuân hai tiếng")
+        r = rf.extract("ăn bơ quanh chợ Đồng Xuân hai tiếng")
+        self.assertEqual(r.source, "live")
+        self.assertEqual(len(self.calls), 2)
+
+    def test_r03_huge_review_count_does_not_crash_ranking(self):
+        from app.planner.quality import smoothed_rating, well_rated
+        from app.planner.types import Venue
+        v = Venue("a", "A", 21.0, 105.8, rating=5.0, review_count=10 ** 400, synthetic=True)
+        self.assertEqual(smoothed_rating(v, 3.5), (0 * 5.0 + 20 * 3.5) / 20)
+        self.assertFalse(well_rated(v))
+
+    def test_r04_model_answer_keeps_rule_meal_and_audience(self):
+        rf = self.make()
+        r = rf.extract("ăn tối cùng gia đình quanh chợ Đồng Xuân 2 giờ")
+        self.assertEqual(r.source, "live")
+        self.assertEqual((r.preferences.meal, r.preferences.audience), ("dinner", "family"))
+
+    def test_r06_why_text_never_echoes_source_tags_or_controls(self):
+        from app.planner.engine import _plain
+        self.assertNotIn("<", _plain("<script>x</script>\u202e"))
+        self.assertNotIn("\u202e", _plain("a\u202eb"))
+
+    def test_r07_meal_audience_context_and_negation(self):
+        from app.llm.extract import MockExtractor
+        m = MockExtractor()
+        self.assertEqual(m.extract("chiều nay đi ăn tối").preferences.meal, "dinner")
+        self.assertEqual(m.extract("không có trẻ em, đi một mình").preferences.audience, "solo")
+        self.assertIsNone(m.extract("tối nay đi học").preferences.meal)
+
+    def test_r08_acknowledgement_costs_no_call(self):
+        rf = self.make()
+        r = rf.extract("cảm ơn bạn")
+        self.assertEqual((r.llm_calls, len(self.calls)), (0, 0))
