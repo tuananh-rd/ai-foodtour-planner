@@ -80,3 +80,5 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C1-API (Codex e77e67e) | Codex | DONE, accepted by Claude | /chat route flag-gated, schemas, atomic persistence, 385 tests OK + drift OK, API scenarios 26/26 (CH-01..12 + ADV-01..14) |
 | C5-API + C2-DATA + C1-REVIEW | Codex | In progress | ctx_9bbe99761a8d: LLM understander wiring, capacity/prep/sub-rating fields, independent engine review + held-out utterances |
 | C3-1 chat v2 UI | Antigravity | In progress | ctx_33e86e9f534b |
+| C5-API/C2-DATA/C1-REVIEW (Codex) | Codex | DONE (review REQUEST CHANGES → Claude fixed HIGH/MEDIUM in 0157a16, e33a2a6, 8ca4ae4) | wiring fdd74db/857ca04, data c3a4ed5/1e65a18; held-out v1 68/70 after fixes (was 46/70) |
+| C4-API + heldout2 (blind ≥85%) + C1 re-review | Codex | In progress | ctx_4adbdeac00eb |
