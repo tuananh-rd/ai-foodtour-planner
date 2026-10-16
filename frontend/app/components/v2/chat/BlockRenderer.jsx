@@ -86,7 +86,8 @@ export default function BlockRenderer({
 
       return (
         <div
-          data-testid={isSafety ? 'notice-safety' : `notice-${block.level || 'info'}`}
+          data-testid={block.code === 'outside_hanoi' ? 'outside-hanoi-notice' : (isSafety ? 'notice-safety' : `notice-${block.level || 'info'}`)}
+          data-notice-code={block.code}
           className={isSafety ? 'notice-safety' : ''}
           role={isNew && isSafety ? 'alert' : 'status'}
           style={{
@@ -456,9 +457,9 @@ export default function BlockRenderer({
           </table>
 
           {unsupported.length > 0 && (
-            <div style={{ marginTop: 12, padding: '8px 10px', background: '#FBF8F3', borderRadius: 6, fontSize: 12, color: '#6B6259' }}>
+            <div data-testid="unsupported-criteria-notice" style={{ marginTop: 12, padding: '8px 10px', background: '#FBF8F3', borderRadius: 6, fontSize: 12, color: '#6B6259' }}>
               <strong>Tiêu chí chưa có dữ liệu:</strong>{' '}
-              {unsupported.map((u) => u.criterion || u.text).join(', ')}
+              {unsupported.map((u) => u.text || u.criterion).join(', ')}
             </div>
           )}
         </div>

@@ -83,6 +83,7 @@ export default function StopCard({
   return (
     <div
       data-stop-card
+      data-testid="stop-card"
       className={`ft-stop-card ${className}`.trim()}
       style={{
         backgroundColor: 'var(--card-bg, #FFFFFF)',

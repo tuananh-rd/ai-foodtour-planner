@@ -571,6 +571,33 @@ export async function createSession(options = {}) {
 }
 
 /**
+ * 4b. Get session
+ * GET /v1/sessions/{id}
+ */
+export async function getSession(sessionId, token = '', options = {}) {
+  if (isMockMode()) {
+    const session = getOrCreateMockSession(sessionId);
+    return {
+      session_id: session.session_id,
+      token: session.token,
+      revision: session.revision,
+      preferences: session.preferences,
+      tour: session.tour,
+      chat: session.chat || null,
+      notes: session.notes || [],
+      is_mock: true
+    };
+  }
+
+  const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}`;
+  const headers = { 'Accept': 'application/json' };
+  if (token) {
+    headers['X-Session-Token'] = token;
+  }
+  return await safeFetch(url, { method: 'GET', headers, signal: options?.signal });
+}
+
+/**
  * 5. Send chat message (Extract + Merge preferences)
  * POST /v1/sessions/{id}/messages
  * Returns { preferences, missing_slots, questions, notes, tour|null, revision, dataset_source, dataset_version }

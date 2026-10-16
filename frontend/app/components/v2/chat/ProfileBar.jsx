@@ -238,7 +238,7 @@ export default function ProfileBar({
         <span>Dị ứng: <strong>{allergyListText}</strong></span>
         {hasAllergies && (
           <span style={{ fontSize: 10, background: '#DC2626', color: '#FFFFFF', padding: '1px 5px', borderRadius: 4 }}>
-            Lưu ý an toàn
+            Lưu ý quan trọng
           </span>
         )}
       </button>
