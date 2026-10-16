@@ -18,3 +18,14 @@ Known minor: the /ui-kit gallery chunk exists in the default build but the route
 
 Minor findings carried forward: (1) API rating.value shows float artefacts (3.5999999999999996): round to 2 decimals at the API boundary (Codex, next backend task) and format with toFixed(1) in the UI; (2) legacy test_budget_and_source stays an EXPECTED-SKIP without data/venues.json.
 Inbox: all deliveries processed and acknowledged; no unprocessed messages.
+
+### 2026-10-16 update (coordinator)
+| Item | Owner | Status | Evidence |
+|---|---|---|---|
+| R0 review fixes R01-R08 | Claude | DONE | 324a651; 7 regression tests fail-before on 6c2997d; 5-stop plan 72 s -> 1.4 s |
+| R0-7 backend follow-up | Codex | DONE, accepted | aaa67d2 merged; Claude re-ran 265 tests OK, OpenAPI drift OK; open: user text still enters global fold LRU in `relevance._phrases`, extraction-cache TTL purge is lazy (low) |
+| R1-5 UI_V2 itinerary-first | Antigravity | DONE, accepted (CDP) | a2735e8 (merge 82f05de); Claude re-ran on production build: test_ui_v2 15/15, test_components 24/24, test_ui_kit 11/11. test_cold_bootstrap not re-run (needs the fake Google config harness; flag-off layout covered by TC-V2-15 and components). Codex frontend review pending |
+| GMAPS-URL contract v1.7 | Claude | DONE | e659608; free Maps URLs, no API/key/billing/backend Google call |
+| GMAPS-URL-1 backend | Codex | In progress | dispatch ctx_df8ee56186c7 |
+| GMAPS-URL-2 UI + browser QA | Antigravity | Queued after GMAPS-URL-1 | uses fixtures/real endpoint |
+| R1-9 black-box API+UI QA v1.6 | Antigravity | In progress | reuse of a settled worker's terminal failed at agent_readiness (ctx_c30ca3f008c1, released/retained); fresh Antigravity worker ctx_d6bd5e161f9d (term_899cd8c8) turn observed |
