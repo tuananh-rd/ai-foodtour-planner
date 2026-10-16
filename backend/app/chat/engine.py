@@ -37,6 +37,7 @@ class TurnResult:
     tools: list = field(default_factory=list)
     understanding: str = "rules"
     plan_request: Optional[dict] = None
+    replace_request: Optional[dict] = None  # {"refs": [...]}: the API layer resolves tour stops and calls the planner
     llm_calls: int = 0
     error: Optional[str] = None
 
@@ -575,6 +576,10 @@ class ChatEngine:
                 self._do_discover_dish(R, Understanding("DISCOVER_DISH", {}))
             elif opt == "add_more":
                 self._do_search_venues(R, Understanding("SEARCH_VENUES", {}))
+            elif opt and opt.startswith(("relax_leg:", "vehicle:", "drop:", "time:")):
+                self._apply_conflict_option(R, opt)
+            elif opt in ("widen",) or (opt or "").startswith("dish:") or opt == "area":
+                self._no_result_option(R, opt, pend)
             else:
                 R.blocks.append(text_b("Mình chưa hiểu lựa chọn đó; bạn nói lại giúp mình nhé."))
             R.tools.append("answer_pending")
@@ -986,11 +991,97 @@ class ChatEngine:
 
     def _do_modify_plan(self, R, u):
         st = R.state
-        if st.phase != "planned" and not st.tour_stale:
+        if st.phase != "planned":
             R.blocks.append(text_b("Mình chưa lập lịch trình. Khi có lịch trình, bạn có thể nói \"đổi quán thứ hai\" hoặc dùng nút Đổi quán."))
+        elif u.refs:
+            R.replace_request = {"refs": list(u.refs)}
+            R.blocks.append(text_b("Mình sẽ tìm quán thay thế cho quán đó và giữ nguyên các quán còn lại."))
         else:
-            R.blocks.append(text_b("Để đổi quán trong lịch trình, hãy dùng nút Đổi quán trên lịch trình; mình sẽ giữ nguyên các quán còn lại."))
-        R.tools.append("none")
+            R.blocks.append(text_b("Bạn muốn đổi quán nào trong lịch trình? Hãy nói \"đổi quán thứ hai\" hoặc bấm Đổi quán trên lịch trình."))
+        R.tools.append("modify_plan")
+
+    # ---- results of planning (called by the API layer after the planner ran)
+    def after_plan(self, st: ChatState, tour) -> list:
+        """Blocks for the planner outcome. A conflict becomes concrete options; nothing is relaxed silently."""
+        R = TurnResult(st, Preferences(), [], "REQUEST_PLAN")
+        if tour.stops:
+            st.phase, st.tour_stale = "planned", False
+            names = [self.by_id[x.venue_id].name for x in tour.stops if x.venue_id in self.by_id]
+            walk = f" Tổng đi bộ khoảng {tour.walk_minutes} phút (ước tính)." if tour.walk_minutes is not None else ""
+            return [text_b("Mình đã lập lịch trình từ đúng " + str(len(names)) + " quán bạn đã chọn: " + " → ".join(names) + "." + walk +
+                           " Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng.")]
+        st.phase = "choose"
+        blocks = [notice_b("warning", "plan_conflict", " ".join(tour.reasons) or "Chưa lập được lịch trình thoả các ràng buộc hiện tại.")]
+        if tour.status == "insufficient_evidence":
+            blocks.append(text_b("Chế độ nghiêm ngặt cần bằng chứng đã xác minh mà dữ liệu hiện chưa có; bạn có thể chuyển sang chế độ khám phá."))
+            return blocks
+        opts = []
+        leg = st.profile["max_leg_min"]
+        cur = leg.value if leg.known() else 20
+        if cur < 40:
+            opts.append({"option_id": f"relax_leg:{min(60, cur + 10)}", "label": f"Cho phép đi tối đa {min(60, cur + 10)} phút mỗi chặng"})
+        veh = st.profile["vehicle"].value
+        if veh in (None, "walk"):
+            opts.append({"option_id": "vehicle:motorbike", "label": "Đi xe máy thay vì đi bộ"})
+        if st.profile["end_time"].known() or st.profile["duration_min"].known():
+            opts.append({"option_id": "time:+60", "label": "Kéo dài thêm 1 giờ"})
+        if len(st.shortlist) > 1:
+            far = self._farthest(st)
+            if far:
+                opts.append({"option_id": "drop:" + far, "label": "Bỏ " + self.by_id[far].name[:40]})
+        self._set_pending(st, "clarify_intent", opts[:4], None, {"conflict": True})
+        blocks.append(self._clarify_block(st, "Bạn muốn điều chỉnh thế nào? (mình không tự đổi gì khi chưa hỏi bạn)"))
+        return blocks
+
+    def _farthest(self, st):
+        from app.planner.interfaces import haversine_km
+        pts = [(s.venue_id, (self.by_id[s.venue_id].lat, self.by_id[s.venue_id].lon)) for s in st.shortlist if s.venue_id in self.by_id and s.status != "kept"]
+        if not pts:
+            return None
+        cx = sum(p[1][0] for p in pts) / len(pts)
+        cy = sum(p[1][1] for p in pts) / len(pts)
+        return max(pts, key=lambda p: (haversine_km((cx, cy), p[1]), p[0]))[0]
+
+    def _apply_conflict_option(self, R, opt: str):
+        st = R.state
+        kind, _, val = opt.partition(":")
+        if kind == "relax_leg":
+            st.set_field("max_leg_min", int(val))
+            R.blocks.append(text_b(f"Ok, mình cho phép đi tối đa {val} phút mỗi chặng."))
+        elif kind == "vehicle":
+            st.set_field("vehicle", val)
+            R.blocks.append(text_b(f"Ok, mình đổi phương tiện sang {VEHICLES.get(val, val)} (thời gian vẫn chỉ là ước tính)."))
+        elif kind == "time":
+            if st.profile["end_time"].known():
+                h, m = int(st.profile["end_time"].value[:2]), int(st.profile["end_time"].value[3:])
+                t = min(23 * 60 + 59, h * 60 + m + 60)
+                st.set_field("end_time", f"{t // 60:02d}:{t % 60:02d}")
+            elif st.profile["duration_min"].known():
+                st.set_field("duration_min", min(720, st.profile["duration_min"].value + 60))
+            R.blocks.append(text_b("Ok, mình kéo dài thêm 1 giờ."))
+        elif kind == "drop":
+            st.shortlist = [x for x in st.shortlist if x.venue_id != val]
+            R.blocks.append(text_b("Ok, mình bỏ quán đó khỏi danh sách."))
+        if st.shortlist:
+            self._present_summary(R)  # the user confirms again; nothing is planned silently
+
+    def _no_result_option(self, R, opt, pend):
+        st = R.state
+        ctx = pend.context or {}
+        if opt == "widen":
+            self._do_search_venues(R, Understanding("SEARCH_VENUES", {"dish": ctx.get("dish"), "radius_m": min(5000, int(ctx.get("radius_m", 1500)) * 2)}))
+        elif opt.startswith("dish:"):
+            name = opt.split(":", 1)[1]
+            e = next((d for d in knowledge.DISHES if d[1] == name), None)
+            self._do_search_venues(R, Understanding("SEARCH_VENUES", {"dish": (e[1].lower() if e else name)}))
+        else:
+            st.profile["area"] = Field_()
+            self._ask_area(R, "SEARCH_VENUES", {"dish": ctx.get("dish")} if ctx.get("dish") else {})
+
+    def swap_shortlist(self, st: ChatState, old_id: str, new_id: str) -> None:
+        for s in st.shortlist:
+            if s.venue_id == old_id:
+                s.venue_id = new_id
 
     def _do_unknown(self, R, u):
         st = R.state
