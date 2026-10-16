@@ -12,6 +12,7 @@ from dataclasses import dataclass, field, replace
 from typing import Optional, Protocol
 
 from app.planner import allergens
+from app.llm import safety_parse
 from app.planner.engine import missing_slots
 from app.planner.relevance import fold, fold_uncached
 from app.planner.types import Preferences
@@ -91,101 +92,47 @@ def _money(u: str) -> Optional[int]:
     return None
 
 
-_ALLERGY_TRIGGER = re.compile(
-    r"(?:bị\s+|bi\s+)?(?:dị ứng|di ung)(?:\s+(?:với|voi))?\s*([^.;!?\n]*)")
-# Taste-level avoidance ("không ăn (được) X", "kiêng X"): applied to diacritic-stripped text.
-_AVOID_TRIGGER = re.compile(r"\b(?:(?:khong|ko)\s+(?:the\s+)?an\s+(?:duoc\s+)?|kieng\s+)([^.;!?,\n]+)")
-_TERM_SPLIT = re.compile(r",|\bvà\b|\bva\b|\bhoặc\b|\bhoac\b|\bvới\b|\bvoi\b|\bnhưng\b|\bnhung\b|\bcòn\b|\bcon\b")
-_FILLER = re.compile(r"^(?:các|cac|món|mon|đồ|do|những|nhung|loại|loai|thịt|thit)\s+")
-_TRAILING = re.compile(r"\s+(?:nữa|nua|nhé|nhe|nha|thôi|thoi|ạ|a|đấy|day|luôn|luon|rồi|roi|xong|đó|do)$")
-_NOT_A_TERM = re.compile(r"\d|người|nguoi|nhóm|nhom|\bk\b|đồng|dong|ngân|ngan|tiền|tien")
-
-
-_NEGATOR = re.compile(r"(?:không|khong|chẳng|chang|chưa|chua|ko|hết|het)\s*(?:còn|con|bị|bi|có|co)?\s*$")
-_REMOVER = re.compile(r"(?:hết|het|không còn|khong con|chẳng còn|chang con)\s*(?:bị |bi )?$")
-_TAGS = re.compile(r"<[^>]*>")
-_STOP_AT = re.compile(r"\s+(?=\d|(?:người|nguoi|nhóm|nhom|ngân|ngan|mỗi|moi|cả|ca nhom|khoảng|khoang|lúc|luc|trong|quanh|"
-                      r"tại|tai|muốn|muon|đi|di|ăn|an)\b)")
-
-
-_SEVERITY = re.compile(r"^(?:(?:nhẹ|nhe|nặng|nang|vừa|vua|ít|it|một chút|mot chut|chút|chut|hơi|hoi|rất|rat|bị|bi)\s+)+|"
-                       r"(?:\s+(?:nhẹ|nhe|nặng|nang|lắm|lam|một chút|mot chut|chút|chut))+$")
-
-
-def _allergy_terms(chunk: str, issues=None) -> list:
-    out = []
-    chunk = _STOP_AT.split(_TAGS.sub(" ", chunk), maxsplit=1)[0]  # "cua 4 người" -> "cua"
-    for raw in _TERM_SPLIT.split(chunk):
-        raw = re.sub(r"[^\w\s-]", "", raw)  # no markup/punctuation ever reaches user-visible notes
-        term = _TRAILING.sub("", _FILLER.sub("", raw.strip(" \t-:")).strip()).strip()
-        term = _SEVERITY.sub("", term).strip()
-        if not term or _NOT_A_TERM.search(term) or term in ("gì", "gi", "gì cả", "gi ca", "nhẹ", "nhe", "nặng", "nang", "vừa", "vua", "lắm", "lam", "ít", "it"):
-            continue
-        core = allergens.core_term(term)  # "cua please execute" -> "cua"
-        if core:
-            term = core
-        elif len(term.split()) > 3 or len(term) > allergens.MAX_TERM_CHARS:
-            if issues is not None:
-                issues.append("long")
-            continue
-        if term and term not in out:
-            out.append(term)
-    return out
-
-
 class MockExtractor:
-    def _allergies(self, t, u, prior, upd, notes):
-        """Allergy / avoidance statements must never be dropped silently (C0-HF)."""
-        found, cleared, issues = [], [], []
-        for m in _ALLERGY_TRIGGER.finditer(t):
-            before = t[max(0, m.start() - 16):m.start()]
-            terms = _allergy_terms(m.group(1), issues)
-            if _REMOVER.search(before):
-                cleared += terms  # "hết dị ứng cua rồi": user retracts it
-            elif _NEGATOR.search(before):
-                continue  # "không dị ứng …" states the absence of an allergy; nothing to record
-            else:
-                found += terms
-                if not terms:
-                    issues.append("empty")
-        if "long" in issues:
-            notes.append("Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ "
-                         "(ví dụ: cua, tôm, lạc).")
-        elif "empty" in issues and not found:
-            notes.append("Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên "
-                         "(ví dụ: cua, tôm, sữa).")
-        if cleared:
+    def _allergies(self, raw_text, prior, upd, notes):
+        """Allergy / avoidance statements must never be dropped silently (C0-HF). Returns taste-level avoid terms."""
+        sp = safety_parse.parse(raw_text)
+        if sp.removed:
             keep = [a for a in prior.allergies
-                    if all(allergens.fold_uncached(a) != allergens.fold_uncached(c) for c in cleared)]
+                    if all(allergens.fold_uncached(a) != allergens.fold_uncached(c) for c in sp.removed)]
             if len(keep) != len(prior.allergies):
                 upd["allergies"] = tuple(keep)
-                notes.append("Đã bỏ khỏi danh sách dị ứng: " + ", ".join(cleared) + ". Bạn có thể thêm lại bất cứ lúc nào.")
-        if found:
+                notes.append("Đã bỏ khỏi danh sách dị ứng: " + ", ".join(sp.removed) + ". Bạn có thể thêm lại bất cứ lúc nào.")
+        if sp.allergies:
             merged = list(upd.get("allergies", prior.allergies))
-            for term in found:
+            for term in sp.allergies:
                 if all(allergens.fold_uncached(term) != allergens.fold_uncached(x) for x in merged):
                     merged.append(term)
             upd["allergies"] = tuple(merged[:allergens.MAX_TERMS])
-            odd = allergens.unrecognised(tuple(found))
-            notes.append("Đã ghi nhận dị ứng/kiêng: " + ", ".join(found) + ". Dữ liệu quán không có thông tin nguyên liệu "
+            notes.append("Đã ghi nhận dị ứng/kiêng: " + ", ".join(sp.allergies) + ". Dữ liệu quán không có thông tin nguyên liệu "
                          "nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn "
                          "— hãy hỏi quán trước khi ăn.")
+            odd = allergens.unrecognised(tuple(sp.allergies))
             if odd:
                 notes.append("Chưa có quy tắc cho: " + ", ".join(odd) + "; mình chỉ loại quán có tên/món chứa đúng từ này.")
-            return []
-        avoid = []
-        for m in _AVOID_TRIGGER.finditer(u):
-            terms = [x for x in _allergy_terms(m.group(1)) if allergens.recognised(x)]
-            if not terms:
-                continue
-            avoid += [x for x in terms if x not in avoid]
-            notes.append("Đã ghi nhận không ăn: " + ", ".join(terms) + ". Đây là dị ứng hay chỉ là không thích? "
-                         "Nếu là dị ứng, hãy nói 'dị ứng " + terms[0] + "' để mình lưu ý an toàn.")
-        return avoid
+        if "example" in sp.issues:
+            notes.append("Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì.")
+        elif "people" in sp.issues:
+            notes.append("Mỗi người dị ứng với gì? Hãy liệt kê từng tác nhân (ví dụ: tôm, lạc) để mình lưu ý an toàn.")
+        elif "long" in sp.issues:
+            notes.append("Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ "
+                         "(ví dụ: cua, tôm, lạc).")
+        elif "empty" in sp.issues and not sp.allergies and not sp.removed:
+            notes.append("Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên "
+                         "(ví dụ: cua, tôm, sữa).")
+        if sp.avoid:
+            notes.append("Đã ghi nhận không ăn: " + ", ".join(sp.avoid) + ". Đây là dị ứng hay chỉ là không thích? "
+                         "Nếu là dị ứng, hãy nói 'dị ứng " + sp.avoid[0] + "' để mình lưu ý an toàn.")
+        return list(sp.avoid)
 
     def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
         p = prior or Preferences()
-        cleaned, dropped = _clean(text[:MAX_TEXT])
+        text = safety_parse.normalize_keep_case(text[:MAX_TEXT])
+        cleaned, dropped = _clean(text)
         t = " ".join(cleaned.casefold().split())
         upd, notes = {}, []
         if dropped:
@@ -248,7 +195,7 @@ class MockExtractor:
             else:
                 rejected.append("party_size")
                 notes.append("Số người phải từ 1 đến 20; không được áp dụng.")
-        avoid_terms = self._allergies(t, u, p, upd, notes)
+        avoid_terms = self._allergies(text, p, upd, notes)
         for name, ll in ANCHORS.items():
             if _strip_marks(name) in u:
                 upd["origin"] = ll

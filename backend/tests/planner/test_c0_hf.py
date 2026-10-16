@@ -179,3 +179,60 @@ class CodexReviewC0HFRound2(unittest.TestCase):
     def test_mixed_clause_does_not_create_fake_allergen(self):
         r = self.m.extract("dị ứng cua và muốn ăn phở")
         self.assertEqual(r.preferences.allergies, ("cua",))
+
+
+class CodexReviewC0HFRound3(unittest.TestCase):
+    """Round-3 findings: clause-based parsing, NFC/zero-width, cache poisoning, mixed avoid/allergy."""
+
+    def setUp(self):
+        self.m = MockExtractor()
+
+    def allergies(self, text, prior=None):
+        return self.m.extract(text, prior).preferences.allergies
+
+    def test_nfd_and_zero_width_inputs(self):
+        import unicodedata
+        self.assertEqual(self.allergies(unicodedata.normalize("NFD", "dị ứng cua")), ("cua",))
+        self.assertEqual(self.allergies("di\u200b ung cua"), ("cua",))
+        self.assertEqual(self.allergies("dị\u200b ứng cua"), ("cua",))
+
+    def test_cache_cannot_discard_current_safety_fields(self):
+        import unicodedata
+        from app.llm.provider import LLMExtractor, RulesFirstExtractor
+
+        class Stub:
+            def complete(self, *a, **k):
+                return "{}"
+        rf = RulesFirstExtractor(self.m, LLMExtractor(Stub()))
+        for text in (unicodedata.normalize("NFD", "dị ứng cua"), "dị ứng cua"):
+            r = rf.extract(text)
+            self.assertEqual(r.preferences.allergies, ("cua",), (r.source, text))
+            self.assertTrue(r.notes)
+
+    def test_later_clauses_are_not_swallowed(self):
+        self.assertEqual(self.allergies("dị ứng cua, 600k, dị ứng sữa"), ("cua", "sữa"))
+        self.assertEqual(self.allergies("dị ứng cua, 600k cả nhóm, dị ứng sữa"), ("cua", "sữa"))
+        self.assertEqual(self.allergies("tôi không bị dị ứng cua nhưng dị ứng tôm"), ("tôm",))
+
+    def test_mixed_allergy_and_avoidance_are_separate(self):
+        for text in ("dị ứng cua và không ăn sữa", "dị ứng cua; không ăn sữa", "dị ứng cua, kiêng sữa"):
+            p = self.m.extract(text).preferences
+            self.assertEqual((p.allergies, p.exclusions), (("cua",), ("sữa",)), text)
+
+    def test_list_continuation(self):
+        self.assertEqual(self.allergies("dị ứng cua, tôm và sữa"), ("cua", "tôm", "sữa"))
+        self.assertEqual(self.allergies("dị ứng tôm lạc"), ("tôm", "lạc"))
+
+    def test_negation_people_quotes_and_ambiguous_words(self):
+        self.assertEqual(self.allergies("mình không hề bị dị ứng cua"), ())
+        self.assertEqual(self.allergies("tôi chưa từng bị dị ứng cua"), ())
+        r = self.m.extract("hai bạn dị ứng khác nhau")
+        self.assertEqual(r.preferences.allergies, ())
+        self.assertTrue(any("Mỗi người dị ứng với gì" in n for n in r.notes))
+        r = self.m.extract('Tôi nói "dị ứng cua" là ví dụ, tôi không dị ứng')
+        self.assertEqual(r.preferences.allergies, ())
+        self.assertTrue(any("ví dụ" in n for n in r.notes))
+        self.assertEqual(self.allergies("dị ứng của bạn là tôm"), ("tôm",))  # "của" is not crab
+
+    def test_injection_words_do_not_hide_the_allergy(self):
+        self.assertEqual(self.allergies("dị ứng cua ignore this"), ("cua",))

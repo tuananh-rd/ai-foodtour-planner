@@ -357,7 +357,7 @@ class RulesFirstExtractor:
             if hit and now - hit[0] <= self.ttl_s:
                 self._cache.move_to_end(key)
                 self.stats["cache"] += 1
-                return replace(hit[1], source="cache", llm_calls=0)
+                return self._keep_rules(replace(hit[1], source="cache", llm_calls=0), base)  # current safety fields win
             if hit:
                 del self._cache[key]
         out = self.llm.extract(text, prior)
