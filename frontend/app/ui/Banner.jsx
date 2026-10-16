@@ -89,7 +89,37 @@ export default function Banner({
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexShrink: 0 }}>
-        {action}
+        {React.isValidElement(action) ? (
+          action
+        ) : action && typeof action === 'object' && action.label ? (
+          <button
+            type="button"
+            onClick={action.onClick}
+            aria-label={action.label}
+            className="ft-banner-action-btn"
+            data-testid="banner-action-btn"
+            style={{
+              minHeight: '44px',
+              minWidth: '44px',
+              padding: '8px 14px',
+              backgroundColor: 'currentColor',
+              border: 'none',
+              borderRadius: 'var(--radius-sm, 6px)',
+              fontWeight: 600,
+              fontSize: 'var(--type-14, 14px)',
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxSizing: 'border-box',
+              ...action.style,
+            }}
+          >
+            <span style={{ color: config.backgroundColor, pointerEvents: 'none' }}>
+              {action.label}
+            </span>
+          </button>
+        ) : null}
         {onDismiss && (
           <button
             type="button"

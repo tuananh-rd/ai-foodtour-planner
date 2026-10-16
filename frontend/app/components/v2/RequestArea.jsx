@@ -4,24 +4,25 @@ import React, { useState } from 'react';
 import Button from '../../ui/Button';
 import Chip from '../../ui/Chip';
 
-const SUGGESTION_CHIPS = [
+// 4 One-tap suggestion chips per UPGRADE_PLAN §3.2
+export const SUGGESTION_CHIPS = [
   {
-    id: 'breakfast',
-    label: '🍜 Ăn sáng 2 giờ',
-    text: 'Ăn sáng phở và cà phê quanh Hồ Gươm, 2 giờ',
-    prefs: { start_time: '08:00', duration_min: 120, interests: ['phở', 'cà phê'], meal: 'breakfast' },
+    id: 'pho_cafe',
+    label: '🍜 Phở & Cà phê quanh Hồ Gươm',
+    text: 'Ăn sáng phở và cà phê quanh Hồ Gươm 2 tiếng, 150k mỗi người',
+    prefs: { duration_min: 120, budget_vnd: 150000, budget_scope: 'per_person', interests: ['phở', 'cà phê'] },
   },
   {
-    id: 'evening',
-    label: '🌙 Ăn vặt chiều tối',
-    text: 'Ăn vặt nem rán và chè Phố Cổ chiều tối, 2 giờ',
-    prefs: { start_time: '18:30', duration_min: 120, interests: ['nem', 'chè'], meal: 'dinner' },
+    id: 'snack_3stops',
+    label: '🍢 Ăn vặt 3 quán chiều nay',
+    text: 'Ăn vặt Phố Cổ chiều nay 3 quán: bún chả, nem rán, chè',
+    prefs: { duration_min: 150, max_stops: 3, interests: ['bún chả', 'nem rán', 'chè'] },
   },
   {
-    id: 'family',
-    label: '👨‍👩‍👧 Đi gia đình',
-    text: 'Đi cùng gia đình, quán rộng rãi, 3 quán',
-    prefs: { audience: 'family', duration_min: 150, max_stops: 3 },
+    id: 'strict_mode',
+    label: '🛡️ Nghiêm ngặt đủ bằng chứng',
+    text: 'Tour ẩm thực nghiêm ngặt kiểm tra bằng chứng giờ và tuyến',
+    prefs: { mode: 'strict' },
   },
   {
     id: 'budget',
@@ -31,14 +32,29 @@ const SUGGESTION_CHIPS = [
   },
 ];
 
+const quickChipStyle = {
+  minHeight: '44px',
+  padding: '6px 12px',
+  backgroundColor: '#FFFFFF',
+  border: '1px solid #FDE68A',
+  borderRadius: '6px',
+  color: '#78350F',
+  fontSize: '13px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  display: 'inline-flex',
+  alignItems: 'center',
+};
+
 /**
- * RequestArea for UI_V2 (Scope 2).
+ * RequestArea for UI_V2 (Scope 2, F03, F05, F06).
  * Features:
- * - Free text input
+ * - Free text input with visible focus ring (F06)
  * - 4 one-tap chips that pre-fill the request
+ * - Clarification & conversation surface for questions/missing slots/notes (F03)
  * - 'Tuỳ chọn' button opening PreferencesSheet
  * - 'Lập hành trình' action button
- * - Provenance note: "Dữ liệu cục bộ chưa xác minh"
+ * - Real metadata provenance & normal-mode synthetic data disclosure (F05)
  */
 export default function RequestArea({
   onSendMessage,
@@ -47,19 +63,39 @@ export default function RequestArea({
   onSelectSuggestion,
   busy = false,
   originLabel = 'Hồ Hoàn Kiếm / Phố Cổ',
+  questions = [],
+  missingSlots = [],
+  notes = [],
+  messages = [],
+  health = null,
+  datasetSource = null,
+  datasetVersion = null,
+  isMock = false,
   className = '',
   style = {},
 }) {
   const [inputText, setInputText] = useState('');
   const [selectedChipId, setSelectedChipId] = useState(null);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleSubmit = (e) => {
     e?.preventDefault();
-    const text = inputText.trim();
+    const formEl = e?.target;
+    const inp =
+      formEl?.querySelector?.('input[data-request-input]') ||
+      (typeof document !== 'undefined' ? document.querySelector('input[data-request-input]') : null);
+    const rawVal = inp ? inp.value : '';
+    const text = (inputText || rawVal || '').trim();
     if (text) {
-      onSendMessage(text);
+      setInputText('');
+      if (inp) inp.value = '';
+      if (onSendMessage) {
+        onSendMessage(text);
+      }
     } else {
-      onPlanTour();
+      if (onPlanTour) {
+        onPlanTour();
+      }
     }
   };
 
@@ -70,6 +106,24 @@ export default function RequestArea({
       onSelectSuggestion(chip);
     }
   };
+
+  // Derive provenance metadata (F05)
+  const isSynthetic = isMock || datasetSource === 'synthetic';
+  const venueCount =
+    typeof health?.venues_count === 'number'
+      ? health.venues_count
+      : typeof health?.dataset_venues === 'number'
+      ? health.dataset_venues
+      : null;
+
+  let provenanceText = '';
+  if (isSynthetic) {
+    provenanceText = 'Mẫu thử giả lập (synthetic)';
+  } else if (venueCount !== null) {
+    provenanceText = `${venueCount.toLocaleString('vi-VN')} quán Hà Nội`;
+  } else {
+    provenanceText = 'Khu vực Phố Cổ, Hà Nội';
+  }
 
   return (
     <section
@@ -101,14 +155,185 @@ export default function RequestArea({
         Xuất phát từ <strong>{originLabel}</strong>. Nhập tự do hoặc bấm gợi ý bên dưới:
       </p>
 
+      {/* Conversation history surface (F03) */}
+      {messages.length > 0 && (
+        <div
+          data-clarification-conversation
+          style={{
+            marginBottom: '16px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '8px',
+            maxHeight: '260px',
+            overflowY: 'auto',
+            padding: '8px',
+            backgroundColor: '#FAF9F5',
+            borderRadius: '8px',
+            border: '1px solid var(--border, #DFD5C6)',
+          }}
+        >
+          {messages.map((m, idx) => (
+            <div
+              key={idx}
+              style={{
+                alignSelf: m.role === 'user' ? 'flex-end' : 'flex-start',
+                maxWidth: '90%',
+                backgroundColor: m.role === 'user' ? 'var(--accent, #C8431A)' : '#FFFFFF',
+                color: m.role === 'user' ? '#FFFFFF' : 'var(--text, #1F1B16)',
+                padding: '8px 12px',
+                borderRadius: '8px',
+                fontSize: '13px',
+                lineHeight: 1.45,
+                border: m.role === 'user' ? 'none' : '1px solid var(--border, #DFD5C6)',
+                wordBreak: 'break-word',
+              }}
+            >
+              <div style={{ fontWeight: 700, fontSize: '11px', opacity: 0.8, marginBottom: '2px' }}>
+                {m.role === 'user' ? 'Bạn' : 'Trợ lý AI'}
+              </div>
+              <div style={{ whiteSpace: 'pre-line' }}>{m.text}</div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Questions from backend when slots are missing (F03) */}
+      {questions.length > 0 && (
+        <div
+          data-clarification-questions
+          role="region"
+          aria-label="Cần thêm thông tin để lập lịch trình"
+          style={{
+            backgroundColor: '#FFFBEB',
+            border: '1px solid #FDE68A',
+            borderRadius: 'var(--radius-md, 8px)',
+            padding: '12px 14px',
+            marginBottom: '14px',
+            color: '#78350F',
+            fontSize: '13px',
+          }}
+        >
+          <strong style={{ display: 'block', marginBottom: '6px', color: '#92400E' }}>
+            ❓ Cần thêm thông tin để lập lịch trình:
+          </strong>
+          <ul style={{ margin: 0, paddingLeft: '20px' }}>
+            {questions.map((q, idx) => (
+              <li key={idx} style={{ marginBottom: '4px' }}>
+                {q}
+              </li>
+            ))}
+          </ul>
+
+          {/* Quick response chips for missing slots */}
+          {missingSlots && missingSlots.length > 0 && (
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', marginTop: '10px' }}>
+              {missingSlots.includes('duration_min') && (
+                <>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setInputText('Đi trong 60 phút');
+                      if (onSendMessage) onSendMessage('Đi trong 60 phút');
+                    }}
+                    style={quickChipStyle}
+                  >
+                    ⏱️ 60 phút
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setInputText('Đi trong 120 phút');
+                      if (onSendMessage) onSendMessage('Đi trong 120 phút');
+                    }}
+                    style={quickChipStyle}
+                  >
+                    ⏱️ 120 phút
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setInputText('Đi trong 180 phút');
+                      if (onSendMessage) onSendMessage('Đi trong 180 phút');
+                    }}
+                    style={quickChipStyle}
+                  >
+                    ⏱️ 180 phút
+                  </button>
+                </>
+              )}
+              {missingSlots.includes('budget_scope') && (
+                <>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setInputText('Ngân sách tính theo mỗi người');
+                      if (onSendMessage) onSendMessage('Ngân sách tính theo mỗi người');
+                    }}
+                    style={quickChipStyle}
+                  >
+                    👤 Mỗi người
+                  </button>
+                  <button
+                    type="button"
+                    disabled={busy}
+                    onClick={() => {
+                      setInputText('Ngân sách tính cho cả nhóm');
+                      if (onSendMessage) onSendMessage('Ngân sách tính cho cả nhóm');
+                    }}
+                    style={quickChipStyle}
+                  >
+                    👥 Cả nhóm
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* System notes / notices (F03) */}
+      {notes.length > 0 && (
+        <div
+          data-clarification-notes
+          role="note"
+          style={{
+            backgroundColor: '#EFF6FF',
+            border: '1px solid #BFDBFE',
+            borderRadius: 'var(--radius-md, 8px)',
+            padding: '10px 14px',
+            marginBottom: '14px',
+            color: '#1E3A8A',
+            fontSize: '13px',
+          }}
+        >
+          <strong style={{ display: 'block', marginBottom: '4px' }}>
+            💬 Lưu ý từ hệ thống trích xuất yêu cầu:
+          </strong>
+          <ul style={{ margin: 0, paddingLeft: '20px' }}>
+            {notes.map((n, idx) => (
+              <li key={idx} style={{ marginBottom: '2px' }}>
+                {n}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Form Input Area */}
       <form onSubmit={handleSubmit} style={{ width: '100%' }}>
         <div style={{ position: 'relative', width: '100%', marginBottom: '14px' }}>
           <input
             type="text"
             data-request-input
+            className="ft-request-input"
             value={inputText}
             onChange={(e) => setInputText(e.target.value)}
+            onFocus={() => setIsFocused(true)}
+            onBlur={() => setIsFocused(false)}
             disabled={busy}
             placeholder="Ví dụ: phở và chè quanh Hồ Gươm, 2 giờ..."
             aria-label="Nhu cầu ẩm thực hoặc món bạn muốn thử"
@@ -118,12 +343,14 @@ export default function RequestArea({
               padding: '12px 16px',
               fontSize: '15px',
               borderRadius: 'var(--radius-md, 8px)',
-              border: '1.5px solid var(--border, #DFD5C6)',
+              border: isFocused ? '2px solid var(--accent, #C8431A)' : '1.5px solid var(--border, #DFD5C6)',
+              outline: isFocused ? '2px solid var(--accent, #C8431A)' : 'none',
+              outlineOffset: isFocused ? '2px' : '0px',
+              boxShadow: isFocused ? '0 0 0 3px rgba(200, 67, 26, 0.25)' : 'none',
               backgroundColor: '#FAFAF8',
               color: 'var(--text, #1F1B16)',
-              outline: 'none',
               boxSizing: 'border-box',
-              transition: 'border-color 0.15s ease',
+              transition: 'border-color 0.15s ease, box-shadow 0.15s ease',
             }}
           />
         </div>
@@ -189,8 +416,9 @@ export default function RequestArea({
         </div>
       </form>
 
-      {/* Local Dataset Provenance Note */}
+      {/* Local Dataset Provenance Note & Synthetic Data Disclosure (F05) */}
       <div
+        data-provenance-footer
         style={{
           marginTop: '16px',
           paddingTop: '12px',
@@ -199,11 +427,31 @@ export default function RequestArea({
           color: 'var(--muted, #6B6259)',
           display: 'flex',
           justifyContent: 'space-between',
+          alignItems: 'center',
           flexWrap: 'wrap',
           gap: '8px',
         }}
       >
-        <span>📍 Dữ liệu: 1.702 quán Hà Nội · Dữ liệu cục bộ chưa xác minh</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+          {isSynthetic && (
+            <span
+              data-synthetic-badge
+              style={{
+                background: '#D9532F',
+                color: '#FFFFFF',
+                fontWeight: 800,
+                fontSize: '10px',
+                padding: '2px 6px',
+                borderRadius: '4px',
+                letterSpacing: '0.5px',
+                textTransform: 'uppercase',
+              }}
+            >
+              DỮ LIỆU GIẢ LẬP
+            </span>
+          )}
+          <span>📍 Dữ liệu: {provenanceText} · Dữ liệu cục bộ chưa xác minh</span>
+        </div>
         <span>🚶 Đi bộ tối ưu trong Phố Cổ</span>
       </div>
     </section>

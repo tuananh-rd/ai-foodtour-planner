@@ -576,6 +576,22 @@ export async function createSession(options = {}) {
  * Returns { preferences, missing_slots, questions, notes, tour|null, revision, dataset_source, dataset_version }
  */
 export async function sendMessage(sessionId, text, token = "", options = {}) {
+  if (typeof window !== 'undefined' && window.__MOCK_NEXT_MESSAGE_ERROR) {
+    const errData = window.__MOCK_NEXT_MESSAGE_ERROR;
+    window.__MOCK_NEXT_MESSAGE_ERROR = null;
+    throw new ApiError(errData.code || 'error', errData.message || 'Synthetic message error', errData.details || null, errData.status || 500);
+  }
+  if (typeof window !== 'undefined' && window.__MOCK_NEXT_MESSAGE_RES) {
+    const msgRes = window.__MOCK_NEXT_MESSAGE_RES;
+    window.__MOCK_NEXT_MESSAGE_RES = null;
+    if (isMockMode()) {
+      const session = getOrCreateMockSession(sessionId);
+      if (msgRes.revision !== undefined) session.revision = msgRes.revision;
+      if (msgRes.tour !== undefined) session.tour = msgRes.tour;
+    }
+    return msgRes;
+  }
+
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
     session.revision += 1;
@@ -832,6 +848,22 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
  * Body: { base_revision }
  */
 export async function planTour(sessionId, baseRevision, token = "", options = {}) {
+  if (typeof window !== 'undefined' && window.__MOCK_NEXT_ERROR) {
+    const errData = window.__MOCK_NEXT_ERROR;
+    window.__MOCK_NEXT_ERROR = null;
+    throw new ApiError(errData.code || 'error', errData.message || 'Synthetic error', errData.details || null, errData.status || 500);
+  }
+  if (typeof window !== 'undefined' && window.__MOCK_NEXT_TOUR) {
+    const tourRes = window.__MOCK_NEXT_TOUR;
+    window.__MOCK_NEXT_TOUR = null;
+    if (isMockMode()) {
+      const session = getOrCreateMockSession(sessionId);
+      if (tourRes.revision !== undefined) session.revision = tourRes.revision;
+      if (tourRes.tour !== undefined) session.tour = tourRes.tour;
+    }
+    return tourRes;
+  }
+
   if (isMockMode()) {
     const session = getOrCreateMockSession(sessionId);
     if (baseRevision !== undefined && baseRevision !== null && baseRevision !== session.revision) {

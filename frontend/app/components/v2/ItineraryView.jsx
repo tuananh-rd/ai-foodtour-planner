@@ -3,6 +3,7 @@
 import React from 'react';
 import EvidenceStrip from './EvidenceStrip';
 import StopCard from './StopCard';
+import TourStatusBanner from '../TourStatusBanner';
 import Button from '../../ui/Button';
 
 /**
@@ -31,9 +32,15 @@ export default function ItineraryView({
 
   const stops = tour.stops;
   const stopsCount = stops.length;
-  const walkMinutes = tour.totals?.walk_minutes || 0;
-  const upperSum = tour.totals?.venue_range_upper_sum_vnd || 0;
-  const upperSumFormatted = upperSum > 0 ? `${upperSum.toLocaleString('vi-VN')} ₫` : 'chưa rõ';
+  const walkMinutes = tour.totals?.walk_minutes;
+  const walkText = typeof walkMinutes === 'number'
+    ? `~${walkMinutes} phút đi bộ`
+    : 'chưa rõ thời gian đi bộ';
+
+  const upperSum = tour.totals?.venue_range_upper_sum_vnd;
+  const priceText = typeof upperSum === 'number' && upperSum > 0
+    ? `≤ ${upperSum.toLocaleString('vi-VN')} ₫ (khoảng giá quán)`
+    : 'chưa rõ khoảng giá quán';
 
   return (
     <section
@@ -75,6 +82,7 @@ export default function ItineraryView({
             Hành trình của bạn
           </h3>
           <div
+            data-itinerary-summary
             className="ft-tabular-nums"
             style={{
               fontSize: '13px',
@@ -87,9 +95,9 @@ export default function ItineraryView({
           >
             <span>{stopsCount} quán</span>
             <span>·</span>
-            <span>~{walkMinutes} phút đi bộ</span>
+            <span>{walkText}</span>
             <span>·</span>
-            <span>≤ {upperSumFormatted} (khoảng giá quán)</span>
+            <span>{priceText}</span>
           </div>
         </div>
 
@@ -115,6 +123,14 @@ export default function ItineraryView({
           )}
         </div>
       </div>
+
+      {/* Tour feasibility status banner if status/reasons/proposed changes present */}
+      {tour?.status && (
+        <TourStatusBanner
+          tour={tour}
+          onAdjustPreferences={onOpenPreferences}
+        />
+      )}
 
       {/* ONE collapsed EvidenceStrip */}
       <EvidenceStrip tour={tour} />

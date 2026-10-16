@@ -36,7 +36,7 @@ export default function PreferencesSheet({
       onClose={onClose}
       title="Tuỳ chọn hành trình & Điểm xuất phát"
     >
-      <div style={{ padding: '4px 0' }}>
+      <div className="ft-preferences-sheet-content" style={{ padding: '4px 0' }}>
         <PreferencesPanel
           preferences={preferences}
           revision={revision}

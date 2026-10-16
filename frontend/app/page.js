@@ -10,7 +10,12 @@ import MapView from './components/MapView';
 import ReplaceDiffModal from './components/ReplaceDiffModal';
 import RevisionConflictAlert from './components/RevisionConflictAlert';
 import { StatusQueueProvider } from './ui/StatusQueue';
-import V2Layout from './components/v2/V2Layout';
+import dynamic from 'next/dynamic';
+
+const V2Layout = dynamic(() => import('./components/v2/V2Layout'), {
+  ssr: false,
+  loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FBF8F3' }} />,
+});
 import {
   isMockMode,
   setRuntimeMockMode,
@@ -500,6 +505,9 @@ export default function Home() {
           providerUnavailableError={providerUnavailableError}
           notes={notes}
           messages={messages}
+          questions={questions}
+          missingSlots={missingSlots}
+          onRetry={handleRetry}
           isDevMode={isDevMode}
         />
       </StatusQueueProvider>

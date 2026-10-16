@@ -8,6 +8,7 @@ import PreferencesSheet from './PreferencesSheet';
 import MapSheet from './MapSheet';
 import StickyActionBar from './StickyActionBar';
 import ReplaceDiffModal from '../ReplaceDiffModal';
+import TourStatusBanner from '../TourStatusBanner';
 import { BannerQueue } from '../../ui/Banner';
 import { useStatusQueue } from '../../ui/StatusQueue';
 import Skeleton from '../../ui/Skeleton';
@@ -61,6 +62,9 @@ export default function V2Layout({
   providerUnavailableError,
   notes = [],
   messages = [],
+  questions = [],
+  missingSlots = [],
+  onRetry = null,
 
   // Dev mode flag (?dev=1)
   isDevMode = false,
@@ -106,7 +110,8 @@ export default function V2Layout({
           label: 'Đồng bộ lại',
           onClick: () => {
             dismiss('conflict_error');
-            onPlanTour();
+            if (onRetry) onRetry();
+            else onPlanTour();
           },
         },
       });
@@ -167,7 +172,11 @@ export default function V2Layout({
         message: error.message || 'Đã có sự cố khi xử lý dữ liệu. Bạn có thể thử lại.',
         action: {
           label: 'Thử lại',
-          onClick: onPlanTour,
+          onClick: () => {
+            dismiss('general_error');
+            if (onRetry) onRetry();
+            else onPlanTour();
+          },
         },
       });
       return;
@@ -194,12 +203,16 @@ export default function V2Layout({
     providerUnavailableError,
     error,
     llmBudget?.exhausted,
+    onRetry,
+    onPlanTour,
+    onResetSession,
   ]);
 
   const hasTour = Boolean(tour && tour.stops && tour.stops.length > 0);
 
   return (
     <div
+      data-ui-v2="true"
       className="ft-v2-container"
       style={{
         minHeight: '100vh',
@@ -249,6 +262,16 @@ export default function V2Layout({
           </div>
         )}
 
+        {/* Feasibility outcome when tour status returned with empty stops (e.g. no_solution / insufficient_evidence) (F02) */}
+        {!hasTour && tour && tour.status && (
+          <div data-feasibility-outcome style={{ marginBottom: '20px' }}>
+            <TourStatusBanner
+              tour={tour}
+              onAdjustPreferences={() => setIsPrefOpen(true)}
+            />
+          </div>
+        )}
+
         {/* 2. ITINERARY VIEW IS FIRST WHEN A TOUR EXISTS (Scope 3, Assertion a) */}
         {hasTour ? (
           <div>
@@ -270,6 +293,14 @@ export default function V2Layout({
                 onOpenPreferences={() => setIsPrefOpen(true)}
                 busy={busy}
                 originLabel={preferences.origin_label || 'Phố Cổ'}
+                questions={questions}
+                missingSlots={missingSlots}
+                notes={notes}
+                messages={messages}
+                health={health}
+                datasetSource={datasetSource}
+                datasetVersion={datasetVersion}
+                isMock={isMock}
               />
             </div>
           </div>
@@ -282,6 +313,14 @@ export default function V2Layout({
               onOpenPreferences={() => setIsPrefOpen(true)}
               busy={busy}
               originLabel={preferences.origin_label || 'Phố Cổ'}
+              questions={questions}
+              missingSlots={missingSlots}
+              notes={notes}
+              messages={messages}
+              health={health}
+              datasetSource={datasetSource}
+              datasetVersion={datasetVersion}
+              isMock={isMock}
             />
           </div>
         )}
