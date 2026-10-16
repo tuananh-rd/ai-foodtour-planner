@@ -377,6 +377,7 @@ class ChatEngine:
         for k in ("start_time", "end_time", "duration_min", "vehicle", "max_leg_min", "audience"):
             if k in patch:
                 st.set_field(k, patch[k])
+                st.tour_stale = st.tour_stale or st.phase == "planned"
                 said.append({"start_time": f"bắt đầu {patch.get('start_time')}", "end_time": f"kết thúc trước {patch.get('end_time')}",
                              "duration_min": f"{patch.get('duration_min')} phút", "vehicle": VEHICLES.get(patch.get("vehicle"), ""),
                              "max_leg_min": f"không đi bộ quá {patch.get('max_leg_min')} phút mỗi chặng",

@@ -63,3 +63,18 @@ class Adv(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StaleNotice(unittest.TestCase):
+    def test_vehicle_change_after_plan_flags_tour_stale(self):
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        eng = ChatEngine(data.venues)
+        st, pr = ChatState(), Preferences()
+        steps = [{"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán chè"}, {"text": "Thêm A"},
+                 {"text": "tạo lịch đi"}, {"text": "16 giờ đến 18 giờ, đi bộ"}, {"action": {"type": "confirm_yes"}}, {"text": "đổi sang đi ô tô"}]
+        for kw in steps:
+            r = eng.handle(st, pr, **kw)
+            st, pr = r.state, r.prefs
+        self.assertEqual(r.state.phase, "planned")
+        self.assertTrue(r.state.tour_stale)
+        self.assertTrue([b for b in r.blocks if b["type"] == "notice" and b["code"] == "tour_stale"])
