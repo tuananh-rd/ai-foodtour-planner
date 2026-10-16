@@ -277,6 +277,11 @@ export default function V2Layout({
           <div>
             <ItineraryView
               tour={tour}
+              sessionId={sessionId}
+              sessionToken={sessionToken}
+              sessionEpoch={sessionEpoch}
+              revision={revision}
+              originLabel={preferences?.origin_label || 'Phố Cổ'}
               lockedIds={lockedVenueIds}
               onInitiateReplace={onInitiateReplace}
               onResetTour={onResetSession}
