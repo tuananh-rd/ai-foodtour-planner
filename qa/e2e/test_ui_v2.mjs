@@ -519,6 +519,156 @@ async function run() {
       `hasQ: ${clarificationState.hasQ}, hasN: ${clarificationState.hasN}, hasChip: ${clarificationState.hasChip}`
     );
 
+    // Verify Quick-Answer buttons send and clear input without leaving sent text (R2-N02)
+    console.log('--- Test 4c-2: Quick Answer Send & Clear Input (R2-N02) ---');
+    await ev(`(() => {
+      window.__MESSAGE_CALL_COUNT = 0;
+      window.__TOUR_CALL_COUNT = 0;
+      // Configure next message response to satisfy duration_min and clear missing_slots
+      window.__MOCK_NEXT_MESSAGE_RES = {
+        revision: 2,
+        tour: null,
+        missing_slots: [],
+        questions: [],
+        notes: [],
+        preferences: { origin: { lat: 21.033, lon: 105.85 }, duration_min: 60 }
+      };
+    })()`);
+
+    // Click the 60-minute quick-answer button
+    await ev(`(() => {
+      const btn = Array.from(document.querySelectorAll('[data-clarification-questions] button')).find(b => b.innerText.includes('60 phút'));
+      if (btn) btn.click();
+    })()`);
+    await sleep(400);
+
+    const quickAnswerState = await ev(`(() => {
+      const inp = document.querySelector('input[data-request-input]');
+      return {
+        inputCleared: inp ? inp.value === '' : false,
+        inputValue: inp ? inp.value : null,
+        messageCallCount: window.__MESSAGE_CALL_COUNT || 0,
+        tourCallCount: window.__TOUR_CALL_COUNT || 0,
+      };
+    })()`);
+
+    record(
+      'TC-V2-09e2',
+      'Quick-answer sends message and immediately clears input text (R2-N02)',
+      quickAnswerState.inputCleared && quickAnswerState.messageCallCount === 1,
+      `inputCleared: ${quickAnswerState.inputCleared} (value: "${quickAnswerState.inputValue}"), messageCalls: ${quickAnswerState.messageCallCount}`
+    );
+
+    // Now click "Lập hành trình" (form submit) with required preferences complete
+    await ev(`(() => {
+      window.__MOCK_NEXT_TOUR = {
+        revision: 3,
+        tour: {
+          status: 'verified_feasible',
+          stops: [
+            {
+              id: 'STOP-1',
+              venue_id: 'SYN-001',
+              name: '[SYNTHETIC] Quán Phở 1',
+              dish: 'Phở bò',
+              price: { min_vnd: 40000, max_vnd: 50000, semantics: 'per_person', evidence: 'verified' },
+              hours: { status: 'verified', display: '06:00 - 12:00', open_at_arrival: true },
+              rating: { score: 4.5, count: 128 },
+              why: ['Gần điểm xuất phát'],
+              leg_from_previous: { minutes: 5, km: 0.3, source: 'provider_route' }
+            }
+          ],
+          reasons: [],
+          proposed_changes: [],
+          unknowns: [],
+          totals: {
+            walk_minutes: 5,
+            venue_range_upper_sum_vnd: 50000,
+            leg_source: 'provider_route',
+            route_provider: 'google_routes'
+          },
+          route_warnings: [],
+          explanation: 'Hành trình xác thực',
+          locks: []
+        }
+      };
+      // Submit form or click plan button
+      document.querySelector('form')?.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+    })()`);
+    await sleep(500);
+
+    const planAfterQuickAnswer = await ev(`(() => {
+      return {
+        messageCallCount: window.__MESSAGE_CALL_COUNT || 0,
+        tourCallCount: window.__TOUR_CALL_COUNT || 0,
+        hasStopCard: !!document.querySelector('[data-stop-card]'),
+      };
+    })()`);
+
+    record(
+      'TC-V2-09e3',
+      'Following "Lập hành trình" reaches /tour directly without resending /messages (R2-N02)',
+      planAfterQuickAnswer.messageCallCount === 1 && planAfterQuickAnswer.tourCallCount === 1 && planAfterQuickAnswer.hasStopCard,
+      `messageCalls: ${planAfterQuickAnswer.messageCallCount} (no extra POST), tourCalls: ${planAfterQuickAnswer.tourCallCount}, hasTour: ${planAfterQuickAnswer.hasStopCard}`
+    );
+
+    // Test EvidenceStrip adversarial and verified states in DOM (R2-N01)
+    console.log('--- Test 4c-3: EvidenceStrip DOM Verification & Adversarial Fields (R2-N01) ---');
+    // Contradictory synthetic hours (stop.hours.status: "unknown", open_at_arrival: null, tour.unknowns: [])
+    await ev(`(() => {
+      window.__MOCK_NEXT_TOUR = {
+        revision: 4,
+        tour: {
+          status: 'conditional',
+          stops: [
+            {
+              id: 'STOP-1',
+              venue_id: 'SYN-001',
+              name: '[SYNTHETIC] Quán 1',
+              hours: { status: 'unknown', display: '<synthetic>', open_at_arrival: null },
+              price: { min_vnd: 40000, max_vnd: 50000, semantics: 'per_person', evidence: 'verified' },
+              leg_from_previous: { minutes: 5, km: 0.3, source: 'provider_route' }
+            }
+          ],
+          unknowns: [], // adversarial: no 'hours' in tour.unknowns!
+          totals: { leg_source: 'provider_route', walk_minutes: 5, venue_range_upper_sum_vnd: 50000 }
+        }
+      };
+      document.querySelector('[data-plan-tour-button]')?.click();
+    })()`);
+    await sleep(400);
+
+    // Expand strip to inspect detail text
+    await ev(`(() => {
+      const btn = document.querySelector('[data-evidence-strip] button');
+      if (btn && btn.getAttribute('aria-expanded') !== 'true') {
+        btn.click();
+      }
+    })()`);
+    await sleep(250);
+
+    const stripContradictoryDOM = await ev(`(() => {
+      const strip = document.querySelector('[data-evidence-strip]');
+      const headerText = strip?.querySelector('button')?.innerText || '';
+      const details = document.querySelector('#evidence-strip-details')?.innerText || '';
+      return {
+        headerHasUnknownHours: headerText.includes('giờ mở cửa'),
+        headerHasVerifiedClaim: headerText.includes('giờ mở cửa xác thực'),
+        detailsHasVerifiedClaim: details.includes('Đã xác thực theo lịch hoạt động thực tế'),
+        detailsHasUnknownNotice: details.includes('Dữ liệu nguồn chưa có lịch chi tiết'),
+      };
+    })()`);
+
+    record(
+      'TC-V2-09e4',
+      'DOM EvidenceStrip stays conservative on contradictory hours (never claims verified) (R2-N01)',
+      stripContradictoryDOM.headerHasUnknownHours &&
+        !stripContradictoryDOM.headerHasVerifiedClaim &&
+        !stripContradictoryDOM.detailsHasVerifiedClaim &&
+        stripContradictoryDOM.detailsHasUnknownNotice,
+      `headerHasUnknownHours: ${stripContradictoryDOM.headerHasUnknownHours}, detailsHasVerifiedClaim: ${stripContradictoryDOM.detailsHasVerifiedClaim}`
+    );
+
     // Now re-plan a valid tour to test StopCards & ItineraryView
     // Injects 3-stop conditional tour with null walk_minutes & null upper sum to test F04 & F08
     await ev(`(() => {
@@ -749,20 +899,41 @@ async function run() {
     console.log('--- Test 7: Rollback Switch Invariant & Computed Styles (f, F07) ---');
     // Navigate without ?ui=v2
     await navigateTo(`http://127.0.0.1:${PORT_WEB}/`);
+    await sleep(400);
+
+    // Open legacy preferences tab on mobile to reveal PreferencesPanel controls
+    await ev(`(() => {
+      const btns = Array.from(document.querySelectorAll('button'));
+      const prefTab = btns.find(b => b.innerText.includes('Tuỳ chọn') || b.innerText.includes('Tùy chọn'));
+      if (prefTab) prefTab.click();
+    })()`);
+    await sleep(300);
+
     const rollbackEvaluation = await ev(`(() => {
       const input = document.querySelector('[aria-label="Nội dung tin nhắn yêu cầu tour"]');
       const contractBadge = document.body.innerText.includes('CONTRACT');
 
       const btns = Array.from(document.querySelectorAll('button'));
       const resetBtn = btns.find(b => b.innerText.includes('Tạo phiên mới'));
-      const resetH = resetBtn ? parseFloat(window.getComputedStyle(resetBtn).height) : -1;
+      const resetH = resetBtn ? Math.round(parseFloat(window.getComputedStyle(resetBtn).height)) : -1;
 
       // Mode toggle button
       const modeBtn = btns.find(b => b.innerText.includes('Chế độ Nghiêm ngặt') || b.innerText.includes('Khám phá có điều kiện') || b.innerText.includes('Mock Mode') || b.innerText.includes('Backend Thật'));
-      const modeH = modeBtn ? parseFloat(window.getComputedStyle(modeBtn).height) : -1;
+      const modeH = modeBtn ? Math.round(parseFloat(window.getComputedStyle(modeBtn).height)) : -1;
 
       const rootBg = window.getComputedStyle(document.documentElement).getPropertyValue('--bg');
       const rootShadowLg = window.getComputedStyle(document.documentElement).getPropertyValue('--shadow-lg');
+
+      // Legacy preferences controls heights (F07 baseline from a2735e8^: 40/36/36/40px)
+      const presetEl = document.querySelector('#pref-origin-preset');
+      const latEl = document.querySelector('#pref-custom-lat');
+      const lonEl = document.querySelector('#pref-custom-lon');
+      const durationEl = document.querySelector('#pref-duration');
+
+      const presetH = presetEl ? Math.round(presetEl.getBoundingClientRect().height) : -1;
+      const latH = latEl ? Math.round(latEl.getBoundingClientRect().height) : -1;
+      const lonH = lonEl ? Math.round(lonEl.getBoundingClientRect().height) : -1;
+      const durationH = durationEl ? Math.round(durationEl.getBoundingClientRect().height) : -1;
 
       return {
         oldLayoutRenders: !!input && contractBadge,
@@ -770,17 +941,30 @@ async function run() {
         modeH,
         rootBg,
         rootShadowLg,
+        presetH,
+        latH,
+        lonH,
+        durationH,
       };
     })()`);
 
+    const legacyControlsMatchBaseline =
+      rollbackEvaluation.presetH === 40 &&
+      rollbackEvaluation.latH === 36 &&
+      rollbackEvaluation.lonH === 36 &&
+      rollbackEvaluation.durationH === 40;
+
     record(
       'TC-V2-15',
-      'Flag off => old layout renders with exact computed styles (reset 30px, mode 26px, no --bg) (F07)',
+      'Flag off => old layout renders with exact computed styles (reset 30px, mode 26px, no --bg, legacy controls 40/36/36/40px) (F07)',
       rollbackEvaluation.oldLayoutRenders &&
       rollbackEvaluation.resetH <= 32 &&
       rollbackEvaluation.resetH >= 28 &&
-      !rollbackEvaluation.rootBg,
-      `resetH: ${rollbackEvaluation.resetH}px, modeH: ${rollbackEvaluation.modeH}px, rootBg: "${rollbackEvaluation.rootBg}"`
+      rollbackEvaluation.modeH <= 28 &&
+      rollbackEvaluation.modeH >= 24 &&
+      !rollbackEvaluation.rootBg &&
+      legacyControlsMatchBaseline,
+      `resetH: ${rollbackEvaluation.resetH}px (30), modeH: ${rollbackEvaluation.modeH}px (26), rootBg: "${rollbackEvaluation.rootBg}", legacy: ${rollbackEvaluation.presetH}/${rollbackEvaluation.latH}/${rollbackEvaluation.lonH}/${rollbackEvaluation.durationH}px (baseline 40/36/36/40)`
     );
 
   } finally {

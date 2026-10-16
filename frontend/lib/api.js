@@ -576,6 +576,10 @@ export async function createSession(options = {}) {
  * Returns { preferences, missing_slots, questions, notes, tour|null, revision, dataset_source, dataset_version }
  */
 export async function sendMessage(sessionId, text, token = "", options = {}) {
+  if (typeof window !== 'undefined') {
+    window.__MESSAGE_CALL_COUNT = (window.__MESSAGE_CALL_COUNT || 0) + 1;
+    window.__LAST_MESSAGE_TEXT = text;
+  }
   if (typeof window !== 'undefined' && window.__MOCK_NEXT_MESSAGE_ERROR) {
     const errData = window.__MOCK_NEXT_MESSAGE_ERROR;
     window.__MOCK_NEXT_MESSAGE_ERROR = null;
@@ -848,6 +852,9 @@ export async function updatePreferences(sessionId, baseRevision, preferences, to
  * Body: { base_revision }
  */
 export async function planTour(sessionId, baseRevision, token = "", options = {}) {
+  if (typeof window !== 'undefined') {
+    window.__TOUR_CALL_COUNT = (window.__TOUR_CALL_COUNT || 0) + 1;
+  }
   if (typeof window !== 'undefined' && window.__MOCK_NEXT_ERROR) {
     const errData = window.__MOCK_NEXT_ERROR;
     window.__MOCK_NEXT_ERROR = null;

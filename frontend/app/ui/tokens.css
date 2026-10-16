@@ -272,10 +272,14 @@
 .ft-preferences-sheet-content textarea,
 .ft-preferences-sheet-content button,
 .ft-preferences-sheet-content input[type="range"],
-#pref-origin-preset,
-#pref-custom-lat,
-#pref-custom-lon,
-#pref-duration {
+.ft-sheet #pref-origin-preset,
+.ft-sheet #pref-custom-lat,
+.ft-sheet #pref-custom-lon,
+.ft-sheet #pref-duration,
+.ft-preferences-sheet-content #pref-origin-preset,
+.ft-preferences-sheet-content #pref-custom-lat,
+.ft-preferences-sheet-content #pref-custom-lon,
+.ft-preferences-sheet-content #pref-duration {
   min-height: 44px !important;
   box-sizing: border-box !important;
 }

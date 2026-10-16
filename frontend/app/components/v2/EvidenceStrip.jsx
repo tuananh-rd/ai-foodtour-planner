@@ -24,35 +24,67 @@ export default function EvidenceStrip({
   tour,
   className = '',
   style = {},
+  initialExpanded = false,
 }) {
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(initialExpanded);
 
   const unknowns = Array.isArray(tour?.unknowns) ? tour.unknowns : [];
   const stops = Array.isArray(tour?.stops) ? tour.stops : [];
   const legs = Array.isArray(tour?.legs) ? tour.legs : [];
 
+  // Route evidence evaluation:
+  // Must have provider routes without unresolved route unknowns or straight-line fallbacks.
+  const routeUnknown =
+    unknowns.includes('route') ||
+    tour?.totals?.leg_source === 'straight_line_estimate' ||
+    tour?.totals?.leg_source === 'unknown';
+
   const hasProviderRoute =
-    tour?.totals?.leg_source === 'provider_route' ||
-    legs.some((l) => l.source === 'provider_route');
+    !routeUnknown &&
+    (tour?.totals?.leg_source === 'provider_route' ||
+      (legs.length > 0 && legs.every((l) => l.source === 'provider_route')) ||
+      (stops.length > 1 && stops.slice(1).every((s) => s.leg_from_previous?.source === 'provider_route')));
 
-  const hoursUnknown =
-    unknowns.includes('hours') ||
-    stops.some((s) => s.hours === null || s.hours === undefined);
+  // Hours evidence evaluation:
+  // Never claim verified from object presence.
+  // Must have verified status and open_at_arrival === true for all stops, and no 'hours' in tour.unknowns.
+  // On any disagreement stay conservative (unknown).
+  const allStopsHoursVerified =
+    stops.length > 0 &&
+    stops.every((s) => {
+      const h = s?.hours;
+      return Boolean(h && h.status === 'verified' && h.open_at_arrival === true);
+    });
 
-  const priceUnknown =
-    unknowns.includes('price_per_person') ||
-    stops.some((s) => s.price_evidence !== 'verified_exact');
+  const hoursUnknown = unknowns.includes('hours') || !allStopsHoursVerified;
+
+  // Price evidence evaluation:
+  // Must have verified per-person pricing for all stops, and no 'price_per_person' in tour.unknowns.
+  // API evidence enum is verified|estimate|unknown, semantics is per_person|venue_range.
+  // 'verified_exact' is NOT an API enum value.
+  // On any disagreement stay conservative (unknown).
+  const allStopsPriceVerified =
+    stops.length > 0 &&
+    stops.every((s) => {
+      const evidence = s?.price?.evidence || s?.price_evidence;
+      const semantics = s?.price?.semantics || s?.price_semantics;
+      return evidence === 'verified' && semantics === 'per_person';
+    });
+
+  const priceUnknown = unknowns.includes('price_per_person') || !allStopsPriceVerified;
 
   const isVerified =
     tour?.status === 'verified_feasible' &&
     unknowns.length === 0 &&
-    !hoursUnknown;
+    !hoursUnknown &&
+    !priceUnknown &&
+    hasProviderRoute;
 
   // Build human-friendly unknown list for the header
   const unknownTerms = [];
   if (hoursUnknown) unknownTerms.push('giờ mở cửa');
   if (priceUnknown) unknownTerms.push('giá theo người');
-  if (!hasProviderRoute && (unknowns.includes('route') || tour?.totals?.leg_source === 'straight_line_estimate')) {
+  if (!hasProviderRoute) {
     unknownTerms.push('tuyến đi thực tế');
   }
 

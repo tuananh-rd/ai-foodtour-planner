@@ -107,6 +107,26 @@ export default function RequestArea({
     }
   };
 
+  const handleQuickAnswer = (answerText) => {
+    setInputText('');
+    const inp =
+      typeof document !== 'undefined'
+        ? document.querySelector('input[data-request-input]')
+        : null;
+    if (inp) {
+      const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+      if (setter) {
+        setter.call(inp, '');
+      } else {
+        inp.value = '';
+      }
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+    if (onSendMessage) {
+      onSendMessage(answerText);
+    }
+  };
+
   // Derive provenance metadata (F05)
   const isSynthetic = isMock || datasetSource === 'synthetic';
   const venueCount =
@@ -232,10 +252,7 @@ export default function RequestArea({
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => {
-                      setInputText('Đi trong 60 phút');
-                      if (onSendMessage) onSendMessage('Đi trong 60 phút');
-                    }}
+                    onClick={() => handleQuickAnswer('Đi trong 60 phút')}
                     style={quickChipStyle}
                   >
                     ⏱️ 60 phút
@@ -243,10 +260,7 @@ export default function RequestArea({
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => {
-                      setInputText('Đi trong 120 phút');
-                      if (onSendMessage) onSendMessage('Đi trong 120 phút');
-                    }}
+                    onClick={() => handleQuickAnswer('Đi trong 120 phút')}
                     style={quickChipStyle}
                   >
                     ⏱️ 120 phút
@@ -254,10 +268,7 @@ export default function RequestArea({
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => {
-                      setInputText('Đi trong 180 phút');
-                      if (onSendMessage) onSendMessage('Đi trong 180 phút');
-                    }}
+                    onClick={() => handleQuickAnswer('Đi trong 180 phút')}
                     style={quickChipStyle}
                   >
                     ⏱️ 180 phút
@@ -269,10 +280,7 @@ export default function RequestArea({
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => {
-                      setInputText('Ngân sách tính theo mỗi người');
-                      if (onSendMessage) onSendMessage('Ngân sách tính theo mỗi người');
-                    }}
+                    onClick={() => handleQuickAnswer('Ngân sách tính theo mỗi người')}
                     style={quickChipStyle}
                   >
                     👤 Mỗi người
@@ -280,10 +288,7 @@ export default function RequestArea({
                   <button
                     type="button"
                     disabled={busy}
-                    onClick={() => {
-                      setInputText('Ngân sách tính cho cả nhóm');
-                      if (onSendMessage) onSendMessage('Ngân sách tính cho cả nhóm');
-                    }}
+                    onClick={() => handleQuickAnswer('Ngân sách tính cho cả nhóm')}
                     style={quickChipStyle}
                   >
                     👥 Cả nhóm
