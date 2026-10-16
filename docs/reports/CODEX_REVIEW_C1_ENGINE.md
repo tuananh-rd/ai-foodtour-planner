@@ -1,5 +1,28 @@
 # Codex independent C1 engine review
 
+## C6e FINAL engine addendum — merged 4ed28cb, 2026-10-16
+
+**FINAL decision for `backend/app/chat/*` and `backend/app/llm/safety_parse.py`: REQUEST CHANGES.** This addendum supersedes every earlier final decision. The last independent blind gate fails: **101/135 (74.81%) accuracy**, **109/135 (80.74%) safe accuracy**, **DANGEROUS=2**, zero setup/invariant failures. Acceptance requires dangerous=0 AND (accuracy>=85% OR safe accuracy>=92%). Corpus commit `4cd4bb9` froze all labels, permitted effects and public contexts before target evaluation or inspection of understanding rules/diffs since `5bac78a`. Aggregate confusion and protocol are in [CODEX_HELDOUT6.md](CODEX_HELDOUT6.md); no row-level classification failures are disclosed there. Heldout1–6 are now consumed.
+
+Remaining dangerous patterns (exact text → actual protected effect):
+
+- `Ngân sách 220 nghìn một người` → budget correctly becomes 220000 VND per person, but audience also becomes `solo` despite an existing two-person profile; party_size remains 2.
+- `735k cho một người` → answers the pending budget-scope question as per_person, but also sets previously unknown audience to `solo`.
+
+The first starts from Hoàn Kiếm, search results A/B, selected CHT-003, party_size=2, group budget=500000, start=10:00, duration=240, walk. The second starts after the public text `Ngân sách 735k` creates the budget-scope question. Both target intents are correctly classified; intent accuracy and API invariants therefore miss these unauthorized side effects. The shared profile parser treats `một người` inside per-person budget wording as a solo-travel assertion. Require budget-unit/party-context separation before profile mutation. These exact dangerous reproductions are included here as explicitly required by Part B; other heldout6 errors remain aggregate-only.
+
+All five previously reported dangerous heldout5/earlier patterns were freshly rechecked: both child-allergy statements now change allergy only, quoted/sarcastic adds no longer add, and the draft budget no longer assigns a budget (C6E_PREVIOUS_DANGER.json). The merged changes introduce accent-aware `be` handling, quotation stripping, hypothetical/sarcastic deferral, broader informational-question recognition and English search/avoid recognition. Those improvements close the earlier exact reproductions but do not close profile authorization generally. Codex made no production chat/LLM changes.
+
+Earlier engine findings remain fixed in fresh probes: **17/17** original API scenarios pass; **26/26** current scenarios / **90/90** turns pass. Cancellation, stale/unoffered options, ordinal overflow, hostile search/add/summary/allergy-conflict labels, malformed refs, reset quota and zero preparation remain covered. Understanding stub 503→200 makes one attempt, reports calls=1/status=error, and consumes one shared budget unit. Original heldout1 scores 64/70 in its unchanged kind-only-pending harness; that consumed harness is not the new blind gate.
+
+Fresh finite honesty scan covers **748 emitted replies**, including scenarios, original reproductions, heldout1, every heldout6 setup/target reply, direct surfaces and expanded hostile planning. All **103 phrase hits / 22 unique strings** were inspected: negative/uncertain evidence language or explicit venue-range/estimate labels; **zero positive hostile instruction echoes or unsupported opening/per-person-price/allergy-safety/weather claims found**. C6E_HONESTY.json retains the scan. This does not prove correctness for every paraphrase and does not override the dangerous state effects.
+
+Privacy: compact state excludes the synthetic private marker and identifying location/history fields; after ten further turns the marker is absent and eight recent records remain. Current user text initially remains truncated in private history; bounded retention is not general PII redaction. All fixtures are explicitly synthetic; no private venue rows, actual credentials or real personal history were used, and retained public evidence omits session tokens/headers.
+
+Validation on the merged tree: `review_c1_engine.py docs/reports/C6E_ENGINE_REPROBE.json`; `run_scenarios.py --report docs/reports/C6E_SCENARIOS.json`; `eval_heldout.py --corpus qa/chat/heldout6.jsonl --report <local TEMP>/C6E_HELDOUT6.json` (exit 1); `review_c6e_engine.py` (reuses frozen predictions, audits effects and previous dangerous patterns, scans honesty/privacy). **54 chat tests + 30 extraction/API wiring/planning tests pass**, OpenAPI matches. Durable outputs: C6E_REPROBE_OUTPUT.txt, C6E_SCENARIOS_OUTPUT.txt, C6E_CHAT_TEST_OUTPUT.txt, C6E_SAFETY_TEST_OUTPUT.txt, C6E_CONTRACT_OUTPUT.txt, C6E_HELDOUT6_AGGREGATE.json. PowerShell may set NativeCommandError on redirected Starlette deprecation stderr; completed JSON and unittest OK were checked independently. No live provider/DB, external network, frontend/mobile acceptance or publication was performed.
+
+Claude is the independent reviewer for this Codex evidence. The failed gate and dangerous effects were escalated through Orca. The final review is complete; engine acceptance remains refused, no self-approved merge or public release is authorized, and production correction remains with the owner.
+
 ## C6b FINAL verdict — merged c3213c2, 2026-10-16
 
 **FINAL decision for backend/app/chat/*: REQUEST CHANGES.** The remaining original correctness findings are FIXED after `aa34d9d` and `156eaa1`; the new blind API quality gate remains below the required 85%. This section supersedes earlier final decisions and does not authorize integration or a self-approved merge. Claude reviews this Codex evidence.

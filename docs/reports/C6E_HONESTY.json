@@ -1,0 +1,1574 @@
+{
+  "scanned_replies": 748,
+  "hits": [
+    {
+      "case": "FRESH-compare-after-remove",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "FRESH-compare-after-remove",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "FRESH-cancel-creates-tour",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "FRESH-pick-unoffered-at-confirm",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "FRESH-allergy-after-shortlist",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "FRESH-allergy-after-shortlist",
+      "phrase": "an toan",
+      "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "FRESH-allergy-after-shortlist",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "FRESH-allergy-after-shortlist",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "FRESH-allergy-seafood",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "FRESH-confirmation-nonresult",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "FRESH-weather-honesty",
+      "phrase": "nhiet do",
+      "text": "Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+    },
+    {
+      "case": "FRESH-weather-honesty",
+      "phrase": "nhiet do",
+      "text": "Bạn nói trời nóng nên mình ưu tiên món mát/đồ uống. Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+    },
+    {
+      "case": "FRESH-replace-api",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "FRESH-replace-api",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "CH-01",
+      "phrase": "nhiet do",
+      "text": "Bạn nói trời nóng nên mình ưu tiên món mát/đồ uống. Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+    },
+    {
+      "case": "CH-01",
+      "phrase": "nhiet do",
+      "text": "Bạn nói trời nóng nên mình ưu tiên món mát/đồ uống. Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+    },
+    {
+      "case": "CH-03",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "CH-03",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "CH-06",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "CH-06",
+      "phrase": "an toan",
+      "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "CH-09",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "CH-09",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "CH-09",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "CH-09",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "CH-09",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 2 quán bạn đã chọn: [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 10 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "CH-10",
+      "phrase": "an toan",
+      "text": "Mình bỏ qua phần yêu cầu đổi quy tắc hoặc xác nhận an toàn. Mình không thể khẳng định một quán an toàn cho người dị ứng vì dữ liệu không có thông tin nguyên liệu."
+    },
+    {
+      "case": "CH-10",
+      "phrase": "nhiet do",
+      "text": "Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+    },
+    {
+      "case": "ADV-05",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "ADV-05",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "ADV-05",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 2 quán bạn đã chọn: [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 10 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "ADV-07",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "ADV-09",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "ADV-09",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "ADV-09",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 2 quán bạn đã chọn: [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 10 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "ADV-11",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "ADV-12",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "H6-009",
+      "phrase": "gia theo nguoi",
+      "text": "Khoảng giá quán của [SYNTHETIC] Phở Thử 3: 35.000 đ – 75.000 đ (khoảng giá của quán, không phải giá theo người)."
+    },
+    {
+      "case": "H6-048",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-086",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: hạt điều. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "H6-087",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cá. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "H6-088",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: sữa. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "H6-089",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: tôm. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "H6-090",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua, trứng. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "H6-096",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-097",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-098",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-099",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-100",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-101",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-101",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-102",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-102",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-103",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-103",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-104",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-104",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-105",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-105",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-106",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-106",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-107",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-107",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-108",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-108",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-109",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-109",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-110",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-110",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 1 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3. Tổng đi bộ khoảng 8 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "H6-114",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-114",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-121",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-122",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-123",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-124",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-125",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "H6-131",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-131",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-133",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-133",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-134",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "H6-134",
+      "phrase": "gia theo nguoi",
+      "text": "khoảng giá của quán, không phải giá theo người"
+    },
+    {
+      "case": "HO-006",
+      "phrase": "nhiet do",
+      "text": "Bạn nói trời lạnh nên mình ưu tiên món nóng. Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
+    },
+    {
+      "case": "HO-033",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: đậu phộng. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "HO-034",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: tom hum. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "HO-035",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: vừng. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "HO-036",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: sua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "HO-061",
+      "phrase": "an toan",
+      "text": "Mình bỏ qua phần yêu cầu đổi quy tắc hoặc xác nhận an toàn. Mình không thể khẳng định một quán an toàn cho người dị ứng vì dữ liệu không có thông tin nguyên liệu."
+    },
+    {
+      "case": "HO-062",
+      "phrase": "an toan",
+      "text": "Mình bỏ qua phần yêu cầu đổi quy tắc hoặc xác nhận an toàn. Mình không thể khẳng định một quán an toàn cho người dị ứng vì dữ liệu không có thông tin nguyên liệu."
+    },
+    {
+      "case": "HO-063",
+      "phrase": "an toan",
+      "text": "Mình bỏ qua phần yêu cầu đổi quy tắc hoặc xác nhận an toàn. Mình không thể khẳng định một quán an toàn cho người dị ứng vì dữ liệu không có thông tin nguyên liệu."
+    },
+    {
+      "case": "HO-064",
+      "phrase": "an toan",
+      "text": "Mình bỏ qua phần yêu cầu đổi quy tắc hoặc xác nhận an toàn. Mình không thể khẳng định một quán an toàn cho người dị ứng vì dữ liệu không có thông tin nguyên liệu."
+    },
+    {
+      "case": "conflict-choice:relax_leg:30",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "conflict-choice:relax_leg:30",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "conflict-choice:vehicle:motorbike",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "conflict-choice:vehicle:motorbike",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "conflict-choice:time:+60",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "conflict-choice:time:+60",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "conflict-choice:drop:CHT-004",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "conflict-choice:drop:CHT-004",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    },
+    {
+      "case": "after-plan-success",
+      "phrase": "gia theo nguoi",
+      "text": "Mình đã lập lịch trình từ đúng 2 quán bạn đã chọn: [SYNTHETIC] Phở Thử 3 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 22 phút (ước tính). Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng."
+    },
+    {
+      "case": "hostile-planning",
+      "phrase": "an toan",
+      "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "hostile-planning",
+      "phrase": "an toan",
+      "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+    },
+    {
+      "case": "hostile-planning",
+      "phrase": "gia theo nguoi",
+      "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+    },
+    {
+      "case": "hostile-planning",
+      "phrase": "dang mo",
+      "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+    }
+  ],
+  "hostile_planning": [
+    {
+      "request": {
+        "action": {
+          "type": "set_location",
+          "location": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "response": {
+        "chat": {
+          "phase": "discover",
+          "profile": {
+            "area": {
+              "value": {
+                "kind": "district",
+                "label": "Hoàn Kiếm",
+                "lat": 21.028499999999998,
+                "lon": 105.85241666666667,
+                "district": "Hoàn Kiếm"
+              },
+              "source": "user_said",
+              "turn": 1,
+              "confirmed": true
+            },
+            "party_size": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "audience": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "budget": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "start_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "end_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "duration_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "vehicle": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "tastes": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "max_leg_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            }
+          },
+          "allergies": [],
+          "shortlist": [],
+          "last_results": [],
+          "pending": null,
+          "turn_count": 1
+        },
+        "preferences": {
+          "city": "Hà Nội",
+          "origin": {
+            "lat": 21.028499999999998,
+            "lon": 105.85241666666667
+          },
+          "origin_label": "Hoàn Kiếm",
+          "origin_source": "place",
+          "start_time": null,
+          "weekday": null,
+          "duration_min": null,
+          "budget_vnd": null,
+          "budget_scope": null,
+          "party_size": null,
+          "meal": null,
+          "audience": null,
+          "interests": [],
+          "exclusions": [],
+          "allergies": [],
+          "max_leg_min": 20,
+          "max_stops": 3,
+          "mode": "explore"
+        },
+        "missing_slots": [
+          "duration_min"
+        ],
+        "questions": [
+          "Bạn có khoảng bao nhiêu giờ cho chuyến đi?"
+        ],
+        "notes": [],
+        "tour": null,
+        "revision": 1,
+        "dataset_source": "synthetic",
+        "dataset_version": "3d4d754de347a5743505ca8dcf4ff40875a91608a5957e08ecd95b93cbbbaa5b",
+        "extraction_source": "rules",
+        "llm_calls": 0,
+        "llm_budget": {
+          "limit": 18,
+          "remaining": 18,
+          "exhausted": false
+        },
+        "reply": {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Đã cập nhật: khu vực: Hoàn Kiếm (xấp xỉ)."
+            }
+          ]
+        },
+        "turn": {
+          "intent": "UPDATE_PROFILE",
+          "tools": [
+            "set_profile"
+          ],
+          "understanding": "action"
+        }
+      }
+    },
+    {
+      "request": {
+        "action": {
+          "type": "add",
+          "venue_id": "CHT-005"
+        }
+      },
+      "response": {
+        "chat": {
+          "phase": "choose",
+          "profile": {
+            "area": {
+              "value": {
+                "kind": "district",
+                "label": "Hoàn Kiếm",
+                "lat": 21.028499999999998,
+                "lon": 105.85241666666667,
+                "district": "Hoàn Kiếm"
+              },
+              "source": "user_said",
+              "turn": 1,
+              "confirmed": true
+            },
+            "party_size": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "audience": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "budget": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "start_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "end_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "duration_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "vehicle": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "tastes": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "max_leg_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            }
+          },
+          "allergies": [],
+          "shortlist": [
+            {
+              "venue_id": "CHT-005",
+              "status": "considering"
+            }
+          ],
+          "last_results": [],
+          "pending": null,
+          "turn_count": 2
+        },
+        "preferences": {
+          "city": "Hà Nội",
+          "origin": {
+            "lat": 21.028499999999998,
+            "lon": 105.85241666666667
+          },
+          "origin_label": "Hoàn Kiếm",
+          "origin_source": "place",
+          "start_time": null,
+          "weekday": null,
+          "duration_min": null,
+          "budget_vnd": null,
+          "budget_scope": null,
+          "party_size": null,
+          "meal": null,
+          "audience": null,
+          "interests": [],
+          "exclusions": [],
+          "allergies": [],
+          "max_leg_min": 20,
+          "max_stops": 3,
+          "mode": "explore"
+        },
+        "missing_slots": [
+          "duration_min"
+        ],
+        "questions": [
+          "Bạn có khoảng bao nhiêu giờ cho chuyến đi?"
+        ],
+        "notes": [],
+        "tour": null,
+        "revision": 2,
+        "dataset_source": "synthetic",
+        "dataset_version": "3d4d754de347a5743505ca8dcf4ff40875a91608a5957e08ecd95b93cbbbaa5b",
+        "extraction_source": "rules",
+        "llm_calls": 0,
+        "llm_budget": {
+          "limit": 18,
+          "remaining": 18,
+          "exhausted": false
+        },
+        "reply": {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Mình đã thêm [SYNTHETIC] Cua vào danh sách (1/5). Bạn muốn tìm thêm món khác hay xem tiếp một lựa chọn nữa?"
+            }
+          ]
+        },
+        "turn": {
+          "intent": "ADD",
+          "tools": [
+            "shortlist_add"
+          ],
+          "understanding": "action"
+        }
+      }
+    },
+    {
+      "request": {
+        "text": "dị ứng cua"
+      },
+      "response": {
+        "chat": {
+          "phase": "choose",
+          "profile": {
+            "area": {
+              "value": {
+                "kind": "district",
+                "label": "Hoàn Kiếm",
+                "lat": 21.028499999999998,
+                "lon": 105.85241666666667,
+                "district": "Hoàn Kiếm"
+              },
+              "source": "user_said",
+              "turn": 1,
+              "confirmed": true
+            },
+            "party_size": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "audience": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "budget": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "start_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "end_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "duration_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "vehicle": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "tastes": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "max_leg_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            }
+          },
+          "allergies": [
+            {
+              "term": "cua",
+              "family": "crustacean",
+              "source": "user_said",
+              "venue_confirmations": []
+            }
+          ],
+          "shortlist": [
+            {
+              "venue_id": "CHT-005",
+              "status": "considering"
+            }
+          ],
+          "last_results": [],
+          "pending": null,
+          "turn_count": 3
+        },
+        "preferences": {
+          "city": "Hà Nội",
+          "origin": {
+            "lat": 21.028499999999998,
+            "lon": 105.85241666666667
+          },
+          "origin_label": "Hoàn Kiếm",
+          "origin_source": "place",
+          "start_time": null,
+          "weekday": null,
+          "duration_min": null,
+          "budget_vnd": null,
+          "budget_scope": null,
+          "party_size": null,
+          "meal": null,
+          "audience": null,
+          "interests": [],
+          "exclusions": [],
+          "allergies": [
+            "cua"
+          ],
+          "max_leg_min": 20,
+          "max_stops": 3,
+          "mode": "explore"
+        },
+        "missing_slots": [
+          "duration_min"
+        ],
+        "questions": [
+          "Bạn có khoảng bao nhiêu giờ cho chuyến đi?"
+        ],
+        "notes": [],
+        "tour": null,
+        "revision": 3,
+        "dataset_source": "synthetic",
+        "dataset_version": "3d4d754de347a5743505ca8dcf4ff40875a91608a5957e08ecd95b93cbbbaa5b",
+        "extraction_source": "rules",
+        "llm_calls": 0,
+        "llm_budget": {
+          "limit": 18,
+          "remaining": 18,
+          "exhausted": false
+        },
+        "reply": {
+          "blocks": [
+            {
+              "type": "notice",
+              "level": "safety",
+              "code": "allergy_unknown",
+              "text": "Đã ghi nhận dị ứng: cua. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+            }
+          ]
+        },
+        "turn": {
+          "intent": "SET_ALLERGY",
+          "tools": [
+            "set_allergy"
+          ],
+          "understanding": "rules"
+        }
+      }
+    },
+    {
+      "request": {
+        "action": {
+          "type": "edit_profile",
+          "patch": {
+            "start_time": "10:00",
+            "duration_min": 240,
+            "vehicle": "walk"
+          }
+        }
+      },
+      "response": {
+        "chat": {
+          "phase": "choose",
+          "profile": {
+            "area": {
+              "value": {
+                "kind": "district",
+                "label": "Hoàn Kiếm",
+                "lat": 21.028499999999998,
+                "lon": 105.85241666666667,
+                "district": "Hoàn Kiếm"
+              },
+              "source": "user_said",
+              "turn": 1,
+              "confirmed": true
+            },
+            "party_size": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "audience": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "budget": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "start_time": {
+              "value": "10:00",
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "end_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "duration_min": {
+              "value": 240,
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "vehicle": {
+              "value": "walk",
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "tastes": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "max_leg_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            }
+          },
+          "allergies": [
+            {
+              "term": "cua",
+              "family": "crustacean",
+              "source": "user_said",
+              "venue_confirmations": []
+            }
+          ],
+          "shortlist": [
+            {
+              "venue_id": "CHT-005",
+              "status": "considering"
+            }
+          ],
+          "last_results": [],
+          "pending": null,
+          "turn_count": 4
+        },
+        "preferences": {
+          "city": "Hà Nội",
+          "origin": {
+            "lat": 21.028499999999998,
+            "lon": 105.85241666666667
+          },
+          "origin_label": "Hoàn Kiếm",
+          "origin_source": "place",
+          "start_time": "10:00",
+          "weekday": null,
+          "duration_min": 240,
+          "budget_vnd": null,
+          "budget_scope": null,
+          "party_size": null,
+          "meal": null,
+          "audience": null,
+          "interests": [],
+          "exclusions": [],
+          "allergies": [
+            "cua"
+          ],
+          "max_leg_min": 20,
+          "max_stops": 3,
+          "mode": "explore"
+        },
+        "missing_slots": [],
+        "questions": [],
+        "notes": [],
+        "tour": null,
+        "revision": 4,
+        "dataset_source": "synthetic",
+        "dataset_version": "3d4d754de347a5743505ca8dcf4ff40875a91608a5957e08ecd95b93cbbbaa5b",
+        "extraction_source": "rules",
+        "llm_calls": 0,
+        "llm_budget": {
+          "limit": 18,
+          "remaining": 18,
+          "exhausted": false
+        },
+        "reply": {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Đã cập nhật: bắt đầu 10:00; 240 phút; đi bộ."
+            }
+          ]
+        },
+        "turn": {
+          "intent": "UPDATE_PROFILE",
+          "tools": [
+            "set_profile"
+          ],
+          "understanding": "action"
+        }
+      }
+    },
+    {
+      "request": {
+        "action": {
+          "type": "request_plan"
+        }
+      },
+      "response": {
+        "chat": {
+          "phase": "confirm",
+          "profile": {
+            "area": {
+              "value": {
+                "kind": "district",
+                "label": "Hoàn Kiếm",
+                "lat": 21.028499999999998,
+                "lon": 105.85241666666667,
+                "district": "Hoàn Kiếm"
+              },
+              "source": "user_said",
+              "turn": 1,
+              "confirmed": true
+            },
+            "party_size": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "audience": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "budget": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "start_time": {
+              "value": "10:00",
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "end_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "duration_min": {
+              "value": 240,
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "vehicle": {
+              "value": "walk",
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "tastes": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "max_leg_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            }
+          },
+          "allergies": [
+            {
+              "term": "cua",
+              "family": "crustacean",
+              "source": "user_said",
+              "venue_confirmations": []
+            }
+          ],
+          "shortlist": [
+            {
+              "venue_id": "CHT-005",
+              "status": "considering"
+            }
+          ],
+          "last_results": [],
+          "pending": {
+            "pending_id": "p5",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "turn_count": 5
+        },
+        "preferences": {
+          "city": "Hà Nội",
+          "origin": {
+            "lat": 21.028499999999998,
+            "lon": 105.85241666666667
+          },
+          "origin_label": "Hoàn Kiếm",
+          "origin_source": "place",
+          "start_time": "10:00",
+          "weekday": null,
+          "duration_min": 240,
+          "budget_vnd": null,
+          "budget_scope": null,
+          "party_size": null,
+          "meal": null,
+          "audience": null,
+          "interests": [],
+          "exclusions": [],
+          "allergies": [
+            "cua"
+          ],
+          "max_leg_min": 20,
+          "max_stops": 3,
+          "mode": "explore"
+        },
+        "missing_slots": [],
+        "questions": [],
+        "notes": [],
+        "tour": null,
+        "revision": 5,
+        "dataset_source": "synthetic",
+        "dataset_version": "3d4d754de347a5743505ca8dcf4ff40875a91608a5957e08ecd95b93cbbbaa5b",
+        "extraction_source": "rules",
+        "llm_calls": 0,
+        "llm_budget": {
+          "limit": 18,
+          "remaining": 18,
+          "exhausted": false
+        },
+        "reply": {
+          "blocks": [
+            {
+              "type": "text",
+              "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+            },
+            {
+              "type": "confirm_summary",
+              "items": [
+                {
+                  "id": "area",
+                  "label": "Điểm xuất phát",
+                  "value": "Hoàn Kiếm",
+                  "status": "user",
+                  "editable": true
+                },
+                {
+                  "id": "start_time",
+                  "label": "Bắt đầu",
+                  "value": "10:00",
+                  "status": "user",
+                  "editable": true
+                },
+                {
+                  "id": "end_time",
+                  "label": "Kết thúc trước",
+                  "value": null,
+                  "status": "missing",
+                  "editable": true
+                },
+                {
+                  "id": "party_size",
+                  "label": "Số người",
+                  "value": null,
+                  "status": "missing",
+                  "editable": true
+                },
+                {
+                  "id": "vehicle",
+                  "label": "Phương tiện",
+                  "value": "đi bộ",
+                  "status": "user",
+                  "editable": true
+                },
+                {
+                  "id": "budget",
+                  "label": "Ngân sách",
+                  "value": null,
+                  "status": "missing",
+                  "editable": true
+                },
+                {
+                  "id": "tastes",
+                  "label": "Khẩu vị",
+                  "value": null,
+                  "status": "missing",
+                  "editable": true
+                },
+                {
+                  "id": "allergies",
+                  "label": "Dị ứng",
+                  "value": "cua",
+                  "status": "user",
+                  "editable": true
+                },
+                {
+                  "id": "max_leg_min",
+                  "label": "Đi bộ tối đa mỗi chặng",
+                  "value": null,
+                  "status": "missing",
+                  "editable": true
+                }
+              ],
+              "shortlist": [
+                {
+                  "venue_id": "CHT-005",
+                  "name": "[SYNTHETIC] Cua",
+                  "status": "considering"
+                }
+              ],
+              "missing": [],
+              "warnings": [
+                {
+                  "code": "allergy_unknown",
+                  "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+                },
+                {
+                  "code": "price_not_per_person",
+                  "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+                },
+                {
+                  "code": "hours_unknown",
+                  "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+                }
+              ]
+            }
+          ]
+        },
+        "turn": {
+          "intent": "REQUEST_PLAN",
+          "tools": [],
+          "understanding": "action"
+        }
+      }
+    },
+    {
+      "request": {
+        "action": {
+          "type": "confirm_yes"
+        }
+      },
+      "response": {
+        "chat": {
+          "phase": "choose",
+          "profile": {
+            "area": {
+              "value": {
+                "kind": "district",
+                "label": "Hoàn Kiếm",
+                "lat": 21.028499999999998,
+                "lon": 105.85241666666667,
+                "district": "Hoàn Kiếm"
+              },
+              "source": "user_said",
+              "turn": 1,
+              "confirmed": true
+            },
+            "party_size": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "audience": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "budget": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "start_time": {
+              "value": "10:00",
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "end_time": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "duration_min": {
+              "value": 240,
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "vehicle": {
+              "value": "walk",
+              "source": "user_said",
+              "turn": 4,
+              "confirmed": true
+            },
+            "tastes": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            },
+            "max_leg_min": {
+              "value": null,
+              "source": "missing",
+              "turn": 0,
+              "confirmed": false
+            }
+          },
+          "allergies": [
+            {
+              "term": "cua",
+              "family": "crustacean",
+              "source": "user_said",
+              "venue_confirmations": []
+            }
+          ],
+          "shortlist": [
+            {
+              "venue_id": "CHT-005",
+              "status": "considering"
+            }
+          ],
+          "last_results": [],
+          "pending": {
+            "pending_id": "p6",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "relax_leg:30",
+                "label": "Cho phép đi tối đa 30 phút mỗi chặng"
+              },
+              {
+                "option_id": "vehicle:motorbike",
+                "label": "Đi xe máy thay vì đi bộ"
+              },
+              {
+                "option_id": "time:+60",
+                "label": "Kéo dài thêm 1 giờ"
+              }
+            ]
+          },
+          "turn_count": 6
+        },
+        "preferences": {
+          "city": "Hà Nội",
+          "origin": {
+            "lat": 21.028499999999998,
+            "lon": 105.85241666666667
+          },
+          "origin_label": "Hoàn Kiếm",
+          "origin_source": "place",
+          "start_time": "10:00",
+          "weekday": null,
+          "duration_min": 240,
+          "budget_vnd": null,
+          "budget_scope": null,
+          "party_size": null,
+          "meal": null,
+          "audience": null,
+          "interests": [],
+          "exclusions": [],
+          "allergies": [
+            "cua"
+          ],
+          "max_leg_min": 20,
+          "max_stops": 3,
+          "mode": "explore"
+        },
+        "missing_slots": [],
+        "questions": [],
+        "notes": [],
+        "tour": null,
+        "revision": 6,
+        "dataset_source": "synthetic",
+        "dataset_version": "3d4d754de347a5743505ca8dcf4ff40875a91608a5957e08ecd95b93cbbbaa5b",
+        "extraction_source": "rules",
+        "llm_calls": 0,
+        "llm_budget": {
+          "limit": 18,
+          "remaining": 18,
+          "exhausted": false
+        },
+        "reply": {
+          "blocks": [
+            {
+              "type": "notice",
+              "level": "warning",
+              "code": "plan_conflict",
+              "text": "Quán [SYNTHETIC] Cua có tên/nhóm món liên quan tới tác nhân dị ứng bạn nêu."
+            },
+            {
+              "type": "clarify",
+              "pending_id": "p6",
+              "question": "Bạn muốn điều chỉnh thế nào? (mình không tự đổi gì khi chưa hỏi bạn)",
+              "options": [
+                {
+                  "option_id": "relax_leg:30",
+                  "label": "Cho phép đi tối đa 30 phút mỗi chặng"
+                },
+                {
+                  "option_id": "vehicle:motorbike",
+                  "label": "Đi xe máy thay vì đi bộ"
+                },
+                {
+                  "option_id": "time:+60",
+                  "label": "Kéo dài thêm 1 giờ"
+                }
+              ]
+            }
+          ]
+        },
+        "turn": {
+          "intent": "CONFIRM_YES",
+          "tools": [
+            "generate_tour"
+          ],
+          "understanding": "action"
+        }
+      }
+    }
+  ],
+  "privacy": {
+    "compact_has_marker": false,
+    "retained_turns": 8,
+    "marker_after_10_turns": false
+  },
+  "scenario_count": 26,
+  "scenario_failures": 0,
+  "heldout2_accuracy": 0.7481481481481481,
+  "instruction_echoes": []
+}
