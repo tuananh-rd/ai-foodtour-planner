@@ -440,10 +440,19 @@ class ChatEngine:
             R.blocks.append(text_b(msg))
         if sp.avoid:
             self._ask_avoid(R, sp.avoid)
-        if u.patch and any(k in u.patch for k in ("party_size", "budget_vnd", "start_time", "vehicle", "audience")):
+        if u.patch and any(k in u.patch for k in ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min",
+                                                   "vehicle", "audience", "max_leg_min")):
             said = self._apply_patch(R, u.patch)
             if said:
                 R.blocks.append(text_b("Đã cập nhật: " + "; ".join(said) + "."))
+        pend = st.pending
+        if pend and pend.kind == "clarify_slot" and pend.slot == "plan_slots":
+            st.pending = None  # the same message answered the plan questions as well
+            miss = self._plan_missing(st)
+            if miss:
+                self._ask_plan_slots(R, miss)
+            else:
+                self._present_summary(R)
         R.tools.append("set_allergy")
 
     def _ask_avoid(self, R, terms):
