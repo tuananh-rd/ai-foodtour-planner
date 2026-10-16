@@ -16,7 +16,7 @@ from app.planner.types import Preferences
 from app.repositories.venues import VenueRepository
 
 FIXTURE=ROOT/'contracts/fixtures/venues.chat.synthetic.json'
-REPORT=ROOT/'docs/reports/C1_FRESH_PROBES.json'
+REPORT=Path(sys.argv[1]) if len(sys.argv)>1 else ROOT/'docs/reports/C1_FRESH_PROBES.json'
 
 def turn(say=None,action=None,expect=None):
     return dict({'say':say} if say is not None else {'action':action},expect=expect or {})
@@ -43,6 +43,7 @@ def main():
         'FRESH-weather-honesty':[turn('Hôm nay trời có mưa không nhỉ?'),turn('Trưa nóng quá, ăn món gì quanh Hồ Gươm?')],
         'FRESH-hours-price':[*base,turn('quán A đang mở cửa không?'),turn('giá quán A cho mỗi người là bao nhiêu?')],
         'FRESH-ordinal-eight':[*base,turn('thêm quán thứ 8')],
+        'FRESH-replace-api':[*prep,action('confirm_yes'),turn('đổi quán thứ nhất trong tour')],
         'FRESH-confirm-no-pending':[action('confirm_yes')],
     }
     for identity,turns in cases.items():
@@ -84,6 +85,31 @@ def main():
     zero=ChatEngine([replace(v,prep_time_min=0) for v in data.venues])
     r=zero.handle(st,Preferences(),action={'type':'compare','venue_ids':['CHT-003','CHT-004'],'criteria':['prep_time']})
     report['direct'].append({'id':'prep-zero','request':{'source_prep_time_min':0,'criteria':['prep_time']},'response':{'blocks':r.blocks}})
+    # Review the coordinator's additional result/conflict and replacement surfaces directly.
+    from copy import deepcopy
+    from app.planner.types import Tour
+    from app.chat.planning import plan_selected
+    from app.planner.interfaces import StraightLineEstimator
+    st=ChatState(); pr=Preferences()
+    for a in ({'type':'set_location','location':{'district':'Hoàn Kiếm'}},{'type':'add','venue_id':'CHT-003'},
+              {'type':'add','venue_id':'CHT-004'},{'type':'keep','venue_id':'CHT-003'},
+              {'type':'edit_profile','patch':{'start_time':'10:00','duration_min':240,'vehicle':'walk'}}):
+        r=eng.handle(st,pr,action=a); st,pr=r.state,r.prefs
+    if hasattr(eng,'after_plan'):
+        blocks=eng.after_plan(st,Tour('no_solution',reasons=('Synthetic constraint conflict',)))
+        report['direct'].append({'id':'after-plan-conflict','request':{'status':'no_solution'},'response':{'state':st.to_json(private=True),'blocks':blocks}})
+        for opt in st.pending.options:
+            r=eng.handle(deepcopy(st),pr,action={'type':'pick_option','option_id':opt['option_id']})
+            report['direct'].append({'id':'conflict-choice:'+opt['option_id'],'request':{'option_id':opt['option_id']},'response':{'state':r.state.to_json(private=True),'blocks':r.blocks,'plan_request':r.plan_request}})
+        planned=plan_selected(eng.by_id,['CHT-003','CHT-004'],pr,StraightLineEstimator())
+        st.pending=None  # model the explicit confirmation that precedes a successful planner result
+        blocks=eng.after_plan(st,planned)
+        report['direct'].append({'id':'after-plan-success','request':{'tour_status':planned.status},'response':{'state':st.to_json(private=True),'blocks':blocks}})
+        r=eng.handle(st,pr,text='đổi quán thứ hai trong tour')
+        report['direct'].append({'id':'modify-replace-request','request':{'text':'đổi quán thứ hai trong tour'},'response':{'replace_request':r.replace_request,'blocks':r.blocks}})
+        before=st.to_json(private=True)
+        eng.swap_shortlist(st,'CHT-004','CHT-007')
+        report['direct'].append({'id':'swap-shortlist','request':{'old_id':'CHT-004','new_id':'CHT-007','before':before},'response':{'state':st.to_json(private=True)}})
     # API held-out runner; fresh session for every utterance. Labels remain unchanged.
     rows=[json.loads(l) for l in (ROOT/'qa/chat/heldout.jsonl').read_text(encoding='utf-8').splitlines()]
     with scenario_app({'fixture':'chat','llm':'off'}) as (app,client,provider):
@@ -121,6 +147,11 @@ def main():
     scan=[]
     for s in report['scenarios']:
         for t in s.get('turns',[]): scan.append((s['id']+':'+str(t['turn']),t.get('response',{}).get('reply',{}).get('blocks',[])))
+    existing_path=ROOT/'docs/reports/C1_EXISTING_REPROBE.json'
+    if existing_path.exists():
+        for scenario in json.loads(existing_path.read_text(encoding='utf-8'))['scenarios']:
+            for t in scenario.get('turns',[]):
+                scan.append((scenario['id']+':'+str(t['turn']),t.get('response',{}).get('reply',{}).get('blocks',[])))
     for t in report['heldout_api']: scan.append((t['id'],t['response'].get('reply',{}).get('blocks',[])))
     for t in report['hostile_fixture']: scan.append(('HOSTILE:'+str(t['request']['revision']),t['response'].get('reply',{}).get('blocks',[])))
     for t in report['direct']: scan.append((t['id'],t['response'].get('blocks',[])))
