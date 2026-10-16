@@ -84,6 +84,9 @@ class ChatPlanAPI(unittest.TestCase):
         self.assertEqual(set(s['venue_id'] for s in new),set(s['venue_id'] for s in view['chat']['shortlist']))
         self.restart()
         self.assertEqual(self.get()['tour'],view['tour'])
+        blocked = self.post(text='đổi quán thứ hai trong tour').json()
+        self.assertEqual(blocked['tour']['stops'],view['tour']['stops'])
+        self.assertIn('stop_locked',[b.get('code') for b in blocked['reply']['blocks']])
 
     def test_replace_label(self):
         ids = self.prepare()

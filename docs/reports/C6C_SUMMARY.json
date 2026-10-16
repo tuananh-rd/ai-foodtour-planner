@@ -1,0 +1,237 @@
+{
+  "heldouts": {
+    "2": {
+      "rows": 100,
+      "correct": 99,
+      "accuracy": 0.99,
+      "invariant_failures": 0,
+      "confusion": {
+        "ADD": {
+          "ADD": 5
+        },
+        "AMBIGUOUS_ACK": {
+          "AMBIGUOUS_ACK": 5
+        },
+        "ANSWER_PENDING": {
+          "ANSWER_PENDING": 10
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 4,
+          "KEEP": 1
+        },
+        "COMPARE": {
+          "COMPARE": 5
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 5
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 5
+        },
+        "DISCOVER_DISH": {
+          "DISCOVER_DISH": 5
+        },
+        "GREET_OR_SMALLTALK": {
+          "GREET_OR_SMALLTALK": 5
+        },
+        "KEEP": {
+          "KEEP": 5
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 5
+        },
+        "OUT_OF_SCOPE": {
+          "OUT_OF_SCOPE": 5
+        },
+        "REMOVE": {
+          "REMOVE": 5
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 5
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 5
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 5
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 5
+        },
+        "UNSAFE": {
+          "UNSAFE": 5
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 5
+        }
+      },
+      "corpus_sha256": "fa484371dbbc7bda143a97e37778d9a2d70278908337773ba92dd9131c3d6921"
+    },
+    "3": {
+      "rows": 104,
+      "correct": 103,
+      "accuracy": 0.9903846153846154,
+      "invariant_failures": 1,
+      "confusion": {
+        "ADD": {
+          "ADD": 6
+        },
+        "AMBIGUOUS_ACK": {
+          "AMBIGUOUS_ACK": 6
+        },
+        "ANSWER_PENDING": {
+          "ANSWER_PENDING": 8
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 10
+        },
+        "COMPARE": {
+          "COMPARE": 8
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 4
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 4
+        },
+        "DISCOVER_DISH": {
+          "DISCOVER_DISH": 6
+        },
+        "KEEP": {
+          "KEEP": 6
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 6
+        },
+        "REMOVE": {
+          "REMOVE": 6
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 3,
+          "null": 1
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 6
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 8
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 8
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 8
+        }
+      },
+      "corpus_sha256": "c26cb9f9e63f3dc80cd3c193c0ff9317933b9d2c83aacfd0fe49ccf09160f452"
+    },
+    "4": {
+      "rows": 104,
+      "correct": 82,
+      "accuracy": 0.7884615384615384,
+      "invariant_failures": 0,
+      "confusion": {
+        "ADD": {
+          "ADD": 5,
+          "COMPARE": 1
+        },
+        "AMBIGUOUS_ACK": {
+          "AMBIGUOUS_ACK": 2,
+          "CONFIRM_YES": 1,
+          "UNKNOWN": 3
+        },
+        "ASK_DETAIL": {
+          "ASK_DETAIL": 5,
+          "UNKNOWN": 1,
+          "ADD": 1,
+          "SEARCH_VENUES": 1
+        },
+        "COMPARE": {
+          "COMPARE": 4,
+          "UNKNOWN": 1,
+          "DISCOVER_DISH": 1
+        },
+        "CONFIRM_NO": {
+          "CONFIRM_NO": 4
+        },
+        "CONFIRM_YES": {
+          "CONFIRM_YES": 4
+        },
+        "DISCOVER_DISH": {
+          "DISCOVER_DISH": 4
+        },
+        "KEEP": {
+          "KEEP": 5,
+          "SEARCH_VENUES": 1
+        },
+        "MODIFY_PLAN": {
+          "MODIFY_PLAN": 5,
+          "SEARCH_VENUES": 1
+        },
+        "OUT_OF_SCOPE": {
+          "OUT_OF_SCOPE": 5,
+          "SEARCH_VENUES": 1
+        },
+        "REMOVE": {
+          "REMOVE": 5,
+          "SEARCH_VENUES": 1
+        },
+        "REQUEST_PLAN": {
+          "REQUEST_PLAN": 4
+        },
+        "SEARCH_VENUES": {
+          "SEARCH_VENUES": 5,
+          "UPDATE_PROFILE": 1
+        },
+        "SET_ALLERGY": {
+          "SET_ALLERGY": 6
+        },
+        "SET_AVOID": {
+          "SET_AVOID": 4,
+          "UNKNOWN": 2
+        },
+        "UNKNOWN": {
+          "UNKNOWN": 9,
+          "DISCOVER_DISH": 2,
+          "KEEP": 1,
+          "SEARCH_VENUES": 1,
+          "AMBIGUOUS_ACK": 1
+        },
+        "UPDATE_PROFILE": {
+          "UPDATE_PROFILE": 6
+        }
+      },
+      "corpus_sha256": "a6308b31bc2298718f109509c2a68ad3e04adab68a669b0893aa4e7ddc857ab0"
+    }
+  },
+  "dangerous_errors": {
+    "rows": 2,
+    "denominator": 104,
+    "rate": 0.019230769230769232,
+    "effects": {
+      "rows": 2,
+      "add": 1,
+      "plan": 1
+    }
+  },
+  "heldout1": {
+    "correct": 64,
+    "rows": 70
+  },
+  "retry": {
+    "outcome": {
+      "data": null,
+      "calls": 1,
+      "status": "error"
+    },
+    "budget_used": 1
+  },
+  "scanned_replies": 1238,
+  "phrase_hits": 250,
+  "instruction_echoes": 0,
+  "privacy": {
+    "compact_has_marker": false,
+    "retained_turns": 8,
+    "marker_after_10_turns": false
+  }
+}

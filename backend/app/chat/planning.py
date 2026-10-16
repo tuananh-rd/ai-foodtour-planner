@@ -9,6 +9,7 @@ from dataclasses import replace
 from typing import Optional
 
 from app.planner import allergens, engine
+from .tools import clean_text
 from app.planner.interfaces import StraightLineEstimator
 from app.planner.types import Preferences, Tour
 
@@ -28,7 +29,7 @@ def plan_selected(venues_by_id: dict, ids: list, prefs: Preferences, routing, ve
     if not pool:
         return Tour("no_solution", reasons=("Danh sách quán đã chọn không còn trong dữ liệu.",),
                     proposed_changes=("Chọn lại quán.",))
-    blocked = [v.name for v in pool if allergens.allergen_excluded(v, prefs.allergies)]
+    blocked = [clean_text(v.name) for v in pool if allergens.allergen_excluded(v, prefs.allergies)]
     if blocked:
         return Tour("no_solution", reasons=("Quán " + ", ".join(blocked) + " có tên/nhóm món liên quan tới tác nhân dị ứng bạn nêu.",),
                     proposed_changes=("Bỏ quán đó khỏi danh sách hoặc kiểm tra lại với quán trước khi quyết định.",))

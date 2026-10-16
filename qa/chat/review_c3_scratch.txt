@@ -1,0 +1,52 @@
+    // Review-only pages and transport seams, written outside the repository.
+    const chatExists = fs.existsSync(path.join(scratchDir,'app/components/v2/chat/BlockRenderer.jsx'));
+    if(chatExists) {
+      fs.mkdirSync(path.join(scratchDir,'app/review'),{recursive:true});
+      fs.writeFileSync(path.join(scratchDir,'app/review/page.jsx'), `
+'use client';
+import React from 'react';
+import BlockRenderer from '../components/v2/chat/BlockRenderer';
+const h = '<img src=x onerror="window.__xss=1">javascript:alert(1)\\u202e' + 'N'.repeat(5000);
+const venue = {id:'SYNTHETIC',name:h,address:h,district:h,source_url:'javascript:alert(1)',price:null,hours:{display:h},rating:{value:4,count:1}};
+const blocks = [
+ {type:'text',text:h}, {type:'notice',level:'safety',text:h},
+ {type:'dish_suggestions',items:[{dish_group:h,blurb:h,venue_count:null}]},
+ {type:'venue_cards',title:h,cards:[{label:'A',venue,why:[{text:h}],flags:[{code:'allergy_unknown',text:h}]}]},
+ {type:'compare_table',columns:[{label:'A',name:h}],criteria:[{id:'x',label:h}],rows:[{criterion_id:'x',cells:[{value:null,note:h,status:'unknown'}]}],unsupported:[{text:h}]},
+ {type:'clarify',question:h,options:[{option_id:'x',label:h}]},
+ {type:'confirm_summary',items:[{label:h,value:h}],shortlist:[{venue_id:'SYNTHETIC',name:h}],warnings:[{text:h}]},
+ {type:'tour_ready'}
+];
+const tour={status:'conditional',stops:[{order:1,venue_id:'SYNTHETIC',name:h,address:h,district:h,venue,why:[{text:h}],price:{},hours:{},leg_from_previous:{source:'unknown'}}],totals:{},legs:[],reasons:[h],proposed_changes:[h],unknowns:['hours','price_per_person','route']};
+export default function Review(){return <main>{blocks.map((b,i)=><section key={i} data-review={b.type}><BlockRenderer block={b} allergies={['cua']} tour={tour} onAction={()=>{}} /></section>)}</main>}
+      `);
+      fs.mkdirSync(path.join(scratchDir,'app/review/layoutcheck'),{recursive:true});
+      fs.writeFileSync(path.join(scratchDir,'app/review/layoutcheck/page.jsx'), `
+'use client';
+import React from 'react';
+import ChatV2Layout from '../../components/v2/chat/ReviewChatV2Layout';
+import {StatusQueueProvider} from '../../ui/StatusQueue';
+export default function Review(){return <StatusQueueProvider><ChatV2Layout sessionId="SYNTHETIC-REVIEW" sessionToken="SYNTHETIC" health={{llm_budget:{remaining:18,limit:18}}} /></StatusQueueProvider>}
+      `);
+      const p = path.join(scratchDir,'app/components/v2/chat/ChatV2Layout.jsx');
+      fs.writeFileSync(path.join(scratchDir,'app/components/v2/chat/ReviewChatV2Layout.jsx'),fs.readFileSync(p,'utf8').replace("from '../../../../lib/api'", "from '../../../../lib/reviewApi'"));
+      fs.writeFileSync(path.join(scratchDir,'lib/reviewApi.js'), `
+export {createSession,ApiError} from './api';
+const chat={phase:'choose',profile:{area:{value:{district:'Hoàn Kiếm'},source:'user_said'}},allergies:[],shortlist:[],last_results:[]};
+export async function chatTurn(id,body,token){
+ window.__calls = (window.__calls||[]).concat([body]);
+ await new Promise(r=>setTimeout(r,200));
+ if(window.__conflict) {window.__serverRevision=9;window.__conflict=false;}
+ if(window.__serverRevision && body.revision!==window.__serverRevision) {const err=new Error('Synthetic conflict');err.status=409;throw err;}
+ return {revision:body.revision+1,chat,tour:null,reply:{blocks:[{type:'text',text:'SYNTHETIC OK'}]},turn:{understanding:'rules'},llm_budget:{remaining:18,limit:18}};
+}
+export async function getChatState(){window.__gets=(window.__gets||0)+1;return chat;}
+      `);
+      fs.mkdirSync(path.join(scratchDir,'app/review/profile'),{recursive:true});
+      fs.writeFileSync(path.join(scratchDir,'app/review/profile/page.jsx'), `
+'use client';
+import React from 'react';
+import ProfileBar from '../../components/v2/chat/ProfileBar';
+export default function Review(){return <ProfileBar chatState={{profile:{},allergies:[]}} onAction={action=>{window.__profileActions=(window.__profileActions||[]).concat([action])}}/>}
+      `);
+    }

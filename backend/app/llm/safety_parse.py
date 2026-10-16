@@ -15,7 +15,8 @@ from app.planner.relevance import fold_uncached
 
 _CLAUSE_SPLIT = re.compile(r"[,;.!?\n]+|\s+(?:và|va|nhưng|nhung|mà|ma|còn|con|hoặc|hoac)\s+")
 _ALLERGY = re.compile(r"(?:dị ứng|di ung)")
-_AVOID = re.compile(r"(?:không|khong|ko)\s+(?:thể\s+|the\s+)?(?:ăn|an)(?:\s+(?:được|duoc))?|kiêng|kieng")
+_AVOID = re.compile(r"(?:không|khong|ko)\s+(?:thể\s+|the\s+)?(?:ăn|an)(?:\s+(?:được|duoc))?|kiêng|kieng|tránh|tranh|"
+                    r"đừng\s+(?:cho|ăn|lấy)|dung\s+(?:cho|an|lay)|ghét|ghet|\bavoid\b|né|không chọn món(?: có)?|khong chon mon(?: co)?|không lấy món(?: có)?")
 _NEG = re.compile(r"(?:không hề|khong he|không bao giờ|khong bao gio|chưa từng|chua tung|chưa bao giờ|"
                   r"không|khong|chẳng|chang|chưa|chua|ko|hết|het)\s*(?:còn|con|bị|bi|có|co)?\s*$")
 _REMOVE = re.compile(r"(?:hết|het|không còn|khong con|chẳng còn|chang con)\s*(?:bị |bi )?$")
@@ -51,6 +52,8 @@ class SafetyParse:
     avoid: list = field(default_factory=list)
     issues: list = field(default_factory=list)  # empty | long | people | example
     mentioned: bool = False                       # some allergy/avoidance trigger was seen (even if negated)
+    negated: bool = False                          # "không (bị) dị ứng …": an explicit absence statement
+    avoid_any: list = field(default_factory=list)  # taste-level avoid terms, lexicon or not (<=3 words)
 
 
 def _scan(words: list) -> tuple:
@@ -79,6 +82,19 @@ def _clean_words(rest: str) -> list:
     rest = _TAGS.sub(" ", rest)
     rest = re.sub(r"[^\w\s-]", " ", rest)
     return [w for w in rest.split() if w]
+
+
+_TAIL_STOP = {"vao", "trong", "nha", "nhe", "nhen", "giup", "dum", "vi", "boi", "do", "hom", "nua", "di", "a", "ạ", "nhé", "nghen", "với",
+              "voi", "cho", "phan", "luon", "thoi", "nua", "suot", "chuyen", "toan", "het", "dip", "tuan", "ngay"}
+
+
+def _cut_tail(rest: str) -> str:
+    out = []
+    for w in _clean_words(rest):
+        if fold_uncached(w) in _TAIL_STOP or w in _TAIL_STOP:
+            break
+        out.append(w)
+    return " ".join(out)
 
 
 def _terms(rest: str, issues: list) -> tuple:
@@ -161,12 +177,18 @@ def parse(text: str) -> SafetyParse:
                     mode = None
                     continue
                 if _NEG.search(before) and kind == "allergy":
+                    out.negated = True
                     mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
                     continue
-                terms, lexicon = _terms(seg, out.issues)
                 if kind == "avoid":
-                    terms = [t for t in terms if allergens.recognised(t)]  # taste-level avoid: lexicon terms only
-                bucket = out.allergies if kind == "allergy" else out.avoid
+                    local = []
+                    terms, lexicon = _terms(_cut_tail(seg), local)
+                    out.avoid += [t for t in terms if allergens.recognised(t) and t not in out.avoid]
+                    out.avoid_any += [t for t in terms if t not in out.avoid_any and not _STOP.search(t)]
+                    mode = "avoid" if terms else None
+                    continue
+                terms, lexicon = _terms(seg, out.issues)
+                bucket = out.allergies
                 bucket += [t for t in terms if t not in bucket]
                 mode = kind if terms else None
             continue

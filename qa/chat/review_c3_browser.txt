@@ -1,0 +1,69 @@
+    const mode = process.env.C6_MODE;
+    const evidence = {mode, pages:[]};
+    await send('Network.setCacheDisabled',{cacheDisabled:true});
+    await setViewport(1280,800);
+    for(const query of ['', '?ui=v2', ...(mode!=='prechange'?['?chat=v2']:[])]) {
+      await navigateTo(`http://127.0.0.1:${PORT_WEB}/${query}`);
+      await sleep(700);
+      const snapshot = await ev(`(() => {
+        const nodes=[...document.body.querySelectorAll('*')].filter(e=>e.getBoundingClientRect().width>0 && !['SCRIPT','STYLE','NEXT-ROUTE-ANNOUNCER'].includes(e.tagName));
+        const styles=nodes.map(e=>{const s=getComputedStyle(e),r=e.getBoundingClientRect();return {tag:e.tagName,text:e.children.length?'':e.textContent,style:[s.display,s.color,s.backgroundColor,s.fontSize,s.fontWeight,s.padding,s.margin,s.borderRadius,s.flexDirection],rect:[r.x,r.y,r.width,r.height].map(n=>Math.round(n*100)/100)}});
+        const js=performance.getEntriesByType('resource').filter(e=>e.name.includes('.js')).map(e=>({name:e.name.split('/').pop(),bytes:e.encodedBodySize,transfer:e.transferSize}));
+        return {styles,js,totalJS:js.reduce((s,e)=>s+e.bytes,0),controls:[...document.querySelectorAll('button,input,select,textarea')].map(e=>({tag:e.tagName,text:e.textContent,label:e.getAttribute('aria-label'),disabled:e.disabled})),text:document.body.innerText};
+      })()`);
+      evidence.pages.push({query,...snapshot});
+    }
+    if(mode==='diagnostics') {
+      await navigateTo(`http://127.0.0.1:${PORT_WEB}/review`);
+      evidence.hostile = await ev(`(() => {
+        const sections=[...document.querySelectorAll('[data-review]')];
+        return {xss:window.__xss||0,images:document.querySelectorAll('img[src=x]').length,jsLinks:[...document.querySelectorAll('a')].filter(a=>a.href.startsWith('javascript:')).length,
+          sections:sections.map(e=>({type:e.dataset.review,hasHostile:e.innerText.includes('<img'),length:e.innerText.length})),width:document.documentElement.scrollWidth,viewport:innerWidth};
+      })()`);
+      await setViewport(390,844);
+      evidence.hostileMobile = await ev(`({width:document.documentElement.scrollWidth,viewport:innerWidth})`);
+      await setViewport(1280,800);
+      await navigateTo(`http://127.0.0.1:${PORT_WEB}/review/layoutcheck`);
+      // Start a real layout request through the controlled transport seam.
+      await ev(`([...document.querySelectorAll('button')].find(b=>b.innerText==='Hoàn Kiếm')).click()`);
+      await sleep(500);
+      // Same event-loop dispatches before React commits busy state.
+      evidence.doubleSubmitBefore = await ev(`window.__calls.length`);
+      await ev(`(() => {const f=document.querySelector('[data-testid=chat-form]'),i=f.querySelector('input');const set=Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set;set.call(i,'SYNTHETIC double');i.dispatchEvent(new Event('input',{bubbles:true}));for(let n=0;n<2;n++)f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));})()`);
+      await sleep(650);
+      evidence.doubleSubmitAfter=await ev(`window.__calls.length`);
+      await ev(`window.__conflict=true`);
+      await ev(`(() => {const f=document.querySelector('[data-testid=chat-form]'),i=f.querySelector('input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(i,'SYNTHETIC conflict');i.dispatchEvent(new Event('input',{bubbles:true}));f.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}));})()`);
+      await sleep(650);
+      evidence.conflictBeforeRetry=await ev(`({calls:window.__calls.map(c=>c.revision),gets:window.__gets,text:document.body.innerText})`);
+      await ev(`document.querySelector('[data-testid=banner-action-btn]')?.click()`);
+      await sleep(650);
+      evidence.conflictAfterRetry=await ev(`({calls:window.__calls.map(c=>c.revision),gets:window.__gets,text:document.body.innerText})`);
+      // Keyboard-only traversal with real CDP key input.
+      await ev(`document.activeElement?.blur()`);
+      evidence.focus=[];
+      for(let i=0;i<12;i++) {await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});evidence.focus.push(await ev(`({tag:document.activeElement.tagName,label:document.activeElement.getAttribute('aria-label'),text:document.activeElement.tagName==='BODY'?'':document.activeElement.textContent})`));}
+      evidence.a11y=await ev(`({live:document.querySelector('[aria-live=polite]')?.getAttribute('aria-label'),small:[...document.querySelectorAll('button')].filter(e=>{const r=e.getBoundingClientRect();return r.width&&r.height&&(r.width<44||r.height<44)}).map(e=>e.innerText)})`);
+      // Enter/Tab/Escape-only profile editing: record focus escape from the modal.
+      await navigateTo(`http://127.0.0.1:${PORT_WEB}/review/profile`);
+      await send('Page.bringToFront');
+      await ev(`document.querySelector('[data-testid=chip-profile-party]').click()`);
+      await sleep(150);
+      evidence.dialogFocus=[];
+      for(let i=0;i<5;i++) {evidence.dialogFocus.push(await ev(`({inDialog:!!document.activeElement.closest('[role=dialog]'),tag:document.activeElement.tagName,label:document.activeElement.getAttribute('aria-label')})`));await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});}
+      await send('Input.dispatchKeyEvent',{type:'keyDown',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      await send('Input.dispatchKeyEvent',{type:'keyUp',key:'Escape',code:'Escape',windowsVirtualKeyCode:27});
+      evidence.dialogAfterEscape=await ev(`!!document.querySelector('[role=dialog]')`);
+      await ev(`document.querySelector('[role=dialog] button')?.click()`);
+      for(const [chip,value] of [['party','3'],['budget','250k mỗi người'],['allergies','cua'],['tastes','ít cay']]) {
+        await ev(`document.querySelector('[data-testid=chip-profile-${chip}]').click()`);
+        await sleep(80);
+        await ev(`(() => {const i=document.querySelector('[role=dialog] input');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(i,${JSON.stringify(value)});i.dispatchEvent(new Event('input',{bubbles:true}));i.dispatchEvent(new Event('change',{bubbles:true}));})()`);
+        await sleep(80);
+        await ev(`document.querySelector('[role=dialog] form').dispatchEvent(new Event('submit',{bubbles:true,cancelable:true}))`);
+        await sleep(80);
+      }
+      evidence.profileActions=await ev(`window.__profileActions`);
+    }
+    fs.writeFileSync(path.join(REPO_ROOT,'docs/reports/C6_FRONTEND_'+mode+'.json'),JSON.stringify(evidence,null,2));
+    console.log('Independent browser diagnostics saved for '+mode);

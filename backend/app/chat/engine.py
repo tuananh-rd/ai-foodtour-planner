@@ -72,9 +72,11 @@ class ChatEngine:
                 R.llm_calls = out.calls
                 st.llm_used += out.calls
                 llm_status = out.status or llm_status
-                cand = self._from_llm(out.data) if out.data else None
+                cand = self._from_llm(out.data, st) if out.data else None
                 if cand:
                     u, R.understanding = cand, ("cache" if out.calls == 0 else "llm")
+            if u.intent == "UNKNOWN" and not st.pending:
+                u = self._fragment(text or "", st, u)  # dish-name-only / "A thôi"-style fragments
             st.remember("user", text or "", u.intent)
             if u.source == "rules" and u.confidence < LOW_CONFIDENCE:
                 R.intent = "UNKNOWN"
@@ -200,6 +202,16 @@ class ChatEngine:
             return Understanding("SEARCH_VENUES", {"dish": q} if q else {}, [], 1.0, "action")
         return None
 
+    def _fragment(self, text: str, st: ChatState, u: Understanding) -> Understanding:
+        """A very short message that is just a dish present in the data ("Chả cá") means a search for it."""
+        f = fold_uncached(text)
+        words = f.split()
+        if 1 <= len(words) <= 3 and not any(c.isdigit() for c in f):
+            phrase = " ".join(words)
+            if any(tools.matches(v, (phrase,)) for v in self.venues):
+                return Understanding("SEARCH_VENUES", {"dish": text.strip()[:40]}, [], 0.7)
+        return u
+
     def _nudge(self, R, prefix=""):
         """Help answering the open question without repeating it (wording alternates, buttons stay in the earlier block)."""
         st = R.state
@@ -236,9 +248,16 @@ class ChatEngine:
         R.blocks.append(self._clarify_block(st, "Bạn muốn mình làm gì trước?"))
         R.tools.append("clarify")
 
-    def _from_llm(self, data: dict) -> Optional[Understanding]:
+    def _from_llm(self, data: dict, st: Optional[ChatState] = None) -> Optional[Understanding]:
         """`data` was already whitelisted/range-checked by llm_understand.sanitize; map it to an Understanding."""
         intent = data.get("intent")
+        if st is not None:  # state-dependent intents are only valid in the matching state
+            if intent == "MODIFY_PLAN" and st.phase != "planned":
+                return None
+            if intent in ("CONFIRM_YES", "CONFIRM_NO") and not (st.pending and st.pending.kind == "confirm_plan"):
+                return None
+            if intent == "ANSWER_PENDING" and not st.pending:
+                return None
         patch = dict(data.get("patch") or {})
         extra = {}
         terms = patch.pop("allergy", None)
@@ -498,8 +517,18 @@ class ChatEngine:
             self._do_update_profile(R, Understanding("UPDATE_PROFILE", {"dislike": u.patch["dislike"]}, u.refs, u.confidence))
             return
         sp = u.extra.get("safety")
-        self._ask_avoid(R, sp.avoid)
-        R.tools.append("clarify")
+        other = [t for t in getattr(sp, "avoid_any", []) if t not in sp.avoid]
+        if other:  # taste-level avoidance of a non-allergen term: filter only when the dataset actually has such dishes
+            hit = [t for t in other if any(tools.matches(v, tools.dish_phrases(t)) for v in self.venues)]
+            miss = [t for t in other if t not in hit]
+            if hit:
+                R.prefs = replace(R.prefs, exclusions=tuple(dict.fromkeys(R.prefs.exclusions + tuple(tools.clean_text(t, 40) for t in hit)))[:10])
+                R.blocks.append(text_b(f"Đã ghi nhận bạn muốn tránh: {', '.join(hit)} (sở thích, không phải dị ứng). Nếu là dị ứng hãy nói \"dị ứng …\"."))
+            if miss:
+                R.blocks.append(text_b(f"Mình chưa thấy {', '.join(miss)} trong dữ liệu quán nên chưa lọc được."))
+        if sp.avoid:
+            self._ask_avoid(R, sp.avoid)
+        R.tools.append("clarify" if sp.avoid else "set_profile")
 
     def _do_update_profile(self, R, u):
         st = R.state
@@ -764,7 +793,7 @@ class ChatEngine:
                 R.blocks.append(notice_b("warning", "shortlist_full", f"Danh sách tối đa {MAX_SHORTLIST} quán; hãy bỏ bớt một quán trước khi thêm."))
                 break
             st.shortlist.append(ShortItem(vid))
-            names.append(tools.clean_text(self.by_id[vid].name))
+            names.append(tools.clean_text(self.by_id[vid].name, 80, "quán này"))
         if names:
             R.blocks.append(text_b(f"Mình đã thêm {', '.join(names)} vào danh sách ({len(st.shortlist)}/{MAX_SHORTLIST}). Bạn muốn tìm thêm món khác hay xem tiếp một lựa chọn nữa?"))
         st.tour_stale = st.tour_stale or st.phase == "planned"
@@ -778,7 +807,7 @@ class ChatEngine:
         opts = []
         for vid in ids:
             lab = next((x["label"] for x in st.last_results if x["venue_id"] == vid), None)
-            opts.append({"option_id": vid, "label": f"{lab + ' — ' if lab else ''}{tools.clean_text(self.by_id[vid].name)}"[:60]})
+            opts.append({"option_id": vid, "label": f"{lab + ' — ' if lab else ''}{tools.clean_text(self.by_id[vid].name, 80, "quán này")}"[:60]})
         self._set_pending(st, "pick_venue", opts[:4], None, {"candidates": ids})
         R.blocks.append(self._clarify_block(st, "Bạn chọn quán nào?"))
 
@@ -826,7 +855,7 @@ class ChatEngine:
         if not ids:
             R.blocks.append(text_b("Mình chưa rõ bạn muốn bỏ quán nào; hãy nói \"bỏ quán thứ hai\" hoặc bấm nút bỏ trên quán."))
             return
-        gone = [tools.clean_text(self.by_id[i].name) for i in ids if any(s.venue_id == i for s in st.shortlist)]
+        gone = [tools.clean_text(self.by_id[i].name, 80, "quán này") for i in ids if any(s.venue_id == i for s in st.shortlist)]
         st.shortlist = [s for s in st.shortlist if s.venue_id not in ids]
         R.blocks.append(text_b(("Đã bỏ " + ", ".join(gone) + f" khỏi danh sách ({len(st.shortlist)}/{MAX_SHORTLIST}).") if gone else "Quán đó không có trong danh sách chọn."))
         st.tour_stale = st.tour_stale or st.phase == "planned"
@@ -972,7 +1001,7 @@ class ChatEngine:
         if st.profile["vehicle"].known() and st.profile["vehicle"].value != "walk":
             warnings.append({"code": "eta_estimate", "text": "Thời gian di chuyển chỉ là ước tính theo tốc độ trung bình, không phải thời gian thực của dịch vụ xe."})
         warnings.append({"code": "hours_unknown", "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."})
-        short = [{"venue_id": s.venue_id, "name": tools.clean_text(self.by_id[s.venue_id].name), "status": s.status} for s in st.shortlist]
+        short = [{"venue_id": s.venue_id, "name": tools.clean_text(self.by_id[s.venue_id].name, 80, "Quán (tên không hiển thị được)"), "status": s.status} for s in st.shortlist]
         self._set_pending(st, "confirm_plan", [{"option_id": "confirm_yes", "label": "Xác nhận và tạo lịch trình"}, {"option_id": "confirm_no", "label": "Sửa thông tin"}], None, {})
         R.blocks.append(text_b("Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."))
         R.blocks.append({"type": "confirm_summary", "items": items, "shortlist": short, "missing": [], "warnings": warnings})
@@ -1033,12 +1062,13 @@ class ChatEngine:
         R = TurnResult(st, Preferences(), [], "REQUEST_PLAN")
         if tour.stops:
             st.phase, st.tour_stale = "planned", False
-            names = [tools.clean_text(self.by_id[x.venue_id].name) for x in tour.stops if x.venue_id in self.by_id]
+            names = [tools.clean_text(self.by_id[x.venue_id].name, 80, "quán") for x in tour.stops if x.venue_id in self.by_id]
             walk = f" Tổng đi bộ khoảng {tour.walk_minutes} phút (ước tính)." if tour.walk_minutes is not None else ""
             return [text_b("Mình đã lập lịch trình từ đúng " + str(len(names)) + " quán bạn đã chọn: " + " → ".join(names) + "." + walk +
                            " Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng.")]
         st.phase = "choose"
-        blocks = [notice_b("warning", "plan_conflict", " ".join(tour.reasons) or "Chưa lập được lịch trình thoả các ràng buộc hiện tại.")]
+        reasons = " ".join(tools.clean_text(r, 240) for r in tour.reasons)  # reasons may quote venue names: dataset text stays neutralised
+        blocks = [notice_b("warning", "plan_conflict", reasons or "Chưa lập được lịch trình thoả các ràng buộc hiện tại.")]
         if tour.status == "insufficient_evidence":
             blocks.append(text_b("Chế độ nghiêm ngặt cần bằng chứng đã xác minh mà dữ liệu hiện chưa có; bạn có thể chuyển sang chế độ khám phá."))
             return blocks

@@ -143,3 +143,13 @@ class EngineWithLLM(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class StateDependentIntents(unittest.TestCase):
+    def test_llm_cannot_use_state_dependent_intents_out_of_state(self):
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        eng = ChatEngine(data.venues)
+        st = ChatState()
+        for intent in ("MODIFY_PLAN", "CONFIRM_YES", "CONFIRM_NO", "ANSWER_PENDING"):
+            self.assertIsNone(eng._from_llm({"intent": intent, "patch": {}, "refs": []}, st), intent)
+        self.assertIsNotNone(eng._from_llm({"intent": "SEARCH_VENUES", "patch": {}, "refs": []}, st))

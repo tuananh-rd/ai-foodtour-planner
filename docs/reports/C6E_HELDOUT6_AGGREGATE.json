@@ -1,0 +1,83 @@
+{
+  "rows": 135,
+  "correct": 101,
+  "accuracy": 0.7481481481481481,
+  "invariant_failures": 0,
+  "corpus_sha256": "8ea20294564ecf23e77e2dea93aee319bd725e98805daed07d30c73d83bdb1f4",
+  "confusion": {
+    "ADD": {
+      "UNKNOWN": 2,
+      "ADD": 7,
+      "ASK_DETAIL": 1
+    },
+    "AMBIGUOUS_ACK": {
+      "AMBIGUOUS_ACK": 2,
+      "CONFIRM_NO": 1,
+      "UNKNOWN": 2
+    },
+    "ANSWER_PENDING": {
+      "ANSWER_PENDING": 13,
+      "UNKNOWN": 2
+    },
+    "ASK_DETAIL": {
+      "ASK_DETAIL": 5
+    },
+    "COMPARE": {
+      "COMPARE": 4,
+      "ASK_DETAIL": 1
+    },
+    "CONFIRM_YES": {
+      "CONFIRM_YES": 5
+    },
+    "KEEP": {
+      "KEEP": 3,
+      "SEARCH_VENUES": 1,
+      "UNKNOWN": 1
+    },
+    "MODIFY_PLAN": {
+      "MODIFY_PLAN": 4,
+      "UNKNOWN": 1
+    },
+    "REMOVE": {
+      "REMOVE": 3,
+      "SEARCH_VENUES": 1,
+      "SET_AVOID": 1
+    },
+    "REQUEST_PLAN": {
+      "REQUEST_PLAN": 5
+    },
+    "SEARCH_VENUES": {
+      "SEARCH_VENUES": 8,
+      "UNKNOWN": 1,
+      "ADD": 1
+    },
+    "SET_ALLERGY": {
+      "SET_ALLERGY": 5
+    },
+    "SET_AVOID": {
+      "SET_AVOID": 5
+    },
+    "UNKNOWN": {
+      "UNKNOWN": 6,
+      "SEARCH_VENUES": 1,
+      "COMPARE": 1,
+      "AMBIGUOUS_ACK": 1,
+      "ASK_DETAIL": 1
+    },
+    "UPDATE_PROFILE": {
+      "SEARCH_VENUES": 2,
+      "UPDATE_PROFILE": 26,
+      "AMBIGUOUS_ACK": 1,
+      "UNKNOWN": 6,
+      "KEEP": 3,
+      "REQUEST_PLAN": 1,
+      "DISCOVER_DISH": 1
+    }
+  },
+  "safe_correct": 109,
+  "safe_accuracy": 0.8074074074074075,
+  "dangerous_rows": 2,
+  "forbidden_effect_counts": {
+    "profile:audience": 2
+  }
+}

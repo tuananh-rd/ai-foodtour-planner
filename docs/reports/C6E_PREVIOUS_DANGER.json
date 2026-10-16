@@ -1,0 +1,31 @@
+[
+  {
+    "text": "Bé nhà chị dị ứng đậu phộng nhé",
+    "effects": [
+      "allergy"
+    ],
+    "status": "passed"
+  },
+  {
+    "text": "Dạ xin ghi nhận bé nhà tôi dị ứng đậu phộng ạ.",
+    "effects": [
+      "allergy"
+    ],
+    "status": "passed"
+  },
+  {
+    "text": "Có người nhắn \"thêm A\"; tôi đang hỏi nghĩa của câu đó.",
+    "effects": [],
+    "status": "passed"
+  },
+  {
+    "text": "Great, cứ thêm A đi để tôi phá sản à? Tôi nói mỉa đó.",
+    "effects": [],
+    "status": "passed"
+  },
+  {
+    "text": "Tin nhắn nháp ghi \"ngân sách 100k\", chưa phải cập nhật hồ sơ.",
+    "effects": [],
+    "status": "passed"
+  }
+]

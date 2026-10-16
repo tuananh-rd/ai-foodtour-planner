@@ -1,0 +1,674 @@
+.venv/Scripts/python.exe : test_adv01_idk_never_repeats_or_replaces_the_open_question
+(test_adversarial_engine.Adv.test_adv01_idk_never_repeats_or_replaces_the_open_question) ... ok
+At line:2 char:135
++ ... ONUTF8='1'; .venv/Scripts/python.exe -m unittest discover -s backend/ ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_adv01_idk_...uestion) ... ok:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+test_adv04_vague_add_shows_candidates_and_ok_cannot_plan
+(test_adversarial_engine.Adv.test_adv04_vague_add_shows_candidates_and_ok_cannot_plan) ... ok
+test_adv14_stale_label_after_empty_search_asks_instead_of_adding
+(test_adversarial_engine.Adv.test_adv14_stale_label_after_empty_search_asks_instead_of_adding) ... ok
+test_unknown_table_cells_say_chua_ro (test_adversarial_engine.Adv.test_unknown_table_cells_say_chua_ro) ... ok
+test_large_ordinals_never_crash (test_adversarial_engine.CodexReviewC1High.test_large_ordinals_never_crash) ... ok
+test_pick_venue_only_accepts_offered_candidates
+(test_adversarial_engine.CodexReviewC1High.test_pick_venue_only_accepts_offered_candidates) ... ok
+test_unrelated_option_can_never_confirm_a_plan
+(test_adversarial_engine.CodexReviewC1High.test_unrelated_option_can_never_confirm_a_plan) ... ok
+test_dataset_strings_are_cleaned_in_cards
+(test_adversarial_engine.CodexReviewC1Medium.test_dataset_strings_are_cleaned_in_cards) ... ok
+test_malformed_model_refs_do_not_crash
+(test_adversarial_engine.CodexReviewC1Medium.test_malformed_model_refs_do_not_crash) ... ok
+test_negated_plan_request_at_confirmation_never_plans
+(test_adversarial_engine.CodexReviewC1Medium.test_negated_plan_request_at_confirmation_never_plans) ... ok
+test_reset_keeps_llm_usage (test_adversarial_engine.CodexReviewC1Medium.test_reset_keeps_llm_usage) ... ok
+test_transient_retry_spends_two_calls
+(test_adversarial_engine.CodexReviewC1Medium.test_transient_retry_spends_two_calls) ... ok
+test_conflict_reasons_never_echo_hostile_names
+(test_adversarial_engine.FinalReviewFixes.test_conflict_reasons_never_echo_hostile_names) ... ok
+test_gemini_understanding_never_retries
+(test_adversarial_engine.FinalReviewFixes.test_gemini_understanding_never_retries) ... ok
+test_per_person_and_claim_clauses_are_removed_from_source_strings
+(test_adversarial_engine.FinalReviewFixes.test_per_person_and_claim_clauses_are_removed_from_source_strings) ... ok
+test_vehicle_change_after_plan_flags_tour_stale
+(test_adversarial_engine.StaleNotice.test_vehicle_change_after_plan_flags_tour_stale) ... ok
+test_all_scenarios (test_engine_scenarios.EngineScenarios.test_all_scenarios) ... C:\Users\tuana\orca\workspaces\ai-foo
+dtour-planner\foodtour-codex-backend\backend\tests\chat\test_engine_scenarios.py:51: ResourceWarning: unclosed file
+<_io.TextIOWrapper name='C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\qa\\chat\\sce
+narios\\scenarios.json' mode='r' encoding='utf-8'>
+  scenarios = json.load(open(ROOT / "qa/chat/scenarios/scenarios.json", encoding="utf-8"))["scenarios"]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+test_random_walks (test_fuzz_engine.Fuzz.test_random_walks) ... ok
+test_confident_rules_never_call_llm (test_llm_understand.EngineWithLLM.test_confident_rules_never_call_llm) ... ok
+test_llm_cannot_guess_an_allergy_without_a_term
+(test_llm_understand.EngineWithLLM.test_llm_cannot_guess_an_allergy_without_a_term) ... ok
+test_llm_failure_degrades_to_clarification_with_reason
+(test_llm_understand.EngineWithLLM.test_llm_failure_degrades_to_clarification_with_reason) ... ok
+test_llm_unsafe_is_honoured_and_confirm_yes_needs_pending
+(test_llm_understand.EngineWithLLM.test_llm_unsafe_is_honoured_and_confirm_yes_needs_pending) ... ok
+test_low_confidence_text_uses_llm_once (test_llm_understand.EngineWithLLM.test_low_confidence_text_uses_llm_once) ...
+ok
+test_bad_model_json_counts_one_call_and_yields_nothing
+(test_llm_understand.Gate.test_bad_model_json_counts_one_call_and_yields_nothing) ... ok
+test_call_is_counted_and_cached (test_llm_understand.Gate.test_call_is_counted_and_cached) ... ok
+test_prompt_input_is_name_free (test_llm_understand.Gate.test_prompt_input_is_name_free) ... ok
+test_provider_failure_still_counts_when_attempted
+(test_llm_understand.Gate.test_provider_failure_still_counts_when_attempted) ... ok
+test_session_cap_and_reserve_refuse_without_calling
+(test_llm_understand.Gate.test_session_cap_and_reserve_refuse_without_calling) ... ok
+test_schema_has_closed_intents (test_llm_understand.Sanitize.test_schema_has_closed_intents) ... ok
+test_unknown_intent_is_rejected (test_llm_understand.Sanitize.test_unknown_intent_is_rejected) ... ok
+test_whitelist_and_ranges (test_llm_understand.Sanitize.test_whitelist_and_ranges) ... ok
+test_conflict_offers_options_and_never_changes_silently
+(test_planning.AfterPlan.test_conflict_offers_options_and_never_changes_silently) ... ok
+test_modify_plan_requests_a_replacement_only_after_planning
+(test_planning.AfterPlan.test_modify_plan_requests_a_replacement_only_after_planning) ... ok
+test_success_text_is_honest (test_planning.AfterPlan.test_success_text_is_honest) ... ok
+test_exclusion_added_after_selection_is_reported_not_ignored
+(test_planning.HardPreferences.test_exclusion_added_after_selection_is_reported_not_ignored) ... ok
+test_strict_mode_is_not_relaxed (test_planning.HardPreferences.test_strict_mode_is_not_relaxed) ... ok
+test_all_selected_kept_in_one_valid_tour (test_planning.PlanSelected.test_all_selected_kept_in_one_valid_tour) ... ok
+test_allergen_venue_is_reported_not_planned (test_planning.PlanSelected.test_allergen_venue_is_reported_not_planned)
+... ok
+test_never_returns_a_smaller_tour_silently (test_planning.PlanSelected.test_never_returns_a_smaller_tour_silently) ...
+ok
+test_vehicle_changes_eta_label_stays_estimate
+(test_planning.PlanSelected.test_vehicle_changes_eta_label_stays_estimate) ... ok
+test_confirm_summary_status_values_follow_the_contract
+(test_planning.SummaryContract.test_confirm_summary_status_values_follow_the_contract) ... ok
+test_all_corpus_expectations_are_known (test_runner.RunnerChecks.test_all_corpus_expectations_are_known) ... ok
+test_compare_rows_unknowns_and_unsupported (test_runner.RunnerChecks.test_compare_rows_unknowns_and_unsupported) ... ok
+test_each_expectation_can_fail (test_runner.RunnerChecks.test_each_expectation_can_fail) ... ok
+test_global_tour_provider_and_unknown_fact_invariants
+(test_runner.RunnerChecks.test_global_tour_provider_and_unknown_fact_invariants) ... ok
+test_intent_evaluator_denominator_and_confusion
+(test_runner.RunnerChecks.test_intent_evaluator_denominator_and_confusion) ... ok
+test_parallel_expectations_and_accent_folding (test_runner.RunnerChecks.test_parallel_expectations_and_accent_folding)
+... ok
+test_phrase_boundaries_do_not_confuse_food_with_celsius
+(test_runner.RunnerChecks.test_phrase_boundaries_do_not_confuse_food_with_celsius) ... ok
+test_repeat_question_slot_value_changes (test_runner.RunnerChecks.test_repeat_question_slot_value_changes) ... ok
+test_runner_replays_exact_revision_and_compares_only_persisted_state
+(test_runner.RunnerChecks.test_runner_replays_exact_revision_and_compares_only_persisted_state) ... ok
+test_stub_exact_lookup_is_detached_and_counted
+(test_runner.RunnerChecks.test_stub_exact_lookup_is_detached_and_counted) ... ok
+test_acceptance_corpus (test_scenarios.ConversationScenarios.test_acceptance_corpus) ... C:\Users\tuana\orca\workspaces
+\ai-foodtour-planner\foodtour-codex-backend\.venv\Lib\site-packages\fastapi\testclient.py:1:
+StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+  from starlette.testclient import TestClient as TestClient  # noqa
+{"request_id": "11061f7846384fac80e10e8684bfc38b", "route": "/v1/sessions", "status": 200, "latency_ms": 63.816}
+{"request_id": "38a5eb913a5d4d3eb3b5aae2021d7a69", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.917}
+{"request_id": "ad0229123e254201aec5f43d63b12d94", "route": "/v1/client-config", "status": 200, "latency_ms": 1.077}
+{"request_id": "61c391683ba143a0992fe944459c81b1", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.582}
+{"request_id": "2ec45f85c6d54e7baad2b1ba4ac947fd", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 38.89}
+{"request_id": "8dd1e05ed2ce4ac4b1695726439c328d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.731}
+{"request_id": "9cc9f4a324e549fc89777496c6078528", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.957}
+{"request_id": "f01f23f62e56463d91ab1c7e2373b084", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.121}
+{"request_id": "691e4792898f4d0aaadba3735701d380", "route": "/v1/sessions", "status": 200, "latency_ms": 54.934}
+{"request_id": "e96d2f537c234d5a849203259c6d6287", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.999}
+{"request_id": "b8b545e43db14b7f93c361c5eeea1a70", "route": "/v1/client-config", "status": 200, "latency_ms": 0.849}
+{"request_id": "a65253691a214fe78757c8badb529920", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.801}
+{"request_id": "343e837f8da4498eae8a6042693c4dc4", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 46.508}
+{"request_id": "7bcb5c96cf0747dbb9f6cd53b3dfb2ad", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 51.729}
+{"request_id": "8cc22447384548f19694e68bdb78cdc7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+18.515}
+{"request_id": "2f0e2c8bea21448ab334a980b99929cf", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.975}
+{"request_id": "d6b43ca36682429f85224b1fae388479", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.578}
+{"request_id": "576ec90236c5433bbd5602cd1a92fdc5", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 46.057}
+{"request_id": "52597d463ef74105a45cce3734cb15ae", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+23.653}
+{"request_id": "fc1b5ff3935c4e7ab2e7be432a39bf11", "route": "/v1/sessions", "status": 200, "latency_ms": 63.439}
+{"request_id": "46a78a18f0d040088e691cafef404040", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.451}
+{"request_id": "0144209864384299a87be0305eeefef1", "route": "/v1/client-config", "status": 200, "latency_ms": 1.062}
+{"request_id": "13048097d656483c9678345da347211b", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.89}
+{"request_id": "6aa1c5dd7dac49a7a56b4e3791e10ad5", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 51.319}
+{"request_id": "2f0bf803a8834c0589f3d35de50af9b0", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.425}
+{"request_id": "9a5b26b27f8543af80569d3efa324cbd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.209}
+{"request_id": "b9357b0f7f4f439ab685e6dc7f0b2cc1", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 28.537}
+{"request_id": "26cfdac179984c1fb6ebd575d28cba06", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+18.553}
+{"request_id": "f82a467f592b43b88d6863c0502bcd81", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 58.357}
+{"request_id": "ac305c7b70ad48d2b002e3addc8847b0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+17.896}
+{"request_id": "34bc26c846cd45988bb13ba8e0e497dd", "route": "/v1/sessions", "status": 200, "latency_ms": 63.131}
+{"request_id": "92f095cb8d404071aca62c2bfa56e07c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.391}
+{"request_id": "b88a60e070a74c16a62c0029f589ef88", "route": "/v1/client-config", "status": 200, "latency_ms": 1.094}
+{"request_id": "c0a0ea19a6d144ee92aab0d7ac610261", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.796}
+{"request_id": "eaf28de953264cb99daba1f704cea0c4", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 46.541}
+{"request_id": "fd750cbd59474092ac393c22489d1512", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.121}
+{"request_id": "34f31c5102b14cd899d618054f34efd7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.335}
+{"request_id": "bba61b1733f04b6a97c189339a239476", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.851}
+{"request_id": "bd8cf5f476b041e9a710073bc14fb4e1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.478}
+{"request_id": "a21b281adeb849a19f837370433bbf0c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.727}
+{"request_id": "c98674ff23ec44148cc73d508cd57daf", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.103}
+{"request_id": "f00d38a0f8984bb1bfaf466546ffcd49", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.171}
+{"request_id": "9267d3fd28e445e9bc32755371262dc5", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.438}
+{"request_id": "029f2df776604ddf9ab9debec3bdbd76", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.575}
+{"request_id": "d0229a8d4cd14f5d9c97c36479344b3b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.265}
+{"request_id": "21c0cd60733a440bb51ab47456205467", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.781}
+{"request_id": "d4b015c4ba5f437cb6210897cfc30c84", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.096}
+{"request_id": "99719a3d5922495a8d79fc23e7df2f14", "route": "/v1/sessions", "status": 200, "latency_ms": 73.313}
+{"request_id": "d81e58f1425241aeaca7d67f5e499e26", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.407}
+{"request_id": "9cf50a30da3b4c0388e6e7c85c12a8d3", "route": "/v1/client-config", "status": 200, "latency_ms": 1.566}
+{"request_id": "2df10d8a4aac4317821d94228f500b35", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.203}
+{"request_id": "f0568ec14a2b4bb1b53f70190bc5e268", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 51.732}
+{"request_id": "b3b01362005c4109a5ef9a2ebe601b9d", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.719}
+{"request_id": "ab08005f32a3411c83d1dfb2fd988ef1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+20.223}
+{"request_id": "d243340f9eb44225946b941152ef0fad", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 50.255}
+{"request_id": "2daef813e44d4a86a880c614102e7477", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+41.703}
+{"request_id": "285ffbb6df0e438cbac0a2ef0ca0c509", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 54.891}
+{"request_id": "86941eb03a5743579282e2de79b99b87", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+21.176}
+{"request_id": "85d3583f24d94b32a0d6cf6f994621ad", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.965}
+{"request_id": "22da29ed77724ac89a82481d9da831e5", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.641}
+{"request_id": "74819c7040474f8eb9c1cfed4c853367", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.093}
+{"request_id": "6d47f9c9e4744ec2a86936c95e434c19", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.68}
+{"request_id": "7f900712cd22434eac6397e0427d616a", "route": "/v1/sessions", "status": 200, "latency_ms": 75.116}
+{"request_id": "1e1a5e31b34d4a3b8906d08ffc892f28", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.257}
+{"request_id": "a992def1cb5949db92d01373eae3ba9a", "route": "/v1/client-config", "status": 200, "latency_ms": 1.158}
+{"request_id": "38ec332214be4f98b62cea2be5bf7217", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.904}
+{"request_id": "64d1dbd444c743adb74b41bc6f042924", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 39.03}
+{"request_id": "055945a6afa4477a865a1fc830acacf6", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 21.057}
+{"request_id": "de28a0fe545b468582027b95609b182a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.413}
+{"request_id": "6eb98efceb00421b9ec8cd3f586203de", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.605}
+{"request_id": "a93d4e0e0cbd499b8e1cd375319011ae", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.997}
+{"request_id": "ed0fc76c24b745bb859d16708417eafa", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.163}
+{"request_id": "4cf8df35d99a496f9830ec134ba0975e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.732}
+{"request_id": "8737af76d74c479c9c48933885b8267b", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.792}
+{"request_id": "0ebb629f640c4a6fb6866e282f83e241", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.617}
+{"request_id": "db3deab8463c4f03984b91bb5faf4a97", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.121}
+{"request_id": "b581a97bde90402daf40e5cfb97538fe", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.014}
+{"request_id": "9cd26ac39fd94fcba963b3805c0cb1f4", "route": "/v1/sessions", "status": 200, "latency_ms": 49.569}
+{"request_id": "208ba3e5b12d45178ad3125b9a91b805", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+17.822}
+{"request_id": "c4d1af0751c9490d867a454a7a0949ee", "route": "/v1/client-config", "status": 200, "latency_ms": 0.799}
+{"request_id": "e443ee94ed8d45bfb123f5e6d2d9d5dc", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.728}
+{"request_id": "7ceb017ee22741fe917f8c0f263dd4ff", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 32.233}
+{"request_id": "7d281fed759a4dc8ba568cb695819d0c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.6}
+{"request_id": "b524f2629588404db5cbd8fc15be5d08", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.294}
+{"request_id": "560064491d164943800da11aebb5d5ae", "route": "/v1/sessions", "status": 200, "latency_ms": 91.157}
+{"request_id": "bcee2f48b5244e549252dd65cf4fa982", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+18.378}
+{"request_id": "64d2ffd6efdf4f0d955366ee854dd3dd", "route": "/v1/client-config", "status": 200, "latency_ms": 1.87}
+{"request_id": "63df3fe0a5f2437aae69c1b5a8d972b5", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.195}
+{"request_id": "339e384cf96b458ea394ab7c180f037f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 33.283}
+{"request_id": "63b1171290de4121b5c3922cf224da99", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.947}
+{"request_id": "a426b1dc803c4cccbc73d9318e0176ab", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.731}
+{"request_id": "17a7c3b9a10d4941b62015468dc816fb", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.412}
+{"request_id": "c7acdeeaec6b4ad896deb0bc5614217a", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 31.932}
+{"request_id": "91426f744a6c4b4c820b908db57e3dcd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+34.329}
+{"request_id": "cbd1d7dc4c4b416b876bc25da404d401", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 39.551}
+{"request_id": "7c465bebc7134fe394dd74234ff88716", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+20.934}
+{"request_id": "0aa4878c4fe44611b37ef7d767b4242e", "route": "/v1/sessions", "status": 200, "latency_ms": 64.514}
+{"request_id": "25e3131f93854f6ab767a43cbea3b03d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.049}
+{"request_id": "c08677b34a6f45158e9d0efd949552b9", "route": "/v1/client-config", "status": 200, "latency_ms": 0.758}
+{"request_id": "b5125091b51045058ed4e6f1bcaf3a9d", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.869}
+{"request_id": "d272dc175e294bdd94d3211a01e7dcea", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 50.999}
+{"request_id": "1b25f0e5769849dca245e40540722435", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.071}
+{"request_id": "6369a785f9f54d1bbe72cd006c42e5b8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.114}
+{"request_id": "2fea280c98524db78c05418d52885657", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.105}
+{"request_id": "541ac0a2b23e46d5afa3500d5c81aaf4", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.889}
+{"request_id": "12d834a44fcb4bf9b3bfac119177b96c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 21.466}
+{"request_id": "4c7806c98b2740e9ac1d4643813c8b3f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.918}
+{"request_id": "4905720a62af436fb4685d58cb1f3899", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.912}
+{"request_id": "af044ff3358e4361b879be4873198026", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.686}
+{"request_id": "f7555d8eeca94273bf29c7d3840e501c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.108}
+{"request_id": "ac2d93e1a8fe4f9082d3b64e03546ebb", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.946}
+{"request_id": "e5caaaf04ff94f18a1352354a93290b8", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 21.183}
+{"request_id": "0b720e8de9b44baf8f7d47933c98a298", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.5}
+{"request_id": "58c9940c69124d418ca45c9783fa3a53", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 21.039}
+{"request_id": "8003b6e56db64535a8b25e95dd0fe2b2", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.903}
+{"request_id": "80ec91287cab4c28b7a062a6490ee6f5", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.031}
+{"request_id": "44733dce45ca4a778e09e7177df88d6e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+21.882}
+{"request_id": "059bc5d3700b417fa8a9512f071709c6", "route": "/v1/sessions", "status": 200, "latency_ms": 74.817}
+{"request_id": "86157b1e315d419587991af6dd2492da", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.016}
+{"request_id": "ba2c38edb4db41b8b1012bb882a93232", "route": "/v1/client-config", "status": 200, "latency_ms": 0.621}
+{"request_id": "876b186bc503453f8fa765268f4a4701", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.705}
+{"request_id": "d94b654a4d14438b86fd8918de7f2c5f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 36.751}
+{"request_id": "444ca807c416473f9eae8f2f6c6888c2", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.265}
+{"request_id": "68eba22a457f483486822a58f52e91b6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+21.801}
+{"request_id": "a521a0effa1143d48c98faa2a65c64de", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 74.137}
+{"request_id": "c7ee6bb65f2142ee83b6a883bdc1a3e9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.101}
+{"request_id": "32f0a22170294d30b30f46b53e4220fd", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 21.337}
+{"request_id": "994de6055abe46d4aacf7e6148c67833", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.387}
+{"request_id": "fdedf428c7cc470091f5c0cf0f7a79e0", "route": "/v1/sessions", "status": 200, "latency_ms": 130.433}
+{"request_id": "78851280a0fa461b9c354fe3046337fa", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.964}
+{"request_id": "92c68194e8df4e62bd22c56993efa072", "route": "/v1/client-config", "status": 200, "latency_ms": 0.749}
+{"request_id": "ef946f5f5a5341d186d69f654337960d", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.448}
+{"request_id": "e67cfba1f0064586b3d5aba827bea7db", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 36.343}
+{"request_id": "20984965967e45e68815c8092e2085ea", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.045}
+{"request_id": "9763a9678e054b88a042f855de98f77b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.161}
+{"request_id": "374d560736e34b85861fbb79b77428ef", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.422}
+{"request_id": "05cae9f430c5439e8a875330f4fd506d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.061}
+{"request_id": "4279276815c247489f150eb6c49943ee", "route": "/v1/sessions", "status": 200, "latency_ms": 58.415}
+{"request_id": "13d2dc69e5e041c09060cb489415f03e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.029}
+{"request_id": "3be2f13cda8641f6858640481ab870ae", "route": "/v1/client-config", "status": 200, "latency_ms": 0.844}
+{"request_id": "862a213b137644b19ede6f0b9d739127", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.863}
+{"request_id": "f29b19f499bf4804a10867fb580eec06", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 36.426}
+{"request_id": "f8b2da162b774064b5db5ef62c5b1a0c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.816}
+{"request_id": "3e956a0159f14f8ba79e5a9baa495bb3", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.362}
+{"request_id": "14f9e53624d34fb4bd0fafc9fc4843ac", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 28.678}
+{"request_id": "36681feaa10e489d9d43b5aa6cc081bd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.45}
+{"request_id": "034d1924ad86446ab29904a9b96a579b", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.553}
+{"request_id": "d916266fad204af59a1ef602cb1e50bd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.263}
+{"request_id": "70610c1d6b5a4324a96b8b8182778629", "route": "/v1/sessions", "status": 200, "latency_ms": 56.097}
+{"request_id": "6e585b67b97b4e8697cc8f0de2bae55a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.843}
+{"request_id": "78951f8ade8543beb41a6e56d9030977", "route": "/v1/client-config", "status": 200, "latency_ms": 1.166}
+{"request_id": "30da758132fa49df820b1bc16164aaea", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.834}
+{"request_id": "8fec94fe275c4bfba37b1ef7e1235304", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 39.686}
+{"request_id": "5590a4fd847e46cba1007bac0f5884ca", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+19.866}
+{"request_id": "f755136bbda542dabfa7cb8b46b2a518", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.152}
+{"request_id": "7ca8f033728445639739f9d10f1b76b1", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.374}
+{"request_id": "0514be04973b40d494b3caf0ee139716", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.864}
+{"request_id": "2c747297f6cc4b27bab262069db358dd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.093}
+{"request_id": "f0bfb1f1712842ccaf02ba292063dad4", "route": "/v1/sessions", "status": 200, "latency_ms": 53.379}
+{"request_id": "ef797b6d440b4e1fbe591cb36ee8face", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.68}
+{"request_id": "356a60bcddf34b669b38c2e74c380a59", "route": "/v1/client-config", "status": 200, "latency_ms": 0.58}
+{"request_id": "45cb30875ba74290b7ccc1e39d046d3f", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.639}
+{"request_id": "5f5b72a2969141fcafec5b2d8f33837f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 40.402}
+{"request_id": "f9e69cff720e490da62ad19414b43aac", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.842}
+{"request_id": "f16024dd8947438b99a04866fcfbed6f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.571}
+{"request_id": "7f28542b21c5495097df567a10877124", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.489}
+{"request_id": "9d9ec4d227d04a0a81d93657076a5021", "route": "/v1/sessions", "status": 200, "latency_ms": 85.971}
+{"request_id": "ed8ddf64f845470f9d102b607a4f26f9", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+43.965}
+{"request_id": "c30b7e203c1141e28616d2bc76c8032f", "route": "/v1/client-config", "status": 200, "latency_ms": 3.037}
+{"request_id": "ab6fe425792447848e2705aa953058d5", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 2.259}
+{"request_id": "21619b9d8d924eb79f6d620111e54888", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 56.828}
+{"request_id": "96ad34ed652047ea9f1a3840ba05c0ee", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 21.512}
+{"request_id": "f4f86fb7a7b34b1d825f4c89143aed84", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.794}
+{"request_id": "a2232bf6a11c4ff7ad8d1be8df0e4149", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 38.032}
+{"request_id": "ae4d143e3fff40b089b49cbec4872ba5", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+21.649}
+{"request_id": "178a601206d34d1cae5d33f627d133a1", "route": "/v1/sessions", "status": 200, "latency_ms": 94.911}
+{"request_id": "6b9af728828b4b21a26d0105b253b134", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.871}
+{"request_id": "c0036d268d264221a6c4822029ba5bdb", "route": "/v1/client-config", "status": 200, "latency_ms": 2.844}
+{"request_id": "22471a8e86ac410facf178d27046e437", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.942}
+{"request_id": "046b115223624a6bab994c3ccddea7aa", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 68.023}
+{"request_id": "b917a14799f64349bfd7023a6795b4d0", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.512}
+{"request_id": "169ad851f01740da972b380753a6a92a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.081}
+{"request_id": "06cffefb5c70446394545faecc9e0db3", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 34.91}
+{"request_id": "b7c1998ebf824e46bcbec559766a4b00", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.314}
+{"request_id": "719a34428b10462ea23dd93c93ba638a", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 32.847}
+{"request_id": "e1befee40ab24d97aef26e7e9e674ac0", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+30.764}
+{"request_id": "ae6b2a6ae7894fb5974b35324a0c45f4", "route": "/v1/sessions", "status": 200, "latency_ms": 76.376}
+{"request_id": "8983e10730424a21867b8b428b23b955", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+18.023}
+{"request_id": "f1a4072fe379408eba9e1fcdffe8962c", "route": "/v1/client-config", "status": 200, "latency_ms": 1.46}
+{"request_id": "1ccbcc67bb0140ac89d11a496f9e4bf6", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 2.6}
+{"request_id": "d8f7a207e1b242ada49f50ccc551108f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 53.078}
+{"request_id": "76c18b16fbbf4647b6aed009b6bf5bd4", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 30.132}
+{"request_id": "ceb9412d729f4bddb9acafac10795509", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.108}
+{"request_id": "42471ffdc0dd4b4aa6573e79647b72c1", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.629}
+{"request_id": "54cf39e70cde48758bc19fa7e5337ae6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.461}
+{"request_id": "2cd2e9c61cdc4fdfb8213447d27d8e93", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.215}
+{"request_id": "926f68b780db41cba8f887d2cb348378", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.645}
+{"request_id": "1b6706401ef543a3857c92a3ef627734", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 42.875}
+{"request_id": "75a9bde958f345739256e3c57c6bd340", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+38.338}
+{"request_id": "87a19d0362d54d67a6e0ee457e1df77b", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 124.126}
+{"request_id": "5a3d2b65a936485ca8085e8b03d5140c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.602}
+{"request_id": "79f1c86ae5234d0a932d45c6614c393d", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 26.396}
+{"request_id": "314b138c03b54a7b8dbbc38dfa9ba74a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.041}
+{"request_id": "f843161fb9dc4a899e4c1fd2847c55a5", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.649}
+{"request_id": "c39843c4f3124296b4b7675d8baf0461", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+23.68}
+{"request_id": "4238090a100c4dc391f5ba2759f6a082", "route": "/v1/sessions", "status": 200, "latency_ms": 57.63}
+{"request_id": "86b7328fdd314485859ae04412a742ac", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.948}
+{"request_id": "1add99edf0364c84bb8c73736bcd7b2a", "route": "/v1/client-config", "status": 200, "latency_ms": 0.779}
+{"request_id": "538312e112014729aaad84c8edcd8e18", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.897}
+{"request_id": "e4eafd7bfd8a41d5bb0b4c81700c7022", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 37.069}
+{"request_id": "18e4ffbfc2624ab8aff721a2c55539f1", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.537}
+{"request_id": "c919debb331a4087be2bb39ab3de1715", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.894}
+{"request_id": "a510934471f547a0a4e03a8f30b9e36b", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 19.406}
+{"request_id": "f15ed27296e4481a8459c45426be8c5d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.786}
+{"request_id": "1cf8f5f6319a4dc09cd05bf09e50686f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.916}
+{"request_id": "9ae96ffada0348fc9e1c28a06424b099", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+17.253}
+{"request_id": "bf445c74f78147ff8de5f52d8610ab57", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.735}
+{"request_id": "d24ad6319a094240a917245edb9dddd2", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.632}
+{"request_id": "88d2833dcc3146dca9095296b73ac15e", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.262}
+{"request_id": "7d0208798e5342a0ab284329131f2819", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.263}
+{"request_id": "c9da9cbb3b764a11929622a70068457e", "route": "/v1/sessions", "status": 200, "latency_ms": 79.19}
+{"request_id": "3e6e84b170c24f25bee7a89e9e1179ba", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.639}
+{"request_id": "9bb4a54654ea4d4c85a9f32616c362c8", "route": "/v1/client-config", "status": 200, "latency_ms": 0.645}
+{"request_id": "7f0d00aa31fb45d6a0cffb87eb6d8512", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.715}
+{"request_id": "04adacfa60c445ca8cede2f61aa76a5b", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 45.174}
+{"request_id": "4e5af60678fe495190df77afaa3db67b", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 34.584}
+{"request_id": "86f675f670524698baefd977f356f76f", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.075}
+{"request_id": "a7721c723f694d1ca9b22412c259cb85", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 32.112}
+{"request_id": "82a57731e9d54ff0beba02c26e560c96", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.833}
+{"request_id": "f748840524e3497085e1a093589d5d7b", "route": "/v1/sessions", "status": 200, "latency_ms": 50.43}
+{"request_id": "bfef6400f61f4fba9719138ceec60290", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.361}
+{"request_id": "6f0d92b642844bc1b866cf0bf4077077", "route": "/v1/client-config", "status": 200, "latency_ms": 0.786}
+{"request_id": "ed52515ac7f84aa192070b1a25e92fa3", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.327}
+{"request_id": "bb706212a68e48d286b2bf7dbc346844", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 43.289}
+{"request_id": "4d9a01828add45dfb15cb7b14a2fed7e", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 29.334}
+{"request_id": "9b87a422ae38497292562da7ef399947", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.47}
+{"request_id": "13a1c6a9264a4794b873d676faea61bb", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.093}
+{"request_id": "89a13bdebde0492e8252a30e37fd9fdd", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.992}
+{"request_id": "6aaac5896e1f4fe7a63796e21d8c24ff", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 28.586}
+{"request_id": "fc545c5b136c40f2bddf5eb54c05fdca", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.93}
+{"request_id": "15094cc0c3f54d5797dfbc1302e8d6ef", "route": "/v1/sessions", "status": 200, "latency_ms": 57.759}
+{"request_id": "668933632215411fa38c554f53256b71", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.162}
+{"request_id": "c6b3630d88f44818b9f51d66066ddf3e", "route": "/v1/client-config", "status": 200, "latency_ms": 0.59}
+{"request_id": "c5a1127c029a4436a3f5fc1e77d59f25", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.761}
+{"request_id": "9bb4978aae9e45a8abd3c7a9763e78f1", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 32.91}
+{"request_id": "ada0ca5056ef49e88ccda89335eec368", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.08}
+{"request_id": "98d0e52a85c24019bb0ffb81f7fbab9a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.201}
+{"request_id": "d78de009e8ad4763b9daeed2936a2ba9", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 27.859}
+{"request_id": "dd69b19d4e784b248f89043679c7efc4", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.976}
+{"request_id": "89464c449c984b26af9a9166642647b1", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 26.363}
+{"request_id": "e791a94bb48a4d94a0c88da04929797b", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.592}
+{"request_id": "750f1f4123d4470090f95132d63691ef", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.008}
+{"request_id": "5f7ca092c53d41098fba340d413852c6", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.173}
+{"request_id": "80cb2c7c6e394c16b0b9f9faba757712", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.811}
+{"request_id": "e2d6766a76384bd39a11067d669b7b21", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+15.642}
+{"request_id": "9e7245c18ca6423891ceac102978ced4", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.306}
+{"request_id": "f916e311d10540989bc5ddc3071320f8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.354}
+{"request_id": "60f459f3e5b344b187e61997c208d646", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 25.278}
+{"request_id": "6e6a2974b986478390aa9cfcc0f5d253", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+40.211}
+{"request_id": "f7a3d758ed8b4834a80f88de5828adde", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 95.571}
+{"request_id": "3b08b859820348789af57c7e38ce7e7c", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+36.36}
+{"request_id": "e02f0093fb434ec686d875a3cbcba7c6", "route": "/v1/sessions", "status": 200, "latency_ms": 53.919}
+{"request_id": "f1f1d42b9c6c46dfbce0555b7ad005b8", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.453}
+{"request_id": "06057f6c73554c1f8ab610ca9c80e468", "route": "/v1/client-config", "status": 200, "latency_ms": 0.818}
+{"request_id": "d5c7d261f9c24068bafe0a704eae88c2", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.783}
+{"request_id": "0dfa6e528c9f4d799922ac4b7eb6cb47", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 38.277}
+{"request_id": "ea77e90c667445f0bc3d5858d000ec3e", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.606}
+{"request_id": "b2cb8e51bebc4b6a9dc356ee35b484cc", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.838}
+{"request_id": "7f3882ec6fdd480a859b8562efadc045", "route": "/v1/sessions", "status": 200, "latency_ms": 71.331}
+{"request_id": "3c86f028841a467b92937bc1552abd61", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+16.908}
+{"request_id": "af075f12cea6444aa5d4cbc910b4e589", "route": "/v1/client-config", "status": 200, "latency_ms": 0.673}
+{"request_id": "3cba98980c7a47769a69a6d38ff72b04", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.714}
+{"request_id": "b9dd36c317d74604ad3ce470fafdc069", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 38.308}
+{"request_id": "6cdb98eee1a9482fa804b0e7c9247e0e", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 28.044}
+{"request_id": "9308816658be4c7dae43ff1b095384f7", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.34}
+{"request_id": "c0f2e0e025514d4886d666f6fe81bb89", "route": "/v1/sessions", "status": 200, "latency_ms": 59.957}
+{"request_id": "c3fa0c834f6d45c582c204b7008436bf", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.391}
+{"request_id": "a6ea8ae94ee045dd9b698e42a112cb50", "route": "/v1/client-config", "status": 200, "latency_ms": 0.682}
+{"request_id": "c1f738ea2d614c6ba7d83497db80749b", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.718}
+{"request_id": "15a524bed8004b8e80b5a61c57052fe1", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 36.163}
+{"request_id": "163adaa888dc4b57bf8b1dc43876acd8", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 20.152}
+{"request_id": "715b46384d984b42bf6521be4b18007e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.985}
+{"request_id": "e9b740812ef94f2198314689a5e8a1cf", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.324}
+{"request_id": "f10c236b1cdd4d91aecd31da5f51262e", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.324}
+{"request_id": "4a0e281d2a524b5e9328219493355331", "route": "/v1/sessions", "status": 200, "latency_ms": 62.339}
+{"request_id": "d1415e4975f9473d8a5e5b93cc8e5873", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.474}
+{"request_id": "a092a039ef1d4ab887bdfd15794d945f", "route": "/v1/client-config", "status": 200, "latency_ms": 0.915}
+{"request_id": "1b6d59ac32e8453d9661e2cb117e5092", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 0.693}
+{"request_id": "41ef7aebd18f4afda1a990126e86c5a3", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 37.7}
+{"request_id": "854c2cd9b7904ca284f5b8a5f9fd4f1c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 23.651}
+{"request_id": "d9fc5b0dcdd94b5685f70b2c9028c997", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.16}
+{"request_id": "a0ef26798bd0401c85c70c7c5880e658", "route": "/v1/sessions/{session_id}/chat", "status": 409,
+"latency_ms": 3.422}
+{"request_id": "5c46b7c907af441b8c1dc4f47c68b5dc", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.586}
+{"request_id": "044500d24dce4b639569a1841638ed88", "route": "/v1/sessions", "status": 200, "latency_ms": 50.991}
+{"request_id": "a90342d813f142a98c4c6849d5c64eec", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+14.849}
+{"request_id": "875a7e4e5771430c8a466361c99044c8", "route": "/v1/client-config", "status": 200, "latency_ms": 1.273}
+{"request_id": "cbf612f51d0b4986aada28477c4c90a5", "route": "/v1/sessions/{session_id}/chat", "status": 422,
+"latency_ms": 1.056}
+{"request_id": "b85272e48cfb4be69d1900cf933be18c", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 41.799}
+{"request_id": "8ae5db8a8e474ff3acd17a6f3ca1723d", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 22.861}
+{"request_id": "6f52557184d94c37b4b8a2ba1782164a", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+10.839}
+{"request_id": "eedf84486dcf448994c623b4d90ae01d", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 24.726}
+{"request_id": "31e221c61e7b4f95b111f5ce852c03ea", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+11.993}
+{"request_id": "37efac0b26b64e8fafa463cb4064599f", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 29.657}
+{"request_id": "586e28e812d04878a6ffd72c3fbfd48d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+12.631}
+{"request_id": "c4414926a15241f4a3528f3d28f7159d", "route": "/v1/sessions/{session_id}/chat", "status": 200,
+"latency_ms": 26.464}
+{"request_id": "a6d25c52a25d41d4a08ee6c9993c3a9d", "route": "/v1/sessions/{session_id}", "status": 200, "latency_ms":
+13.916}
+ok
+test_intent_accuracy (test_utterances.Corpus.test_intent_accuracy) ...
+C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_utterances.py:25:
+ResourceWarning: unclosed file <_io.TextIOWrapper
+name='C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\qa\\chat\\utterances.jsonl'
+mode='r' encoding='utf-8'>
+  rows = [json.loads(l) for l in open(ROOT / "qa/chat/utterances.jsonl", encoding="utf-8") if l.strip()]
+ResourceWarning: Enable tracemalloc to get the object allocation traceback
+ok
+
+----------------------------------------------------------------------
+Ran 53 tests in 10.008s
+
+OK
