@@ -45,6 +45,16 @@ def main() -> int:
     ap.add_argument("--max-calls", type=int, default=8)
     args = ap.parse_args()
     provider = GeminiUnderstandingProvider()
+    errors = []
+    inner = provider.understand
+
+    def traced(text, compact, *, deadline_s):
+        try:
+            return inner(text, compact, deadline_s=deadline_s)
+        except Exception as e:  # record only the error kind/status, never the key or payload
+            errors.append({"kind": getattr(e, "kind", type(e).__name__), "status": getattr(e, "status", None)})
+            raise
+    provider.understand = traced
     if not provider.configured:
         print("Gemini is not configured (GEMINI_API_KEY missing); nothing was called.")
         return 2
@@ -62,7 +72,7 @@ def main() -> int:
         rows.append({"intent": d.get("intent"), "expected": sorted(intents), "calls": out.calls, "status": out.status, "ok": good,
                      "patch_keys": sorted(d.get("patch", {}))})
     snap = provider.client.budget.snapshot()
-    print(json.dumps({"calls": used, "ok": ok, "of": len(rows), "budget_after": {k: snap[k] for k in ("limit", "used", "remaining")}, "rows": rows},
+    print(json.dumps({"calls": used, "ok": ok, "of": len(rows), "budget_after": {k: snap[k] for k in ("limit", "used", "remaining")}, "errors": errors, "rows": rows},
                      ensure_ascii=False, indent=1))
     return 0 if ok == len(rows) and used <= args.max_calls else 1
 

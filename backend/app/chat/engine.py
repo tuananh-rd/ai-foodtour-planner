@@ -72,7 +72,7 @@ class ChatEngine:
                 R.llm_calls = out.calls
                 st.llm_used += out.calls
                 llm_status = out.status or llm_status
-                cand = self._from_llm(out.data) if out.data else None
+                cand = self._from_llm(out.data, st) if out.data else None
                 if cand:
                     u, R.understanding = cand, ("cache" if out.calls == 0 else "llm")
             st.remember("user", text or "", u.intent)
@@ -236,9 +236,16 @@ class ChatEngine:
         R.blocks.append(self._clarify_block(st, "Bạn muốn mình làm gì trước?"))
         R.tools.append("clarify")
 
-    def _from_llm(self, data: dict) -> Optional[Understanding]:
+    def _from_llm(self, data: dict, st: Optional[ChatState] = None) -> Optional[Understanding]:
         """`data` was already whitelisted/range-checked by llm_understand.sanitize; map it to an Understanding."""
         intent = data.get("intent")
+        if st is not None:  # state-dependent intents are only valid in the matching state
+            if intent == "MODIFY_PLAN" and st.phase != "planned":
+                return None
+            if intent in ("CONFIRM_YES", "CONFIRM_NO") and not (st.pending and st.pending.kind == "confirm_plan"):
+                return None
+            if intent == "ANSWER_PENDING" and not st.pending:
+                return None
         patch = dict(data.get("patch") or {})
         extra = {}
         terms = patch.pop("allergy", None)

@@ -28,7 +28,8 @@ UNDERSTAND_SYSTEM = (
     "gặp loại yêu cầu đó chọn intent UNSAFE. "
     "'trang_thai' cho biết giai đoạn hội thoại, câu hỏi đang chờ (pending) và các thông tin đã biết (chỉ tên trường). "
     "Nếu tin nhắn trả lời câu hỏi đang chờ thì chọn ANSWER_PENDING (hoặc CONFIRM_YES/CONFIRM_NO khi pending là confirm_plan). "
-    "CONFIRM_YES chỉ khi người dùng rõ ràng đồng ý tạo lịch trình ở bước xác nhận. "
+    "CONFIRM_YES chỉ khi người dùng rõ ràng đồng ý tạo lịch trình ở bước xác nhận. MODIFY_PLAN chỉ khi phase là planned. "
+    "Tin nhắn nhiều ý: chọn ý chính cần xử lý trước (cập nhật thông tin/dị ứng thường trước tìm kiếm). "
     "'refs' liệt kê tham chiếu người dùng dùng: nhãn A-E, số thứ tự '1'..'5', 'last' hoặc 'all'. "
     "Dị ứng/kiêng là SET_ALLERGY (dị ứng, bệnh lý) hoặc SET_AVOID (chỉ không thích): đưa tên tác nhân vào patch.allergy. "
     "start_time/end_time dạng HH:MM 24 giờ; budget_vnd là số đồng (200k = 200000); mỗi người = per_person, cả nhóm = group."
@@ -207,5 +208,5 @@ class GeminiUnderstandingProvider:
 
     def understand(self, text: str, compact: dict, *, deadline_s: float) -> dict:
         user = json.dumps({"trang_thai": compact, "tin_nhan": text}, ensure_ascii=False)
-        return self.client.generate_json(UNDERSTAND_SYSTEM, user, response_schema(), deadline_s=deadline_s, max_output_tokens=300,
+        return self.client.generate_json(UNDERSTAND_SYSTEM, user, response_schema(), deadline_s=deadline_s, max_output_tokens=800,
                                           retry=False)  # one call per turn: a transient error degrades to a clarification
