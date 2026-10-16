@@ -173,7 +173,7 @@ def dish_in(f: str):
     return e[1].lower() if e else None
 
 
-def understand(text: str, state: ChatState, gz, prior: Optional[Preferences] = None) -> Understanding:
+def understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None) -> Understanding:
     u = _understand(text, state, gz, prior)
     if u.intent in ("SEARCH_VENUES", "UPDATE_PROFILE", "DISCOVER_DISH") and u.confidence >= 0.75:
         f = fold_uncached(text)
@@ -184,7 +184,7 @@ def understand(text: str, state: ChatState, gz, prior: Optional[Preferences] = N
     return u
 
 
-def _understand(text: str, state: ChatState, gz, prior: Optional[Preferences] = None) -> Understanding:
+def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None) -> Understanding:
     prior = prior or Preferences()
     text = safety_parse.normalize_keep_case(text).strip()
     f = fold_uncached(text)
