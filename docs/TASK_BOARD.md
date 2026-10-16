@@ -3,11 +3,14 @@ Defaults chốt: D1 UI_V2 sau cờ; D5 Gemini 18/ngày + giải thích template;
 
 | ID | Owner | Status | Evidence |
 |---|---|---|---|
-| R0-1 contract v1.6 | Claude | DONE | 43f5fee (+ clarification) |
-| R0-2 CSV evidence fields | Codex | In progress | dispatch ctx_a6468868f5e6 (prompt unsent -> Enter -> Working) |
-| R0-3 LLM daily budget (Pacific reset) | Codex | In progress | same dispatch |
-| R0-4 rules-first + cache + llm_calls | Claude | DONE (module) | b7c89c3: 218 tests OK; wiring in main.py by Codex |
-| R0-5 quality/meal scoring + why[] | Claude | Queued (needs R0-2 Venue fields) | - |
-| R1-1 tokens + base UI components | Antigravity | In progress | dispatch ctx_ece0f501f38b (heartbeat phase=investigating) |
-| R1-5 itinerary-first screen (UI_V2) | Antigravity | Queued (after R0-5 merge) | - |
-| R1-9 black-box API QA v1.6 | Antigravity | Queued | - |
+| R0-1 contract v1.6 | Claude | DONE | 43f5fee, b5467ed, edac994 |
+| R0-2 CSV evidence fields | Codex | DONE, accepted | 982fa07, e2b50cd; Claude re-ran 241 tests OK, drift OK; ds-1 vocabulary: 565/1701 quán < 5 review, rating mean 3.51 |
+| R0-3 LLM daily budget (Pacific reset, own SQLite) | Codex | DONE, accepted | 982fa07; /health.llm_budget limit 18, resets_at 07:00Z (=00:00 PDT); complete message -> rules, 0 calls |
+| R0-4 rules-first + cache + llm_calls | Claude | DONE | b7c89c3, c581dc6 |
+| R0-5 quality/meal/audience scoring + why[] | Claude | DONE | 887e54b: 252 tests OK; eval ds-1 p50 125 ms, 0 invalid tours |
+| R0-6 API wiring (meal/audience/why/quality weight) | Codex | In progress | dispatch ctx_fedcc0dd5c08 (prompt unsent -> Enter -> Working) |
+| R1-1 tokens + base UI components | Antigravity | DONE, accepted | d62e50d merge; Claude re-ran: ui-kit CDP 11/11 on a production build, components 24/24; default build: /ui-kit -> 404 |
+| R1-5 itinerary-first UI_V2 screen | Antigravity | BLOCKED: CLI not signed in | dispatch ctx_ad191c293ca4 failed at agent_readiness (timeout); terminal term_45d767cf shows "not signed in". No retry, no substitute agent; waiting for user sign-in |
+| R1-9 black-box API QA v1.6 | Antigravity | Queued (needs sign-in) | - |
+
+Known minor: the /ui-kit gallery chunk exists in the default build but the route returns 404 (acceptable for local-first).
