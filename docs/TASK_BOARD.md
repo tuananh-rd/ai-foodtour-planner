@@ -74,3 +74,5 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C0-HF | Claude/Codex | Round-4 fixes d7ff7c3; Codex final verification in C1-API Part A | acceptance pending |
 | C1 engine | Claude | DONE (pending API wiring + review) | backend/app/chat/*: rules-first understanding 100% on dev corpus (held-out via Codex adversarial), engine scenarios 11/12 + plan_request; plan_selected (never drops a selected venue); fixtures chat_turns.synthetic.json |
 | C1-API | Codex | In progress | ctx_92a5468c2fb8 |
+| C5 (Claude ae32883) | Claude | DONE (engine side) | llm_understand.py: schema, sanitize (whitelists/ranges), LLMUnderstander gate (session cap 6, daily reserve 3, cache), engine integration; 354 tests OK; route wiring (provider from env, `understand` callable) = C5-API for Codex after C1-API; real Gemini smoke ≤8 calls at C6 |
+| C3-1 chat v2 UI | Antigravity | In progress | ctx_33e86e9f534b (fixtures-based; real-API E2E at C6) |
