@@ -24,9 +24,12 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 |---|---|---|---|
 | R0 review fixes R01-R08 | Claude | DONE | 324a651; 7 regression tests fail-before on 6c2997d; 5-stop plan 72 s -> 1.4 s |
 | R0-7 backend follow-up | Codex | DONE, accepted | aaa67d2 merged; Claude re-ran 265 tests OK, OpenAPI drift OK; open: user text still enters global fold LRU in `relevance._phrases`, extraction-cache TTL purge is lazy (low) |
-| R1-5 UI_V2 itinerary-first | Antigravity | DONE, accepted (CDP) | a2735e8 (merge 82f05de); Claude re-ran on production build: test_ui_v2 15/15, test_components 24/24, test_ui_kit 11/11. test_cold_bootstrap not re-run (needs the fake Google config harness; flag-off layout covered by TC-V2-15 and components). Codex frontend review pending |
+| R1-5 UI_V2 itinerary-first | Antigravity | ACCEPTANCE WITHDRAWN: Codex review REQUEST CHANGES (3 HIGH, 5 MED, 1 LOW; 5e75912) | author fixes R1-5b dispatch ctx_047c7b3cb35b; independent re-review required |
 | GMAPS-URL contract v1.7 | Claude | DONE | e659608; free Maps URLs, no API/key/billing/backend Google call |
 | GMAPS-URL-1 backend | Codex | DONE, accepted | 519b0ac (merged): Claude re-ran 274 tests OK, OpenAPI drift OK; independent probe 7 stops driving -> 2 links (3+2 waypoints, join stop 4, 205/180 chars, api=1, no dir_action) |
 | GMAPS-URL-2 UI + browser QA | Antigravity | Queued after R1-9 (single worker; no duplicate) | fixtures contracts/fixtures/maps_links.synthetic.json |
 | R1-REVIEW frontend review of R1-5 | Codex | In progress | dispatch ctx_c41b51f063d7 (term_653be71d); Enter sent once for unsent draft |
 | R1-9 black-box API+UI QA v1.6 | Antigravity | In progress | reuse of a settled worker's terminal failed at agent_readiness (ctx_c30ca3f008c1, released/retained); fresh Antigravity worker ctx_d6bd5e161f9d (term_899cd8c8) turn observed |
+| R1-9 black-box QA v1.6 | Antigravity | DONE (report), 5de6950 | 48/48 own assertions; 3 loader discrepancies -> Codex R0-8 (dispatch ctx_d1710c046c37). Claude to re-run test_api_v16 on merged branch |
+| R1-5b fixes | Antigravity | In progress | ctx_047c7b3cb35b |
+| R0-8 loader honesty/fixtures | Codex | In progress | ctx_d1710c046c37; Enter sent once |
