@@ -115,3 +115,5 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C6i structured profile editors + containment + Vietnamese Maps text | Antigravity | In progress | ctx_c5d049df7091; then Codex last re-verification (C6-final-3) and Claude closes C6 |
 | C6i (Antigravity eb26b55) | Antigravity | DONE, verified by Claude (serial) | backend 424 OK; real-API test_chat_v2 **29/29 exit 0**; ui_v2 28/28; components 48/48; ui_kit 11/11; maps 61/61; contractTest 18/18 |
 | C6-final-3 (Codex last re-verification) | Codex | In progress | ctx_396c7775c7f0; Claude closes C6 after ACCEPT |
+| C6-final-3 (Codex b8c3fc4) | Codex | DONE: REQUEST CHANGES (2 residuals) | Everything else passed: backend 424 + drift, 5 frontend suites + contractTest 18, 26 scenarios, 4 mutation detectors fail as required, isolation/log scans, hostile containment, English Maps text fixed, flag-off OK; independent boundary probes 37/39. Residual: tampered budget unit silently → thousands (parseInt||1000); max-leg editor has no reachable chip |
+| C6j (Antigravity) | Antigravity | In progress | strict unit validation + max-leg chip; then a short Codex confirmation and Claude closes C6 |
