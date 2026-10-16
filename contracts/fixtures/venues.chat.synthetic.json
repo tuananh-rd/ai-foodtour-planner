@@ -1,0 +1,3072 @@
+{
+ "_label": "SYNTHETIC chat fixture - fictional venues, public street names only",
+ "synthetic": true,
+ "venues": [
+  {
+   "id": "CHT-001",
+   "name": "[SYNTHETIC] Bún Thử 1",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 11 Hàng Bún, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0241,
+   "lon": 105.8483,
+   "source_url": "https://example.invalid/synthetic/1",
+   "dish_tags": [
+    "Bún",
+    "Món nước"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-002",
+   "name": "[SYNTHETIC] Phở Thử 2",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 12 Hàng Gai, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0274,
+   "lon": 105.8522,
+   "source_url": "https://example.invalid/synthetic/2",
+   "dish_tags": [
+    "Món nước",
+    "Phở"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 35000,
+   "price_max_vnd": 75000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi trưa"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-003",
+   "name": "[SYNTHETIC] Cua Biển Thử 3",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 13 Lò Sũ, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0307,
+   "lon": 105.8561,
+   "source_url": "https://example.invalid/synthetic/3",
+   "dish_tags": [
+    "Hải sản",
+    "Cua"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 150000,
+   "price_max_vnd": 450000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-004",
+   "name": "[SYNTHETIC] Ốc Thử 4",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 14 Tạ Hiện, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0241,
+   "lon": 105.8509,
+   "source_url": "https://example.invalid/synthetic/4",
+   "dish_tags": [
+    "Hải sản",
+    "Ốc"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 120000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-005",
+   "name": "[SYNTHETIC] Bánh Mì Thử 5",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 15 Hàng Bún, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0274,
+   "lon": 105.8548,
+   "source_url": "https://example.invalid/synthetic/5",
+   "dish_tags": [
+    "Bánh mì",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 40000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-006",
+   "name": "[SYNTHETIC] Chè Thử 6",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 16 Hàng Gai, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0307,
+   "lon": 105.8496,
+   "source_url": "https://example.invalid/synthetic/6",
+   "dish_tags": [
+    "Chè",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 45000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-007",
+   "name": "[SYNTHETIC] Cà Phê Thử 7",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 17 Lò Sũ, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0241,
+   "lon": 105.8535,
+   "source_url": "https://example.invalid/synthetic/7",
+   "dish_tags": [
+    "Cà phê",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 70000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-008",
+   "name": "[SYNTHETIC] Nem Thử 8",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 18 Tạ Hiện, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0274,
+   "lon": 105.8483,
+   "source_url": "https://example.invalid/synthetic/8",
+   "dish_tags": [
+    "Nem",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 80000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-009",
+   "name": "[SYNTHETIC] Lẩu Bò Thử 9",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 19 Hàng Bún, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0307,
+   "lon": 105.8522,
+   "source_url": "https://example.invalid/synthetic/9",
+   "dish_tags": [
+    "Lẩu",
+    "Bò"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 120000,
+   "price_max_vnd": 300000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-010",
+   "name": "[SYNTHETIC] Cơm Gà Thử 10",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 20 Hàng Gai, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0241,
+   "lon": 105.8561,
+   "source_url": "https://example.invalid/synthetic/10",
+   "dish_tags": [
+    "Cơm",
+    "Gà"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 90000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-011",
+   "name": "[SYNTHETIC] Trà Sữa Thử 11",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 21 Lò Sũ, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0274,
+   "lon": 105.8509,
+   "source_url": "https://example.invalid/synthetic/11",
+   "dish_tags": [
+    "Trà sữa",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-012",
+   "name": "[SYNTHETIC] Kem Thử 12",
+   "city": "Hà Nội",
+   "district": "Hoàn Kiếm",
+   "address": "Số 22 Tạ Hiện, Hoàn Kiếm, Hà Nội",
+   "lat": 21.0307,
+   "lon": 105.8548,
+   "source_url": "https://example.invalid/synthetic/12",
+   "dish_tags": [
+    "Kem",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 20000,
+   "price_max_vnd": 50000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-013",
+   "name": "[SYNTHETIC] Bún Thử 13",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 23 Đội Cấn, Ba Đình, Hà Nội",
+   "lat": 21.0401,
+   "lon": 105.8303,
+   "source_url": "https://example.invalid/synthetic/13",
+   "dish_tags": [
+    "Bún",
+    "Món nước"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-014",
+   "name": "[SYNTHETIC] Phở Thử 14",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 24 Nguyễn Thái Học, Ba Đình, Hà Nội",
+   "lat": 21.0335,
+   "lon": 105.8342,
+   "source_url": "https://example.invalid/synthetic/14",
+   "dish_tags": [
+    "Món nước",
+    "Phở"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 35000,
+   "price_max_vnd": 75000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi trưa"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-015",
+   "name": "[SYNTHETIC] Cua Biển Thử 15",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 25 Hàng Bột, Ba Đình, Hà Nội",
+   "lat": 21.0368,
+   "lon": 105.8381,
+   "source_url": "https://example.invalid/synthetic/15",
+   "dish_tags": [
+    "Hải sản",
+    "Cua"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 150000,
+   "price_max_vnd": 450000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-016",
+   "name": "[SYNTHETIC] Ốc Thử 16",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 26 Đội Cấn, Ba Đình, Hà Nội",
+   "lat": 21.0401,
+   "lon": 105.8329,
+   "source_url": "https://example.invalid/synthetic/16",
+   "dish_tags": [
+    "Hải sản",
+    "Ốc"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 120000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-017",
+   "name": "[SYNTHETIC] Bánh Mì Thử 17",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 27 Nguyễn Thái Học, Ba Đình, Hà Nội",
+   "lat": 21.0335,
+   "lon": 105.8368,
+   "source_url": "https://example.invalid/synthetic/17",
+   "dish_tags": [
+    "Bánh mì",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 40000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-018",
+   "name": "[SYNTHETIC] Chè Thử 18",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 28 Hàng Bột, Ba Đình, Hà Nội",
+   "lat": 21.0368,
+   "lon": 105.8316,
+   "source_url": "https://example.invalid/synthetic/18",
+   "dish_tags": [
+    "Chè",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 45000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-019",
+   "name": "[SYNTHETIC] Cà Phê Thử 19",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 29 Đội Cấn, Ba Đình, Hà Nội",
+   "lat": 21.0401,
+   "lon": 105.8355,
+   "source_url": "https://example.invalid/synthetic/19",
+   "dish_tags": [
+    "Cà phê",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 70000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-020",
+   "name": "[SYNTHETIC] Nem Thử 20",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 30 Nguyễn Thái Học, Ba Đình, Hà Nội",
+   "lat": 21.0335,
+   "lon": 105.8303,
+   "source_url": "https://example.invalid/synthetic/20",
+   "dish_tags": [
+    "Nem",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 80000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-021",
+   "name": "[SYNTHETIC] Lẩu Bò Thử 21",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 31 Hàng Bột, Ba Đình, Hà Nội",
+   "lat": 21.0368,
+   "lon": 105.8342,
+   "source_url": "https://example.invalid/synthetic/21",
+   "dish_tags": [
+    "Lẩu",
+    "Bò"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 120000,
+   "price_max_vnd": 300000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-022",
+   "name": "[SYNTHETIC] Cơm Gà Thử 22",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 32 Đội Cấn, Ba Đình, Hà Nội",
+   "lat": 21.0401,
+   "lon": 105.8381,
+   "source_url": "https://example.invalid/synthetic/22",
+   "dish_tags": [
+    "Cơm",
+    "Gà"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 90000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-023",
+   "name": "[SYNTHETIC] Trà Sữa Thử 23",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 33 Nguyễn Thái Học, Ba Đình, Hà Nội",
+   "lat": 21.0335,
+   "lon": 105.8329,
+   "source_url": "https://example.invalid/synthetic/23",
+   "dish_tags": [
+    "Trà sữa",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-024",
+   "name": "[SYNTHETIC] Kem Thử 24",
+   "city": "Hà Nội",
+   "district": "Ba Đình",
+   "address": "Số 34 Hàng Bột, Ba Đình, Hà Nội",
+   "lat": 21.0368,
+   "lon": 105.8368,
+   "source_url": "https://example.invalid/synthetic/24",
+   "dish_tags": [
+    "Kem",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 20000,
+   "price_max_vnd": 50000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-025",
+   "name": "[SYNTHETIC] Bún Thử 25",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 35 Phạm Văn Đồng, Cầu Giấy, Hà Nội",
+   "lat": 21.0382,
+   "lon": 105.7847,
+   "source_url": "https://example.invalid/synthetic/25",
+   "dish_tags": [
+    "Bún",
+    "Món nước"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-026",
+   "name": "[SYNTHETIC] Phở Thử 26",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 36 Xuân Thủy, Cầu Giấy, Hà Nội",
+   "lat": 21.0415,
+   "lon": 105.7886,
+   "source_url": "https://example.invalid/synthetic/26",
+   "dish_tags": [
+    "Món nước",
+    "Phở"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 35000,
+   "price_max_vnd": 75000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi trưa"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-027",
+   "name": "[SYNTHETIC] Cua Biển Thử 27",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 37 Trần Thái Tông, Cầu Giấy, Hà Nội",
+   "lat": 21.0349,
+   "lon": 105.7925,
+   "source_url": "https://example.invalid/synthetic/27",
+   "dish_tags": [
+    "Hải sản",
+    "Cua"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 150000,
+   "price_max_vnd": 450000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-028",
+   "name": "[SYNTHETIC] Ốc Thử 28",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 38 Phạm Văn Đồng, Cầu Giấy, Hà Nội",
+   "lat": 21.0382,
+   "lon": 105.7873,
+   "source_url": "https://example.invalid/synthetic/28",
+   "dish_tags": [
+    "Hải sản",
+    "Ốc"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 120000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-029",
+   "name": "[SYNTHETIC] Bánh Mì Thử 29",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 39 Xuân Thủy, Cầu Giấy, Hà Nội",
+   "lat": 21.0415,
+   "lon": 105.7912,
+   "source_url": "https://example.invalid/synthetic/29",
+   "dish_tags": [
+    "Bánh mì",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 40000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-030",
+   "name": "[SYNTHETIC] Chè Thử 30",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 40 Trần Thái Tông, Cầu Giấy, Hà Nội",
+   "lat": 21.0349,
+   "lon": 105.786,
+   "source_url": "https://example.invalid/synthetic/30",
+   "dish_tags": [
+    "Chè",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 45000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-031",
+   "name": "[SYNTHETIC] Cà Phê Thử 31",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 41 Phạm Văn Đồng, Cầu Giấy, Hà Nội",
+   "lat": 21.0382,
+   "lon": 105.7899,
+   "source_url": "https://example.invalid/synthetic/31",
+   "dish_tags": [
+    "Cà phê",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 70000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-032",
+   "name": "[SYNTHETIC] Nem Thử 32",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 42 Xuân Thủy, Cầu Giấy, Hà Nội",
+   "lat": 21.0415,
+   "lon": 105.7847,
+   "source_url": "https://example.invalid/synthetic/32",
+   "dish_tags": [
+    "Nem",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 80000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi xế"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-033",
+   "name": "[SYNTHETIC] Lẩu Bò Thử 33",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 43 Trần Thái Tông, Cầu Giấy, Hà Nội",
+   "lat": 21.0349,
+   "lon": 105.7886,
+   "source_url": "https://example.invalid/synthetic/33",
+   "dish_tags": [
+    "Lẩu",
+    "Bò"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 120000,
+   "price_max_vnd": 300000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-034",
+   "name": "[SYNTHETIC] Cơm Gà Thử 34",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 44 Phạm Văn Đồng, Cầu Giấy, Hà Nội",
+   "lat": 21.0382,
+   "lon": 105.7925,
+   "source_url": "https://example.invalid/synthetic/34",
+   "dish_tags": [
+    "Cơm",
+    "Gà"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 90000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-035",
+   "name": "[SYNTHETIC] Trà Sữa Thử 35",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 45 Xuân Thủy, Cầu Giấy, Hà Nội",
+   "lat": 21.0415,
+   "lon": 105.7873,
+   "source_url": "https://example.invalid/synthetic/35",
+   "dish_tags": [
+    "Trà sữa",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-036",
+   "name": "[SYNTHETIC] Kem Thử 36",
+   "city": "Hà Nội",
+   "district": "Cầu Giấy",
+   "address": "Số 46 Trần Thái Tông, Cầu Giấy, Hà Nội",
+   "lat": 21.0349,
+   "lon": 105.7912,
+   "source_url": "https://example.invalid/synthetic/36",
+   "dish_tags": [
+    "Kem",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 20000,
+   "price_max_vnd": 50000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-037",
+   "name": "[SYNTHETIC] Bún Thử 37",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 47 Tây Sơn, Đống Đa, Hà Nội",
+   "lat": 21.0176,
+   "lon": 105.8231,
+   "source_url": "https://example.invalid/synthetic/37",
+   "dish_tags": [
+    "Bún",
+    "Món nước"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-038",
+   "name": "[SYNTHETIC] Phở Thử 38",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 48 Khâm Thiên, Đống Đa, Hà Nội",
+   "lat": 21.0209,
+   "lon": 105.827,
+   "source_url": "https://example.invalid/synthetic/38",
+   "dish_tags": [
+    "Món nước",
+    "Phở"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 35000,
+   "price_max_vnd": 75000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi trưa"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-039",
+   "name": "[SYNTHETIC] Cua Biển Thử 39",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 49 Láng Hạ, Đống Đa, Hà Nội",
+   "lat": 21.0143,
+   "lon": 105.8309,
+   "source_url": "https://example.invalid/synthetic/39",
+   "dish_tags": [
+    "Hải sản",
+    "Cua"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 150000,
+   "price_max_vnd": 450000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-040",
+   "name": "[SYNTHETIC] Ốc Thử 40",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 50 Tây Sơn, Đống Đa, Hà Nội",
+   "lat": 21.0176,
+   "lon": 105.8257,
+   "source_url": "https://example.invalid/synthetic/40",
+   "dish_tags": [
+    "Hải sản",
+    "Ốc"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 120000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-041",
+   "name": "[SYNTHETIC] Bánh Mì Thử 41",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 51 Khâm Thiên, Đống Đa, Hà Nội",
+   "lat": 21.0209,
+   "lon": 105.8296,
+   "source_url": "https://example.invalid/synthetic/41",
+   "dish_tags": [
+    "Bánh mì",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 40000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-042",
+   "name": "[SYNTHETIC] Chè Thử 42",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 52 Láng Hạ, Đống Đa, Hà Nội",
+   "lat": 21.0143,
+   "lon": 105.8244,
+   "source_url": "https://example.invalid/synthetic/42",
+   "dish_tags": [
+    "Chè",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 45000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-043",
+   "name": "[SYNTHETIC] Cà Phê Thử 43",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 53 Tây Sơn, Đống Đa, Hà Nội",
+   "lat": 21.0176,
+   "lon": 105.8283,
+   "source_url": "https://example.invalid/synthetic/43",
+   "dish_tags": [
+    "Cà phê",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 70000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-044",
+   "name": "[SYNTHETIC] Nem Thử 44",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 54 Khâm Thiên, Đống Đa, Hà Nội",
+   "lat": 21.0209,
+   "lon": 105.8231,
+   "source_url": "https://example.invalid/synthetic/44",
+   "dish_tags": [
+    "Nem",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 80000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-045",
+   "name": "[SYNTHETIC] Lẩu Bò Thử 45",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 55 Láng Hạ, Đống Đa, Hà Nội",
+   "lat": 21.0143,
+   "lon": 105.827,
+   "source_url": "https://example.invalid/synthetic/45",
+   "dish_tags": [
+    "Lẩu",
+    "Bò"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 120000,
+   "price_max_vnd": 300000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-046",
+   "name": "[SYNTHETIC] Cơm Gà Thử 46",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 56 Tây Sơn, Đống Đa, Hà Nội",
+   "lat": 21.0176,
+   "lon": 105.8309,
+   "source_url": "https://example.invalid/synthetic/46",
+   "dish_tags": [
+    "Cơm",
+    "Gà"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 90000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-047",
+   "name": "[SYNTHETIC] Trà Sữa Thử 47",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 57 Khâm Thiên, Đống Đa, Hà Nội",
+   "lat": 21.0209,
+   "lon": 105.8257,
+   "source_url": "https://example.invalid/synthetic/47",
+   "dish_tags": [
+    "Trà sữa",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-048",
+   "name": "[SYNTHETIC] Kem Thử 48",
+   "city": "Hà Nội",
+   "district": "Đống Đa",
+   "address": "Số 58 Láng Hạ, Đống Đa, Hà Nội",
+   "lat": 21.0143,
+   "lon": 105.8296,
+   "source_url": "https://example.invalid/synthetic/48",
+   "dish_tags": [
+    "Kem",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 20000,
+   "price_max_vnd": 50000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-049",
+   "name": "[SYNTHETIC] Bún Thử 49",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 59 Phố Huế, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0062,
+   "lon": 105.8531,
+   "source_url": "https://example.invalid/synthetic/49",
+   "dish_tags": [
+    "Bún",
+    "Món nước"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-050",
+   "name": "[SYNTHETIC] Phở Thử 50",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 60 Minh Khai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0095,
+   "lon": 105.857,
+   "source_url": "https://example.invalid/synthetic/50",
+   "dish_tags": [
+    "Món nước",
+    "Phở"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 35000,
+   "price_max_vnd": 75000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi trưa"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-051",
+   "name": "[SYNTHETIC] Cua Biển Thử 51",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 61 Bạch Mai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0128,
+   "lon": 105.8609,
+   "source_url": "https://example.invalid/synthetic/51",
+   "dish_tags": [
+    "Hải sản",
+    "Cua"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 150000,
+   "price_max_vnd": 450000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-052",
+   "name": "[SYNTHETIC] Ốc Thử 52",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 62 Phố Huế, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0062,
+   "lon": 105.8557,
+   "source_url": "https://example.invalid/synthetic/52",
+   "dish_tags": [
+    "Hải sản",
+    "Ốc"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 120000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-053",
+   "name": "[SYNTHETIC] Bánh Mì Thử 53",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 63 Minh Khai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0095,
+   "lon": 105.8596,
+   "source_url": "https://example.invalid/synthetic/53",
+   "dish_tags": [
+    "Bánh mì",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 40000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-054",
+   "name": "[SYNTHETIC] Chè Thử 54",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 64 Bạch Mai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0128,
+   "lon": 105.8544,
+   "source_url": "https://example.invalid/synthetic/54",
+   "dish_tags": [
+    "Chè",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 45000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-055",
+   "name": "[SYNTHETIC] Cà Phê Thử 55",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 65 Phố Huế, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0062,
+   "lon": 105.8583,
+   "source_url": "https://example.invalid/synthetic/55",
+   "dish_tags": [
+    "Cà phê",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 70000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-056",
+   "name": "[SYNTHETIC] Nem Thử 56",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 66 Minh Khai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0095,
+   "lon": 105.8531,
+   "source_url": "https://example.invalid/synthetic/56",
+   "dish_tags": [
+    "Nem",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 80000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-057",
+   "name": "[SYNTHETIC] Lẩu Bò Thử 57",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 67 Bạch Mai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0128,
+   "lon": 105.857,
+   "source_url": "https://example.invalid/synthetic/57",
+   "dish_tags": [
+    "Lẩu",
+    "Bò"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 120000,
+   "price_max_vnd": 300000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-058",
+   "name": "[SYNTHETIC] Cơm Gà Thử 58",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 68 Phố Huế, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0062,
+   "lon": 105.8609,
+   "source_url": "https://example.invalid/synthetic/58",
+   "dish_tags": [
+    "Cơm",
+    "Gà"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 90000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 3,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-059",
+   "name": "[SYNTHETIC] Trà Sữa Thử 59",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 69 Minh Khai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0095,
+   "lon": 105.8557,
+   "source_url": "https://example.invalid/synthetic/59",
+   "dish_tags": [
+    "Trà sữa",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-060",
+   "name": "[SYNTHETIC] Kem Thử 60",
+   "city": "Hà Nội",
+   "district": "Hai Bà Trưng",
+   "address": "Số 70 Bạch Mai, Hai Bà Trưng, Hà Nội",
+   "lat": 21.0128,
+   "lon": 105.8596,
+   "source_url": "https://example.invalid/synthetic/60",
+   "dish_tags": [
+    "Kem",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 20000,
+   "price_max_vnd": 50000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi xế"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-061",
+   "name": "[SYNTHETIC] Bún Thử 61",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 71 Lạc Long Quân, Tây Hồ, Hà Nội",
+   "lat": 21.0734,
+   "lon": 105.8191,
+   "source_url": "https://example.invalid/synthetic/61",
+   "dish_tags": [
+    "Bún",
+    "Món nước"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-062",
+   "name": "[SYNTHETIC] Phở Thử 62",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 72 Xuân Diệu, Tây Hồ, Hà Nội",
+   "lat": 21.0668,
+   "lon": 105.823,
+   "source_url": "https://example.invalid/synthetic/62",
+   "dish_tags": [
+    "Món nước",
+    "Phở"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 35000,
+   "price_max_vnd": 75000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi trưa"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-063",
+   "name": "[SYNTHETIC] Cua Biển Thử 63",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 73 Quảng An, Tây Hồ, Hà Nội",
+   "lat": 21.0701,
+   "lon": 105.8269,
+   "source_url": "https://example.invalid/synthetic/63",
+   "dish_tags": [
+    "Hải sản",
+    "Cua"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 150000,
+   "price_max_vnd": 450000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-064",
+   "name": "[SYNTHETIC] Ốc Thử 64",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 74 Lạc Long Quân, Tây Hồ, Hà Nội",
+   "lat": 21.0734,
+   "lon": 105.8217,
+   "source_url": "https://example.invalid/synthetic/64",
+   "dish_tags": [
+    "Hải sản",
+    "Ốc"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 120000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-065",
+   "name": "[SYNTHETIC] Bánh Mì Thử 65",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 75 Xuân Diệu, Tây Hồ, Hà Nội",
+   "lat": 21.0668,
+   "lon": 105.8256,
+   "source_url": "https://example.invalid/synthetic/65",
+   "dish_tags": [
+    "Bánh mì",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 40000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 260,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-066",
+   "name": "[SYNTHETIC] Chè Thử 66",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 76 Quảng An, Tây Hồ, Hà Nội",
+   "lat": 21.0701,
+   "lon": 105.8204,
+   "source_url": "https://example.invalid/synthetic/66",
+   "dish_tags": [
+    "Chè",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 15000,
+   "price_max_vnd": 45000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-067",
+   "name": "[SYNTHETIC] Cà Phê Thử 67",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 77 Lạc Long Quân, Tây Hồ, Hà Nội",
+   "lat": 21.0734,
+   "lon": 105.8243,
+   "source_url": "https://example.invalid/synthetic/67",
+   "dish_tags": [
+    "Cà phê",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 70000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 6.5,
+   "rating_scale_max": 10,
+   "review_count": 22,
+   "suitable_meals": [
+    "Buổi sáng",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn một mình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-068",
+   "name": "[SYNTHETIC] Nem Thử 68",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 78 Xuân Diệu, Tây Hồ, Hà Nội",
+   "lat": 21.0668,
+   "lon": 105.8191,
+   "source_url": "https://example.invalid/synthetic/68",
+   "dish_tags": [
+    "Nem",
+    "Ăn vặt - Ăn nhẹ"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 30000,
+   "price_max_vnd": 80000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 7.4,
+   "rating_scale_max": 10,
+   "review_count": 130,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Ăn gia đình"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 80,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-069",
+   "name": "[SYNTHETIC] Lẩu Bò Thử 69",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 79 Quảng An, Tây Hồ, Hà Nội",
+   "lat": 21.0701,
+   "lon": 105.823,
+   "source_url": "https://example.invalid/synthetic/69",
+   "dish_tags": [
+    "Lẩu",
+    "Bò"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 120000,
+   "price_max_vnd": 300000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.1,
+   "rating_scale_max": 10,
+   "review_count": 1,
+   "suitable_meals": [
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 120,
+   "prep_time_min": 5,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-070",
+   "name": "[SYNTHETIC] Cơm Gà Thử 70",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 80 Lạc Long Quân, Tây Hồ, Hà Nội",
+   "lat": 21.0734,
+   "lon": 105.8269,
+   "source_url": "https://example.invalid/synthetic/70",
+   "dish_tags": [
+    "Cơm",
+    "Gà"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 40000,
+   "price_max_vnd": 90000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 8.8,
+   "rating_scale_max": 10,
+   "review_count": 8,
+   "suitable_meals": [
+    "Buổi trưa",
+    "Buổi tối"
+   ],
+   "audiences": [
+    "Ăn gia đình",
+    "Họp nhóm"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có máy lạnh & điều hòa",
+    "Nên đặt trước"
+   ],
+   "amenities_no": [],
+   "capacity_value": null,
+   "prep_time_min": 10,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-071",
+   "name": "[SYNTHETIC] Trà Sữa Thử 71",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 81 Xuân Diệu, Tây Hồ, Hà Nội",
+   "lat": 21.0668,
+   "lon": 105.8217,
+   "source_url": "https://example.invalid/synthetic/71",
+   "dish_tags": [
+    "Trà sữa",
+    "Thức uống"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 25000,
+   "price_max_vnd": 60000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": 9.3,
+   "rating_scale_max": 10,
+   "review_count": 47,
+   "suitable_meals": [
+    "Buổi xế",
+    "Buổi tối"
+   ],
+   "audiences": [],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Giữ xe máy miễn phí",
+    "Có chỗ đậu ôtô"
+   ],
+   "amenities_no": [],
+   "capacity_value": 20,
+   "prep_time_min": 15,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  },
+  {
+   "id": "CHT-072",
+   "name": "[SYNTHETIC] Kem Thử 72",
+   "city": "Hà Nội",
+   "district": "Tây Hồ",
+   "address": "Số 82 Quảng An, Tây Hồ, Hà Nội",
+   "lat": 21.0701,
+   "lon": 105.8256,
+   "source_url": "https://example.invalid/synthetic/72",
+   "dish_tags": [
+    "Kem",
+    "Tráng miệng"
+   ],
+   "online_only": false,
+   "geo_ok": true,
+   "price_min_vnd": 20000,
+   "price_max_vnd": 50000,
+   "price_evidence": "estimate",
+   "hours": null,
+   "hours_display": "Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)",
+   "synthetic": true,
+   "rating_value": null,
+   "rating_scale_max": null,
+   "review_count": null,
+   "suitable_meals": [
+    "Buổi xế"
+   ],
+   "audiences": [
+    "Hẹn hò"
+   ],
+   "cuisine_styles": [
+    "Món Việt"
+   ],
+   "amenities_yes": [
+    "Có wifi",
+    "Có bàn ngoài trời"
+   ],
+   "amenities_no": [],
+   "capacity_value": 40,
+   "prep_time_min": null,
+   "source_fetched_at": "2026-10-01T00:00:00Z"
+  }
+ ]
+}
