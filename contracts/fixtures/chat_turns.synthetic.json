@@ -2072,21 +2072,21 @@
            "id": "area",
            "label": "Điểm xuất phát",
            "value": "Hoàn Kiếm",
-           "status": "user_said",
+           "status": "user",
            "editable": true
           },
           {
            "id": "start_time",
            "label": "Bắt đầu",
            "value": "16:00",
-           "status": "user_said",
+           "status": "user",
            "editable": true
           },
           {
            "id": "end_time",
            "label": "Kết thúc trước",
            "value": "18:00",
-           "status": "user_said",
+           "status": "user",
            "editable": true
           },
           {
@@ -2100,7 +2100,7 @@
            "id": "vehicle",
            "label": "Phương tiện",
            "value": "đi bộ",
-           "status": "user_said",
+           "status": "user",
            "editable": true
           },
           {

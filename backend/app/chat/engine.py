@@ -869,9 +869,13 @@ class ChatEngine:
     def _present_summary(self, R):
         st = R.state
 
+        def status(f):
+            """Contract v1.8 summary status: user | inferred | default | missing."""
+            return ("user" if f.source in ("user_said", "ui_form") else f.source) if f.known() else "missing"
+
         def item(i, label, f, fmt=lambda v: str(v)):
             return {"id": i, "label": label, "value": fmt(f.value) if f.known() else None,
-                    "status": f.source if f.known() else "missing", "editable": True}
+                    "status": status(f), "editable": True}
         b = st.profile["budget"]
         items = [
             item("area", "Điểm xuất phát", st.profile["area"], lambda v: v.get("label", "")),
@@ -880,10 +884,10 @@ class ChatEngine:
             item("party_size", "Số người", st.profile["party_size"], lambda v: f"{v} người"),
             item("vehicle", "Phương tiện", st.profile["vehicle"], lambda v: VEHICLES.get(v, v)),
             {"id": "budget", "label": "Ngân sách", "value": (tools.fmt_vnd(b.value) + {"per_person": " mỗi người", "group": " cả nhóm"}.get(b.scope, " (chưa rõ phạm vi)")) if b.known() else None,
-             "status": b.source if b.known() else "missing", "editable": True},
+             "status": status(b), "editable": True},
             item("tastes", "Khẩu vị", st.profile["tastes"], lambda v: ", ".join(v)),
             {"id": "allergies", "label": "Dị ứng", "value": ", ".join(a.term for a in st.allergies) or None,
-             "status": "user_said" if st.allergies else "missing", "editable": True},
+             "status": "user" if st.allergies else "missing", "editable": True},
             item("max_leg_min", "Đi bộ tối đa mỗi chặng", st.profile["max_leg_min"], lambda v: f"{v} phút"),
         ]
         warnings = []

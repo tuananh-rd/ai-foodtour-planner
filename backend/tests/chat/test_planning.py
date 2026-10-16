@@ -43,3 +43,18 @@ class PlanSelected(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class SummaryContract(unittest.TestCase):
+    def test_confirm_summary_status_values_follow_the_contract(self):
+        from app.chat.engine import ChatEngine
+        from app.chat.state import ChatState
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        eng = ChatEngine(data.venues)
+        st, pr = ChatState(), Preferences()
+        for kw in ({"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán chè"}, {"text": "Thêm A"},
+                   {"text": "tạo lịch đi"}, {"text": "16 giờ đến 18 giờ, đi bộ, dị ứng cua"}):
+            r = eng.handle(st, pr, **kw)
+            st, pr = r.state, r.prefs
+        summ = next(b for b in r.blocks if b["type"] == "confirm_summary")
+        self.assertTrue({i["status"] for i in summ["items"]} <= {"user", "inferred", "default", "missing"})
