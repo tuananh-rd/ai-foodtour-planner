@@ -64,3 +64,21 @@ preferences and revision exactly. Reports contain scenario IDs and diagnostics, 
 scenarios. The runner also validates dataset IDs, factual card fields, unknown compare cells, distance
 labels and allergy warning flags. Free prose is checked by scenario text assertions; this is not a
 general semantic proof that arbitrary text contains no invented fact.
+
+## Second blind held-out evaluation
+
+`heldout2.jsonl` contains 100 independently labelled synthetic utterances, frozen in commit
+`7729a35` before the first target evaluation. Labels describe the primary requested operation
+using the ontology above. Every row includes `setup_actions` and a frozen `context` with
+`pending` (kind, offered options, explicit nullable slot) and `last_results`. Setup actions
+use the public API; no session state or pending is injected. Regional wording, typos,
+accentless text, emoji, mixed intentions, negation, amounts and clock times are included.
+
+Run `python qa/chat/eval_heldout.py --report docs/reports/C1_HELDOUT2_API.json` to print
+API accuracy and confusion. Each row runs through `run_scenario` with a fresh synthetic
+session and disabled external providers; setup and target turns receive the runner's
+grounding, persistence, revision, confirmation and call-count checks. A mismatch with the
+frozen setup context is an evaluation failure. Exit 0 requires at least 80 rows, at least
+85% accuracy and zero setup/invariant failures; rules-only results do not measure live LLM
+quality. `build_heldout2.py` records authoring and bootstraps contexts without evaluating
+target utterances. Do not regenerate or relabel the set to improve a measured score.
