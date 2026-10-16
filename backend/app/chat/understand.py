@@ -95,15 +95,15 @@ def parse_times(f: str) -> dict:
     return out
 
 
-def parse_vehicle(f: str) -> Optional[str]:
+def parse_vehicle(f: str, text: str = "") -> Optional[str]:
     if re.search(r"\bdi bo\b|\bbo bo\b|\bdi chan\b", f):
         return "walk"
     if re.search(r"xe may|\bxe om\b", f):
         return "motorbike"
     if re.search(r"\bo to\b|\boto\b|xe hoi|\bxe 4 cho\b", f):
         return "car"
-    if re.search(r"\bgrab\b|\btaxi\b|\bbe\b|\bxanh sm\b", f):
-        return "taxi"
+    if re.search(r"\bgrab\b|\btaxi\b|\bxanh sm\b", f) or re.search(r"(?<![a-zà-ỹ])be(?![a-zà-ỹ])", text.casefold()):
+        return "taxi"  # "be" (the app) only when typed without accent; "bé" (child) never
     return None
 
 
@@ -111,7 +111,7 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     """Profile patch from explicit statements."""
     patch = {}
     patch.update(parse_times(f))
-    veh = parse_vehicle(f)
+    veh = parse_vehicle(f, text)
     if veh:
         patch["vehicle"] = veh
     m = re.search(r"khong\s+(?:muon\s+)?(?:di bo\s+)?(?:qua|hon)\s+(\d{1,2})\s*phut", f)
@@ -227,13 +227,22 @@ def trim_deferred(text: str) -> str:
     return low
 
 
+def _squash(t: str) -> str:
+    return re.sub(r"(.)\1+", r"\1", t)  # "Xoáa", "Giữr"-style key slips: collapse repeated letters
+
+
+_SQUASHED = {cls: {_squash(w) for w in words} for cls, words in VERBS.items()}
+
+
 def verb_classes(text: str) -> dict:
     """{class: first token position} of non-negated verbs, from the accented lower-case text."""
     toks = _TOK.findall(text.casefold())
     out = {}
     for i, t in enumerate(toks):
+        if i > 0 and (toks[i - 1] in _NEG_BEFORE or (t in ("thêm", "them") and toks[i - 1] in ("có", "co", "còn", "con", "ngoài", "ngoai"))):
+            continue
         for cls, words in VERBS.items():
-            if t in words and not (i > 0 and toks[i - 1] in _NEG_BEFORE) and cls not in out:
+            if cls not in out and (t in words or (len(t) > 3 and _squash(t) in _SQUASHED[cls])):
                 out[cls] = i
     return out
 
@@ -254,6 +263,13 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     text = safety_parse.normalize_keep_case(text).strip()
     if text and not re.search(r"[A-Za-zÀ-ỹ0-9]", text):  # emoji / punctuation only: a reaction, not a request
         return Understanding("AMBIGUOUS_ACK" if not (state.pending and state.pending.kind == "confirm_plan") else "AMBIGUOUS_ACK", confidence=0.7)
+    if re.search(r"[\"“”«»]", text):
+        unquoted = re.sub(r"[\"“«][^\"”»]*[\"”»]", " ", text).strip()  # quoted drafts / examples never act
+        if not re.search(r"[A-Za-zÀ-ỹ0-9]", unquoted):
+            return Understanding("UNKNOWN", confidence=0.3)
+        text = unquoted
+    if re.search(r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|nếu như", text.casefold()):
+        return Understanding("AMBIGUOUS_ACK", confidence=0.7)  # hypothetical / joking wording: never act
     text = trim_deferred(text)
     f = fold_uncached(text)
     f = re.sub(r"\b(?:khong|chua|dung|dung vo)\s+can\s+(?:phai\s+)?(?:tim|kiem)\b", " ", f)  # "không cần tìm …" is not a search
@@ -289,13 +305,13 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     if place and not re.search(r"\bthoi tiet\b", f):
         patch["area"] = place.to_json()
 
-    if refs and re.search(r"\bco\b.*\bkhong\b", f) and re.search(r"thanh toan|the\b|visa|momo|chuyen khoan", f):
+    if refs and re.search(r"\bco\b.*\b(?:khong|chu)\b", f) and not re.search(r"\b(?:them|bo|giu|doi|thay)\b", f):
         return Understanding("ASK_DETAIL", {**patch, "field": "amenity"}, refs, 0.85)
     # --- out of scope signals
     if re.search(r"thoi tiet|troi (?:co )?(?:mua|nang|lanh)|bao nhieu do|may do\b|\bmua khong\b|co mua", f) and not _w(f, "nong", "lanh") \
             or re.search(r"\bmai troi\b|\bhom nay bao nhieu\b", f):
         return Understanding("OUT_OF_SCOPE", {"reason": "no_weather_data"})
-    if re.search(r"\bdat ban\b|\bbook (?:a )?table\b|\breservation\b|\bdat grab\b|\bdat xe\b|thanh toan|luu tour|chia se|gui link", f):
+    if re.search(r"\bpay (?:the )?bill\b|\btra tien\b|\bdat ban\b|\bbook (?:a )?table\b|\breservation\b|\bdat grab\b|\bdat xe\b|thanh toan|luu tour|chia se|gui link", f):
         return Understanding("OUT_OF_SCOPE", {"reason": "not_supported_yet"})
     if re.search(r"bai toan|viet tho|lap trinh|dich giup|lop \d", f):
         return Understanding("OUT_OF_SCOPE", {"reason": "off_topic"})
@@ -328,9 +344,11 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
           and not re.search(r"khong (?:an|thich|muon|qua)|\d", f))
 
     low0 = text.casefold()
-    if re.search(r"chi dang nghi|dang soan|\bde hoi lai\b|chua quyet|con (?:dang )?can nhac|\bxin doi\b|doi chut|"
+    if "đói quá" in low0 or "doi qua" in low0:
+        return Understanding("DISCOVER_DISH", patch, refs, 0.8)
+    if re.search(r"chi dang nghi|dang soan|\bde hoi lai\b|chua quyet|chua thong nhat|chua dong y|con (?:dang )?can nhac|doi chut|"
                  r"\bneu\b.*\bthi sao\b|\bde (?:em|minh|tui|toi) nghi\b", f) or \
-            ("nghi them" in f and "nghị" not in low0):
+            ("nghi them" in f and "nghị" not in low0) or re.search(r"xin (?:đợi|doi)\b", low0):
         return Understanding("AMBIGUOUS_ACK", confidence=0.75)
     if len(verb_classes(text)) >= 2 and re.search(r"\bhay\b", f) and (re.search(r"\bnhi\b|\bnhe\b", f) or "?" in text):
         return Understanding("UNKNOWN", confidence=0.3)  # "giữ hay đổi … nhỉ?": the user is undecided, never act
@@ -411,7 +429,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         return Understanding("GREET_OR_SMALLTALK", confidence=0.9)
 
     # --- discover vs search vs profile
-    discover = re.search(r"\ban gi\b|\bmon gi\b|\bmon nao\b|goi y mon|nen an|dang thu|\bla gi\b|co mon nao|\bdoi qua\b|an vat gi|"
+    discover = re.search(r"\ban gi\b|\bmon gi\b|\bmon nao\b|goi y mon|nen an|dang thu|\bla gi\b|co mon nao|an vat gi|"
                          r"mon (?:mat|am|nhe)|an sang|an trua|an toi|muon an gi|an gi do|di an dau|an dau\b|y tuong (?:mon|an)|mon an|dac san|"
                          r"\bke (?:cho|mon|ve)\b", f)
     mood = ("cool" if re.search(r"\bnong\b|\bmat\b", f) else "warm" if re.search(r"\blanh\b|\bam\b", f) else
@@ -422,7 +440,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
             "dinner" if re.search(r"\btoi\b", f) else None)
     if meal:
         patch["meal"] = meal
-    search_strong = re.search(r"\btim\b|\bkiem\b|\bquan\b|goi y quan|\bco quan\b|\bchi\b.*\bnao\b|cho an|chu nao|"
+    search_strong = re.search(r"\bsearch\b|\bfind\b|\btim\b|\bkiem\b|\bquan\b|goi y quan|\bco quan\b|\bchi\b.*\bnao\b|cho an|chu nao|"
                               r"\bxem them\b|quan nao ngon", f)
     search = search_strong or re.search(r"gan day|quanh day|\bgan toi\b", f)
     unsupported = [c for c in criteria_from(f) if c in tools.UNSUPPORTED]

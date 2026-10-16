@@ -92,3 +92,5 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C6c heldout4 blind + final engine addendum | Codex | In progress | ctx_d68bc27931e1 |
 | C6c (Codex) | Codex | DONE: heldout4 blind 78.9% (2 dangerous) → Claude fixed (dev 97/104) | decision REQUEST CHANGES at review time |
 | C6d heldout5 blind + final engine verdict | Codex | In progress | ctx_f70c2944637c; acceptance: dangerous = 0 AND (accuracy ≥85% OR safe-accuracy ≥92%) |
+| C6d (Codex): heldout5 blind 68.6% (safe 89.5%, 4 dangerous: quoted drafts, sarcasm, bé→taxi) | Codex | DONE → Claude fixed (a8b8716, dev 83/105) | |
+| C6e heldout6 blind (last gate) + final engine verdict | Codex | In progress | ctx_a001c39e9e68; acceptance dangerous=0 AND (acc ≥85% OR safe ≥92%) |
