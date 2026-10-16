@@ -49,3 +49,11 @@ Inbox: all deliveries processed and acknowledged; no unprocessed messages.
 | R1-5e (Antigravity, 6b53d0e) | Antigravity | Done, pending final Codex review (ctx_5d02a435f886) | Claude re-ran on production scratch build: test_maps_links_cdp 61/61, test_ui_v2 28/28, components 47/47, ui_kit 11/11 |
 | GMAPS-URL-2 (final) | Antigravity | ACCEPTED | Codex GMAPS-REVIEW3 ACCEPT (cf128d0): 61/61 own, 86/86 independent stress, 4 source mutations + pre-fix probe fail as expected; Claude re-ran 61/61 + ui_v2 28/28 + components 47/47 + ui_kit 11/11; backend 283 OK, drift OK |
 | Run state 2026-10-16 | Claude | R0, R1-lite (R1-1,R1-5..5e,R1-9), GMAPS-URL v1.7 all accepted; nothing pushed/deployed; no key/billing/Google call | Not done (deferred by user decision D2/D3/D4/D7): Leaflet/OSM map, routing service, address service, user study; R1-6 alternatives |
+
+### Chatbot upgrade — PLANNING ONLY (2026-10-16), chưa dispatch
+Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứng, orchestrator + công cụ nội bộ, chính sách LLM/budget/privacy, hợp đồng v1.8 dự kiến, 12 kịch bản hội thoại, đợt C0–C6, 9 quyết định cần duyệt). Chưa có worker nào được giao; chờ người dùng duyệt (đặc biệt Q1–Q9 và C0-HF).
+| ID | Owner | Status |
+|---|---|---|
+| C0-HF allergy/party hotfix in /messages | Claude + Codex | Proposed, awaiting approval |
+| C0-1 contract v1.8, C0-2 scenario corpus | Claude / Codex | Proposed |
+| C1 state+/chat, C2 tools+gazetteer+allergen map, C3 chat UI v2, C4 planner integration, C5 Gemini turn understanding, C6 E2E | Claude / Codex / Antigravity | Proposed |
