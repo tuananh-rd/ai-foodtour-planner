@@ -494,6 +494,9 @@ class ChatEngine:
         R.blocks.append(self._clarify_block(st, f"Bạn không ăn {', '.join(terms)}: đây là dị ứng hay chỉ là không thích?"))
 
     def _do_set_avoid(self, R, u):
+        if u.patch.get("dislike"):
+            self._do_update_profile(R, Understanding("UPDATE_PROFILE", {"dislike": u.patch["dislike"]}, u.refs, u.confidence))
+            return
         sp = u.extra.get("safety")
         self._ask_avoid(R, sp.avoid)
         R.tools.append("clarify")

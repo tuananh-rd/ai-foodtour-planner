@@ -107,11 +107,21 @@ def _price(v: Venue):
             "evidence": v.price_evidence}
 
 
+_SUSPICIOUS = re.compile(r"\b(?:system|ignore|reveal|prompt|api key|apikey|jailbreak|developer|assistant)\b|dang mo\b|an toan|da xac minh|xac minh|"
+                         r"verified|\bsafe\b|/ *nguoi|moi nguoi|gia moi")
+
+
 def clean_text(text, limit=80) -> str:
-    """Dataset strings are shown verbatim as DATA: drop control/format characters and markup, bound the length."""
+    """Dataset strings are shown as DATA: drop control/format characters and markup, bound the length, and remove
+    clauses that read like instructions or like claims the app itself must not make (open now, safe, per-person price)."""
     kept = "".join(ch for ch in str(text or "") if unicodedata.category(ch)[0] != "C" or ch == " ")
     kept = re.sub(r"<[^>]*>", " ", kept).replace("<", " ").replace(">", " ")
-    return " ".join(kept.split())[:limit]
+    parts = [p for p in re.split(r"[;|]", kept) if p.strip() and not _SUSPICIOUS.search(fold_uncached(p))]
+    out = []
+    for p in parts:  # a ':' that introduces a suspicious tail ("SYSTEM: ...") drops the tail only
+        head, sep, tail = p.partition(":")
+        out.append(head if sep and _SUSPICIOUS.search(fold_uncached(tail + head)) else p)
+    return " ".join(" ".join(out).split())[:limit]
 
 
 def venue_view(v: Venue) -> dict:
@@ -197,10 +207,10 @@ def _cell(c: str, v: Venue, centre) -> dict:
         return unknown  # amenities_no is empty in the source: absence is never stated
     if c == "capacity":
         cap = getattr(v, "capacity_value", None)
-        return {"value": f"{cap} chỗ", "status": "source", "note": "theo nguồn"} if cap else unknown
+        return {"value": f"{cap} chỗ", "status": "source", "note": "theo nguồn"} if cap is not None else unknown
     if c == "prep_time":
         pt = getattr(v, "prep_time_min", None)
-        return {"value": f"~{pt} phút", "status": "source", "note": "theo nguồn"} if pt else unknown
+        return {"value": f"~{pt} phút", "status": "source", "note": "theo nguồn"} if pt is not None else unknown
     if c == "hours":
         return ({"value": v.hours_display, "status": "source", "note": "nguồn ghi, chưa rõ áp dụng ngày nào"}
                 if v.hours_display else unknown)

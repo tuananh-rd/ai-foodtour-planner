@@ -79,7 +79,7 @@
 {"text":"đi với nhóm bạn","intent":"UPDATE_PROFILE","patch":{"audience":"friends"}}
 {"text":"mình đi một mình","intent":"UPDATE_PROFILE","patch":{"audience":"solo"}}
 {"text":"bọn mình thích ít ngọt","intent":"UPDATE_PROFILE","patch":{"taste":"ít ngọt"}}
-{"text":"không thích đồ nội tạng","intent":"UPDATE_PROFILE","patch":{"dislike":"nội tạng"}}
+{"text":"không thích đồ nội tạng","intent":"SET_AVOID","patch":{"dislike":"nội tạng"}}
 {"text":"không phải, ý mình là phố cổ chứ không phải Hồ Gươm","intent":"UPDATE_PROFILE","patch":{"area":"phố cổ"}}
 {"text":"đổi sang khu Cầu Giấy","intent":"UPDATE_PROFILE","patch":{"area":"Cầu Giấy"}}
 {"text":"mình đang ở đường Xuân Thủy","intent":"UPDATE_PROFILE","patch":{"area":"Xuân Thủy"}}
