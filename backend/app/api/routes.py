@@ -407,14 +407,18 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         cached = request.app.state.chat_engine_cache
         key = (data.dataset_version, data.dataset_source)
         if cached is None or cached[0] != key:
-            cached = (key, ChatEngine(data.venues))
+            chat_engine = ChatEngine(data.venues)
+            understander = request.app.state.chat_understander
             provider = request.app.state.chat_understanding_provider
             if provider is not None and not request.app.state.chat_understander_injected:
-                request.app.state.chat_understander = LLMUnderstander.from_env(
-                    provider, provider.client.budget, gazetteer=cached[1].gz)
+                understander = LLMUnderstander.from_env(
+                    provider, provider.client.budget, gazetteer=chat_engine.gz)
+                request.app.state.chat_understander = understander
+            cached = (key, chat_engine, understander)
             request.app.state.chat_engine_cache = cached
         budget = budget_snapshot(request)
-        understander = request.app.state.chat_understander
+        # Keep each request on the engine/understander pair for its own snapshot.
+        understander = cached[2]
         exhausted = bool(budget and (budget["exhausted"] or budget["remaining"] <= request.app.state.llm_reserve))
         try:
             try:

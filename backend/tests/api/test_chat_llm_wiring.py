@@ -55,6 +55,8 @@ class ChatLLMWiring(unittest.TestCase):
         self.start()
         first = self.post()
         self.assertEqual((first['llm_calls'], first['extraction_source'], self.provider.calls, self.used()),(1,'llm',1,1))
+        repeated = self.post()
+        self.assertEqual((repeated['llm_calls'], repeated['extraction_source'], self.provider.calls),(0,'cache',1))
         # A second fresh session has the same compact state and therefore the same cache key.
         session = self.client.post('/v1/sessions').json()
         r = self.client.post('/v1/sessions/'+session['session_id']+'/chat',headers={'X-Session-Token':session['token']},json={'revision':0,'text':TEXT}).json()
@@ -112,8 +114,20 @@ class ChatLLMWiring(unittest.TestCase):
         self.assertIs(app.state.extractor.llm.provider.client,client)
         self.assertIs(app.state.chat_understander.budget,app.state.llm_budget)
         self.assertIs(app.state.chat_understander.gz,app.state.chat_engine_cache[1].gz)
-        client.generate_json('','','') # extraction transport consumes the same budget
+        app.state.extractor.llm.provider.complete(TEXT, {}, deadline_s=1.0)
         self.assertEqual(app.state.llm_budget.snapshot()['used'],2)
         self.assertEqual(r.json()['llm_budget']['remaining'],17)
+        first=app.state.chat_understander
+        from app.repositories.venues import VenueRepository
+        fixture=json.loads(FIXTURE.read_text(encoding='utf-8'))
+        fixture['venues'][0]['name'] += ' changed snapshot'
+        path=Path(self.tmp.name)/'changed.synthetic.json'
+        path.write_text(json.dumps(fixture),encoding='utf-8')
+        app.state.venues=VenueRepository(path)
+        r=c.post('/v1/sessions/'+s['session_id']+'/chat',headers={'X-Session-Token':s['token']},json={'revision':1,'text':TEXT})
+        self.assertEqual(r.status_code,200,r.text)
+        self.assertIsNot(first,app.state.chat_understander)
+        self.assertIs(app.state.chat_understander.gz,app.state.chat_engine_cache[1].gz)
+        self.assertIs(app.state.chat_understander.budget,budget)
 
 if __name__=='__main__': unittest.main()
