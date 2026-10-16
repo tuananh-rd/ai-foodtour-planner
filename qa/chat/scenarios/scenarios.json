@@ -52,7 +52,7 @@
         {"say": "thêm một quán phở", "expect": {"intent": "ADD", "llm_calls_max": 0, "tour": "none", "blocks_include": ["venue_cards"], "text_not_contains": ["đã thêm quán phở"]}},
         {"say": "chọn quán thứ hai", "expect": {"intent": "ADD", "llm_calls_max": 0, "state": {"shortlist.1.status": "considering"}}},
         {"say": "bỏ quán thứ hai", "expect": {"intent": "REMOVE", "llm_calls_max": 0, "state_absent": ["shortlist.1"]}},
-        {"say": "giữ A nhé", "expect": {"intent": "KEEP", "llm_calls_max": 0, "state": {"shortlist.0.status": "kept"}}}
+        {"say": "giữ quán đầu tiên", "expect": {"intent": "KEEP", "llm_calls_max": 0, "state": {"shortlist.0.status": "kept"}}}
       ]
     },
     {
@@ -63,7 +63,7 @@
         {"say": "tìm quán phở", "expect": {"intent": "SEARCH_VENUES", "cards": {"min": 1}}},
         {"say": "So sánh A và B, chỗ nào gần hơn?", "expect": {"intent": "COMPARE", "blocks_include": ["compare_table"]}},
         {"say": "ok", "expect": {"intent": "AMBIGUOUS_ACK", "tour": "none", "pending_kind": "clarify_intent", "blocks_include": ["clarify"], "llm_calls_max": 0}},
-        {"action": {"type": "pick_option", "option_id": "choose_venue"}, "expect": {"understanding": "action", "tour": "none", "state_absent": ["pending"]}}
+        {"action": {"type": "pick_option", "option_id": "choose_venue"}, "expect": {"understanding": "action", "tour": "none", "pending_kind": "pick_venue", "blocks_include": ["clarify"]}}
       ]
     },
     {
@@ -73,13 +73,13 @@
         {"say": "có bạn không ăn cua", "expect": {"intent": "SET_AVOID", "llm_calls_max": 0, "pending_kind": "clarify_intent", "text_contains": ["dị ứng hay"], "blocks_include": ["clarify"]}},
         {"say": "dị ứng", "expect": {"intent": "ANSWER_PENDING", "llm_calls_max": 0, "state": {"allergies.0.term": "cua"}, "blocks_include": ["notice"], "text_contains": ["không quán nào được xác nhận an toàn"]}},
         {"say": "bọn mình thích ít ngọt, tìm quán chè", "expect": {"intent": "SEARCH_VENUES", "cards": {"min": 1}, "card_flags_all": ["allergy_unknown"], "text_contains": ["chưa rõ có giảm đường"], "text_not_contains": ["an toàn cho người dị ứng", "đã xác minh"]}},
-        {"say": "tìm quán hải sản", "expect": {"intent": "SEARCH_VENUES", "no_card_name_contains": ["Cua"], "card_flags_all": ["allergy_unknown"], "llm_calls_max": 0}},
-        {"say": "đã gọi hỏi quán A rồi, quán nói không có cua", "expect": {"intent": "SET_ALLERGY", "state": {"allergies.0.venue_confirmations.0.venue_id": "A"}, "text_contains": ["Người dùng xác nhận", "không phải xác minh"]}}
+        {"say": "đã gọi hỏi quán A rồi, quán nói không có cua", "expect": {"intent": "SET_ALLERGY", "state": {"allergies.0.venue_confirmations.0.label": "A"}, "text_contains": ["Người dùng xác nhận", "không phải xác minh"]}},
+        {"say": "tìm quán hải sản", "expect": {"intent": "SEARCH_VENUES", "no_card_name_contains": ["Cua"], "card_flags_all": ["allergy_unknown"], "llm_calls_max": 0}}
       ]
     },
     {
       "id": "CH-07", "title": "Không có kết quả: nêu phạm vi, không bịa",
-      "setup": {"fixture": "chat", "llm": "off", "budget": 20, "start": {"area": {"district": "Hà Đông"}}},
+      "setup": {"fixture": "chat", "llm": "off", "budget": 20, "start": {"area": {"label": "Hà Đông", "lat": 20.9717, "lon": 105.7788}}},
       "turns": [
         {"say": "Quán phở bò quanh Hà Đông trong 300 m",
          "expect": {"intent": "SEARCH_VENUES", "tour": "none", "llm_calls_max": 0, "cards": {"max": 0}, "blocks_include": ["notice", "clarify"], "text_contains": ["300 m", "không tìm thấy"], "text_not_contains": ["gợi ý cho bạn quán"]}}

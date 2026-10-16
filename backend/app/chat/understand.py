@@ -168,11 +168,23 @@ def criteria_from(f: str) -> list:
 
 
 def dish_in(f: str):
+    f = re.sub(r"\bpho co\b", " ", f)  # "phố cổ" (old quarter) folds to the same letters as "phở cổ"
     e = knowledge.lookup_dish(f)
     return e[1].lower() if e else None
 
 
 def understand(text: str, state: ChatState, gz, prior: Optional[Preferences] = None) -> Understanding:
+    u = _understand(text, state, gz, prior)
+    if u.intent in ("SEARCH_VENUES", "UPDATE_PROFILE", "DISCOVER_DISH") and u.confidence >= 0.75:
+        f = fold_uncached(text)
+        signals = sum(bool(re.search(q, f)) for q in (
+            r"\bthay vi\b|\bdoi thanh\b|\bdoi sang\b|\bthuc ra\b", r"\bbo\s+\w+\s+di\b|\bdung (?:an|cho)\b", r"\btim\b|\bkiem\b"))
+        if signals >= 2:
+            u.confidence = 0.5  # several distinct requests in one sentence: let the LLM (or a clarification) sort it out
+    return u
+
+
+def _understand(text: str, state: ChatState, gz, prior: Optional[Preferences] = None) -> Understanding:
     prior = prior or Preferences()
     text = safety_parse.normalize_keep_case(text).strip()
     f = fold_uncached(text)
@@ -234,7 +246,8 @@ def understand(text: str, state: ChatState, gz, prior: Optional[Preferences] = N
             return ans
 
     ack = re.fullmatch(r"(?:ok|oke|okay|o ke|u|um|uhm|uh|vang|da|duoc|duoc do|duoc roi|dong y|co|ung|dung|dung roi|chuan|chot|ok luon|ok nhe|ok ban)", f)
-    no = re.fullmatch(r"(?:khong|ko|chua|thoi|thoi dung|dung|that khong|khong can)\b.*", f) and not re.search(r"khong (?:an|thich|muon di bo)", f)
+    no = (re.match(r"(?:khong|ko|chua|thoi|dung|that khong)\b", f) and len(words) <= 5
+          and not re.search(r"khong (?:an|thich|muon|qua)|\d", f))
 
     # --- action verbs
     has_plan = re.search(r"\b(?:tao|lap|xep|len)\s+(?:lai\s+)?(?:lich|tour|lich trinh|hanh trinh|ke hoach)\b|\blap tour\b|\btao tour\b", f)
@@ -342,7 +355,7 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
         if re.fullmatch(r"(?:co|ok|oke|okay|dung|dung roi|xac nhan|dong y|chot|duoc|u|um|vang|da|tao di|ok tao di|u tao di|tao luon)", f) \
                 or re.search(r"\b(?:xac nhan|tao di|chot)\b", f):
             return Understanding("CONFIRM_YES", confidence=0.95)
-        if re.match(r"(?:khong|chua|thoi|de minh|cho minh sua|sua)\b", f):
+        if re.match(r"(?:khong|chua|thoi|de minh|cho minh sua|sua)\b", f) and len(f.split()) <= 5 and not re.search(r"\d|qua|muon", f):
             return Understanding("CONFIRM_NO", confidence=0.9)
         return None  # edits to the profile keep the confirmation open
     if pending.kind == "clarify_slot":
@@ -366,7 +379,7 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
             pick = "choose_venue"
         elif re.search(r"lap lich|lap tour|tao lich|tao tour|lap lich trinh", f) and "plan" in opts:
             pick = "plan"
-        elif re.search(r"\btim\b.*quan|\bquan\b.*gan", f) and "search" in opts:
+        elif re.search(r"\btim\b.*quan|\bquan\b.*gan", f) and "search" in opts and not dish_in(f):
             pick = "search"
         elif re.search(r"goi y mon|mon gi|an gi", f) and "discover" in opts:
             pick = "discover"

@@ -76,7 +76,7 @@ class Gazetteer:
 
     def resolve(self, text: str) -> Optional[Place]:
         """Best place named in the text: streets > landmarks > districts (longest phrase wins within a class)."""
-        f = fold_uncached(text)
+        f = re.sub(r"\bchu khong phai\b.*$", " ", fold_uncached(text))  # "ý mình là A chứ không phải B"
         for table in (self.streets, self.landmarks, self.districts):
             hits = [(len(k), p) for k, p in table.items() if self._has(f, k)]
             if hits:
