@@ -1,0 +1,656 @@
+{
+  "version": 1,
+  "synthetic": true,
+  "scenarios": [
+    {
+      "id": "ADV-01",
+      "title": "Repeated question while same slot unresolved",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": null
+        }
+      },
+      "turns": [
+        {
+          "say": "Tìm quán phở gần tôi",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "clarify_slot"
+          }
+        },
+        {
+          "say": "tôi chưa biết",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "no_repeat_of_previous_question": true
+          }
+        },
+        {
+          "say": "tôi vẫn chưa biết",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "no_repeat_of_previous_question": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-02",
+      "title": "ok after clarify_slot cannot plan",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": null
+        }
+      },
+      "turns": [
+        {
+          "say": "Tìm quán phở gần tôi",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "clarify_slot"
+          }
+        },
+        {
+          "say": "ok",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-03",
+      "title": "ok after clarify_intent cannot plan",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "ok",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "clarify_intent"
+          }
+        },
+        {
+          "say": "ok",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-04",
+      "title": "ok after pick_venue cannot plan",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tìm quán chè",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "cards": {
+              "min": 2
+            }
+          }
+        },
+        {
+          "say": "thêm một quán",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "pick_venue"
+          }
+        },
+        {
+          "say": "ok",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-05",
+      "title": "ok at confirm_plan resolves explicit confirmation",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tìm quán chè",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "cards": {
+              "min": 2
+            }
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "tìm quán phở",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "tạo lịch đi",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "clarify_slot"
+          }
+        },
+        {
+          "say": "16 giờ đến 18 giờ, đi bộ",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "confirm_plan"
+          }
+        },
+        {
+          "say": "ok",
+          "expect": {
+            "intent": "CONFIRM_YES",
+            "tour": "present",
+            "phase": "planned",
+            "llm_calls_max": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-06",
+      "title": "Old label after location change/new search context",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tìm quán phở",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "label_refs": [
+              "A"
+            ]
+          }
+        },
+        {
+          "say": "đổi khu vực sang Cầu Giấy",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "profile.area.value.district": "Cầu Giấy"
+            }
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "blocks_include": [
+              "clarify"
+            ],
+            "state_absent": [
+              "shortlist.0"
+            ]
+          }
+        },
+        {
+          "say": "tìm quán chè",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "label_refs": [
+              "A"
+            ]
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "shortlist.0.status": "considering"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-07",
+      "title": "Crab allergy survives seafood search",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tôi dị ứng cua",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "allergies.0.term": "cua"
+            }
+          }
+        },
+        {
+          "say": "tìm quán hải sản",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "no_card_name_contains": [
+              "cua"
+            ],
+            "card_flags_all": [
+              "allergy_unknown"
+            ],
+            "state": {
+              "allergies.0.term": "cua"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-08",
+      "title": "Budget flips scope without losing party",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "4 người, 600k cả nhóm",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "profile.budget.scope": "group"
+            }
+          }
+        },
+        {
+          "say": "500k mỗi người",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "profile.budget.value": 500000,
+              "profile.budget.scope": "per_person",
+              "profile.party_size.value": 4
+            }
+          }
+        },
+        {
+          "say": "600k cả nhóm",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "profile.budget.value": 600000,
+              "profile.budget.scope": "group",
+              "profile.party_size.value": 4
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-09",
+      "title": "Vehicle edit after confirm requires new planning confirmation",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tìm quán chè",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "cards": {
+              "min": 2
+            }
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "tìm quán phở",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "tạo lịch đi",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "clarify_slot"
+          }
+        },
+        {
+          "say": "16 giờ đến 18 giờ, đi bộ",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "pending_kind": "confirm_plan"
+          }
+        },
+        {
+          "action": {
+            "type": "confirm_yes"
+          },
+          "expect": {
+            "tour": "present",
+            "phase": "planned",
+            "understanding": "action",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "đổi sang đi ô tô",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "profile.vehicle.value": "car"
+            },
+            "blocks_include": [
+              "notice"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-10",
+      "title": "Outside Hanoi retains current location",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "mình ở Đà Nẵng",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "intent": "OUT_OF_SCOPE",
+            "state": {
+              "profile.area.value.district": "Hoàn Kiếm"
+            },
+            "text_contains": [
+              "Hà Nội"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-11",
+      "title": "1000 characters preserve allergy at end",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a a dị ứng cua",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "allergies.0.term": "cua"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-12",
+      "title": "NFD allergy and avoidance remain distinct",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tôi dị ứng cua",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "state": {
+              "allergies.0.term": "cua"
+            }
+          }
+        },
+        {
+          "say": "tìm quán hải sản",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "no_card_name_contains": [
+              "cua"
+            ],
+            "card_flags_all": [
+              "allergy_unknown"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-13",
+      "title": "Duplicate action with same revision rejected without mutation",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "action": {
+            "type": "search",
+            "query": "chè"
+          },
+          "expect": {
+            "understanding": "action",
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "repeat_request": 1,
+          "expect": {
+            "status": 409,
+            "error_code": "revision_conflict"
+          }
+        }
+      ]
+    },
+    {
+      "id": "ADV-14",
+      "title": "Stale A after a new empty search must not add an old result",
+      "setup": {
+        "fixture": "chat",
+        "llm": "off",
+        "budget": 20,
+        "start": {
+          "area": {
+            "district": "Hoàn Kiếm"
+          }
+        }
+      },
+      "turns": [
+        {
+          "say": "tìm quán phở",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "label_refs": [
+              "A"
+            ]
+          }
+        },
+        {
+          "action": {
+            "type": "set_location",
+            "location": {
+              "district": "Hà Đông"
+            }
+          },
+          "expect": {
+            "understanding": "action",
+            "tour": "none",
+            "llm_calls_max": 0
+          }
+        },
+        {
+          "say": "Quán phở bò quanh Hà Đông trong 300 m",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "cards": {
+              "max": 0
+            }
+          }
+        },
+        {
+          "say": "Thêm A",
+          "expect": {
+            "tour": "none",
+            "llm_calls_max": 0,
+            "blocks_include": [
+              "clarify"
+            ],
+            "state_absent": [
+              "shortlist.0"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
