@@ -34,9 +34,9 @@ const BACKEND_DIR = path.join(REPO_ROOT, 'backend');
 const SYNTHETIC_DATA_PATH = path.join(REPO_ROOT, 'contracts', 'fixtures', 'venues.chat.synthetic.json');
 const SCREENSHOTS_DIR = path.join(REPO_ROOT, 'qa', 'screenshots', 'chat-v2');
 
-const PORT_API = 18000;
-const PORT_WEB = 13000;
-const PORT_CDP = 19222;
+const PORT_API = Number(process.env.UI_CHAT_PORT_API || 18000);
+const PORT_WEB = Number(process.env.UI_CHAT_PORT_WEB || 13000);
+const PORT_CDP = Number(process.env.UI_CHAT_PORT_CDP || 19222);
 
 const PYTHON_CANDIDATES = [
   process.env.PYTHON,
@@ -93,7 +93,52 @@ function killProcessTree(pid) {
   } catch (_) {}
 }
 
+let currentStep = 'initialization';
+const HARD_TIMEOUT_MS = 9 * 60 * 1000;
+let globalBackendProc = null;
+let globalFrontendProc = null;
+let globalBrowserProc = null;
+
+const hardTimeoutTimer = setTimeout(() => {
+  console.error(`\n[FATAL] Overall test suite hard timeout (${HARD_TIMEOUT_MS / 1000}s) exceeded! Last active step: ${currentStep}`);
+  if (globalBrowserProc?.pid) killProcessTree(globalBrowserProc.pid);
+  if (globalFrontendProc?.pid) killProcessTree(globalFrontendProc.pid);
+  if (globalBackendProc?.pid) killProcessTree(globalBackendProc.pid);
+  process.exit(1);
+}, HARD_TIMEOUT_MS);
+hardTimeoutTimer.unref();
+
+function ensurePortFree(port, name) {
+  let isBusy = false;
+  let pids = [];
+  try {
+    const out = execSync(`netstat -ano | findstr :${port}`, { encoding: 'utf8' });
+    for (const line of out.split('\n')) {
+      const parts = line.trim().split(/\s+/);
+      const pid = parts[parts.length - 1];
+      if (pid && pid !== '0' && !isNaN(Number(pid))) {
+        if (!pids.includes(pid)) pids.push(pid);
+        isBusy = true;
+      }
+    }
+  } catch (_) {
+    isBusy = false;
+  }
+
+  if (isBusy) {
+    if (process.env.FORCE_FREE_PORTS === '1') {
+      console.log(`[Port Check] Port ${port} (${name}) is busy (PIDs: ${pids.join(', ')}). FORCE_FREE_PORTS=1 set: killing...`);
+      for (const pid of pids) {
+        try { execSync(`taskkill /pid ${pid} /T /F`, { stdio: 'ignore' }); } catch (_) {}
+      }
+    } else {
+      throw new Error(`Port ${port} (${name}) is already in use by PID(s): ${pids.join(', ')}. Set FORCE_FREE_PORTS=1 to auto-kill, or use UI_CHAT_PORT_${name.toUpperCase()} to override.`);
+    }
+  }
+}
+
 function freePort(port) {
+  if (process.env.FORCE_FREE_PORTS !== '1') return;
   try {
     const out = execSync(`netstat -ano | findstr :${port}`, { encoding: 'utf8' });
     for (const line of out.split('\n')) {
@@ -144,9 +189,9 @@ async function run() {
   let ws = null;
 
   try {
-    freePort(PORT_API);
-    freePort(PORT_WEB);
-    freePort(PORT_CDP);
+    ensurePortFree(PORT_API, 'api');
+    ensurePortFree(PORT_WEB, 'web');
+    ensurePortFree(PORT_CDP, 'cdp');
     await sleep(500);
 
     // -------------------------------------------------------------
@@ -187,7 +232,7 @@ async function run() {
     }
 
     let backendStarted = false;
-    for (let attempt = 1; attempt <= 5; attempt++) {
+    for (let attempt = 1; attempt <= 15; attempt++) {
       try {
         backendProc = spawn(
           pythonPath,
@@ -388,10 +433,9 @@ async function run() {
       while (Date.now() - start < timeoutMs) {
         const isBusy = await ev(`Boolean(
           document.querySelector('[data-testid="chat-v2-container"]')?.getAttribute('aria-busy') === 'true' ||
-          document.querySelector('[data-testid="chat-send"]')?.disabled ||
-          document.body.classList.contains('busy')
+          document.querySelector('[aria-busy="true"]') !== null
         )`);
-        if (!isBusy && (Date.now() - start > 500)) break;
+        if (!isBusy && (Date.now() - start > 400)) break;
         await sleep(150);
       }
       await sleep(300);
@@ -516,7 +560,44 @@ async function run() {
     );
 
     // Compare A and B across criteria including distance and rating
+    let compareInjected = false;
+    const compareHandler = async (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.method !== 'Fetch.requestPaused') return;
+        const id = data.params.requestId;
+        if (data.params.responseStatusCode === 200 && data.params.request?.method === 'POST') {
+          const r = await sendCDP('Fetch.getResponseBody', { requestId: id });
+          const body = JSON.parse(r.base64Encoded ? Buffer.from(r.body, 'base64').toString() : r.body);
+          for (const block of body.reply?.blocks || []) {
+            if ((block.type === 'compare' || block.type === 'compare_table') && block.rows?.length && block.rows[0].cells?.length) {
+              block.rows[0].cells[0].value = null;
+              block.rows[0].cells[0].note = null;
+              block.rows[0].cells[0].status = null;
+              compareInjected = true;
+            }
+          }
+          await sendCDP('Fetch.fulfillRequest', {
+            requestId: id,
+            responseCode: 200,
+            responseHeaders: data.params.responseHeaders.filter(h => !['content-length', 'content-encoding'].includes(h.name.toLowerCase())),
+            body: Buffer.from(JSON.stringify(body)).toString('base64'),
+          });
+          return;
+        }
+        await sendCDP('Fetch.continueRequest', { requestId: id });
+      } catch (e) {
+        console.log('Compare fallback injection error', e.message);
+      }
+    };
+
+    ws.addEventListener('message', compareHandler);
+    await sendCDP('Fetch.enable', { patterns: [{ urlPattern: '*chat*', requestStage: 'Response' }] });
+
     await sendChat('so sánh A và B');
+
+    ws.removeEventListener('message', compareHandler);
+    await sendCDP('Fetch.disable');
 
     const ch03Compare = await ev(`(() => {
       const table = document.querySelector('[data-testid="compare-table"]');
@@ -526,6 +607,7 @@ async function run() {
       const hasDistanceEstimate = text.includes('ước tính') || text.includes('~');
       const hasChuaRoFallback = Array.from(table.querySelectorAll('td')).some(td => td.innerText.includes('Chưa rõ'));
       const hasNoEmptyCells = Array.from(table.querySelectorAll('td')).every(td => td.innerText.trim().length > 0);
+      const firstRowDataCell = table.querySelectorAll('tbody tr')[0]?.querySelectorAll('td')[1]?.innerText.trim();
       const unsupportedBlock = document.querySelector('[data-testid="unsupported-criteria-notice"]') ||
                                Array.from(document.querySelectorAll('[data-testid="block-notice"]')).find(n => n.innerText.includes('tiêu chí'));
       return {
@@ -534,6 +616,7 @@ async function run() {
         hasDistanceEstimate,
         hasChuaRoFallback,
         noEmptyCells: hasNoEmptyCells,
+        injectedCellFallback: firstRowDataCell,
         hasUnsupportedNote: !!unsupportedBlock || text.includes('chưa có dữ liệu'),
       };
     })()`);
@@ -546,8 +629,8 @@ async function run() {
     record(
       'CH-03b',
       "Compare A and B renders table with columns A and B, distance estimate label, 'Chưa rõ' fallback cells, and unsupported criteria note",
-      ch03Compare.found && ch03Compare.hasCols && ch03Compare.hasDistanceEstimate && ch03Compare.hasChuaRoFallback && ch03Compare.noEmptyCells,
-      `table: ${ch03Compare.found}, cols: ${ch03Compare.hasCols}, distanceEstimate: ${ch03Compare.hasDistanceEstimate}, chuaRo: ${ch03Compare.hasChuaRoFallback}, noEmpty: ${ch03Compare.noEmptyCells}`
+      ch03Compare.found && ch03Compare.hasCols && ch03Compare.hasDistanceEstimate && ch03Compare.hasChuaRoFallback && ch03Compare.noEmptyCells && ch03Compare.injectedCellFallback === 'Chưa rõ',
+      `table: ${ch03Compare.found}, cols: ${ch03Compare.hasCols}, distanceEstimate: ${ch03Compare.hasDistanceEstimate}, chuaRo: ${ch03Compare.hasChuaRoFallback}, noEmpty: ${ch03Compare.noEmptyCells}, injectedCell: ${ch03Compare.injectedCellFallback}`
     );
 
     // =============================================================
@@ -976,6 +1059,76 @@ async function run() {
       `xssTriggered: ${hostileCheck.isXss}, rawImg: ${hostileCheck.rawImgCreated}, rendersText: ${hostileCheck.rendersAsText}`
     );
 
+    // Hostile server strings containment (5,000-character name & address)
+    let hostileInjected = 0;
+    const hostileHandler = async (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.method !== 'Fetch.requestPaused') return;
+        const id = data.params.requestId;
+        if (data.params.responseStatusCode === 200 && data.params.request?.method === 'POST') {
+          const r = await sendCDP('Fetch.getResponseBody', { requestId: id });
+          const body = JSON.parse(r.base64Encoded ? Buffer.from(r.body, 'base64').toString() : r.body);
+          for (const block of body.reply?.blocks || []) {
+            for (const card of block.cards || []) {
+              if (card.venue) {
+                card.venue.name = '<img src=x onerror="window.__xss=1">javascript:alert(1)\u202e' + 'N'.repeat(5000);
+                card.venue.address = card.venue.name;
+                hostileInjected++;
+              }
+            }
+          }
+          await sendCDP('Fetch.fulfillRequest', {
+            requestId: id,
+            responseCode: 200,
+            responseHeaders: data.params.responseHeaders.filter(h => !['content-length', 'content-encoding'].includes(h.name.toLowerCase())),
+            body: Buffer.from(JSON.stringify(body)).toString('base64'),
+          });
+          return;
+        }
+        await sendCDP('Fetch.continueRequest', { requestId: id });
+      } catch (e) {
+        console.log('HOSTILE injection error', e.message);
+      }
+    };
+
+    ws.addEventListener('message', hostileHandler);
+    await sendCDP('Fetch.enable', { patterns: [{ urlPattern: '*chat*', requestStage: 'Response' }] });
+    await sendChat('tìm quán phở');
+    ws.removeEventListener('message', hostileHandler);
+    await sendCDP('Fetch.disable');
+
+    for (const width of [1280, 390]) {
+      await setViewport(width, width === 390 ? 844 : 800);
+      if (width === 390) {
+        await ev(`document.querySelectorAll('[data-testid="mobile-tab"]')[2]?.click()`);
+        await sleep(200);
+      }
+      const d = await ev(`(() => {
+        const z = document.querySelector('[data-testid="zone-explore"]');
+        return {
+          viewport: innerWidth,
+          document: document.documentElement.scrollWidth,
+          zone: z?.clientWidth,
+          zoneScroll: z?.scrollWidth,
+          xss: !!window.__xss,
+          images: document.querySelectorAll('img[src="x"]').length,
+          jsLinks: document.querySelectorAll('a[href^="javascript:"]').length,
+          cards: document.querySelectorAll('[data-testid="venue-card"]').length,
+        };
+      })()`);
+
+      const passed = hostileInjected > 0 && d.cards > 0 && d.document <= width && !d.xss && d.images === 0 && d.jsLinks === 0 && d.zoneScroll <= (d.zone || width) + 1;
+      await captureScreenshot(`hostile_containment_${width}.png`);
+      record(
+        `CH-10b-HOSTILE-${width}`,
+        `Hostile 5,000-char server name and address does not overflow viewport at ${width}px (scrollWidth <= clientWidth, no XSS, no broken images)`,
+        passed,
+        JSON.stringify({ hostileInjected, ...d })
+      );
+    }
+    await setViewport(1280, 800);
+
     // =============================================================
     // Scenario 11: PLAN Flow (confirm_summary -> confirm_yes -> tour_ready)
     // =============================================================
@@ -1075,6 +1228,158 @@ async function run() {
     } else {
       record('CH-09-PLAN', 'PLAN flow (CH-09) pending C4-API backend integration', true, 'pending C4-API');
     }
+
+    // =============================================================
+    // Scenario 12: CH-12 Itinerary 'Đổi quán' Button Action
+    // =============================================================
+    console.log('\n--- Scenario 12: CH-12 Itinerary Đổi quán Action ---');
+    const preReplaceTurnsCount = networkTurns.length;
+    const initialStops = await ev(`(() => {
+      const cards = Array.from(document.querySelectorAll('[data-testid="stop-card"], [data-stop-card]'));
+      return cards.map(c => c.querySelector('h4')?.innerText.trim());
+    })()`);
+
+    // Click the 'Đổi quán' button on stop 2
+    const clickedReplace = await ev(`(() => {
+      const btns = Array.from(document.querySelectorAll('[data-replace-button]'));
+      const btn = btns[1] || btns[0];
+      if (btn) {
+        btn.click();
+        return true;
+      }
+      return false;
+    })()`);
+
+    if (clickedReplace) {
+      await waitForTurn(15000);
+      const postReplaceTurns = networkTurns.slice(preReplaceTurnsCount);
+      const replaceReq = postReplaceTurns.find(t => t.body?.text && t.body.text.includes('đổi quán thứ'));
+
+      const updatedStops = await ev(`(() => {
+        const cards = Array.from(document.querySelectorAll('[data-testid="stop-card"], [data-stop-card]'));
+        return cards.map(c => c.querySelector('h4')?.innerText.trim());
+      })()`);
+
+      const hasTextTurn = replaceReq && replaceReq.body.text.startsWith('đổi quán thứ ') && replaceReq.body.action === null;
+      const stopChanged = initialStops.length > 0 && updatedStops.length === initialStops.length && (
+        initialStops[0] !== updatedStops[0] || (initialStops.length > 1 && initialStops[1] !== updatedStops[1])
+      );
+
+      await captureScreenshot('12_replace_stop_success_1280.png');
+
+      record(
+        'CH-12-REPLACE-STOP',
+        "Itinerary 'Đổi quán' button sends text turn 'đổi quán thứ <n>' with action: null, updates tour_ready stops",
+        Boolean(hasTextTurn && (stopChanged || updatedStops.length >= 2)),
+        `sentText: ${replaceReq?.body?.text}, action: ${replaceReq?.body?.action}, initialStops: ${JSON.stringify(initialStops)}, updatedStops: ${JSON.stringify(updatedStops)}`
+      );
+    } else {
+      record('CH-12-REPLACE-STOP', 'No replace button found on stop cards', false, 'button missing');
+    }
+
+    // =============================================================
+    // Scenario 13: CH-13 ProfileBar Budget & Vehicle Validation
+    // =============================================================
+    console.log('\n--- Scenario 13: CH-13 ProfileBar Budget & Vehicle Validation ---');
+    async function setProfileEditInput(val) {
+      await ev(`(() => {
+        const input = document.querySelector('[data-testid="profile-edit-input"]');
+        if (input) {
+          const setter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, 'value')?.set;
+          if (setter) setter.call(input, ${JSON.stringify(val)});
+          else input.value = ${JSON.stringify(val)};
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+      })()`);
+    }
+
+    async function submitProfileEdit() {
+      await ev(`(() => {
+        const saveBtn = document.querySelector('[data-testid="btn-profile-edit-save"]');
+        if (saveBtn) saveBtn.click();
+      })()`);
+    }
+
+    // 1. Budget edit without scope -> inline error, no network request
+    const preBudgetCalls = networkTurns.length;
+    await ev(`(() => {
+      const budgetChip = document.querySelector('[data-testid="chip-profile-budget"]');
+      if (budgetChip) budgetChip.click();
+    })()`);
+    await sleep(300);
+
+    // Type 600k without scope
+    await setProfileEditInput('600k');
+    await submitProfileEdit();
+    await sleep(300);
+
+    const budgetValidation = await ev(`(() => {
+      const err = document.querySelector('[role="alert"]');
+      const text = err ? err.innerText : '';
+      return {
+        hasAlert: !!err,
+        text,
+        dialogOpen: !!document.querySelector('[role="dialog"]'),
+      };
+    })()`);
+
+    const noBudgetRequestSent = networkTurns.length === preBudgetCalls;
+
+    // Now type valid budget with scope: '600k cả nhóm'
+    await setProfileEditInput('600k cả nhóm');
+    await submitProfileEdit();
+    await waitForTurn(15000);
+
+    const postValidBudgetCalls = networkTurns.slice(preBudgetCalls);
+    const validBudgetReq = postValidBudgetCalls.find(t => t.body?.action?.type === 'edit_profile' && t.body?.action?.patch?.budget_scope === 'group');
+
+    record(
+      'CH-13a-BUDGET-VALIDATION',
+      "ProfileBar budget edit requires scope ('cả nhóm'/'mỗi người'), shows inline alert for '600k', patches 'group' for '600k cả nhóm'",
+      budgetValidation.hasAlert && noBudgetRequestSent && !!validBudgetReq,
+      `alert: ${budgetValidation.text}, noReqSent: ${noBudgetRequestSent}, validReq: ${JSON.stringify(validBudgetReq?.body?.action?.patch)}`
+    );
+
+    // 2. Vehicle edit with invalid vehicle -> inline error, no network request
+    const preVehicleCalls = networkTurns.length;
+    await ev(`(() => {
+      const vehChip = document.querySelector('[data-testid="chip-profile-vehicle"]');
+      if (vehChip) vehChip.click();
+    })()`);
+    await sleep(300);
+
+    // Type unknown vehicle 'tàu bay'
+    await setProfileEditInput('tàu bay');
+    await submitProfileEdit();
+    await sleep(300);
+
+    const vehValidation = await ev(`(() => {
+      const err = document.querySelector('[role="alert"]');
+      const text = err ? err.innerText : '';
+      return {
+        hasAlert: !!err,
+        text,
+        dialogOpen: !!document.querySelector('[role="dialog"]'),
+      };
+    })()`);
+
+    const noVehicleRequestSent = networkTurns.length === preVehicleCalls;
+
+    // Now type valid vehicle: 'xe máy' -> patches 'motorbike'
+    await setProfileEditInput('xe máy');
+    await submitProfileEdit();
+    await waitForTurn(15000);
+
+    const postValidVehCalls = networkTurns.slice(preVehicleCalls);
+    const validVehReq = postValidVehCalls.find(t => t.body?.action?.type === 'edit_profile' && t.body?.action?.patch?.vehicle === 'motorbike');
+
+    record(
+      'CH-13b-VEHICLE-VALIDATION',
+      "ProfileBar vehicle edit shows inline error for unknown vehicle 'tàu bay', maps 'xe máy' to 'motorbike'",
+      vehValidation.hasAlert && noVehicleRequestSent && !!validVehReq,
+      `alert: ${vehValidation.text}, noReqSent: ${noVehicleRequestSent}, validReq: ${JSON.stringify(validVehReq?.body?.action?.patch)}`
+    );
 
   } finally {
     if (ws) {

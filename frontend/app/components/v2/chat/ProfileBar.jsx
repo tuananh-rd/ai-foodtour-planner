@@ -19,22 +19,27 @@ function parseProfileField(fieldKey, rawVal) {
   }
 
   if (fieldKey === 'budget') {
-    const isPerPerson = val.toLowerCase().includes('người') || val.toLowerCase().includes('mỗi');
+    const lower = val.toLowerCase();
+    const isPerPerson = lower.includes('người') || lower.includes('mỗi') || lower.includes('/người');
+    const isGroup = lower.includes('cả nhóm') || lower.includes('tổng') || lower.includes('nhóm');
     let digits = parseInt(val.replace(/[^\d]/g, ''), 10);
     if (isNaN(digits) || digits <= 0) {
-      return { error: 'Ngân sách không hợp lệ (ví dụ: 250k mỗi người).' };
+      return { error: 'Ngân sách không hợp lệ (ví dụ: 250k mỗi người hoặc 600k cả nhóm).' };
     }
-    if (val.toLowerCase().includes('k') && digits < 10000) {
+    if (lower.includes('k') && digits < 10000) {
       digits = digits * 1000;
     } else if (digits > 0 && digits < 1000) {
       digits = digits * 1000;
+    }
+    if (!isPerPerson && !isGroup) {
+      return { error: 'Vui lòng chỉ rõ phạm vi ngân sách: mỗi người hay cả nhóm (ví dụ: 250k mỗi người hoặc 600k cả nhóm).' };
     }
     return {
       action: {
         type: 'edit_profile',
         patch: {
           budget_vnd: digits,
-          budget_scope: isPerPerson ? 'per_person' : 'total',
+          budget_scope: isPerPerson ? 'per_person' : 'group',
         },
       },
     };
@@ -58,9 +63,19 @@ function parseProfileField(fieldKey, rawVal) {
 
   if (fieldKey === 'vehicle') {
     const lower = val.toLowerCase();
-    let v = 'walking';
-    if (lower.includes('máy') || lower.includes('motor')) v = 'motorbike';
-    else if (lower.includes('ô tô') || lower.includes('taxi') || lower.includes('car')) v = 'taxi';
+    let v = null;
+    if (lower.includes('bộ') || lower.includes('walk')) {
+      v = 'walk';
+    } else if (lower.includes('máy') || lower.includes('motor') || lower.includes('bike')) {
+      v = 'motorbike';
+    } else if (lower.includes('ô tô') || lower.includes('oto') || lower.includes('car')) {
+      v = 'car';
+    } else if (lower.includes('taxi') || lower.includes('grab')) {
+      v = 'taxi';
+    }
+    if (!v) {
+      return { error: 'Phương tiện không hợp lệ. Vui lòng chọn: đi bộ, xe máy, ô tô hoặc taxi/grab.' };
+    }
     return { action: { type: 'edit_profile', patch: { vehicle: v } } };
   }
 
@@ -412,6 +427,7 @@ export default function ProfileBar({
               </label>
               <input
                 id="profile-edit-input"
+                data-testid="profile-edit-input"
                 aria-labelledby="profile-edit-label"
                 ref={inputRef}
                 type="text"
@@ -433,7 +449,7 @@ export default function ProfileBar({
                 }}
               />
               {errorMsg && (
-                <div role="alert" style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>
+                <div role="alert" data-testid="profile-edit-error" style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>
                   ⚠️ {errorMsg}
                 </div>
               )}
@@ -441,6 +457,7 @@ export default function ProfileBar({
                 <button
                   ref={cancelBtnRef}
                   type="button"
+                  data-testid="btn-profile-edit-cancel"
                   onClick={handleCloseEdit}
                   style={{
                     minHeight: 44,
@@ -458,6 +475,7 @@ export default function ProfileBar({
                 <button
                   ref={saveBtnRef}
                   type="submit"
+                  data-testid="btn-profile-edit-save"
                   style={{
                     minHeight: 44,
                     padding: '8px 16px',

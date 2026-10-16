@@ -75,6 +75,7 @@ const EvidenceChip = loadComponent('../../frontend/app/ui/EvidenceChip.jsx');
 const Toast = loadComponent('../../frontend/app/ui/Toast.jsx');
 const MapsLinksBlock = loadComponent('../../frontend/app/components/v2/MapsLinksBlock.jsx');
 const EvidenceStrip = loadComponent('../../frontend/app/components/v2/EvidenceStrip.jsx');
+const BlockRenderer = loadComponent('../../frontend/app/components/v2/chat/BlockRenderer.jsx');
 import { SYNTHETIC_MAPS_LINKS } from '../../frontend/lib/mapsFixtures.js';
 
 const results = [];
@@ -737,7 +738,8 @@ async function runComponentTests() {
   record(
     'TC-MAPS-07',
     'MapsLinksBlock renders privacy and schedule proposal disclaimers',
-    htmlSingle.includes('sent to Google only when the user opens them') &&
+    (htmlSingle.includes('sent to Google only when the user opens them') ||
+      htmlSingle.includes('chỉ được gửi tới Google khi bạn mở liên kết')) &&
       htmlSingle.includes('Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác') &&
       !htmlSingle.includes('khoảng cách Google') &&
       !htmlSingle.includes('thời gian Google tính'),
@@ -1392,6 +1394,30 @@ async function runComponentTests() {
       loosenedUnsafeCount === 14 &&
       strictReproClaimsProvider === false,
     `Loosened logic unsafe count=${loosenedUnsafeCount} (fails on 97fbb55); strict predicate safe=true`
+  );
+
+  // -------------------------------------------------------------
+  // Test 13: BlockRenderer compare_table 'Chưa rõ' fallback with null cell
+  // -------------------------------------------------------------
+  console.log('--- Test 13: BlockRenderer Compare Table Fallback ---');
+  const compareBlock = {
+    type: 'compare_table',
+    criteria: [{ id: 'price', label: 'Giá tiền' }],
+    columns: [{ venue_id: 'V1', name: 'Quán A' }],
+    rows: [
+      {
+        criterion_id: 'price',
+        cells: [{ value: null, status: 'unknown' }]
+      }
+    ]
+  };
+  const compareHtml = renderToStaticMarkup(React.createElement(BlockRenderer, { block: compareBlock }));
+  const hasFallbackText = compareHtml.includes('Chưa rõ');
+  record(
+    'TC-COMPARE-NULL-FALLBACK',
+    "BlockRenderer compare_table renders 'Chưa rõ' fallback for cell with null value",
+    hasFallbackText,
+    `Rendered 'Chưa rõ': ${hasFallbackText}`
   );
 
   console.log('\n===============================================================');

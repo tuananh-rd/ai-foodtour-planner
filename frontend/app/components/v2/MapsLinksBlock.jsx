@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getMapsLinks } from '../../../lib/api';
 import { useStatusQueue } from '../../ui/StatusQueue';
-import { isValidGoogleMapsDirUrl, translateSkippedReason } from '../../../lib/mapsUrlValidation';
+import { isValidGoogleMapsDirUrl, translateSkippedReason, translateServerNote } from '../../../lib/mapsUrlValidation';
 
 /**
  * Free Google Maps URLs Itinerary Block (Contract v1.7, GMAPS-URL-2).
@@ -519,7 +519,7 @@ export default function MapsLinksBlock({
         >
           {serverNotes.map((note, idx) => (
             <div key={idx} data-maps-note style={{ marginBottom: idx < serverNotes.length - 1 ? '4px' : 0 }}>
-              ℹ️ {String(note)}
+              ℹ️ {translateServerNote(String(note))}
             </div>
           ))}
         </div>
@@ -639,7 +639,7 @@ export default function MapsLinksBlock({
         }}
       >
         <div>
-          🔒 Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.
+          🔒 Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới Google khi bạn mở liên kết (Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them).
         </div>
         <div>
           ⏱️ Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác.

@@ -17,15 +17,17 @@ function formatVnd(val) {
  * Escapes / ensures safe string rendering (no raw HTML injection)
  */
 function SafeText({ text, className = '', style = {} }) {
-  if (!text) return null;
+  if (text === null || text === undefined || text === '') return null;
   return (
     <span
       className={className}
       dir="auto"
       style={{
-        overflowWrap: 'break-word',
+        overflowWrap: 'anywhere',
         wordBreak: 'break-word',
         unicodeBidi: 'plaintext',
+        minWidth: 0,
+        maxWidth: '100%',
         ...style,
       }}
     >
@@ -114,7 +116,7 @@ export default function BlockRenderer({
           }}
         >
           <span aria-hidden="true" style={{ fontSize: 16 }}>{icon}</span>
-          <div style={{ flex: 1, wordBreak: 'break-word' }}>
+          <div style={{ flex: 1, wordBreak: 'break-word', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere' }}>
             <SafeText text={block.text} />
           </div>
         </div>
@@ -227,10 +229,14 @@ export default function BlockRenderer({
                     borderRadius: 12,
                     padding: 14,
                     boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    minWidth: 0,
+                    maxWidth: '100%',
+                    overflowWrap: 'anywhere',
+                    boxSizing: 'border-box',
                   }}
                 >
                   {/* Header: Label badge + Name */}
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6, minWidth: 0, maxWidth: '100%' }}>
                     <span
                       data-testid="card-label-badge"
                       style={{
@@ -244,11 +250,12 @@ export default function BlockRenderer({
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
+                        flexShrink: 0,
                       }}
                     >
                       {card.label || String.fromCharCode(65 + idx)}
                     </span>
-                    <strong style={{ fontSize: 15, color: '#1F1B16', flex: 1 }}>
+                    <strong style={{ fontSize: 15, color: '#1F1B16', flex: 1, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                       <SafeText text={v.name} />
                     </strong>
                     {inShortlist && (
@@ -261,6 +268,7 @@ export default function BlockRenderer({
                           border: '1px solid #9ED4A7',
                           padding: '2px 8px',
                           borderRadius: 6,
+                          flexShrink: 0,
                         }}
                       >
                         Đã thêm
@@ -269,14 +277,14 @@ export default function BlockRenderer({
                   </div>
 
                   {/* Location & District */}
-                  <div style={{ fontSize: 13, color: '#6B6259', marginBottom: 8 }}>
+                  <div style={{ fontSize: 13, color: '#6B6259', marginBottom: 8, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     <SafeText text={v.district} />
-                    {v.address ? ` · ${v.address}` : ''}
-                    {distText && ` · ${distText}`}
+                    {v.address ? <span> · <SafeText text={v.address} /></span> : ''}
+                    {distText && <span> · <SafeText text={distText} /></span>}
                   </div>
 
                   {/* Chips: Price Range, Hours, Rating */}
-                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8 }}>
+                  <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 8, minWidth: 0, maxWidth: '100%' }}>
                     <span
                       style={{
                         fontSize: 12,
@@ -285,6 +293,9 @@ export default function BlockRenderer({
                         border: '1px solid #FFD480',
                         padding: '3px 8px',
                         borderRadius: 6,
+                        minWidth: 0,
+                        maxWidth: '100%',
+                        overflowWrap: 'anywhere',
                       }}
                     >
                       {priceText}
@@ -297,6 +308,9 @@ export default function BlockRenderer({
                         border: '1px solid #C8C1B7',
                         padding: '3px 8px',
                         borderRadius: 6,
+                        minWidth: 0,
+                        maxWidth: '100%',
+                        overflowWrap: 'anywhere',
                       }}
                     >
                       {hoursText}
@@ -308,6 +322,9 @@ export default function BlockRenderer({
                         color: '#1F1B16',
                         padding: '3px 8px',
                         borderRadius: 6,
+                        minWidth: 0,
+                        maxWidth: '100%',
+                        overflowWrap: 'anywhere',
                       }}
                     >
                       {ratingText}
@@ -316,7 +333,7 @@ export default function BlockRenderer({
 
                   {/* Why Chips */}
                   {card.why && card.why.length > 0 && (
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8 }}>
+                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: 4, marginBottom: 8, minWidth: 0, maxWidth: '100%' }}>
                       {card.why.map((w, wIdx) => (
                         <span
                           key={wIdx}
@@ -327,6 +344,10 @@ export default function BlockRenderer({
                             color: '#6B6259',
                             padding: '2px 6px',
                             borderRadius: 4,
+                            minWidth: 0,
+                            maxWidth: '100%',
+                            overflowWrap: 'anywhere',
+                            wordBreak: 'break-word',
                           }}
                         >
                           <SafeText text={w.text} />
@@ -420,17 +441,20 @@ export default function BlockRenderer({
             padding: 14,
             marginBottom: 16,
             overflowX: 'auto',
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
           }}
         >
           <h4 style={{ margin: '0 0 10px', fontSize: 14, fontWeight: 700, color: '#1F1B16' }}>
             Bảng so sánh quán
           </h4>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, minWidth: 0 }}>
             <thead>
               <tr style={{ borderBottom: '2px solid #DFD5C6', textAlign: 'left' }}>
-                <th style={{ padding: '8px 6px', color: '#6B6259', fontWeight: 600 }}>Tiêu chí</th>
+                <th style={{ padding: '8px 6px', color: '#6B6259', fontWeight: 600, minWidth: 0, maxWidth: '140px', overflowWrap: 'anywhere' }}>Tiêu chí</th>
                 {columns.map((col, idx) => (
-                  <th key={col.venue_id || idx} style={{ padding: '8px 6px', color: '#C8431A', fontWeight: 700 }}>
+                  <th key={col.venue_id || idx} style={{ padding: '8px 6px', color: '#C8431A', fontWeight: 700, minWidth: 0, maxWidth: '180px', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     {col.label ? `${col.label}. ` : ''}
                     <SafeText text={col.name} />
                   </th>
@@ -442,17 +466,17 @@ export default function BlockRenderer({
                 const crit = criteria.find((c) => c.id === row.criterion_id) || { label: row.criterion_id };
                 return (
                   <tr key={row.criterion_id || rIdx} style={{ borderBottom: '1px solid #F0EAE1' }}>
-                    <td style={{ padding: '8px 6px', fontWeight: 600, color: '#1F1B16' }}>
+                    <td style={{ padding: '8px 6px', fontWeight: 600, color: '#1F1B16', minWidth: 0, maxWidth: '140px', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                       <SafeText text={crit.label} />
                     </td>
                     {(row.cells || []).map((cell, cIdx) => {
                       const displayVal = cell.value || 'Chưa rõ';
                       const noteText = cell.note ? ` (${cell.note})` : (cell.status === 'estimate' ? ' (ước tính)' : cell.status === 'source' ? ' (theo nguồn)' : '');
                       return (
-                        <td key={cIdx} style={{ padding: '8px 6px', color: cell.value ? '#1F1B16' : '#6B6259' }}>
+                        <td key={cIdx} style={{ padding: '8px 6px', color: cell.value ? '#1F1B16' : '#6B6259', minWidth: 0, maxWidth: '180px', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                           <SafeText text={displayVal} />
                           {noteText && (
-                            <span style={{ fontSize: 11, color: '#8C827A' }}>
+                            <span style={{ fontSize: 11, color: '#8C827A', overflowWrap: 'anywhere' }}>
                               <SafeText text={noteText} />
                             </span>
                           )}
@@ -466,9 +490,9 @@ export default function BlockRenderer({
           </table>
 
           {unsupported.length > 0 && (
-            <div data-testid="unsupported-criteria-notice" style={{ marginTop: 12, padding: '8px 10px', background: '#FBF8F3', borderRadius: 6, fontSize: 12, color: '#6B6259' }}>
+            <div data-testid="unsupported-criteria-notice" style={{ marginTop: 12, padding: '8px 10px', background: '#FBF8F3', borderRadius: 6, fontSize: 12, color: '#6B6259', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
               <strong>Tiêu chí chưa có dữ liệu:</strong>{' '}
-              {unsupported.map((u) => u.text || u.criterion).join(', ')}
+              <SafeText text={unsupported.map((u) => u.text || u.criterion).join(', ')} />
             </div>
           )}
         </div>
@@ -486,14 +510,17 @@ export default function BlockRenderer({
             borderRadius: 12,
             padding: 14,
             marginBottom: 12,
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
           }}
         >
           {block.question && (
-            <p style={{ margin: '0 0 10px', fontSize: 14, fontWeight: 600, color: '#1F1B16' }}>
+            <p style={{ margin: '0 0 10px', fontSize: 14, fontWeight: 600, color: '#1F1B16', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere' }}>
               <SafeText text={block.question} />
             </p>
           )}
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8, minWidth: 0, maxWidth: '100%' }}>
             {options.map((opt, idx) => (
               <button
                 key={opt.option_id || idx}
@@ -503,7 +530,8 @@ export default function BlockRenderer({
                 onClick={() => onAction && onAction({ type: 'pick_option', option_id: opt.option_id })}
                 style={{
                   minHeight: 44,
-                  minWidth: 44,
+                  minWidth: 0,
+                  maxWidth: '100%',
                   padding: '10px 16px',
                   borderRadius: 8,
                   border: '1px solid #C8431A',
@@ -513,6 +541,8 @@ export default function BlockRenderer({
                   fontSize: 13,
                   cursor: busy ? 'not-allowed' : 'pointer',
                   boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+                  overflowWrap: 'anywhere',
+                  wordBreak: 'break-word',
                 }}
               >
                 <SafeText text={opt.label} />
@@ -537,6 +567,9 @@ export default function BlockRenderer({
             borderRadius: 12,
             padding: 16,
             marginBottom: 16,
+            minWidth: 0,
+            maxWidth: '100%',
+            boxSizing: 'border-box',
           }}
         >
           <h4 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, color: '#1F1B16' }}>
@@ -544,16 +577,16 @@ export default function BlockRenderer({
           </h4>
 
           {/* Profile fields summary */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12 }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 12, minWidth: 0, maxWidth: '100%' }}>
             {items.map((it, idx) => {
               const isMissing = it.status === 'missing' || !it.value;
               return (
-                <div key={it.id || idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13 }}>
-                  <span style={{ color: '#6B6259' }}>
+                <div key={it.id || idx} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 13, gap: 8, minWidth: 0, maxWidth: '100%' }}>
+                  <span style={{ color: '#6B6259', minWidth: 0, maxWidth: '50%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     <SafeText text={it.label} />:
                   </span>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                    <strong style={{ color: isMissing ? '#991B1B' : '#1F1B16' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, maxWidth: '50%', justifyContent: 'flex-end' }}>
+                    <strong style={{ color: isMissing ? '#991B1B' : '#1F1B16', minWidth: 0, overflowWrap: 'anywhere', wordBreak: 'break-word', textAlign: 'right' }}>
                       <SafeText text={isMissing ? 'Thiếu' : it.value} />
                     </strong>
                     {isMissing && (
@@ -566,6 +599,7 @@ export default function BlockRenderer({
                           color: '#991B1B',
                           padding: '2px 6px',
                           borderRadius: 4,
+                          flexShrink: 0,
                         }}
                       >
                         Thiếu
@@ -579,13 +613,13 @@ export default function BlockRenderer({
 
           {/* Shortlist summary */}
           {shortlistItems.length > 0 && (
-            <div style={{ marginBottom: 12, borderTop: '1px solid #F0EAE1', paddingTop: 8 }}>
+            <div style={{ marginBottom: 12, borderTop: '1px solid #F0EAE1', paddingTop: 8, minWidth: 0, maxWidth: '100%' }}>
               <span style={{ fontSize: 12, fontWeight: 600, color: '#6B6259', display: 'block', marginBottom: 4 }}>
                 Các quán đã chọn ({shortlistItems.length}):
               </span>
-              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#1F1B16' }}>
+              <ul style={{ margin: 0, paddingLeft: 20, fontSize: 13, color: '#1F1B16', minWidth: 0, maxWidth: '100%' }}>
                 {shortlistItems.map((s, sIdx) => (
-                  <li key={s.venue_id || sIdx}>
+                  <li key={s.venue_id || sIdx} style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                     <SafeText text={s.name || s.venue_id} />
                     {s.status === 'kept' ? ' (Đã giữ)' : ''}
                   </li>
@@ -596,9 +630,9 @@ export default function BlockRenderer({
 
           {/* Warnings */}
           {warnings.length > 0 && (
-            <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8, padding: '8px 12px', marginBottom: 12 }}>
+            <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8, padding: '8px 12px', marginBottom: 12, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere' }}>
               {warnings.map((w, wIdx) => (
-                <div key={w.code || wIdx} style={{ fontSize: 12, color: '#92400E' }}>
+                <div key={w.code || wIdx} style={{ fontSize: 12, color: '#92400E', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                   ⚠️ <SafeText text={w.text} />
                 </div>
               ))}
@@ -652,23 +686,23 @@ export default function BlockRenderer({
     }
 
     case 'tour_ready': {
-      if (!tour) return null;
+      const currentTour = block.tour || tour;
+      if (!currentTour) return null;
       return (
-        <div data-testid="tour-ready-block" style={{ marginBottom: 20 }}>
-          <div data-testid="itinerary-view">
+        <div data-testid="tour-ready-block" style={{ marginBottom: 20, minWidth: 0, maxWidth: '100%' }}>
+          <div data-testid="itinerary-view" style={{ minWidth: 0, maxWidth: '100%' }}>
             <ItineraryView
-              tour={tour}
+              tour={currentTour}
               sessionId={sessionId}
               sessionToken={sessionToken}
               highlightedStopId={null}
               onSelectStop={() => {}}
-              onInitiateReplace={(stop) => {
+              onInitiateReplace={(stop, orderNum) => {
+                const order = stop?.order || orderNum || 1;
                 if (onAction) {
                   onAction({
-                    type: 'replace_stop',
-                    venue_id: stop?.venue_id,
-                    order: stop?.order,
-                    text: `đổi quán thứ ${stop?.order || 1}`,
+                    type: 'text',
+                    text: `đổi quán thứ ${order}`,
                   });
                 }
               }}

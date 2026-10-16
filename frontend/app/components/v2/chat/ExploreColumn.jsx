@@ -37,7 +37,11 @@ export default function ExploreColumn({
         background: '#FBF8F3',
         padding: '16px',
         overflowY: 'auto',
+        overflowX: 'hidden',
         boxSizing: 'border-box',
+        minWidth: 0,
+        maxWidth: '100%',
+        width: '100%',
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>

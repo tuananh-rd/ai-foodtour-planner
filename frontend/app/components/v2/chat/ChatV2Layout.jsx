@@ -585,8 +585,11 @@ export default function ChatV2Layout({
             style={{
               flex: 1,
               display: 'grid',
-              gridTemplateColumns: isDesktop ? '380px 300px 1fr' : '1fr',
+              gridTemplateColumns: isDesktop ? '380px 300px minmax(0, 1fr)' : 'minmax(0, 1fr)',
               overflow: 'hidden',
+              minWidth: 0,
+              maxWidth: '100%',
+              width: '100%',
             }}
           >
             {/* Zone 1: Chat Column */}
@@ -596,6 +599,9 @@ export default function ChatV2Layout({
                 flexDirection: 'column',
                 height: '100%',
                 overflow: 'hidden',
+                minWidth: 0,
+                maxWidth: '100%',
+                width: '100%',
               }}
             >
               <ChatColumn
@@ -614,6 +620,9 @@ export default function ChatV2Layout({
                 flexDirection: 'column',
                 height: '100%',
                 overflow: 'hidden',
+                minWidth: 0,
+                maxWidth: '100%',
+                width: '100%',
               }}
             >
               <ShortlistColumn
@@ -631,6 +640,9 @@ export default function ChatV2Layout({
                 flexDirection: 'column',
                 height: '100%',
                 overflow: 'hidden',
+                minWidth: 0,
+                maxWidth: '100%',
+                width: '100%',
               }}
             >
               <ExploreColumn

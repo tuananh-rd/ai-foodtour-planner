@@ -124,8 +124,8 @@ export default function StopCard({
       )}
 
       {/* Main Stop Header */}
-      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px' }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1 }}>
+      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '12px', minWidth: 0, maxWidth: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px', flex: 1, minWidth: 0, maxWidth: '100%' }}>
           {/* Order Badge */}
           <div
             style={{
@@ -147,7 +147,7 @@ export default function StopCard({
           </div>
 
           {/* Name & District & Rating */}
-          <div style={{ flex: 1 }}>
+          <div style={{ flex: 1, minWidth: 0, maxWidth: '100%' }}>
             <h4
               style={{
                 fontSize: 'var(--type-16, 16px)',
@@ -155,16 +155,20 @@ export default function StopCard({
                 color: 'var(--text, #1F1B16)',
                 margin: '0 0 4px 0',
                 lineHeight: 1.3,
+                minWidth: 0,
+                maxWidth: '100%',
+                overflowWrap: 'anywhere',
+                wordBreak: 'break-word',
               }}
             >
               {stop.name}
             </h4>
-            <div style={{ fontSize: '13px', color: 'var(--muted, #6B6259)', marginBottom: '4px' }}>
+            <div style={{ fontSize: '13px', color: 'var(--muted, #6B6259)', marginBottom: '4px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere' }}>
               {stop.district ? `${stop.district} · ` : ''}
               {ratingDisplay}
             </div>
             {stop.address && (
-              <div style={{ fontSize: '12px', color: 'var(--muted, #6B6259)', marginBottom: '8px' }}>
+              <div style={{ fontSize: '12px', color: 'var(--muted, #6B6259)', marginBottom: '8px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                 📍 {stop.address}
               </div>
             )}
@@ -172,7 +176,7 @@ export default function StopCard({
         </div>
 
         {/* Locked badge or Replace Button */}
-        <div>
+        <div style={{ flexShrink: 0 }}>
           {isLocked ? (
             <span
               style={{
@@ -191,7 +195,7 @@ export default function StopCard({
             <Button
               variant="secondary"
               data-replace-button
-              onClick={() => onInitiateReplace && onInitiateReplace(stop)}
+              onClick={() => onInitiateReplace && onInitiateReplace(stop, stop?.order || index + 1)}
               disabled={busy}
               style={{
                 padding: '6px 12px',

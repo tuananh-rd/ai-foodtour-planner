@@ -358,6 +358,7 @@ async function run() {
     record('TC-V2-05', 'One-tap chip pre-fills request input', inputValue.length > 0, `Value: "${inputValue}"`);
 
     // Verify visible keyboard focus indicator on request input (F06)
+    await send('Emulation.setFocusEmulationEnabled', { enabled: true });
     const keyboardFocusIndicator = await ev(`(() => {
       const inp = document.querySelector('input[data-request-input]');
       if (!inp) return { hasFocus: false, outline: 'none' };

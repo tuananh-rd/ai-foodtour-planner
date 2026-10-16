@@ -743,7 +743,8 @@ async function run() {
       'TC-MAPS-PRIVACY-NOTE',
       'Privacy note rendered: coordinates sent only when user opens link',
       disclaimerText.includes('Links contain the origin/venue coordinates') ||
-        disclaimerText.includes('sent to Google only when the user opens them'),
+        disclaimerText.includes('sent to Google only when the user opens them') ||
+        disclaimerText.includes('chỉ được gửi tới Google khi bạn mở liên kết'),
       'Privacy note present'
     );
 
