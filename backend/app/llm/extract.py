@@ -11,6 +11,7 @@ import unicodedata
 from dataclasses import dataclass, field, replace
 from typing import Optional, Protocol
 
+from app.planner import allergens
 from app.planner.engine import missing_slots
 from app.planner.relevance import fold, fold_uncached
 from app.planner.types import Preferences
@@ -90,7 +91,57 @@ def _money(u: str) -> Optional[int]:
     return None
 
 
+_ALLERGY_TRIGGER = re.compile(
+    r"(?:bị\s+|bi\s+)?(?:dị ứng|di ung|kiêng|kieng|không ăn được|khong an duoc|không thể ăn|khong the an)"
+    r"(?:\s+(?:với|voi))?\s+([^.;!?\n]+)")
+_AVOID_TRIGGER = re.compile(r"\b(?:không|khong|ko)\s+(?:ăn|an)\s+(?:được\s+|duoc\s+)?([^.;!?,\n]+)")
+_TERM_SPLIT = re.compile(r",|\bvà\b|\bva\b|\bhoặc\b|\bhoac\b|\bvới\b|\bvoi\b|\bnhưng\b|\bnhung\b|\bcòn\b|\bcon\b")
+_FILLER = re.compile(r"^(?:các|cac|món|mon|đồ|do|những|nhung|loại|loai|thịt|thit)\s+")
+_TRAILING = re.compile(r"\s+(?:nữa|nua|nhé|nhe|nha|thôi|thoi|ạ|a|đấy|day|luôn|luon)$")
+_NOT_A_TERM = re.compile(r"\d|người|nguoi|nhóm|nhom|\bk\b|đồng|dong|ngân|ngan|tiền|tien")
+
+
+def _allergy_terms(chunk: str) -> list:
+    out = []
+    for raw in _TERM_SPLIT.split(chunk):
+        term = _TRAILING.sub("", _FILLER.sub("", raw.strip(" \t-:")).strip()).strip()
+        if not term or _NOT_A_TERM.search(term):
+            continue
+        term = " ".join(term.split()[:3])[:allergens.MAX_TERM_CHARS].strip()
+        if term and term not in out:
+            out.append(term)
+    return out
+
+
 class MockExtractor:
+    def _allergies(self, t, u, prior, upd, notes):
+        """Allergy / avoidance statements must never be dropped silently (C0-HF)."""
+        found = []
+        for m in _ALLERGY_TRIGGER.finditer(t):
+            found += _allergy_terms(m.group(1))
+        if found:
+            merged = list(prior.allergies)
+            for term in found:
+                if all(allergens.fold_uncached(term) != allergens.fold_uncached(x) for x in merged):
+                    merged.append(term)
+            upd["allergies"] = tuple(merged[:allergens.MAX_TERMS])
+            odd = allergens.unrecognised(tuple(found))
+            notes.append("Đã ghi nhận dị ứng/kiêng: " + ", ".join(found) + ". Dữ liệu quán không có thông tin nguyên liệu "
+                         "nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn "
+                         "— hãy hỏi quán trước khi ăn.")
+            if odd:
+                notes.append("Chưa có quy tắc cho: " + ", ".join(odd) + "; mình chỉ loại quán có tên/món chứa đúng từ này.")
+            return []
+        avoid = []
+        for m in _AVOID_TRIGGER.finditer(u):
+            terms = [x for x in _allergy_terms(m.group(1)) if allergens.recognised(x)]
+            if not terms:
+                continue
+            avoid += [x for x in terms if x not in avoid]
+            notes.append("Đã ghi nhận không ăn: " + ", ".join(terms) + ". Đây là dị ứng hay chỉ là không thích? "
+                         "Nếu là dị ứng, hãy nói 'dị ứng " + terms[0] + "' để mình lưu ý an toàn.")
+        return avoid
+
     def extract(self, text: str, prior: Optional[Preferences] = None) -> ExtractionResult:
         p = prior or Preferences()
         cleaned, dropped = _clean(text[:MAX_TEXT])
@@ -142,13 +193,21 @@ class MockExtractor:
             else:
                 rejected.append("max_stops")
                 notes.append("Số điểm dừng phải từ 1 đến 5; không được áp dụng.")
-        party = re.search(r"(?:nhom|di|cho|ban|gia dinh)\s*(\d+)\s*nguoi", u)
-        if party:
-            if 1 <= int(party.group(1)) <= 20:
-                upd["party_size"] = int(party.group(1))
+        party = (re.search(r"(?:nhom|di|cho|ban|gia dinh)\s*(\d+)\s*nguoi", u)
+                 or re.search(r"(?:doi thanh|doi sang|chinh thanh|chinh lai|con lai|con|co|la|gom|toi|minh|tui)\s*(\d+)\s*nguoi\b", u)
+                 or re.search(r"(?<![\d/.,])\b(\d{1,3})\s*nguoi\b", u))
+        party_n = int(party.group(1)) if party else None
+        if party_n is None:
+            word = re.search(r"(?:doi thanh|doi sang|chinh thanh|nhom|di|cho|gom|con|la)\s*(hai|ba|bon|nam|sau|bay|tam|chin|muoi)\s*nguoi\b", u)
+            if word:
+                party_n = {"hai": 2, "ba": 3, "bon": 4, "nam": 5, "sau": 6, "bay": 7, "tam": 8, "chin": 9, "muoi": 10}[word.group(1)]
+        if party_n is not None:
+            if 1 <= party_n <= 20:
+                upd["party_size"] = party_n
             else:
                 rejected.append("party_size")
                 notes.append("Số người phải từ 1 đến 20; không được áp dụng.")
+        avoid_terms = self._allergies(t, u, p, upd, notes)
         for name, ll in ANCHORS.items():
             if _strip_marks(name) in u:
                 upd["origin"] = ll
@@ -187,12 +246,18 @@ class MockExtractor:
         # Diacritic-insensitive, whole-word matching ("an bun" works; "oc" does not hit "hoc").
         ft = fold_uncached(t)
         excl = list(p.exclusions)
+        for x in avoid_terms:
+            if x not in excl:
+                excl.append(x)
         for d in DISH_TERMS:
             fd = re.escape(fold(d))
             if re.search(r"\b(khong|tranh|tru|bo)\s+(?:an\s+|muon\s+)?" + fd + r"\b", ft) and d not in excl:
                 excl.append(d)
         want = list(p.interests)
+        banned = {allergens.family_of(a) or fold_uncached(a) for a in (upd.get("allergies") or p.allergies)}
         for d in DISH_TERMS:
+            if (allergens.family_of(d) or fold_uncached(d)) in banned:
+                continue  # never turn an allergen into a wanted dish
             if re.search(r"\b" + re.escape(fold(d)) + r"\b", ft) and d not in excl and d not in want:
                 want.append(d)
         if tuple(want) != p.interests:

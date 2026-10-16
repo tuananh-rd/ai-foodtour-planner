@@ -10,6 +10,7 @@ LABEL = {
     "no_solution": "Không tìm được lịch trình thoả các ràng buộc.",
 }
 UNKNOWN_LABEL = {
+    "allergy_ingredients": "nguyên liệu/dị ứng của quán (dữ liệu không có; hãy hỏi quán trước khi ăn)",
     "hours": "giờ mở cửa theo ngày", "price_per_person": "giá theo người", "route": "dữ liệu định tuyến đi bộ từ nhà cung cấp",
     "party_size": "số người", "origin": "điểm xuất phát", "duration_min": "thời lượng", "budget_scope": "phạm vi ngân sách",
 }

@@ -58,6 +58,8 @@ class Preferences:
     party_size: Optional[int] = None
     interests: tuple = ()
     exclusions: tuple = ()
+    # Reported allergies/medical avoidances (C0-HF). Never "safe": the dataset has no ingredient data.
+    allergies: tuple = ()
     max_stops: int = 3
     mode: Mode = "explore"
     # Display/provenance only; never affects planning (contract v1.5).

@@ -10,6 +10,7 @@ from typing import Optional
 from .interfaces import RouteMatrixProvider, StraightLineEstimator, haversine_km
 from .quality import (dataset_mean_rating, effective_meal, matched_interests, meal_fit, MEAL_NAME_VI,
                       smoothed_rating, soft_score, well_rated, audience_fit)
+from .allergens import allergen_excluded
 from .relevance import excluded, interest_score
 from .types import Leg, Preferences, ReplaceResult, Stop, Tour, Venue
 
@@ -54,7 +55,7 @@ def eligible(v: Venue, prefs: Preferences) -> bool:
         return False
     if prefs.budget_vnd is not None and v.price_max_vnd is None:
         return False  # budget can't be checked; unknown price is never free
-    if excluded(v, prefs.exclusions):
+    if excluded(v, prefs.exclusions) or allergen_excluded(v, prefs.allergies):
         return False
     if any(x.strip() for x in prefs.interests) and interest_score(v, prefs.interests) == 0:
         return False
@@ -143,6 +144,8 @@ def _evaluate(seq: list, prefs: Preferences, routes: RouteMatrixProvider, with_w
             return None, "venue range upper sum exceeds budget"
         if prefs.budget_scope == "group" and prefs.party_size is None:
             unknowns.add("party_size")
+    if prefs.allergies:
+        unknowns.add("allergy_ingredients")  # no ingredient data exists: never verified
     if any(s.hours_evidence != "verified" for s in stops):
         unknowns.add("hours")
     if any(s.price_evidence != "verified" for s in stops):
