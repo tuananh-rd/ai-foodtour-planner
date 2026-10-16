@@ -159,7 +159,7 @@ Normative for Codex (server) and Antigravity (browser). Field names are fixed. I
 Default `limit` = 18 (`FOODTOUR_LLM_DAILY_BUDGET`, configurable; the free tier allows 20 and 2 are reserved). The daily window resets at **midnight US Pacific time** (matches the provider's quota reset); an HTTP 429 from the provider is authoritative: it marks the budget `exhausted` until the next reset regardless of the local counter. No key material is ever included.
 
 ### Messages response (additive)
-`extraction_source: "rules" | "llm" | "cache"` (adds `cache`), `llm_calls: 0 | 1` (provider calls consumed by THIS message), `llm_budget: {limit, remaining, exhausted} | null`. The rule extractor answers without any provider call when the required slots (origin and duration) are present and nothing needs the model (see UPGRADE_PLAN §5.3).
+`extraction_source: "rules" | "llm" | "cache"` (adds `cache`), `llm_calls: 0 | 1` (1 = the model was invoked for THIS message, including when it then failed and the rule result was returned; a purely local budget refusal is 0; the daily budget `used` counts every transport attempt once, so a transient-5xx retry can raise `used` by 2 while `llm_calls` stays 1), `llm_budget: {limit, remaining, exhausted} | null`. The rule extractor answers without any provider call when the required slots (origin and duration) are present and nothing needs the model (see UPGRADE_PLAN §5.3).
 
 ### Venue evidence fields (additive on `GET /v1/venues`, `GET /v1/venues/{id}`, tour stops' `venue`; every value is "as reported by the source")
 ```
@@ -175,6 +175,7 @@ Default `limit` = 18 (`FOODTOUR_LLM_DAILY_BUDGET`, configurable; the free tier a
 `rating.count < 5` or a missing value is shown as "ít đánh giá"/"chưa có", never as a score. None of these fields is evidence of opening hours or per-person price.
 
 ### Tour stops (additive)
+Each stop may carry a nested optional `venue` object (the venue evidence view above) in addition to the existing flattened fields.
 `why: [{ "code": "match_interest"|"near_origin"|"short_walk"|"well_rated"|"fits_meal"|"diverse", "text": string }]` — text is generated from validated facts by templates (no LLM needed); `well_rated` appears only when `rating.count >= 20`.
 
 ### Preferences (additive)
