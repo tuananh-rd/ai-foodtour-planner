@@ -76,3 +76,7 @@ Kế hoạch: `docs/CHATBOT_UPGRADE_PLAN.vi.md` (chẩn đoán có bằng chứn
 | C1-API | Codex | In progress | ctx_92a5468c2fb8 |
 | C5 (Claude ae32883) | Claude | DONE (engine side) | llm_understand.py: schema, sanitize (whitelists/ranges), LLMUnderstander gate (session cap 6, daily reserve 3, cache), engine integration; 354 tests OK; route wiring (provider from env, `understand` callable) = C5-API for Codex after C1-API; real Gemini smoke ≤8 calls at C6 |
 | C3-1 chat v2 UI | Antigravity | In progress | ctx_33e86e9f534b (fixtures-based; real-API E2E at C6) |
+| C0-HF | Claude/Codex | ACCEPTED (Codex addendum on 239f28b: ACCEPT) | CODEX_REVIEW_C0HF_3.md; Claude suite 385 OK |
+| C1-API (Codex e77e67e) | Codex | DONE, accepted by Claude | /chat route flag-gated, schemas, atomic persistence, 385 tests OK + drift OK, API scenarios 26/26 (CH-01..12 + ADV-01..14) |
+| C5-API + C2-DATA + C1-REVIEW | Codex | In progress | ctx_9bbe99761a8d: LLM understander wiring, capacity/prep/sub-rating fields, independent engine review + held-out utterances |
+| C3-1 chat v2 UI | Antigravity | In progress | ctx_33e86e9f534b |
