@@ -115,7 +115,8 @@ def sanitize(raw: dict, gz=None) -> Optional[dict]:
         place = gz.resolve(area[:80])
         if place:
             patch["area"] = place.to_json()
-    refs = [r for r in (raw.get("refs") or []) if isinstance(r, str) and REF.match(r)][:4]
+    refs_in = raw.get("refs") if isinstance(raw.get("refs"), list) else []
+    refs = [r for r in refs_in if isinstance(r, str) and REF.match(r)][:4]
     return {"intent": raw["intent"], "patch": patch, "refs": refs}
 
 
@@ -144,6 +145,12 @@ class LLMUnderstander:
             return int(v) if v.isdigit() else default
         return cls(provider, budget, session_cap=num("FOODTOUR_LLM_SESSION_CAP", 6), reserve=num("FOODTOUR_LLM_RESERVE", 3), **kw)
 
+    def _used(self) -> int:
+        try:
+            return int(self.budget.snapshot().get("used", 0)) if self.budget is not None else 0
+        except Exception:
+            return 0
+
     def gate(self, used_in_session: int) -> Optional[str]:
         """None when a call may be attempted, else why not ('capped' | 'exhausted')."""
         if used_in_session >= self.session_cap:
@@ -167,21 +174,24 @@ class LLMUnderstander:
                 return Outcome(hit[1], 0, None)
             if hit:
                 del self._cache[key]
+        before = self._used()
         try:
             raw = self.provider.understand(text[:500], compact, deadline_s=self.deadline_s)
         except ProviderError as e:
             attempted = getattr(e, "llm_calls", None)
             calls = (1 if attempted else 0) if attempted is not None else (0 if (e.kind == "quota" and e.status is None) else 1)
+            calls = max(calls, self._used() - before) if calls else calls
             return Outcome(None, calls, "exhausted" if e.kind == "quota" else "error")
         except Exception:
-            return Outcome(None, 1, "error")
+            return Outcome(None, max(1, self._used() - before), "error")
+        spent = max(1, self._used() - before)  # a transient-error retry consumes a second budget unit
         data = sanitize(raw, self.gz)
         if data is not None:
             with self._lock:
                 self._cache[key] = (now, data)
                 while len(self._cache) > self.cache_size:
                     self._cache.popitem(last=False)
-        return Outcome(data, 1, None if data else "error")
+        return Outcome(data, spent, None if data else "error")
 
 
 class GeminiUnderstandingProvider:

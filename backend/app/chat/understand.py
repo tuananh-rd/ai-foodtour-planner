@@ -255,6 +255,8 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     # --- action verbs
     has_plan = re.search(r"\b(?:tao|lap|xep|len)\s+(?:lai\s+)?(?:lich|tour|lich trinh|hanh trinh|ke hoach)\b|\blap tour\b|\btao tour\b", f)
     if has_plan:
+        if re.search(r"(?<![a-z0-9])(?:khong|ko|dung|thoi|chua|huy|khoan|de sau)(?![a-z0-9])", f):
+            return Understanding("CONFIRM_NO" if pending else "AMBIGUOUS_ACK", patch, refs, 0.9)  # negated plan request
         if pending and pending.kind == "confirm_plan":
             return Understanding("CONFIRM_YES", patch, refs, 0.9)
         return Understanding("REQUEST_PLAN", patch, refs, 0.9)
@@ -356,8 +358,12 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
 def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
     """Bind a reply to the open question; returns None when it is not an answer."""
     if pending.kind == "confirm_plan":
-        if re.fullmatch(r"(?:co|ok|oke|okay|dung|dung roi|xac nhan|dong y|chot|duoc|u|um|vang|da|tao di|ok tao di|u tao di|tao luon)", f) \
-                or re.search(r"\b(?:xac nhan|tao di|chot)\b", f):
+        negated = re.search(r"(?<![a-z0-9])(?:khong|ko|dung|thoi|chua|huy|bo|khoan|de sau|chan)(?![a-z0-9])", f)
+        if re.fullmatch(r"(?:co|ok|oke|okay|dung roi|xac nhan|dong y|chot|duoc|u|um|vang|da|tao di|ok tao di|u tao di|tao luon)", f):
+            return Understanding("CONFIRM_YES", confidence=0.95)
+        if negated and re.search(r"(?:tao|lap|xep|len)\s+(?:lai\s+)?(?:lich|tour|lich trinh|ke hoach)|xac nhan|\bchot\b|\btao\b", f):
+            return Understanding("CONFIRM_NO", confidence=0.95)  # "thôi đừng lập tour nữa" must never plan
+        if not negated and re.search(r"\b(?:xac nhan|tao di|chot)\b", f):
             return Understanding("CONFIRM_YES", confidence=0.95)
         if re.match(r"(?:khong|chua|thoi|de minh|cho minh sua|sua)\b", f) and len(f.split()) <= 5 and not re.search(r"\d|qua|muon", f):
             return Understanding("CONFIRM_NO", confidence=0.9)

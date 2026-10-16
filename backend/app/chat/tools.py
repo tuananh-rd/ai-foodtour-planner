@@ -4,6 +4,8 @@ Every value they return is a dataset fact or an explicitly labelled estimate; mi
 """
 from __future__ import annotations
 
+import re
+import unicodedata
 from dataclasses import dataclass
 from typing import Optional
 
@@ -105,6 +107,13 @@ def _price(v: Venue):
             "evidence": v.price_evidence}
 
 
+def clean_text(text, limit=80) -> str:
+    """Dataset strings are shown verbatim as DATA: drop control/format characters and markup, bound the length."""
+    kept = "".join(ch for ch in str(text or "") if unicodedata.category(ch)[0] != "C" or ch == " ")
+    kept = re.sub(r"<[^>]*>", " ", kept).replace("<", " ").replace(">", " ")
+    return " ".join(kept.split())[:limit]
+
+
 def venue_view(v: Venue) -> dict:
     rating = None
     if v.rating is not None:
@@ -112,8 +121,9 @@ def venue_view(v: Venue) -> dict:
     hours = None
     if v.hours_display:
         hours = {"status": "verified" if v.hours else "unknown", "display": v.hours_display}
-    return {"id": v.id, "name": v.name, "district": v.district, "address": v.address,
-            "dish_tags": list(v.dish_tags), "price": _price(v), "hours": hours, "rating": rating}
+    return {"id": v.id, "name": clean_text(v.name), "district": clean_text(v.district, 40), "address": clean_text(v.address, 140),
+            "dish_tags": [t for t in (clean_text(x, 40) for x in v.dish_tags[:8]) if t], "price": _price(v), "hours": hours,
+            "rating": rating}
 
 
 def fmt_vnd(n: int) -> str:

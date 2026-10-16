@@ -119,3 +119,60 @@ class CodexReviewC1High(unittest.TestCase):
         r = self.drive([{"action": {"type": "set_location", "location": {"district": "Hoàn Kiếm"}}}, {"text": "tìm quán phở"}])
         for t in ("bỏ quán thứ 12", "thêm quán thứ 99", "so sánh quán thứ 7 và quán thứ 8", "giữ quán thứ 0"):
             self.eng.handle(r.state, r.prefs, text=t)
+
+
+class CodexReviewC1Medium(unittest.TestCase):
+    def setUp(self):
+        data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
+        self.eng = ChatEngine(data.venues)
+
+    def test_negated_plan_request_at_confirmation_never_plans(self):
+        base = CodexReviewC1High.BASE
+        st, pr = ChatState(), Preferences()
+        for kw in base:
+            r = self.eng.handle(st, pr, **kw)
+            st, pr = r.state, r.prefs
+        self.assertEqual(st.pending.kind, "confirm_plan")
+        for t in ("thôi đừng lập tour nữa nha", "không tạo lịch", "chưa tạo tour đâu", "đừng xác nhận", "hủy lập tour"):
+            r2 = self.eng.handle(st, pr, text=t)
+            self.assertIsNone(r2.plan_request, t)
+        yes = self.eng.handle(st, pr, text="xác nhận")
+        self.assertIsNotNone(yes.plan_request)
+
+    def test_reset_keeps_llm_usage(self):
+        st = ChatState()
+        st.llm_used = 6
+        r = self.eng.handle(st, Preferences(), text="làm lại từ đầu")
+        self.assertEqual(r.state.llm_used, 6)
+
+    def test_malformed_model_refs_do_not_crash(self):
+        from app.chat.llm_understand import sanitize
+        for refs in (7, "A", {"a": 1}, [7, None, "B"]):
+            out = sanitize({"intent": "COMPARE", "refs": refs, "patch": {}})
+            self.assertIsInstance(out["refs"], list)
+        self.assertEqual(sanitize({"intent": "COMPARE", "refs": [7, None, "B"], "patch": {}})["refs"], ["B"])
+
+    def test_transient_retry_spends_two_calls(self):
+        from app.chat.llm_understand import LLMUnderstander
+
+        class Budget:
+            used = 0
+
+            def snapshot(self):
+                return {"used": self.used, "remaining": 20 - self.used, "exhausted": False}
+
+        class Provider:
+            def __init__(self, b):
+                self.b = b
+
+            def understand(self, text, compact, *, deadline_s):
+                self.b.used += 2  # first attempt + retry
+                return {"intent": "SEARCH_VENUES", "patch": {}}
+        b = Budget()
+        out = LLMUnderstander(Provider(b), b, reserve=0).understand("x", {})
+        self.assertEqual(out.calls, 2)
+
+    def test_dataset_strings_are_cleaned_in_cards(self):
+        from app.chat import tools
+        self.assertEqual(tools.clean_text("<img src=x onerror=1>Quán\u202e A\u200b"), "Quán A")
+        self.assertLessEqual(len(tools.clean_text("x" * 500)), 80)
