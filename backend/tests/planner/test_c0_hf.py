@@ -252,3 +252,12 @@ class CodexReviewC0HFRound4(unittest.TestCase):
         self.assertEqual((p.allergies, p.exclusions), (("sữa",), ("cua",)))
         p = self.m.extract("dị ứng tôm không ăn lạc").preferences
         self.assertEqual((p.allergies, p.exclusions), (("tôm",), ("lạc",)))
+
+
+class CodexReviewC0HFRound5(unittest.TestCase):
+    def test_second_allergy_without_a_term_is_not_silent(self):
+        m = MockExtractor()
+        for text in ("dị ứng cua và dị ứng", "dị ứng cua, dị ứng rất nặng"):
+            r = m.extract(text)
+            self.assertEqual(r.preferences.allergies, ("cua",), text)
+            self.assertTrue(any("chưa biết là gì" in n for n in r.notes), (text, r.notes))

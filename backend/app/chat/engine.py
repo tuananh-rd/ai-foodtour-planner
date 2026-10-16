@@ -432,11 +432,11 @@ class ChatEngine:
                                          "Tour vẫn được đánh dấu chưa đủ bằng chứng về nguyên liệu."))
             else:
                 R.blocks.append(text_b("Mình chưa biết quán bạn nói tới (danh sách quán đã đổi). Bạn chọn lại quán trong danh sách nhé."))
-        if sp.issues and not added:
+        if sp.issues and (not added or "empty" in sp.issues):
             msg = {"people": "Mỗi người dị ứng với gì? Hãy liệt kê từng tác nhân (ví dụ: tôm, lạc).",
                    "example": "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì.",
                    "long": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc)."}.get(
-                sp.issues[0], "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).")
+                sp.issues[0], ("Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó." if added else "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."))
             R.blocks.append(text_b(msg))
         if sp.avoid:
             self._ask_avoid(R, sp.avoid)

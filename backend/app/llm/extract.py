@@ -121,9 +121,9 @@ class MockExtractor:
         elif "long" in sp.issues:
             notes.append("Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ "
                          "(ví dụ: cua, tôm, lạc).")
-        elif "empty" in sp.issues and not sp.allergies and not sp.removed:
-            notes.append("Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên "
-                         "(ví dụ: cua, tôm, sữa).")
+        elif "empty" in sp.issues and not sp.removed:
+            notes.append(("Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó." if sp.allergies else
+                          "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."))
         if sp.avoid:
             notes.append("Đã ghi nhận không ăn: " + ", ".join(sp.avoid) + ". Đây là dị ứng hay chỉ là không thích? "
                          "Nếu là dị ứng, hãy nói 'dị ứng " + sp.avoid[0] + "' để mình lưu ý an toàn.")
