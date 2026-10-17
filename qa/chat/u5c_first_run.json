@@ -1,0 +1,3836 @@
+[
+  {
+    "summary": {
+      "mode": "rules",
+      "cases": 225,
+      "safety_pass": 202,
+      "safety_pct": 89.778,
+      "safety_failures": {
+        "allergy_missing": 14,
+        "multiple_clarify": 1,
+        "allergy_cue_not_asked": 3,
+        "allergy_false_positive": 9
+      },
+      "all_slots_correct": 114,
+      "all_slots_pct": 50.667,
+      "slot_accuracy_pct": {
+        "stops": 88.444,
+        "day_part": 97.333,
+        "budget_vnd": 91.556,
+        "budget_scope": 90.222,
+        "duration_min": 96.889,
+        "max_leg_min": 99.111,
+        "party_size": 92.444,
+        "start_time_set": 98.222,
+        "interests": 85.778,
+        "allergies": 90.222,
+        "allergy_question": 97.333
+      },
+      "clarify_per_case": 0.5644,
+      "llm_calls": 0,
+      "overasking_count": 6
+    },
+    "failures": [
+      {
+        "id": "v3-001",
+        "text": "Phở trước nha 😋 rồi dẫn mình qua 3 quán tối nay đi hết 120 phút, hai người thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-002",
+        "text": "300k mỗi người là trần đó, nhóm 4 người muốn ăn bún chả ở 4 quán trong 150 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 300000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-004",
+        "text": "Ừm cả nhà 5 người tính đi trưa nay 3 quán, tổng tiền 1 triệu, 90 phút là về.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1000000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-005",
+        "text": "Cho một mình mình tour 4 quán chiều mai, mê bánh cuốn, mỗi chặng tối đa 10 phút đi bộ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-006",
+        "text": "Hội 4 đứa thèm phở, tối nay ghé 3 quán thôi, toàn bộ 120 phút được hông?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "day_part": {
+            "expected": "evening",
+            "actual": null
+          },
+          "duration_min": {
+            "expected": 120,
+            "actual": null
+          },
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-007",
+        "text": "Bọn tớ có 2 người; 500 nghìn cho cả nhóm; 4 điểm; dành 180 phút ăn bún chả.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-008",
+        "text": "SÁNG MAI nha bạn ơi 3 QUÁN 90 PHÚT 3 NGƯỜI thích PHỞ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-009",
+        "text": "toi muon 4 quan 120 phut 2 nguoi toi nay thich bun cha",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-010",
+        "text": "Chốt ý tưởng chứ chưa lập tour: 5 quán chiều nay 150 phút, 4 người, không ăn được lạc.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "day_part": {
+            "expected": "afternoon",
+            "actual": null
+          },
+          "duration_min": {
+            "expected": 150,
+            "actual": null
+          },
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-011",
+        "text": "Tụi tui ở Hà Nội, bữa trưa muốn 3 quán cho 2 người, tiền mỗi người 250k, ăn bánh mì.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "day_part": {
+            "expected": "noon",
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 250000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-012",
+        "text": "Bún chả nhé; 180 phút, 4 quán, 3 người; mình dị ứng trứng nên nhớ giùm.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-015",
+        "text": "Đặt bài toán thế này: 3 người, 4 điểm, tối nay, 120 phút và phở.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "day_part": {
+            "expected": "evening",
+            "actual": null
+          },
+          "duration_min": {
+            "expected": 120,
+            "actual": null
+          },
+          "party_size": {
+            "expected": 3,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-016",
+        "text": "Có tour nào trưa mai 3 quán 90 phút cho 4 người ăn bánh cuốn không nhỉ?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-017",
+        "text": "Này, tổng ngân sách 900k, 3 người ăn 4 quán trong 180 phút buổi tối.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 900000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-018",
+        "text": "Hai vợ chồng muốn ăn phở sáng mai; 3 quán, tổng 120 phút nha.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": [
+              "phở sáng mai"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-020",
+        "text": "Chuyến này 4 quán cho 4 người, 120 phút, tổng tiền không quá 800k, buổi chiều.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 800000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-021",
+        "text": "Đi ăn bánh mì chứ bạn? 3 quán sáng nay 90 phút hai người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-022",
+        "text": "Nếu được thì sắp 4 quán trưa nay cho 2 người, 150 phút, mỗi người 350k.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 350000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-023",
+        "text": "Mê bánh cuốn quá trời luôn á, nhóm 3 người đi 3 quán chiều nay 120 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-024",
+        "text": "500k cả nhóm nhen, 2 người đi 3 quán buổi tối, tổng 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 500000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-025",
+        "text": "Dẫn em ăn phở trong 90 phút ở 4 quán cho 2 người; em bị dị ứng mè.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-028",
+        "text": "Chắc mình chọn bánh mì; nhóm 4 người, 5 điểm, 180 phút vào trưa mai.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-030",
+        "text": "Bạn ơi 4 người đang thèm phở, 4 quán sáng nay 90 phút được chứ?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-031",
+        "text": "Đầu tiên nghe nhu cầu đã: cả nhóm 600k, 3 người, 3 quán, 150 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 600000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-032",
+        "text": "Em gửi lịch dự kiến 19h bắt đầu, 3 quán 120 phút cho 2 người ăn bún chả.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "start_time_set": {
+            "expected": true,
+            "actual": false
+          },
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-033",
+        "text": "Muốn rủ 5 người đi 4 quán chiều nay với 1 triệu cho cả nhóm và 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1000000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-034",
+        "text": "Vòng ăn sáng 3 quán cho một mình, thích bánh cuốn, chỉ 90 phút thôi nha.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "day_part": {
+            "expected": "morning",
+            "actual": null
+          },
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-035",
+        "text": "Tớ ăn được phở; 2 người đi 5 quán tối nay tổng 150 phút, ngân sách mỗi người 450k.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 450000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-037",
+        "text": "Phở! 3 quán! Sáng mai! 90 phút! 2 người! 😄",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-038",
+        "text": "Dự trù mỗi người 200 nghìn, 4 người đi 3 quán chiều mai 120 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 200000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-039",
+        "text": "Không gấp đâu, tìm cho 2 người một vòng 4 quán tối nay, 180 phút, bánh mì là món thích.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-040",
+        "text": "Hà Nội chiều nay tụi em 3 người muốn ăn phở 3 quán trong 150 phút í.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-041",
+        "text": "Lạc thì mình không ăn được nha; buổi trưa 4 quán cho 2 người trong 90 phút.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-042",
+        "text": "Tính sơ là 800 nghìn cả nhóm, 4 người 5 quán, sáng mai 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 800000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-043",
+        "text": "Tour nho nhỏ cho một mình, 3 quán buổi tối 120 phút, mình mê bún chả.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-044",
+        "text": "Các thông tin đây ạ: 2 người / 4 quán / 150 phút / chiều mai / thích phở.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-045",
+        "text": "Trưa mai đi nhé bạn, 3 người, 3 quán, tổng 90 phút, mỗi người 300k.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 300000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-046",
+        "text": "Xếp giúp vòng ăn bánh cuốn sáng nay cho 4 người qua 4 quán trong 120 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-048",
+        "text": "Nhóm có 5 người, ngân sách cả nhóm 1500k, 5 quán tối nay, 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-049",
+        "text": "Bánh mì là ưu tiên, 3 quán sáng mai 90 phút và 2 người thôi ạ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-050",
+        "text": "Xin lỗi gõ hơi vội 4 quán 120 phút cho 3 người tối nay ngân sách mỗi người 250k",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 250000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-051",
+        "text": "Đậu phộng thì em không ăn được đâu chị ơi.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "đậu phộng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-053",
+        "text": "Ăn trứng là mình bị mẩn ngứa khi ăn, nhớ tránh trứng.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "trứng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-056",
+        "text": "Lạc làm mình dị ứng, đừng cho lạc vào nhé.",
+        "prior": [],
+        "safety": [
+          "allergy_missing",
+          "multiple_clarify"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-058",
+        "text": "Mình kiêng đậu phộng và sữa.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "đậu phộng",
+              "sữa"
+            ],
+            "actual": [
+              "đậu phộng"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-060",
+        "text": "Em không ăn được mè với đậu phộng.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "mè",
+              "đậu phộng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-067",
+        "text": "Tôm và một nguyên liệu chưa rõ tên làm mình dị ứng.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "tôm"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-068",
+        "text": "Tôi dị ứng lạc, còn thứ gây ngứa kia chưa rõ.",
+        "prior": [],
+        "safety": [
+          "allergy_cue_not_asked"
+        ],
+        "mismatches": {
+          "allergy_question": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-072",
+        "text": "Bạn cũ bị dị ứng lạc, bạn ấy ở nhà không tham gia tour.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "lạc"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-073",
+        "text": "Chị tôi không đi chuyến này; chị dị ứng tôm.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-074",
+        "text": "Mẹ dị ứng trứng nhưng hôm nay mẹ ở nhà.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "trứng"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-075",
+        "text": "Giả dụ khách dị ứng sữa thì bạn xử lý ra sao?",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "sữa"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-081",
+        "text": "Dị ứng giá cao thôi 🤣 chứ tôm mình ăn bình thường.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-082",
+        "text": "Ôi tôi dị ứng chờ lâu chứ không dị ứng trứng đâu.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "allergy_question": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-085",
+        "text": "Không có chuyện mình dị ứng trứng nhé.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "trứng"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-090",
+        "text": "Chuyện tour để sau nha vì mình kiêng mè nên phải xem nguyên liệu trước.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "mè"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-093",
+        "text": "Tôi bị mẩn ngứa khi ăn tôm.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "tôm"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-095",
+        "text": "Mình dị ứng \"đậu phộng\" đó.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "đậu phộng"
+            ],
+            "actual": []
+          },
+          "allergy_question": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-098",
+        "text": "Mình kiêng vừng, tức là mè ấy.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "vừng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-099",
+        "text": "Nghĩ lại thì chưa biết có phải dị ứng không, ăn hạt đó thấy ngứa.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive",
+          "allergy_cue_not_asked"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "không"
+            ]
+          },
+          "allergy_question": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-105",
+        "text": "Tổng cả nhóm một triệu rưỡi thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-106",
+        "text": "1 triệu rưỡi cho cả đoàn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-114",
+        "text": "TẦM 700K TỔNG NHÓM.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-117",
+        "text": "Tối đa 450k/người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-120",
+        "text": "Khoảng 1,5 triệu tất cả mọi người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": 5000000
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": "per_person"
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-124",
+        "text": "Cầm 2 triệu, chưa rõ tính đầu người hay cả hội.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": null,
+            "actual": "group"
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-128",
+        "text": "Tổng ngân sách 1 triệu 500 nghìn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": 1000000
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-129",
+        "text": "Mỗi người 0,5 triệu.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 500000,
+            "actual": 5000000
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-131",
+        "text": "Ăn trong mức 275k/người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-136",
+        "text": "Đi trọn hai tiếng được không?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 120,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-137",
+        "text": "90p là toàn bộ thời gian mình có.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 90,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-138",
+        "text": "Khoảng 1 tiếng rưỡi đi ăn thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 90,
+            "actual": 60
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-140",
+        "text": "Bắt đầu đúng 19h nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "start_time_set": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-141",
+        "text": "Sau 6h chiều mới rảnh, đừng chốt giờ cụ thể.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "day_part": {
+            "expected": "evening",
+            "actual": "afternoon"
+          },
+          "start_time_set": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-150",
+        "text": "Tổng thời gian hai tiếng rưỡi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 150,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-156",
+        "text": "Chặng nào cũng dưới 20 phút đi bộ nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "max_leg_min": {
+            "expected": 20,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-157",
+        "text": "Hai quán cách nhau đi bộ không quá 7 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": null,
+            "actual": 2
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-159",
+        "text": "Đừng hiểu nhầm 10 phút là cả tour, đó là mỗi chặng đi bộ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "max_leg_min": {
+            "expected": 10,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-162",
+        "text": "Hội 4 đứa đó bạn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-163",
+        "text": "Hai vợ chồng mình thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-164",
+        "text": "Đi một mình á.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-165",
+        "text": "Số quán là 3 nha.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-166",
+        "text": "Chỉ ghé 4 chỗ ăn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-167",
+        "text": "5 điểm dừng là đẹp.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-170",
+        "text": "Nhóm gồm 2 người lớn với 1 bé, tổng 3 người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 3,
+            "actual": 2
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-171",
+        "text": "toi di 1 minh",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-172",
+        "text": "4 QUÁN thôi ạ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-173",
+        "text": "Một vòng ba quán được chứ?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-174",
+        "text": "Bốn người muốn ăn năm quán.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-175",
+        "text": "Mình với người yêu, hai người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-176",
+        "text": "Tour ba điểm cho cả nhà năm người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 5,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-179",
+        "text": "Mỗi vòng chỉ 2 điểm thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 2,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-181",
+        "text": "Khoái phở cực kỳ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": [
+              "phở cực kỳ"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-182",
+        "text": "Mê bún chả lắm luôn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": [
+              "bún chả lắm"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-183",
+        "text": "Thèm bánh cuốn ghê.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": [
+              "bánh cuốn ghê"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-188",
+        "text": "Phở thì mê, hành thì ghét.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": [
+              "hành thì ghét"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-189",
+        "text": "bun cha la mon khoai khau",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": [
+              "khau"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-190",
+        "text": "BÁNH CUỐN nhé, mê lắm.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": [
+              "lắm"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-191",
+        "text": "Có bánh mì là vui rồi 😋",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-192",
+        "text": "Không thích trứng nhưng chẳng phải dị ứng.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "allergy_question": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-194",
+        "text": "Mình muốn thử phở và bánh cuốn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-195",
+        "text": "Ưu tiên bún chả với bánh mì.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả",
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-199",
+        "text": "Ăn chè đi, đang thèm.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "chè"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-200",
+        "text": "Ưa cà phê sau bữa ăn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "cà phê"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-216",
+        "text": "Tôm thì mình không dị ứng.",
+        "prior": [
+          "Mình dị ứng lạc."
+        ],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-217",
+        "text": "À thêm sữa nữa.",
+        "prior": [
+          "Tôi dị ứng tôm."
+        ],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "tôm",
+              "sữa"
+            ],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-219",
+        "text": "Giữ các ý đó, chiều mai nhé.",
+        "prior": [
+          "3 quán 120 phút cho 2 người."
+        ],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-220",
+        "text": "Bún chả nữa nha.",
+        "prior": [
+          "Mình mê phở."
+        ],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": [
+              "phở"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-222",
+        "text": "19h bắt đầu.",
+        "prior": [
+          "Tối nay 3 quán."
+        ],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "start_time_set": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-223",
+        "text": "Bạn ấy ở nhà không đi cùng nhé.",
+        "prior": [
+          "Bạn mình dị ứng tôm."
+        ],
+        "safety": [
+          "allergy_false_positive",
+          "allergy_cue_not_asked"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "tôm"
+            ]
+          },
+          "allergy_question": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-225",
+        "text": "Không phải tôm mà là lạc, mình nói nhầm.",
+        "prior": [
+          "Tôi dị ứng tôm."
+        ],
+        "safety": [
+          "allergy_missing",
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      }
+    ],
+    "overasking": [
+      {
+        "id": "v3-067",
+        "slot": "allergy_term",
+        "text": "Tôm và một nguyên liệu chưa rõ tên làm mình dị ứng."
+      },
+      {
+        "id": "v3-095",
+        "slot": "allergy_term",
+        "text": "Mình dị ứng \"đậu phộng\" đó."
+      },
+      {
+        "id": "v3-106",
+        "slot": "budget_scope",
+        "text": "1 triệu rưỡi cho cả đoàn."
+      },
+      {
+        "id": "v3-114",
+        "slot": "budget_scope",
+        "text": "TẦM 700K TỔNG NHÓM."
+      },
+      {
+        "id": "v3-117",
+        "slot": "budget_scope",
+        "text": "Tối đa 450k/người."
+      },
+      {
+        "id": "v3-131",
+        "slot": "budget_scope",
+        "text": "Ăn trong mức 275k/người."
+      }
+    ]
+  },
+  {
+    "summary": {
+      "mode": "outcome_exhausted",
+      "cases": 225,
+      "safety_pass": 202,
+      "safety_pct": 89.778,
+      "safety_failures": {
+        "allergy_missing": 14,
+        "multiple_clarify": 1,
+        "allergy_cue_not_asked": 3,
+        "allergy_false_positive": 9
+      },
+      "all_slots_correct": 114,
+      "all_slots_pct": 50.667,
+      "slot_accuracy_pct": {
+        "stops": 88.444,
+        "day_part": 97.333,
+        "budget_vnd": 91.556,
+        "budget_scope": 90.222,
+        "duration_min": 96.889,
+        "max_leg_min": 99.111,
+        "party_size": 92.444,
+        "start_time_set": 98.222,
+        "interests": 85.778,
+        "allergies": 90.222,
+        "allergy_question": 97.333
+      },
+      "clarify_per_case": 0.5644,
+      "llm_calls": 0,
+      "overasking_count": 6
+    },
+    "failures": [
+      {
+        "id": "v3-001",
+        "text": "Phở trước nha 😋 rồi dẫn mình qua 3 quán tối nay đi hết 120 phút, hai người thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-002",
+        "text": "300k mỗi người là trần đó, nhóm 4 người muốn ăn bún chả ở 4 quán trong 150 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 300000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-004",
+        "text": "Ừm cả nhà 5 người tính đi trưa nay 3 quán, tổng tiền 1 triệu, 90 phút là về.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1000000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-005",
+        "text": "Cho một mình mình tour 4 quán chiều mai, mê bánh cuốn, mỗi chặng tối đa 10 phút đi bộ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-006",
+        "text": "Hội 4 đứa thèm phở, tối nay ghé 3 quán thôi, toàn bộ 120 phút được hông?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "day_part": {
+            "expected": "evening",
+            "actual": null
+          },
+          "duration_min": {
+            "expected": 120,
+            "actual": null
+          },
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-007",
+        "text": "Bọn tớ có 2 người; 500 nghìn cho cả nhóm; 4 điểm; dành 180 phút ăn bún chả.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-008",
+        "text": "SÁNG MAI nha bạn ơi 3 QUÁN 90 PHÚT 3 NGƯỜI thích PHỞ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-009",
+        "text": "toi muon 4 quan 120 phut 2 nguoi toi nay thich bun cha",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-010",
+        "text": "Chốt ý tưởng chứ chưa lập tour: 5 quán chiều nay 150 phút, 4 người, không ăn được lạc.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "day_part": {
+            "expected": "afternoon",
+            "actual": null
+          },
+          "duration_min": {
+            "expected": 150,
+            "actual": null
+          },
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-011",
+        "text": "Tụi tui ở Hà Nội, bữa trưa muốn 3 quán cho 2 người, tiền mỗi người 250k, ăn bánh mì.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "day_part": {
+            "expected": "noon",
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 250000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-012",
+        "text": "Bún chả nhé; 180 phút, 4 quán, 3 người; mình dị ứng trứng nên nhớ giùm.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-015",
+        "text": "Đặt bài toán thế này: 3 người, 4 điểm, tối nay, 120 phút và phở.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "day_part": {
+            "expected": "evening",
+            "actual": null
+          },
+          "duration_min": {
+            "expected": 120,
+            "actual": null
+          },
+          "party_size": {
+            "expected": 3,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-016",
+        "text": "Có tour nào trưa mai 3 quán 90 phút cho 4 người ăn bánh cuốn không nhỉ?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-017",
+        "text": "Này, tổng ngân sách 900k, 3 người ăn 4 quán trong 180 phút buổi tối.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 900000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-018",
+        "text": "Hai vợ chồng muốn ăn phở sáng mai; 3 quán, tổng 120 phút nha.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": [
+              "phở sáng mai"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-020",
+        "text": "Chuyến này 4 quán cho 4 người, 120 phút, tổng tiền không quá 800k, buổi chiều.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 800000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-021",
+        "text": "Đi ăn bánh mì chứ bạn? 3 quán sáng nay 90 phút hai người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-022",
+        "text": "Nếu được thì sắp 4 quán trưa nay cho 2 người, 150 phút, mỗi người 350k.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 350000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-023",
+        "text": "Mê bánh cuốn quá trời luôn á, nhóm 3 người đi 3 quán chiều nay 120 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-024",
+        "text": "500k cả nhóm nhen, 2 người đi 3 quán buổi tối, tổng 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 500000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-025",
+        "text": "Dẫn em ăn phở trong 90 phút ở 4 quán cho 2 người; em bị dị ứng mè.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-028",
+        "text": "Chắc mình chọn bánh mì; nhóm 4 người, 5 điểm, 180 phút vào trưa mai.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-030",
+        "text": "Bạn ơi 4 người đang thèm phở, 4 quán sáng nay 90 phút được chứ?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-031",
+        "text": "Đầu tiên nghe nhu cầu đã: cả nhóm 600k, 3 người, 3 quán, 150 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 600000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-032",
+        "text": "Em gửi lịch dự kiến 19h bắt đầu, 3 quán 120 phút cho 2 người ăn bún chả.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "start_time_set": {
+            "expected": true,
+            "actual": false
+          },
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-033",
+        "text": "Muốn rủ 5 người đi 4 quán chiều nay với 1 triệu cho cả nhóm và 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1000000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-034",
+        "text": "Vòng ăn sáng 3 quán cho một mình, thích bánh cuốn, chỉ 90 phút thôi nha.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "day_part": {
+            "expected": "morning",
+            "actual": null
+          },
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-035",
+        "text": "Tớ ăn được phở; 2 người đi 5 quán tối nay tổng 150 phút, ngân sách mỗi người 450k.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 450000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-037",
+        "text": "Phở! 3 quán! Sáng mai! 90 phút! 2 người! 😄",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-038",
+        "text": "Dự trù mỗi người 200 nghìn, 4 người đi 3 quán chiều mai 120 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 200000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-039",
+        "text": "Không gấp đâu, tìm cho 2 người một vòng 4 quán tối nay, 180 phút, bánh mì là món thích.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-040",
+        "text": "Hà Nội chiều nay tụi em 3 người muốn ăn phở 3 quán trong 150 phút í.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-041",
+        "text": "Lạc thì mình không ăn được nha; buổi trưa 4 quán cho 2 người trong 90 phút.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-042",
+        "text": "Tính sơ là 800 nghìn cả nhóm, 4 người 5 quán, sáng mai 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 800000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-043",
+        "text": "Tour nho nhỏ cho một mình, 3 quán buổi tối 120 phút, mình mê bún chả.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-044",
+        "text": "Các thông tin đây ạ: 2 người / 4 quán / 150 phút / chiều mai / thích phở.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-045",
+        "text": "Trưa mai đi nhé bạn, 3 người, 3 quán, tổng 90 phút, mỗi người 300k.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 300000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-046",
+        "text": "Xếp giúp vòng ăn bánh cuốn sáng nay cho 4 người qua 4 quán trong 120 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-048",
+        "text": "Nhóm có 5 người, ngân sách cả nhóm 1500k, 5 quán tối nay, 180 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-049",
+        "text": "Bánh mì là ưu tiên, 3 quán sáng mai 90 phút và 2 người thôi ạ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-050",
+        "text": "Xin lỗi gõ hơi vội 4 quán 120 phút cho 3 người tối nay ngân sách mỗi người 250k",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          },
+          "budget_vnd": {
+            "expected": 250000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-051",
+        "text": "Đậu phộng thì em không ăn được đâu chị ơi.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "đậu phộng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-053",
+        "text": "Ăn trứng là mình bị mẩn ngứa khi ăn, nhớ tránh trứng.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "trứng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-056",
+        "text": "Lạc làm mình dị ứng, đừng cho lạc vào nhé.",
+        "prior": [],
+        "safety": [
+          "allergy_missing",
+          "multiple_clarify"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-058",
+        "text": "Mình kiêng đậu phộng và sữa.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "đậu phộng",
+              "sữa"
+            ],
+            "actual": [
+              "đậu phộng"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-060",
+        "text": "Em không ăn được mè với đậu phộng.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "mè",
+              "đậu phộng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-067",
+        "text": "Tôm và một nguyên liệu chưa rõ tên làm mình dị ứng.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "tôm"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-068",
+        "text": "Tôi dị ứng lạc, còn thứ gây ngứa kia chưa rõ.",
+        "prior": [],
+        "safety": [
+          "allergy_cue_not_asked"
+        ],
+        "mismatches": {
+          "allergy_question": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-072",
+        "text": "Bạn cũ bị dị ứng lạc, bạn ấy ở nhà không tham gia tour.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "lạc"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-073",
+        "text": "Chị tôi không đi chuyến này; chị dị ứng tôm.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-074",
+        "text": "Mẹ dị ứng trứng nhưng hôm nay mẹ ở nhà.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "trứng"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-075",
+        "text": "Giả dụ khách dị ứng sữa thì bạn xử lý ra sao?",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "sữa"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-081",
+        "text": "Dị ứng giá cao thôi 🤣 chứ tôm mình ăn bình thường.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-082",
+        "text": "Ôi tôi dị ứng chờ lâu chứ không dị ứng trứng đâu.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "allergy_question": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-085",
+        "text": "Không có chuyện mình dị ứng trứng nhé.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "trứng"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-090",
+        "text": "Chuyện tour để sau nha vì mình kiêng mè nên phải xem nguyên liệu trước.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "mè"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-093",
+        "text": "Tôi bị mẩn ngứa khi ăn tôm.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "tôm"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-095",
+        "text": "Mình dị ứng \"đậu phộng\" đó.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "đậu phộng"
+            ],
+            "actual": []
+          },
+          "allergy_question": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-098",
+        "text": "Mình kiêng vừng, tức là mè ấy.",
+        "prior": [],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "vừng"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-099",
+        "text": "Nghĩ lại thì chưa biết có phải dị ứng không, ăn hạt đó thấy ngứa.",
+        "prior": [],
+        "safety": [
+          "allergy_false_positive",
+          "allergy_cue_not_asked"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "không"
+            ]
+          },
+          "allergy_question": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-105",
+        "text": "Tổng cả nhóm một triệu rưỡi thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": null
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-106",
+        "text": "1 triệu rưỡi cho cả đoàn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-114",
+        "text": "TẦM 700K TỔNG NHÓM.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "group",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-117",
+        "text": "Tối đa 450k/người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-120",
+        "text": "Khoảng 1,5 triệu tất cả mọi người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": 5000000
+          },
+          "budget_scope": {
+            "expected": "group",
+            "actual": "per_person"
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-124",
+        "text": "Cầm 2 triệu, chưa rõ tính đầu người hay cả hội.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": null,
+            "actual": "group"
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-128",
+        "text": "Tổng ngân sách 1 triệu 500 nghìn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 1500000,
+            "actual": 1000000
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-129",
+        "text": "Mỗi người 0,5 triệu.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_vnd": {
+            "expected": 500000,
+            "actual": 5000000
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-131",
+        "text": "Ăn trong mức 275k/người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "budget_scope": {
+            "expected": "per_person",
+            "actual": null
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v3-136",
+        "text": "Đi trọn hai tiếng được không?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 120,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-137",
+        "text": "90p là toàn bộ thời gian mình có.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 90,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-138",
+        "text": "Khoảng 1 tiếng rưỡi đi ăn thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 90,
+            "actual": 60
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-140",
+        "text": "Bắt đầu đúng 19h nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "start_time_set": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-141",
+        "text": "Sau 6h chiều mới rảnh, đừng chốt giờ cụ thể.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "day_part": {
+            "expected": "evening",
+            "actual": "afternoon"
+          },
+          "start_time_set": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-150",
+        "text": "Tổng thời gian hai tiếng rưỡi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "duration_min": {
+            "expected": 150,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-156",
+        "text": "Chặng nào cũng dưới 20 phút đi bộ nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "max_leg_min": {
+            "expected": 20,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-157",
+        "text": "Hai quán cách nhau đi bộ không quá 7 phút.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": null,
+            "actual": 2
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-159",
+        "text": "Đừng hiểu nhầm 10 phút là cả tour, đó là mỗi chặng đi bộ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "max_leg_min": {
+            "expected": 10,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-162",
+        "text": "Hội 4 đứa đó bạn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-163",
+        "text": "Hai vợ chồng mình thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-164",
+        "text": "Đi một mình á.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-165",
+        "text": "Số quán là 3 nha.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-166",
+        "text": "Chỉ ghé 4 chỗ ăn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-167",
+        "text": "5 điểm dừng là đẹp.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 5,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-170",
+        "text": "Nhóm gồm 2 người lớn với 1 bé, tổng 3 người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 3,
+            "actual": 2
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-171",
+        "text": "toi di 1 minh",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 1,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-172",
+        "text": "4 QUÁN thôi ạ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-173",
+        "text": "Một vòng ba quán được chứ?",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-174",
+        "text": "Bốn người muốn ăn năm quán.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 4,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-175",
+        "text": "Mình với người yêu, hai người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 2,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-176",
+        "text": "Tour ba điểm cho cả nhà năm người.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "party_size": {
+            "expected": 5,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-179",
+        "text": "Mỗi vòng chỉ 2 điểm thôi.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 2,
+            "actual": null
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-181",
+        "text": "Khoái phở cực kỳ.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": [
+              "phở cực kỳ"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-182",
+        "text": "Mê bún chả lắm luôn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": [
+              "bún chả lắm"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-183",
+        "text": "Thèm bánh cuốn ghê.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": [
+              "bánh cuốn ghê"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-188",
+        "text": "Phở thì mê, hành thì ghét.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở"
+            ],
+            "actual": [
+              "hành thì ghét"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-189",
+        "text": "bun cha la mon khoai khau",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả"
+            ],
+            "actual": [
+              "khau"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-190",
+        "text": "BÁNH CUỐN nhé, mê lắm.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh cuốn"
+            ],
+            "actual": [
+              "lắm"
+            ]
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-191",
+        "text": "Có bánh mì là vui rồi 😋",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-192",
+        "text": "Không thích trứng nhưng chẳng phải dị ứng.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "allergy_question": {
+            "expected": false,
+            "actual": true
+          }
+        },
+        "pending": "allergy_term"
+      },
+      {
+        "id": "v3-194",
+        "text": "Mình muốn thử phở và bánh cuốn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bánh cuốn"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-195",
+        "text": "Ưu tiên bún chả với bánh mì.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "bún chả",
+              "bánh mì"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-199",
+        "text": "Ăn chè đi, đang thèm.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "chè"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-200",
+        "text": "Ưa cà phê sau bữa ăn.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "cà phê"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-216",
+        "text": "Tôm thì mình không dị ứng.",
+        "prior": [
+          "Mình dị ứng lạc."
+        ],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": []
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-217",
+        "text": "À thêm sữa nữa.",
+        "prior": [
+          "Tôi dị ứng tôm."
+        ],
+        "safety": [
+          "allergy_missing"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "tôm",
+              "sữa"
+            ],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-219",
+        "text": "Giữ các ý đó, chiều mai nhé.",
+        "prior": [
+          "3 quán 120 phút cho 2 người."
+        ],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-220",
+        "text": "Bún chả nữa nha.",
+        "prior": [
+          "Mình mê phở."
+        ],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": [
+              "phở"
+            ]
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-222",
+        "text": "19h bắt đầu.",
+        "prior": [
+          "Tối nay 3 quán."
+        ],
+        "safety": [],
+        "mismatches": {
+          "stops": {
+            "expected": 3,
+            "actual": null
+          },
+          "start_time_set": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": "area"
+      },
+      {
+        "id": "v3-223",
+        "text": "Bạn ấy ở nhà không đi cùng nhé.",
+        "prior": [
+          "Bạn mình dị ứng tôm."
+        ],
+        "safety": [
+          "allergy_false_positive",
+          "allergy_cue_not_asked"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [],
+            "actual": [
+              "tôm"
+            ]
+          },
+          "allergy_question": {
+            "expected": true,
+            "actual": false
+          }
+        },
+        "pending": null
+      },
+      {
+        "id": "v3-225",
+        "text": "Không phải tôm mà là lạc, mình nói nhầm.",
+        "prior": [
+          "Tôi dị ứng tôm."
+        ],
+        "safety": [
+          "allergy_missing",
+          "allergy_false_positive"
+        ],
+        "mismatches": {
+          "allergies": {
+            "expected": [
+              "lạc"
+            ],
+            "actual": [
+              "tôm"
+            ]
+          }
+        },
+        "pending": null
+      }
+    ],
+    "overasking": [
+      {
+        "id": "v3-067",
+        "slot": "allergy_term",
+        "text": "Tôm và một nguyên liệu chưa rõ tên làm mình dị ứng."
+      },
+      {
+        "id": "v3-095",
+        "slot": "allergy_term",
+        "text": "Mình dị ứng \"đậu phộng\" đó."
+      },
+      {
+        "id": "v3-106",
+        "slot": "budget_scope",
+        "text": "1 triệu rưỡi cho cả đoàn."
+      },
+      {
+        "id": "v3-114",
+        "slot": "budget_scope",
+        "text": "TẦM 700K TỔNG NHÓM."
+      },
+      {
+        "id": "v3-117",
+        "slot": "budget_scope",
+        "text": "Tối đa 450k/người."
+      },
+      {
+        "id": "v3-131",
+        "slot": "budget_scope",
+        "text": "Ăn trong mức 275k/người."
+      }
+    ]
+  }
+]

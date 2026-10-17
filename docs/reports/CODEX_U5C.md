@@ -10,3 +10,10 @@
 - No engine/chat or LLM diff since `595bde8` read before freeze. No live providers, keys, private CSV, servers, push or deploy.
 
 Evaluation and gate evidence pending.
+
+## First-run verbatim summaries
+
+```json
+{"mode": "rules", "cases": 225, "safety_pass": 202, "safety_pct": 89.778, "safety_failures": {"allergy_missing": 14, "multiple_clarify": 1, "allergy_cue_not_asked": 3, "allergy_false_positive": 9}, "all_slots_correct": 114, "all_slots_pct": 50.667, "slot_accuracy_pct": {"stops": 88.444, "day_part": 97.333, "budget_vnd": 91.556, "budget_scope": 90.222, "duration_min": 96.889, "max_leg_min": 99.111, "party_size": 92.444, "start_time_set": 98.222, "interests": 85.778, "allergies": 90.222, "allergy_question": 97.333}, "clarify_per_case": 0.5644, "llm_calls": 0, "overasking_count": 6}
+{"mode": "outcome_exhausted", "cases": 225, "safety_pass": 202, "safety_pct": 89.778, "safety_failures": {"allergy_missing": 14, "multiple_clarify": 1, "allergy_cue_not_asked": 3, "allergy_false_positive": 9}, "all_slots_correct": 114, "all_slots_pct": 50.667, "slot_accuracy_pct": {"stops": 88.444, "day_part": 97.333, "budget_vnd": 91.556, "budget_scope": 90.222, "duration_min": 96.889, "max_leg_min": 99.111, "party_size": 92.444, "start_time_set": 98.222, "interests": 85.778, "allergies": 90.222, "allergy_question": 97.333}, "clarify_per_case": 0.5644, "llm_calls": 0, "overasking_count": 6}
+```
