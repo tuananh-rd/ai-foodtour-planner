@@ -24,4 +24,6 @@ For functional regressions, retain the failing case and route to its owner (Code
 
 ## Reproducible offline preview
 
+The launcher isolates frontend preview artifacts in `.next-preview`; ordinary builds continue using `.next`. Building into the same directory as an active Next dev server can produce stale-module HTTP500s. Stop only the task-owned preview terminal if recovering an older launcher, then restart with this script; do not delete caches or stop unrelated user servers. Production browser harnesses build scratch copies separately.
+
 From the coordinator checkout, run `tools/run_upgrade_preview.ps1 -Component backend` and `tools/run_upgrade_preview.ps1 -Component frontend` in separate Orca terminals. The explicit synthetic fixture is labelled in the app; API is real local HTTP, LLM is deterministic rules/mock, routing is estimated and no Google API/provider call is activated. Default URL is http://127.0.0.1:3020 and API http://127.0.0.1:8020. The script refuses occupied ports and stops no existing process. Pass `-DataPath` only to the backend for an authorised existing local input; do not put private paths or records in screenshots/reports. Use matching `-WebPort`/`-ApiPort` in both terminals if defaults are occupied. This development preview does not establish production readiness.

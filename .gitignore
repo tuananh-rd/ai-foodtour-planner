@@ -2,6 +2,7 @@ __pycache__/
 .venv/
 node_modules/
 .next/
+.next-preview/
 .env
 data/raw/
 data/venues.json

@@ -32,6 +32,7 @@ if ($Component -eq 'backend') {
     $env:FOODTOUR_DATA_PATH = if ($DataPath) { $DataPath } else { Join-Path $repoRoot 'contracts/fixtures/venues.chat.synthetic.json' }
     & (Join-Path $repoRoot '.venv/Scripts/python.exe') -m uvicorn app.main:app --host 127.0.0.1 --port $ApiPort
 } else {
+    $env:FOODTOUR_PREVIEW = '1'
     $env:NEXT_PUBLIC_API_URL = "http://127.0.0.1:$ApiPort"
     $env:NEXT_PUBLIC_API_MODE = 'real'
     $env:NEXT_PUBLIC_UI_GUIDED = '1'
