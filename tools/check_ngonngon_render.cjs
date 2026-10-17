@@ -51,7 +51,7 @@ check('null timeline never invents 19:00 or five-minute legs', !/19:00|~5\b/.tes
 check('conditional status is explicit', /có điều kiện/i.test(text(timeline)));
 check('route warning survives timeline render', text(timeline).includes(tour.route_warnings[0]));
 const zeroTour = structuredClone(tour);
-zeroTour.stops[0].leg_from_previous = { minutes: 0, km: 0, source: 'straight_line_estimate', route_provider: null };
+zeroTour.stops[1].leg_from_previous = { minutes: 0, km: 0, source: 'straight_line_estimate', route_provider: null };
 const zeroTimeline = text(render('GuidedTimeline', { tour: zeroTour }));
 check('zero-minute leg remains zero', /0\s*phút/.test(zeroTimeline));
 
