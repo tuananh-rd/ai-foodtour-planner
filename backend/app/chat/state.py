@@ -107,6 +107,8 @@ class ChatState:
     tour_stale: bool = False
     allergy_unresolved: bool = False  # an allergy cue was heard but no substance yet: planning stays blocked until resolved
     conflicts: list = field(default_factory=list)  # [{"key","values":[rule,llm]}] disagreements still to ask
+    unparsed_slots: list = field(default_factory=list)  # explicit cues not understood; durable planning obligation
+    attempted_adjustments: list = field(default_factory=list)  # bounded private no-solution history
     goal: Optional[str] = None  # "tour" while the guided flow is collecting what a one-shot tour request still needs
 
     def to_json(self, private: bool = False) -> dict:
@@ -121,7 +123,8 @@ class ChatState:
         }
         if private:
             out.update({"results_stale": self.results_stale, "turns": list(self.turns), "asked": list(self.asked),
-                        "llm_used": self.llm_used, "tour_stale": self.tour_stale, "goal": self.goal, "allergy_unresolved": self.allergy_unresolved, "conflicts": list(self.conflicts)})
+                        "llm_used": self.llm_used, "tour_stale": self.tour_stale, "goal": self.goal, "allergy_unresolved": self.allergy_unresolved, "conflicts": list(self.conflicts),
+                        "unparsed_slots": list(self.unparsed_slots), "attempted_adjustments": list(self.attempted_adjustments)})
         return out
 
     @classmethod
@@ -145,6 +148,8 @@ class ChatState:
         st.goal = d.get("goal")
         st.conflicts = [c for c in d.get("conflicts", []) if isinstance(c, dict)][:8]
         st.allergy_unresolved = bool(d.get("allergy_unresolved", False))
+        st.unparsed_slots = [k for k in d.get("unparsed_slots", []) if k in ("budget_vnd", "party_size", "duration_min", "stops")][:4]
+        st.attempted_adjustments = [s for s in d.get("attempted_adjustments", []) if isinstance(s, str) and len(s) < 100][:32]
         return st
 
     # -- helpers used by the engine -------------------------------------------------

@@ -1,6 +1,7 @@
 """Contract-v1 endpoints. All session mutations are atomic and checked."""
 from dataclasses import asdict, replace as domain_replace
 import os
+import time
 from typing import Literal
 
 from fastapi import APIRouter, Depends, Header, Query, Request, Response
@@ -489,10 +490,18 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         exhausted = bool(budget and (budget["exhausted"] or budget["remaining"] <= request.app.state.llm_reserve))
         try:
             try:
+                extraction_started = time.perf_counter()
                 result = cached[1].handle(session.chat, session.preferences, text=body.text,
                     action=body.action.model_dump(exclude_none=True) if body.action else None,
                     llm=understander.understand if understander is not None else None,
                     llm_status='exhausted' if exhausted else None)
+                request.scope['foodtour_pipeline'] = {
+                    'understanding': result.understanding,
+                    'provider_attempted': bounded_count(result.llm_calls, maximum=1),
+                    'provider_validated': int(result.understanding == 'llm'),
+                    'extraction_ms': round((time.perf_counter() - extraction_started) * 1000, 3),
+                    'algorithm': 'guided-fixed-v1',
+                }
             except Exception:
                 raise APIError(500, 'internal_validation_failed', 'Unable to validate chat result.') from None
             if result.error:
@@ -501,6 +510,7 @@ def chat(session_id: str, body: ChatRequest, request: Request,
             encode_chat(result.state)
             obligation = cached[1].obligation_open(result.state) or (guided and session.chat.allergy_unresolved)
             if result.plan_request and not obligation:
+                planning_started = time.perf_counter()
                 ids = result.plan_request['venue_ids']
                 vm = result.plan_request.get('visit_minutes')
                 if isinstance(vm, int) and 20 <= vm <= 45:
@@ -512,7 +522,10 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                 plan_prefs = domain_replace(prefs, interests=(), max_stops=min(5, len(ids)))
                 if planned.stops and {s.venue_id for s in planned.stops} != set(ids):
                     raise APIError(500, 'internal_validation_failed', 'Planner changed the selected venues.')
-                outcome_blocks = cached[1].after_plan(result.state, planned)
+                outcome_blocks = cached[1].after_plan(result.state, planned, prefs=plan_prefs, routing=request.app.state.routing)
+                request.scope['foodtour_pipeline'].update(
+                    planner_status=planned.status, planner_checked=int(bool(planned.stops)),
+                    planning_ms=round((time.perf_counter() - planning_started) * 1000, 3))
                 if planned.stops:
                     planned = planned.with_locks(tuple(result.plan_request.get('kept', ())))
                     session.tour, session.snapshot = planned, data
