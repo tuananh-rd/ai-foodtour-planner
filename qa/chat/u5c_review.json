@@ -1,0 +1,2053 @@
+{
+  "failure_followups": [
+    {
+      "id": "v3-041",
+      "trace": [
+        {
+          "input": {
+            "text": "Lạc thì mình không ăn được nha; buổi trưa 4 quán cho 2 người trong 90 phút."
+          },
+          "intent": "SEARCH_VENUES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-051",
+      "trace": [
+        {
+          "input": {
+            "text": "Đậu phộng thì em không ăn được đâu chị ơi."
+          },
+          "intent": "SET_AVOID",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-053",
+      "trace": [
+        {
+          "input": {
+            "text": "Ăn trứng là mình bị mẩn ngứa khi ăn, nhớ tránh trứng."
+          },
+          "intent": "SET_AVOID",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "allergy",
+                "label": "Dị ứng"
+              },
+              {
+                "option_id": "dislike",
+                "label": "Chỉ là không thích"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-056",
+      "trace": [
+        {
+          "input": {
+            "text": "Lạc làm mình dị ứng, đừng cho lạc vào nhé."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "allergy",
+                "label": "Dị ứng"
+              },
+              {
+                "option_id": "dislike",
+                "label": "Chỉ là không thích"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 2
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-058",
+      "trace": [
+        {
+          "input": {
+            "text": "Mình kiêng đậu phộng và sữa."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "đậu phộng"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "allergy",
+                "label": "Dị ứng"
+              },
+              {
+                "option_id": "dislike",
+                "label": "Chỉ là không thích"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "đậu phộng"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "đậu phộng"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-060",
+      "trace": [
+        {
+          "input": {
+            "text": "Em không ăn được mè với đậu phộng."
+          },
+          "intent": "SET_AVOID",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-067",
+      "trace": [
+        {
+          "input": {
+            "text": "Tôm và một nguyên liệu chưa rõ tên làm mình dị ứng."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-068",
+      "trace": [
+        {
+          "input": {
+            "text": "Tôi dị ứng lạc, còn thứ gây ngứa kia chưa rõ."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-072",
+      "trace": [
+        {
+          "input": {
+            "text": "Bạn cũ bị dị ứng lạc, bạn ấy ở nhà không tham gia tour."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "time:18:00",
+                "label": "18:00"
+              },
+              {
+                "option_id": "time:19:00",
+                "label": "19:00"
+              },
+              {
+                "option_id": "time:20:00",
+                "label": "20:00"
+              }
+            ],
+            "slot": "start_time"
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-073",
+      "trace": [
+        {
+          "input": {
+            "text": "Chị tôi không đi chuyến này; chị dị ứng tôm."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-074",
+      "trace": [
+        {
+          "input": {
+            "text": "Mẹ dị ứng trứng nhưng hôm nay mẹ ở nhà."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "trứng"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "trứng"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "trứng"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-075",
+      "trace": [
+        {
+          "input": {
+            "text": "Giả dụ khách dị ứng sữa thì bạn xử lý ra sao?"
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "sữa"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "sữa"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "sữa"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-081",
+      "trace": [
+        {
+          "input": {
+            "text": "Dị ứng giá cao thôi 🤣 chứ tôm mình ăn bình thường."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-085",
+      "trace": [
+        {
+          "input": {
+            "text": "Không có chuyện mình dị ứng trứng nhé."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "trứng"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "trứng"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "trứng"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-090",
+      "trace": [
+        {
+          "input": {
+            "text": "Chuyện tour để sau nha vì mình kiêng mè nên phải xem nguyên liệu trước."
+          },
+          "intent": "UNKNOWN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "search",
+                "label": "Tìm quán"
+              },
+              {
+                "option_id": "discover",
+                "label": "Gợi ý món"
+              },
+              {
+                "option_id": "plan",
+                "label": "Lập lịch trình"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-093",
+      "trace": [
+        {
+          "input": {
+            "text": "Tôi bị mẩn ngứa khi ăn tôm."
+          },
+          "intent": "UNKNOWN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "search",
+                "label": "Tìm quán"
+              },
+              {
+                "option_id": "discover",
+                "label": "Gợi ý món"
+              },
+              {
+                "option_id": "plan",
+                "label": "Lập lịch trình"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-095",
+      "trace": [
+        {
+          "input": {
+            "text": "Mình dị ứng \"đậu phộng\" đó."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p1",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": true,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_slot",
+            "options": [
+              {
+                "option_id": "allergy:peanut",
+                "label": "Đậu phộng"
+              },
+              {
+                "option_id": "allergy:seafood",
+                "label": "Hải sản"
+              },
+              {
+                "option_id": "allergy:milk",
+                "label": "Sữa"
+              },
+              {
+                "option_id": "allergy:egg",
+                "label": "Trứng"
+              },
+              {
+                "option_id": "allergy:gluten",
+                "label": "Gluten"
+              },
+              {
+                "option_id": "allergy:soy",
+                "label": "Đậu nành"
+              },
+              {
+                "option_id": "allergy:sesame",
+                "label": "Mè"
+              },
+              {
+                "option_id": "allergy:other",
+                "label": "Khác"
+              }
+            ],
+            "slot": "allergy_term"
+          },
+          "plan_request": null,
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-098",
+      "trace": [
+        {
+          "input": {
+            "text": "Mình kiêng vừng, tức là mè ấy."
+          },
+          "intent": "SET_AVOID",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-099",
+      "trace": [
+        {
+          "input": {
+            "text": "Nghĩ lại thì chưa biết có phải dị ứng không, ăn hạt đó thấy ngứa."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "không"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "không"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "không"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-216",
+      "trace": [
+        {
+          "input": {
+            "text": "Mình dị ứng lạc."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "lạc"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "text": "Tôm thì mình không dị ứng."
+          },
+          "intent": "GREET_OR_SMALLTALK",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p3",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-217",
+      "trace": [
+        {
+          "input": {
+            "text": "Tôi dị ứng tôm."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "text": "À thêm sữa nữa."
+          },
+          "intent": "UNKNOWN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "search",
+                "label": "Tìm quán"
+              },
+              {
+                "option_id": "discover",
+                "label": "Gợi ý món"
+              },
+              {
+                "option_id": "plan",
+                "label": "Lập lịch trình"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p3",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-223",
+      "trace": [
+        {
+          "input": {
+            "text": "Bạn mình dị ứng tôm."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "text": "Bạn ấy ở nhà không đi cùng nhé."
+          },
+          "intent": "UNKNOWN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "search",
+                "label": "Tìm quán"
+              },
+              {
+                "option_id": "discover",
+                "label": "Gợi ý món"
+              },
+              {
+                "option_id": "plan",
+                "label": "Lập lịch trình"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p3",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    },
+    {
+      "id": "v3-225",
+      "trace": [
+        {
+          "input": {
+            "text": "Tôi dị ứng tôm."
+          },
+          "intent": "SET_ALLERGY",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "text": "Không phải tôm mà là lạc, mình nói nhầm."
+          },
+          "intent": "UNKNOWN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p2",
+            "kind": "clarify_intent",
+            "options": [
+              {
+                "option_id": "search",
+                "label": "Tìm quán"
+              },
+              {
+                "option_id": "discover",
+                "label": "Gợi ý món"
+              },
+              {
+                "option_id": "plan",
+                "label": "Lập lịch trình"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 1
+        },
+        {
+          "input": {
+            "action": {
+              "type": "request_plan"
+            }
+          },
+          "intent": "REQUEST_PLAN",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": {
+            "pending_id": "p3",
+            "kind": "confirm_plan",
+            "options": [
+              {
+                "option_id": "confirm_yes",
+                "label": "Xác nhận và tạo lịch trình"
+              },
+              {
+                "option_id": "confirm_no",
+                "label": "Sửa thông tin"
+              }
+            ]
+          },
+          "plan_request": null,
+          "clarifies": 0
+        },
+        {
+          "input": {
+            "action": {
+              "type": "confirm_yes"
+            }
+          },
+          "intent": "CONFIRM_YES",
+          "allergies": [
+            "tôm"
+          ],
+          "unresolved": false,
+          "pending": null,
+          "plan_request": {
+            "venue_ids": [
+              "CHT-001"
+            ],
+            "kept": []
+          },
+          "clarifies": 0
+        }
+      ]
+    }
+  ],
+  "grounding": [
+    {
+      "text": "Tour 3 quán khoảng 1 tiếng rưỡi, mình dị ứng mấy thứ rang giòn",
+      "calls": 1,
+      "profile": {
+        "start_time": {
+          "value": "19:00",
+          "source": "ai",
+          "turn": 1,
+          "confirmed": false
+        },
+        "end_time": {
+          "value": "21:00",
+          "source": "ai",
+          "turn": 1,
+          "confirmed": false
+        },
+        "budget": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        }
+      }
+    },
+    {
+      "text": "Tour 3 quán tối nay 120 phút cho một người, ngân sách 500k, mình dị ứng mấy thứ rang giòn",
+      "calls": 1,
+      "profile": {
+        "start_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "end_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "budget": {
+          "value": 500000,
+          "source": "user_said",
+          "turn": 1,
+          "confirmed": true,
+          "scope": "per_person"
+        }
+      }
+    },
+    {
+      "text": "Tour 3 quán tối nay 120 phút, chung sở thích phở, ngân sách 500k cho 2 người, mình dị ứng mấy thứ rang giòn",
+      "calls": 1,
+      "profile": {
+        "start_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "end_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "budget": {
+          "value": 500000,
+          "source": "user_said",
+          "turn": 1,
+          "confirmed": true,
+          "scope": "group"
+        }
+      }
+    }
+  ],
+  "timing_1000": [
+    {
+      "prefix": "a",
+      "chars": 1000,
+      "max_ms": 21.3944,
+      "median_ms": 13.9164
+    },
+    {
+      "prefix": "dị ứng ",
+      "chars": 1000,
+      "max_ms": 2175.9584,
+      "median_ms": 1976.4501
+    },
+    {
+      "prefix": "tôi thích ",
+      "chars": 1000,
+      "max_ms": 74.9975,
+      "median_ms": 50.1635
+    },
+    {
+      "prefix": "nếu tôi ",
+      "chars": 1000,
+      "max_ms": 76.0247,
+      "median_ms": 56.1574
+    },
+    {
+      "prefix": "tôm nhưng không ",
+      "chars": 1000,
+      "max_ms": 74.3021,
+      "median_ms": 52.2187
+    },
+    {
+      "prefix": "12 h ",
+      "chars": 1000,
+      "max_ms": 50.4477,
+      "median_ms": 43.0346
+    },
+    {
+      "prefix": "<",
+      "chars": 1000,
+      "max_ms": 5.2309,
+      "median_ms": 3.813
+    },
+    {
+      "prefix": "(",
+      "chars": 1000,
+      "max_ms": 4.1554,
+      "median_ms": 3.7614
+    },
+    {
+      "prefix": "không ăn được ",
+      "chars": 1000,
+      "max_ms": 82.4822,
+      "median_ms": 59.1737
+    }
+  ],
+  "compact": {
+    "phase": "discover",
+    "pending": null,
+    "known": [
+      "area",
+      "duration_min",
+      "vehicle",
+      "tastes"
+    ],
+    "results": 0,
+    "shortlist": 1,
+    "has_allergy": true
+  },
+  "compact_sentinel_leak": false,
+  "growth_2000": {
+    "turns": 8,
+    "asked": 0,
+    "conflicts": 0,
+    "allergies": 1,
+    "shortlist": 0
+  }
+}
