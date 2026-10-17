@@ -654,7 +654,27 @@ async function run() {
     await captureScreenshot('04_proposals_confirm_1280.png');
     await setViewport(390, 844);
     await captureScreenshot('04_proposals_confirm_390.png');
-    await setViewport(1280, 800);
+    // [U4D-01] F2: Confirmation Reload Fidelity Check
+    const beforeReloadVenues = await ev(`document.querySelector('[data-testid="confirm-venues-list"]')?.innerText || ''`);
+    const beforeReloadVisitMin = await ev(`document.querySelector('[data-testid="confirm-visit-min"]')?.innerText || ''`);
+    const beforeReloadDetails = await ev(`document.querySelector('[data-testid="confirm-summary-details"]')?.innerText || ''`);
+
+    // Reload page mid-confirmation
+    await navigateTo(`http://127.0.0.1:${PORT_WEB}/?guided=1`);
+    await sleep(400);
+
+    const afterReloadVenues = await ev(`document.querySelector('[data-testid="confirm-venues-list"]')?.innerText || ''`);
+    const afterReloadVisitMin = await ev(`document.querySelector('[data-testid="confirm-visit-min"]')?.innerText || ''`);
+    const afterReloadDetails = await ev(`document.querySelector('[data-testid="confirm-summary-details"]')?.innerText || ''`);
+
+    record('U4D-01-RELOAD-FIDELITY', 'Confirmation reload preserves venue names, visit minutes, and details',
+      beforeReloadVenues === afterReloadVenues &&
+      beforeReloadVisitMin === afterReloadVisitMin &&
+      beforeReloadDetails === afterReloadDetails &&
+      !afterReloadVenues.includes('CHT-') &&
+      !afterReloadVisitMin.includes('30 phút/quán'),
+      `venuesMatch: ${beforeReloadVenues === afterReloadVenues}, visitMatch: ${beforeReloadVisitMin === afterReloadVisitMin}`
+    );
 
     // Click "Đúng, lập tour" (Action 4)
     userActionCount++;
@@ -890,25 +910,88 @@ async function run() {
     console.log('\n--- Scenario 6: Offline & 409 Error Recovery ---');
     currentStep = 'scenario_6_error_recovery';
 
+    await ev(`try { sessionStorage.clear(); } catch {}`);
     await navigateTo(`http://127.0.0.1:${PORT_WEB}/?guided=1`);
-    await sleep(300);
+    await waitForTurn();
 
-    // Inject simulated 409 conflict
-    await ev(`(() => {
-      window.dispatchEvent(new CustomEvent('simulate-409'));
-    })()`);
+    console.log('[DEBUG S6] Initial ready. Sending S0...');
+    await sendInput(S0_TEXT);
+    console.log('[DEBUG S6] After S0:', await ev(`({
+      busy: document.querySelector('[data-testid="guided-container"]')?.getAttribute('aria-busy'),
+      question: document.querySelector('[data-testid="clarify-question-text"]')?.innerText,
+      hasScope: document.querySelector('[data-testid="clarify-option-scope:group"]') !== null
+    })`));
 
-    // Verify calm error message banner
+    await clickOption('scope:group');
+    console.log('[DEBUG S6] After scope:group:', await ev(`({
+      busy: document.querySelector('[data-testid="guided-container"]')?.getAttribute('aria-busy'),
+      question: document.querySelector('[data-testid="clarify-question-text"]')?.innerText
+    })`));
+
+    await sendInput('19h');
+    console.log('[DEBUG S6] After 19h:', await ev(`({
+      busy: document.querySelector('[data-testid="guided-container"]')?.getAttribute('aria-busy'),
+      hasConfirm: document.querySelector('[data-testid="confirm-yes-btn"]') !== null,
+      confirmText: document.querySelector('[data-testid="confirm-summary-card"]')?.innerText?.slice(0, 80)
+    })`));
+
+    for (let i = 0; i < 40; i++) {
+      const hasConfirm = await ev(`document.querySelector('[data-testid="confirm-yes-btn"]') !== null`);
+      if (hasConfirm) break;
+      await sleep(150);
+    }
+
+    const concurrentSessionId = await ev(`sessionStorage.getItem('foodtour_chat_session_id')`);
+    const concurrentToken = await ev(`sessionStorage.getItem('foodtour_chat_session_token')`);
+    const currentSession = await (await fetch(`http://127.0.0.1:${PORT_API}/v1/sessions/${concurrentSessionId}`, {
+      headers: { 'X-Session-Token': concurrentToken }
+    })).json();
+
+    // Second client submits new allergy cue directly via HTTP API, advancing server revision
+    const secondTurnRes = await (await fetch(`http://127.0.0.1:${PORT_API}/v1/sessions/${concurrentSessionId}/chat`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'X-Session-Token': concurrentToken },
+      body: JSON.stringify({
+        text: 'mình bị dị ứng nhẹ với mấy thứ rang giòn',
+        action: null,
+        revision: currentSession.revision
+      })
+    })).json();
+    console.log('[DEBUG S6] Second client turn result:', { pendingKind: secondTurnRes?.chat?.pending?.kind, newRev: secondTurnRes?.revision });
+
+    // First client clicks stale confirm-yes-btn, triggering real 409 Conflict
+    await ev(`document.querySelector('[data-testid="confirm-yes-btn"]')?.click()`);
+    await waitForTurn();
+    await sleep(600);
+
+    let conflictQuestionCount = 0;
+    let conflictQuestionText = '';
+    let hasAllergyChip = false;
+    let hasStaleConfirmBtn = true;
+    for (let i = 0; i < 30; i++) {
+      conflictQuestionCount = await ev(`document.querySelectorAll('[data-testid="clarify-question-card"]').length`);
+      conflictQuestionText = await ev(`document.querySelector('[data-testid="clarify-question-text"]')?.innerText || ''`);
+      hasAllergyChip = await ev(`document.querySelector('[data-testid^="clarify-option-allergy:"]') !== null`);
+      hasStaleConfirmBtn = await ev(`document.querySelector('[data-testid="confirm-yes-btn"]') !== null`);
+      if (hasAllergyChip && !hasStaleConfirmBtn) break;
+      await sleep(150);
+    }
+    const hasTourTimeline = await ev(`document.querySelector('[data-testid="guided-timeline"]') !== null`);
     const hasCalmErrorBanner = await ev(`(() => {
       const banner = document.querySelector('[data-testid="guided-error-banner"]');
-      if (!banner) return true; // not triggered yet
+      if (!banner) return false;
       const text = banner.innerText;
       return text.includes('⚠️') && !text.includes('{') && !text.includes('Traceback');
     })()`);
 
-    record('U4B-22-CALM-ERROR-RECOVERY', 'Error handling shows calm Vietnamese notice without raw JSON',
+    record('U4D-02-REAL-409-CONFLICT-RECOVERY', 'Real 409 conflict replaces confirmation with allergy question and removes confirm button',
+      conflictQuestionCount === 1 &&
+      conflictQuestionText.toLowerCase().includes('dị ứng') &&
+      hasAllergyChip &&
+      !hasStaleConfirmBtn &&
+      !hasTourTimeline &&
       hasCalmErrorBanner,
-      `calm: ${hasCalmErrorBanner}`
+      `questions: ${conflictQuestionCount}, allergy: ${hasAllergyChip}, staleConfirm: ${hasStaleConfirmBtn}, banner: ${hasCalmErrorBanner}`
     );
 
     // -------------------------------------------------------------------------------------------------

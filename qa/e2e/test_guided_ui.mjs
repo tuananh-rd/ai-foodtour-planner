@@ -454,6 +454,18 @@ async function run() {
     const hasVenuesList = await ev(`document.querySelector('[data-testid="confirm-venues-list"]') !== null`);
     record('S0-TURN5-01', 'Proposed venues rendered in confirmation shortlist', hasVenuesList);
 
+    // Pending summary fixture rendering checks (F2)
+    const venuesListText = await ev(`document.querySelector('[data-testid="confirm-venues-list"]')?.innerText || ''`);
+    const visitMinText = await ev(`document.querySelector('[data-testid="confirm-visit-min"]')?.innerText || ''`);
+    record('S0-PENDING-SUMMARY-VENUES', 'Confirm summary renders venue names without internal IDs',
+      hasVenuesList && !venuesListText.includes('CHT-') && venuesListText.includes('[SYNTHETIC]'),
+      venuesListText
+    );
+    record('S0-PENDING-SUMMARY-VISIT', 'Confirm summary renders inferred visit_min',
+      visitMinText.includes('34 phút'),
+      visitMinText
+    );
+
     // TOUR GATE: Tour is NEVER displayed before confirm_yes!
     const tourBeforeConfirm = await ev(`document.querySelector('[data-testid="guided-timeline"]') !== null`);
     record('S0-GATE-01', 'Tour timeline is NOT rendered before confirm_yes', !tourBeforeConfirm);

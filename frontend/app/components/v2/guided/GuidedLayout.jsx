@@ -26,6 +26,16 @@ function profileToUnderstoodItems(profile = {}) {
   if (profile.duration_min?.value) {
     items.push({ id: 'duration', label: 'Tổng thời gian', value: `${profile.duration_min.value} phút`, status: 'user', editable: true });
   }
+  if (profile.stops?.value && profile.duration_min?.value) {
+    const n = Number(profile.stops.value);
+    const d = Number(profile.duration_min.value);
+    if (n > 0 && d > 0) {
+      const vm = Math.floor((d - (n - 1) * 8) / n);
+      if (vm > 0) {
+        items.push({ id: 'visit_min', label: 'Thời gian mỗi quán (ước tính)', value: `khoảng ${vm} phút`, status: 'inferred', editable: false });
+      }
+    }
+  }
   if (profile.day_part?.value) {
     const dayPartMap = { morning: 'Buổi sáng', noon: 'Buổi trưa', afternoon: 'Buổi chiều', evening: 'Buổi tối', late: 'Đêm muộn' };
     items.push({ id: 'day_part', label: 'Buổi', value: dayPartMap[profile.day_part.value] || profile.day_part.value, status: 'user', editable: true });
@@ -146,13 +156,23 @@ export default function GuidedLayout({
               }
               if (s.chat?.pending) {
                 if (s.chat.pending.kind === 'confirm_plan') {
-                  restoredAssistantBlocks.push({
-                    type: 'confirm_summary',
-                    items: profileToUnderstoodItems(s.chat.profile),
-                    shortlist: s.chat.shortlist || [],
-                    missing: [],
-                    warnings: []
-                  });
+                  if (s.chat.last_results && s.chat.last_results.length > 0) {
+                    restoredAssistantBlocks.push({
+                      type: 'venue_cards',
+                      cards: s.chat.last_results
+                    });
+                  }
+                  if (s.chat.pending.summary) {
+                    restoredAssistantBlocks.push(s.chat.pending.summary);
+                  } else {
+                    restoredAssistantBlocks.push({
+                      type: 'confirm_summary',
+                      items: profileToUnderstoodItems(s.chat.profile),
+                      shortlist: s.chat.shortlist || [],
+                      missing: [],
+                      warnings: []
+                    });
+                  }
                 } else if (s.chat.pending.slot === 'propose') {
                   if (s.chat.last_results && s.chat.last_results.length > 0) {
                     restoredAssistantBlocks.push({
@@ -246,13 +266,14 @@ export default function GuidedLayout({
       ]);
     }
 
+    let activeSessionId = sessionId;
+    let activeToken = sessionToken;
+    if (!activeSessionId && typeof window !== 'undefined') {
+      activeSessionId = sessionStorage.getItem('foodtour_chat_session_id');
+      activeToken = sessionStorage.getItem('foodtour_chat_session_token') || activeToken;
+    }
+
     try {
-      let activeSessionId = sessionId;
-      let activeToken = sessionToken;
-      if (!activeSessionId && typeof window !== 'undefined') {
-        activeSessionId = sessionStorage.getItem('foodtour_chat_session_id');
-        activeToken = sessionStorage.getItem('foodtour_chat_session_token') || activeToken;
-      }
       if (!activeSessionId) {
         const fresh = await createSession();
         activeSessionId = fresh.session_id;
@@ -320,15 +341,88 @@ export default function GuidedLayout({
       setLastFailedTurn({ text, action });
       if (err?.status === 409) {
         setErrorMessage('Phiên làm việc đã thay đổi trên máy chủ. Đang tự động đồng bộ lại...');
-        getSession(sessionId, sessionToken)
-          .then((s) => {
-            if (s) {
-              setRevision(s.revision || 0);
-              if (s.chat) setChatState(s.chat);
-              if (s.tour) setTour(s.tour);
+        try {
+          const s = await getSession(activeSessionId, activeToken);
+          if (s) {
+            setRevision(s.revision || 0);
+            if (s.chat) setChatState(s.chat);
+            if (s.tour) setTour(s.tour);
+
+              // Discard incompatible previous confirmation/question and sync stream with refreshed session
+              const restoredBlocks = [];
+              if (s.chat?.profile) {
+                restoredBlocks.push({
+                  type: 'understood',
+                  items: profileToUnderstoodItems(s.chat.profile),
+                  allergies: s.chat.allergies || []
+                });
+              }
+              if (s.chat?.pending) {
+                if (s.chat.pending.kind === 'confirm_plan') {
+                  if (s.chat.last_results && s.chat.last_results.length > 0) {
+                    restoredBlocks.push({
+                      type: 'venue_cards',
+                      cards: s.chat.last_results
+                    });
+                  }
+                  if (s.chat.pending.summary) {
+                    restoredBlocks.push(s.chat.pending.summary);
+                  } else {
+                    restoredBlocks.push({
+                      type: 'confirm_summary',
+                      items: profileToUnderstoodItems(s.chat.profile),
+                      shortlist: s.chat.shortlist || [],
+                      missing: [],
+                      warnings: []
+                    });
+                  }
+                } else if (s.chat.pending.slot === 'propose') {
+                  if (s.chat.last_results && s.chat.last_results.length > 0) {
+                    restoredBlocks.push({
+                      type: 'venue_cards',
+                      cards: s.chat.last_results
+                    });
+                  }
+                  restoredBlocks.push({
+                    type: 'clarify',
+                    question: 'Bạn muốn dùng những quán này cho tour không?',
+                    options: s.chat.pending.options || [
+                      { option_id: 'propose:use', label: 'Dùng những quán này' },
+                      { option_id: 'propose:self', label: 'Mình tự chọn' }
+                    ],
+                    slot: 'propose',
+                    free_text: true
+                  });
+                } else {
+                  restoredBlocks.push({
+                    type: 'clarify',
+                    question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot),
+                    options: s.chat.pending.options || [],
+                    slot: s.chat.pending.slot,
+                    free_text: true
+                  });
+                }
+              }
+              if (s.tour) {
+                restoredBlocks.push({
+                  type: 'tour_ready',
+                  revision: s.revision
+                });
+              }
+              if (restoredBlocks.length > 0) {
+                setMessages((prev) => [
+                  ...prev.filter((m) => m.role === 'user'),
+                  {
+                    role: 'assistant',
+                    reply: { blocks: restoredBlocks },
+                    chat: s.chat,
+                    tour: s.tour,
+                    timestamp: Date.now()
+                  }
+                ]);
+              }
             }
-          })
-          .catch(() => {});
+          } catch (_) {}
       } else if (err?.status === 422) {
         setErrorMessage('Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.');
       } else if (err?.status >= 500) {
@@ -443,7 +537,7 @@ export default function GuidedLayout({
 
   const textBlocks = latestBlocks.filter((b) => b.type === 'text');
   const noticeBlocks = latestBlocks.filter((b) => b.type === 'notice');
-  const venueCardsBlock = latestBlocks.find((b) => b.type === 'venue_cards');
+  const venueCardsBlock = (!chatState?.pending || chatState?.pending?.kind === 'confirm_plan' || chatState?.pending?.slot === 'propose') ? latestBlocks.find((b) => b.type === 'venue_cards') : null;
   const latestUnderstoodBlock = latestBlocks.find((b) => b.type === 'understood');
   const previousUnderstoodBlock = [...messages]
     .reverse()
@@ -482,54 +576,72 @@ export default function GuidedLayout({
   const tourReadyBlock = latestBlocks.find((b) => b.type === 'tour_ready');
   const isTourReady = Boolean(tour && (tourReadyBlock || chatState?.phase === 'planned'));
 
-  // Confirm Summary Block: active when confirmation is latest or pending confirm_plan
-  let confirmSummaryBlock = !isTourReady ? latestBlocks.find((b) => b.type === 'confirm_summary') : null;
-  if (!confirmSummaryBlock && !isTourReady && chatState?.pending?.kind === 'confirm_plan') {
-    const previousConfirm = [...messages]
-      .reverse()
-      .map((m) => m.reply?.blocks?.find((b) => b.type === 'confirm_summary'))
-      .find(Boolean);
-    if (previousConfirm) {
-      confirmSummaryBlock = previousConfirm;
+  // Active Decision: strictly derived from current chatState.pending!
+  let confirmSummaryBlock = null;
+  let clarifyBlock = null;
+
+  if (!isTourReady) {
+    if (chatState?.pending) {
+      if (chatState.pending.kind === 'confirm_plan') {
+        if (chatState.pending.summary) {
+          confirmSummaryBlock = chatState.pending.summary;
+        } else {
+          const latestConfirm = latestBlocks.find((b) => b.type === 'confirm_summary');
+          if (latestConfirm) {
+            confirmSummaryBlock = latestConfirm;
+          } else {
+            const previousConfirm = [...messages]
+              .reverse()
+              .map((m) => m.reply?.blocks?.find((b) => b.type === 'confirm_summary'))
+              .find(Boolean);
+            if (previousConfirm) {
+              confirmSummaryBlock = previousConfirm;
+            } else {
+              confirmSummaryBlock = {
+                type: 'confirm_summary',
+                items: profileToUnderstoodItems(chatState.profile),
+                shortlist: chatState.shortlist || [],
+                missing: [],
+                warnings: []
+              };
+            }
+          }
+        }
+      } else {
+        // Pending is a clarify question (clarify_slot)
+        const latestClarify = latestBlocks.find((b) => b.type === 'clarify');
+        if (latestClarify && (!chatState.pending.slot || latestClarify.slot === chatState.pending.slot)) {
+          clarifyBlock = latestClarify;
+        } else {
+          const previousClarify = [...messages]
+            .reverse()
+            .map((m) => m.reply?.blocks?.find((b) => b.type === 'clarify'))
+            .find(Boolean);
+          if (previousClarify && (!chatState.pending.slot || previousClarify.slot === chatState.pending.slot)) {
+            clarifyBlock = previousClarify;
+          } else {
+            clarifyBlock = {
+              type: 'clarify',
+              pending_id: chatState.pending.pending_id || 'p_restored',
+              question: chatState.pending.question || chatState.pending.prompt || getClarifyQuestionText(chatState.pending.slot),
+              options: chatState.pending.options || [],
+              slot: chatState.pending.slot,
+              free_text: true
+            };
+          }
+        }
+      }
     } else {
-      confirmSummaryBlock = {
-        type: 'confirm_summary',
-        items: profileToUnderstoodItems(chatState.profile),
-        shortlist: chatState.shortlist || [],
-        missing: [],
-        warnings: []
-      };
+      // Fallback when chatState.pending is null/undefined
+      confirmSummaryBlock = latestBlocks.find((b) => b.type === 'confirm_summary') || null;
+      if (!confirmSummaryBlock) {
+        clarifyBlock = latestBlocks.find((b) => b.type === 'clarify') || null;
+      }
     }
   }
 
   // Tour Gate: Tour is rendered ONLY when tour is available and tour_ready block or planned phase is reached
   const showTour = Boolean(tour && (tourReadyBlock || chatState?.phase === 'planned'));
-
-  // Clarify Block: active only when tour and confirm summary are not shown
-  let clarifyBlock = null;
-  if (!showTour && !confirmSummaryBlock && chatState?.pending?.kind !== 'confirm_plan') {
-    const latestClarify = latestBlocks.find((b) => b.type === 'clarify');
-    if (latestClarify) {
-      clarifyBlock = latestClarify;
-    } else if (chatState?.pending) {
-      const previousClarify = [...messages]
-        .reverse()
-        .map((m) => m.reply?.blocks?.find((b) => b.type === 'clarify'))
-        .find(Boolean);
-      if (previousClarify && (!chatState.pending.slot || previousClarify.slot === chatState.pending.slot)) {
-        clarifyBlock = previousClarify;
-      } else {
-        clarifyBlock = {
-          type: 'clarify',
-          pending_id: chatState.pending.pending_id || 'p_restored',
-          question: chatState.pending.question || chatState.pending.prompt || getClarifyQuestionText(chatState.pending.slot),
-          options: chatState.pending.options || [],
-          slot: chatState.pending.slot,
-          free_text: true
-        };
-      }
-    }
-  }
 
   // Filter text blocks to enforce EXACTLY ONE visible decision question across DOM
   const filteredTextBlocks = textBlocks.filter((b) => {

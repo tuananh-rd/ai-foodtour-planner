@@ -38,7 +38,7 @@ export default function ConfirmSummaryCard({
   const cleanBudget = String(budget).replace(/\s*\(?(mỗi người|cả nhóm|chưa rõ[^)]*)\)?/gi, '').trim();
 
   const visitMinItem = summary?.items?.find((i) => i.id === 'visit_min');
-  const visitMinText = visitMinItem?.value || 'khoảng 30 phút/quán';
+  const visitMinText = visitMinItem?.value || (summary?.visit_min ? `khoảng ${summary.visit_min} phút` : '');
 
   const vehicleItem = summary?.items?.find((i) => i.id === 'vehicle');
   const vehicleVal = vehicleItem?.value || profile?.vehicle?.value || 'đi bộ';
@@ -91,21 +91,23 @@ export default function ConfirmSummaryCard({
               marginTop: 6
             }}
           >
-            <b>Quán đề xuất:</b> {summary.shortlist.map((s) => s.name || s.venue_id).join(', ')}
+            <b>Quán đề xuất:</b> {summary.shortlist.map((s) => s.name || 'Quán chưa rõ tên').join(', ')}
           </div>
         )}
 
         {/* Visit Minutes per Stop */}
-        <div
-          data-testid="confirm-visit-min"
-          style={{
-            fontSize: 13,
-            color: 'var(--mute, #6b6257)',
-            marginTop: 4
-          }}
-        >
-          ⏱️ <b>Thời gian mỗi quán:</b> {visitMinText}
-        </div>
+        {visitMinText && (
+          <div
+            data-testid="confirm-visit-min"
+            style={{
+              fontSize: 13,
+              color: 'var(--mute, #6b6257)',
+              marginTop: 4
+            }}
+          >
+            ⏱️ <b>Thời gian mỗi quán:</b> {visitMinText}
+          </div>
+        )}
 
         {/* Vehicle Row (default walking, editable) */}
         <div
