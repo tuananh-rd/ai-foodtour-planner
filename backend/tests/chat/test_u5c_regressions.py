@@ -1,5 +1,7 @@
 """U5c independent review: new failures remain honest, without skips or xfails."""
 import unittest
+import time
+import statistics
 
 from .test_u1_guided import engine
 from app.chat.state import ChatState, ShortItem
@@ -90,6 +92,26 @@ class BlindRegressions(unittest.TestCase):
         self.assertEqual(r.llm_calls, 1)
         self.assertIsNone(r.state.profile['budget'].scope)
 
+    def test_absent_friend_does_not_erase_speakers_allergy(self):
+        r = self.turns(['Tôi dị ứng tôm nhưng bạn tôi không đi cùng'])
+        self.assertTrue('tôm' in [a.term for a in r.state.allergies] or r.state.allergy_unresolved)
+
+    def test_real_allergy_after_unpunctuated_hypothetical_is_not_lost(self):
+        r = self.turns(['Giả sử bạn dị ứng trứng còn tôi dị ứng lạc thật'])
+        self.assertTrue('lạc' in [a.term for a in r.state.allergies] or r.state.allergy_unresolved)
+
+    def test_repeated_allergy_cues_have_bounded_processing_time(self):
+        # 250 ms per 1000-character turn on this review machine; median reduces
+        # scheduler noise. The former parser control takes about 7 ms; this
+        # regression takes about 700 ms even with no other workload.
+        text = ('dị ứng '*1000)[:1000]
+        samples=[]
+        for _ in range(3):
+            start=time.perf_counter()
+            self.eng.handle(ChatState(),Preferences(),text=text)
+            samples.append(time.perf_counter()-start)
+        self.assertLess(statistics.median(samples), .25)
+
 
 class GuardControls(unittest.TestCase):
     """Green committed controls used for mutation kills, separate from findings."""
@@ -112,3 +134,17 @@ class GuardControls(unittest.TestCase):
     def test_hard_cue_guard(self):
         r=self.eng.handle(ChatState(),Preferences(),text='Mình kiêng trứng')
         self.assertEqual([a.term for a in r.state.allergies],['trứng'])
+
+    def test_model_symptom_guard(self):
+        llm=lambda *a:Outcome(sanitize({'intent':'SET_ALLERGY','patch':{'allergy':['ngứa họng']}}),1)
+        r=self.eng.handle(ChatState(),Preferences(),
+            text='Tour 3 quán quanh Hồ Gươm, mình dị ứng mấy thứ rang giòn',llm=llm)
+        self.assertFalse(r.state.allergies)
+        self.assertTrue(r.state.allergy_unresolved)
+
+    def test_model_description_guard(self):
+        llm=lambda *a:Outcome(sanitize({'intent':'SET_ALLERGY','patch':{'allergy':['vỏ cứng']}}),1)
+        r=self.eng.handle(ChatState(),Preferences(),
+            text='Tour 3 quán quanh Hồ Gươm, mình dị ứng mấy thứ rang giòn',llm=llm)
+        self.assertFalse(r.state.allergies)
+        self.assertTrue(r.state.allergy_unresolved)
