@@ -3,7 +3,9 @@ import json
 from pathlib import Path
 from collections import defaultdict
 R=Path(__file__).resolve().parents[2]
-def read(name): return json.loads((R/f'qa/chat/u5d_{name}.json').read_text(encoding='utf8'))
+def read(name):
+    tag='' if name=='first_run' else 'postmerge_'
+    return json.loads((R/f'qa/chat/u5d_{tag}{name}.json').read_text(encoding='utf8'))
 report=R/'docs/reports/CODEX_U5D.md'
 receipt=report.read_text(encoding='utf8').split('\n## Verdict')[0]
 out=[receipt,'''\n## Verdict
@@ -53,7 +55,7 @@ for mode in ['raw','valid','mixed']:
     f=read('fuzz_'+mode);counts=f['failure_counts'].copy();rejects=counts.pop('api_rejected_inputs',0)
     out.append(f"| {mode} | {f['sequences']} | {f['turns']} | {f['plan_requests']} | {f['llm_calls']} | {rejects} | {json.dumps(counts)} |")
 out.append('\n## Mutation evidence\n\nAll mutation controls were committed before execution. Known-red U5d finding tests are excluded, so they cannot falsely kill a mutant. Baseline-green inherited and U5d controls are used; each row names committed failure tests. A harness-only missing `re` import interrupted the first attempt before saving results, was corrected, committed, and rerun; no corpus rescoring occurred.\n\n| Mutant | Tests | Result | Committed killing tests |\n|---|---:|---|---|')
-if (R/'qa/chat/u5d_mutations.json').exists():
+if (R/'qa/chat/u5d_postmerge_mutations.json').exists():
     mut=read('mutations');rs=mut['mutations']+extra['mutations']
     for m in rs:
         state='KILLED' if m['failures'] else 'SURVIVED' if not m['errors'] else 'ERROR (not kill)'
@@ -61,7 +63,7 @@ if (R/'qa/chat/u5d_mutations.json').exists():
     out.append('\nThe original `one_clarify` mutation changes intermediate handlers; the newer `_finish` guard can mask it. A separate `final_one_question` mutant removes that final guard and is tested behaviorally. Surviving prior mutants, if any, remain explicitly visible and prevent a claim that every requested mutant was killed.\n')
 else: out.append('Mutation run still pending.\n')
 out.append('\n## Timing evidence\n\n`u5d_timing_final.json` records each actual assembled runtime pattern and module-level compiled regex (310 entries), with maximum milliseconds at 250/500/1000/2000 characters over 17 adversarial cue families, including repeated allergy/absence/conditional/uncertainty cues, whitespace, tags, numbers, and correction near-misses. It covers new parse_slots expressions, hypothetical splitting, third-party/absence patterns, symptom/uncertainty/unnamed patterns, dish scanning, and LLM grounding; this is dynamic branch coverage, not a proof against all regex inputs. Raw earlier timing passes are retained.\n\nThe standalone stress table intentionally uses full `finditer` for every pattern, even patterns used as anchored `match` in production; it can overstate reachable cost and must not be mistaken for end-to-end latency. End-to-end medians below use the actual engine and three samples per prefix/length, including normalization and short-circuit behavior.\n\n| Repeated input | 250 chars ms | 500 chars ms | 1000 chars ms | 2000 chars ms |\n|---|---:|---:|---:|---:|')
-if (R/'qa/chat/u5d_timing_final.json').exists():
+if (R/'qa/chat/u5d_postmerge_timing_final.json').exists():
     timing=read('timing_final');by=defaultdict(dict)
     for row in timing['engine']: by[row['prefix']][row['chars']]=row['median_ms']
     for cue,vals in by.items():out.append('| '+repr(cue)+' | '+' | '.join(str(vals[n]) for n in [250,500,1000,2000])+' |')
@@ -84,5 +86,23 @@ for cause,rows in groups.items():
         esc=lambda v:json.dumps(v,ensure_ascii=False).replace('|','&#124;').replace('\n',' ')
         out.append('| '+row['id']+' | '+esc(row['text'])+' | '+esc(row.get('prior',[]))+' | '+esc(row.get('mismatches',{}))+' |')
 out.append('\n## Reproduction commands and limits\n\nFirst-run scoring used `eval_guided.evaluate(mode, load_cases(Path("qa/chat/guided_blind_v4.jsonl")))` once each for rules and outcome_exhausted; the CLI defaults to v1/failed_provider, so it was deliberately not used to mislabel this measurement. Output-file existence was checked before writing. Do not rerun or overwrite `u5d_first_run.json`. Diagnostics: `qa/chat/review_u5d.py review`, `raw`, `valid`, `mixed`, `timing`; mutations: `qa/chat/mutations_u5d.py` and `qa/chat/extra_u5d.py`. Evidence scripts use local synthetic fixtures and in-process provider stubs. No live Gemini calls, remote publishing, servers, keys, .env, or private CSV were used. DB/live provider validation was not attempted. The present verdict requires fixes and independent review; it does not authorize a self-approved merge.\n')
-report.write_text('\n'.join(out),encoding='utf8')
+late=read('late')
+out.append('''\n## Coordinator-requested late merge: separate review revision
+
+The frozen first run remains on `0dde2116c6d5d2421000bb3afa90c158e081b350`. After coordinator delivery `msg_d07d24a3d243`, merged production revision **66326402fe56a9e1bd7351ea36c0347fef44396f** in merge commit `c4a17599ea7e7b4e176f3080f0a6f1e015156b1a`. All STEP 3 evidence was repeated against that production revision, using `U5D_EVIDENCE_TAG=postmerge_` so original evidence is preserved. The tables above use the **postmerge** JSON for fuzz/mutations/timing/privacy/growth/ready-state diagnostics, while frozen numbers/failure sentences remain original. The baseline 552-test gate paragraph above describes the original engine; the final postmerge gate receipt below supersedes it for final acceptance. No second v4 score was run.
+
+Reviewed the additional engine stale-pending cleanup ordering, `_answer` free-text filter, low-confidence/no obligation handling, and `routes.py` visit-minute application. Existing semantic findings remain. New major repro in the late revision: `Tôi dị ứng một thứ chưa rõ.` → `lên đường` → actions `request_plan`, `confirm_yes` stores `lên đường` as a concrete allergy, clears unresolved, and emits a plan. `duyệt luôn`, `go ahead`, `tiến hành`, and `được nha` have the same result (full traces in `qa/chat/u5d_postmerge_late.json`). Committed failing test `ConfirmedFindings.test_command_answer_cannot_resolve_unknown_allergy` preserves this finding. This shows the command denylist blocks the specific fixed phrase but still accepts other commands as an unnamed substance.
+
+MINOR: `_to_prefs` retains a previously inferred 34-minute visit when the duration changes from 120 to 240 minutes; `_visit_minutes` then returns None and the summary omits that assumption. The API hook applies only bounded integer values (20..45), and real selected-tour planning still checks actual routing/time constraints; no fabricated route or ETA is introduced by this hook. The hardcoded eight-minute leg is an internal heuristic for estimating a visit, not verified walking evidence. The stale assumption should be reconciled with displayed summary state. Probe trace:
+''')
+out.append('```json\n'+json.dumps(late['visit_update'],ensure_ascii=False,indent=2)+'\n```')
+gate=R/'qa/chat/u5d_postmerge_backend_gate.txt'
+if gate.exists():
+    log=gate.read_text(encoding='utf8',errors='replace'); lines=log.splitlines()
+    receipt_lines=[line for line in lines if line.startswith(('Ran ','FAILED (','OK','FAIL:','ERROR:'))]
+    out.append('\nFinal postmerge gate, canonical command from repository root:\n```text\n'+'\n'.join(receipt_lines)+'\n```\nFull log: `qa/chat/u5d_postmerge_backend_gate.txt`. The one skip remains the pre-existing unconfigured private CSV check. New confirmed regressions are neither skipped nor xfailed.')
+text='\n'.join(out).replace('First-run results pending.','')
+text=text.replace('`u5d_timing_final.json`','`u5d_postmerge_timing_final.json`')
+text=text.replace('in `qa/chat/u5d_review.json`','in `qa/chat/u5d_postmerge_review.json`')
+report.write_text(text,encoding='utf8')
 print('report written')
