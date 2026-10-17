@@ -365,43 +365,55 @@
         "properties": {
           "blocks": {
             "items": {
-              "discriminator": {
-                "mapping": {
-                  "clarify": "#/components/schemas/ClarifyBlock",
-                  "compare_table": "#/components/schemas/CompareTableBlock",
-                  "confirm_summary": "#/components/schemas/ConfirmSummaryBlock",
-                  "dish_suggestions": "#/components/schemas/DishSuggestionsBlock",
-                  "notice": "#/components/schemas/NoticeBlock",
-                  "text": "#/components/schemas/TextBlock",
-                  "tour_ready": "#/components/schemas/TourReadyBlock",
-                  "venue_cards": "#/components/schemas/VenueCardsBlock"
-                },
-                "propertyName": "type"
-              },
-              "oneOf": [
+              "anyOf": [
                 {
-                  "$ref": "#/components/schemas/TextBlock"
+                  "discriminator": {
+                    "mapping": {
+                      "clarify": "#/components/schemas/ClarifyBlock",
+                      "compare_table": "#/components/schemas/CompareTableBlock",
+                      "confirm_summary": "#/components/schemas/ConfirmSummaryBlock",
+                      "dish_suggestions": "#/components/schemas/DishSuggestionsBlock",
+                      "notice": "#/components/schemas/NoticeBlock",
+                      "text": "#/components/schemas/TextBlock",
+                      "tour_ready": "#/components/schemas/TourReadyBlock",
+                      "understood": "#/components/schemas/UnderstoodBlock",
+                      "venue_cards": "#/components/schemas/VenueCardsBlock"
+                    },
+                    "propertyName": "type"
+                  },
+                  "oneOf": [
+                    {
+                      "$ref": "#/components/schemas/TextBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/NoticeBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/DishSuggestionsBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/VenueCardsBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/CompareTableBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ClarifyBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/ConfirmSummaryBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/TourReadyBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/UnderstoodBlock"
+                    }
+                  ]
                 },
                 {
-                  "$ref": "#/components/schemas/NoticeBlock"
-                },
-                {
-                  "$ref": "#/components/schemas/DishSuggestionsBlock"
-                },
-                {
-                  "$ref": "#/components/schemas/VenueCardsBlock"
-                },
-                {
-                  "$ref": "#/components/schemas/CompareTableBlock"
-                },
-                {
-                  "$ref": "#/components/schemas/ClarifyBlock"
-                },
-                {
-                  "$ref": "#/components/schemas/ConfirmSummaryBlock"
-                },
-                {
-                  "$ref": "#/components/schemas/TourReadyBlock"
+                  "additionalProperties": true,
+                  "type": "object"
                 }
               ]
             },
@@ -571,9 +583,44 @@
       "ChatTurnInfo": {
         "additionalProperties": false,
         "properties": {
+          "coverage": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TurnCoverage"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "intent": {
             "title": "Intent",
             "type": "string"
+          },
+          "llm_budget": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TurnBudget"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "llm_calls": {
+            "anyOf": [
+              {
+                "enum": [
+                  0,
+                  1
+                ],
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Llm Calls"
           },
           "tools": {
             "items": {
@@ -581,6 +628,23 @@
             },
             "title": "Tools",
             "type": "array"
+          },
+          "trigger_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "low_conf",
+                  "uncovered",
+                  "multi_clause",
+                  "conflict"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Trigger Reason"
           },
           "understanding": {
             "enum": [
@@ -672,13 +736,24 @@
         "type": "object"
       },
       "ClarifyBlock": {
-        "additionalProperties": false,
+        "additionalProperties": true,
         "properties": {
+          "free_text": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Free Text"
+          },
           "options": {
             "items": {
               "$ref": "#/components/schemas/ChatOption"
             },
-            "maxItems": 4,
+            "maxItems": 8,
             "title": "Options",
             "type": "array"
           },
@@ -689,6 +764,17 @@
           "question": {
             "title": "Question",
             "type": "string"
+          },
+          "slot": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Slot"
           },
           "type": {
             "const": "clarify",
@@ -954,6 +1040,44 @@
         "title": "ConfirmSummaryBlock",
         "type": "object"
       },
+      "CoverageSignal": {
+        "additionalProperties": false,
+        "properties": {
+          "kind": {
+            "enum": [
+              "allergy",
+              "dish",
+              "stops",
+              "day_part",
+              "budget",
+              "budget_scope",
+              "duration",
+              "leg_time",
+              "party",
+              "area",
+              "time",
+              "vehicle"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "captured",
+              "uncovered",
+              "asked"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "status"
+        ],
+        "title": "CoverageSignal",
+        "type": "object"
+      },
       "DishSuggestion": {
         "additionalProperties": false,
         "properties": {
@@ -1104,6 +1228,11 @@
           "chat_v2": {
             "default": false,
             "title": "Chat V2",
+            "type": "boolean"
+          },
+          "guided_ui": {
+            "default": false,
+            "title": "Guided Ui",
             "type": "boolean"
           },
           "ui_v2": {
@@ -3008,6 +3137,200 @@
           "locks"
         ],
         "title": "TourView",
+        "type": "object"
+      },
+      "TurnBudget": {
+        "additionalProperties": false,
+        "properties": {
+          "daily_remaining_public": {
+            "enum": [
+              "ok",
+              "low",
+              "exhausted",
+              "unavailable"
+            ],
+            "title": "Daily Remaining Public",
+            "type": "string"
+          },
+          "session_cap": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Session Cap",
+            "type": "integer"
+          },
+          "session_used": {
+            "maximum": 2147483647.0,
+            "minimum": 0.0,
+            "title": "Session Used",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "session_used",
+          "session_cap",
+          "daily_remaining_public"
+        ],
+        "title": "TurnBudget",
+        "type": "object"
+      },
+      "TurnCoverage": {
+        "additionalProperties": false,
+        "properties": {
+          "complete": {
+            "title": "Complete",
+            "type": "boolean"
+          },
+          "signals": {
+            "items": {
+              "$ref": "#/components/schemas/CoverageSignal"
+            },
+            "title": "Signals",
+            "type": "array"
+          }
+        },
+        "required": [
+          "signals",
+          "complete"
+        ],
+        "title": "TurnCoverage",
+        "type": "object"
+      },
+      "UnderstoodAllergy": {
+        "additionalProperties": true,
+        "properties": {
+          "family": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Family"
+          },
+          "status": {
+            "enum": [
+              "user",
+              "ai_unconfirmed"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "term": {
+            "title": "Term",
+            "type": "string"
+          }
+        },
+        "required": [
+          "term",
+          "family",
+          "status"
+        ],
+        "title": "UnderstoodAllergy",
+        "type": "object"
+      },
+      "UnderstoodBlock": {
+        "additionalProperties": true,
+        "properties": {
+          "allergies": {
+            "items": {
+              "$ref": "#/components/schemas/UnderstoodAllergy"
+            },
+            "title": "Allergies",
+            "type": "array"
+          },
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/UnderstoodItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "style_note": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Style Note"
+          },
+          "type": {
+            "const": "understood",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "items",
+          "allergies"
+        ],
+        "title": "UnderstoodBlock",
+        "type": "object"
+      },
+      "UnderstoodItem": {
+        "additionalProperties": true,
+        "properties": {
+          "editable": {
+            "title": "Editable",
+            "type": "boolean"
+          },
+          "id": {
+            "enum": [
+              "allergy",
+              "dish",
+              "stops",
+              "day_part",
+              "budget",
+              "budget_scope",
+              "duration",
+              "leg_time",
+              "party",
+              "area",
+              "time",
+              "vehicle"
+            ],
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "user",
+              "ai",
+              "inferred",
+              "missing"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "required": [
+          "id",
+          "label",
+          "value",
+          "status",
+          "editable"
+        ],
+        "title": "UnderstoodItem",
         "type": "object"
       },
       "UnsupportedCriterion": {

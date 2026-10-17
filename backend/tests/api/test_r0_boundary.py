@@ -37,7 +37,8 @@ class BoundaryTests(unittest.TestCase):
                         os.environ['FOODTOUR_UI_V2'] = value
                     response = client.get('/v1/client-config')
                     self.assertEqual(response.status_code, 200, response.text)
-                    self.assertEqual(response.json().get('features'), {'ui_v2': expected, 'chat_v2': False})
+                    self.assertEqual(response.json().get('features'), {'ui_v2': expected, 'chat_v2': False,
+                                                                     'guided_ui': False})
 
     def test_rating_rounds_in_list_detail_and_nested_stop(self):
         fixture = Path(__file__).resolve().parents[3] / 'contracts/fixtures/venues.evidence.synthetic.json'

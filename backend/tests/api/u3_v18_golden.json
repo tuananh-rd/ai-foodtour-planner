@@ -1,0 +1,359 @@
+{
+  "chat": {
+    "chat": {
+      "phase": "discover",
+      "profile": {
+        "area": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "party_size": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "audience": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "budget": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "start_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "end_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "duration_min": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "vehicle": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "tastes": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "max_leg_min": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "stops": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "day_part": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        }
+      },
+      "allergies": [],
+      "shortlist": [],
+      "last_results": [],
+      "pending": null,
+      "turn_count": 1
+    },
+    "preferences": {
+      "city": "Hà Nội",
+      "origin": null,
+      "origin_label": null,
+      "origin_source": null,
+      "start_time": null,
+      "weekday": null,
+      "duration_min": null,
+      "budget_vnd": null,
+      "budget_scope": null,
+      "party_size": null,
+      "meal": null,
+      "audience": null,
+      "interests": [],
+      "exclusions": [],
+      "allergies": [],
+      "max_leg_min": 20,
+      "max_stops": 3,
+      "mode": "explore"
+    },
+    "missing_slots": [
+      "origin",
+      "duration_min"
+    ],
+    "questions": [
+      "Bạn muốn xuất phát từ đâu (ví dụ: Hồ Gươm, Phố cổ)?",
+      "Bạn có khoảng bao nhiêu giờ cho chuyến đi?"
+    ],
+    "notes": [],
+    "tour": null,
+    "revision": 1,
+    "dataset_source": "synthetic",
+    "dataset_version": "bd561f274a3d654c59c1234a1d37687fe47be9c633495ddad8c3664b9d0983f9",
+    "extraction_source": "rules",
+    "llm_calls": 0,
+    "llm_budget": {
+      "limit": 18,
+      "remaining": 18,
+      "exhausted": false
+    },
+    "reply": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Chào bạn! Mình giúp bạn khám phá món ngon ở Hà Nội, so sánh quán rồi mới ghép thành food tour. Bạn đang ở khu nào, hay muốn mình gợi ý món trước?"
+        }
+      ]
+    },
+    "turn": {
+      "intent": "GREET_OR_SMALLTALK",
+      "tools": [
+        "none"
+      ],
+      "understanding": "rules"
+    }
+  },
+  "clarify": {
+    "chat": {
+      "phase": "discover",
+      "profile": {
+        "area": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "party_size": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "audience": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "budget": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "start_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "end_time": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "duration_min": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "vehicle": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "tastes": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "max_leg_min": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "stops": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        },
+        "day_part": {
+          "value": null,
+          "source": "missing",
+          "turn": 0,
+          "confirmed": false
+        }
+      },
+      "allergies": [],
+      "shortlist": [],
+      "last_results": [],
+      "pending": {
+        "pending_id": "p2",
+        "kind": "clarify_intent",
+        "options": [
+          {
+            "option_id": "search",
+            "label": "Tìm quán"
+          },
+          {
+            "option_id": "discover",
+            "label": "Gợi ý món"
+          },
+          {
+            "option_id": "plan",
+            "label": "Lập lịch trình"
+          }
+        ]
+      },
+      "turn_count": 2
+    },
+    "preferences": {
+      "city": "Hà Nội",
+      "origin": null,
+      "origin_label": null,
+      "origin_source": null,
+      "start_time": null,
+      "weekday": null,
+      "duration_min": null,
+      "budget_vnd": null,
+      "budget_scope": null,
+      "party_size": null,
+      "meal": null,
+      "audience": null,
+      "interests": [],
+      "exclusions": [],
+      "allergies": [],
+      "max_leg_min": 20,
+      "max_stops": 3,
+      "mode": "explore"
+    },
+    "missing_slots": [
+      "origin",
+      "duration_min"
+    ],
+    "questions": [
+      "Bạn muốn xuất phát từ đâu (ví dụ: Hồ Gươm, Phố cổ)?",
+      "Bạn có khoảng bao nhiêu giờ cho chuyến đi?"
+    ],
+    "notes": [],
+    "tour": null,
+    "revision": 2,
+    "dataset_source": "synthetic",
+    "dataset_version": "bd561f274a3d654c59c1234a1d37687fe47be9c633495ddad8c3664b9d0983f9",
+    "extraction_source": "rules",
+    "llm_calls": 0,
+    "llm_budget": {
+      "limit": 18,
+      "remaining": 18,
+      "exhausted": false
+    },
+    "reply": {
+      "blocks": [
+        {
+          "type": "text",
+          "text": "Mình chưa chắc hiểu đúng ý bạn trong câu này, nên mình hỏi lại thay vì đoán. Bạn bấm một lựa chọn hoặc chia nhỏ yêu cầu giúp mình nhé."
+        },
+        {
+          "type": "clarify",
+          "pending_id": "p2",
+          "question": "Bạn muốn mình làm gì trước?",
+          "options": [
+            {
+              "option_id": "search",
+              "label": "Tìm quán"
+            },
+            {
+              "option_id": "discover",
+              "label": "Gợi ý món"
+            },
+            {
+              "option_id": "plan",
+              "label": "Lập lịch trình"
+            }
+          ]
+        }
+      ]
+    },
+    "turn": {
+      "intent": "UNKNOWN",
+      "tools": [
+        "clarify"
+      ],
+      "understanding": "rules"
+    }
+  },
+  "messages": {
+    "chat": null,
+    "preferences": {
+      "city": "Hà Nội",
+      "origin": null,
+      "origin_label": null,
+      "origin_source": null,
+      "start_time": null,
+      "weekday": null,
+      "duration_min": null,
+      "budget_vnd": null,
+      "budget_scope": null,
+      "party_size": null,
+      "meal": null,
+      "audience": null,
+      "interests": [],
+      "exclusions": [],
+      "allergies": [],
+      "max_leg_min": 20,
+      "max_stops": 3,
+      "mode": "explore"
+    },
+    "missing_slots": [
+      "origin",
+      "duration_min"
+    ],
+    "questions": [
+      "Bạn muốn xuất phát từ đâu (ví dụ: Hồ Gươm, Phố cổ)?",
+      "Bạn có khoảng bao nhiêu giờ cho chuyến đi?"
+    ],
+    "notes": [],
+    "tour": null,
+    "revision": 3,
+    "dataset_source": "synthetic",
+    "dataset_version": "bd561f274a3d654c59c1234a1d37687fe47be9c633495ddad8c3664b9d0983f9",
+    "extraction_source": "rules",
+    "llm_calls": 0,
+    "llm_budget": {
+      "limit": 18,
+      "remaining": 18,
+      "exhausted": false
+    }
+  }
+}

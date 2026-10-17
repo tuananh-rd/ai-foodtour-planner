@@ -97,6 +97,38 @@ Theo [Google Maps URLs](https://developers.google.com/maps/documentation/urls/ge
 
 ## Chat hội thoại v2 (FOODTOUR_CHAT_V2)
 
+Guided chat (contract v1.9.1): set `FOODTOUR_UI_GUIDED=1` together with
+`FOODTOUR_CHAT_V2=1`; both default to false. `features.guided_ui` in client-config
+is true only when both flags are on. The cached engine is rebuilt when this flag
+changes. With chat off, `/chat` returns 404; `/messages` keeps its legacy wire.
+With chat on and guided off, `/chat` keeps the v1.8 wire including top-level
+`llm_budget`. With both on, `/chat` omits that top-level counter and returns
+`turn.trigger_reason`, `turn.coverage`, `turn.llm_calls`, and `turn.llm_budget`.
+The latter contains bounded session counts and only a public daily status:
+`exhausted` when remaining <= reserve, `low` when remaining <= reserve+2,
+otherwise `ok`; no configured chat provider means `unavailable` with zero session
+counts. Guided public budget scope is explicitly null until known.
+Unresolved allergy, unconfirmed AI allergy, and ambiguous budget scope block
+planner execution independently of the displayed pending question.
+
+QA scripts can share the persisted daily ledger without constructing a provider:
+
+```python
+from app.repositories.llm_budget import ledger_record, ledger_remaining
+ledger_record(calls=1, source="smoke")  # record an already-made transport attempt
+remaining = ledger_remaining()         # internal script use only
+```
+
+Use the same `FOODTOUR_BUDGET_DB` absolute path and `FOODTOUR_LLM_DAILY_BUDGET`
+(default 18) as the app. If the budget path is unset, both app and scripts use
+`FOODTOUR_SESSION_DB + ".budget.sqlite"`. The script helpers require one of these
+persistent paths; they refuse an isolated in-memory ledger. `source` accepts only
+`app` or `smoke`; counts must be nonnegative integers. Recording is atomic across
+processes, uses the app's Pacific-midnight reset and exhausted status, and counts
+already-made attempts even beyond the limit. App transport admissions already
+increment the counter: do not record them twice. This helper grants no permission
+to make live calls.
+
 Bật bằng `FOODTOUR_CHAT_V2=1` (mặc định tắt; `/messages` cũ không đổi). `GET /v1/client-config` trả `features.chat_v2`; `POST /v1/sessions/{id}/chat` nhận `{text|action, revision}` và trả các khối phản hồi (văn bản, thẻ quán, bảng so sánh, câu hỏi làm rõ, bản xác nhận, `tour_ready`). Chỉ khi người dùng xác nhận (`confirm_yes`) mới lập tour, từ **đúng các quán đã chọn**.
 
 | Cấu hình | Mặc định | Ý nghĩa |

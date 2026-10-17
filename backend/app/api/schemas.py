@@ -413,6 +413,7 @@ class PrivacyConfig(Model):
 class FeaturesConfig(Model):
     ui_v2: bool
     chat_v2: bool = False
+    guided_ui: bool = False
 
 
 class ClientConfig(Model):
@@ -604,10 +605,13 @@ class ChatOption(Model):
 
 
 class ClarifyBlock(Model):
+    model_config = ConfigDict(extra='allow')
     type: Literal['clarify']
     pending_id: str
     question: str
-    options: list[ChatOption] = Field(max_length=4)
+    options: list[ChatOption] = Field(max_length=8)
+    slot: str | None = None
+    free_text: bool | None = None
 
 
 class SummaryItem(Model):
@@ -637,17 +641,61 @@ class TourReadyBlock(Model):
     revision: int
 
 
-Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock, Field(discriminator='type')]
+class UnderstoodItem(Model):
+    model_config = ConfigDict(extra='allow')
+    id: Literal['allergy', 'dish', 'stops', 'day_part', 'budget', 'budget_scope', 'duration', 'leg_time', 'party', 'area', 'time', 'vehicle']
+    label: str
+    value: str | None
+    status: Literal['user', 'ai', 'inferred', 'missing']
+    editable: bool
+
+
+class UnderstoodAllergy(Model):
+    model_config = ConfigDict(extra='allow')
+    term: str
+    family: str | None
+    status: Literal['user', 'ai_unconfirmed']
+
+
+class UnderstoodBlock(Model):
+    model_config = ConfigDict(extra='allow')
+    type: Literal['understood']
+    items: list[UnderstoodItem]
+    allergies: list[UnderstoodAllergy]
+    style_note: str | None = None
+
+
+Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock | UnderstoodBlock, Field(discriminator='type')]
 
 
 class ChatReply(Model):
-    blocks: list[Block]
+    blocks: list[Annotated[Block | dict, Field(union_mode='left_to_right')]]
+
+
+class CoverageSignal(Model):
+    kind: Literal['allergy', 'dish', 'stops', 'day_part', 'budget', 'budget_scope', 'duration', 'leg_time', 'party', 'area', 'time', 'vehicle']
+    status: Literal['captured', 'uncovered', 'asked']
+
+
+class TurnCoverage(Model):
+    signals: list[CoverageSignal]
+    complete: bool
+
+
+class TurnBudget(Model):
+    session_used: int = Field(ge=0, le=2**31-1)
+    session_cap: int = Field(ge=0, le=2**31-1)
+    daily_remaining_public: Literal['ok', 'low', 'exhausted', 'unavailable']
 
 
 class ChatTurnInfo(Model):
     intent: str
     tools: list[str]
     understanding: Literal['rules', 'llm', 'cache', 'action']
+    trigger_reason: Literal['low_conf', 'uncovered', 'multi_clause', 'conflict'] | None = None
+    coverage: TurnCoverage | None = None
+    llm_calls: Literal[0, 1] | None = None
+    llm_budget: TurnBudget | None = None
 
 
 class ChatTurn(SessionView):

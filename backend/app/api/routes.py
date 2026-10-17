@@ -8,6 +8,7 @@ from pydantic import ValidationError
 
 from app.api import legacy
 from app.api.errors import APIError
+from app.api.guided import public_chat, guided_turn, guided_blocks, bounded_count
 from app.api.schemas import (
     ChatRequest, ChatTurn, ErrorResponse, Health, Hours, LegView, MessageRequest, MessageBudget, PreferencesRequest,
     PreferencesSchema, Price, ReplaceRequest, RevisionRequest, SessionCreated,
@@ -156,7 +157,7 @@ def client_config(request: Request, response: Response):
     map_id = os.getenv('GOOGLE_MAPS_MAP_ID', '').strip()
     secrets = [os.getenv(name, '').strip() for name in ('GOOGLE_MAPS_SERVER_KEY', 'GEMINI_API_KEY', 'ORS_API_KEY')]
     ready = bool(key and map_id and not any(secret and (secret in key or secret in map_id) for secret in secrets))
-    return {'features': {'chat_v2': chat_enabled(), 'ui_v2': os.getenv('FOODTOUR_UI_V2', '').strip().casefold() in ('1', 'true', 'yes')},
+    return {'features': {'chat_v2': chat_enabled(), 'guided_ui': guided_enabled(), 'ui_v2': os.getenv('FOODTOUR_UI_V2', '').strip().casefold() in ('1', 'true', 'yes')},
         'maps': {'provider': 'google', 'status': 'ready' if ready else 'unavailable',
         'reason': None if ready else 'not_configured', 'js_api_key': key if ready else None,
         'map_id': map_id if ready else None, 'language': 'vi', 'region': 'VN',
@@ -271,7 +272,7 @@ def read_session(session_id: str, request: Request,
         view = session_view(session, tour, data, request)
         view.notes = list(notes)
         if chat_enabled():
-            view.chat = session.chat.to_json()
+            view.chat = public_chat(session.chat, guided=guided_enabled())
         return view
 
 
@@ -376,6 +377,10 @@ def chat_enabled():
     return os.getenv('FOODTOUR_CHAT_V2', '').strip().casefold() in ('1', 'true', 'yes')
 
 
+def guided_enabled():
+    return chat_enabled() and os.getenv('FOODTOUR_UI_GUIDED', '').strip().casefold() in ('1', 'true', 'yes')
+
+
 def health_budget(request):
     info = budget_snapshot(request)
     if info is not None:
@@ -464,9 +469,10 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         request.app.state.sessions.check_revision(session, body.revision)
         data = snapshot(request)
         cached = request.app.state.chat_engine_cache
-        key = (data.dataset_version, data.dataset_source)
+        guided = guided_enabled()
+        key = (data.dataset_version, data.dataset_source, guided)
         if cached is None or cached[0] != key:
-            chat_engine = ChatEngine(data.venues)
+            chat_engine = ChatEngine(data.venues, guided=guided)
             understander = request.app.state.chat_understander
             provider = request.app.state.chat_understanding_provider
             if provider is not None and not request.app.state.chat_understander_injected:
@@ -491,7 +497,8 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                 raise APIError(422, 'validation_error', 'Invalid chat action.')
             prefs = PreferencesSchema.from_domain(result.prefs).domain()
             encode_chat(result.state)
-            if result.plan_request:
+            obligation = cached[1].obligation_open(result.state) or (guided and session.chat.allergy_unresolved)
+            if result.plan_request and not obligation:
                 ids = result.plan_request['venue_ids']
                 vehicle = result.state.profile['vehicle'].value
                 planned = plan_selected({v.id: v for v in data.venues}, ids, prefs, request.app.state.routing,
@@ -510,18 +517,24 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                     result.blocks.append({'type': 'tour_ready', 'revision': session.revision + 1})
                 else:
                     result.blocks = outcome_blocks
-            if result.replace_request:
+            if result.replace_request and not obligation:
                 replace_chat_stop(session, result, data, request, cached[1])
             session.preferences, session.chat = prefs, result.state
             session.revision += 1
             view = session_view(session, session.tour, session.snapshot or data, request)
             values = view.model_dump()
-            values.update(chat=result.state.to_json(), reply={'blocks': result.blocks},
+            values.update(chat=public_chat(result.state, guided=guided),
+                reply={'blocks': guided_blocks(result.blocks) if guided else result.blocks},
                 turn={'intent': result.intent, 'tools': result.tools, 'understanding': result.understanding},
                 llm_calls=result.llm_calls,
                 extraction_source=result.understanding if result.understanding in ('llm', 'cache') else 'rules')
             budget = budget_snapshot(request)
-            if budget:
+            if guided:
+                values.pop('llm_budget', None)
+                values['llm_calls'] = bounded_count(result.llm_calls, maximum=1)
+                values['turn'].update(guided_turn(result, budget, understander,
+                    request.app.state.llm_session_cap, request.app.state.llm_reserve))
+            elif budget:
                 values['llm_budget'] = {k: budget[k] for k in ('limit', 'remaining', 'exhausted')}
             # Validate the entire output before the unit of work can commit.
             return ChatTurn.model_validate(values)

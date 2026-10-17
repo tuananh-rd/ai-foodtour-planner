@@ -3,6 +3,8 @@ from contextlib import contextmanager
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 import logging
+import os
+import re
 import sqlite3
 import time
 from threading import Lock
@@ -73,7 +75,7 @@ class DailyLLMBudget:
                         db.rollback()
                     db.close()
 
-    def _operate(self, operation, admitted_window=None):
+    def _operate(self, operation, admitted_window=None, calls=0):
         with self._storage() as db:
             local = self.clock().astimezone(self.zone)
             window = local.date().isoformat()
@@ -84,6 +86,8 @@ class DailyLLMBudget:
             denied = operation == "admit" and (exhausted or used >= self.limit)
             if operation == "admit" and not denied:
                 used += 1
+            if operation == "record":
+                used += calls
             if operation == "exhaust" and admitted_window == window:
                 exhausted = True
             if db:
@@ -108,3 +112,34 @@ class DailyLLMBudget:
 
     def snapshot(self):
         return self._operate("read")
+
+    def ledger_record(self, calls: int, source: str):
+        """Record already-made transport attempts, including attempts beyond the cap."""
+        if type(calls) is not int or not 0 <= calls <= 2**31-1 or source not in ('app', 'smoke'):
+            raise ValueError('invalid ledger record')
+        self._operate('record', calls=calls)
+
+    def ledger_remaining(self):
+        return self.snapshot()['remaining']
+
+
+def _persisted_ledger():
+    # Same precedence/defaults as GeminiClient; no credentials or provider construction.
+    session_db = os.getenv('FOODTOUR_SESSION_DB', '').strip()
+    path = os.getenv('FOODTOUR_BUDGET_DB', '').strip() or (session_db+'.budget.sqlite' if session_db else None)
+    if path is None:
+        raise ValueError('configure FOODTOUR_BUDGET_DB or FOODTOUR_SESSION_DB for the durable ledger')
+    value = os.getenv('FOODTOUR_LLM_DAILY_BUDGET', '18')
+    try:
+        limit = int(value) if re.fullmatch(r'[0-9]+', value.strip()) else 18
+    except ValueError:
+        limit = 18
+    return DailyLLMBudget(limit, db_path=path)
+
+
+def ledger_record(calls: int, source: str):
+    _persisted_ledger().ledger_record(calls, source)
+
+
+def ledger_remaining():
+    return _persisted_ledger().ledger_remaining()
