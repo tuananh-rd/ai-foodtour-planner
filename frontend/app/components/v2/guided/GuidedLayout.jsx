@@ -744,6 +744,13 @@ export default function GuidedLayout({
       style={{
         minHeight: '100vh',
         backgroundColor: '#F7F8F2',
+        '--accent': '#166B52',
+        '--accent-hover': '#125640',
+        '--ink': '#17352B',
+        '--mute': '#62736D',
+        '--line': '#DDE7E1',
+        '--chip': '#F0F6F2',
+        '--card': '#FFFFFF',
         color: '#17352B',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         display: 'flex',

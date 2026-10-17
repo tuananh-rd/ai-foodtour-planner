@@ -85,13 +85,13 @@ export default function GuidedTimeline({
     <div
       data-testid="guided-timeline"
       style={{
-        background: 'var(--card, #fff)',
-        border: '1px solid var(--line, #e6dfd3)',
+        background: 'transparent',
+        border: 'none',
         borderRadius: 16,
-        padding: 16,
+        padding: 0,
         display: 'grid',
         gap: 16,
-        margin: '16px 0'
+        margin: 0
       }}
     >
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
@@ -204,10 +204,9 @@ export default function GuidedTimeline({
               data-testid={`guided-stop-${idx}`}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '80px 1fr',
-                gap: 12,
-                padding: '12px 0',
-                borderTop: idx > 0 ? '1px solid var(--line, #e6dfd3)' : 'none',
+                gridTemplateColumns: 'minmax(0, 1fr)',
+                gap: 8,
+                padding: '10px 0',
                 alignItems: 'start'
               }}
             >
@@ -216,17 +215,20 @@ export default function GuidedTimeline({
                 style={{
                   fontWeight: 700,
                   fontSize: 14,
-                  color: 'var(--accent, #c2410c)',
-                  paddingTop: 2
+                  color: '#FFFFFF',
+                  background: '#166B52',
+                  borderRadius: 20,
+                  padding: '6px 14px',
+                  width: 'fit-content'
                 }}
               >
                 {arriveDisplay}
               </div>
 
               {/* Stop Info with Honest Labels */}
-              <div style={{ display: 'grid', gap: 4 }}>
+              <div style={{ display: 'grid', gap: 10, minWidth: 0, padding: 20, background: '#FFFFFF', border: '1px solid #DDE7E1', borderRadius: 12 }}>
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <b style={{ fontSize: 15, color: 'var(--ink, #231f1a)' }}>
+                  <b style={{ fontSize: 20, color: 'var(--ink, #231f1a)' }}>
                     {stop.name}
                   </b>
                   {isLocked && (
@@ -263,7 +265,9 @@ export default function GuidedTimeline({
                       background: 'none',
                       border: '1px solid var(--line, #e6dfd3)',
                       borderRadius: 6,
-                      padding: '2px 8px',
+                      padding: '8px 12px',
+                      minHeight: 44,
+                      color: '#166B52',
                       fontSize: 12,
                       fontWeight: 600,
                       color: 'var(--ink, #231f1a)',
