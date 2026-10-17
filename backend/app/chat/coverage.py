@@ -17,7 +17,7 @@ DAY_PARTS = {"morning": "Buổi sáng", "noon": "Buổi trưa", "afternoon": "Bu
 MEAL_OF = {"evening": "dinner", "late": "late", "noon": "lunch", "morning": "breakfast", "afternoon": "snack"}
 
 _TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\b")
-_STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b(?!\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))"
+_STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|hang an|hang|diem dung|diem|dia diem|chang)\b(?!\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))"
                     r"|\bso (?:quan|diem)\s*(?:la|:)?\s*(\d{1,2})\b")
 _LIKE = re.compile(r"(?:\byêu thích\b|\bưa chuộng\b|\bđam mê\b|\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bkhoái\b|\bghiền\b|\bnghiện\b|\byeu thich\b|\bthich\b|\bmuon an\b|\bkhoai\b)"
                    r"\s*[:\-–]?\s*(?:là\s+|la\s+)?(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|\bchưa\b|\bchua\b|$)",
@@ -152,9 +152,9 @@ def extras(text: str, f: str) -> dict:
 
 _CUES = {
     "allergy": re.compile(r"\bdi ung\b|\bkieng\b|\bkhong (?:the )?an (?:duoc)?\b.{0,3}|\bbi di ung\b"),
-    "budget": re.compile(r"\bngan sach\b|\bchi toi da\b|\d[\d.,]*\s*(?:k|nghin|ngan|trieu|tr|d|dong)\b|\bnua trieu\b"),
-    "duration": re.compile(r"\b\d{1,3}\s*(?:phut|tieng|gio)\b"),
-    "party": re.compile(r"\b(?:\d{1,2}|hai|ba|bon|nam|sau|bay|tam)\s*nguoi\b"),
+    "budget": re.compile(r"\bngan sach\b|\btui tien\b|\bchi toi da\b|\d[\d.,]*\s*(?:k|nghin|ngan|trieu|tr|d|dong)\b|\b(?:nua|mot|hai|ba|bon|nam|tram|muoi)\s+(?:trieu|nghin|ngan)\b"),
+    "duration": re.compile(r"\b(?:\d{1,3}|mot|hai|ba|bon|nam|sau|nua)\s*(?:phut|tieng|gio)\b"),
+    "party": re.compile(r"\b(?:\d{1,2}|hai|ba|bon|nam|sau|bay|tam)\s*(?:nguoi|dua|thanh vien)\b"),
     "stops": _STOPS,
 }
 
@@ -169,9 +169,9 @@ def audit(text: str, f: str, patch: dict, *, allergy_terms: Iterable[str] = (), 
     if _CUES["allergy"].search(f):
         add("allergy", bool(list(allergy_terms)) or allergy_negated)
     if _CUES["budget"].search(f):
-        add("budget", "budget_vnd" in patch or has_budget)
+        add("budget", "budget_vnd" in patch or "budget_scope" in patch)
     if _CUES["party"].search(f):
-        add("party", "party_size" in patch or has_party)
+        add("party", "party_size" in patch)
     if _CUES["duration"].search(f) and re.search(r"\bphut\b|\btieng\b|\bgio\b", f):
         add("duration", any(k in patch for k in ("duration_min", "max_leg_min", "start_time", "end_time")))
     if _TOUR_CTX.search(f) and _STOPS.search(f):

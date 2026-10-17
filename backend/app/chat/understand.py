@@ -143,7 +143,7 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
         span = leg.group(0)
         stripped = stripped.replace(span, " ", 1)
     dur_words = {"một": 1, "mot": 1, "hai": 2, "ba": 3, "bốn": 4, "bon": 4, "năm": 5, "nam": 5, "sáu": 6, "sau": 6}
-    mdur = re.search(r"(?<![\d.,])(\d{1,2}|" + "|".join(k for k in dur_words if k.isascii()) + r")\s*(?:tieng|gio dong ho|h dong ho)(?:\s*(ruoi))?(?!\s*(?:\d|sang|chieu|toi|trua))", stripped)
+    mdur = re.search(r"(?<![\d.,])(\d{1,2}|" + "|".join(k for k in dur_words if k.isascii()) + r")\s*(?:tieng|gio dong ho|h dong ho)(?:\s*(ruoi))?", stripped)
     if mdur and "duration_min" not in patch:
         n = int(mdur.group(1)) if mdur.group(1).isdigit() else dur_words[mdur.group(1)]
         mins = n * 60 + (30 if mdur.group(2) else 0)
@@ -157,7 +157,7 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     money = None
     dm = re.search(r"(?<![\d.,])(\d+) (\d) (?:trieu|tr)\b", stripped)  # fold turns "1,5 triệu" into "1 5 trieu"
     if dm:
-        money = int((int(dm.group(1)) + int(dm.group(2)) / 10) * 1_000_000)
+        money = (int(dm.group(1)) * 10 + int(dm.group(2))) * 100_000
         stripped = stripped.replace(dm.group(0), " ", 1)
     dm = re.search(r"(?<![\d.,])(\d+) (?:trieu|tr) (\d{3}) (?:nghin|ngan|k)\b", stripped)  # 1 triệu 500 nghìn
     if dm:

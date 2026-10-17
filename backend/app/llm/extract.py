@@ -82,6 +82,38 @@ def _money(u: str) -> Optional[int]:
     """u is diacritic-stripped, lower-cased text. Negative amounts return -1 so callers reject them."""
     if re.search(r"\bnua trieu\b", u):
         return 500_000
+    # Written Vietnamese amounts: parse only a bounded numeral phrase immediately
+    # before a currency unit. Never treat unrelated prose as an amount.
+    digit = {"khong": 0, "mot": 1, "hai": 2, "ba": 3, "bon": 4, "tu": 4,
+             "nam": 5, "lam": 5, "sau": 6, "bay": 7, "tam": 8, "chin": 9}
+
+    def number(words):
+        parts = words.split()
+        value = 0
+        if len(parts) >= 2 and parts[0] in digit and parts[1] == "tram":
+            value = digit[parts.pop(0)] * 100
+            parts.pop(0)
+            if parts and parts[0] in ("le", "linh"):
+                parts.pop(0)
+        if parts and parts[0] == "muoi":
+            value += 10
+            parts.pop(0)
+        elif len(parts) >= 2 and parts[0] in digit and parts[1] == "muoi":
+            value += digit[parts.pop(0)] * 10
+            parts.pop(0)
+        if len(parts) == 1 and parts[0] in digit:
+            value += digit[parts.pop(0)]
+        return value if not parts else None
+
+    word = r"(?:khong|mot|hai|ba|bon|tu|nam|lam|sau|bay|tam|chin|tram|muoi|le|linh)"
+    written = re.search(r"\b(" + word + r"(?:\s+" + word + r"){0,5})\s+(trieu|nghin|ngan)\b"
+                        r"(?:\s+(" + word + r"(?:\s+" + word + r"){0,5})\s+(?:nghin|ngan)\b)?(?:\s+(ruoi))?", u)
+    if written:
+        n = number(written.group(1))
+        tail = number(written.group(3)) if written.group(3) else 0
+        if n is not None and tail is not None:
+            unit = 1_000_000 if written.group(2) == "trieu" else 1000
+            return n * unit + tail * 1000 + (unit // 2 if written.group(4) else 0)
     m = re.search(r"(\d+(?:[.,]\d+)?)\s*(?:trieu|tr)\s*ruoi\b", u)
     if m:
         return int((float(m.group(1).replace(",", ".")) + 0.5) * 1_000_000)

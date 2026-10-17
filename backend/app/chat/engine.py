@@ -18,6 +18,7 @@ from app.planner import allergens
 from app.planner.relevance import fold_uncached
 from app.planner.types import Preferences
 from . import coverage, knowledge, tools
+from app.planner.interfaces import StraightLineEstimator
 from .gazetteer import Gazetteer, Place
 from .state import (MAX_ALLERGIES, MAX_SHORTLIST, Allergy, ChatState, Field_, Pending, ShortItem)
 from .understand import CONFIDENT, Understanding, effective_text, third_party_head, understand
@@ -60,6 +61,7 @@ def open_obligation(st: ChatState) -> bool:
     """Unresolved allergy / unconfirmed AI allergy / budget amount without scope: no plan may be created while this is true (every entry point)."""
     b = st.profile["budget"]
     return bool(st.allergy_unresolved or any(a.source == "ai_unconfirmed" for a in st.allergies)
+                or st.unparsed_slots
                 or (b.known() and not b.scope and (st.profile["party_size"].value or 2) >= 2))
 
 
@@ -109,6 +111,13 @@ class ChatEngine:
                     u = self._merge(u, cand, R, text or "") if self.guided else cand
             elif reason in ("uncovered", "multi_clause") and self.guided:
                 R.blocks.append(notice_b("info", "llm_unavailable", "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."))
+            if self.guided and u.intent not in PASSIVE:
+                R.coverage = self._signals(text or "", u, st)
+                slots = {"budget": "budget_vnd", "party": "party_size", "duration": "duration_min", "stops": "stops"}
+                for signal in R.coverage:
+                    key = slots.get(signal["kind"])
+                    if key and signal["status"] == "uncovered" and key not in st.unparsed_slots:
+                        st.unparsed_slots.append(key)
             if u.intent == "UNKNOWN" and not st.pending:
                 u = self._fragment(text or "", st, u)  # dish-name-only / "A thôi"-style fragments
             st.remember("user", text or "", u.intent)
@@ -478,6 +487,7 @@ class ChatEngine:
             R.tools.append("clarify")
             return True
         if st.conflicts:
+            # Unparsed numeric constraints are asked before confirming an old value.
             c = st.conflicts.pop(0)
             self._ask_conflict(R, {c["key"]: tuple(c["values"][:2])})
             return True
@@ -486,6 +496,16 @@ class ChatEngine:
             self._set_pending(st, "clarify_slot", [{"option_id": "scope:group", "label": "Cả nhóm"}, {"option_id": "scope:per_person", "label": "Mỗi người"}],
                               "budget_scope", {})
             R.blocks.append(self._clarify_block(st, f"{tools.fmt_vnd(b.value)} là ngân sách cho cả nhóm hay cho mỗi người?"))
+            R.tools.append("clarify")
+            return True
+        if st.unparsed_slots:
+            key = st.unparsed_slots[0]
+            question = {"budget_vnd": "Mình chưa đọc rõ số tiền bạn nêu. Ngân sách là bao nhiêu đồng (ví dụ 400k), cho cả nhóm hay mỗi người?",
+                        "duration_min": "Mình chưa đọc rõ thời lượng bạn nêu. Bạn có bao nhiêu phút cho cả tour (ví dụ 90 phút)?",
+                        "party_size": "Mình chưa đọc rõ số người bạn nêu. Có bao nhiêu người đi cùng tour?",
+                        "stops": "Mình chưa đọc rõ số quán bạn muốn. Bạn muốn ghé bao nhiêu quán?"}[key]
+            self._set_pending(st, "clarify_slot", [], key, {})
+            R.blocks.append(self._clarify_block(st, question))
             R.tools.append("clarify")
             return True
         if not full:
@@ -675,6 +695,7 @@ class ChatEngine:
 
     # ---- profile
     def _apply_patch(self, R, patch: dict) -> list:
+        R.state.unparsed_slots = [k for k in R.state.unparsed_slots if k not in patch]
         st, said = R.state, []
         if patch.get("reset"):
             R.state = st2 = ChatState()
@@ -1522,10 +1543,11 @@ class ChatEngine:
         R.tools.append("modify_plan")
 
     # ---- results of planning (called by the API layer after the planner ran)
-    def after_plan(self, st: ChatState, tour) -> list:
+    def after_plan(self, st: ChatState, tour, *, prefs=None, routing=None) -> list:
         """Blocks for the planner outcome. A conflict becomes concrete options; nothing is relaxed silently."""
         R = TurnResult(st, Preferences(), [], "REQUEST_PLAN")
         if tour.stops:
+            st.attempted_adjustments = []
             st.phase, st.tour_stale = "planned", False
             names = [tools.clean_text(self.by_id[x.venue_id].name, 80, "quán") for x in tour.stops if x.venue_id in self.by_id]
             walk = f" Tổng đi bộ khoảng {tour.walk_minutes} phút (ước tính)." if tour.walk_minutes is not None else ""
@@ -1543,7 +1565,7 @@ class ChatEngine:
         if cur < 40:
             opts.append({"option_id": f"relax_leg:{min(60, cur + 10)}", "label": f"Cho phép đi tối đa {min(60, cur + 10)} phút mỗi chặng"})
         veh = st.profile["vehicle"].value
-        if veh in (None, "walk"):
+        if not self.guided and veh in (None, "walk"):
             opts.append({"option_id": "vehicle:motorbike", "label": "Đi xe máy thay vì đi bộ"})
         if st.profile["end_time"].known() or st.profile["duration_min"].known():
             opts.append({"option_id": "time:+60", "label": "Kéo dài thêm 1 giờ"})
@@ -1551,8 +1573,43 @@ class ChatEngine:
             far = self._farthest(st)
             if far:
                 opts.append({"option_id": "drop:" + far, "label": "Bỏ " + tools.clean_text(self.by_id[far].name, 40)})
-        self._set_pending(st, "clarify_intent", opts[:4], None, {"conflict": True})
-        blocks.append(self._clarify_block(st, "Bạn muốn điều chỉnh thế nào? (mình không tự đổi gì khi chưa hỏi bạn)"))
+        opts = [o for o in opts if o["option_id"] not in st.attempted_adjustments]
+        if self.guided and prefs is not None and routing is not None:
+            from dataclasses import replace
+            from .planning import plan_selected
+            supported = []
+            ids = [s.venue_id for s in st.shortlist]
+            for option in opts[:4]:  # bounded, same dataset/provider policy; never mutate the real profile
+                kind, _, val = option["option_id"].partition(":")
+                trial, selected = prefs, ids
+                if kind == "relax_leg":
+                    trial = replace(prefs, max_leg_min=int(val))
+                elif kind == "time":
+                    trial = replace(prefs, duration_min=min(720, (prefs.duration_min or 120) + 60))
+                elif kind == "drop":
+                    if any(s.venue_id == val and s.status == "kept" for s in st.shortlist):
+                        continue
+                    selected = [i for i in ids if i != val]
+                    # A reduction below the pilot's 3-stop target is not a useful default suggestion.
+                    if len(selected) < 3:
+                        continue
+                else:
+                    continue
+                # Do not spend additional provider requests to test speculative changes.
+                if not isinstance(routing, StraightLineEstimator):
+                    continue
+                candidate = plan_selected(self.by_id, selected, trial, routing, veh)
+                if candidate.stops and len(candidate.stops) == len(selected):
+                    supported.append(option)
+            opts = supported
+        if opts:
+            self._set_pending(st, "clarify_intent", opts[:4], None, {"conflict": True})
+            if self.guided:
+                blocks.append(text_b("Các điều chỉnh dưới đây " + ("đã thử với dữ liệu và ước tính hiện tại; vẫn chưa xác minh giờ/giá/tuyến thật." if prefs is not None else "chỉ là gợi ý thử, chưa bảo đảm có lời giải.")))
+            blocks.append(self._clarify_block(st, "Bạn muốn điều chỉnh thế nào? Mình chỉ đổi khi bạn chọn rồi xác nhận lại."))
+        else:
+            st.pending = None
+            blocks.append(text_b("Chưa có điều chỉnh nào đủ căn cứ để lập được tour với danh sách này. Bạn có thể sửa khu vực hoặc chọn lại các quán gần nhau trong khu thí điểm; giữ đi bộ và các quán đã khóa. Mình chưa thay yêu cầu của bạn."))
         return blocks
 
     def _farthest(self, st):
@@ -1566,6 +1623,7 @@ class ChatEngine:
 
     def _apply_conflict_option(self, R, opt: str):
         st = R.state
+        st.attempted_adjustments = (st.attempted_adjustments + [opt])[-32:]
         kind, _, val = opt.partition(":")
         if kind == "relax_leg":
             st.set_field("max_leg_min", int(val))

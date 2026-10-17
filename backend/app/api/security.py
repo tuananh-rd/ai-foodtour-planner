@@ -146,6 +146,20 @@ class SecurityMiddleware:
             await reject(500, 'internal_validation_failed', 'Không thể xử lý yêu cầu.')
         finally:
             route = getattr(scope.get('route'), 'path', '<unmatched>')
-            ACCESS_LOG.info(json.dumps({'request_id': identity, 'route': route,
-                'status': status, 'latency_ms': round((time.perf_counter() - started) * 1000, 3)},
-                ensure_ascii=True))
+            record = {'request_id': identity, 'route': route,
+                      'status': status, 'latency_ms': round((time.perf_counter() - started) * 1000, 3)}
+            pipeline = scope.get('foodtour_pipeline', {})
+            # Fixed enums/numeric counters only: never copy an arbitrary payload or exception.
+            for key, allowed in {'understanding': {'rules', 'action', 'llm', 'cache'},
+                                 'planner_status': {'verified_feasible', 'conditional', 'insufficient_evidence', 'no_solution'},
+                                 'algorithm': {'guided-fixed-v1'}}.items():
+                if isinstance(pipeline.get(key), str) and pipeline[key] in allowed:
+                    record[key] = pipeline[key]
+            for key in ('provider_attempted', 'provider_validated', 'planner_checked'):
+                if type(pipeline.get(key)) is int and pipeline[key] in (0, 1):
+                    record[key] = pipeline[key]
+            for key in ('extraction_ms', 'planning_ms'):
+                value = pipeline.get(key)
+                if type(value) in (float, int) and 0 <= value <= 3_600_000:
+                    record[key] = value
+            ACCESS_LOG.info(json.dumps(record, ensure_ascii=True))
