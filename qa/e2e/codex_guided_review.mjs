@@ -1,4 +1,4 @@
-/** Independent U5e review. Real Chrome/CDP + uvicorn + scratch production Next.
+/** Independent U5f review. Real Chrome/CDP + uvicorn + scratch production Next.
  * Synthetic data only; no credentials; no new dependencies. Run with Node >=22.
  * U5E_MUTATION=questions|auto_confirm|allergy changes scratch source only.
  * Evidence is aggregated and contains no session tokens or venue records.
@@ -9,7 +9,7 @@ import path from 'node:path';
 import {spawn, execFileSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 const root=path.resolve(path.dirname(fileURLToPath(import.meta.url)),'../..');
-const out=process.env.U5E_OUTPUT || path.join(os.tmpdir(),'codex-u5e-evidence.json');
+const out=process.env.U5F_OUTPUT || process.env.U5E_OUTPUT || path.join(os.tmpdir(),'codex-u5f-evidence.json');
 const mutation=process.env.U5E_MUTATION;
 const S0='Tôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.';
 const cue='Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn';
@@ -28,6 +28,26 @@ try{
   for(const port of [13100,18100,19300]){let busy=false;try{await fetch(`http://127.0.0.1:${port}`);busy=true;}catch{} if(busy)throw Error('Port occupied: '+port);}
   start(path.join(root,'.venv/Scripts/python.exe'),['-m','uvicorn','app.main:app','--host','127.0.0.1','--port','18100']);
   await until(async()=> (await fetch('http://127.0.0.1:18100/health')).ok);
+  // Independent transport attacks; never print session IDs/tokens or venue IDs.
+  async function apiSession(){return await(await fetch('http://127.0.0.1:18100/v1/sessions',{method:'POST',headers:{'Content-Type':'application/json'},body:'{}'})).json();}
+  async function apiTurn(s,text=null,action=null,revision=s.revision){const r=await fetch(`http://127.0.0.1:18100/v1/sessions/${s.session_id}/chat`,{method:'POST',headers:{'Content-Type':'application/json','X-Session-Token':s.token},body:JSON.stringify({text,action,revision})});const b=await r.json();if(r.ok)s.revision=b.revision;return {status:r.status,...b};}
+  const attack=await apiSession();await apiTurn(attack,cue);
+  for(const action of [{type:'request_plan'},{type:'confirm_yes'},{type:'pick_option',option_id:'confirm_yes'},{type:'pick_option',option_id:'propose:use'},{type:'confirm_no'}]){
+    const b=await apiTurn(attack,null,action);check('open allergy blocks '+action.type+' '+(action.option_id||''),b.status===200&&!b.tour&&b.chat?.pending?.kind!=='confirm_plan'&&!b.turn?.tools?.includes('generate_tour'));
+  }
+  const proposal=await apiSession();await apiTurn(proposal,S0);await apiTurn(proposal,null,{type:'pick_option',option_id:'scope:group'});let b=await apiTurn(proposal,'19h');
+  check('proposal preplaces shortlist with default source',b.chat?.shortlist?.length>0&&b.chat?.profile?.vehicle?.value==='walk'&&b.chat?.profile?.vehicle?.source==='default'&&!b.tour);
+  b=await apiTurn(proposal,null,{type:'request_plan'});check('request_plan with preplaced venues only asks confirmation',!b.tour&&b.chat?.pending?.kind==='confirm_plan');
+  const oldRevision=proposal.revision;await apiTurn(proposal,null,{type:'confirm_no'});
+  b=await apiTurn(proposal,null,{type:'confirm_yes'},oldRevision);check('stale confirm revision rejected',b.status===409&&!b.tour);
+  b=await apiTurn(proposal,null,{type:'confirm_yes'});check('confirm after Sửa without new summary cannot plan',!b.tour&&!b.turn?.tools?.includes('generate_tour'));
+  // A fresh summary followed by a new safety cue must close the old gate.
+  await apiTurn(proposal,null,{type:'request_plan'});b=await apiTurn(proposal,'mình bị dị ứng nhẹ với mấy thứ rang giòn');
+  check('new allergy cue invalidates proposed confirmation',!b.tour&&b.chat?.pending?.kind!=='confirm_plan');
+  b=await apiTurn(proposal,null,{type:'confirm_yes'});check('preplaced venues plus allergy cannot confirm',!b.tour&&!b.turn?.tools?.includes('generate_tour')&&b.chat?.pending?.kind!=='confirm_plan');
+  const legacy=await apiSession();await apiTurn(legacy,S0);await apiTurn(legacy,null,{type:'pick_option',option_id:'scope:group'});await apiTurn(legacy,'19h');await apiTurn(legacy,'mình bị dị ứng nhẹ với mấy thứ rang giòn');
+  const direct=await fetch(`http://127.0.0.1:18100/v1/sessions/${legacy.session_id}/tour`,{method:'POST',headers:{'Content-Type':'application/json','X-Session-Token':legacy.token},body:JSON.stringify({base_revision:legacy.revision})});const directBody=await direct.json();
+  check('legacy tour endpoint respects guided open obligation',!directBody.tour,{status:direct.status,tour:!!directBody.tour,tourStatus:directBody.tour?.status,stops:directBody.tour?.stops?.length});
   const web=path.join(scratch,'web');
   fs.cpSync(path.join(root,'frontend'),web,{recursive:true,filter:s=>!s.split(path.sep).some(x=>['node_modules','.next'].includes(x)||x.startsWith('.env'))});
   fs.symlinkSync(path.join(root,'frontend/node_modules'),path.join(web,'node_modules'),'junction');
@@ -96,6 +116,8 @@ try{
     check(`S0 ${width} confirm has repair option`,await exists('confirm-no-btn'));
     check(`S0 ${width} time answered in profile`,await exists('understood-row-time'));
     const prompts=await ev(`Array.from(document.querySelectorAll('[data-testid="assistant-text-bubble"],[data-testid="clarify-question-text"],[data-testid="confirm-summary-card"] h3')).map(x=>x.innerText).filter(t=>t.includes('?'))`);check(`S0 ${width} one visible decision question`,prompts.length===1,{count:prompts.length});
+    const confirmGeometry=await ev(`(()=>{const e=document.querySelector('[data-testid="confirm-summary-card"]'),r=e.getBoundingClientRect();return {top:r.top,bottom:r.bottom,height:r.height,viewport:innerHeight,overlaps:[...document.querySelectorAll('*')].filter(x=>x!==e&&!e.contains(x)&&getComputedStyle(x).position==='fixed').filter(x=>{const b=x.getBoundingClientRect();return b.width&&b.height&&b.top<r.bottom&&b.bottom>r.top;}).length};})()`);
+    check(`S0 ${width} entire confirmation visible without fixed overlap`,confirmGeometry.top>=0&&confirmGeometry.bottom<=height&&confirmGeometry.overlaps===0,confirmGeometry);
     confirmed=true;await pick('Đúng, lập tour',keyboard);const tour=await snap(`S0 ${width} tour`);
     check(`S0 ${width} double-confirm makes one plan`,network.filter(n=>n.method==='POST'&&n.body?.includes('confirm_yes')).length===1);
     const timelineText=await ev(`document.querySelector('[data-testid="guided-timeline"]')?.innerText||''`);
@@ -106,6 +128,7 @@ try{
     await cdp('Network.setBlockedURLs',{urls:['*://www.google.com/*']});
     keyboard?await tabTo(sel('google-maps-cta')):await clickSelector(sel('google-maps-cta'));if(keyboard)await key('Enter');
     actionLabels.push('open Maps');await pause(150);evidence.flows.push({name:`metrics ${width}`,semanticActions:actionLabels.length,actionLabels:[...actionLabels],physicalActionsExcludingFocusAndTabs:actionLabels.length+2,additionalConfirmStressActivations:1,firstReplyIncludingTypingMs:elapsed,domFirstReplyMs:replyMs,keyboardOnly:keyboard,mapsTargetOpened:(await(await fetch('http://127.0.0.1:19300/json')).json()).some(x=>x.url===link)});
+    check(`S0 ${width} at most four semantic actions after initial submission`,actionLabels.length-1<=4,{afterInitialSubmission:actionLabels.length-1,labels:actionLabels.slice(1)});
     check(`S0 ${width} no horizontal overflow`,!tour.overflow);
     if(width===390){
       const fixed=await ev(`Array.from(document.querySelectorAll('*')).filter(e=>['fixed','sticky'].includes(getComputedStyle(e).position)).map(e=>({testid:e.dataset.testid,rect:(()=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height}})()}))`);evidence.flows.push({name:'mobile fixed bars',fixed});
@@ -116,9 +139,41 @@ try{
   }
   replies.length=0;network.length=0;await nav();await send(S0);await pick('Mỗi người');await send('19h');await gate('per-person confirmation');
   const perPerson=await ev(`({understood:document.querySelector('[data-testid="understood-row-budget"]')?.innerText,confirm:document.querySelector('[data-testid="confirm-summary-details"]')?.innerText})`);check('confirmation preserves per-person budget scope',/mỗi người/.test(perPerson.understood||'')&&/mỗi người/.test(perPerson.confirm||''),perPerson);
+  const beforeReload=await ev(`({venues:document.querySelector('[data-testid="confirm-venues-list"]')?.innerText,visit:document.querySelector('[data-testid="confirm-visit-min"]')?.innerText,details:document.querySelector('[data-testid="confirm-summary-details"]')?.innerText})`);
+  await nav(false);
+  const afterReload=await ev(`({venues:document.querySelector('[data-testid="confirm-venues-list"]')?.innerText,visit:document.querySelector('[data-testid="confirm-visit-min"]')?.innerText,details:document.querySelector('[data-testid="confirm-summary-details"]')?.innerText})`);
+  check('confirmation reload preserves venue names',beforeReload.venues===afterReload.venues,{before:beforeReload.venues,after:afterReload.venues});
+  check('confirmation reload preserves visit minutes',beforeReload.visit===afterReload.visit,{before:beforeReload.visit,after:afterReload.visit});
+  check('confirmation reload preserves scope and start',beforeReload.details===afterReload.details,{before:beforeReload.details,after:afterReload.details});
+  await clickSelector(sel('confirm-no-btn'));await idle();
+  check('Sửa exits confirmation into editing',!(await exists('confirm-yes-btn'))&&await exists('guided-input'));
+  await send('Bỏ quán đầu tiên khỏi danh sách');
+  check('shortlist accepts removal after Sửa',/Đã bỏ/.test((await snap('removal acknowledgement')).text));
+  check('shortlist edit after Sửa never creates tour',!(await exists('guided-timeline')));
+  evidence.flows.push({name:'shortlist edit after Sửa',...(await snap('shortlist edit result'))});
+  replies.length=0;network.length=0;await nav();await send(S0+' Tôi đi xe máy.');await pick('Cả nhóm');await send('19h');
+  const motorbike=await ev(`({row:document.querySelector('[data-testid="understood-row-vehicle"]')?.innerText,confirm:document.querySelector('[data-testid="confirm-vehicle"]')?.innerText})`);
+  check('stated motorbike survives walking default',/xe máy/i.test(motorbike.confirm||'')&&!/mặc định/.test(motorbike.confirm||''),motorbike);
+  await clickSelector(sel('confirm-no-btn'));await idle();await send('Đổi phương tiện thành đi bộ');
+  check('vehicle editable through Sửa and text',/Đi bộ/i.test((await ev(`document.querySelector('[data-testid="confirm-vehicle"]')?.innerText`))||''));
+  check('confirmation exposes decision buttons rather than text composer',await exists('confirm-yes-btn')&&!(await exists('guided-input'))&&!(await exists('clarify-free-text-input')));
+  await nav();await send('Tour 3 quán tại huyện đảo Trường Sa lúc 19h trong 120 phút');
+  const empty=await snap('unsupported area');check('unsupported area calm and no tour',!empty.tour&&!/Traceback|internal_error|"detail"/.test(empty.text)&&/chưa|không|khu vực|quận/i.test(empty.text));
+  await nav();await send(S0);await pick('Cả nhóm');await send('19h');
+  const concurrent=await ev(`({session_id:sessionStorage.getItem('foodtour_chat_session_id'),token:sessionStorage.getItem('foodtour_chat_session_token')})`);
+  const current=await(await fetch(`http://127.0.0.1:18100/v1/sessions/${concurrent.session_id}`,{headers:{'X-Session-Token':concurrent.token}})).json();concurrent.revision=current.revision;
+  await apiTurn(concurrent,'mình bị dị ứng nhẹ với mấy thứ rang giòn');
+  await clickSelector(sel('confirm-yes-btn'));await idle();await pause(600);
+  const conflict=await snap('real concurrent safety change then stale confirm');
+  check('409 replacing confirmation with safety question shows current obligation',conflict.questionCount===1&&/dị ứng/.test(conflict.questions.join(''))&&!(await exists('confirm-yes-btn'))&&!conflict.tour);
+  await nav(false);const conflictReload=await snap('real concurrent safety conflict reload');
+  check('reload after real conflict shows current obligation',conflictReload.questionCount===1&&/dị ứng/.test(conflictReload.questions.join(''))&&!conflictReload.tour);
   // Allergy obligations: all attacks go through visible UI and persisted sessions.
   replies.length=0;network.length=0;await nav();await send(cue);await gate('allergy cue');
   for(const text of ['lập tour đi','ok','xác nhận']){await send(text);const s=await gate('allergy bypass '+text);check('allergy obligation remains answerable after '+text,s.questionCount===1,{questions:s.questions});}
+  errorStatus=409;await send('ok');errorStatus=null;await pause(600);
+  check('pending safety question survives 409 resync',await exists('clarify-question-card')&&await exists('clarify-option-allergy:peanut'));
+  await nav(false);const recovered=await snap('409 then reload');check('pending safety question survives 409 and reload',recovered.questionCount===1&&/dị ứng/.test(recovered.questions.join(''))&&!recovered.tour);
   await clickSelector(sel('understood-edit-party'));await clickSelector(sel('inline-stepper-plus'));await clickSelector(sel('inline-edit-save'));await idle();await gate('allergy inline edit');
   for(const field of ['stops','duration','time','budget']){await clickSelector(sel('understood-edit-'+field));if(await exists('inline-edit-save')){await clickSelector(sel('inline-edit-save'));await idle();await gate('allergy inline edit '+field);}}
   const primary=await ev(`Array.from(document.querySelectorAll('button')).filter(b=>!b.disabled&&!b.closest('[data-testid="clarify-question-card"]')&&!b.dataset.testid?.startsWith('understood-')&&!/reset|retry/.test(b.dataset.testid||'')).map(b=>b.dataset.testid).filter(Boolean)`);
