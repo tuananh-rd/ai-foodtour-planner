@@ -1,6 +1,6 @@
 # Codex independent review — NgonNgon frontend
 
-18/10/2026. Reviewer: Codex lead. Author/QA: Antigravity. Status: **REQUEST CHANGES on checkpoint `502972c`, no acceptance yet**. Review uses the SVG preview visually inspected by Codex, source diff, and later fresh browser evidence. No frontend changes made by Codex while author owns active files.
+18/10/2026. Reviewer: Codex lead. Author/QA: Antigravity. Initial verdict: **REQUEST CHANGES on checkpoint `502972c`**. Serial review fixes through `6415d61` now pass Codex verification below; final independent author QA settlement remains separate. No frontend changes were made by Codex while Antigravity owned active writes; ownership transferred explicitly at `739ee78` before Codex fixes.
 
 ## Early findings sent through Orca
 
@@ -24,3 +24,24 @@ These refer to the author's in-progress working tree, not a final commit; final 
 Independent `tools/check_ngonngon_render.cjs` probes (React SSR via existing Next SWC, synthetic only): unmerged baseline UI at coordinator failed 8/11 checks; author checkpoint `502972c` reviewed read-only through `NGONNGON_FRONTEND_DIR` passes 11/11. This covers empty-profile defaults, null arrival/ETA, a legitimate zero-duration inter-stop leg, warning retention, conditional label and 3/4/5-stop HTTPS walking URLs without keys. It does not cover root shell metric/header fallbacks, interaction/hydration, waypoint handling in Google, modal focus or 409; NFE findings stay open until their specific evidence is recorded. No private data or outbound request is used by this probe.
 
 Record author commits, Codex diff review result, integrated commit, contract/build/backend results, desktop/mobile browser flows, screenshots and limitations here after real verification. A running process, input acceptance or worker_done alone does not close this review. Actual screen-reader speech, real Google navigation and real-world venue facts require distinct evidence; accessibility DOM/CDP checks are not equivalent to all of them.
+
+## Serial re-review on6415d61
+
+Author checkpoints `502972c` and `739ee78` were reviewed before integration. Findings required further serial fixes rather than accepting the author's earlier presence-only QA/mobile images. Antigravity paused all frontend writes via Orca `msg_9215935809c2`; Codex fixed root hydration, portals, reconstruction, metrics and scope in `5c87b1f`, styling/touch targets in `4a39b04`, full mobile confirmation in `dbc8a63`, and pending-safety/focus in `6415d61`. The latest two were found by actual browser failures, not inferred from source attributes.
+
+| Finding | Codex verification / disposition |
+|---|---|
+| NFE-01 | CLOSED: SSR null/zero/profile probes11/11, source review of root totals/budget scope/title, actual screenshot metric500k group and estimated0.8km derived from known legs, no sample date/time/distance defaults |
+| NFE-02 | CLOSED in reviewed source: real successful replacement preserves identities/order/locks; controlled no-candidate preserves server tour; real concurrent allergy edit causes stale replacement409→current obligation, no old modal/timeline, same after reload. New test failed before6415d61 because retained tour hid pending question |
+| NFE-03 | CLOSED: disclosure distinguishes rules/mock vs conditional GoogleGemini, recent session memory vs retention, source attribution and destination URL; source+browser review |
+| NFE-04 | CLOSED for automated keyboard/DOM checks: portals outside inert root, actual mouse activation, Tab/Shift+Tab containment, dialog close/return, replacement completion fallback. Actual screen-reader speech remains untested |
+| NFE-05 | CLOSED: provenance retained from source; dynamic question150/300/1000k checked after browser reload; current safety question restored after real conflict |
+| NFE-06 | CLOSED: fabricated18:30 seating tip removed, no new operational claim |
+| NFE-07 | CLOSED: status/missing/warnings readable before confirmation and timeline; source ranges qualified;3/4/5-stop HTTPS walking URL probes, real anchor activation blocked before external Google navigation; actual Google routing not tested |
+| NFE-08 | CLOSED: anonymous visitor header, no invented Tuấn/account |
+| NFE-09 | CLOSED in reviewed source: real desktop section focus/scroll actions and mobile visibility state; mobile390no overflow, keyboard and200% reflow coverage; larger author interaction QA additionally reviewed before acceptance |
+| NFE-10 | CLOSED: unrestricted browser-global endpoint override removed; scratch production endpoint configured before build; no Maps API/key requests or credentials in independent browser evidence |
+
+Independent final application source gate:169/169 production Chrome checks, zero runtime/console errors;22/22 additional interactive checks;18/18 frontend contracts;11/11 SSR probes; production build exit0. Backend575 OK/1 optional private-CSV skip; schema drift matches. See [integration report](CODEX_N_INTEGRATION.md) and [fresh synthetic visual evidence](ngonngon-codex/README.md). Preview-only cache isolation `ac05fc8` leaves default production distDir unchanged and is additionally checked with build+preview interactions; it fixes a root build/dev artifact collision, not an application behavior change.
+
+Verdict for inspected frontend source: **local prototype is acceptable subject to final independent QA/report settlement**. No live provider, data certification, screen-reader participant or deployment acceptance is implied. Historical report claims from earlier source are superseded by the explicit base/results here and the final author QA report.
