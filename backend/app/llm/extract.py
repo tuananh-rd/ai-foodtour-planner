@@ -154,7 +154,7 @@ class MockExtractor:
             budget = None
         if budget:
             upd["budget_vnd"] = budget
-            if re.search(r"ca nhom|tong|ca hoi|ca ban|chung", u):
+            if re.search(r"ca nhom|tong\s+(?:ngan sach|cong|so tien|chi)|tong\s+\d[\d.,]*\s*(?:k\b|nghin|ngan|trieu|tr\b|d\b|dong)|ca hoi|ca ban|\bchung\b", u):
                 upd["budget_scope"] = "group"
             elif re.search(r"moi nguoi|/\s*nguoi|mot nguoi|dau nguoi|per person", u):
                 upd["budget_scope"] = "per_person"

@@ -339,8 +339,9 @@ class ChatEngine:
                 if k not in base.patch:
                     base.patch[k] = v
         f = fold_uncached(effective_text(text))
-        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|theo nhom|theo nguoi|tong|chung|mot nguoi|ca ban|ca hoi",
-                    "start_time": r"\d{1,2}\s*(?:h|gio|:)|ruoi", "end_time": r"\d{1,2}\s*(?:h|gio|:)|ruoi"}
+        clock = r"\d{1,2}\s*(?:h|gio|:)\s*\d{0,2}|ruoi"
+        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|theo nhom|theo nguoi|\bchung\b|mot nguoi|ca ban|ca hoi|tong\s+(?:ngan sach|cong|so tien|chi)|tong\s+\d[\d.,]*\s*(?:k\b|nghin|ngan|trieu|tr\b|d\b|dong)",
+                    "start_time": clock, "end_time": r"(?:ket thuc|xong|ve truoc|truoc luc|truoc|den|toi)\s*(?:luc\s*)?" + clock}
         for k, rx in grounded.items():
             if k not in rules.patch and k in base.patch and not re.search(rx, f):
                 base.patch.pop(k, None)  # the model may not decide what the user never said (contract v1.9 rule 4)
@@ -704,6 +705,10 @@ class ChatEngine:
 
     # ================================================================== intents
     def _do_greet_or_smalltalk(self, R, u):
+        if u.patch.get("absent_allergy"):
+            R.blocks.append(text_b("Ok, mình không tính dị ứng của người không đi cùng. Nếu bạn hoặc người đi cùng có dị ứng, hãy nói để mình lưu ý."))
+            R.tools.append("none")
+            return
         if u.patch.get("no_allergy"):
             st0 = R.state
             st0.allergy_unresolved = False

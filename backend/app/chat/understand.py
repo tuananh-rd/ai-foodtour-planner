@@ -311,8 +311,23 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
             return Understanding("UNKNOWN", confidence=0.3)
         text = unquoted
     if re.search(r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|nếu như", text.casefold()) or \
-            re.search(r"\bnếu\b[^.?!]{0,80}\b(?:thì sao|thì có sao|thì thế nào|thì có được không|có được không)\b", text.casefold()):
-        return Understanding("AMBIGUOUS_ACK", confidence=0.7)  # hypothetical / joking wording: never act
+            re.search(r"\bnếu\b[^.?!]{0,80}\b(?:thì sao|thì có sao|thì thế nào|thì có được không|có được không)\b", text.casefold()) or \
+            re.search(r"\bnếu\b[^.?!]{0,100}\bthì\b[^.?!]{0,60}(?:\?|\bsao\b|\bgì\b|\bnào\b|\bthế nào\b)", text.casefold()):
+        keep = []
+        if guided:  # a hypothetical clause never acts, but a real statement next to it still counts (fail closed for allergies)
+            hypo = r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|\bnếu\b"
+            keep = [c for c in re.split(r"[,;.!?\n]+", text) if c.strip() and not re.search(hypo, c.casefold()) and not re.search(r"(?:không|chẳng|đâu|chưa)\s+phải", c.casefold())]
+            if not any(safety_parse._ALLERGY.search(c) for c in keep):
+                keep = []
+        if not keep:
+            return Understanding("AMBIGUOUS_ACK", confidence=0.7)  # hypothetical / joking wording: never act
+        text = ", ".join(keep)
+    if guided:  # an allergy of someone who is not coming constrains nothing
+        cleaned = re.sub(r"[^,.;!?]*?(?:dị ứng|di ung)[^,.;!?]*?\s(?:nhưng|mà|song)\s+(?:\S+\s+){0,2}?(?:không|ko|chẳng)\s+(?:đi cùng|tham gia|có mặt|đi)\b[^,.;!?]*", " ", text, flags=re.IGNORECASE).strip(" ,;.")
+        if cleaned != text.strip(" ,;."):
+            if not re.search(r"[A-Za-zÀ-ỹ0-9]", cleaned):
+                return Understanding("GREET_OR_SMALLTALK", {"absent_allergy": True}, confidence=0.8)
+            text = cleaned
     raw_safety = text  # the safety parser reads the WHOLE message (quotes already removed): a postponed clause may still carry an allergy
     text = trim_deferred(text)
     f = fold_uncached(text)
