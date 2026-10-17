@@ -527,7 +527,11 @@ class ChatEngine:
 
     def _clarify_block(self, st, question) -> dict:
         p = st.pending
-        return {"type": "clarify", "pending_id": p.pending_id, "question": question, "options": list(p.options)}
+        block = {"type": "clarify", "pending_id": p.pending_id, "question": question, "options": list(p.options)}
+        if self.guided:  # contract v1.9: the options ARE the chips; `slot` tells the UI which question this is
+            block["slot"] = p.slot
+            block["free_text"] = True
+        return block
 
     def _district_options(self, n=3) -> list:
         counts = {}

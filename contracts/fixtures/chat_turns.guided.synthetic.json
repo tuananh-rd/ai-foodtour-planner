@@ -100,7 +100,9 @@
            "option_id": "scope:per_person",
            "label": "Mỗi người"
           }
-         ]
+         ],
+         "slot": "budget_scope",
+         "free_text": true
         }
        ]
       },
@@ -295,7 +297,9 @@
            "option_id": "time:20:00",
            "label": "20:00"
           }
-         ]
+         ],
+         "slot": "start_time",
+         "free_text": true
         }
        ]
       },
@@ -466,7 +470,9 @@
            "option_id": "veh:taxi",
            "label": "Taxi/Grab"
           }
-         ]
+         ],
+         "slot": "plan_slots",
+         "free_text": true
         }
        ]
       },
@@ -802,7 +808,9 @@
            "option_id": "propose:self",
            "label": "Mình tự chọn"
           }
-         ]
+         ],
+         "slot": "propose",
+         "free_text": true
         }
        ]
       },
@@ -1464,7 +1472,9 @@
            "option_id": "allergy:other",
            "label": "Khác"
           }
-         ]
+         ],
+         "slot": "allergy_term",
+         "free_text": true
         }
        ]
       },
@@ -1659,7 +1669,9 @@
            "option_id": "time:20:00",
            "label": "20:00"
           }
-         ]
+         ],
+         "slot": "start_time",
+         "free_text": true
         }
        ]
       },
@@ -1866,7 +1878,9 @@
            "option_id": "allergy_no",
            "label": "Không phải"
           }
-         ]
+         ],
+         "slot": "allergy_confirm",
+         "free_text": true
         }
        ]
       },
@@ -2043,7 +2057,9 @@
            "option_id": "time:20:00",
            "label": "20:00"
           }
-         ]
+         ],
+         "slot": "start_time",
+         "free_text": true
         }
        ]
       },
@@ -2250,7 +2266,9 @@
            "option_id": "allergy_no",
            "label": "Không phải"
           }
-         ]
+         ],
+         "slot": "allergy_confirm",
+         "free_text": true
         }
        ]
       },
@@ -2427,7 +2445,9 @@
            "option_id": "conflict:1",
            "label": "4"
           }
-         ]
+         ],
+         "slot": "conflict",
+         "free_text": true
         }
        ]
       },
@@ -2585,7 +2605,9 @@
            "option_id": "time:20:00",
            "label": "20:00"
           }
-         ]
+         ],
+         "slot": "start_time",
+         "free_text": true
         }
        ]
       },
@@ -2816,7 +2838,9 @@
            "option_id": "allergy:other",
            "label": "Khác"
           }
-         ]
+         ],
+         "slot": "allergy_term",
+         "free_text": true
         }
        ]
       },
