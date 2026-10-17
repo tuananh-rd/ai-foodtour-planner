@@ -21,6 +21,7 @@
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
+import net from 'node:net';
 import { spawn, execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
@@ -53,6 +54,8 @@ const scratchApp = path.join(scratch, 'app');
 
 const env = {
   ...process.env,
+  NEXT_TELEMETRY_DISABLED: '1',
+  FOODTOUR_PREVIEW: '0',
   FOODTOUR_LLM: 'mock',
   FOODTOUR_CHAT_V2: '1',
   FOODTOUR_UI_GUIDED: '1',
@@ -108,12 +111,16 @@ function startProcess(cmd, args, opts = {}) {
   return p;
 }
 
+let cleanupDone = false;
 function cleanup() {
+  if (cleanupDone) return;
+  cleanupDone = true;
   console.log('Cleaning up processes and temporary build scratch...');
   for (const p of children) {
+    if (!p.pid || p.exitCode !== null) continue;
     try {
       if (process.platform === 'win32') {
-        spawn('taskkill', ['/pid', p.pid, '/T', '/F'], { stdio: 'ignore' });
+        execFileSync('taskkill', ['/pid', String(p.pid), '/T', '/F'], { stdio: 'ignore' });
       } else {
         p.kill('SIGKILL');
       }
@@ -128,6 +135,15 @@ process.on('exit', cleanup);
 process.on('SIGINT', () => { cleanup(); process.exit(1); });
 
 async function run() {
+  // Refuse existing listeners before creating processes or taking any capture.
+  for (const port of [PORT_WEB, PORT_API, PORT_CDP]) {
+    const free = await new Promise(resolve => {
+      const probe = net.createServer();
+      probe.once('error', () => resolve(false));
+      probe.listen(port, '127.0.0.1', () => probe.close(() => resolve(true)));
+    });
+    check(`Reserved QA port ${port} is unused`, free);
+  }
   console.log('=== Starting Isolated QA Environment ===');
   console.log(`Backend API: http://127.0.0.1:${PORT_API}`);
   console.log(`Frontend Web: http://127.0.0.1:${PORT_WEB}`);
@@ -145,6 +161,8 @@ async function run() {
     const res = await fetch(`http://127.0.0.1:${PORT_API}/health`);
     return res.ok;
   });
+  const health = await (await fetch(`http://127.0.0.1:${PORT_API}/health`)).json();
+  check('Synthetic dataset required before browser or captures', health.dataset_source === 'synthetic');
   console.log('Backend healthy and running on synthetic fixtures.');
 
   // 2. Scratch Build Next.js with inlined NEXT_PUBLIC_API_URL=18200
@@ -164,14 +182,7 @@ async function run() {
     'build'
   ], {
     cwd: scratchApp,
-    env: {
-      ...process.env,
-      NEXT_PUBLIC_API_URL: `http://127.0.0.1:${PORT_API}`,
-      NEXT_PUBLIC_API_MODE: 'real',
-      NEXT_PUBLIC_UI_GUIDED: '1',
-      NEXT_PUBLIC_CHAT_V2: '1',
-      NEXT_PUBLIC_UI_V2: '1'
-    },
+    env,
     stdio: 'ignore'
   });
   console.log('Scratch Next.js build completed with port 18200 inlined.');
@@ -376,7 +387,6 @@ async function run() {
 
   // Capture Desktop Empty State
   await snapScreenshot(path.join(REPORT_DIR, 'desktop_1440_empty.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'desktop_1440_empty.png'), path.join(REPORT_DIR, 'ngonngon-desktop-empty.png'));
 
   // NFE-09: Desktop Navigation Scroll & Active Area Behavior
   const navItems = await ev(`[...document.querySelectorAll('nav button')].map(b => b.innerText.trim())`);
@@ -421,7 +431,6 @@ async function run() {
 
   // Capture Desktop Clarify State
   await snapScreenshot(path.join(REPORT_DIR, 'desktop_1440_clarify.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'desktop_1440_clarify.png'), path.join(REPORT_DIR, 'ngonngon-desktop-clarify.png'));
 
   // STEP 3: Answer Clarify Question
   await click('[data-testid="clarify-option-scope:group"]');
@@ -455,7 +464,6 @@ async function run() {
 
   // Capture Desktop Confirmation State
   await snapScreenshot(path.join(REPORT_DIR, 'desktop_1440_confirmation.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'desktop_1440_confirmation.png'), path.join(REPORT_DIR, 'ngonngon-desktop-confirmation.png'));
 
   // STEP 5: Confirm Tour Generation
   await click('[data-testid="confirm-yes-btn"]');
@@ -488,7 +496,6 @@ async function run() {
 
   // Capture Desktop Tour State
   await snapScreenshot(path.join(REPORT_DIR, 'desktop_1440_tour.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'desktop_1440_tour.png'), path.join(REPORT_DIR, 'ngonngon-desktop-tour.png'));
 
   // STEP 6: Modal Portals, Background Inertness & Focus Trap (NFE-04 & Q07)
   const replaceBtnExists = await ev(`!!document.querySelector('[data-testid="stop-replace-btn-0"]')`);
@@ -523,7 +530,6 @@ async function run() {
 
   // Capture Desktop Replace Modal
   await snapScreenshot(path.join(REPORT_DIR, 'desktop_1440_replace.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'desktop_1440_replace.png'), path.join(REPORT_DIR, 'ngonngon-desktop-replace.png'));
 
   // Keyboard Tab navigation inside dialog
   await keyPress('Tab');
@@ -746,7 +752,6 @@ async function run() {
 
   // Capture Mobile Empty State
   await snapScreenshot(path.join(REPORT_DIR, 'mobile_390_empty.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'mobile_390_empty.png'), path.join(REPORT_DIR, 'ngonngon-mobile-empty.png'));
 
   // Mobile Guided Flow: S0 Prompt
   await typeAndSend(S0);
@@ -756,7 +761,6 @@ async function run() {
 
   // Capture Mobile Clarify State
   await snapScreenshot(path.join(REPORT_DIR, 'mobile_390_clarify.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'mobile_390_clarify.png'), path.join(REPORT_DIR, 'ngonngon-mobile-clarify.png'));
 
   // Mobile Answer Clarify
   await click('[data-testid="clarify-option-scope:group"]');
@@ -779,7 +783,6 @@ async function run() {
 
   // Capture Mobile Confirmation State
   await snapScreenshot(path.join(REPORT_DIR, 'mobile_390_confirmation.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'mobile_390_confirmation.png'), path.join(REPORT_DIR, 'ngonngon-mobile-confirmation.png'));
 
   // Mobile Confirm Tour
   await click('[data-testid="confirm-yes-btn"]');
@@ -816,7 +819,6 @@ async function run() {
 
   // Capture Mobile Tour State
   await snapScreenshot(path.join(REPORT_DIR, 'mobile_390_tour.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'mobile_390_tour.png'), path.join(REPORT_DIR, 'ngonngon-mobile-tour.png'));
 
   // Mobile Stop Replacement Modal Check
   await click('[data-testid="stop-replace-btn-0"]');
@@ -830,7 +832,6 @@ async function run() {
 
   // Capture Mobile Replace Modal
   await snapScreenshot(path.join(REPORT_DIR, 'mobile_390_replace.png'));
-  fs.copyFileSync(path.join(REPORT_DIR, 'mobile_390_replace.png'), path.join(REPORT_DIR, 'ngonngon-mobile-replace.png'));
 
   await keyPress('Escape');
   await pause(200);

@@ -7,6 +7,8 @@
 **Thiết kế tham chiếu:** `D:/Downloads/UI ngonngon tour.svg` & `docs/design/ngonngon-tour-reference.png`  
 **Trạng thái rà soát:** **Đã đóng hoàn tất toàn bộ 9 điểm phản hồi (NFE-01..09) trong `CODEX_N_FRONTEND_REVIEW.md` với bằng chứng kiểm thử thực tế.**
 
+**Bổ sung review sau bàn giao — Codex:** Antigravity hoàn tất `d52335c`, gửi `worker_done` và được release trước khi Codex sửa tuần tự report/harness. Author báo 62 kiểm tra tương tác; Codex chạy lại trên bản tích hợp sau khi thêm 3 kiểm tra cổng trống và 1 kiểm tra dataset synthetic: **66/66 PASS**, log local tạm `foodtour-n-author-qa-integrated.log`. Kiểm tra âm bằng listener do test tạo trên13200 xác nhận harness thoát trước startup/capture và giữ nguyên listener. Build dùng env đã loại credentials, tắt telemetry; không dừng server người dùng. Giữ10 ảnh canonical, bỏ10 bản sao. Không thay đổi logic ứng dụng ở bước này. Các kết quả này là kiểm tra synthetic/mock; không chứng nhận tuyến, giờ mở cửa, giá hay an toàn dị ứng ngoài thực tế.
+
 ---
 
 ## 1. Tóm tắt Thay đổi & So sánh Trực quan với Thiết kế SVG
@@ -27,9 +29,9 @@
 
 | Mã ID | Mức độ | Yêu cầu rà soát từ Codex Lead | Bằng chứng khắc phục & Kết quả kiểm thử trên `6415d61` |
 |---|---|---|---|
-| **NFE-01** | P1 | Giữ nguyên null/zero cho giờ đến, cự ly, ngân sách; không gán cứng 20:30, Thứ bảy, Hoàn Kiếm, 1.8 km, 450k; phân biệt trần ngân sách với giá món ăn theo quán. | Đã loại bỏ toàn bộ giá trị mẫu: phụ đề tour hiển thị giờ thực tế `19:04–20:55 • Hoàn Kiếm` (hoặc linh hoạt), cự ly tính theo mét thực tế (`tour.totals.distance_m`), ngân sách hiển thị theo trần mong muốn (`≈ 500K / cả nhóm`). Đạt 100% kiểm tra `NFE-01`. |
+| **NFE-01** | P1 | Giữ nguyên null/zero cho giờ đến, cự ly, ngân sách; bỏ giá trị mẫu; phân biệt ngân sách với giá quán. | Giờ hiển thị như `19:04–20:55` là giờ dự kiến tính từ local estimator, không phải ETA đã xác minh; cự ly cộng từ các chặng chỉ khi đủ dữ liệu và mang nhãn ước tính. Ngân sách yêu cầu là `500.000 đ (cả nhóm)`, không phải dự đoán bill. Null/zero có SSR probes riêng. |
 | **NFE-02** | P1 | Xử lý mã 409 trong đổi quán: phân biệt xung đột phiên bản (`revision_conflict`) với hết ứng viên (`no_candidates`) hoặc câu hỏi còn mở (`obligation_open`). | Đã kiểm thử thực tế cả 3 trường hợp: (1) `no_candidates` đóng modal, giữ nguyên tour cũ kèm thông báo "Không có quán thay thế thoả các ràng buộc. Lịch trình hiện tại được giữ nguyên."; (2) Đổi quán thành công hiển thị diff và đánh dấu khóa (locks) cho các điểm dừng còn lại; (3) Sửa đổi đồng thời mở nghĩa vụ dị ứng (`obligation_open`) gây 409 khi đổi quán: giao diện tự động đồng bộ lại phiên, đóng modal cũ, và hiển thị câu hỏi an toàn dị ứng mới lên trước lịch trình được giữ lại. |
-| **NFE-03** | P2 | Minh bạch AI & Dữ liệu: Nêu rõ Gemini được gọi có điều kiện; phiên làm việc chỉ lưu tạm thời theo phiên ẩn danh; nguồn dữ liệu thể hiện đúng chế độ chạy (synthetic / thử nghiệm cục bộ). | Dòng chữ tóm tắt: "Dữ liệu quán từ Foody • giờ & giá theo nguồn ghi • khoảng cách ước tính". Modal chi tiết nêu rõ văn bản yêu cầu có thể gửi ẩn danh đến Google Gemini, phiên lưu tạm thời không lưu danh tính cá nhân, và nguồn dữ liệu thể hiện đúng `Dữ liệu tổng hợp (synthetic), chỉ để kiểm thử`. |
+| **NFE-03** | P2 | Nêu đúng điều kiện Gemini, dữ liệu gửi và session retention; nguồn theo mode. | Khi cấu hình Gemini và còn lượt, văn bản nhập cùng tiêu chí cần thiết có thể gửi đến Google Gemini; rules tại máy không gửi ra AI bên ngoài. Không cam kết ẩn danh hoá thông tin người dùng tự nhập. Phiên giữ các lượt gần nhất/tiêu chí, mặc định hết hạn sau một giờ; Làm lại không cam kết xoá ngay phiên cũ. Attribution theo health synthetic/private/unknown. |
 | **NFE-04** | P2 | Quản lý tiêu điểm modal: Bẫy tiêu điểm (Tab/Shift+Tab), đóng bằng Escape và trả tiêu điểm về nút kích hoạt; cô lập hộp thoại ngoài cây nền bị trơ (`inert` / `aria-hidden`); hỗ trợ cuộn dọc trên di động. | Đã chuyển `ReplaceDiffModal` và `TrustDisclosure` sang cơ chế `createPortal(..., document.body)`. Kiểm thử khẳng định `dialog.closest('[inert]') === null` và `dialog.closest('[aria-hidden="true"]') === null`, trong khi `[data-testid="guided-container"]` nhận `aria-hidden="true"` và `inert`. Phím Tab giữ tiêu điểm trong hộp thoại, phím Escape đóng hộp thoại và trả tiêu điểm về đúng nút kích hoạt. |
 | **NFE-05** | P2 | Nguồn gốc tiêu chí (provenance) & phục hồi câu hỏi: Dữ liệu suy luận (`inferred`) hoặc mặc định (`default`) không bị đổi thành `user`; phục hồi đúng câu hỏi số lượng/ngân sách động (150k, 300k, 1m, v.v.). | `profileToUnderstoodItems` giữ nguyên `.source`; `UnderstoodCard` hiển thị nhãn `(suy luận)` cho thời gian mỗi quán; kiểm thử tự động xác nhận câu hỏi ngân sách động phục hồi chính xác cho các mức `150.000 đ`, `300.000 đ`, `500.000 đ` và `1.000.000 đ`. |
 | **NFE-06** | P2 | Bỏ lời khuyên bịa đặt về chỗ ngồi trước 18:30 không có căn cứ. | Đã loại bỏ hoàn toàn lời khuyên 18:30; chỉ hiển thị cảnh báo hoạt động trung thực: "Giờ mở cửa và mức giá thực tế của quán có thể thay đổi tùy thời điểm". |
@@ -45,16 +47,16 @@ Toàn bộ 10 ảnh chụp màn hình được tạo lại bằng trình duyệt
 
 | Tên tệp ảnh | Độ phân giải | Mô tả trạng thái kiểm chứng |
 |---|---|---|
-| [desktop_1440_empty.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/desktop_1440_empty.png) | 1440x1024 | Trạng thái ban đầu trung thực: Cột trái nhận yêu cầu, cột phải hướng dẫn 3 bước minh bạch, chỉ số chưa gán giá trị giả. |
-| [desktop_1440_clarify.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/desktop_1440_clarify.png) | 1440x1024 | Trạng thái làm rõ: Một câu hỏi ngân sách động 500.000 đ, UnderstoodCard có dị ứng đậu phộng và nhãn suy luận. |
-| [desktop_1440_confirmation.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/desktop_1440_confirmation.png) | 1440x1024 | Cổng xác nhận rõ ràng: Thẻ xác nhận tổng hợp, phân biệt trần ngân sách với giá quán, danh sách cảnh báo tiếng Việt. |
-| [desktop_1440_tour.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/desktop_1440_tour.png) | 1440x1024 | Lịch trình tour hoàn chỉnh: 3 quán, giờ đến xanh lá (`#166B52`), thẻ timeline riêng biệt, cự ly thực tế, nút mở Google Maps đi bộ. |
-| [desktop_1440_replace.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/desktop_1440_replace.png) | 1440x1024 | Hộp thoại đổi quán: Portaled ra ngoài vùng trơ, bẫy tiêu điểm Tab/Escape, hiển thị quy tắc khóa điểm dừng. |
-| [mobile_390_empty.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/mobile_390_empty.png) | 390x844 | Giao diện di động trạng thái trống: Chạm bấm ≥44px, clientWidth = 390, scrollWidth = 390 (zero overflow), header ngắt dòng chuẩn. |
-| [mobile_390_clarify.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/mobile_390_clarify.png) | 390x844 | Giao diện di động làm rõ: Đơn cột rõ ràng, không tràn ngang, các nút lựa chọn vừa vặn màn hình dọc. |
-| [mobile_390_confirmation.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/mobile_390_confirmation.png) | 390x844 | Giao diện di động xác nhận: Toàn bộ thẻ quyết định hiển thị đầy đủ bên dưới header cố định, nút bấm rõ ràng. |
-| [mobile_390_tour.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/mobile_390_tour.png) | 390x844 | Giao diện di động xem lịch trình: Kích hoạt tab Lịch trình, hiển thị đơn cột thẻ timeline, cự ly đi bộ rõ ràng. |
-| [mobile_390_replace.png](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/ngonngon/mobile_390_replace.png) | 390x844 | Hộp thoại đổi quán trên di động: Khả năng cuộn dọc mượt mà trên 390px, nút hành động ≥44px không bị che khuất. |
+| [desktop_1440_empty.png](ngonngon/desktop_1440_empty.png) | 1440x1024 | Trạng thái ban đầu trung thực: Cột trái nhận yêu cầu, cột phải hướng dẫn 3 bước minh bạch, chỉ số chưa gán giá trị giả. |
+| [desktop_1440_clarify.png](ngonngon/desktop_1440_clarify.png) | 1440x1024 | Trạng thái làm rõ: Một câu hỏi ngân sách động 500.000 đ, UnderstoodCard có dị ứng đậu phộng và nhãn suy luận. |
+| [desktop_1440_confirmation.png](ngonngon/desktop_1440_confirmation.png) | 1440x1024 | Cổng xác nhận rõ ràng: Thẻ xác nhận tổng hợp, phân biệt trần ngân sách với giá quán, danh sách cảnh báo tiếng Việt. |
+| [desktop_1440_tour.png](ngonngon/desktop_1440_tour.png) | 1440x1024 | Lịch trình tour hoàn chỉnh: 3 quán, giờ đến xanh lá (`#166B52`), thẻ timeline riêng biệt, cự ly thực tế, nút mở Google Maps đi bộ. |
+| [desktop_1440_replace.png](ngonngon/desktop_1440_replace.png) | 1440x1024 | Hộp thoại đổi quán: Portaled ra ngoài vùng trơ, bẫy tiêu điểm Tab/Escape, hiển thị quy tắc khóa điểm dừng. |
+| [mobile_390_empty.png](ngonngon/mobile_390_empty.png) | 390x844 | Giao diện di động trạng thái trống: Chạm bấm ≥44px, clientWidth = 390, scrollWidth = 390 (zero overflow), header ngắt dòng chuẩn. |
+| [mobile_390_clarify.png](ngonngon/mobile_390_clarify.png) | 390x844 | Giao diện di động làm rõ: Đơn cột rõ ràng, không tràn ngang, các nút lựa chọn vừa vặn màn hình dọc. |
+| [mobile_390_confirmation.png](ngonngon/mobile_390_confirmation.png) | 390x844 | Giao diện di động xác nhận: Toàn bộ thẻ quyết định hiển thị đầy đủ bên dưới header cố định, nút bấm rõ ràng. |
+| [mobile_390_tour.png](ngonngon/mobile_390_tour.png) | 390x844 | Giao diện di động xem lịch trình: Kích hoạt tab Lịch trình, hiển thị đơn cột thẻ timeline, cự ly đi bộ rõ ràng. |
+| [mobile_390_replace.png](ngonngon/mobile_390_replace.png) | 390x844 | Hộp thoại đổi quán trên di động: Khả năng cuộn dọc mượt mà trên 390px, nút hành động ≥44px không bị che khuất. |
 
 ---
 
@@ -90,16 +92,16 @@ Toàn bộ 10 ảnh chụp màn hình được tạo lại bằng trình duyệt
 ### 4.3. Kiểm thử Tích hợp Trình duyệt Thực tế (`qa/e2e/test_ngonngon_qa.mjs`)
 - Môi trường: Bản dựng Next.js sạch trong thư mục scratch (`NEXT_PUBLIC_API_URL=http://127.0.0.1:18200`), uvicorn backend cổng `18200`, Chrome CDP cổng `19400`.
 - Chặn mạng: `--host-resolver-rules=MAP www.google.com ~NOTFOUND, MAP maps.googleapis.com ~NOTFOUND, MAP maps.gstatic.com ~NOTFOUND`.
-- Kết quả: **62/62 bài kiểm tra tương tác và hồi quy đạt PASS tuyệt đối (0 lỗi, 0 exception):**
+- Author: **62/62 kiểm tra tương tác PASS**; Codex rerun tích hợp: **66/66 PASS** gồm4chốt môi trường bổ sung. Harness này không đếm riêng runtime exceptions/console errors; suite độc lập `codex_guided_review.mjs` mới cung cấp các bộ đếm đó.
   - Khởi tạo giao diện ẩn danh (NFE-08) và trạng thái trống trung thực (NFE-01).
   - Điều hướng desktop cuộn mượt và kích hoạt vùng tương ứng (NFE-09).
   - Xử lý đối thoại làm rõ, bảo lưu dị ứng, phục hồi câu hỏi ngân sách động (NFE-05).
   - Cổng xác nhận với cảnh báo tiếng Việt và giải thích mức trần ngân sách (NFE-07).
-  - Lập lịch trình tour, kiểm tra cự ly/thời gian thực tế và liên kết Google Maps đi bộ miễn phí.
+  - Lập tour với cự ly/thời gian ước tính và liên kết Google Maps đi bộ miễn phí.
   - Hộp thoại đổi quán: Portaled bên ngoài vùng trơ, bẫy tiêu điểm Tab, đóng bằng Escape/Cancel và hoàn trả tiêu điểm (NFE-04).
   - Bảo toàn lịch trình khi hết ứng viên (`no_candidates`) kèm thông báo rõ ràng (NFE-02).
   - Đổi quán thành công với cơ chế khóa các điểm dừng còn lại (`tour.locks`) (NFE-02).
-  - Xung đột phiên bản an toàn khi có sửa đổi dị ứng đồng thời (`obligation_open` / 409): Tự động đồng bộ lại phiên, đóng hộp thoại cũ, khôi phục câu hỏi dị ứng mới lên trước lịch trình và bảo toàn qua tải lại trang (NFE-02).
+  - Sửa dị ứng đồng thời rồi gửi revision cũ tạo409 `revision_conflict`: đồng bộ lại, đóng modal, khôi phục câu hỏi dị ứng trước tour cũ và giữ qua reload. Không coi ca này là bằng chứng riêng cho response code `obligation_open`.
   - Minh bạch AI và dữ liệu trong TrustDisclosure modal (NFE-03 & NFE-04).
   - Khôi phục câu hỏi ngân sách động cho các mức 150k, 300k, 1 triệu (NFE-05).
   - Kiểm tra hình học di động 390px: `clientWidth === 390px`, `scrollWidth <= 390px` xuyên suốt các trạng thái, chuyển đổi tab Khám phá / Lịch trình với vùng chạm ≥ 44px (NFE-09).
@@ -113,6 +115,7 @@ Toàn bộ 10 ảnh chụp màn hình được tạo lại bằng trình duyệt
 
 ## 5. Giới hạn & Đánh giá Tính trung thực
 
-1. **Dữ liệu cục bộ & Chưa kiểm chứng thực địa:** Toàn bộ thông tin quán ăn, giờ mở cửa và khoảng giá trong nguyên mẫu được lấy từ tập dữ liệu thử nghiệm cục bộ (`venues.chat.synthetic.json`); chưa có bằng chứng thực địa về thành phần chi tiết của món ăn nhằm đảm bảo an toàn dị ứng tuyệt đối. Ứng dụng đã thông báo rõ ràng cho người dùng phải hỏi trực tiếp nhân viên quán trước khi gọi món.
+1. **QA synthetic khác bản chạy cho người dùng:** QA và ảnh dùng `venues.chat.synthetic.json` có nhãn. Preview8020/3020 dùng input private local hiện có theo chỉ đạo người dùng; không có venue records/IDs/toạ độ private trong ảnh/báo cáo. Không chứng nhận operating status, tuyến đi bộ, giá theo người hay nguyên liệu. Cảnh báo yêu cầu hỏi trực tiếp quán vẫn còn.
 2. **Không triển khai môi trường công khai:** Bản dựng hiện tại phục vụ hoàn toàn cho mục đích nghiệm thu nội bộ trên môi trường cục bộ cô lập, không yêu cầu bất kỳ dịch vụ trả phí, khóa API hay quyền truy cập ngoài luồng nào.
 3. **Claude nghỉ ngơi:** Toàn bộ công việc trong phiên thực hiện dưới sự điều phối trực tiếp của Codex Lead và thực thi kiểm thử độc lập bởi Antigravity theo đúng chỉ thị người dùng; Claude được giữ nghỉ ngơi hoàn toàn.
+4. **Chưa thử:** screen-reader speech, người tham gia thật, Google navigation ngoài ứng dụng, Gemini quality tổng quát và DB backup/restore thật. Metadata/DOM/bàn phím không thay các bằng chứng này. Kết luận NFE và acceptance cuối thuộc review Codex, không phải tự duyệt của tác giả.
