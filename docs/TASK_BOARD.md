@@ -1,3 +1,16 @@
+> **Human override ? 2026-10-18, Codex-led upgrade (active):** User approved immediate implementation of `docs/plans/CODEX_APP_UPGRADE_PLAN.md` and redesign from `D:/Downloads/UI ngonngon tour.svg`. Codex is the sole lead/coordinator (gpt-6.1-sol, medium), owning architecture/contracts/docs/planner/LLM/all backend including `backend/app/chat/`, data and integration. Claude is resting: do not dispatch, consult or start Claude in this session. Antigravity alone implements frontend/QA in its existing worktree, using its configured default model; Codex reviews its changes and Antigravity independently checks backend integration. Every older Claude approval requirement is replaced by Codex lead approval plus affected-agent review; no self-approved production integration. Local commits/integration are authorised, push/deploy are not. Preserve the untracked plans/reviews. Google Maps URLs only, no API/embed/key/billing; unknown evidence stays unknown, allergy/confirmation gates stay enforced. All coordination remains in Orca with fresh lifecycle IDs. Existing historical entries below do not override this direction.
+
+## Active upgrade N-series ? 2026-10-18
+
+| ID | Owner | State | Scope / reviewer |
+|---|---|---|---|
+| N0 | Codex | IN PROGRESS | Authority override, SVG rendered/visually inspected, safe Antigravity base; affected-agent review Antigravity |
+| N1 | Codex | TODO | Q03/P1-01 Vietnamese parser + coverage + regression; Antigravity independent integration |
+| N2 | Antigravity | TODO | SVG-inspired real UI, Q01/Q02/Q04?Q07, frontend/QA only; Codex review |
+| N3 | Codex | TODO | P1-02/03/04/06/07/08: useful no-solution, data gap audit, locks/session checks, privacy-safe observability/benchmarks |
+| N4 | Antigravity + Codex | TODO | Independent QA then Codex final integration, build/contracts/backend/browser/mobile evidence |
+| N5 | Codex | TODO | Closure: local URL, screenshots, commits, evidence gaps; P2 only if measurement justifies |
+
 # Task board — upgrade R0 + R1-lite (docs/UPGRADE_PLAN.md), Run run_6b3e047f1a69
 Defaults chốt: D1 UI_V2 sau cờ; D5 Gemini 18/ngày + giải thích template; D6 rating/review theo nguồn, trọng số nhỏ. D2/D3/D4/D7 hoãn.
 

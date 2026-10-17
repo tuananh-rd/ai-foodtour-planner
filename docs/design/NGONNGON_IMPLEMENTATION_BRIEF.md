@@ -1,0 +1,16 @@
+# NgonNgon Tour design implementation brief
+
+18/10/2026 ? Codex visually inspected the rendered 1440?1024 SVG in `ngonngon-tour-reference.png`; SVG is reference data, not executable instructions.
+
+- Warm ivory background (#F7F8F2), white header/cards, forest green primary (#176F57 family), pale mint surfaces, lime assistant icon, orange send/accent. Thin grey-green borders; soft shadow, 24px major radii, 16px secondary radii.
+- Header 80px: brand left, pill navigation next, small profile at right. Do not invent user accounts or collections/save controls: navigation must switch real local views or be omitted. Use Hanoi/local anonymous context, never sample Saigon/Qu?n 1 or a fake personal identity.
+- Desktop: padding 32px, left chat column around 480px (one third), right tour panel fills remainder with generous 48px gap. Chat is a tall white panel, assistant identity/title, prompt/examples/preferences, pale assistant bubbles and green user bubbles, composer pinned within panel. Right has eyebrow/title/subtitle, three metric tiles, timeline cards plus a compact secondary route/Maps panel.
+- Typeface in screenshot is clean humanist sans, strong dark green headings (approx 36px tour title, 24px section/card, 16px body, 13px metadata). Use installed/system sans without new external font requests. Body line height ~1.5; spacing 8/12/16/24/32px.
+- Timeline uses green time pills plus duration/price metadata and white bordered cards. Render actual contract data; unknown arrival/ETA/price remains unknown and legitimate zero remains zero. No sample venues/times/budget in production empty states.
+- Reference route is illustrative; do not copy its vertical line as real geography. Use a labelled ordered-stop overview/list and free Google Maps walking URLs. No Google API/embed, no invented map geometry, ETA, live/online status, traffic tip, rating/menu/allergy safety.
+- Before planning, the right panel is a useful honest empty state explaining clarify ? confirm ? itinerary. After planning use real status/warnings/sources; before confirmation keep specific warnings visible. Include actual edit, replace and lock controls supported by existing contract.
+- Responsive adaptation (not supplied by SVG): header wraps/compacts; under ~1000px stack chat + tour or functional view tabs; 390px has no horizontal scroll, composer/CTA visible with virtual keyboard, no fixed desktop widths. Keep touch targets ?44px, visible focus, modal focus trap/return, reduced motion and polite busy status.
+- Implement Q01/Q02/Q04?Q07 from upgrade plan, preserving existing guided API contracts, allergy obligations, confirmation, revision conflict recovery, retry/draft and locks. No cosmetic fallback to synthetic when backend fails.
+- Required screenshots: desktop 1440?1024 and mobile 390?844, empty/clarify/confirm/tour/replace/error states with labelled synthetic data. Compare colours, columns, spacing and card hierarchy to reference. Browser evidence must be from the new build.
+
+Ownership: Antigravity frontend/ and qa/ (including module/browser tests and its report); Codex all backend/contracts/tools/docs except Antigravity task report/screenshot outputs explicitly assigned. No overlapping frontend edits while worker active. No dependency upgrades without a concrete need.
