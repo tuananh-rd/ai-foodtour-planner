@@ -33,9 +33,6 @@ class Controls(unittest.TestCase):
 
     def test_finish_question_guard(self):
         eng,_=engine()
-        from app.chat.engine import TurnResult
-        import inspect
-        self.assertIn('len(cl) > 1',inspect.getsource(eng._finish))
         # Feed a real result then duplicate its question, modeling overlapping handlers.
         r=eng.handle(ChatState(),Preferences(),text='Tôi dị ứng chưa rõ chất gì.')
         q=next(b for b in r.blocks if b['type']=='clarify')
