@@ -389,3 +389,15 @@ class LiveSmokeLessons(unittest.TestCase):
         r2 = eng.handle(ChatState(), Preferences(), text="Mình dị ứng đồ có vỏ cứng, đi tour 3 quán quanh Hồ Gươm tối nay")
         self.assertEqual(r2.state.allergies, [])  # live smoke: rules used to record "có vỏ cứng" as the user's substance
         self.assertTrue(r2.state.allergy_unresolved)
+
+
+class FinalHardening(unittest.TestCase):
+    def test_venue_confirmations_are_deduplicated_and_bounded(self):
+        eng, _ = engine()
+        st, pr = ChatState(), Preferences()
+        r = eng.handle(st, pr, text="Tôi dị ứng tôm")
+        r = eng.handle(r.state, r.prefs, text="tìm quán bún")
+        for i in range(30):
+            r = eng.handle(r.state, r.prefs, text=f"Tôi đã gọi quán A, quán nói có tôm {i % 12}")
+        sizes = [len(a.venue_confirmations) for a in r.state.allergies]
+        self.assertTrue(all(n <= 10 for n in sizes), sizes)

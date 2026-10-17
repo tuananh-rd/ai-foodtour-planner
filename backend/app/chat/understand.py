@@ -407,7 +407,7 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         keep = []
         if guided:  # a hypothetical clause never acts, but a real statement next to it still counts (fail closed for allergies)
             hypo = _HYPO + r"|\bnếu\b"
-            keep = [c for c in re.split(r"[,;.!?\n]+", text) if c.strip() and not re.search(hypo, c.casefold()) and not re.search(r"(?:không|chẳng|đâu|chưa)\s+phải", c.casefold())]
+            keep = [c for c in re.split(r"[,;.!?\n]+|\s+(?:còn|nhưng|mà|chứ)\s+", text) if c.strip() and not re.search(hypo, c.casefold()) and not re.search(r"(?:không|chẳng|đâu|chưa)\s+phải", c.casefold())]
             if not any(safety_parse._ALLERGY.search(c) for c in keep):
                 keep = []
         if not keep:
@@ -419,11 +419,6 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
             if not re.search(r"[A-Za-zÀ-ỹ0-9]", pre):
                 return Understanding("GREET_OR_SMALLTALK", {"absent_allergy": True}, confidence=0.8)
             text = pre
-        cleaned = re.sub(r"[^,.;!?]*?(?:dị ứng|di ung)[^,.;!?]*?\s(?:nhưng|mà|song)\s+(?:\S+\s+){0,2}?(?:không|ko|chẳng)\s+(?:đi cùng|tham gia|có mặt|đi)\b[^,.;!?]*", " ", text, flags=re.IGNORECASE).strip(" ,;.")
-        if cleaned != text.strip(" ,;."):
-            if not re.search(r"[A-Za-zÀ-ỹ0-9]", cleaned):
-                return Understanding("GREET_OR_SMALLTALK", {"absent_allergy": True}, confidence=0.8)
-            text = cleaned
     raw_safety = text  # the safety parser reads the WHOLE message (quotes already removed): a postponed clause may still carry an allergy
     text = trim_deferred(text)
     f = fold_uncached(text)

@@ -795,7 +795,9 @@ class ChatEngine:
                 tgt = [a for a in st.allergies if fold_uncached(a.term) in fold_uncached(said)] or st.allergies
                 lab = next((x["label"] for x in st.last_results if x["venue_id"] == ids[0]), vc)
                 for a in tgt:
-                    a.venue_confirmations.append({"venue_id": ids[0], "label": lab, "text": said, "at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
+                    if not any(c.get("venue_id") == ids[0] and c.get("text") == said for c in a.venue_confirmations):
+                        a.venue_confirmations.append({"venue_id": ids[0], "label": lab, "text": said, "at": datetime.now(timezone.utc).isoformat(timespec="seconds")})
+                    a.venue_confirmations = a.venue_confirmations[-10:]  # bounded, deduplicated
                 R.blocks.append(notice_b("safety", "user_confirmed", f"Mình ghi lại: Người dùng xác nhận với quán {lab} (không phải xác minh độc lập). "
                                          "Tour vẫn được đánh dấu chưa đủ bằng chứng về nguyên liệu."))
             else:
