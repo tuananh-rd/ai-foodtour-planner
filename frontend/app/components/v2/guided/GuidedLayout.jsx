@@ -112,7 +112,7 @@ function sessionBlocks(session) {
         options: pending.options || [], slot: pending.slot, free_text: true });
     }
   }
-  if (session.tour) blocks.push({ type: 'tour_ready', revision: session.revision });
+  if (session.tour && !pending) blocks.push({ type: 'tour_ready', revision: session.revision });
   return blocks;
 }
 
@@ -584,7 +584,7 @@ export default function GuidedLayout({
   }
 
   const tourReadyBlock = latestBlocks.find((b) => b.type === 'tour_ready');
-  const isTourReady = Boolean(tour && (tourReadyBlock || chatState?.phase === 'planned'));
+  const isTourReady = Boolean(tour && !chatState?.pending && (tourReadyBlock || chatState?.phase === 'planned'));
 
   // Active Decision: strictly derived from current chatState.pending!
   let confirmSummaryBlock = null;
@@ -651,7 +651,7 @@ export default function GuidedLayout({
   }
 
   // Tour Gate: Tour is rendered ONLY when tour is available and tour_ready block or planned phase is reached
-  const showTour = Boolean(tour && (tourReadyBlock || chatState?.phase === 'planned'));
+  const showTour = isTourReady;
 
   // Filter text blocks to enforce EXACTLY ONE visible decision question across DOM
   const filteredTextBlocks = textBlocks.filter((b) => {

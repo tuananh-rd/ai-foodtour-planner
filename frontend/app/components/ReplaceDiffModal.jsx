@@ -95,7 +95,7 @@ export default function ReplaceDiffModal({
         return;
       }
       // Invoker is gone (the stop was replaced): land on the tour region so keyboard users keep context.
-      const fallback = document.querySelector('[data-focus-fallback], main, [role="main"]');
+      const fallback = document.querySelector('[data-focus-fallback]') || document.querySelector('main, [role="main"]');
       if (fallback) {
         if (!fallback.hasAttribute('tabindex')) fallback.setAttribute('tabindex', '-1');
         fallback.focus();
