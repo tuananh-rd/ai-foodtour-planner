@@ -1,0 +1,44 @@
+[
+  {
+    "id": "CH-01a",
+    "title": "Start screen: geolocation denied displays friendly fallback and district chips",
+    "passed": true,
+    "details": "deniedMsg: true, districtChips: true"
+  },
+  {
+    "id": "CH-01b",
+    "title": "Phrase 'Chiều nay nóng quá, quanh đây ăn gì được?' returns NO_WEATHER disclaimer and dish suggestions",
+    "passed": true,
+    "details": "noWeatherText: true, dishSuggestions: true"
+  },
+  {
+    "id": "CH-03a",
+    "title": "Search 'tìm quán bún' renders venue cards labelled A and B",
+    "passed": true,
+    "details": "cards: 2, badges: [\"A\",\"B\"]"
+  },
+  {
+    "id": "CH-03b",
+    "title": "Compare A and B renders table with columns A and B, distance estimate label, 'Chưa rõ' fallback cells, and unsupported criteria note",
+    "passed": true,
+    "details": "table: true, cols: true, distanceEstimate: true, chuaRo: true, noEmpty: true, injectedCell: Chưa rõ"
+  },
+  {
+    "id": "CH-04",
+    "title": "Shortlist add/remove/keep works via BOTH buttons and typed text, panel stays synchronized with server state",
+    "passed": true,
+    "details": "addBtn: 1/5, kept: true, addText: 2/5, removeText: 1/5, removeBtn: 0/5"
+  },
+  {
+    "id": "CH-05",
+    "title": "Typed 'ok' never creates a tour and displays clarification options",
+    "passed": true,
+    "details": "hasTour: false, clarifyButtons: true"
+  },
+  {
+    "id": "CH-06",
+    "title": "Allergy flow sets prominent chip, every card displays 'Chưa đủ thông tin về dị ứng', excludes crab, zero 'an toàn' claims",
+    "passed": false,
+    "details": "prominentChip: true, cardsWarned: false, containsCrab: false, unsafeClaims: false"
+  }
+]
