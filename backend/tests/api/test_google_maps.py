@@ -120,7 +120,12 @@ class GoogleAPI(unittest.TestCase):
         self.assertNotIn('PRIVATE_QUERY_SENTINEL', combined)
         self.assertNotIn(headers['X-Session-Token'], combined)
         for line in logs.records:
-            self.assertEqual(set(json.loads(line.message)), {'request_id', 'route', 'status', 'latency_ms'})
+            record = json.loads(line.message)
+            expected = {'request_id', 'route', 'status', 'latency_ms'}
+            if record['status'] >= 400:
+                expected.add('error_code')
+                self.assertEqual(record['error_code'], 'validation_error')
+            self.assertEqual(set(record), expected)
 
     def test_reflected_secret_cannot_reach_geocode_response(self):
         _, headers = self.session()
