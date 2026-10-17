@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[3]
 
 class Telemetry(unittest.TestCase):
     def test_chat_event_is_allowlisted_and_private(self):
-        with patch.dict(os.environ, {'FOODTOUR_CHAT_V2': '1', 'FOODTOUR_GUIDED_UI': '1',
+        with patch.dict(os.environ, {'FOODTOUR_CHAT_V2': '1', 'FOODTOUR_UI_GUIDED': '1',
                                     'FOODTOUR_LLM': 'off', 'FOODTOUR_EXPLAIN': 'template',
                                     'FOODTOUR_ROUTING': 'estimate', 'FOODTOUR_SESSION_DB': ''}):
             client = TestClient(create_app(data_path=ROOT / 'contracts/fixtures/venues.chat.synthetic.json'))
