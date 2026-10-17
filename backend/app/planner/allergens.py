@@ -26,6 +26,7 @@ FAMILIES = {
     "gluten": (("gluten", "lua mi", "bot mi"), ("banh mi", "mi", "pizza", "burger", "banh ngot", "tiem banh")),
     "soy": (("dau nanh", "dau phu", "dau hu"), ("dau phu", "dau hu", "dau nanh", "sua dau nanh")),
     "sesame": (("me", "vung", "me den"), ("me", "vung", "xoi vung", "che vung")),
+    "treenut": (("hat dieu", "hanh nhan", "oc cho", "mac ca", "hat de", "hat phi", "hat"), ("hat dieu", "hanh nhan", "oc cho", "mac ca", "hat de", "che hat")),
 }
 _BY_WORD = {w: fam for fam, (words, _) in FAMILIES.items() for w in words}
 MAX_TERMS = 10
@@ -42,6 +43,8 @@ def family_of(term: str):
             fam = _BY_WORD.get(phrase)
             if fam == "sesame" and phrase == "me" and "mè" not in low:
                 continue  # "mẹ" (mother) and "mê" (to love) fold to "me": only the accented mè is sesame
+            if fam == "treenut" and phrase == "hat" and "hạt" not in low:
+                continue  # "hát" (to sing) folds to "hat": only the accented hạt (nuts/seeds) counts
             if fam:
                 return fam
     return None

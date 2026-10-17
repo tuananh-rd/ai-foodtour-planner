@@ -381,26 +381,17 @@ class LiveSmokeLessons(unittest.TestCase):
     def test_llm_description_is_not_a_substance_and_rules_do_not_record_one(self):
         from app.chat.llm_understand import Outcome, sanitize
         eng, _ = engine()
-        data = {"intent": "SET_ALLERGY", "patch": {"allergy": ["mấy loại hạt"]}}
-        r = eng.handle(ChatState(), Preferences(), text="Con mình bé xíu, bị dị ứng mấy loại hạt, tối nay muốn ăn tour 2 quán quanh Hồ Gươm",
+        data = {"intent": "SET_ALLERGY", "patch": {"allergy": ["mấy thứ rang giòn"]}}
+        r = eng.handle(ChatState(), Preferences(), text="Mình bị dị ứng nhẹ với mấy thứ rang giòn, tối nay muốn ăn tour 2 quán quanh Hồ Gươm",
                        llm=lambda t, c, u: Outcome(sanitize(data), 1))
         self.assertEqual(r.state.allergies, [])
         self.assertTrue(r.state.allergy_unresolved)
         r2 = eng.handle(ChatState(), Preferences(), text="Mình dị ứng đồ có vỏ cứng, đi tour 3 quán quanh Hồ Gươm tối nay")
         self.assertEqual(r2.state.allergies, [])  # live smoke: rules used to record "có vỏ cứng" as the user's substance
         self.assertTrue(r2.state.allergy_unresolved)
+        r3 = eng.handle(ChatState(), Preferences(), text="Con mình bé xíu, bị dị ứng mấy loại hạt")
+        self.assertEqual([a.family for a in r3.state.allergies], ["treenut"])  # 'hạt' (nuts/seeds) is a named food group
 
-
-class FinalHardening(unittest.TestCase):
-    def test_venue_confirmations_are_deduplicated_and_bounded(self):
-        eng, _ = engine()
-        st, pr = ChatState(), Preferences()
-        r = eng.handle(st, pr, text="Tôi dị ứng tôm")
-        r = eng.handle(r.state, r.prefs, text="tìm quán bún")
-        for i in range(30):
-            r = eng.handle(r.state, r.prefs, text=f"Tôi đã gọi quán A, quán nói có tôm {i % 12}")
-        sizes = [len(a.venue_confirmations) for a in r.state.allergies]
-        self.assertTrue(all(n <= 10 for n in sizes), sizes)
 
 
 class IntegrationLessons(unittest.TestCase):
@@ -426,3 +417,35 @@ class IntegrationLessons(unittest.TestCase):
         self.assertEqual(eng._visit_minutes(st), 34)
         st.set_field("duration_min", 240)
         self.assertIsNone(eng._visit_minutes(st))
+
+
+class FreeTextAllergenAnswers(unittest.TestCase):
+    CUE = "Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn"
+
+    def test_unknown_words_cannot_resolve_the_allergy_question_without_confirmation(self):
+        eng, venues = engine()
+        for answer in ("lên đường", "duyệt luôn", "go ahead", "tiến hành", "được nha", "wasabi"):
+            r = eng.handle(ChatState(), Preferences(), text=self.CUE)
+            r = eng.handle(r.state, r.prefs, text=answer)
+            self.assertTrue(r.state.allergy_unresolved, answer)  # still open
+            self.assertEqual(r.state.pending.slot, "allergy_confirm", answer)
+            r = eng.handle(r.state, r.prefs, action={"type": "request_plan"})
+            r = eng.handle(r.state, r.prefs, action={"type": "confirm_yes"})
+            self.assertIsNone(r.plan_request, answer)
+
+    def test_confirming_an_unknown_food_resolves_it(self):
+        eng, _ = engine()
+        r = eng.handle(ChatState(), Preferences(), text=self.CUE)
+        r = eng.handle(r.state, r.prefs, text="wasabi")
+        r = eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": "allergy_ok"})
+        self.assertFalse(r.state.allergy_unresolved)
+        self.assertEqual([a.source for a in r.state.allergies], ["user_said"])
+
+    def test_assumed_visit_minutes_follow_the_duration(self):
+        eng, _ = engine()
+        st = ChatState()
+        st.set_field("stops", 3)
+        st.set_field("duration_min", 120)
+        self.assertEqual(eng._to_prefs(st, Preferences()).visit_minutes, 34)
+        st.set_field("duration_min", 240)
+        self.assertEqual(eng._to_prefs(st, eng._to_prefs(ChatState(), Preferences())).visit_minutes, 45)

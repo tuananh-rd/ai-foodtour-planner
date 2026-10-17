@@ -208,8 +208,8 @@ class ChatEngine:
         if st.profile["stops"].known():
             kw["max_stops"] = st.profile["stops"].value
         vm = self._visit_minutes(st)
-        if self.guided and vm and p.visit_minutes == 45:
-            kw["visit_minutes"] = vm  # "3 quán trong 120 phút" cannot hold 3 x 45 minutes: shorten the assumed time per stop (shown to the user)
+        if self.guided and st.profile["stops"].known() and st.profile["duration_min"].known():
+            kw["visit_minutes"] = vm or 45  # "3 quán trong 120 phút" cannot hold 3 x 45 minutes: shorten the assumed time per stop (shown to the user)
         if st.profile["day_part"].known():
             if p.meal is None:
                 kw["meal"] = coverage.MEAL_OF.get(st.profile["day_part"].value)
@@ -1012,9 +1012,12 @@ class ChatEngine:
                 R.tools.append("nudge")
                 return True
             st.pending = None
-            st.allergy_unresolved = False
+            known_food = bool(allergens.family_of(term))
+            if known_food:
+                st.allergy_unresolved = False
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
-                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said"))
+                # a food outside the lexicon is stored unverified and must be confirmed ("lên đường" is not an allergen); the obligation stays open until then
+                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said" if known_food else "ai_unconfirmed"))
             R.blocks.append(notice_b("safety", "allergy_unknown", f"Đã ghi nhận dị ứng: {term}. {SAFETY_LINE}"))
             if st.last_results:
                 st.results_stale = True
