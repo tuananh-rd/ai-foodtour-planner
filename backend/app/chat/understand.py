@@ -132,6 +132,10 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     # numbers (party size, budget, duration) via the existing rule extractor, with the time phrases removed first
     stripped = re.sub(r"(?:tu|luc|bat dau|xuat phat|di luc|ket thuc|xong|ve)?\s*(?:truoc\s*)?\d{1,2}\s*(?:gio|h)\s*\d{0,2}"
                       r"(?:\s*(?:den|toi|-)\s*\d{1,2}\s*(?:gio|h)\s*\d{0,2})?", " ", f)
+    # a per-leg time ("không đi bộ quá 10 phút mỗi chặng") is not the tour length: remove it before the duration is read
+    stripped = re.sub(r"khong\s+(?:muon\s+)?(?:di bo\s+)?(?:qua|hon)\s+\d{1,2}\s*phut(?:\s+(?:moi|1)\s+(?:chang|quan))?"
+                      r"|\d{1,2}\s*phut\s+(?:giua|moi)\s+(?:cac\s+)?(?:quan|chang)"
+                      r"|(?:moi|giua)\s+(?:chang|cac quan)[^,.]{0,12}\d{1,2}\s*phut", " ", stripped)
     rx = MockExtractor().extract(stripped if stripped.strip() else "", Preferences())
     p = rx.preferences
     if "party_size" in rx.updated_fields:

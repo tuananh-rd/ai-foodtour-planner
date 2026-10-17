@@ -20,6 +20,7 @@ _TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang)\b
 _STOPS = re.compile(r"\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b")
 _LIKE = re.compile(r"(?:\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bthich\b|\bmuon an\b)\s+(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|$)",
                    re.IGNORECASE)
+_NEGATED = re.compile(r"(?:không|khong|ko|chẳng|chang|chả|chưa|chua|đừng|dung)\s*(?:\w+\s+)?$", re.IGNORECASE)
 _SPLIT = re.compile(r"\s*(?:,|;|\bvà\b|\bva\b|\bvới\b|\bvoi\b|\bhoặc\b|\bhoac\b|\bhay là\b|/)\s*")
 _ITEM_STOP = {"ăn", "an", "các", "cac", "món", "mon", "đồ", "do", "những", "nhung", "mấy", "may", "loại", "loai", "một", "mot", "ít", "it",
               "nhiều", "nhieu", "là", "la", "thế", "the", "cái", "cai", "kiểu", "kieu"}
@@ -69,6 +70,8 @@ def extras(text: str, f: str) -> dict:
         out["day_part"] = dp
     items = []
     for m in _LIKE.finditer(text):
+        if _NEGATED.search(text[:m.start()]):
+            continue  # "không thích bún" is an aversion, never an interest
         if re.match(r"\s*(?:tour|lịch trình|hành trình|\d)", m.group(1), re.IGNORECASE):
             continue  # "muốn ăn tour 3 quán …" states a goal, not a dish
         items += [i for i in _items(m.group(1)) if i.casefold() not in {x.casefold() for x in items}]
@@ -105,7 +108,7 @@ def audit(text: str, f: str, patch: dict, *, allergy_terms: Iterable[str] = (), 
         add("stops", "stops" in patch or "_stops_rejected" in patch)
     if _day_part(text, f):
         add("day_part", "day_part" in patch)
-    if any(not re.match(r"\s*(?:tour|lịch trình|hành trình|\d)", m.group(1), re.IGNORECASE) for m in _LIKE.finditer(text)):
+    if any(not _NEGATED.search(text[:m.start()]) and not re.match(r"\s*(?:tour|lịch trình|hành trình|\d)", m.group(1), re.IGNORECASE) for m in _LIKE.finditer(text)):
         add("dish", "interests" in patch)
     return sig
 

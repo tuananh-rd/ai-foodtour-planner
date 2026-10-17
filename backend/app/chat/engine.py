@@ -182,7 +182,8 @@ class ChatEngine:
         if st.profile["stops"].known():
             kw["max_stops"] = st.profile["stops"].value
         if st.profile["day_part"].known():
-            kw["meal"] = coverage.MEAL_OF.get(st.profile["day_part"].value)
+            if p.meal is None:
+                kw["meal"] = coverage.MEAL_OF.get(st.profile["day_part"].value)
         kw["allergies"] = tuple(a_.term for a_ in st.allergies)
         return replace(p, **kw)
 
@@ -383,6 +384,11 @@ class ChatEngine:
         st = R.state
         if st.pending is not None or R.plan_request:
             return False
+        if st.allergy_unresolved:
+            self._set_pending(st, "clarify_slot", [{"option_id": "allergy:" + k, "label": LABEL_OF[k]} for k in LABEL_OF], "allergy_term", {})
+            R.blocks.append(self._clarify_block(st, "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."))
+            R.tools.append("clarify")
+            return True
         if any(a.source == "ai_unconfirmed" for a in st.allergies):
             terms = [a.term for a in st.allergies if a.source == "ai_unconfirmed"]
             self._set_pending(st, "clarify_slot", [{"option_id": "allergy_ok", "label": "Đúng, mình dị ứng"}, {"option_id": "allergy_no", "label": "Không phải"}],
@@ -649,6 +655,7 @@ class ChatEngine:
     # ================================================================== intents
     def _do_greet_or_smalltalk(self, R, u):
         if u.patch.get("no_allergy"):
+            R.state.allergy_unresolved = False
             R.blocks.append(text_b("Ok, mình không ghi nhận dị ứng nào. Nếu sau này có, bạn cứ nói để mình lưu ý."))
         else:
             R.blocks.append(text_b("Chào bạn! Mình giúp bạn khám phá món ngon ở Hà Nội, so sánh quán rồi mới ghép thành food tour. "
@@ -684,6 +691,7 @@ class ChatEngine:
             st.allergies = [a for a in st.allergies if fold_uncached(a.term) != fold_uncached(term)]
             R.blocks.append(text_b(f"Đã bỏ \"{term}\" khỏi danh sách dị ứng. Bạn có thể thêm lại bất cứ lúc nào."))
         if added:
+            st.allergy_unresolved = False
             R.blocks.append(notice_b("safety", "allergy_unknown", f"Đã ghi nhận dị ứng: {', '.join(added)}. {SAFETY_LINE}"))
             odd = allergens.unrecognised(tuple(added))
             if odd:
@@ -708,6 +716,8 @@ class ChatEngine:
                    "example": "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì.",
                    "long": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc)."}.get(
                 sp.issues[0], ("Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó." if added else "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."))
+            if self.guided and not added:
+                st.allergy_unresolved = True
             if self.guided and not added and st.pending is None:
                 self._set_pending(st, "clarify_slot", [{"option_id": "allergy:" + k, "label": LABEL_OF[k]} for k in LABEL_OF], "allergy_term", {})
                 R.blocks.append(self._clarify_block(st, msg))
@@ -897,6 +907,7 @@ class ChatEngine:
                 R.tools.append("nudge")
                 return True
             st.pending = None
+            st.allergy_unresolved = False
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
                 st.allergies.append(Allergy(term, allergens.family_of(term), "user_said"))
             R.blocks.append(notice_b("safety", "allergy_unknown", f"Đã ghi nhận dị ứng: {term}. {SAFETY_LINE}"))
@@ -1184,7 +1195,7 @@ class ChatEngine:
 
     def _do_confirm_yes(self, R, u):
         st = R.state
-        if st.pending and st.pending.kind == "confirm_plan" and self.guided and any(a.source == "ai_unconfirmed" for a in st.allergies):
+        if st.pending and st.pending.kind == "confirm_plan" and self._open_obligation(st):
             st.pending = None
             self._guided_continue(R)
             return
@@ -1268,8 +1279,20 @@ class ChatEngine:
             return
         self._present_summary(R)
 
+    def _open_obligation(self, st) -> bool:
+        """Safety/scope questions that must be answered before any plan, whatever pending replaced them (contract v1.9 rule 1)."""
+        if not self.guided:
+            return False
+        b = st.profile["budget"]
+        return bool(st.allergy_unresolved or any(a.source == "ai_unconfirmed" for a in st.allergies)
+                    or (b.known() and not b.scope and (st.profile["party_size"].value or 2) >= 2))
+
     def _present_summary(self, R):
         st = R.state
+        if self._open_obligation(st):
+            st.pending = None
+            if self._guided_continue(R):
+                return
 
         def status(f):
             """Contract v1.8 summary status: user | inferred | default | missing."""

@@ -99,6 +99,7 @@ class ChatState:
     asked: list = field(default_factory=list)  # [{"slot","turn"}] slot questions already asked (no repeats)
     llm_used: int = 0  # Gemini calls consumed by this session (per-session cap)
     tour_stale: bool = False
+    allergy_unresolved: bool = False  # an allergy cue was heard but no substance yet: planning stays blocked until resolved
     goal: Optional[str] = None  # "tour" while the guided flow is collecting what a one-shot tour request still needs
 
     def to_json(self, private: bool = False) -> dict:
@@ -113,7 +114,7 @@ class ChatState:
         }
         if private:
             out.update({"results_stale": self.results_stale, "turns": list(self.turns), "asked": list(self.asked),
-                        "llm_used": self.llm_used, "tour_stale": self.tour_stale, "goal": self.goal})
+                        "llm_used": self.llm_used, "tour_stale": self.tour_stale, "goal": self.goal, "allergy_unresolved": self.allergy_unresolved})
         return out
 
     @classmethod
@@ -135,6 +136,7 @@ class ChatState:
         st.llm_used = int(d.get("llm_used", 0))
         st.tour_stale = bool(d.get("tour_stale", False))
         st.goal = d.get("goal")
+        st.allergy_unresolved = bool(d.get("allergy_unresolved", False))
         return st
 
     # -- helpers used by the engine -------------------------------------------------
