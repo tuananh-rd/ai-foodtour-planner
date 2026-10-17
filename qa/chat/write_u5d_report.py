@@ -100,7 +100,8 @@ out.append('Postmerge mutation totals: **21 killed, 1 survived, 0 errors** acros
 out.append('```json\n'+json.dumps(late['visit_update'],ensure_ascii=False,indent=2)+'\n```')
 gate=R/'qa/chat/u5d_postmerge_backend_gate.txt'
 if gate.exists():
-    log=gate.read_text(encoding='utf8',errors='replace'); lines=log.splitlines()
+    blob=gate.read_bytes()
+    log=blob.decode('utf16' if blob.startswith((b'\xff\xfe',b'\xfe\xff')) else 'utf8',errors='replace'); lines=log.splitlines()
     receipt_lines=[line for line in lines if line.startswith(('Ran ','FAILED (','OK','FAIL:','ERROR:'))]
     out.append('\nFinal postmerge gate, canonical command from repository root:\n```text\n'+'\n'.join(receipt_lines)+'\n```\nFull log: `qa/chat/u5d_postmerge_backend_gate.txt`. The one skip remains the pre-existing unconfigured private CSV check. New confirmed regressions are neither skipped nor xfailed.')
 text='\n'.join(out).replace('First-run results pending.','')

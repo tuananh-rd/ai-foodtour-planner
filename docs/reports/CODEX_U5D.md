@@ -72,6 +72,7 @@ Verbatim first-run numbers:
 
 
 
+
 ## Verdict
 
 **REQUEST-CHANGES.** Open blocker: unrelated absent-person declarations erase a present child's allergy and permit a plan. Other confirmed major findings permit plans with a missed, invented, or unresolved allergy. No production changes were made; reviewer/integrator is Claude. The evaluation task is complete even though the engine fails acceptance.
@@ -429,6 +430,15 @@ Postmerge mutation totals: **21 killed, 1 survived, 0 errors** across 22 mutants
 
 Final postmerge gate, canonical command from repository root:
 ```text
-
+FAIL: test_absent_colleague_cannot_clear_present_child 
+FAIL: test_absent_grandparents_cannot_drop_present_child_sentence 
+FAIL: test_command_answer_cannot_resolve_unknown_allergy 
+FAIL: test_hypothetical_first_clause_not_invented 
+FAIL: test_southern_hen_not_mussel (tests.chat.test_u5d_review.ConfirmedFindings.test_southern_hen_not_mussel)
+FAIL: test_uncertain_cashew_or_milk_held 
+FAIL: test_unnamed_extra_cannot_be_concrete_allergy 
+FAIL: test_unnamed_food_cannot_be_concrete_allergy 
+Ran 555 tests in 105.485s
+FAILED (failures=8, skipped=1)
 ```
 Full log: `qa/chat/u5d_postmerge_backend_gate.txt`. The one skip remains the pre-existing unconfigured private CSV check. New confirmed regressions are neither skipped nor xfailed.
