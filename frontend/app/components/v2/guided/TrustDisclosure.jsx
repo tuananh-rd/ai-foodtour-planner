@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 /**
  * TrustDisclosure
@@ -97,11 +98,11 @@ export default function TrustDisclosure({ turn, health }) {
 
   // Translate understanding parser mode
   const understandingMode = turn?.understanding === 'llm'
-    ? 'Trợ lý ngôn ngữ nâng cao'
-    : 'Quy tắc ngữ nghĩa trực tiếp';
+    ? 'Có hỗ trợ của Gemini trong lượt này'
+    : 'Đọc yêu cầu theo quy tắc tại máy';
 
   // Translate llm_budget status
-  let budgetStatus = 'Đang dùng gói thường';
+  let budgetStatus = 'Có thể nhờ AI khi cần và còn lượt';
   const remaining = turn?.llm_budget?.daily_remaining_public;
   if (remaining === 'exhausted') {
     budgetStatus = 'Đang đọc theo cách đơn giản';
@@ -147,7 +148,7 @@ export default function TrustDisclosure({ turn, health }) {
       </div>
 
       {/* Calm Modal / Drawer with accessible focus management (Q07) */}
-      {isOpen && (
+      {isOpen && createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -221,13 +222,13 @@ export default function TrustDisclosure({ turn, health }) {
                 <b>Trạng thái xử lý:</b> {budgetStatus}
               </div>
               <div>
-                <b>Trí tuệ nhân tạo (AI):</b> Khi cần hiểu các yêu cầu phức tạp, văn bản yêu cầu của bạn có thể được gửi ẩn danh đến mô hình Google Gemini để nhận diện các tiêu chí tour (khu vực, thời gian, khẩu vị). Không liên kết danh tính người dùng.
+                <b>Trí tuệ nhân tạo (AI):</b> Khi Gemini được cấu hình và còn lượt, văn bản bạn nhập cùng các tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu. Chế độ quy tắc tại máy không gửi yêu cầu đến AI bên ngoài.
               </div>
               <div>
-                <b>Lưu trữ phiên:</b> Lịch sử đối thoại và các tiêu chí đã chọn chỉ được lưu tạm thời theo phiên làm việc ẩn danh để phục vụ xếp lịch trình, không lưu trữ lịch sử cá nhân lâu dài và có thể đặt lại bất cứ lúc nào qua nút &quot;Làm lại&quot;.
+                <b>Lưu trữ phiên:</b> Ứng dụng giữ các lượt trò chuyện gần nhất và tiêu chí trong phiên để khôi phục khi tải lại; phiên mặc định hết hạn sau một giờ. &quot;Làm lại&quot; mở phiên mới, không phải cam kết xóa ngay phiên cũ trên máy chủ.
               </div>
               <div>
-                <b>Nguồn dữ liệu:</b> {health?.dataset ? `Dữ liệu ẩm thực (${health.dataset})` : 'Dữ liệu địa điểm ẩm thực Hà Nội (thử nghiệm cục bộ)'}
+                <b>Nguồn dữ liệu:</b> {health?.dataset_source === 'synthetic' ? 'Dữ liệu tổng hợp (synthetic), chỉ để kiểm thử' : health?.dataset_source === 'private' ? 'Dữ liệu địa điểm thử nghiệm cục bộ, chưa có quyền công bố' : 'Chưa rõ nguồn dữ liệu'}
               </div>
               <div>
                 <b>Giờ mở cửa & giá:</b> Theo nguồn ghi nhận ban đầu, chưa qua kiểm chứng thực tế tại quán
@@ -270,7 +271,7 @@ export default function TrustDisclosure({ turn, health }) {
               </button>
             </div>
           </div>
-        </div>
+        </div>, document.body
       )}
     </div>
   );

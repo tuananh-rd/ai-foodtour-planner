@@ -130,7 +130,7 @@ export default function GuidedTimeline({
             lineHeight: 1.45
           }}
         >
-          ⚠️ <b>Lịch trình có điều kiện:</b> Một số thông tin về giờ mở cửa và giá theo người chưa được xác minh trực tiếp tại quán.
+          ⚠️ <b>Lịch trình có điều kiện:</b> Còn bằng chứng chưa được xác minh; hãy xem các thông tin cần kiểm tra bên dưới.
         </div>
       )}
 
@@ -180,16 +180,16 @@ export default function GuidedTimeline({
           const leg = stop.leg_from_previous;
           const priceMin = stop.price?.min_vnd ? `${Math.round(stop.price.min_vnd / 1000)}k` : null;
           const priceMax = stop.price?.max_vnd ? `${Math.round(stop.price.max_vnd / 1000)}k` : null;
-          const priceStr = priceMin && priceMax ? `${priceMin}–${priceMax}` : priceMax || 'theo nguồn';
+          const priceStr = priceMin && priceMax ? `${priceMin}–${priceMax}` : priceMax ? `tối đa tham khảo ${priceMax}` : 'chưa rõ khoảng giá';
 
           const dishStr = Array.isArray(stop.venue?.cuisine_styles) && stop.venue.cuisine_styles.length > 0
             ? stop.venue.cuisine_styles.join(' • ')
-            : 'Món ngon Hà Nội';
+            : 'Chưa có thông tin món cụ thể';
 
           // Q01: Preserve legitimate 0; do not turn null or 0 into 5!
           const legMinText = typeof leg?.minutes === 'number'
             ? (leg.minutes === 0 ? '0 phút' : `~${leg.minutes} phút (ước tính)`)
-            : 'chưa tính khoảng cách';
+            : 'chưa rõ thời gian chặng';
 
           // Q01: Preserve null arrive; do NOT fall back to '19:00'!
           const arriveDisplay = stop.arrive

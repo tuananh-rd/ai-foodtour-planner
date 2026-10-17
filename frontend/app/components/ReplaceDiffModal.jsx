@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 
 export default function ReplaceDiffModal({
   isOpen,
@@ -13,10 +14,12 @@ export default function ReplaceDiffModal({
 }) {
   const confirmBtnRef = useRef(null);
   const dialogRef = useRef(null);
+  const invokerRef = useRef(null);
 
   // Background inertness (NFE-04)
   useEffect(() => {
     if (!isOpen) return;
+    invokerRef.current = document.activeElement;
     const container = document.querySelector('[data-testid="guided-container"]') || document.querySelector('main');
     if (container) {
       container.setAttribute('aria-hidden', 'true');
@@ -85,7 +88,7 @@ export default function ReplaceDiffModal({
   // Restore focus to the invoking control when the dialog closes.
   useEffect(() => {
     if (!isOpen) return undefined;
-    const invoker = document.activeElement;
+    const invoker = invokerRef.current || document.activeElement;
     return () => {
       if (invoker && typeof invoker.focus === 'function' && document.contains(invoker)) {
         invoker.focus();
@@ -127,7 +130,7 @@ export default function ReplaceDiffModal({
   const newPriceDiff = resultDiff?.newStop?.price?.max_vnd || 0;
   const priceDiff = newPriceDiff - oldPriceDiff;
 
-  return (
+  return createPortal(
     <div
       ref={dialogRef}
       tabIndex={-1}
@@ -365,6 +368,6 @@ export default function ReplaceDiffModal({
           </div>
         )}
       </div>
-    </div>
+    </div>, document.body
   );
 }

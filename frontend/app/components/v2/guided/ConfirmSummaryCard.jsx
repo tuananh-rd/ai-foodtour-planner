@@ -6,12 +6,16 @@ export function formatWarningMessage(w) {
   if (!w) return '';
   if (typeof w === 'string') {
     const raw = w.trim();
+    const fields = { allergy_ingredients: 'Chưa xác minh thành phần để đánh giá dị ứng', hours: 'Chưa xác minh giờ mở cửa',
+      price_per_person: 'Chưa có giá theo người đã xác minh', route: 'Chưa có tuyến đường thực đã xác minh',
+      route_time: 'Chưa rõ thời gian di chuyển', budget: 'Chưa xác minh chi phí theo ngân sách' };
+    if (fields[raw]) return fields[raw];
     if (raw === 'conditional') return 'Lịch trình có điều kiện (cần đối chiếu thông tin thực tế).';
     if (raw === 'verified_feasible') return 'Đã xác minh đầy đủ tính khả thi.';
     if (raw === 'insufficient_evidence') return 'Thiếu bằng chứng xác thực hoạt động của quán.';
     if (raw === 'unknown_opening_hours' || raw === 'unknown_hours') return 'Chưa rõ giờ mở cửa chính xác của một số quán theo nguồn ghi.';
     if (raw === 'unknown_price' || raw === 'price_unknown') return 'Chưa có khoảng giá cụ thể của một số quán.';
-    return raw;
+    return /^[a-z_]+$/.test(raw) ? 'Còn thông tin cần kiểm chứng trước khi khởi hành.' : raw;
   }
   if (typeof w === 'object') {
     if (w.message) return w.message;
@@ -49,16 +53,20 @@ export default function ConfirmSummaryCard({
   onConfirmNo,
   busy = false
 }) {
-  const stops = profile?.stops?.value || summary?.shortlist?.length || 3;
-  const duration = profile?.duration_min?.value || 120;
+  const item = (...ids) => summary?.items?.find(entry => ids.includes(entry.id))?.value;
+  const stops = profile?.stops?.value ?? (summary?.shortlist?.length || summary?.venues?.length || item('stops') || null);
+  const duration = profile?.duration_min?.value ?? item('duration_min', 'duration');
+  const stopsText = stops == null ? 'chưa rõ số quán' : /quán/.test(String(stops)) ? stops : `${stops} quán`;
+  const durationText = duration == null ? 'chưa rõ thời lượng' : /phút/.test(String(duration)) ? duration : `${duration} phút`;
   const area = typeof profile?.area?.value === 'string'
     ? profile.area.value
-    : (profile?.area?.value?.label || summary?.items?.find((i) => i.id === 'area')?.value || 'quanh Hồ Gươm');
-  const party = profile?.party_size?.value || summary?.items?.find((i) => i.id === 'party_size' || i.id === 'party')?.value || 2;
-  const time = profile?.start_time?.value || summary?.items?.find((i) => i.id === 'start_time' || i.id === 'time')?.value || '19:00';
-  const budget = profile?.budget?.value
+    : (profile?.area?.value?.label || item('area') || 'chưa rõ khu vực');
+  const party = profile?.party_size?.value ?? item('party_size', 'party');
+  const partyText = party == null ? 'Chưa rõ số người' : /người/.test(String(party)) ? party : `${party} người`;
+  const time = profile?.start_time?.value || item('start_time', 'time') || 'chưa rõ giờ';
+  const budget = profile?.budget?.value !== null && profile?.budget?.value !== undefined
     ? `${Number(profile.budget.value).toLocaleString('vi-VN')} đ`
-    : (summary?.items?.find((i) => i.id === 'budget')?.value || '500.000 đ');
+    : (item('budget') || 'chưa đặt ngân sách');
 
   const budgetScopeItem = summary?.items?.find((i) => i.id === 'budget_scope');
   const scopeFromProfile = profile?.budget?.scope;
@@ -109,7 +117,7 @@ export default function ConfirmSummaryCard({
               color: 'var(--ink, #231f1a)'
             }}
           >
-            Lập tour {stops} quán, ~{duration} phút, {area}?
+            Lập tour {stopsText}, {durationText}, {area}?
           </h3>
           {statusLabel && (
             <span
@@ -137,7 +145,7 @@ export default function ConfirmSummaryCard({
             lineHeight: 1.45
           }}
         >
-          {party} người • từ {time} • tối đa {cleanBudget} {scopeText}
+          {partyText} • từ {time} • mức bạn muốn chi: {cleanBudget} ({scopeText})
           {summary?.notes ? ` • ${summary.notes}` : ''}
         </div>
 

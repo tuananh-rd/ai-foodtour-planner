@@ -91,6 +91,31 @@ function getClarifyQuestionText(slot, chatState = null, profile = null) {
   return 'Vui lòng cho biết thêm thông tin về yêu cầu của bạn:';
 }
 
+// One reconstruction path for reload and every revision-conflict recovery.
+function sessionBlocks(session) {
+  const chat = session.chat;
+  if (!chat?.turn_count && !chat?.pending && !session.tour && !chat?.allergies?.length &&
+      !Object.values(chat?.profile || {}).some(field => field?.value !== null && field?.value !== undefined)) return [];
+  const blocks = [];
+  if (chat?.profile) blocks.push({ type: 'understood', items: profileToUnderstoodItems(chat.profile), allergies: chat.allergies || [] });
+  const pending = chat?.pending;
+  if (pending) {
+    if ((pending.kind === 'confirm_plan' || pending.slot === 'propose') && chat.last_results?.length) {
+      blocks.push({ type: 'venue_cards', cards: chat.last_results });
+    }
+    if (pending.kind === 'confirm_plan') {
+      blocks.push(pending.summary || { type: 'confirm_summary', items: profileToUnderstoodItems(chat.profile),
+        shortlist: chat.shortlist || [], missing: [], warnings: ['Phiên cũ chưa lưu đầy đủ bản xác nhận; hãy kiểm tra lại các tiêu chí và bằng chứng.'] });
+    } else {
+      blocks.push({ type: 'clarify', pending_id: pending.pending_id,
+        question: pending.question || pending.prompt || (pending.slot === 'propose' ? 'Bạn muốn dùng những quán này cho tour không?' : getClarifyQuestionText(pending.slot, chat)),
+        options: pending.options || [], slot: pending.slot, free_text: true });
+    }
+  }
+  if (session.tour) blocks.push({ type: 'tour_ready', revision: session.revision });
+  return blocks;
+}
+
 /**
  * GuidedLayout - NgonNgon Tour redesign matching SVG reference (1440x1024)
  * Two-column desktop shell (Chat left, Tour right) with 390px responsive adaptation.
@@ -127,7 +152,7 @@ export default function GuidedLayout({
   const [lockedVenueIds, setLockedVenueIds] = useState([]);
 
   // Responsive layout state (desktop >= 1024px vs mobile)
-  const [isDesktop, setIsDesktop] = useState(true);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('chat'); // 'chat' | 'tour'
 
   const inputRef = useRef(null);
@@ -137,12 +162,25 @@ export default function GuidedLayout({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(typeof window !== 'undefined' && window.innerWidth >= 1024);
+      setIsDesktop(document.documentElement.clientWidth >= 1200);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  function restoreOwnedSnapshot(session, keepUsers = false) {
+    setRevision(session.revision ?? 0);
+    setChatState(session.chat || null);
+    setTour(session.tour || null);
+    setLockedVenueIds(session.tour?.locks || []);
+    setLatestTurnMeta(null);
+    const blocks = sessionBlocks(session);
+    setMessages(previous => blocks.length ? [
+      ...(keepUsers ? previous.filter(message => message.role === 'user') : []),
+      { role: 'assistant', reply: { blocks }, chat: session.chat, tour: session.tour, timestamp: Date.now() }
+    ] : []);
+  }
 
   // Synchronize prop changes from page.js
   useEffect(() => {
@@ -184,93 +222,7 @@ export default function GuidedLayout({
               sessionStorage.setItem('foodtour_chat_session_id', activeId);
               if (activeToken) sessionStorage.setItem('foodtour_chat_session_token', activeToken);
             }
-            if (s.chat) setChatState(s.chat);
-            if (s.tour) setTour(s.tour);
-
-            // Reconstruct stream messages only if session has active dialogue
-            const hasActiveDialogue = Boolean(
-              (s.chat?.turn_count && s.chat.turn_count > 0) ||
-              s.chat?.pending ||
-              s.tour ||
-              (s.chat?.allergies && s.chat.allergies.length > 0) ||
-              Object.values(s.chat?.profile || {}).some((v) => v?.value !== null && v?.value !== undefined)
-            );
-
-            if (hasActiveDialogue) {
-              const restoredAssistantBlocks = [];
-              if (s.chat?.profile) {
-                const items = profileToUnderstoodItems(s.chat.profile);
-                const allergies = s.chat.allergies || [];
-                restoredAssistantBlocks.push({
-                  type: 'understood',
-                  items,
-                  allergies
-                });
-              }
-              if (s.chat?.pending) {
-                if (s.chat.pending.kind === 'confirm_plan') {
-                  if (s.chat.last_results && s.chat.last_results.length > 0) {
-                    restoredAssistantBlocks.push({
-                      type: 'venue_cards',
-                      cards: s.chat.last_results
-                    });
-                  }
-                  if (s.chat.pending.summary) {
-                    restoredAssistantBlocks.push(s.chat.pending.summary);
-                  } else {
-                    restoredAssistantBlocks.push({
-                      type: 'confirm_summary',
-                      items: profileToUnderstoodItems(s.chat.profile),
-                      shortlist: s.chat.shortlist || [],
-                      missing: [],
-                      warnings: []
-                    });
-                  }
-                } else if (s.chat.pending.slot === 'propose') {
-                  if (s.chat.last_results && s.chat.last_results.length > 0) {
-                    restoredAssistantBlocks.push({
-                      type: 'venue_cards',
-                      cards: s.chat.last_results
-                    });
-                  }
-                  restoredAssistantBlocks.push({
-                    type: 'clarify',
-                    question: 'Bạn muốn dùng những quán này cho tour không?',
-                    options: s.chat.pending.options || [
-                      { option_id: 'propose:use', label: 'Dùng những quán này' },
-                      { option_id: 'propose:self', label: 'Mình tự chọn' }
-                    ],
-                    slot: 'propose',
-                    free_text: true
-                  });
-                } else {
-                  restoredAssistantBlocks.push({
-                    type: 'clarify',
-                    question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot, s.chat),
-                    options: s.chat.pending.options || [],
-                    slot: s.chat.pending.slot,
-                    free_text: true
-                  });
-                }
-              }
-              if (s.tour) {
-                restoredAssistantBlocks.push({
-                  type: 'tour_ready',
-                  revision: s.revision
-                });
-              }
-              if (restoredAssistantBlocks.length > 0) {
-                setMessages([
-                  {
-                    role: 'assistant',
-                    reply: { blocks: restoredAssistantBlocks },
-                    chat: s.chat,
-                    tour: s.tour,
-                    timestamp: Date.now()
-                  }
-                ]);
-              }
-            }
+            restoreOwnedSnapshot(s);
           }
           setBusy(false);
         })
@@ -413,85 +365,11 @@ export default function GuidedLayout({
         try {
           const s = await getSession(activeSessionId, activeToken);
           if (s) {
-            setRevision(s.revision || 0);
-            if (s.chat) setChatState(s.chat);
-            if (s.tour) setTour(s.tour);
-
-            // Sync stream with refreshed session
-            const restoredBlocks = [];
-            if (s.chat?.profile) {
-              restoredBlocks.push({
-                type: 'understood',
-                items: profileToUnderstoodItems(s.chat.profile),
-                allergies: s.chat.allergies || []
-              });
-            }
-            if (s.chat?.pending) {
-              if (s.chat.pending.kind === 'confirm_plan') {
-                if (s.chat.last_results && s.chat.last_results.length > 0) {
-                  restoredBlocks.push({
-                    type: 'venue_cards',
-                    cards: s.chat.last_results
-                  });
-                }
-                if (s.chat.pending.summary) {
-                  restoredBlocks.push(s.chat.pending.summary);
-                } else {
-                  restoredBlocks.push({
-                    type: 'confirm_summary',
-                    items: profileToUnderstoodItems(s.chat.profile),
-                    shortlist: s.chat.shortlist || [],
-                    missing: [],
-                    warnings: []
-                  });
-                }
-              } else if (s.chat.pending.slot === 'propose') {
-                if (s.chat.last_results && s.chat.last_results.length > 0) {
-                  restoredBlocks.push({
-                    type: 'venue_cards',
-                    cards: s.chat.last_results
-                  });
-                }
-                restoredBlocks.push({
-                  type: 'clarify',
-                  question: 'Bạn muốn dùng những quán này cho tour không?',
-                  options: s.chat.pending.options || [
-                    { option_id: 'propose:use', label: 'Dùng những quán này' },
-                    { option_id: 'propose:self', label: 'Mình tự chọn' }
-                  ],
-                  slot: 'propose',
-                  free_text: true
-                });
-              } else {
-                restoredBlocks.push({
-                  type: 'clarify',
-                  question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot, s.chat),
-                  options: s.chat.pending.options || [],
-                  slot: s.chat.pending.slot,
-                  free_text: true
-                });
-              }
-            }
-            if (s.tour) {
-              restoredBlocks.push({
-                type: 'tour_ready',
-                revision: s.revision
-              });
-            }
-            if (restoredBlocks.length > 0) {
-              setMessages((prev) => [
-                ...prev.filter((m) => m.role === 'user'),
-                {
-                  role: 'assistant',
-                  reply: { blocks: restoredBlocks },
-                  chat: s.chat,
-                  tour: s.tour,
-                  timestamp: Date.now()
-                }
-              ]);
-            }
+            restoreOwnedSnapshot(s, true);
+            setLastFailedTurn(null);
+            setErrorMessage('Đã đồng bộ phiên mới nhất. Hãy kiểm tra câu hỏi và tiêu chí hiện tại trước khi tiếp tục.');
           }
-        } catch (_) {}
+        } catch (_) { setErrorMessage('Chưa tải được phiên mới nhất. Bạn vui lòng tải lại trước khi tiếp tục.'); }
       } else if (err?.status === 422) {
         setErrorMessage('Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.');
       } else if (err?.status >= 500) {
@@ -593,33 +471,28 @@ export default function GuidedLayout({
     try {
       const res = await replaceTourStop(sessionId, revision, oldStop.venue_id, sessionToken);
       if (res) {
-        if (res.revision !== undefined) setRevision(res.revision);
-        if (res.tour) setTour(res.tour);
-        if (res.chat) setChatState(res.chat);
+        restoreOwnedSnapshot(res, true);
         const newStop = res.tour?.stops?.find((s) => s.order === oldStop.order) || null;
         setReplaceResultDiff({ oldStop, newStop });
-        const otherStops = (res.tour?.stops || []).filter((s) => s.venue_id !== newStop?.venue_id);
-        setLockedVenueIds(otherStops.map((s) => s.venue_id));
       }
     } catch (err) {
-      const errCode = err?.code || err?.data?.code || (err?.data?.detail?.code) || '';
-      const errMsg = err?.message || err?.data?.message || err?.data?.detail?.message || '';
-      if (errCode === 'revision_conflict' || (err?.status === 409 && (errCode === 'revision_conflict' || String(errMsg).includes('thay đổi') || String(errMsg).includes('revision')))) {
-        setErrorMessage('Phiên làm việc đã có cập nhật mới hơn trên máy chủ. Đã cập nhật lại thông tin mới nhất.');
+      setIsReplaceModalOpen(false);
+      setReplaceTargetStop(null);
+      setReplaceResultDiff(null);
+      if (err?.code === 'revision_conflict' || err?.code === 'obligation_open') {
         try {
           const fresh = await getSession(sessionId, sessionToken);
-          if (fresh) {
-            if (fresh.revision !== undefined) setRevision(fresh.revision);
-            if (fresh.chat) setChatState(fresh.chat);
-            if (fresh.tour) setTour(fresh.tour);
-          }
-        } catch (_) {}
-      } else if (errCode === 'no_candidates' || (err?.status === 409 && (String(errMsg).includes('phương án') || String(errMsg).includes('điểm dừng') || String(errMsg).includes('thay thế')))) {
-        setErrorMessage(errMsg || 'Không có phương án thay thế thoả ràng buộc trong khu vực. Giữ nguyên tour hiện tại.');
-      } else if (errCode === 'obligation_open' || (err?.status === 409 && String(errMsg).includes('câu hỏi'))) {
-        setErrorMessage(errMsg || 'Còn câu hỏi về dị ứng hoặc ngân sách chưa được trả lời trong khung trò chuyện.');
+          restoreOwnedSnapshot(fresh, true);
+          setLastFailedTurn(null);
+          setActiveMobileTab('chat');
+          setErrorMessage('Đã đồng bộ phiên mới nhất. Hãy kiểm tra câu hỏi và tiêu chí hiện tại trước khi đổi quán.');
+        } catch (_) {
+          setErrorMessage('Chưa tải được phiên mới nhất. Bạn vui lòng tải lại trước khi đổi quán.');
+        }
+      } else if (err?.code === 'no_candidates') {
+        setErrorMessage('Không có quán thay thế thoả các ràng buộc. Lịch trình hiện tại được giữ nguyên.');
       } else {
-        setErrorMessage(errMsg || 'Không thể đổi quán lúc này. Bạn vui lòng thử lại.');
+        setErrorMessage('Không thể đổi quán lúc này. Lịch trình được giữ nguyên; bạn có thể thử lại.');
       }
     } finally {
       setBusy(false);
@@ -852,14 +725,16 @@ export default function GuidedLayout({
 
   // Derived metrics for Right Panel (NFE-01: honest nulls/zeros, no sample 1.8km/450k)
   const stops = tour?.stops || [];
-  const distanceKm = (tour?.totals?.distance_m !== null && tour?.totals?.distance_m !== undefined)
-    ? (Math.round(tour.totals.distance_m / 100) / 10).toLocaleString('vi-VN')
-    : null;
+  const knownLegs = stops.length > 0 && stops.every(stop =>
+    typeof stop.leg_from_previous?.km === 'number' && Number.isFinite(stop.leg_from_previous.km) &&
+    stop.leg_from_previous.km >= 0 && stop.leg_from_previous.source !== 'unknown');
+  const distanceKm = knownLegs ? stops.reduce((sum, stop) => sum + stop.leg_from_previous.km, 0)
+    .toLocaleString('vi-VN', { maximumFractionDigits: 1 }) : null;
   const budgetVal = chatState?.profile?.budget?.value;
   const budgetScope = chatState?.profile?.budget?.scope;
-  const budgetScopeLabel = budgetScope === 'group' ? 'cả nhóm' : 'mỗi người';
+  const budgetScopeLabel = budgetScope === 'group' ? 'cả nhóm' : budgetScope === 'per_person' ? 'mỗi người' : 'chưa rõ phạm vi';
   const budgetDisplay = (budgetVal !== null && budgetVal !== undefined && !isNaN(Number(budgetVal)))
-    ? `≈ ${Math.round(Number(budgetVal) / 1000)}K`
+    ? `${Number(budgetVal).toLocaleString('vi-VN')} đ`
     : null;
 
   return (
@@ -873,6 +748,8 @@ export default function GuidedLayout({
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
         display: 'flex',
         flexDirection: 'column',
+        minWidth: 0,
+        overflowWrap: 'anywhere',
         boxSizing: 'border-box'
       }}
     >
@@ -899,13 +776,16 @@ export default function GuidedLayout({
       {/* 80px SVG-Inspired Header */}
       <header
         style={{
-          height: 80,
+          minHeight: 80,
+          height: isDesktop ? 80 : 'auto',
+          flexWrap: 'wrap',
+          gap: 12,
           backgroundColor: '#FFFFFF',
           borderBottom: '1px solid #DDE7E1',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 32px',
+          padding: isDesktop ? '0 32px' : '12px 16px',
           boxSizing: 'border-box',
           position: 'sticky',
           top: 0,
@@ -946,29 +826,30 @@ export default function GuidedLayout({
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: 8
+            gap: 8,
+            order: isDesktop ? 2 : 3,
+            width: isDesktop ? 'auto' : '100%'
           }}
           aria-label="Điều hướng chính"
         >
           <button
             type="button"
-            role="tab"
-            aria-selected={isDesktop || activeMobileTab === 'chat'}
-            aria-current={(isDesktop || activeMobileTab === 'chat') ? 'page' : undefined}
+            aria-pressed={activeMobileTab === 'chat'}
+            aria-controls="guided-chat-section"
             onClick={() => {
+              setActiveMobileTab('chat');
               if (isDesktop) {
-                chatSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-                inputRef.current?.focus();
-              } else {
-                setActiveMobileTab('chat');
+                chatSectionRef.current?.scrollIntoView({ block: 'start' });
+                chatSectionRef.current?.focus({ preventScroll: true });
               }
             }}
             style={{
               padding: '8px 20px',
               borderRadius: 20,
-              backgroundColor: (isDesktop || activeMobileTab === 'chat') ? '#166B52' : '#FFFFFF',
-              color: (isDesktop || activeMobileTab === 'chat') ? '#FFFFFF' : '#62736D',
-              border: (isDesktop || activeMobileTab === 'chat') ? 'none' : '1px solid #DDE7E1',
+              backgroundColor: activeMobileTab === 'chat' ? '#166B52' : '#FFFFFF',
+              color: activeMobileTab === 'chat' ? '#FFFFFF' : '#62736D',
+              border: '1px solid #DDE7E1',
+              flex: isDesktop ? 'none' : 1,
               fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
@@ -979,21 +860,21 @@ export default function GuidedLayout({
           </button>
           <button
             type="button"
-            role="tab"
-            aria-selected={!isDesktop && activeMobileTab === 'tour'}
-            aria-current={(!isDesktop && activeMobileTab === 'tour') ? 'page' : undefined}
+            aria-pressed={activeMobileTab === 'tour'}
+            aria-controls="guided-tour-section"
             onClick={() => {
+              setActiveMobileTab('tour');
               if (isDesktop) {
-                tourSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
-              } else {
-                setActiveMobileTab('tour');
+                tourSectionRef.current?.scrollIntoView({ block: 'start' });
+                tourSectionRef.current?.focus({ preventScroll: true });
               }
             }}
             style={{
               padding: '8px 20px',
               borderRadius: 20,
-              backgroundColor: (!isDesktop && activeMobileTab === 'tour') ? '#166B52' : '#FFFFFF',
-              color: (!isDesktop && activeMobileTab === 'tour') ? '#FFFFFF' : '#62736D',
+              backgroundColor: activeMobileTab === 'tour' ? '#166B52' : '#FFFFFF',
+              color: activeMobileTab === 'tour' ? '#FFFFFF' : '#62736D',
+              flex: isDesktop ? 'none' : 1,
               border: '1px solid #DDE7E1',
               fontSize: 14,
               fontWeight: 600,
@@ -1006,7 +887,7 @@ export default function GuidedLayout({
         </nav>
 
         {/* Right Anonymous Profile & Action */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, order: isDesktop ? 3 : 2 }}>
           <button
             type="button"
             data-testid="guided-reset-btn"
@@ -1031,7 +912,7 @@ export default function GuidedLayout({
             <span>Làm lại</span>
           </button>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 6 }}>
+          <div style={{ display: isDesktop ? 'flex' : 'none', alignItems: 'center', gap: 10, paddingLeft: 6 }}>
             <div
               style={{
                 width: 38,
@@ -1066,7 +947,7 @@ export default function GuidedLayout({
           padding: isDesktop ? '32px' : '16px',
           boxSizing: 'border-box',
           display: 'grid',
-          gridTemplateColumns: isDesktop ? '460px 1fr' : '1fr',
+          gridTemplateColumns: isDesktop ? '460px minmax(0, 1fr)' : 'minmax(0, 1fr)',
           gap: isDesktop ? 40 : 20,
           alignItems: 'start',
           flex: 1
@@ -1079,6 +960,7 @@ export default function GuidedLayout({
           tabIndex={-1}
           style={{
             display: (isDesktop || activeMobileTab === 'chat') ? 'flex' : 'none',
+            minWidth: 0,
             flexDirection: 'column',
             backgroundColor: '#FFFFFF',
             borderRadius: 24,
@@ -1221,7 +1103,7 @@ export default function GuidedLayout({
                   fontWeight: 600,
                   fontSize: 12,
                   cursor: 'pointer',
-                  minHeight: 40
+                  minHeight: 44
                 }}
               >
                 Thử lại
@@ -1489,7 +1371,7 @@ export default function GuidedLayout({
                 placeholder="Thêm yêu cầu cho chuyến đi…"
                 style={{
                   flex: 1,
-                  minHeight: 40,
+                  minHeight: 44,
                   border: 'none',
                   backgroundColor: 'transparent',
                   fontSize: 14,
@@ -1528,7 +1410,10 @@ export default function GuidedLayout({
 
             {/* Early AI Privacy Disclosure (Q05) */}
             <div style={{ fontSize: 11, color: '#62736D', lineHeight: 1.4, padding: '0 4px' }}>
-              🔒 Yêu cầu bằng ngôn ngữ tự nhiên được chuyển tới trợ lý AI để trích xuất tiêu chí tour. Không lưu thông tin cá nhân.
+              {health?.llm === 'gemini'
+                ? 'Khi cần và còn lượt, nội dung bạn nhập cùng tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu.'
+                : 'Yêu cầu đang được đọc theo quy tắc tại máy, không gửi đến AI bên ngoài trong chế độ này.'}
+              {' '}Ứng dụng giữ các lượt trò chuyện gần nhất trong phiên để khôi phục khi tải lại.
             </div>
 
             {/* Trust line */}
@@ -1540,9 +1425,11 @@ export default function GuidedLayout({
         <section
           ref={tourSectionRef}
           id="guided-tour-section"
+          data-focus-fallback
           tabIndex={-1}
           style={{
             display: (isDesktop || activeMobileTab === 'tour') ? 'flex' : 'none',
+            minWidth: 0,
             flexDirection: 'column',
             gap: 20
           }}
@@ -1575,7 +1462,7 @@ export default function GuidedLayout({
               </h1>
               <div style={{ fontSize: 13, color: '#62736D' }}>
                 {showTour
-                  ? `${stops[0]?.arrive ? `${stops[0].arrive}${stops[stops.length - 1]?.depart ? `–${stops[stops.length - 1].depart}` : ''}` : 'Thời gian linh hoạt'}${stops[0]?.district ? ` • ${stops[0].district}` : ''}`
+                  ? `${stops[0]?.arrive ? `${stops[0].arrive}${stops[stops.length - 1]?.depart ? `–${stops[stops.length - 1].depart}` : ''}` : 'Chưa rõ giờ đến'}${stops[0]?.district ? ` • ${stops[0].district}` : ''}`
                   : 'Chưa có lịch trình được tạo • Vui lòng chọn hoặc nhập yêu cầu ở cột bên trái'}
               </div>
             </div>
@@ -1586,7 +1473,7 @@ export default function GuidedLayout({
             style={{
               display: 'grid',
               gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: 16
+              gap: isDesktop ? 16 : 8
             }}
           >
             {/* Metric 1 */}
@@ -1595,12 +1482,12 @@ export default function GuidedLayout({
                 backgroundColor: '#F0F6F2',
                 border: '1px solid #DDE7E1',
                 borderRadius: 16,
-                padding: '16px 20px',
+                padding: isDesktop ? '16px 20px' : '12px 8px',
                 display: 'grid',
                 gap: 4
               }}
             >
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
+              <div style={{ fontSize: isDesktop ? 20 : 16, fontWeight: 800, color: '#17352B' }}>
                 {showTour ? `${stops.length} điểm` : '0 điểm'}
               </div>
               <div style={{ fontSize: 13, color: '#62736D' }}>
@@ -1614,16 +1501,16 @@ export default function GuidedLayout({
                 backgroundColor: '#FAF2EA',
                 border: '1px solid #E8E2D8',
                 borderRadius: 16,
-                padding: '16px 20px',
+                padding: isDesktop ? '16px 20px' : '12px 8px',
                 display: 'grid',
                 gap: 4
               }}
             >
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
-                {showTour ? (distanceKm ? `${distanceKm} km` : 'Chưa tính') : '0 km'}
+              <div style={{ fontSize: isDesktop ? 20 : 16, fontWeight: 800, color: '#17352B' }}>
+                {showTour ? (distanceKm !== null ? `${distanceKm} km` : 'Chưa rõ') : '—'}
               </div>
               <div style={{ fontSize: 13, color: '#62736D' }}>
-                Tổng di chuyển
+                {tour?.totals?.leg_source === 'provider_route' ? 'Quãng đường theo nguồn' : 'Khoảng cách ước tính'}
               </div>
             </div>
 
@@ -1633,16 +1520,16 @@ export default function GuidedLayout({
                 backgroundColor: '#FFFFFF',
                 border: '1px solid #DDE7E1',
                 borderRadius: 16,
-                padding: '16px 20px',
+                padding: isDesktop ? '16px 20px' : '12px 8px',
                 display: 'grid',
                 gap: 4
               }}
             >
-              <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
+              <div style={{ fontSize: isDesktop ? 20 : 16, fontWeight: 800, color: '#17352B' }}>
                 {showTour ? (budgetDisplay || 'Chưa đặt') : 'Theo ngân sách'}
               </div>
               <div style={{ fontSize: 13, color: '#62736D' }}>
-                {budgetScopeLabel ? `Ngân sách (${budgetScopeLabel})` : 'Ngân sách'}
+                {budgetVal !== null && budgetVal !== undefined ? `Mức muốn chi (${budgetScopeLabel})` : 'Ngân sách chưa đặt'}
               </div>
             </div>
           </div>
@@ -1751,7 +1638,7 @@ export default function GuidedLayout({
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <div style={{ fontSize: 16, fontWeight: 700, color: '#17352B' }}>
-                    Bản đồ tuyến
+                    Thứ tự điểm dừng
                   </div>
                   <span
                     style={{
