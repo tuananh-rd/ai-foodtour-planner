@@ -56,6 +56,13 @@ def text_b(t): return {"type": "text", "text": t}
 def notice_b(level, code, t): return {"type": "notice", "level": level, "code": code, "text": t}
 
 
+def open_obligation(st: ChatState) -> bool:
+    """Unresolved allergy / unconfirmed AI allergy / budget amount without scope: no plan may be created while this is true (every entry point)."""
+    b = st.profile["budget"]
+    return bool(st.allergy_unresolved or any(a.source == "ai_unconfirmed" for a in st.allergies)
+                or (b.known() and not b.scope and (st.profile["party_size"].value or 2) >= 2))
+
+
 class ChatEngine:
     def __init__(self, venues, gazetteer: Optional[Gazetteer] = None, guided: bool = False):
         self.guided = guided  # contract v1.9 behaviours (coverage audit, guided questions); off = v1.8 behaviour
@@ -1416,11 +1423,7 @@ class ChatEngine:
 
     def _open_obligation(self, st) -> bool:
         """Safety/scope questions that must be answered before any plan, whatever pending replaced them (contract v1.9 rule 1)."""
-        if not self.guided:
-            return False
-        b = st.profile["budget"]
-        return bool(st.allergy_unresolved or any(a.source == "ai_unconfirmed" for a in st.allergies)
-                    or (b.known() and not b.scope and (st.profile["party_size"].value or 2) >= 2))
+        return self.guided and open_obligation(st)
 
     def _present_summary(self, R):
         st = R.state
@@ -1462,9 +1465,11 @@ class ChatEngine:
             warnings.append({"code": "eta_estimate", "text": "Thời gian di chuyển chỉ là ước tính theo tốc độ trung bình, không phải thời gian thực của dịch vụ xe."})
         warnings.append({"code": "hours_unknown", "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."})
         short = [{"venue_id": s.venue_id, "name": tools.clean_text(self.by_id[s.venue_id].name, 80, "Quán (tên không hiển thị được)"), "status": s.status} for s in st.shortlist]
-        self._set_pending(st, "confirm_plan", [{"option_id": "confirm_yes", "label": "Xác nhận và tạo lịch trình"}, {"option_id": "confirm_no", "label": "Sửa thông tin"}], None, {})
+        block = {"type": "confirm_summary", "items": items, "shortlist": short, "missing": [], "warnings": warnings}
+        self._set_pending(st, "confirm_plan", [{"option_id": "confirm_yes", "label": "Xác nhận và tạo lịch trình"}, {"option_id": "confirm_no", "label": "Sửa thông tin"}], None,
+                          {"summary": block} if self.guided else {})
         R.blocks.append(text_b("Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."))
-        R.blocks.append({"type": "confirm_summary", "items": items, "shortlist": short, "missing": [], "warnings": warnings})
+        R.blocks.append(block)
 
     def _phase(self, st, plan_request):
         if plan_request:

@@ -80,6 +80,8 @@ class Pending:
         out = {"pending_id": self.pending_id, "kind": self.kind, "options": list(self.options)}
         if self.slot:
             out["slot"] = self.slot
+        if self.kind == "confirm_plan" and isinstance(self.context.get("summary"), dict):
+            out["summary"] = self.context["summary"]  # contract v1.9.3: the confirmation survives reload / revision recovery exactly as it was shown
         if not public:
             out["context"] = dict(self.context)
         return out

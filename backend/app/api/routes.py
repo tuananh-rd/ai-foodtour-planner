@@ -15,7 +15,7 @@ from app.api.schemas import (
     SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
     GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig, MapsLinksResponse,
 )
-from app.chat.engine import ChatEngine
+from app.chat.engine import ChatEngine, open_obligation
 from app.chat.llm_understand import LLMUnderstander
 from app.chat.planning import plan_selected, routing_for
 from app.chat.tools import clean_text
@@ -336,6 +336,8 @@ def tour(session_id: str, body: RevisionRequest, request: Request,
          x_session_token: str | None = Header(default=None)):
     with request.app.state.sessions.owned(session_id, x_session_token) as session:
         request.app.state.sessions.check_revision(session, body.base_revision)
+        if guided_enabled() and getattr(session, "chat", None) is not None and open_obligation(session.chat):
+            raise APIError(409, "obligation_open", "Còn câu hỏi về dị ứng hoặc ngân sách chưa được trả lời; hãy trả lời trong khung trò chuyện trước khi lập lịch trình.")
         data = snapshot(request)
         result = engine.plan_tour(data.venues, session.preferences, request.app.state.routing,
                                   quality_weight=request.app.state.quality_weight)

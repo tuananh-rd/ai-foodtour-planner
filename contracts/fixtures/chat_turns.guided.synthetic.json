@@ -858,7 +858,110 @@
           "option_id": "confirm_no",
           "label": "Sửa thông tin"
          }
-        ]
+        ],
+        "summary": {
+         "type": "confirm_summary",
+         "items": [
+          {
+           "id": "area",
+           "label": "Điểm xuất phát",
+           "value": "Hồ Gươm",
+           "status": "user",
+           "editable": true
+          },
+          {
+           "id": "start_time",
+           "label": "Bắt đầu",
+           "value": "19:00",
+           "status": "user",
+           "editable": true
+          },
+          {
+           "id": "end_time",
+           "label": "Kết thúc trước",
+           "value": null,
+           "status": "missing",
+           "editable": true
+          },
+          {
+           "id": "party_size",
+           "label": "Số người",
+           "value": "2 người",
+           "status": "user",
+           "editable": true
+          },
+          {
+           "id": "vehicle",
+           "label": "Phương tiện",
+           "value": "đi bộ",
+           "status": "default",
+           "editable": true
+          },
+          {
+           "id": "budget",
+           "label": "Ngân sách",
+           "value": "500.000 đ cả nhóm",
+           "status": "user",
+           "editable": true
+          },
+          {
+           "id": "tastes",
+           "label": "Khẩu vị",
+           "value": "phở, bún chả",
+           "status": "user",
+           "editable": true
+          },
+          {
+           "id": "allergies",
+           "label": "Dị ứng",
+           "value": "đậu phộng",
+           "status": "user",
+           "editable": true
+          },
+          {
+           "id": "max_leg_min",
+           "label": "Đi bộ tối đa mỗi chặng",
+           "value": null,
+           "status": "missing",
+           "editable": true
+          },
+          {
+           "id": "visit_min",
+           "label": "Thời gian mỗi quán (ước tính)",
+           "value": "khoảng 34 phút",
+           "status": "inferred",
+           "editable": false
+          }
+         ],
+         "shortlist": [
+          {
+           "venue_id": "CHT-004",
+           "name": "[SYNTHETIC] Phở Thử 4",
+           "status": "considering"
+          },
+          {
+           "venue_id": "CHT-011",
+           "name": "[SYNTHETIC] Chè Thử 11",
+           "status": "considering"
+          },
+          {
+           "venue_id": "CHT-012",
+           "name": "[SYNTHETIC] Chè Thử 12",
+           "status": "considering"
+          }
+         ],
+         "missing": [],
+         "warnings": [
+          {
+           "code": "allergy_unknown",
+           "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+          },
+          {
+           "code": "hours_unknown",
+           "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+          }
+         ]
+        }
        },
        "turn_count": 3
       },

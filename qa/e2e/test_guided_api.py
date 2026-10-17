@@ -131,6 +131,20 @@ def main():
         print("   allergies after chip:", v["chat"]["allergies"], "| reply:", types(r), (r["chat"]["pending"] or {}).get("slot"))
         check("allergy persisted for the session", any("phộng" in a["term"] for a in v["chat"]["allergies"]))
 
+        # the legacy REST tour route must obey the same obligations (Codex U5f F1)
+        L = Session(api)
+        L.chat(text=S0)
+        L.pick("scope:group")
+        L.chat(text="19h")
+        L.chat(text=CUE)
+        st, body = api.call("POST", f"/v1/sessions/{L.id}/tour", {"base_revision": L.rev}, L.token)
+        check("legacy POST /tour is refused while an allergy obligation is open (409 obligation_open)", st == 409 and (body.get("error") or {}).get("code", body.get("code")) in ("obligation_open", None) , f"{st} {str(body)[:120]}")
+        check("legacy /tour created nothing", L.view().get("tour") is None)
+        M = Session(api)
+        M.chat(text=S0); M.pick("scope:group"); M.chat(text="19h")
+        pend = M.view()["chat"]["pending"]
+        check("GET session returns the exact confirm summary in pending (reload fidelity)", pend["kind"] == "confirm_plan" and pend.get("summary", {}).get("type") == "confirm_summary" and len(pend["summary"].get("shortlist", [])) >= 1, str(pend)[:160])
+
         # hostile / bounds
         h = Session(api)
         st, body = api.call("POST", f"/v1/sessions/{h.id}/chat", {"text": "x" * 1001, "action": None, "revision": h.rev}, h.token)

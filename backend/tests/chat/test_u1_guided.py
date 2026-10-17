@@ -449,3 +449,24 @@ class FreeTextAllergenAnswers(unittest.TestCase):
         self.assertEqual(eng._to_prefs(st, Preferences()).visit_minutes, 34)
         st.set_field("duration_min", 240)
         self.assertEqual(eng._to_prefs(st, eng._to_prefs(ChatState(), Preferences())).visit_minutes, 45)
+
+
+class ConfirmationSurvivesReload(unittest.TestCase):
+    def test_pending_confirm_plan_carries_the_exact_summary_publicly(self):
+        eng, _ = engine()
+        r = eng.handle(ChatState(), Preferences(), text="Tôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn mỗi người cho 2 người. Tôi thích phở, dị ứng đậu phộng.")
+        r = eng.handle(r.state, r.prefs, text="19h")
+        pub = r.state.to_json()["pending"]
+        self.assertEqual(pub["kind"], "confirm_plan")
+        shown = [b for b in r.blocks if b["type"] == "confirm_summary"][0]
+        self.assertEqual(pub["summary"], shown)
+        self.assertIn("mỗi người", " ".join(str(i["value"]) for i in shown["items"] if i["id"] == "budget"))
+        again = ChatState.from_json(r.state.to_json(private=True)).to_json()["pending"]
+        self.assertEqual(again["summary"], shown)
+
+    def test_open_obligation_helper_is_shared(self):
+        from app.chat.engine import open_obligation
+        st = ChatState()
+        self.assertFalse(open_obligation(st))
+        st.allergy_unresolved = True
+        self.assertTrue(open_obligation(st))
