@@ -120,6 +120,56 @@ export default function ConfirmSummaryCard({
         >
           🚶 <b>Phương tiện:</b> {vehicleLabel}{isDefaultVehicle ? ' (mặc định)' : ''}
         </div>
+
+        {/* Budget distinction note (Q02) */}
+        <div
+          style={{
+            fontSize: 12,
+            color: 'var(--mute, #6b6257)',
+            marginTop: 4,
+            fontStyle: 'italic'
+          }}
+        >
+          💡 Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.
+        </div>
+
+        {/* Conditional / Warnings / Missing Info (Q02) */}
+        {((Array.isArray(summary?.warnings) && summary.warnings.length > 0) ||
+          (Array.isArray(summary?.missing) && summary.missing.length > 0) ||
+          (Array.isArray(summary?.route_warnings) && summary.route_warnings.length > 0) ||
+          summary?.status === 'conditional') && (
+          <div
+            data-testid="confirm-summary-warnings"
+            style={{
+              background: 'var(--warnbg, #fef3c7)',
+              border: '1px solid var(--warn, #92400e)',
+              borderRadius: 10,
+              padding: '10px 14px',
+              fontSize: 13,
+              color: 'var(--warn, #92400e)',
+              display: 'grid',
+              gap: 4,
+              marginTop: 8
+            }}
+          >
+            <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span>⚠️</span>
+              <span>Lưu ý & thông tin chưa xác minh (Gợi ý có điều kiện):</span>
+            </div>
+            <ul style={{ margin: 0, paddingLeft: 20 }}>
+              {[
+                ...(summary?.warnings || []),
+                ...(summary?.missing || []),
+                ...(summary?.route_warnings || [])
+              ].map((w, idx) => (
+                <li key={idx}>{typeof w === 'string' ? w : w.message || JSON.stringify(w)}</li>
+              ))}
+              {summary?.status === 'conditional' && (!summary?.warnings || summary.warnings.length === 0) && (
+                <li>Một số giờ mở cửa hoặc khoảng giá chưa được kiểm chứng thực tế tại quán.</li>
+              )}
+            </ul>
+          </div>
+        )}
       </div>
 
       {/* Button Group: Exactly ONE primary, ONE secondary */}

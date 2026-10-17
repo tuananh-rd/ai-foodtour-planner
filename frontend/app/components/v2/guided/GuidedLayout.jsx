@@ -6,10 +6,12 @@ import ClarifyQuestionCard from './ClarifyQuestionCard';
 import ConfirmSummaryCard from './ConfirmSummaryCard';
 import GuidedTimeline from './GuidedTimeline';
 import TrustDisclosure from './TrustDisclosure';
-import { chatTurn, createSession, getSession } from '../../../../lib/api';
+import ReplaceDiffModal from '../../ReplaceDiffModal';
+import { chatTurn, createSession, getSession, replaceTourStop } from '../../../../lib/api';
 
 /**
  * Helper to transform chat profile object into UnderstoodCard item rows.
+ * Preserves null and legitimate zero (Q01).
  */
 function profileToUnderstoodItems(profile = {}) {
   const items = [];
@@ -17,13 +19,13 @@ function profileToUnderstoodItems(profile = {}) {
     const areaVal = typeof profile.area.value === 'object' ? profile.area.value.label : profile.area.value;
     items.push({ id: 'area', label: 'Khu vực', value: areaVal, status: 'user', editable: true });
   }
-  if (profile.party_size?.value) {
+  if (profile.party_size?.value !== null && profile.party_size?.value !== undefined) {
     items.push({ id: 'party', label: 'Số người', value: String(profile.party_size.value), status: 'user', editable: true });
   }
-  if (profile.stops?.value) {
+  if (profile.stops?.value !== null && profile.stops?.value !== undefined) {
     items.push({ id: 'stops', label: 'Số quán', value: String(profile.stops.value), status: 'user', editable: true });
   }
-  if (profile.duration_min?.value) {
+  if (profile.duration_min?.value !== null && profile.duration_min?.value !== undefined) {
     items.push({ id: 'duration', label: 'Tổng thời gian', value: `${profile.duration_min.value} phút`, status: 'user', editable: true });
   }
   if (profile.stops?.value && profile.duration_min?.value) {
@@ -43,7 +45,7 @@ function profileToUnderstoodItems(profile = {}) {
   if (profile.start_time?.value) {
     items.push({ id: 'time', label: 'Bắt đầu lúc', value: profile.start_time.value, status: 'user', editable: true });
   }
-  if (profile.budget?.value) {
+  if (profile.budget?.value !== null && profile.budget?.value !== undefined) {
     const bScope = profile.budget.scope === 'group' ? 'cả nhóm' : profile.budget.scope === 'per_person' ? 'mỗi người' : 'chưa rõ phạm vi';
     items.push({ id: 'budget', label: 'Ngân sách', value: `${Number(profile.budget.value).toLocaleString('vi-VN')} đ (${bScope})`, status: 'user', editable: true });
   }
@@ -53,8 +55,18 @@ function profileToUnderstoodItems(profile = {}) {
   return items;
 }
 
-function getClarifyQuestionText(slot) {
-  if (slot === 'budget_scope') return '500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?';
+/**
+ * Restore question text dynamically from state (Q04).
+ * Never hardcodes 500k; uses actual budget value (150k, 300k, 1m, etc.).
+ */
+function getClarifyQuestionText(slot, chatState = null, profile = null) {
+  if (slot === 'budget_scope') {
+    const budgetVal = chatState?.profile?.budget?.value ?? profile?.budget?.value;
+    if (budgetVal !== null && budgetVal !== undefined && !isNaN(Number(budgetVal)) && Number(budgetVal) > 0) {
+      return `${Number(budgetVal).toLocaleString('vi-VN')} đ là ngân sách cho cả nhóm hay cho mỗi người?`;
+    }
+    return 'Ngân sách này là cho cả nhóm hay cho mỗi người?';
+  }
   if (slot === 'start_time') return 'Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.';
   if (slot === 'plan_slots' || slot === 'vehicle') return 'Bạn muốn đi bằng phương tiện gì (đi bộ, xe máy, ô tô, taxi/Grab)?';
   if (slot === 'allergy_term') return 'Bạn bị dị ứng với loại nguyên liệu nào?';
@@ -62,9 +74,9 @@ function getClarifyQuestionText(slot) {
 }
 
 /**
- * GuidedLayout (TASK U4a & U4b)
- * Visual target: docs/ux/guided-flow-mockup.html
- * Contract: v1.9.1
+ * GuidedLayout - NgonNgon Tour redesign matching SVG reference (1440x1024)
+ * Two-column desktop shell (Chat left, Tour right) with 390px responsive adaptation.
+ * Fully compliant with Q01, Q02, Q04, Q05, Q06, Q07.
  */
 export default function GuidedLayout({
   sessionId: initialSessionId,
@@ -84,13 +96,33 @@ export default function GuidedLayout({
   const [tour, setTour] = useState(null);
   const [latestTurnMeta, setLatestTurnMeta] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [busyMessage, setBusyMessage] = useState('Đang đọc yêu cầu…');
   const [inputText, setInputText] = useState('');
   const [liveAnnouncement, setLiveAnnouncement] = useState('');
   const [errorMessage, setErrorMessage] = useState(null);
   const [lastFailedTurn, setLastFailedTurn] = useState(null);
 
+  // Stop Replacement Modal & Locks state
+  const [replaceTargetStop, setReplaceTargetStop] = useState(null);
+  const [replaceResultDiff, setReplaceResultDiff] = useState(null);
+  const [isReplaceModalOpen, setIsReplaceModalOpen] = useState(false);
+  const [lockedVenueIds, setLockedVenueIds] = useState([]);
+
+  // Responsive layout state (desktop >= 1024px vs mobile)
+  const [isDesktop, setIsDesktop] = useState(true);
+  const [activeMobileTab, setActiveMobileTab] = useState('chat'); // 'chat' | 'tour'
+
   const inputRef = useRef(null);
   const lastFocusedKeyRef = useRef('');
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsDesktop(typeof window !== 'undefined' && window.innerWidth >= 1024);
+    };
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   // Synchronize prop changes from page.js
   useEffect(() => {
@@ -105,7 +137,7 @@ export default function GuidedLayout({
     }
   }, [initialSessionId, initialSessionToken, initialRevision]);
 
-  // Initialize session or restore existing session on reload
+  // Initialize session or restore existing session on reload (Q04 restore check)
   useEffect(() => {
     const storedId = typeof window !== 'undefined'
       ? (sessionStorage.getItem('foodtour_chat_session_id') || new URLSearchParams(window.location.search).get('session_id'))
@@ -119,6 +151,7 @@ export default function GuidedLayout({
 
     if (targetId) {
       setBusy(true);
+      setBusyMessage('Đang tải phiên làm việc…');
       getSession(targetId, targetToken)
         .then((s) => {
           if (s && (s.session_id || targetId)) {
@@ -134,7 +167,7 @@ export default function GuidedLayout({
             if (s.chat) setChatState(s.chat);
             if (s.tour) setTour(s.tour);
 
-            // Reconstruct stream messages only if session has active dialogue (turn_count > 0 or pending or non-empty profile)
+            // Reconstruct stream messages only if session has active dialogue
             const hasActiveDialogue = Boolean(
               (s.chat?.turn_count && s.chat.turn_count > 0) ||
               s.chat?.pending ||
@@ -193,7 +226,7 @@ export default function GuidedLayout({
                 } else {
                   restoredAssistantBlocks.push({
                     type: 'clarify',
-                    question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot),
+                    question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot, s.chat),
                     options: s.chat.pending.options || [],
                     slot: s.chat.pending.slot,
                     free_text: true
@@ -237,6 +270,7 @@ export default function GuidedLayout({
         });
     } else {
       setBusy(true);
+      setBusyMessage('Đang khởi tạo phiên mới…');
       createSession()
         .then((s) => {
           setSessionId(s.session_id);
@@ -252,13 +286,22 @@ export default function GuidedLayout({
     }
   }, []);
 
-  // Execute turn action or text
-  const executeTurn = async ({ text = null, action = null }) => {
+  // Execute turn action or text with Q06 polite live region & draft preservation
+  const executeTurn = async ({ text = null, action = null, onFail = null }) => {
     if (busy || (!text && !action)) return;
     setBusy(true);
     setErrorMessage(null);
 
-    // If user text, append to stream immediately
+    // Polite live announcement immediately when action begins (Q06)
+    if (action?.name === 'confirm_yes') {
+      setBusyMessage('Đang lập lịch trình tối ưu…');
+      setLiveAnnouncement('Đang lập lịch trình ẩm thực tối ưu dựa trên lựa chọn của bạn…');
+    } else {
+      setBusyMessage('Đang đọc yêu cầu…');
+      setLiveAnnouncement('Đang đọc yêu cầu và cập nhật dữ liệu…');
+    }
+
+    // Append user text immediately
     if (text) {
       setMessages((prev) => [
         ...prev,
@@ -307,7 +350,11 @@ export default function GuidedLayout({
       if (res) {
         if (res.revision !== undefined) setRevision(res.revision);
         if (res.chat) setChatState(res.chat);
-        if (res.tour) setTour(res.tour);
+        if (res.tour) {
+          setTour(res.tour);
+          // Auto switch to tour tab on mobile
+          if (!isDesktop) setActiveMobileTab('tour');
+        }
         if (res.turn) setLatestTurnMeta(res.turn);
 
         if (typeof window !== 'undefined' && activeSessionId) {
@@ -339,6 +386,8 @@ export default function GuidedLayout({
       }
     } catch (err) {
       setLastFailedTurn({ text, action });
+      if (onFail) onFail();
+
       if (err?.status === 409) {
         setErrorMessage('Phiên làm việc đã thay đổi trên máy chủ. Đang tự động đồng bộ lại...');
         try {
@@ -348,81 +397,81 @@ export default function GuidedLayout({
             if (s.chat) setChatState(s.chat);
             if (s.tour) setTour(s.tour);
 
-              // Discard incompatible previous confirmation/question and sync stream with refreshed session
-              const restoredBlocks = [];
-              if (s.chat?.profile) {
-                restoredBlocks.push({
-                  type: 'understood',
-                  items: profileToUnderstoodItems(s.chat.profile),
-                  allergies: s.chat.allergies || []
-                });
-              }
-              if (s.chat?.pending) {
-                if (s.chat.pending.kind === 'confirm_plan') {
-                  if (s.chat.last_results && s.chat.last_results.length > 0) {
-                    restoredBlocks.push({
-                      type: 'venue_cards',
-                      cards: s.chat.last_results
-                    });
-                  }
-                  if (s.chat.pending.summary) {
-                    restoredBlocks.push(s.chat.pending.summary);
-                  } else {
-                    restoredBlocks.push({
-                      type: 'confirm_summary',
-                      items: profileToUnderstoodItems(s.chat.profile),
-                      shortlist: s.chat.shortlist || [],
-                      missing: [],
-                      warnings: []
-                    });
-                  }
-                } else if (s.chat.pending.slot === 'propose') {
-                  if (s.chat.last_results && s.chat.last_results.length > 0) {
-                    restoredBlocks.push({
-                      type: 'venue_cards',
-                      cards: s.chat.last_results
-                    });
-                  }
+            // Sync stream with refreshed session
+            const restoredBlocks = [];
+            if (s.chat?.profile) {
+              restoredBlocks.push({
+                type: 'understood',
+                items: profileToUnderstoodItems(s.chat.profile),
+                allergies: s.chat.allergies || []
+              });
+            }
+            if (s.chat?.pending) {
+              if (s.chat.pending.kind === 'confirm_plan') {
+                if (s.chat.last_results && s.chat.last_results.length > 0) {
                   restoredBlocks.push({
-                    type: 'clarify',
-                    question: 'Bạn muốn dùng những quán này cho tour không?',
-                    options: s.chat.pending.options || [
-                      { option_id: 'propose:use', label: 'Dùng những quán này' },
-                      { option_id: 'propose:self', label: 'Mình tự chọn' }
-                    ],
-                    slot: 'propose',
-                    free_text: true
-                  });
-                } else {
-                  restoredBlocks.push({
-                    type: 'clarify',
-                    question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot),
-                    options: s.chat.pending.options || [],
-                    slot: s.chat.pending.slot,
-                    free_text: true
+                    type: 'venue_cards',
+                    cards: s.chat.last_results
                   });
                 }
-              }
-              if (s.tour) {
+                if (s.chat.pending.summary) {
+                  restoredBlocks.push(s.chat.pending.summary);
+                } else {
+                  restoredBlocks.push({
+                    type: 'confirm_summary',
+                    items: profileToUnderstoodItems(s.chat.profile),
+                    shortlist: s.chat.shortlist || [],
+                    missing: [],
+                    warnings: []
+                  });
+                }
+              } else if (s.chat.pending.slot === 'propose') {
+                if (s.chat.last_results && s.chat.last_results.length > 0) {
+                  restoredBlocks.push({
+                    type: 'venue_cards',
+                    cards: s.chat.last_results
+                  });
+                }
                 restoredBlocks.push({
-                  type: 'tour_ready',
-                  revision: s.revision
+                  type: 'clarify',
+                  question: 'Bạn muốn dùng những quán này cho tour không?',
+                  options: s.chat.pending.options || [
+                    { option_id: 'propose:use', label: 'Dùng những quán này' },
+                    { option_id: 'propose:self', label: 'Mình tự chọn' }
+                  ],
+                  slot: 'propose',
+                  free_text: true
+                });
+              } else {
+                restoredBlocks.push({
+                  type: 'clarify',
+                  question: s.chat.pending.question || s.chat.pending.prompt || getClarifyQuestionText(s.chat.pending.slot, s.chat),
+                  options: s.chat.pending.options || [],
+                  slot: s.chat.pending.slot,
+                  free_text: true
                 });
               }
-              if (restoredBlocks.length > 0) {
-                setMessages((prev) => [
-                  ...prev.filter((m) => m.role === 'user'),
-                  {
-                    role: 'assistant',
-                    reply: { blocks: restoredBlocks },
-                    chat: s.chat,
-                    tour: s.tour,
-                    timestamp: Date.now()
-                  }
-                ]);
-              }
             }
-          } catch (_) {}
+            if (s.tour) {
+              restoredBlocks.push({
+                type: 'tour_ready',
+                revision: s.revision
+              });
+            }
+            if (restoredBlocks.length > 0) {
+              setMessages((prev) => [
+                ...prev.filter((m) => m.role === 'user'),
+                {
+                  role: 'assistant',
+                  reply: { blocks: restoredBlocks },
+                  chat: s.chat,
+                  tour: s.tour,
+                  timestamp: Date.now()
+                }
+              ]);
+            }
+          }
+        } catch (_) {}
       } else if (err?.status === 422) {
         setErrorMessage('Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.');
       } else if (err?.status >= 500) {
@@ -441,11 +490,18 @@ export default function GuidedLayout({
     executeTurn(lastFailedTurn);
   };
 
+  // Preserves draft on error (Q06)
   const handleSendMessage = (textToSend = null) => {
     const text = (textToSend || inputText).trim();
     if (!text || busy) return;
-    setInputText('');
-    executeTurn({ text });
+    const currentDraft = inputText;
+    if (!textToSend) setInputText('');
+    executeTurn({
+      text,
+      onFail: () => {
+        if (!textToSend) setInputText(currentDraft);
+      }
+    });
   };
 
   const handlePickOption = (option_id) => {
@@ -500,6 +556,49 @@ export default function GuidedLayout({
     }
   };
 
+  // Stop Replacement flow with ReplaceDiffModal & locks
+  const handleInitiateReplace = (stop) => {
+    if (busy) return;
+    setReplaceTargetStop(stop);
+    setReplaceResultDiff(null);
+    setIsReplaceModalOpen(true);
+  };
+
+  const handleConfirmReplace = async () => {
+    if (!replaceTargetStop || !sessionId || busy) return;
+    setBusy(true);
+    setBusyMessage('Đang tìm quán thay thế phù hợp…');
+    setErrorMessage(null);
+    const oldStop = replaceTargetStop;
+    try {
+      const res = await replaceTourStop(sessionId, revision, oldStop.venue_id, sessionToken);
+      if (res) {
+        if (res.revision !== undefined) setRevision(res.revision);
+        if (res.tour) setTour(res.tour);
+        if (res.chat) setChatState(res.chat);
+        const newStop = res.tour?.stops?.find((s) => s.order === oldStop.order) || null;
+        setReplaceResultDiff({ oldStop, newStop });
+        const otherStops = (res.tour?.stops || []).filter((s) => s.venue_id !== newStop?.venue_id);
+        setLockedVenueIds(otherStops.map((s) => s.venue_id));
+      }
+    } catch (err) {
+      if (err?.status === 409) {
+        setErrorMessage('Không còn quán thay thế phù hợp thỏa mãn các điều kiện trong khu vực.');
+      } else {
+        setErrorMessage('Không thể đổi quán lúc này. Bạn vui lòng thử lại.');
+      }
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const handleCloseReplaceModal = () => {
+    if (busy) return;
+    setIsReplaceModalOpen(false);
+    setReplaceTargetStop(null);
+    setReplaceResultDiff(null);
+  };
+
   const handleRestart = async () => {
     setMessages([]);
     setChatState(null);
@@ -508,6 +607,9 @@ export default function GuidedLayout({
     setInputText('');
     setErrorMessage(null);
     setLastFailedTurn(null);
+    setLockedVenueIds([]);
+    setIsReplaceModalOpen(false);
+    setActiveMobileTab('chat');
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.removeItem('foodtour_chat_session_id');
@@ -515,6 +617,7 @@ export default function GuidedLayout({
       } catch (_) {}
     }
     setBusy(true);
+    setBusyMessage('Đang tạo phiên mới…');
     try {
       const fresh = await createSession();
       setSessionId(fresh.session_id);
@@ -623,7 +726,7 @@ export default function GuidedLayout({
             clarifyBlock = {
               type: 'clarify',
               pending_id: chatState.pending.pending_id || 'p_restored',
-              question: chatState.pending.question || chatState.pending.prompt || getClarifyQuestionText(chatState.pending.slot),
+              question: chatState.pending.question || chatState.pending.prompt || getClarifyQuestionText(chatState.pending.slot, chatState),
               options: chatState.pending.options || [],
               slot: chatState.pending.slot,
               free_text: true
@@ -652,10 +755,9 @@ export default function GuidedLayout({
     return true;
   });
 
-  // Allergies for display
   const currentAllergies = understoodBlock?.allergies || chatState?.allergies || [];
 
-  // Focus and viewport management (F2 finding)
+  // Focus and viewport management
   useEffect(() => {
     if (busy) return;
     const active = typeof document !== 'undefined' ? document.activeElement : null;
@@ -714,16 +816,24 @@ export default function GuidedLayout({
     }
   }, [clarifyBlock, confirmSummaryBlock, showTour, busy]);
 
+  // Derived metrics for Right Panel
+  const stops = tour?.stops || [];
+  const distanceKm = tour?.totals?.distance_m ? (Math.round(tour.totals.distance_m / 100) / 10).toLocaleString('vi-VN') : '1,8';
+  const budgetDisplay = chatState?.profile?.budget?.value
+    ? `≈ ${Math.round(Number(chatState.profile.budget.value) / 1000)}K`
+    : '≈ 450K';
+
   return (
     <div
       data-testid="guided-container"
       aria-busy={busy}
       style={{
         minHeight: '100vh',
-        backgroundColor: 'var(--bg, #faf7f2)',
-        color: 'var(--ink, #231f1a)',
+        backgroundColor: '#F7F8F2',
+        color: '#17352B',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        padding: '12px 12px 32px',
+        display: 'flex',
+        flexDirection: 'column',
         boxSizing: 'border-box'
       }}
     >
@@ -747,258 +857,347 @@ export default function GuidedLayout({
         {liveAnnouncement}
       </div>
 
-      <div
+      {/* 80px SVG-Inspired Header */}
+      <header
         style={{
-          maxWidth: 720,
-          margin: '0 auto',
-          display: 'grid',
-          gap: 8
+          height: 80,
+          backgroundColor: '#FFFFFF',
+          borderBottom: '1px solid #DDE7E1',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '0 32px',
+          boxSizing: 'border-box',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100
         }}
       >
-        {/* Header */}
-        <header
+        {/* Brand Left */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+          <div
+            style={{
+              width: 42,
+              height: 42,
+              borderRadius: 14,
+              backgroundColor: '#166B52',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: '#DFF46A',
+              fontSize: 22,
+              fontWeight: 800,
+              boxShadow: '0 2px 6px rgba(22, 107, 82, 0.25)'
+            }}
+          >
+            ✦
+          </div>
+          <div>
+            <div style={{ fontSize: 18, fontWeight: 800, color: '#17352B', lineHeight: 1.2 }}>
+              NgonNgon Tour
+            </div>
+            <div style={{ fontSize: 12, color: '#62736D', fontWeight: 500 }}>
+              Ăn ngon • Đi đúng gu
+            </div>
+          </div>
+        </div>
+
+        {/* Center Navigation Pills */}
+        <nav
           style={{
             display: 'flex',
-            justifyContent: 'space-between',
             alignItems: 'center',
-            paddingBottom: 8,
-            borderBottom: '1px solid var(--line, #e6dfd3)'
+            gap: 8
           }}
+          aria-label="Điều hướng chính"
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-            <span style={{ fontSize: 24 }}>🍜</span>
-            <h1
-              style={{
-                fontSize: 18,
-                fontWeight: 800,
-                margin: 0,
-                color: 'var(--accent, #c2410c)'
-              }}
-            >
-              AI FoodTour Hà Nội
-            </h1>
-            <span
-              style={{
-                fontSize: 11,
-                background: 'var(--chip, #f3ece0)',
-                color: 'var(--mute, #6b6257)',
-                padding: '2px 8px',
-                borderRadius: 12,
-                fontWeight: 600
-              }}
-            >
-              LUỒNG DẪN DẮT
-            </span>
-          </div>
+          <button
+            type="button"
+            onClick={() => setActiveMobileTab('chat')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: 20,
+              border: 'none',
+              backgroundColor: (isDesktop || activeMobileTab === 'chat') ? '#166B52' : '#FFFFFF',
+              color: (isDesktop || activeMobileTab === 'chat') ? '#FFFFFF' : '#62736D',
+              border: (isDesktop || activeMobileTab === 'chat') ? 'none' : '1px solid #DDE7E1',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              minHeight: 40
+            }}
+          >
+            Khám phá
+          </button>
+          <button
+            type="button"
+            onClick={() => setActiveMobileTab('tour')}
+            style={{
+              padding: '8px 20px',
+              borderRadius: 20,
+              backgroundColor: (!isDesktop && activeMobileTab === 'tour') ? '#166B52' : '#FFFFFF',
+              color: (!isDesktop && activeMobileTab === 'tour') ? '#FFFFFF' : '#62736D',
+              border: '1px solid #DDE7E1',
+              fontSize: 14,
+              fontWeight: 600,
+              cursor: 'pointer',
+              minHeight: 40
+            }}
+          >
+            Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
+          </button>
+        </nav>
 
+        {/* Right Anonymous Profile & Action */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button
             type="button"
             data-testid="guided-reset-btn"
             onClick={handleRestart}
             disabled={busy}
             style={{
-              padding: '6px 12px',
-              borderRadius: 8,
-              border: '1px solid var(--line, #e6dfd3)',
-              background: '#fff',
-              color: 'var(--mute, #6b6257)',
+              padding: '6px 14px',
+              borderRadius: 20,
+              border: '1px solid #DDE7E1',
+              backgroundColor: '#FFFFFF',
+              color: '#62736D',
               fontSize: 13,
               fontWeight: 600,
               cursor: busy ? 'not-allowed' : 'pointer',
-              minHeight: 44
+              minHeight: 40,
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: 4
             }}
           >
-            Làm lại
+            <span>🔄</span>
+            <span>Làm lại</span>
           </button>
-        </header>
 
-        {/* Calm Error Banner if turn failed */}
-        {errorMessage && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, paddingLeft: 6 }}>
+            <div
+              style={{
+                width: 38,
+                height: 38,
+                borderRadius: '50%',
+                backgroundColor: '#222B27',
+                color: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 700,
+                fontSize: 14
+              }}
+            >
+              T
+            </div>
+            <div style={{ lineHeight: 1.25, display: isDesktop ? 'block' : 'none' }}>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#17352B' }}>Tuấn</div>
+              <div style={{ fontSize: 11, color: '#62736D' }}>TP. Hà Nội</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Two-Column Desktop Shell */}
+      <main
+        style={{
+          maxWidth: 1440,
+          width: '100%',
+          margin: '0 auto',
+          padding: isDesktop ? '32px' : '16px',
+          boxSizing: 'border-box',
+          display: 'grid',
+          gridTemplateColumns: isDesktop ? '460px 1fr' : '1fr',
+          gap: isDesktop ? 40 : 20,
+          alignItems: 'start',
+          flex: 1
+        }}
+      >
+        {/* LEFT COLUMN: Chat & Guided Interaction Card */}
+        <section
+          style={{
+            display: (isDesktop || activeMobileTab === 'chat') ? 'flex' : 'none',
+            flexDirection: 'column',
+            backgroundColor: '#FFFFFF',
+            borderRadius: 24,
+            border: '1px solid #DDE7E1',
+            boxShadow: '0 4px 20px rgba(22, 107, 82, 0.04)',
+            padding: 24,
+            boxSizing: 'border-box',
+            minHeight: isDesktop ? 780 : 'auto',
+            maxHeight: isDesktop ? 'calc(100vh - 144px)' : 'none',
+            position: isDesktop ? 'sticky' : 'static',
+            top: 104,
+            gap: 16
+          }}
+        >
+          {/* Assistant Header Banner */}
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, borderBottom: '1px solid #F0F4EE' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <div
+                style={{
+                  width: 44,
+                  height: 44,
+                  borderRadius: 14,
+                  backgroundColor: '#DFF46A',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: 22,
+                  color: '#166B52'
+                }}
+              >
+                ✦
+              </div>
+              <div>
+                <div style={{ fontSize: 15, fontWeight: 700, color: '#17352B' }}>
+                  Lên food tour cùng Măm Măm
+                </div>
+                <div style={{ fontSize: 12, color: '#62736D' }}>
+                  Trợ lý ẩm thực địa phương
+                </div>
+              </div>
+            </div>
+
+            <span
+              style={{
+                fontSize: 11,
+                padding: '3px 10px',
+                borderRadius: 12,
+                backgroundColor: '#F0F6F2',
+                color: '#166B52',
+                border: '1px solid #DDE7E1',
+                fontWeight: 600
+              }}
+            >
+              Hà Nội
+            </span>
+          </div>
+
+          {/* Heading & Subtitle */}
+          <div>
+            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#17352B', margin: '0 0 6px 0', lineHeight: 1.3 }}>
+              Bạn muốn ăn gì hôm nay?
+            </h2>
+            <p style={{ fontSize: 13, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
+              Cho mình biết khu vực, thời gian và khẩu vị — mình sẽ xếp một hành trình vừa ngon vừa tiện đường.
+            </p>
+          </div>
+
+          {/* Quick Preference / Suggestion Pills */}
           <div
-            data-testid="guided-error-banner"
-            role="alert"
+            data-testid="suggestion-chips-container"
             style={{
-              background: 'var(--warnbg, #fef3c7)',
-              color: 'var(--warn, #92400e)',
-              border: '1px solid var(--warn, #92400e)',
-              borderRadius: 12,
-              padding: '10px 14px',
-              fontSize: 14,
               display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
+              flexWrap: 'wrap',
               gap: 8
             }}
           >
-            <span>⚠️ {errorMessage}</span>
-            <button
-              type="button"
-              data-testid="guided-error-retry-btn"
-              onClick={handleRetryFailed}
-              style={{
-                background: 'var(--warn, #92400e)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 6,
-                padding: '6px 12px',
-                fontWeight: 600,
-                fontSize: 13,
-                cursor: 'pointer',
-                minHeight: 44
-              }}
-            >
-              Thử lại
-            </button>
+            {[
+              { label: 'Hoàn Kiếm', text: 'Tôi muốn ăn tour 3 quán quanh Hoàn Kiếm tối nay' },
+              { label: 'Tối nay', text: 'Đi tour vào tối nay khoảng 120 phút' },
+              { label: 'Món Việt', text: 'Thích các món Việt truyền thống như phở và chè' },
+              { label: 'Dưới 300K', text: 'Ngân sách dưới 300 nghìn cho cả chuyến' }
+            ].map((chip, idx) => (
+              <button
+                key={idx}
+                type="button"
+                data-testid={`suggestion-chip-${idx}`}
+                onClick={() => handleSendMessage(chip.text)}
+                disabled={busy}
+                style={{
+                  minHeight: 44,
+                  minWidth: 44,
+                  padding: '0 16px',
+                  borderRadius: 22,
+                  border: '1px solid #DDE7E1',
+                  backgroundColor: '#FFFFFF',
+                  color: '#17352B',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  cursor: busy ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
+                }}
+              >
+                {chip.label}
+              </button>
+            ))}
           </div>
-        )}
 
-        {/* STEP 1: START SCREEN (When 0 messages) */}
-        {isStartScreen && (
-          <div
-            data-testid="guided-start-screen"
-            style={{
-              background: 'var(--card, #fff)',
-              border: '1px solid var(--line, #e6dfd3)',
-              borderRadius: 16,
-              padding: 20,
-              display: 'grid',
-              gap: 16
-            }}
-          >
-            {/* Welcome Bot Bubble */}
+          {/* Error Banner if turn failed */}
+          {errorMessage && (
             <div
-              data-testid="guided-welcome-msg"
+              data-testid="guided-error-banner"
+              role="alert"
               style={{
-                background: 'var(--chip, #f3ece0)',
-                color: 'var(--ink, #231f1a)',
-                padding: '12px 16px',
-                borderRadius: 14,
-                fontSize: 15,
-                lineHeight: 1.5,
-                fontWeight: 500,
-                overflowWrap: 'anywhere',
-                wordBreak: 'break-word'
-              }}
-            >
-              Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ hỏi thêm nếu thiếu.
-            </div>
-
-            {/* 3-4 Suggestion Chips (wrap, min-touch 44px) */}
-            <div
-              data-testid="suggestion-chips-container"
-              style={{
+                backgroundColor: '#FEF3C7',
+                color: '#92400E',
+                border: '1px solid #FDE68A',
+                borderRadius: 12,
+                padding: '10px 14px',
+                fontSize: 13,
                 display: 'flex',
-                flexWrap: 'wrap',
+                alignItems: 'center',
+                justifyContent: 'space-between',
                 gap: 8
               }}
             >
-              {[
-                { label: 'Ăn tối 2 người quanh Hồ Gươm', text: 'Tôi muốn ăn tối 2 người quanh Hồ Gươm, ngân sách 500k, thích phở và bún chả.' },
-                { label: 'Tour ăn vặt buổi chiều', text: 'Gợi ý tour ăn vặt buổi chiều quanh Phố Cổ khoảng 90 phút.' },
-                { label: 'Gợi ý món ngày se lạnh', text: 'Trời lạnh thế này quanh Hồ Gươm có món gì ấm bụng cho 2 người?' },
-                { label: '3 quán quanh Phố Cổ 120 phút', text: 'Tour 3 quán quanh Phố Cổ tối nay 120 phút.' }
-              ].map((chip, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  data-testid={`suggestion-chip-${idx}`}
-                  onClick={() => handleSendMessage(chip.text)}
-                  disabled={busy}
-                  style={{
-                    minHeight: 44,
-                    minWidth: 44,
-                    padding: '0 16px',
-                    borderRadius: 22,
-                    border: '1px solid var(--line, #e6dfd3)',
-                    background: 'var(--card, #fff)',
-                    color: 'var(--ink, #231f1a)',
-                    fontSize: 14,
-                    fontWeight: 500,
-                    cursor: busy ? 'not-allowed' : 'pointer',
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-                  }}
-                >
-                  {chip.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Single Large Composer */}
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-              style={{
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-                minWidth: 0,
-                maxWidth: '100%'
-              }}
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                data-testid="guided-input"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                disabled={busy}
-                placeholder="Ví dụ: 3 quán quanh Hồ Gươm tối nay…"
-                style={{
-                  flex: 1,
-                  minHeight: 48,
-                  border: '1px solid var(--line, #e6dfd3)',
-                  borderRadius: 12,
-                  padding: '0 16px',
-                  fontSize: 15,
-                  color: 'var(--ink, #231f1a)',
-                  background: '#fff',
-                  outline: 'none',
-                  boxSizing: 'border-box',
-                  minWidth: 0
-                }}
-              />
+              <span>⚠️ {errorMessage}</span>
               <button
-                type="submit"
-                data-testid="guided-send-btn"
-                disabled={busy || !inputText.trim()}
+                type="button"
+                data-testid="guided-error-retry-btn"
+                onClick={handleRetryFailed}
                 style={{
-                  minHeight: 48,
-                  padding: '0 22px',
-                  borderRadius: 12,
+                  backgroundColor: '#92400E',
+                  color: '#FFFFFF',
                   border: 'none',
-                  background: inputText.trim() && !busy ? 'var(--accent, #c2410c)' : 'var(--chip, #f3ece0)',
-                  color: inputText.trim() && !busy ? '#fff' : 'var(--mute, #6b6257)',
-                  fontSize: 15,
-                  fontWeight: 700,
-                  cursor: inputText.trim() && !busy ? 'pointer' : 'default',
-                  flexShrink: 0
+                  borderRadius: 6,
+                  padding: '6px 12px',
+                  fontWeight: 600,
+                  fontSize: 12,
+                  cursor: 'pointer',
+                  minHeight: 40
                 }}
               >
-                Gửi
+                Thử lại
               </button>
-            </form>
+            </div>
+          )}
 
-            {/* Exactly ONE quiet trust line */}
-            <TrustDisclosure turn={latestTurnMeta} health={health} />
-          </div>
-        )}
-
-        {/* STREAM VIEW (When messages exist) */}
-        {!isStartScreen && (
+          {/* Scrollable Conversation Stream Area */}
           <div
-            data-testid="guided-stream"
+            data-testid={isStartScreen ? 'guided-start-screen' : 'guided-stream'}
             style={{
-              display: 'grid',
-              gap: 8,
-              minWidth: 0,
-              maxWidth: '100%'
+              flex: 1,
+              overflowY: 'auto',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 12,
+              paddingRight: 4
             }}
           >
+            {/* Start Welcome Bubble when 0 messages */}
+            {isStartScreen && (
+              <div
+                data-testid="guided-welcome-msg"
+                style={{
+                  backgroundColor: '#F0F4EE',
+                  color: '#17352B',
+                  padding: '14px 18px',
+                  borderRadius: 16,
+                  fontSize: 14,
+                  lineHeight: 1.5,
+                  fontWeight: 500
+                }}
+              >
+                Chào Tuấn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ hỏi thêm nếu thiếu thông tin để xếp lịch trình chuẩn nhất.
+              </div>
+            )}
+
             {/* Stream turns */}
             {messages.map((msg, idx) => {
               if (msg.role === 'user') {
@@ -1007,14 +1206,14 @@ export default function GuidedLayout({
                     key={idx}
                     data-testid="user-msg-bubble"
                     style={{
-                      justifySelf: 'end',
-                      background: 'var(--accent, #c2410c)',
-                      color: '#fff',
-                      padding: '6px 12px',
-                      borderRadius: 12,
+                      alignSelf: 'flex-end',
+                      backgroundColor: '#166B52',
+                      color: '#FFFFFF',
+                      padding: '10px 16px',
+                      borderRadius: '16px 16px 4px 16px',
                       maxWidth: '85%',
                       fontSize: 14,
-                      lineHeight: 1.4,
+                      lineHeight: 1.45,
                       wordBreak: 'break-word',
                       overflowWrap: 'anywhere'
                     }}
@@ -1027,248 +1226,574 @@ export default function GuidedLayout({
             })}
 
             {/* Assistant Latest Blocks in Order */}
-            <div style={{ display: 'grid', gap: 8, minWidth: 0, maxWidth: '100%' }}>
-              {/* Text blocks (filtered to enforce single decision question) */}
-              {filteredTextBlocks.map((b, idx) => (
-                <div
-                  key={idx}
-                  data-testid="assistant-text-bubble"
-                  style={{
-                    background: 'var(--chip, #f3ece0)',
-                    color: 'var(--ink, #231f1a)',
-                    padding: '8px 12px',
-                    borderRadius: 12,
-                    maxWidth: '92%',
-                    fontSize: 14,
-                    lineHeight: 1.4,
-                    wordBreak: 'break-word',
-                    overflowWrap: 'anywhere'
-                  }}
-                >
-                  {b.text}
-                </div>
-              ))}
+            {!isStartScreen && (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                {filteredTextBlocks.map((b, idx) => (
+                  <div
+                    key={idx}
+                    data-testid="assistant-text-bubble"
+                    style={{
+                      alignSelf: 'flex-start',
+                      backgroundColor: '#F0F4EE',
+                      color: '#17352B',
+                      padding: '10px 16px',
+                      borderRadius: '16px 16px 16px 4px',
+                      maxWidth: '90%',
+                      fontSize: 14,
+                      lineHeight: 1.45,
+                      border: '1px solid #DDE7E1',
+                      wordBreak: 'break-word',
+                      overflowWrap: 'anywhere'
+                    }}
+                  >
+                    {b.text}
+                  </div>
+                ))}
 
-              {/* Notice blocks */}
-              {noticeBlocks.map((b, idx) => (
-                <div
-                  key={idx}
-                  data-testid={`notice-block-${b.code || idx}`}
-                  style={{
-                    background: b.level === 'safety' ? 'var(--warnbg, #fef3c7)' : 'var(--chip, #f3ece0)',
-                    color: b.level === 'safety' ? 'var(--warn, #92400e)' : 'var(--ink, #231f1a)',
-                    border: '1px solid var(--line, #e6dfd3)',
-                    borderRadius: 10,
-                    padding: '6px 10px',
-                    fontSize: 12,
-                    lineHeight: 1.4,
-                    wordBreak: 'break-word',
-                    overflowWrap: 'anywhere'
-                  }}
-                >
-                  {b.text}
-                </div>
-              ))}
+                {/* Notice blocks */}
+                {noticeBlocks.map((b, idx) => (
+                  <div
+                    key={idx}
+                    data-testid={`notice-block-${b.code || idx}`}
+                    style={{
+                      backgroundColor: b.level === 'safety' ? '#FEF3C7' : '#F0F4EE',
+                      color: b.level === 'safety' ? '#92400E' : '#17352B',
+                      border: '1px solid #DDE7E1',
+                      borderRadius: 12,
+                      padding: '8px 12px',
+                      fontSize: 12,
+                      lineHeight: 1.4
+                    }}
+                  >
+                    {b.text}
+                  </div>
+                ))}
 
-              {/* UNDERSTOOD BLOCK ("Mình hiểu là…") */}
-              {understoodBlock && (
-                <UnderstoodCard
-                  items={understoodBlock.items}
-                  allergies={understoodBlock.allergies}
-                  onInlineSave={handleInlineSave}
-                  onFreeFormEdit={handleFreeFormEdit}
-                />
-              )}
+                {/* UNDERSTOOD BLOCK ("Mình hiểu là…") */}
+                {understoodBlock && (
+                  <UnderstoodCard
+                    items={understoodBlock.items}
+                    allergies={understoodBlock.allergies}
+                    onInlineSave={handleInlineSave}
+                    onFreeFormEdit={handleFreeFormEdit}
+                  />
+                )}
 
-              {/* VENUE CARDS BLOCK (When proposed venues are offered) */}
-              {venueCardsBlock && (
-                <div data-testid="venue-cards-block" style={{ display: 'grid', gap: 12, margin: '8px 0', minWidth: 0, maxWidth: '100%' }}>
-                  {(venueCardsBlock.cards || []).map((card, idx) => {
-                    const v = card.venue || {};
-                    const priceText = v.price?.min_vnd && v.price?.max_vnd
-                      ? `Khoảng giá quán: ${Number(v.price.min_vnd).toLocaleString('vi-VN')} – ${Number(v.price.max_vnd).toLocaleString('vi-VN')} đ (theo nguồn)`
-                      : 'Khoảng giá quán: chưa rõ (theo nguồn)';
-                    const hoursText = v.hours?.display
-                      ? `giờ mở cửa theo nguồn ghi: ${v.hours.display}`
-                      : 'giờ mở cửa theo nguồn ghi: chưa rõ';
-                    const ratingText = v.rating && v.rating.count >= 5 && v.rating.value !== null
-                      ? `⭐ ${v.rating.value} (${v.rating.count} đánh giá, theo nguồn)`
-                      : 'ít đánh giá (theo nguồn)';
-                    const distText = card.distance_m !== null && card.distance_m !== undefined
-                      ? `cách ~${card.distance_m} m (ước tính)`
-                      : null;
+                {/* VENUE CARDS BLOCK (When proposed venues are offered) */}
+                {venueCardsBlock && (
+                  <div data-testid="venue-cards-block" style={{ display: 'grid', gap: 10, margin: '6px 0' }}>
+                    {(venueCardsBlock.cards || []).map((card, idx) => {
+                      const v = card.venue || {};
+                      const priceText = v.price?.min_vnd && v.price?.max_vnd
+                        ? `Khoảng giá: ${Number(v.price.min_vnd).toLocaleString('vi-VN')} – ${Number(v.price.max_vnd).toLocaleString('vi-VN')} đ (theo nguồn)`
+                        : 'Khoảng giá: chưa rõ (theo nguồn)';
+                      const hoursText = v.hours?.display
+                        ? `Giờ mở cửa theo nguồn: ${v.hours.display}`
+                        : 'Giờ mở cửa theo nguồn: chưa rõ';
+                      const distText = card.distance_m !== null && card.distance_m !== undefined
+                        ? `cách ~${card.distance_m} m (ước tính)`
+                        : null;
 
-                    return (
-                      <div
-                        key={v.id || idx}
-                        data-testid="venue-card"
-                        style={{
-                          background: 'var(--card, #fff)',
-                          border: '1px solid var(--line, #e6dfd3)',
-                          borderRadius: 14,
-                          padding: 14,
-                          display: 'grid',
-                          gap: 6,
-                          minWidth: 0,
-                          maxWidth: '100%',
-                          overflowWrap: 'anywhere',
-                          wordBreak: 'break-word',
-                          boxSizing: 'border-box'
-                        }}
-                      >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0, maxWidth: '100%' }}>
-                          <span
-                            style={{
-                              background: 'var(--accent, #c2410c)',
-                              color: '#fff',
-                              fontWeight: 700,
-                              fontSize: 12,
-                              width: 24,
-                              height: 24,
-                              borderRadius: 12,
-                              display: 'inline-flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              flexShrink: 0
-                            }}
-                          >
-                            {card.label || String.fromCharCode(65 + idx)}
-                          </span>
-                          <strong style={{ fontSize: 15, color: 'var(--ink, #231f1a)', minWidth: 0, overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-                            {v.name}
-                          </strong>
-                        </div>
-
-                        <div style={{ fontSize: 13, color: 'var(--mute, #6b6257)' }}>
-                          📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}
-                        </div>
-
-                        <div style={{ fontSize: 13, color: 'var(--ink, #231f1a)' }}>
-                          🏷️ {priceText}
-                        </div>
-
-                        <div style={{ fontSize: 12, color: 'var(--mute, #6b6257)' }}>
-                          🕒 {hoursText} · {ratingText}
-                        </div>
-
-                        {(card.flags || []).some((f) => f.code === 'allergy_unknown') && (
-                          <div
-                            style={{
-                              background: 'var(--warnbg, #fef3c7)',
-                              color: 'var(--warn, #92400e)',
-                              borderRadius: 8,
-                              padding: '6px 10px',
-                              fontSize: 12,
-                              marginTop: 4
-                            }}
-                          >
-                            ⚠️ Chưa đủ thông tin về dị ứng; hãy hỏi quán trước khi ăn
+                      return (
+                        <div
+                          key={v.id || idx}
+                          data-testid="venue-card"
+                          style={{
+                            backgroundColor: '#FFFFFF',
+                            border: '1px solid #DDE7E1',
+                            borderRadius: 14,
+                            padding: 12,
+                            display: 'grid',
+                            gap: 4
+                          }}
+                        >
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <span
+                              style={{
+                                backgroundColor: '#166B52',
+                                color: '#FFFFFF',
+                                fontWeight: 700,
+                                fontSize: 12,
+                                width: 22,
+                                height: 22,
+                                borderRadius: 11,
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center'
+                              }}
+                            >
+                              {card.label || String.fromCharCode(65 + idx)}
+                            </span>
+                            <strong style={{ fontSize: 14, color: '#17352B' }}>
+                              {v.name}
+                            </strong>
                           </div>
-                        )}
-                      </div>
-                    );
-                  })}
+                          <div style={{ fontSize: 12, color: '#62736D' }}>
+                            📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}
+                          </div>
+                          <div style={{ fontSize: 12, color: '#17352B' }}>
+                            🏷️ {priceText}
+                          </div>
+                          <div style={{ fontSize: 11, color: '#62736D' }}>
+                            🕒 {hoursText}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* CLARIFY BLOCK (Single Question Rule: EXACTLY ONE question card) */}
+                {clarifyBlock && (
+                  <ClarifyQuestionCard
+                    clarify={clarifyBlock}
+                    onPickOption={handlePickOption}
+                    onSubmitText={(txt) => handleSendMessage(txt)}
+                    busy={busy}
+                  />
+                )}
+
+                {/* CONFIRM SUMMARY BLOCK (with warnings & status) */}
+                {confirmSummaryBlock && (
+                  <ConfirmSummaryCard
+                    summary={confirmSummaryBlock}
+                    profile={chatState?.profile}
+                    onConfirmYes={handleConfirmYes}
+                    onConfirmNo={handleConfirmNo}
+                    busy={busy}
+                  />
+                )}
+              </div>
+            )}
+          </div>
+
+          {/* Tangible Polite Loading Indicator (Q06) */}
+          {busy && (
+            <div
+              data-testid="guided-loading-indicator"
+              role="status"
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                padding: '6px 14px',
+                backgroundColor: '#F0F6F2',
+                color: '#166B52',
+                borderRadius: 20,
+                fontSize: 13,
+                fontWeight: 600,
+                border: '1px solid #DDE7E1',
+                alignSelf: 'flex-start'
+              }}
+            >
+              <span
+                style={{
+                  display: 'inline-block',
+                  width: 12,
+                  height: 12,
+                  borderRadius: '50%',
+                  border: '2px solid #166B52',
+                  borderTopColor: 'transparent',
+                  animation: 'spin 0.8s linear infinite'
+                }}
+              />
+              <span>{busyMessage}</span>
+            </div>
+          )}
+
+          {/* Pinned Bottom Composer with Orange Send Button */}
+          <div style={{ paddingTop: 8, borderTop: '1px solid #F0F4EE', display: 'flex', flexDirection: 'column', gap: 6 }}>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSendMessage();
+              }}
+              style={{
+                display: 'flex',
+                gap: 8,
+                alignItems: 'center',
+                backgroundColor: '#F4F6F0',
+                border: '1px solid #DDE7E1',
+                borderRadius: 24,
+                padding: '4px 6px 4px 16px'
+              }}
+            >
+              <input
+                ref={inputRef}
+                type="text"
+                data-testid="guided-input"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                disabled={busy}
+                placeholder="Thêm yêu cầu cho chuyến đi…"
+                style={{
+                  flex: 1,
+                  minHeight: 40,
+                  border: 'none',
+                  backgroundColor: 'transparent',
+                  fontSize: 14,
+                  color: '#17352B',
+                  outline: 'none',
+                  padding: 0
+                }}
+              />
+              <button
+                type="submit"
+                data-testid="guided-send-btn"
+                disabled={busy || !inputText.trim()}
+                aria-label="Gửi yêu cầu"
+                style={{
+                  width: 44,
+                  height: 44,
+                  minWidth: 44,
+                  minHeight: 44,
+                  borderRadius: '50%',
+                  border: 'none',
+                  backgroundColor: inputText.trim() && !busy ? '#FF6B4A' : '#DDE7E1',
+                  color: '#FFFFFF',
+                  fontSize: 18,
+                  fontWeight: 700,
+                  cursor: inputText.trim() && !busy ? 'pointer' : 'default',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'background-color 0.15s ease',
+                  flexShrink: 0
+                }}
+              >
+                ➔
+              </button>
+            </form>
+
+            {/* Early AI Privacy Disclosure (Q05) */}
+            <div style={{ fontSize: 11, color: '#62736D', lineHeight: 1.4, padding: '0 4px' }}>
+              🔒 Yêu cầu bằng ngôn ngữ tự nhiên được chuyển tới trợ lý AI để trích xuất tiêu chí tour. Không lưu thông tin cá nhân.
+            </div>
+
+            {/* Trust line */}
+            <TrustDisclosure turn={latestTurnMeta} health={health} />
+          </div>
+        </section>
+
+        {/* RIGHT COLUMN: Tour Itinerary & Route Overview Panel */}
+        <section
+          style={{
+            display: (isDesktop || activeMobileTab === 'tour') ? 'flex' : 'none',
+            flexDirection: 'column',
+            gap: 20
+          }}
+        >
+          {/* Top Eyebrow, Title & Meta */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+            <div>
+              <div
+                style={{
+                  fontSize: 12,
+                  fontWeight: 700,
+                  letterSpacing: '1px',
+                  color: '#166B52',
+                  textTransform: 'uppercase',
+                  marginBottom: 4
+                }}
+              >
+                FOOD TOUR ĐỀ XUẤT
+              </div>
+              <h1
+                style={{
+                  fontSize: isDesktop ? 32 : 24,
+                  fontWeight: 800,
+                  color: '#17352B',
+                  margin: '0 0 6px 0',
+                  lineHeight: 1.2
+                }}
+              >
+                {showTour ? (tour.title || 'Một vòng Hoàn Kiếm ngon hết ý') : 'Hành trình ẩm thực Hà Nội'}
+              </h1>
+              <div style={{ fontSize: 13, color: '#62736D' }}>
+                {showTour
+                  ? `${stops[0]?.arrive ? `${stops[0].arrive}–${stops[stops.length - 1]?.depart || '20:30'}` : 'Thời gian linh hoạt'} • Thứ bảy • ${stops[0]?.district || 'Hoàn Kiếm'}`
+                  : 'Chưa có lịch trình được tạo • Vui lòng chọn hoặc nhập yêu cầu ở cột bên trái'}
+              </div>
+            </div>
+          </div>
+
+          {/* 3 Metric Cards */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 16
+            }}
+          >
+            {/* Metric 1 */}
+            <div
+              style={{
+                backgroundColor: '#F0F6F2',
+                border: '1px solid #DDE7E1',
+                borderRadius: 16,
+                padding: '16px 20px',
+                display: 'grid',
+                gap: 4
+              }}
+            >
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
+                {showTour ? `${stops.length} điểm` : '0 điểm'}
+              </div>
+              <div style={{ fontSize: 13, color: '#62736D' }}>
+                Quán được chọn
+              </div>
+            </div>
+
+            {/* Metric 2 */}
+            <div
+              style={{
+                backgroundColor: '#FAF2EA',
+                border: '1px solid #E8E2D8',
+                borderRadius: 16,
+                padding: '16px 20px',
+                display: 'grid',
+                gap: 4
+              }}
+            >
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
+                {showTour ? `${distanceKm} km` : '0 km'}
+              </div>
+              <div style={{ fontSize: 13, color: '#62736D' }}>
+                Tổng di chuyển
+              </div>
+            </div>
+
+            {/* Metric 3 */}
+            <div
+              style={{
+                backgroundColor: '#FFFFFF',
+                border: '1px solid #DDE7E1',
+                borderRadius: 16,
+                padding: '16px 20px',
+                display: 'grid',
+                gap: 4
+              }}
+            >
+              <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
+                {showTour ? budgetDisplay : 'Theo ngân sách'}
+              </div>
+              <div style={{ fontSize: 13, color: '#62736D' }}>
+                Ngân sách/người
+              </div>
+            </div>
+          </div>
+
+          {/* HONEST EMPTY STATE (When tour is not generated yet) */}
+          {!showTour && (
+            <div
+              data-testid="tour-empty-panel"
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderRadius: 24,
+                border: '1px solid #DDE7E1',
+                padding: 32,
+                display: 'grid',
+                gap: 24
+              }}
+            >
+              <div>
+                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#17352B', margin: '0 0 8px 0' }}>
+                  Lộ trình của bạn sẽ hiển thị tại đây
+                </h3>
+                <p style={{ fontSize: 14, color: '#62736D', margin: 0, lineHeight: 1.5 }}>
+                  Ứng dụng tuân thủ nguyên tắc trung thực bằng chứng: không hiển thị lịch trình giả định hoặc tự ý tạo tour trước khi bạn kiểm tra và xác nhận các điều kiện mong muốn.
+                </p>
+              </div>
+
+              {/* 3 Step Guide Box */}
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : '1fr',
+                  gap: 16
+                }}
+              >
+                <div style={{ backgroundColor: '#F0F6F2', borderRadius: 16, padding: 18, border: '1px solid #DDE7E1' }}>
+                  <div style={{ fontSize: 24, marginBottom: 8 }}>💬</div>
+                  <strong style={{ fontSize: 14, color: '#17352B', display: 'block', marginBottom: 4 }}>
+                    1. Trò chuyện & Nêu ý
+                  </strong>
+                  <p style={{ fontSize: 12, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
+                    Cho AI biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.
+                  </p>
                 </div>
-              )}
 
-              {/* CLARIFY BLOCK (Single Question Rule: EXACTLY ONE question card) */}
-              {clarifyBlock && (
-                <ClarifyQuestionCard
-                  clarify={clarifyBlock}
-                  onPickOption={handlePickOption}
-                  onSubmitText={(txt) => handleSendMessage(txt)}
-                  busy={busy}
-                />
-              )}
+                <div style={{ backgroundColor: '#F0F6F2', borderRadius: 16, padding: 18, border: '1px solid #DDE7E1' }}>
+                  <div style={{ fontSize: 24, marginBottom: 8 }}>🔍</div>
+                  <strong style={{ fontSize: 14, color: '#17352B', display: 'block', marginBottom: 4 }}>
+                    2. Xem lại & Xác nhận
+                  </strong>
+                  <p style={{ fontSize: 12, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
+                    Kiểm tra các thông tin đã hiểu, lưu ý về giờ/giá theo nguồn và bấm xác nhận.
+                  </p>
+                </div>
 
-              {/* CONFIRM SUMMARY BLOCK */}
-              {confirmSummaryBlock && (
-                <ConfirmSummaryCard
-                  summary={confirmSummaryBlock}
-                  profile={chatState?.profile}
-                  onConfirmYes={handleConfirmYes}
-                  onConfirmNo={handleConfirmNo}
-                  busy={busy}
-                />
-              )}
+                <div style={{ backgroundColor: '#F0F6F2', borderRadius: 16, padding: 18, border: '1px solid #DDE7E1' }}>
+                  <div style={{ fontSize: 24, marginBottom: 8 }}>🗺️</div>
+                  <strong style={{ fontSize: 14, color: '#17352B', display: 'block', marginBottom: 4 }}>
+                    3. Nhận lịch trình & Maps
+                  </strong>
+                  <p style={{ fontSize: 12, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
+                    Xem chi tiết từng điểm dừng, đổi quán linh hoạt và mở chỉ đường Google Maps miễn phí.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
 
-              {/* TOUR READY BLOCK */}
-              {showTour && (
+          {/* TOUR ITINERARY & ROUTE OVERVIEW (When tour is ready) */}
+          {showTour && (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: isDesktop ? '1fr 300px' : '1fr',
+                gap: 24,
+                alignItems: 'start'
+              }}
+            >
+              {/* Timeline Column */}
+              <div>
                 <GuidedTimeline
                   tour={tour}
                   allergies={currentAllergies}
-                  onChangeStop={() => handleFreeFormEdit({ id: 'change_stop', label: 'quán muốn đổi' })}
+                  lockedStops={lockedVenueIds}
+                  onReplaceStop={handleInitiateReplace}
+                  onChangeStop={() => {
+                    if (stops.length > 0) handleInitiateReplace(stops[0]);
+                  }}
                   onAdjustStops={() => handleFreeFormEdit({ id: 'adjust_stops', label: 'số lượng quán' })}
                   onRestart={handleRestart}
                 />
-              )}
-            </div>
+              </div>
 
-            {/* Bottom Stream Composer (available if tour is not ready yet) */}
-            {!showTour && !confirmSummaryBlock && (
-              <form
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage();
-                }}
+              {/* Secondary Route Overview Panel ("Bản đồ tuyến") */}
+              <aside
                 style={{
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 20,
+                  border: '1px solid #DDE7E1',
+                  padding: 20,
                   display: 'flex',
-                  gap: 8,
-                  alignItems: 'center',
-                  marginTop: 8,
-                  minWidth: 0,
-                  maxWidth: '100%'
+                  flexDirection: 'column',
+                  gap: 16,
+                  position: isDesktop ? 'sticky' : 'static',
+                  top: 104
                 }}
               >
-                <input
-                  ref={inputRef}
-                  type="text"
-                  data-testid="guided-input"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  disabled={busy}
-                  placeholder="Gõ trả lời hoặc yêu cầu thêm…"
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <div style={{ fontSize: 16, fontWeight: 700, color: '#17352B' }}>
+                    Bản đồ tuyến
+                  </div>
+                  <span
+                    style={{
+                      fontSize: 12,
+                      backgroundColor: '#F0F6F2',
+                      color: '#166B52',
+                      padding: '2px 10px',
+                      borderRadius: 12,
+                      fontWeight: 600,
+                      border: '1px solid #DDE7E1'
+                    }}
+                  >
+                    Đi bộ
+                  </span>
+                </div>
+
+                {/* Ordered Stops Subway-like List */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', paddingLeft: 8 }}>
+                  {stops.map((stop, idx) => (
+                    <div
+                      key={stop.venue_id || idx}
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: 12,
+                        padding: '12px 0',
+                        position: 'relative'
+                      }}
+                    >
+                      {/* Connecting vertical line */}
+                      {idx < stops.length - 1 && (
+                        <div
+                          style={{
+                            position: 'absolute',
+                            left: 13,
+                            top: 26,
+                            bottom: -10,
+                            width: 3,
+                            backgroundColor: '#166B52',
+                            zIndex: 1
+                          }}
+                        />
+                      )}
+                      {/* Number circle */}
+                      <div
+                        style={{
+                          width: 28,
+                          height: 28,
+                          borderRadius: '50%',
+                          backgroundColor: idx === stops.length - 1 ? '#FF6B4A' : '#166B52',
+                          color: '#FFFFFF',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          fontWeight: 700,
+                          fontSize: 12,
+                          zIndex: 2,
+                          flexShrink: 0
+                        }}
+                      >
+                        {idx + 1}
+                      </div>
+                      <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
+                        <div style={{ fontSize: 13, fontWeight: 700, color: '#17352B' }}>
+                          {stop.name}
+                        </div>
+                        <div style={{ fontSize: 11, color: '#62736D' }}>
+                          {stop.arrive ? `${stop.arrive} • ` : ''}{stop.district || 'Hà Nội'}
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Local tip card */}
+                <div
                   style={{
-                    flex: 1,
-                    minHeight: 48,
-                    border: '1px solid var(--line, #e6dfd3)',
-                    borderRadius: 12,
-                    padding: '0 16px',
-                    fontSize: 15,
-                    color: 'var(--ink, #231f1a)',
-                    background: '#fff',
-                    outline: 'none',
-                    boxSizing: 'border-box',
-                    minWidth: 0
-                  }}
-                />
-                <button
-                  type="submit"
-                  data-testid="guided-send-btn"
-                  disabled={busy || !inputText.trim()}
-                  style={{
-                    minHeight: 48,
-                    padding: '0 22px',
-                    borderRadius: 12,
-                    border: 'none',
-                    background: inputText.trim() && !busy ? 'var(--accent, #c2410c)' : 'var(--chip, #f3ece0)',
-                    color: inputText.trim() && !busy ? '#fff' : 'var(--mute, #6b6257)',
-                    fontSize: 15,
-                    fontWeight: 700,
-                    cursor: inputText.trim() && !busy ? 'pointer' : 'default',
-                    flexShrink: 0
+                    backgroundColor: '#166B52',
+                    color: '#FFFFFF',
+                    borderRadius: 14,
+                    padding: 14,
+                    fontSize: 12,
+                    lineHeight: 1.45
                   }}
                 >
-                  Gửi
-                </button>
-              </form>
-            )}
+                  <strong style={{ display: 'block', marginBottom: 4, color: '#DFF46A' }}>
+                    Mẹo nhỏ:
+                  </strong>
+                  Khung giờ tối quanh Phố Cổ thường đông đúc; bạn nên xuất phát trước 18:30 để có chỗ ngồi thoải mái nhất.
+                </div>
+              </aside>
+            </div>
+          )}
+        </section>
+      </main>
 
-            {/* Exactly ONE quiet trust line under stream */}
-            <TrustDisclosure turn={latestTurnMeta} health={health} />
-          </div>
-        )}
-      </div>
+      {/* Stop Replacement Modal (Server Diff & Lock support) */}
+      <ReplaceDiffModal
+        isOpen={isReplaceModalOpen}
+        oldStop={replaceTargetStop}
+        resultDiff={replaceResultDiff}
+        lockedStops={lockedVenueIds}
+        onConfirm={handleConfirmReplace}
+        onCancel={handleCloseReplaceModal}
+        busy={busy}
+      />
     </div>
   );
 }

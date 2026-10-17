@@ -45,25 +45,27 @@ export default function UnderstoodCard({
 
   // Canonical rows list to display
   const canonicalOrder = [
-    { id: 'area', label: 'Khu vực', fallback: 'Hồ Gươm' },
-    { id: 'party', label: 'Số người', fallback: '2' },
-    { id: 'stops', label: 'Số quán', fallback: '3' },
-    { id: 'duration', label: 'Tổng thời gian', fallback: '120 phút' },
-    { id: 'day_part', label: 'Buổi', fallback: 'Tối nay' },
-    { id: 'time', label: 'Bắt đầu lúc', fallback: null },
-    { id: 'budget', label: 'Ngân sách', fallback: null },
-    { id: 'dish', label: 'Thích', fallback: null }
+    { id: 'area', label: 'Khu vực' },
+    { id: 'party', label: 'Số người' },
+    { id: 'stops', label: 'Số quán' },
+    { id: 'duration', label: 'Tổng thời gian' },
+    { id: 'day_part', label: 'Buổi' },
+    { id: 'time', label: 'Bắt đầu lúc' },
+    { id: 'budget', label: 'Ngân sách' },
+    { id: 'dish', label: 'Thích' }
   ];
 
   // Merge items from props with canonical order
   const displayRows = canonicalOrder.map((c) => {
     const fromProps = itemsMap[c.id];
-    if (fromProps) return fromProps;
+    if (fromProps && fromProps.value !== null && fromProps.value !== undefined && fromProps.value !== '') {
+      return fromProps;
+    }
     return {
       id: c.id,
       label: c.label,
-      value: c.fallback,
-      status: c.fallback ? 'user' : 'missing',
+      value: null,
+      status: 'missing',
       editable: true
     };
   });
@@ -105,7 +107,8 @@ export default function UnderstoodCard({
 
       {/* Rows */}
       {displayRows.map((item, idx) => {
-        const isMissing = item.status === 'missing' || !item.value;
+        const hasValue = item.value !== null && item.value !== undefined && item.value !== '';
+        const isMissing = item.status === 'missing' || !hasValue;
         const isEditing = editingRowKey === item.id;
 
         return (
@@ -131,7 +134,7 @@ export default function UnderstoodCard({
                     fontWeight: isMissing ? 600 : 400
                   }}
                 >
-                  {item.value || 'Chưa chọn'}
+                  {hasValue ? item.value : 'Chưa chọn'}
                 </span>
                 <button
                   type="button"
