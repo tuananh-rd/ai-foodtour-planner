@@ -23,4 +23,11 @@ any ambiguous-label caveats will be recorded separately.
 
 ## First run
 
-Pending; no evaluation has been executed at this freeze checkpoint.
+Executed once on baseline `23fc905`, before fixes or engine inspection. Exact stdout summaries:
+
+```json
+{"mode": "rules", "cases": 190, "safety_pass": 180, "safety_pct": 94.737, "safety_failures": {"allergy_missing": 5, "allergy_cue_not_asked": 3, "allergy_false_positive": 3}, "all_slots_correct": 127, "all_slots_pct": 66.842, "slot_accuracy_pct": {"stops": 94.737, "day_part": 93.684, "budget_vnd": 96.842, "budget_scope": 100.0, "duration_min": 90.526, "max_leg_min": 90.526, "party_size": 98.421, "start_time_set": 100.0, "interests": 93.158, "allergies": 95.789, "allergy_question": 98.421}, "clarify_per_case": 0.7211, "llm_calls": 0, "overasking_count": 0}
+{"mode": "failed_provider", "cases": 190, "safety_pass": 124, "safety_pct": 65.263, "safety_failures": {"exception": 63, "allergy_false_positive": 3, "allergy_cue_not_asked": 1}, "all_slots_correct": 103, "all_slots_pct": 54.211, "slot_accuracy_pct": {"stops": 63.684, "day_part": 65.789, "budget_vnd": 66.842, "budget_scope": 66.842, "duration_min": 63.684, "max_leg_min": 63.684, "party_size": 66.842, "start_time_set": 66.842, "interests": 60.0, "allergies": 65.263, "allergy_question": 66.316}, "clarify_per_case": 0.4579, "llm_calls": 0, "overasking_count": 0}
+```
+
+Full per-message failures: `qa/chat/u5a_first_run.json`. These first-run results are immutable. The literal-None fake provider pass is separate from the rules pass; its exceptions will be investigated against the callable boundary rather than hidden.
