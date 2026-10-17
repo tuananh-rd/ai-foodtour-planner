@@ -687,8 +687,10 @@ export default function GuidedLayout({
         lastFocusedKeyRef.current = 'confirm';
         const confirmYesBtn = document.querySelector('[data-testid="confirm-yes-btn"]');
         if (confirmYesBtn) {
-          confirmYesBtn.focus();
-          confirmYesBtn.scrollIntoView({ block: 'nearest' });
+          confirmYesBtn.focus({ preventScroll: true });
+          confirmYesBtn.closest('[data-testid="confirm-summary-card"]')?.scrollIntoView({ block: 'start' });
+          const headerHeight = document.querySelector('header')?.getBoundingClientRect().height || 0;
+          window.scrollBy(0, -headerHeight - 12);
         }
       }
       return;
@@ -975,9 +977,9 @@ export default function GuidedLayout({
             boxShadow: '0 4px 20px rgba(22, 107, 82, 0.04)',
             padding: 24,
             boxSizing: 'border-box',
-            minHeight: isDesktop ? 780 : 'auto',
-            maxHeight: isDesktop ? 'calc(100vh - 144px)' : 'none',
-            position: isDesktop ? 'sticky' : 'static',
+            minHeight: isDesktop && !confirmSummaryBlock ? 780 : 'auto',
+            maxHeight: isDesktop && !confirmSummaryBlock ? 'calc(100vh - 144px)' : 'none',
+            position: isDesktop && !confirmSummaryBlock ? 'sticky' : 'static',
             top: 104,
             gap: 16
           }}
@@ -1353,7 +1355,7 @@ export default function GuidedLayout({
 
           {/* Pinned Bottom Composer with Orange Send Button */}
           <div style={{ paddingTop: 8, borderTop: '1px solid #F0F4EE', display: 'flex', flexDirection: 'column', gap: 6 }}>
-            <form
+            {!confirmSummaryBlock && <form
               onSubmit={(e) => {
                 e.preventDefault();
                 handleSendMessage();
@@ -1413,7 +1415,7 @@ export default function GuidedLayout({
               >
                 ➔
               </button>
-            </form>
+            </form>}
 
             {/* Early AI Privacy Disclosure (Q05) */}
             <div style={{ fontSize: 11, color: '#62736D', lineHeight: 1.4, padding: '0 4px' }}>
