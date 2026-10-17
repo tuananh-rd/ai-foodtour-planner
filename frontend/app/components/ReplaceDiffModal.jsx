@@ -196,7 +196,7 @@ export default function ReplaceDiffModal({
         >
           <strong>🔒 Cơ chế Khóa hành trình (Tour Locking):</strong>
           <p style={{ marginTop: 2, marginBottom: 0 }}>
-            Chỉ vị trí điểm dừng #{oldStop.order} được đổi. Tất cả {lockedStops.length} điểm dừng còn lại ({lockedStops.join(', ') || 'các quán khác'}) được giữ nguyên tuyệt đối về vị trí và thứ tự.
+            Chỉ đổi quán tại điểm dừng #{oldStop.order}; giữ nguyên các quán khác và thứ tự của chúng. Thời gian và chặng đi ước tính sẽ được tính lại.
           </p>
         </div>
 
