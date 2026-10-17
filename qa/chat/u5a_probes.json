@@ -1,0 +1,100 @@
+{
+  "compact": {
+    "phase": "discover",
+    "pending": null,
+    "known": [
+      "area",
+      "duration_min",
+      "vehicle",
+      "tastes"
+    ],
+    "results": 0,
+    "shortlist": 1,
+    "has_allergy": true
+  },
+  "compact_sentinel_leak": false,
+  "growth_600": {
+    "turns": 8,
+    "asked": 0,
+    "conflicts": 0,
+    "allergies": 0
+  },
+  "conflicts_peak": 0,
+  "conflicts_after_reload": 0,
+  "timing_worst": [
+    {
+      "label": "long:16000:4",
+      "chars": 80003,
+      "max_ms": 1569.3453,
+      "ms_per_1000": 19.6161
+    },
+    {
+      "label": "long:16000:1",
+      "chars": 32010,
+      "max_ms": 789.489,
+      "ms_per_1000": 24.6638
+    },
+    {
+      "label": "long:16000:5",
+      "chars": 64014,
+      "max_ms": 773.8913,
+      "ms_per_1000": 12.0894
+    },
+    {
+      "label": "long:16000:0",
+      "chars": 32000,
+      "max_ms": 607.2384,
+      "ms_per_1000": 18.9762
+    },
+    {
+      "label": "long:16000:3",
+      "chars": 16001,
+      "max_ms": 284.8106,
+      "ms_per_1000": 17.7996
+    },
+    {
+      "label": "long:4000:4",
+      "chars": 20003,
+      "max_ms": 154.5414,
+      "ms_per_1000": 7.7259
+    },
+    {
+      "label": "long:16000:2",
+      "chars": 16011,
+      "max_ms": 110.092,
+      "ms_per_1000": 6.876
+    },
+    {
+      "label": "long:4000:5",
+      "chars": 16014,
+      "max_ms": 84.3504,
+      "ms_per_1000": 5.2673
+    },
+    {
+      "label": "long:4000:1",
+      "chars": 8010,
+      "max_ms": 68.3711,
+      "ms_per_1000": 8.5357
+    },
+    {
+      "label": "long:4000:0",
+      "chars": 8000,
+      "max_ms": 56.1968,
+      "ms_per_1000": 7.0246
+    },
+    {
+      "label": "long:1000:4",
+      "chars": 5003,
+      "max_ms": 37.1759,
+      "ms_per_1000": 7.4307
+    },
+    {
+      "label": "long:1000:1",
+      "chars": 2010,
+      "max_ms": 32.1349,
+      "ms_per_1000": 15.9875
+    }
+  ],
+  "timing_violations": [],
+  "corpus_p95_ms": 2.8351
+}

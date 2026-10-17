@@ -1,0 +1,1054 @@
+{
+  "summary": {
+    "mode": "outcome_exhausted",
+    "cases": 190,
+    "safety_pass": 180,
+    "safety_pct": 94.737,
+    "safety_failures": {
+      "allergy_missing": 5,
+      "allergy_cue_not_asked": 3,
+      "allergy_false_positive": 3
+    },
+    "all_slots_correct": 127,
+    "all_slots_pct": 66.842,
+    "slot_accuracy_pct": {
+      "stops": 94.737,
+      "day_part": 93.684,
+      "budget_vnd": 96.842,
+      "budget_scope": 100.0,
+      "duration_min": 90.526,
+      "max_leg_min": 90.526,
+      "party_size": 98.421,
+      "start_time_set": 100.0,
+      "interests": 93.158,
+      "allergies": 95.789,
+      "allergy_question": 98.421
+    },
+    "clarify_per_case": 0.7211,
+    "llm_calls": 0,
+    "overasking_count": 0
+  },
+  "failures": [
+    {
+      "id": "v1-050",
+      "text": "Mình không ăn được lạc",
+      "prior": [],
+      "safety": [
+        "allergy_missing"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [
+            "đậu phộng"
+          ],
+          "actual": []
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-051",
+      "text": "Em kiêng đậu phụng",
+      "prior": [],
+      "safety": [
+        "allergy_missing"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [
+            "đậu phộng"
+          ],
+          "actual": []
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-054",
+      "text": "Mình không ăn được sữa",
+      "prior": [],
+      "safety": [
+        "allergy_missing"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [
+            "sữa"
+          ],
+          "actual": []
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-055",
+      "text": "Em kiêng trứng",
+      "prior": [],
+      "safety": [
+        "allergy_missing"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [
+            "trứng"
+          ],
+          "actual": []
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-062",
+      "text": "Tôi không ăn được một số thứ",
+      "prior": [],
+      "safety": [
+        "allergy_cue_not_asked"
+      ],
+      "mismatches": {
+        "allergy_question": {
+          "expected": true,
+          "actual": false
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-063",
+      "text": "Mình kiêng vài thứ",
+      "prior": [],
+      "safety": [
+        "allergy_cue_not_asked"
+      ],
+      "mismatches": {
+        "allergy_question": {
+          "expected": true,
+          "actual": false
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-067",
+      "text": "Nếu tôi dị ứng trứng thì sao?",
+      "prior": [],
+      "safety": [
+        "allergy_false_positive"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [],
+          "actual": [
+            "trứng"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-073",
+      "text": "Tôi bị di ứng tôm",
+      "prior": [],
+      "safety": [
+        "allergy_missing"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [
+            "tôm"
+          ],
+          "actual": []
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-076",
+      "text": "Tôi dị ứng với thứ rang giòn",
+      "prior": [],
+      "safety": [
+        "allergy_false_positive",
+        "allergy_cue_not_asked"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [],
+          "actual": [
+            "thứ rang giòn"
+          ]
+        },
+        "allergy_question": {
+          "expected": true,
+          "actual": false
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-080",
+      "text": "Tôi không dị ứng gì cả, thích phở",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "phở"
+          ],
+          "actual": []
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-082",
+      "text": "Lịch trình trong 120 phút; giữa các quán tối đa 10 phút đi bộ",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 120,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 10,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-083",
+      "text": "Đi chơi ăn uống tổng 180 phút, mỗi chặng 15 phút",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 180,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 15,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-084",
+      "text": "Tour 90 phút; đi bộ không quá 20 phút giữa hai quán",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": null,
+          "actual": 2
+        },
+        "duration_min": {
+          "expected": 90,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 20,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-086",
+      "text": "Lich trinh trong 180 phut; giua cac quan toi da 10 phut di bo",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 180,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 10,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-087",
+      "text": "Đi chơi ăn uống tổng 90 phút, mỗi chặng 15 phút",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 90,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 15,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-088",
+      "text": "Tour 120 phút; đi bộ không quá 20 phút giữa hai quán",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": null,
+          "actual": 2
+        },
+        "duration_min": {
+          "expected": 120,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 20,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-090",
+      "text": "Lịch trình trong 90 phút; giữa các quán tối đa 10 phút đi bộ",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 90,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 10,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-091",
+      "text": "Di choi an uong tong 120 phut, moi chang 15 phut",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 120,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 15,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-092",
+      "text": "Tour 180 phút; đi bộ không quá 20 phút giữa hai quán",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": null,
+          "actual": 2
+        },
+        "duration_min": {
+          "expected": 180,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 20,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-094",
+      "text": "Lịch trình trong 120 phút; giữa các quán tối đa 10 phút đi bộ",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 120,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 10,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-095",
+      "text": "Đi chơi ăn uống tổng 180 phút, mỗi chặng 15 phút",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 180,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 15,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-096",
+      "text": "Tour 90 phut; di bo khong qua 20 phut giua hai quan",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": null,
+          "actual": 2
+        },
+        "duration_min": {
+          "expected": 90,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 20,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-098",
+      "text": "Lịch trình trong 180 phút; giữa các quán tối đa 10 phút đi bộ",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 180,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 10,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-099",
+      "text": "Đi chơi ăn uống tổng 90 phút, mỗi chặng 15 phút",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 90,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 15,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-100",
+      "text": "Tour 120 phút; đi bộ không quá 20 phút giữa hai quán",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": null,
+          "actual": 2
+        },
+        "duration_min": {
+          "expected": 120,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 20,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-102",
+      "text": "Lịch trình trong 90 phút; giữa các quán tối đa 10 phút đi bộ",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 90,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 10,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-103",
+      "text": "Đi chơi ăn uống tổng 120 phút, mỗi chặng 15 phút",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "duration_min": {
+          "expected": 120,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 15,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-104",
+      "text": "Tour 180 phút; đi bộ không quá 20 phút giữa hai quán",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": null,
+          "actual": 2
+        },
+        "duration_min": {
+          "expected": 180,
+          "actual": null
+        },
+        "max_leg_min": {
+          "expected": 20,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-106",
+      "text": "Ngân sách nửa triệu cho 2 người. Hỏi trước nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "budget_vnd": {
+          "expected": 500000,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-107",
+      "text": "Ngân sách nua trieu cho 2ng. Hỏi trước nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "budget_vnd": {
+          "expected": 500000,
+          "actual": null
+        },
+        "party_size": {
+          "expected": 2,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-114",
+      "text": "Mình có ngân sách nửa triệu cho 2 người. Hỏi trước nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "budget_vnd": {
+          "expected": 500000,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-115",
+      "text": "Mình có ngân sách nua trieu cho 2ng. Hỏi trước nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "budget_vnd": {
+          "expected": 500000,
+          "actual": null
+        },
+        "party_size": {
+          "expected": 2,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-122",
+      "text": "Tour với ngân sách nửa triệu cho 2 người. Hỏi trước nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "budget_vnd": {
+          "expected": 500000,
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-123",
+      "text": "Tour với ngân sách nua trieu cho 2ng. Hỏi trước nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "budget_vnd": {
+          "expected": 500000,
+          "actual": null
+        },
+        "party_size": {
+          "expected": 2,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-129",
+      "text": "Muốn ăn tour tối nay",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "evening",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-130",
+      "text": "Muốn ăn tour sáng mai",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "morning",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-131",
+      "text": "Muốn ăn tour trưa nay",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "noon",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-132",
+      "text": "Muốn ăn tour chiều mai",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "afternoon",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-133",
+      "text": "Muốn ăn tour đêm khuya",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "late",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-134",
+      "text": "Muốn ăn tour 7h tối",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "evening",
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-138",
+      "text": "Muốn ăn tour toi nay",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "evening",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-139",
+      "text": "Muốn ăn tour chieu mai",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "afternoon",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-140",
+      "text": "Muốn ăn tour sang mai",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "morning",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-142",
+      "text": "Muốn ăn tour tối mai",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "evening",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-143",
+      "text": "Muốn ăn tour trưa mai",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "noon",
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-144",
+      "text": "Muốn ăn tour bắt đầu lúc 7 giờ tối",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "day_part": {
+          "expected": "evening",
+          "actual": null
+        }
+      },
+      "pending": "area"
+    },
+    {
+      "id": "v1-146",
+      "text": "Tôi muốn ăn tour ba điểm",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": 3,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-148",
+      "text": "Tôi muốn ăn tour bốn điểm",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": 4,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-154",
+      "text": "Tôi muốn ăn tour 2 điểm",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": 2,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-156",
+      "text": "Tôi muốn ăn tour 5 điểm",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "stops": {
+          "expected": 5,
+          "actual": null
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-161",
+      "text": "Tôi không thích bún, thích phở nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "phở"
+          ],
+          "actual": [
+            "phở nhé"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-162",
+      "text": "Mình ghét bún nhưng thích bún chả nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bún chả"
+          ],
+          "actual": [
+            "bún chả nhé"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-163",
+      "text": "Không thích phở, thích bánh mì nhé.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bánh mì"
+          ],
+          "actual": [
+            "bánh mì nhé"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-165",
+      "text": "Tôi không thích bún, thích phở nha.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "phở"
+          ],
+          "actual": [
+            "phở nha"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-166",
+      "text": "Mình ghét bún nhưng thích bún chả nha.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bún chả"
+          ],
+          "actual": [
+            "bún chả nha"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-167",
+      "text": "Không thích phở, thích bánh mì nha.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bánh mì"
+          ],
+          "actual": [
+            "bánh mì nha"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-169",
+      "text": "Tôi không thích bún, thích phở đó.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "phở"
+          ],
+          "actual": [
+            "phở đó"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-170",
+      "text": "Mình ghét bún nhưng thích bún chả đó.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bún chả"
+          ],
+          "actual": [
+            "bún chả đó"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-171",
+      "text": "Không thích phở, thích bánh mì đó.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bánh mì"
+          ],
+          "actual": [
+            "bánh mì đó"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-173",
+      "text": "Tôi không thích bún, thích phở ạ.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "phở"
+          ],
+          "actual": [
+            "phở ạ"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-174",
+      "text": "Mình ghét bún nhưng thích bún chả ạ.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bún chả"
+          ],
+          "actual": [
+            "bún chả ạ"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-175",
+      "text": "Không thích phở, thích bánh mì ạ.",
+      "prior": [],
+      "safety": [],
+      "mismatches": {
+        "interests": {
+          "expected": [
+            "bánh mì"
+          ],
+          "actual": [
+            "bánh mì ạ"
+          ]
+        }
+      },
+      "pending": null
+    },
+    {
+      "id": "v1-190",
+      "text": "Tôi không bị dị ứng gì cả",
+      "prior": [
+        "Tôi dị ứng lạc"
+      ],
+      "safety": [
+        "allergy_false_positive"
+      ],
+      "mismatches": {
+        "allergies": {
+          "expected": [],
+          "actual": [
+            "lạc"
+          ]
+        }
+      },
+      "pending": null
+    }
+  ],
+  "overasking": []
+}

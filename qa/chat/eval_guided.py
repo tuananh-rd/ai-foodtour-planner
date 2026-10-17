@@ -58,7 +58,11 @@ def safety_failures(case,r,llm_none):
 def evaluate(mode='rules', cases=None):
     eng=new_engine(); cases=cases or load_cases(); correct=Counter(); safety=Counter()
     rows=[]; clarifies=0; all_ok=0; safe_ok=0; calls=0; overasking=[]
-    def failed_llm(*args): return None
+    def failed_llm(*args):
+        if mode=='outcome_exhausted':
+            from app.chat.llm_understand import Outcome
+            return Outcome(None,0,'exhausted')
+        return None
     llm=None if mode=='rules' else failed_llm
     for case in cases:
         st,pr=ChatState(),Preferences()

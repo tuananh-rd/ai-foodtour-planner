@@ -1,0 +1,39 @@
+{
+  "mutation": "one_clarify",
+  "tests_run": 43,
+  "failures": [
+    "tests.chat.test_u0_s0.Escalation.test_a11b_unreadable_allergy_cue_consults_gemini_once_then_asks"
+  ],
+  "errors": [],
+  "corpus": {
+    "mode": "rules",
+    "cases": 190,
+    "safety_pass": 167,
+    "safety_pct": 87.895,
+    "safety_failures": {
+      "allergy_missing": 5,
+      "multiple_clarify": 13,
+      "allergy_cue_not_asked": 3,
+      "allergy_false_positive": 3
+    },
+    "all_slots_correct": 127,
+    "all_slots_pct": 66.842,
+    "slot_accuracy_pct": {
+      "stops": 94.737,
+      "day_part": 93.684,
+      "budget_vnd": 96.842,
+      "budget_scope": 100.0,
+      "duration_min": 90.526,
+      "max_leg_min": 90.526,
+      "party_size": 98.421,
+      "start_time_set": 100.0,
+      "interests": 93.158,
+      "allergies": 95.789,
+      "allergy_question": 98.421
+    },
+    "clarify_per_case": 0.7895,
+    "llm_calls": 0,
+    "overasking_count": 0
+  },
+  "test_output": "======================================================================\nFAIL: test_a11b_unreadable_allergy_cue_consults_gemini_once_then_asks (tests.chat.test_u0_s0.Escalation.test_a11b_unreadable_allergy_cue_consults_gemini_once_then_asks)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\backend\\tests\\chat\\test_u0_s0.py\", line 123, in test_a11b_unreadable_allergy_cue_consults_gemini_once_then_asks\n    self.assertEqual(len([b for b in r.blocks if b[\"type\"] == \"clarify\"]), 1)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: 2 != 1\n\n----------------------------------------------------------------------\nRan 43 tests in 0.589s\n\nFAILED (failures=1)\n"
+}
