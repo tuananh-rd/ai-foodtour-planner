@@ -97,6 +97,8 @@ class ChatEngine:
                 if cand:
                     R.understanding = "cache" if out.calls == 0 else "llm"
                     u = self._merge(u, cand, R, text or "") if self.guided else cand
+            elif reason in ("uncovered", "multi_clause") and self.guided:
+                R.blocks.append(notice_b("info", "llm_unavailable", "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."))
             if u.intent == "UNKNOWN" and not st.pending:
                 u = self._fragment(text or "", st, u)  # dish-name-only / "A thôi"-style fragments
             st.remember("user", text or "", u.intent)
