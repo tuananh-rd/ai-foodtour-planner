@@ -133,11 +133,11 @@ class ChatState:
         st.pending = Pending.from_json(d["pending"]) if d.get("pending") else None
         st.turn_count = int(d.get("turn_count", 0))
         st.turns = list(d.get("turns", []))[-MAX_TURNS:]
-        st.asked = list(d.get("asked", []))
+        st.asked = list(d.get("asked", []))[-20:]
         st.llm_used = int(d.get("llm_used", 0))
         st.tour_stale = bool(d.get("tour_stale", False))
         st.goal = d.get("goal")
-        st.conflicts = [c for c in d.get("conflicts", []) if isinstance(c, dict)][:4]
+        st.conflicts = [c for c in d.get("conflicts", []) if isinstance(c, dict)][:8]
         st.allergy_unresolved = bool(d.get("allergy_unresolved", False))
         return st
 

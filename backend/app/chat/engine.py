@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import copy
 import re
+from types import SimpleNamespace
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from typing import Callable, Optional
@@ -74,7 +75,9 @@ class ChatEngine:
                 R.error = "invalid_action"
                 return R
         else:
-            u = understand(text or "", st, self.gz, prefs)
+            u = understand(text or "", st, self.gz, prefs, self.guided)
+            if self.guided and u.intent == "UNKNOWN" and u.source == "rules" and not st.pending and any(k in u.patch for k in ("stops", "day_part", "interests", "duration_min", "max_leg_min", "party_size", "budget_vnd", "start_time", "end_time", "vehicle")):
+                u = Understanding("UPDATE_PROFILE", u.patch, [], 0.8)  # "Muốn ăn tour tối nay": slots only, nothing to ask about the intent
             if self.guided:
                 R.coverage = self._signals(text or "", u, st)
             reason = "low_conf" if u.confidence < CONFIDENT else (
@@ -83,6 +86,8 @@ class ChatEngine:
             R.trigger_reason = reason
             if reason and llm is not None:
                 out = llm(text or "", self.compact(st), st.llm_used)  # app.chat.llm_understand.Outcome
+                if out is None or not hasattr(out, "calls"):
+                    out = SimpleNamespace(data=None, calls=0, status="error")  # a misbehaving callable must degrade to rules
                 R.llm_calls = out.calls
                 st.llm_used += out.calls
                 llm_status = out.status or llm_status
@@ -91,7 +96,7 @@ class ChatEngine:
                     R.blocks.append(notice_b("info", "llm_unavailable", "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."))
                 if cand:
                     R.understanding = "cache" if out.calls == 0 else "llm"
-                    u = self._merge(u, cand, R) if self.guided else cand
+                    u = self._merge(u, cand, R, text or "") if self.guided else cand
             if u.intent == "UNKNOWN" and not st.pending:
                 u = self._fragment(text or "", st, u)  # dish-name-only / "A thôi"-style fragments
             st.remember("user", text or "", u.intent)
@@ -220,6 +225,10 @@ class ChatEngine:
         if t == "edit_profile":
             patch = {k: v for k, v in (a.get("patch") or {}).items() if k in
                      ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min", "vehicle", "max_leg_min", "audience")}
+            ranges = {"party_size": (1, 20), "budget_vnd": (1, 100_000_000), "duration_min": (30, 720), "max_leg_min": (3, 60)}
+            for k, (lo, hi) in ranges.items():
+                if k in patch and not (isinstance(patch[k], int) and not isinstance(patch[k], bool) and lo <= patch[k] <= hi):
+                    return None  # same bounds as llm_understand.RANGES: a direct action cannot widen what text/LLM may set
             return Understanding("UPDATE_PROFILE", patch, [], 1.0, "action") if patch else None
         if t == "request_plan":
             return Understanding("REQUEST_PLAN", {}, [], 1.0, "action")
@@ -244,6 +253,7 @@ class ChatEngine:
         p = st.pending
         n = sum(1 for a in st.asked if a.get("pending_id") == p.pending_id)
         st.asked.append({"pending_id": p.pending_id, "turn": st.turn_count})
+        st.asked = st.asked[-20:]
         labels = ", ".join(o["label"] for o in p.options[:4])
         if p.slot == "area":
             tail = (["Nếu chưa chắc, cứ chọn một quận gần bạn (" + labels + ") hoặc bấm \"Dùng vị trí của tôi\"; sau này sửa được.",
@@ -316,7 +326,7 @@ class ChatEngine:
         return coverage.audit(eff, f, patch, allergy_terms=sp.allergies, allergy_negated=sp.negated or bool(sp.removed),
                               has_budget=st.profile["budget"].known(), has_party=st.profile["party_size"].known())
 
-    def _merge(self, rules: Understanding, cand: Understanding, R) -> Understanding:
+    def _merge(self, rules: Understanding, cand: Understanding, R, text: str = "") -> Understanding:
         """Rules stay in charge of what they captured. The LLM may add what they missed; numbers/times/money that disagree
         are asked, never picked silently; allergy terms are unioned and the LLM-only ones need the user's confirmation."""
         if rules.confidence < CONFIDENT:
@@ -326,6 +336,13 @@ class ChatEngine:
             for k, v in cand.patch.items():
                 if k not in base.patch:
                     base.patch[k] = v
+        f = fold_uncached(effective_text(text))
+        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|theo nhom|theo nguoi|tong|chung|mot nguoi|ca ban|ca hoi",
+                    "start_time": r"\d{1,2}\s*(?:h|gio|:)|ruoi", "end_time": r"\d{1,2}\s*(?:h|gio|:)|ruoi"}
+        for k, rx in grounded.items():
+            if k not in rules.patch and k in base.patch and not re.search(rx, f):
+                base.patch.pop(k, None)  # the model may not decide what the user never said (contract v1.9 rule 4)
+        base.extra["ai_keys"] = [k for k in base.patch if k not in rules.patch and k not in ("area", "location", "option", "refs")]
         conflicts = {}
         for k in ("party_size", "budget_vnd", "duration_min", "start_time", "end_time", "stops", "max_leg_min"):
             if k in rules.patch and k in cand.patch and rules.patch[k] != cand.patch[k]:
@@ -355,17 +372,26 @@ class ChatEngine:
     def _guided_after(self, R, u: Understanding, snap0: str, text: str) -> None:
         """After the intent handler ran: apply the slots it ignores, add LLM-only allergies, then ask ONE next thing."""
         st = R.state
-        if R.intent in PASSIVE and R.intent != "ANSWER_PENDING" or R.plan_request or st.phase == "planned" and R.intent != "UPDATE_PROFILE":
+        extra_keys = {k: v for k, v in u.patch.items() if k in ("stops", "day_part", "interests", "_stops_rejected")}
+        if R.intent in ("SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID"):  # their handlers ignore plain profile slots (budget stays a search price cap there)
+            extra_keys.update({k: v for k, v in u.patch.items() if k in ("duration_min", "max_leg_min", "start_time", "end_time", "vehicle", "party_size", "audience")})
+        if R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID", "GREET_OR_SMALLTALK") and extra_keys \
+                and not R.plan_request:
+            self._apply_patch(R, extra_keys)
+        if R.intent in PASSIVE and R.intent not in ("ANSWER_PENDING", "GREET_OR_SMALLTALK") or R.plan_request or st.phase == "planned" and R.intent != "UPDATE_PROFILE":
             return
         eff = effective_text(text)
-        extra_keys = {k: v for k, v in u.patch.items() if k in ("stops", "day_part", "interests", "_stops_rejected")}
-        if R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID") and extra_keys:
-            self._apply_patch(R, extra_keys)
         for term in u.extra.get("ai_allergies") or ():
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
                 st.allergies.append(Allergy(term, allergens.family_of(term), "ai_unconfirmed"))
         if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH"):
             st.goal = "tour"
+        ai_map = {"party_size": "party_size", "budget_vnd": "budget", "duration_min": "duration_min", "max_leg_min": "max_leg_min", "start_time": "start_time",
+                  "end_time": "end_time", "vehicle": "vehicle", "audience": "audience", "stops": "stops", "day_part": "day_part", "interests": "tastes"}
+        for key in u.extra.get("ai_keys") or ():
+            fld = st.profile.get(ai_map.get(key, ""))
+            if fld is not None and fld.known() and fld.source == "user_said" and fld.turn == st.turn_count:
+                fld.source, fld.confirmed = "ai", False  # filled by the model, shown for the user's correction
         for key, vals in (u.extra.get("conflicts") or {}).items():
             if all(c.get("key") != key for c in st.conflicts):
                 st.conflicts.append({"key": key, "values": list(vals)})
@@ -677,7 +703,14 @@ class ChatEngine:
     # ================================================================== intents
     def _do_greet_or_smalltalk(self, R, u):
         if u.patch.get("no_allergy"):
-            R.state.allergy_unresolved = False
+            st0 = R.state
+            st0.allergy_unresolved = False
+            if self.guided and st0.allergies:
+                gone = ", ".join(a.term for a in st0.allergies)
+                st0.allergies = []  # an explicit "no allergy at all" retracts what was recorded; the card and this notice make it visible and reversible
+                R.blocks.append(notice_b("info", "allergy_cleared", f"Mình đã bỏ dị ứng đã ghi ({gone}). Nếu mình hiểu nhầm, bạn nói lại dị ứng nhé."))
+                R.tools.append("none")
+                return
             R.blocks.append(text_b("Ok, mình không ghi nhận dị ứng nào. Nếu sau này có, bạn cứ nói để mình lưu ý."))
         else:
             R.blocks.append(text_b("Chào bạn! Mình giúp bạn khám phá món ngon ở Hà Nội, so sánh quán rồi mới ghép thành food tour. "
@@ -738,9 +771,9 @@ class ChatEngine:
                    "example": "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì.",
                    "long": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc)."}.get(
                 sp.issues[0], ("Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó." if added else "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."))
-            if self.guided and not added:
-                st.allergy_unresolved = True
-            if self.guided and not added and st.pending is None:
+            if self.guided and (any(i in ("empty", "people", "long", "vague") for i in sp.issues) or (not added and not sp.removed)):
+                st.allergy_unresolved = True  # a cue without a usable substance stays open even if another term was captured
+            if self.guided and st.allergy_unresolved and st.pending is None:
                 self._set_pending(st, "clarify_slot", [{"option_id": "allergy:" + k, "label": LABEL_OF[k]} for k in LABEL_OF], "allergy_term", {})
                 R.blocks.append(self._clarify_block(st, msg))
                 R.tools.append("clarify")
@@ -835,7 +868,7 @@ class ChatEngine:
             R.blocks.append(text_b("Lựa chọn đó không còn hiệu lực với câu hỏi hiện tại; bạn chọn lại ở các nút mới nhất nhé."))
             R.tools.append("nudge")
             return
-        if pend.kind == "clarify_slot" and pend.slot in ("allergy_term", "allergy_confirm", "propose", "conflict") and self._answer_guided_slot(R, pend, u):
+        if pend.kind == "clarify_slot" and pend.slot in ("allergy_term", "allergy_confirm", "allergy_clear", "propose", "conflict") and self._answer_guided_slot(R, pend, u):
             return
         if pend.kind == "clarify_slot":
             patch = dict(u.patch)
@@ -949,6 +982,16 @@ class ChatEngine:
             else:
                 st.allergies = [a for a in st.allergies if not (a.source == "ai_unconfirmed" and fold_uncached(a.term) in terms)]
                 R.blocks.append(text_b("Ok, mình bỏ phần đó. Nếu bạn có dị ứng, hãy nói tên thực phẩm cụ thể nhé."))
+            R.tools.append("answer_pending")
+            return True
+        if slot == "allergy_clear":
+            st.pending = None
+            if opt == "allergy_clear:yes":
+                st.allergies = []
+                st.allergy_unresolved = False
+                R.blocks.append(text_b("Đã bỏ các dị ứng đã ghi. Nếu có dị ứng, bạn cứ nói để mình lưu ý."))
+            else:
+                R.blocks.append(text_b("Ok, mình giữ nguyên dị ứng đã ghi để an toàn."))
             R.tools.append("answer_pending")
             return True
         if slot == "propose":

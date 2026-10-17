@@ -14,7 +14,7 @@ from app.planner import allergens
 from app.planner.relevance import fold_uncached
 
 _CLAUSE_SPLIT = re.compile(r"[,;.!?\n]+|\s+(?:và|va|nhưng|nhung|mà|ma|còn|con|hoặc|hoac)\s+")
-_ALLERGY = re.compile(r"(?:dị ứng|di ung)")
+_ALLERGY = re.compile(r"(?:d[iị]\s*[uưúùủũụứừửữự]ng|di ung)")
 _AVOID = re.compile(r"(?:không|khong|ko)\s+(?:thể\s+|the\s+)?(?:ăn|an)(?:\s+(?:được|duoc))?|kiêng|kieng|tránh|tranh|"
                     r"đừng\s+(?:cho|ăn|lấy)|dung\s+(?:cho|an|lay)|ghét|ghet|\bavoid\b|né|không chọn món(?: có)?|khong chon mon(?: co)?|không lấy món(?: có)?")
 _NEG = re.compile(r"(?:không hề|khong he|không bao giờ|khong bao gio|chưa từng|chua tung|chưa bao giờ|"
@@ -30,7 +30,7 @@ _RELATION = {"nhau", "bạn", "ban", "người", "nguoi", "mình", "minh", "tôi
 _STOP = re.compile(r"\d|\bk\b|đồng|dong|ngân|ngan|tiền|tien|nhóm|nhom")
 _EXAMPLE = re.compile(r"(?:ví dụ|vi du|vd|example)")
 _QUOTE = re.compile(r"[\"“”'‘’«»]")
-_AMBIGUOUS_RAW = {"của", "cùa", "cúa"}  # "của" (of) folds to "cua" (crab)
+_AMBIGUOUS_RAW = {"của", "cùa", "cúa", "số", "sổ", "sỗ"}  # "của" (of) folds to "cua" (crab)
 MAX_SCAN_WORDS = 8
 
 
@@ -54,6 +54,7 @@ class SafetyParse:
     mentioned: bool = False                       # some allergy/avoidance trigger was seen (even if negated)
     negated: bool = False                          # "không (bị) dị ứng …": an explicit absence statement
     avoid_any: list = field(default_factory=list)  # taste-level avoid terms, lexicon or not (<=3 words)
+    avoid_vague: bool = False                      # "không ăn được vài thứ": an avoidance cue with only a description, no named food
 
 
 def _scan(words: list) -> tuple:
@@ -110,6 +111,9 @@ def _terms(rest: str, issues: list) -> tuple:
         issues.append("people")
         return [], False
     cand = " ".join(core)
+    if not (allergens.family_of(cand) and allergens.core_term(cand) == cand) and any(fold_uncached(w) in _VAGUE for w in core):
+        issues.append("vague")  # a description ("thứ rang giòn"), not a named food: ask which one
+        return [], False
     if _STOP.search(cand):
         issues.append("empty")
         return [], False
@@ -119,6 +123,7 @@ def _terms(rest: str, issues: list) -> tuple:
     return [cand], False
 
 
+_VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "chien", "xao", "nuong", "gi"}
 _AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
 
 
@@ -183,6 +188,8 @@ def parse(text: str) -> SafetyParse:
                 if kind == "avoid":
                     local = []
                     terms, lexicon = _terms(_cut_tail(seg), local)
+                    if not terms and "vague" in local:
+                        out.avoid_vague = True
                     out.avoid += [t for t in terms if allergens.recognised(t) and t not in out.avoid]
                     out.avoid_any += [t for t in terms if t not in out.avoid_any and not _STOP.search(t)]
                     mode = "avoid" if terms else None

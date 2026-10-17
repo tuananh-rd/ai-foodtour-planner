@@ -134,7 +134,7 @@ def venue_view(v: Venue) -> dict:
         rating = {"value": round(v.rating, 2), "count": v.review_count}
     hours = None
     if v.hours_display:
-        hours = {"status": "verified" if v.hours else "unknown", "display": v.hours_display}
+        hours = {"status": "verified" if v.hours else "unknown", "display": clean_text(v.hours_display, 120)}
     return {"id": v.id, "name": clean_text(v.name, 80, "Quán (tên không hiển thị được)"), "district": clean_text(v.district, 40), "address": clean_text(v.address, 140),
             "dish_tags": [t for t in (clean_text(x, 40) for x in v.dish_tags[:8]) if t], "price": _price(v), "hours": hours,
             "rating": rating}

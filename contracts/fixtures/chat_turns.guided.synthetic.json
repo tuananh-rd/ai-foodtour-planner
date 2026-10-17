@@ -1438,7 +1438,7 @@
         {
          "type": "clarify",
          "pending_id": "p1",
-         "question": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc).",
+         "question": "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).",
          "options": [
           {
            "option_id": "allergy:peanut",
@@ -2804,7 +2804,7 @@
         {
          "type": "clarify",
          "pending_id": "p1",
-         "question": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc).",
+         "question": "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).",
          "options": [
           {
            "option_id": "allergy:peanut",

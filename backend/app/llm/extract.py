@@ -80,6 +80,11 @@ def _strip_marks(text: str) -> str:
 
 def _money(u: str) -> Optional[int]:
     """u is diacritic-stripped, lower-cased text. Negative amounts return -1 so callers reject them."""
+    if re.search(r"\bnua trieu\b", u):
+        return 500_000
+    m = re.search(r"(\d+(?:[.,]\d+)?)\s*(?:trieu|tr)\s*ruoi\b", u)
+    if m:
+        return int((float(m.group(1).replace(",", ".")) + 0.5) * 1_000_000)
     m = re.search(r"(-?)(\d+(?:[.,]\d+)?)\s*(trieu|tr\b|nghin|ngan|k\b)", u)
     if m:
         if m.group(1):

@@ -11,6 +11,7 @@ from typing import Optional
 
 from app.llm import safety_parse
 from app.llm.extract import MockExtractor, INJECTION
+from app.planner import allergens
 from app.planner.relevance import fold_uncached
 from app.planner.types import Preferences
 from . import coverage, knowledge, tools
@@ -133,9 +134,14 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     stripped = re.sub(r"(?:tu|luc|bat dau|xuat phat|di luc|ket thuc|xong|ve)?\s*(?:truoc\s*)?\d{1,2}\s*(?:gio|h)\s*\d{0,2}"
                       r"(?:\s*(?:den|toi|-)\s*\d{1,2}\s*(?:gio|h)\s*\d{0,2})?", " ", f)
     # a per-leg time ("không đi bộ quá 10 phút mỗi chặng") is not the tour length: remove it before the duration is read
-    stripped = re.sub(r"khong\s+(?:muon\s+)?(?:di bo\s+)?(?:qua|hon)\s+\d{1,2}\s*phut(?:\s+(?:moi|1)\s+(?:chang|quan))?"
-                      r"|\d{1,2}\s*phut\s+(?:giua|moi)\s+(?:cac\s+)?(?:quan|chang)"
-                      r"|(?:moi|giua)\s+(?:chang|cac quan)[^,.]{0,12}\d{1,2}\s*phut", " ", stripped)
+    stripped = re.sub(r"khong\s+(?:muon\s+)?(?:di bo\s+)?(?:qua|hon)\s+\d{1,2}\s*phut(?:\s+(?:moi|1)\s+(?:chang|quan))?", " ", stripped)
+    leg = (re.search(r"(?:moi chang|giua (?:cac|hai|2) quan|giua cac diem)[^.;]{0,14}?(?<!\d)(\d{1,2})\s*phut", f)
+           or re.search(r"(?<!\d)(\d{1,2})\s*phut\s*(?:moi chang|giua (?:cac|hai|2) quan)", f))
+    if leg and 3 <= int(leg.group(1)) <= 60:
+        if "max_leg_min" not in patch:
+            patch["max_leg_min"] = int(leg.group(1))
+        span = leg.group(0)
+        stripped = stripped.replace(span, " ", 1)
     rx = MockExtractor().extract(stripped if stripped.strip() else "", Preferences())
     p = rx.preferences
     if "party_size" in rx.updated_fields:
@@ -148,6 +154,14 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
         patch["budget_scope"] = p.budget_scope
     if "duration_min" in rx.updated_fields and "end_time" not in patch:
         patch["duration_min"] = p.duration_min
+    elif "end_time" not in patch and "start_time" not in patch:
+        d = re.search(r"(?:tong|trong khoang|trong|khoang|tour|lich trinh|hanh trinh|ke hoach|di choi|an uong|choi|di)\s*(?:\w+\s+){0,3}?(\d{2,3})\s*phut", stripped)
+        if d and 30 <= int(d.group(1)) <= 720:
+            patch["duration_min"] = int(d.group(1))
+    if "party_size" not in patch:
+        g = re.search(r"(?<![\d/.,])\b(\d{1,2})\s*ng\b", f)  # "2ng"
+        if g and 1 <= int(g.group(1)) <= 20:
+            patch["party_size"] = int(g.group(1))
     if "audience" in rx.updated_fields:
         patch["audience"] = p.audience
     if re.search(r"tre nho|em be|tre con|con nho|tre em", f):
@@ -275,8 +289,8 @@ def effective_text(text: str) -> str:
     return trim_deferred(text)
 
 
-def understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None) -> Understanding:
-    u = _understand(text, state, gz, prior)
+def understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None, guided: bool = False) -> Understanding:
+    u = _understand(text, state, gz, prior, guided)
     if u.intent in ("SEARCH_VENUES", "UPDATE_PROFILE", "DISCOVER_DISH") and u.confidence >= 0.75:
         f = fold_uncached(text)
         signals = sum(bool(re.search(q, f)) for q in (
@@ -286,7 +300,7 @@ def understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences
     return u
 
 
-def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None) -> Understanding:
+def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None, guided: bool = False) -> Understanding:
     prior = prior or Preferences()
     text = safety_parse.normalize_keep_case(text).strip()
     if text and not re.search(r"[A-Za-zÀ-ỹ0-9]", text):  # emoji / punctuation only: a reaction, not a request
@@ -296,8 +310,10 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         if not re.search(r"[A-Za-zÀ-ỹ0-9]", unquoted):
             return Understanding("UNKNOWN", confidence=0.3)
         text = unquoted
-    if re.search(r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|nếu như", text.casefold()):
+    if re.search(r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|nếu như", text.casefold()) or \
+            re.search(r"\bnếu\b[^.?!]{0,80}\b(?:thì sao|thì có sao|thì thế nào|thì có được không|có được không)\b", text.casefold()):
         return Understanding("AMBIGUOUS_ACK", confidence=0.7)  # hypothetical / joking wording: never act
+    raw_safety = text  # the safety parser reads the WHOLE message (quotes already removed): a postponed clause may still carry an allergy
     text = trim_deferred(text)
     f = fold_uncached(text)
     f = re.sub(r"\b(?:khong|chua|dung|dung vo)\s+can\s+(?:phai\s+)?(?:tim|kiem)\b", " ", f)  # "không cần tìm …" is not a search
@@ -314,7 +330,15 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     if re.search(r"\ban toan (?:cho|voi)\b", f):
         return Understanding("ASK_DETAIL", {"field": "allergy_safety"}, parse_refs(text, f), 0.9)
 
-    sp = safety_parse.parse(text)
+    sp = safety_parse.parse(raw_safety if guided else text)
+    if guided and sp.avoid and not pending:
+        hard = [t for t in sp.avoid if allergens.family_of(t)]  # "không ăn được lạc", "kiêng trứng": a named major allergen is treated as an allergy
+        if hard:
+            sp.allergies += [t for t in hard if t not in sp.allergies]
+            sp.avoid = [t for t in sp.avoid if t not in hard]
+            sp.avoid_any = [t for t in sp.avoid_any if t not in hard]
+    if guided and sp.avoid_vague and not (sp.allergies or sp.avoid):
+        sp.issues.append("vague")  # it may be an allergy: ask which food instead of dropping it
     refs = parse_refs(text, f)
     patch = parse_slots(text, f, prior)
     if re.search(r"\bda (?:goi|hoi|lien he)\b", f) and refs:
@@ -346,8 +370,8 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
 
     # --- safety statements first
     if sp.negated and not (sp.allergies or sp.avoid or sp.avoid_any or sp.removed or sp.issues):
-        return Understanding("GREET_OR_SMALLTALK", {"no_allergy": True}, confidence=0.9)  # "không bị dị ứng gì"
-    if sp.allergies or sp.removed or "empty" in sp.issues or "people" in sp.issues or "long" in sp.issues or "example" in sp.issues:
+        return Understanding("GREET_OR_SMALLTALK", {**patch, "no_allergy": True}, confidence=0.9)  # "không bị dị ứng gì"
+    if sp.allergies or sp.removed or "empty" in sp.issues or "people" in sp.issues or "long" in sp.issues or "vague" in sp.issues or "example" in sp.issues:
         extra = {"safety": sp}
         conf = re.search(r"da (?:goi|hoi|lien he)|quan noi", f)
         if conf and refs:
@@ -548,10 +572,15 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
                 slots["budget_scope"] = "group"
             elif re.search(r"moi nguoi|theo nguoi|mot nguoi|dau nguoi", f):
                 slots["budget_scope"] = "per_person"
-        if pending.slot in ("allergy_confirm", "propose"):
+        if pending.slot in ("allergy_confirm", "propose", "allergy_clear"):
             yes = r"\b(?:dung|co|ok|oke|duoc|vang|u|um|dong y|dung roi)\b"
             no = r"\b(?:khong|ko|chua|thoi|sai)\b"
-            ids = {"allergy_confirm": ("allergy_ok", "allergy_no"), "propose": ("propose:use", "propose:self")}[pending.slot]
+            ids = {"allergy_confirm": ("allergy_ok", "allergy_no"), "propose": ("propose:use", "propose:self"),
+                   "allergy_clear": ("allergy_clear:yes", "allergy_clear:no")}[pending.slot]
+            if pending.slot == "allergy_clear":
+                ids = (ids[1], ids[0])  # "không" = keep the list; "đúng/bỏ" = clear it
+                if re.search(r"\b(?:bo|xoa|het|khong con)\b", f) and not re.search(r"\bkhong bo\b|\bdung bo\b", f):
+                    return Understanding("ANSWER_PENDING", {"option": "allergy_clear:yes"}, refs, 0.9)
             if re.search(no, f) and not is_negated(text, f):
                 return Understanding("ANSWER_PENDING", {"option": ids[1]}, refs, 0.9)
             if re.search(yes, f) and len(f.split()) <= 6:

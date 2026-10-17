@@ -17,11 +17,13 @@ DAY_PARTS = {"morning": "Buổi sáng", "noon": "Buổi trưa", "afternoon": "Bu
 MEAL_OF = {"evening": "dinner", "late": "late", "noon": "lunch", "morning": "breakfast", "afternoon": "snack"}
 
 _TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang)\b")
-_STOPS = re.compile(r"\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b")
+_STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b")
 _LIKE = re.compile(r"(?:\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bthich\b|\bmuon an\b)\s+(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|$)",
                    re.IGNORECASE)
 _NEGATED = re.compile(r"(?:không|khong|ko|chẳng|chang|chả|chưa|chua|đừng|dung)\s*(?:\w+\s+)?$", re.IGNORECASE)
 _SPLIT = re.compile(r"\s*(?:,|;|\bvà\b|\bva\b|\bvới\b|\bvoi\b|\bhoặc\b|\bhoac\b|\bhay là\b|/)\s*")
+_PARTICLES = {"nhé", "nhe", "nha", "đó", "do", "ạ", "a", "đi", "di", "thôi", "thoi", "nhỉ", "nhi", "nhen", "với", "voi", "luôn", "luon",
+              "nè", "ne", "đấy", "day", "cơ", "co", "ha", "hen"}
 _ITEM_STOP = {"ăn", "an", "các", "cac", "món", "mon", "đồ", "do", "những", "nhung", "mấy", "may", "loại", "loai", "một", "mot", "ít", "it",
               "nhiều", "nhieu", "là", "la", "thế", "the", "cái", "cai", "kiểu", "kieu"}
 _NOT_FOOD_START = {"đi", "di", "ngồi", "ngoi", "xem", "chơi", "choi", "ở", "o", "nghỉ", "nghi", "tìm", "tim", "được", "duoc", "nơi", "noi"}
@@ -29,6 +31,12 @@ _NOT_FOOD_START = {"đi", "di", "ngồi", "ngoi", "xem", "chơi", "choi", "ở",
 
 def _day_part(text: str, f: str):
     low = text.casefold()
+    if re.search(r"\b\d{1,2}\s*(?:h|giờ|gio)\s*(?:\d{2}\s*)?tối\b|\b\d{1,2}\s*(?:h|giờ|gio)\s*(?:\d{2}\s*)?toi\b|\bgiờ tối\b", low):
+        return "evening"
+    if re.search(r"\b\d{1,2}\s*(?:h|giờ|gio)\s*(?:\d{2}\s*)?(?:chiều|chieu)\b", low):
+        return "afternoon"
+    if re.search(r"\b\d{1,2}\s*(?:h|giờ|gio)\s*(?:\d{2}\s*)?(?:sáng|sang)\b", low):
+        return "morning"
     if re.search(r"\btối nay\b|\bbuổi tối\b|\btối mai\b|\btối (?:thứ|chủ|cuối)|\bđêm nay\b|\btoi nay\b|\bbuoi toi\b|\btoi mai\b", low):
         return "evening"
     if re.search(r"\bkhuya\b|\bđêm khuya\b|\bdem khuya\b", low):
@@ -46,6 +54,8 @@ def _items(raw: str) -> list:
     out = []
     for part in _SPLIT.split(raw.strip()):
         words = [w for w in part.split() if w.casefold().strip("\"'") not in _ITEM_STOP]
+        while words and words[-1].casefold().strip("\"'.!") in _PARTICLES:
+            words.pop()  # "phở nhé" -> "phở"
         if not words or len(words) > 3 or words[0].casefold() in _NOT_FOOD_START or any(c.isdigit() for c in part):
             continue
         item = " ".join(words).strip(" .\"'")
