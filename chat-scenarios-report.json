@@ -74,6 +74,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -265,6 +277,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -463,6 +487,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -610,6 +646,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -753,6 +801,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -905,6 +965,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -1160,6 +1232,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -1350,6 +1434,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -1599,6 +1695,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -1861,6 +1969,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -2017,6 +2137,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -2278,6 +2410,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -2442,6 +2586,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -2598,6 +2754,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -2768,6 +2936,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -2934,6 +3114,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -3191,6 +3383,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -3385,6 +3589,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -3563,6 +3779,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -3752,6 +3980,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -3922,6 +4162,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [
@@ -4075,6 +4327,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -4365,6 +4629,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [
@@ -4377,7 +4653,7 @@
                       "venue_id": "CHT-011",
                       "label": "A",
                       "text": "đã gọi hỏi quán A rồi, quán nói không có cua",
-                      "at": "2026-10-17T00:37:51+00:00"
+                      "at": "2026-10-17T03:46:21+00:00"
                     }
                   ]
                 }
@@ -4538,6 +4814,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [
@@ -4550,7 +4838,7 @@
                       "venue_id": "CHT-011",
                       "label": "A",
                       "text": "đã gọi hỏi quán A rồi, quán nói không có cua",
-                      "at": "2026-10-17T00:37:51+00:00"
+                      "at": "2026-10-17T03:46:21+00:00"
                     }
                   ]
                 }
@@ -4760,6 +5048,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -4934,6 +5234,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -5120,6 +5432,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -5385,6 +5709,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -5536,6 +5872,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -5699,6 +6047,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -5961,6 +6321,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -6117,6 +6489,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -6379,6 +6763,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -6539,6 +6935,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -6744,6 +7152,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -7016,6 +7436,18 @@
                   "source": "user_said",
                   "turn": 8,
                   "confirmed": true
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -7286,6 +7718,18 @@
                   "source": "user_said",
                   "turn": 8,
                   "confirmed": true
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -7695,6 +8139,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -7843,6 +8299,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -7987,6 +8455,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -8141,6 +8621,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -8326,6 +8818,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -8588,6 +9092,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -8841,6 +9357,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -8992,6 +9520,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -9165,6 +9705,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -9349,6 +9901,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -9506,6 +10070,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -9673,6 +10249,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -9857,6 +10445,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -10024,6 +10624,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -10198,6 +10810,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -10357,6 +10981,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -10619,6 +11255,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -10798,6 +11446,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -10966,6 +11626,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -11228,6 +11900,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -11384,6 +12068,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -11646,6 +12342,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -11806,6 +12514,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -12011,6 +12731,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -12279,6 +13011,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -12692,6 +13436,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -12945,6 +13701,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -13096,6 +13864,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -13269,6 +14049,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -13531,6 +14323,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -13697,6 +14501,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [
@@ -13850,6 +14666,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -14070,6 +14898,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -14217,6 +15057,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -14360,6 +15212,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -14512,6 +15376,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -14774,6 +15650,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -14930,6 +15818,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -15192,6 +16092,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -15352,6 +16264,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -15557,6 +16481,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -15827,6 +16763,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -16230,6 +17178,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -16645,6 +17605,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -16795,6 +17767,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -16962,6 +17946,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [
@@ -17115,6 +18111,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -17333,6 +18341,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -17619,6 +18639,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -17877,6 +18909,18 @@
                   "source": "missing",
                   "turn": 0,
                   "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
                 }
               },
               "allergies": [],
@@ -18028,6 +19072,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,
@@ -18222,6 +19278,18 @@
                   "confirmed": false
                 },
                 "max_leg_min": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "stops": {
+                  "value": null,
+                  "source": "missing",
+                  "turn": 0,
+                  "confirmed": false
+                },
+                "day_part": {
                   "value": null,
                   "source": "missing",
                   "turn": 0,

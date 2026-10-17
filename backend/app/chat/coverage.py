@@ -49,13 +49,30 @@ def _day_part(text: str, f: str):
         return "noon"
     if re.search(r"\bbuổi sáng\b|\bsáng (?:nay|mai|thứ|chủ)|\bbuoi sang\b|\bsang (?:nay|mai)", low):
         return "morning"
+    # bare words ("Sáng. 4 người…", "Lịch chiều…", "trưa 3 điểm"): accents required, common compounds excluded
+    if re.search(r"\bđêm\b(?!\s*(?:nay))|\btối muộn\b", low):
+        return "late"
+    if re.search(r"\bchiều tối\b|\btối\b(?!\s*(?:đa|thiểu|ưu|tân|giản|nay|mai))", low):
+        return "evening"
+    if re.search(r"\bxế chiều\b|\bchiều\b(?!\s*(?:dài|cao|rộng|sâu|ngang|lòng|chuộng|nay|mai))", low):
+        return "afternoon"
+    if re.search(r"\btrưa\b", low):
+        return "noon"
+    if re.search(r"\bsáng sớm\b|\bsáng\b(?!\s*(?:tạo|suốt|giá|dạ|kiến|lạng|nay|mai))", low):
+        return "morning"
     return None
 
 
 _CUT_WORDS = {"ở", "trong", "cho", "vào", "lúc", "tại", "quanh", "gần", "khu", "tối", "sáng", "chiều", "trưa", "nay", "mai", "khoảng", "tầm", "qua", "để",
               "o", "vao", "luc", "tai", "gan", "toi", "sang", "chieu", "trua", "khoang", "tam", "qua", "de", "nhung", "mà", "ma", "thôi", "thoi"}
-_DISHES = [("phở", "pho"), ("bún chả", "bun cha"), ("bún", "bun"), ("bánh cuốn", "banh cuon"), ("bánh mì", "banh mi"), ("xôi", "xoi"), ("nem", "nem"),
-           ("chả giò", "cha gio"), ("ốc", "oc"), ("lẩu", "lau"), ("chè", "che"), ("kem", "kem"), ("cà phê", "ca phe"), ("cơm", "com")]
+_DISHES = [("bún đậu mắm tôm", "bun dau mam tom"), ("bún riêu", "bun rieu"), ("bún bò", "bun bo"), ("bún thang", "bun thang"), ("bún ốc", "bun oc"),
+           ("bún ngan", "bun ngan"), ("bún cá", "bun ca"), ("bún chả", "bun cha"), ("bún", "bun"), ("phở cuốn", "pho cuon"), ("phở", "pho"),
+           ("bánh đa cua", "banh da cua"), ("bánh cuốn", "banh cuon"), ("bánh mì", "banh mi"), ("bánh xèo", "banh xeo"), ("bánh giò", "banh gio"),
+           ("bánh tôm", "banh tom"), ("bánh bao", "banh bao"), ("bánh gối", "banh goi"), ("bánh trôi", "banh troi"), ("mì vằn thắn", "mi van than"),
+           ("miến", "mien"), ("cháo", "chao"), ("xôi xéo", "xoi xeo"), ("xôi", "xoi"), ("nem rán", "nem ran"), ("nem", "nem"), ("chả giò", "cha gio"),
+           ("chả cá", "cha ca"), ("cơm tấm", "com tam"), ("cơm rang", "com rang"), ("cơm", "com"), ("hủ tiếu", "hu tieu"), ("bò kho", "bo kho"),
+           ("gà rán", "ga ran"), ("cá kho", "ca kho"), ("lẩu", "lau"), ("ốc", "oc"), ("chè thái", "che thai"), ("chè", "che"), ("kem", "kem"),
+           ("trà sữa", "tra sua"), ("sinh tố", "sinh to"), ("cà phê", "ca phe")]
 _NEG_BEFORE = {"không", "khong", "ko", "chẳng", "chang", "ghét", "ghet", "chán", "chan", "né", "kiêng", "kieng", "bỏ", "bo", "đừng", "dung", "dị", "ứng", "ung"}
 
 
@@ -63,18 +80,21 @@ def _dish_scan(text: str) -> list:
     """Known dish names mentioned anywhere (so "Phở trước nha", "bánh mì là món thích" still count). Accents required when the message has any."""
     low = text.casefold()
     accented = any(ord(c) > 127 for c in low)
-    out = []
-    for disp, plain in _DISHES:
+    taken, hits = [], []
+    for disp, plain in sorted(_DISHES, key=lambda d: -len(d[0])):
         word = disp if accented else plain
-        for m in re.finditer(r"(?<![\w])" + re.escape(word) + (r"(?!\s+(?:chả|cha))" if disp == "bún" else "") + r"(?![\w])", low):
+        for m in re.finditer(r"(?<![\w])" + re.escape(word) + r"(?![\w])", low):
+            if any(m.start() < e and s0 < m.end() for s0, e in taken):
+                continue  # already part of a longer dish ("bún" inside "bún riêu")
             prefix = low[:m.start()].split()[-3:]
+            taken.append((m.start(), m.end()))
             if any(t.strip(",.;:!?\"'") in _NEG_BEFORE for t in prefix):
                 continue
-            if disp == "bún" and any(o.startswith("bún chả") for o in out):
-                continue
-            item = disp if accented else plain
-            if item not in out:
-                out.append(item)
+            hits.append((m.start(), word))
+    out = []
+    for _pos, word in sorted(hits):
+        if word not in out:
+            out.append(word)
     return out
 
 

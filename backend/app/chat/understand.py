@@ -338,11 +338,17 @@ _THIRD = r"(?:bạn|chị|anh|em gái|em trai|mẹ|bố|ba|má|cô|chú|dì|bác
 _ABSENT = r"(?:ở nhà|không đi|không tham gia|không có mặt|vắng mặt|không cùng đi|đi vắng|không đi cùng)"
 
 
-def is_third_party(sentence: str) -> bool:
-    """The sentence is about a companion ("Bạn mình dị ứng tôm", "Mẹ dị ứng trứng"), not the speaker ("Bạn ơi, mình dị ứng tôm")."""
+def third_party_head(sentence: str):
+    """The companion a sentence is about ("Bạn mình dị ứng tôm" -> "bạn", "Con tôi dị ứng vừng" -> "con"); None for the speaker ("Bạn ơi, mình dị ứng tôm")."""
     low = sentence.casefold()
-    m = re.match(r"\s*" + _THIRD + r"\b(?!\s*(?:ơi|oi|à|ạ|nè|ne|nhé|nhe|,))", low)
-    return bool(m) and not re.match(r"\s*(?:tôi|mình|em|tui|tớ)\b", low)
+    m = re.match(r"\s*(" + _THIRD + r")\b(?!\s*(?:ơi|oi|à|ạ|nè|ne|nhé|nhe|,))", low)
+    if not m or re.match(r"\s*(?:tôi|mình|em|tui|tớ)\b", low):
+        return None
+    return m.group(1)
+
+
+def is_third_party(sentence: str) -> bool:
+    return third_party_head(sentence) is not None
 
 
 def _unquote_foods(text: str) -> str:
@@ -359,13 +365,30 @@ def _drop_absent(text: str) -> str:
     """An allergy that belongs to someone who is not coming constrains nothing (sentence level)."""
     if not re.search(_ABSENT, text.casefold()):
         return text
+    sents = re.split(r"(?<=[.;!?])\s+", text)
+    gone = set()
+    for sent in sents:
+        head = third_party_head(sent)
+        if head and re.search(_ABSENT, sent.casefold()) and not safety_parse._ALLERGY.search(sent.casefold()):
+            gone.add(head)  # "Chị tôi không đi chuyến này": only 'chị' is absent, not every companion
+        last = None
+        for clause in re.split(r"(?:,|\s+(?:nhưng|còn|mà|chứ)\s+)", sent):
+            h = third_party_head(clause)
+            if h and safety_parse._ALLERGY.search(clause.casefold()):
+                last = h
+            elif re.search(_ABSENT, clause.casefold()) and last and re.match(r"\s*(?:không|ko|chẳng|hôm nay|nhưng)", clause.casefold()):
+                gone.add(last)  # "Bạn tôi dị ứng tôm nhưng không đi cùng": the subject-less absence clause is about the same companion
     keep = []
-    for sent in re.split(r"(?<=[.;!?])\s+", text):
-        low = sent.casefold()
-        if safety_parse._ALLERGY.search(low) and is_third_party(sent):
-            continue
-        keep.append(sent)
-    return " ".join(keep).strip()
+    for sent in sents:
+        kept = []
+        for clause in re.split(r"(,|\s+(?:nhưng|còn|mà|chứ)\s+)", sent):
+            low = clause.casefold()
+            head = third_party_head(clause)
+            if safety_parse._ALLERGY.search(low) and head and (head in gone or re.search(_ABSENT, low)):
+                continue
+            kept.append(clause)
+        keep.append("".join(kept).strip(" ,"))
+    return " ".join(k for k in keep if k).strip()
 
 
 def effective_text(text: str) -> str:
@@ -419,6 +442,9 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
             if not re.search(r"[A-Za-zÀ-ỹ0-9]", pre):
                 return Understanding("GREET_OR_SMALLTALK", {"absent_allergy": True}, confidence=0.8)
             text = pre
+    if guided and re.search(r"\bnếu\b", text.casefold()) and safety_parse._ALLERGY.search(text.casefold()):
+        parts = re.split(r"([,;.!?\n]+|\s+(?:còn|nhưng|mà|chứ)\s+)", text)
+        text = "".join(p for i, p in enumerate(parts) if not (i % 2 == 0 and re.search(r"\bnếu\b", p.casefold()) and safety_parse._ALLERGY.search(p.casefold()))).strip(" ,;.") or text
     raw_safety = text  # the safety parser reads the WHOLE message (quotes already removed): a postponed clause may still carry an allergy
     text = trim_deferred(text)
     f = fold_uncached(text)
@@ -430,6 +456,10 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         return Understanding("UNKNOWN", confidence=0.0)
     if re.search(r"\b(?:bo qua|ignore|disregard|system|prompt|reveal|jailbreak)\b", f) and \
             re.search(r"\b(?:an toan|xac nhan|quy tac|moi quy tac|instructions?|rules?|prompt|api|verified|key)\b", f):
+        if guided:
+            sp0 = safety_parse.parse(raw_safety)
+            if sp0.allergies:  # the override request is refused, but the allergy it carried is still the user's statement
+                return Understanding("SET_ALLERGY", {}, [], 0.9, extra={"safety": sp0, "unsafe_notice": True})
         return Understanding("UNSAFE")
     if re.search(r"api[ _-]?key|chi dan he thong|prompt he thong|system prompt|mat khau|\btoken\b.*\bin\b|\bin\b.*(?:key|chi dan)", f):
         return Understanding("UNSAFE")
@@ -448,6 +478,9 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     if guided and sp.avoid_vague and not (sp.allergies or sp.avoid):
         sp.issues.append("vague")  # it may be an allergy: ask which food instead of dropping it
     if guided:
+        alt = re.search(r"dị ứng\s+(.+?)\s+chứ\s+không\s+phải\s+(.+?)(?:[,.;!?]|$)", text.casefold())
+        if alt and allergens.family_of(alt.group(1)) and allergens.family_of(alt.group(2)):
+            sp = safety_parse.SafetyParse(mentioned=True, allergies=[alt.group(1).strip()], removed=[alt.group(2).strip()])  # "dị ứng vừng chứ không phải hạt điều"
         fix = re.search(r"không phải\s+(.+?)\s+mà\s+(?:là\s+)?(.+?)(?:[,.;!?]|$)", text.casefold())
         if fix:  # "không phải tôm mà là lạc, mình nói nhầm"
             wrong, right = fix.group(1).strip(), fix.group(2).strip()
@@ -459,9 +492,9 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
             more, _ = safety_parse._scan(safety_parse._clean_words(text))  # "À thêm sữa nữa" right after an allergy statement
             if more:
                 sp = safety_parse.SafetyParse(mentioned=True, allergies=more)
-        if any(a.who == "other" for a in state.allergies) and not safety_parse._ALLERGY.search(text.casefold()) \
-                and re.match(r"\s*(?:" + _THIRD + r"\s+(?:ấy|kia|đó|mình|tôi|của tôi)|họ)\b", text.casefold()) and re.search(_ABSENT, text.casefold()):
-            return Understanding("GREET_OR_SMALLTALK", {"absent_person": True}, confidence=0.8)  # "Bạn ấy ở nhà không đi cùng nhé"
+        ahead = third_party_head(text)
+        if ahead and any(a.who == ahead for a in state.allergies) and not safety_parse._ALLERGY.search(text.casefold()) and re.search(_ABSENT, text.casefold()):
+            return Understanding("GREET_OR_SMALLTALK", {"absent_person": ahead}, confidence=0.8)  # "Bạn ấy ở nhà không đi cùng nhé": only that companion's allergies go
     refs = parse_refs(text, f)
     patch = parse_slots(text, f, prior)
     if re.search(r"\bda (?:goi|hoi|lien he)\b", f) and refs:

@@ -20,7 +20,7 @@ from app.planner.types import Preferences
 from . import coverage, knowledge, tools
 from .gazetteer import Gazetteer, Place
 from .state import (MAX_ALLERGIES, MAX_SHORTLIST, Allergy, ChatState, Field_, Pending, ShortItem)
-from .understand import CONFIDENT, Understanding, effective_text, is_third_party, understand
+from .understand import CONFIDENT, Understanding, effective_text, third_party_head, understand
 
 ALLERGY_CHIPS = {"peanut": "đậu phộng", "seafood": "hải sản", "milk": "sữa", "egg": "trứng", "gluten": "gluten", "soy": "đậu nành", "sesame": "mè"}
 LABEL_OF = {"peanut": "Đậu phộng", "seafood": "Hải sản", "milk": "Sữa", "egg": "Trứng", "gluten": "Gluten", "soy": "Đậu nành", "sesame": "Mè", "other": "Khác"}
@@ -739,8 +739,9 @@ class ChatEngine:
     # ================================================================== intents
     def _do_greet_or_smalltalk(self, R, u):
         if u.patch.get("absent_person"):
-            gone = [a.term for a in R.state.allergies if a.who == "other"]
-            R.state.allergies = [a for a in R.state.allergies if a.who != "other"]
+            who = u.patch["absent_person"]
+            gone = [a.term for a in R.state.allergies if a.who == who]
+            R.state.allergies = [a for a in R.state.allergies if a.who != who]
             R.blocks.append(notice_b("info", "allergy_cleared", "Mình đã bỏ dị ứng của người không đi cùng (" + ", ".join(gone) + "). Nếu mình hiểu nhầm, bạn nói lại nhé."))
             R.tools.append("none")
             return
@@ -782,13 +783,15 @@ class ChatEngine:
 
     def _do_set_allergy(self, R, u):
         st = R.state
+        if u.extra.get("unsafe_notice"):
+            self._do_unsafe(R, u)
         sp = u.extra.get("safety") or safety_parse.parse(" ".join(x["text"] for x in st.turns[-1:]))
         added = []
         for term in sp.allergies:
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
                 said = (st.turns[-1]["text"] if st.turns else "").casefold()
-                other = is_third_party(said)
-                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said", who="other" if other else "self"))
+                head = third_party_head(said)
+                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said", who=head or "self"))
                 added.append(term)
         for term in sp.removed:
             st.allergies = [a for a in st.allergies if fold_uncached(a.term) != fold_uncached(term)]
@@ -816,6 +819,8 @@ class ChatEngine:
                                          "Tour vẫn được đánh dấu chưa đủ bằng chứng về nguyên liệu."))
             else:
                 R.blocks.append(text_b("Mình chưa biết quán bạn nói tới (danh sách quán đã đổi). Bạn chọn lại quán trong danh sách nhé."))
+        if self.guided and any(i in ("empty", "people", "long", "vague") for i in sp.issues):
+            st.allergy_unresolved = True  # part of the statement could not be turned into a named food: keep the obligation even if another term was captured
         if sp.issues and (not added or "empty" in sp.issues):
             msg = {"people": "Mỗi người dị ứng với gì? Hãy liệt kê từng tác nhân (ví dụ: tôm, lạc).",
                    "example": "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì.",

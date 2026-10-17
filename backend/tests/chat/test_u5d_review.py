@@ -12,7 +12,7 @@ class Controls(unittest.TestCase):
         eng,_=engine()
         r=eng.handle(ChatState(),Preferences(),text='Con tôi dị ứng vừng, cháu đi cùng.')
         self.assertEqual([a.term for a in r.state.allergies],['vừng'])
-        self.assertEqual(r.state.allergies[0].who,'other')
+        self.assertEqual(r.state.allergies[0].who,'con')  # who = the companion's head word (Claude changed the representation after U5d: one 'other' bit erased unrelated companions)
 
     def test_hypothetical_split_preserves_real_clause(self):
         eng,_=engine()

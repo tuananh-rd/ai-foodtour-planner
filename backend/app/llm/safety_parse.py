@@ -6,6 +6,7 @@ cannot be turned into a concrete term becomes an *issue* the caller must answer 
 """
 from __future__ import annotations
 
+import contextvars
 import re
 import unicodedata
 from dataclasses import dataclass, field
@@ -21,7 +22,7 @@ _NEG = re.compile(r"(?:không hề|khong he|không bao giờ|khong bao gio|chưa
                   r"không|khong|chẳng|chang|chưa|chua|ko|hết|het)\s*(?:còn|con|bị|bi|có|co)?\s*$")
 _NEG_PREFIX = re.compile(r"(?:không có chuyện|khong co chuyen|làm gì có|lam gi co|đâu có|dau co|chẳng có chuyện|chang co chuyen)\s*(?:mình|minh|tôi|toi|em|tui|tớ|to)?\s*$", re.IGNORECASE)
 _SYMPTOM = re.compile(r"(?:mẩn ngứa|man ngua|nổi mẩn|noi man|mề đay|me day|sưng môi|sung moi|sưng mặt|khó thở|kho tho|phát ban|phat ban|ngứa họng|ngua hong|ngứa cổ|nổi ban|sốc phản vệ)", re.IGNORECASE)
-_UNSURE = re.compile(r"(?:chưa biết|chua biet|không chắc|khong chac|chưa rõ|chua ro|không biết có phải|khong biet co phai|có phải .* không|co phai .* khong)", re.IGNORECASE)
+_UNSURE = re.compile(r"(?:chưa biết|chua biet|chưa chắc|chua chac|không chắc|khong chac|chưa rõ|chua ro|không biết có phải|khong biet co phai|có phải .* không|co phai .* khong)", re.IGNORECASE)
 _UNNAMED = re.compile(r"\b(?:nguyên liệu|nguyen lieu|chất|chat|thứ|thu|món|mon|loại|loai)\b[^.,;]{0,25}\b(?:chưa rõ|chua ro|không rõ|khong ro|nào đó|nao do|gì đó|gi do|khác|khac|kia)\b", re.IGNORECASE)
 _NORMAL_EAT = re.compile(r"(?:ăn|an)\s+(?:được\s+|duoc\s+)?(?:bình thường|binh thuong|thoải mái|thoai mai|tốt|tot)", re.IGNORECASE)
 _REMOVE = re.compile(r"(?:hết|het|không còn|khong con|chẳng còn|chang con)\s*(?:bị |bi )?$")
@@ -37,6 +38,7 @@ _EXAMPLE = re.compile(r"(?:ví dụ|vi du|vd|example)")
 _QUOTE = re.compile(r"[\"“”'‘’«»]")
 _AMBIGUOUS_RAW = {"của", "cùa", "cúa", "số", "sổ", "sỗ", "cả", "cã"}  # "của" (of) folds to "cua" (crab)
 MAX_SCAN_WORDS = 8
+_ASCII_MSG = contextvars.ContextVar("ascii_msg", default=False)  # the whole message has no diacritics: ambiguous plain-ASCII allergen words are then allowed
 
 
 def normalize_keep_case(text: str) -> str:
@@ -74,6 +76,8 @@ def _scan(words: list) -> tuple:
             chunk = words[i:i + size]
             if size == 1 and chunk[0] in _AMBIGUOUS_RAW:
                 break
+            if size == 1 and chunk[0].isascii() and fold_uncached(chunk[0]) in _AMBIGUOUS_UNACCENTED and not _ASCII_MSG.get():
+                break  # "hen" (a Southern sentence particle) vs "hến" (clam): accented spelling required in an accented message
             if allergens.family_of(" ".join(chunk)) and allergens.core_term(" ".join(chunk)) == " ".join(chunk):
                 hit = size
                 break
@@ -138,7 +142,8 @@ def _terms(rest: str, issues: list) -> tuple:
 
 
 _HARD_CUE = re.compile(r"(?:khong|ko)\s+(?:the\s+)?an\s+duoc|khong the an|kieng")
-_VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "chien", "xao", "nuong", "gi", "loai", "vo", "cung", "mem", "tuoi", "song", "chin"}
+_VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "chien", "xao", "nuong", "gi", "loai", "vo", "cung", "mem", "tuoi", "song", "chin",
+          "thuc", "pham", "chat", "nguyen", "lieu", "chan", "doan", "ro", "biet", "thu", "pham", "chua"}
 _AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
 
 
@@ -183,6 +188,7 @@ def _continuation(clause: str) -> list:
 def parse(text: str) -> SafetyParse:
     out = SafetyParse()
     text = normalize(text)
+    _ASCII_MSG.set(text.isascii())
     if _QUOTE.search(text) and _EXAMPLE.search(text) and _ALLERGY.search(text):
         out.mentioned = True
         out.issues.append("example")
@@ -235,7 +241,7 @@ def parse(text: str) -> SafetyParse:
                 local = []
                 if kind == "symptom":
                     found, _ = _scan(_clean_words(seg))
-                    terms = found or _before_terms(before_full)
+                    terms = list(dict.fromkeys(_before_terms(before_full) + found))
                     if not terms:
                         local.append("empty")
                 else:
