@@ -84,3 +84,8 @@ class ConfirmedFindings(unittest.TestCase):
         r=self.turns(['Tui chưa chắc dị ứng hạt điều hay sữa bò.'])
         self.assertTrue(r.state.allergy_unresolved)
         self.assertIsNone(r.plan_request)
+
+    def test_command_answer_cannot_resolve_unknown_allergy(self):
+        r=self.turns(['Tôi dị ứng một thứ chưa rõ.','lên đường'])
+        self.assertTrue(r.state.allergy_unresolved)
+        self.assertIsNone(r.plan_request)

@@ -2,9 +2,11 @@
 from adversarial_guided import *
 import importlib
 import re
+import os
 
 def save(name,obj):
-    p=ROOT/f'qa/chat/u5d_{name}.json'
+    tag=os.environ.get('U5D_EVIDENCE_TAG','')
+    p=ROOT/f'qa/chat/u5d_{tag}{name}.json'
     assert not p.exists(),p
     p.write_text(json.dumps(obj,ensure_ascii=False,indent=2)+'\n',encoding='utf8')
 
