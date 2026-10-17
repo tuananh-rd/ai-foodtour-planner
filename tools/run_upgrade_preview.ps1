@@ -13,6 +13,7 @@ if (Get-NetTCPConnection -State Listen -LocalPort $targetPort -ErrorAction Silen
 }
 # Explicit offline preview: no dotenv/credential discovery, Google APIs or provider calls.
 $env:FOODTOUR_CHAT_V2 = '1'
+$env:NEXT_TELEMETRY_DISABLED = '1'
 $env:FOODTOUR_UI_GUIDED = '1'
 $env:FOODTOUR_UI_V2 = '1'
 $env:FOODTOUR_LLM = 'mock'
