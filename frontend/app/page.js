@@ -79,30 +79,34 @@ export default function Home() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
-      if (params.get('guided') === '1' || params.get('ui') === 'guided') {
-        setIsGuidedUi(true);
-      }
-      if (params.get('chat') === 'v2') {
-        setIsChatV2(true);
-      }
-      if (params.get('ui') === 'v2') {
-        setIsUiV2(true);
-      }
       if (params.get('dev') === '1') {
         setIsDevMode(true);
       }
-    }
-  }, []);
+      if (params.get('guided') === '1' || params.get('ui') === 'guided') {
+        setIsGuidedUi(true);
+      } else if (params.get('guided') === '0' || params.get('guided') === 'off' || params.get('chat') === 'v2' || params.get('ui') === 'v2') {
+        setIsGuidedUi(false);
+      } else if (clientConfig?.features?.guided_ui !== undefined) {
+        setIsGuidedUi(Boolean(clientConfig.features.guided_ui));
+      }
 
-  useEffect(() => {
-    if (clientConfig?.features?.guided_ui) {
-      setIsGuidedUi(true);
-    }
-    if (clientConfig?.features?.chat_v2) {
-      setIsChatV2(true);
-    }
-    if (clientConfig?.features?.ui_v2) {
-      setIsUiV2(true);
+      if (params.get('chat') === 'v2') {
+        setIsChatV2(true);
+      } else if (params.get('chat') === '0' || params.get('chat') === 'off') {
+        setIsChatV2(false);
+      } else if (clientConfig?.features?.chat_v2 !== undefined) {
+        setIsChatV2(Boolean(clientConfig.features.chat_v2));
+      }
+
+      if (params.get('ui') === 'v2') {
+        setIsUiV2(true);
+      } else if (params.get('ui') === '0' || params.get('ui') === 'v1' || params.get('ui') === 'classic') {
+        setIsUiV2(false);
+      } else if ((params.get('chat') === '0' || params.get('chat') === 'off') && (params.get('guided') === '0' || params.get('guided') === 'off')) {
+        setIsUiV2(false);
+      } else if (clientConfig?.features?.ui_v2 !== undefined) {
+        setIsUiV2(Boolean(clientConfig.features.ui_v2));
+      }
     }
   }, [clientConfig]);
 
@@ -285,13 +289,19 @@ export default function Home() {
     }
 
     try {
+      const isGuided = Boolean(
+        isGuidedUi ||
+        (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_GUIDED_UI === '1') ||
+        (typeof window !== 'undefined' && (new URLSearchParams(window.location.search).get('guided') === '1' || new URLSearchParams(window.location.search).get('ui') === 'guided'))
+      );
       const chatV2Active = Boolean(
         isChatV2 ||
         (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_CHAT_V2 === '1') ||
         (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat_v2') === '1')
       );
+      const sessionRestorable = chatV2Active || isGuided;
 
-      if (!isReset && chatV2Active && typeof window !== 'undefined') {
+      if (!isReset && sessionRestorable && typeof window !== 'undefined') {
         const storedId = sessionStorage.getItem('foodtour_chat_session_id');
         const storedToken = sessionStorage.getItem('foodtour_chat_session_token');
         if (storedId && storedToken) {
@@ -328,7 +338,7 @@ export default function Home() {
       setSessionId(session.session_id);
       setSessionToken(session.token);
       setRevision(session.revision);
-      if (chatV2Active && typeof window !== 'undefined') {
+      if (sessionRestorable && typeof window !== 'undefined') {
         try {
           sessionStorage.setItem('foodtour_chat_session_id', session.session_id);
           sessionStorage.setItem('foodtour_chat_session_token', session.token);

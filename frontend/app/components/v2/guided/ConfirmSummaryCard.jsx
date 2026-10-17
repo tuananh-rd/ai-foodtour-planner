@@ -16,16 +16,16 @@ export default function ConfirmSummaryCard({
   onConfirmNo,
   busy = false
 }) {
-  const stops = profile?.stops?.value || 3;
+  const stops = profile?.stops?.value || summary?.shortlist?.length || 3;
   const duration = profile?.duration_min?.value || 120;
   const area = typeof profile?.area?.value === 'string'
     ? profile.area.value
-    : (profile?.area?.value?.label || 'quanh Hồ Gươm');
-  const party = profile?.party_size?.value || 2;
-  const time = profile?.start_time?.value || '19:00';
+    : (profile?.area?.value?.label || summary?.items?.find((i) => i.id === 'area')?.value || 'quanh Hồ Gươm');
+  const party = profile?.party_size?.value || summary?.items?.find((i) => i.id === 'party_size' || i.id === 'party')?.value || 2;
+  const time = profile?.start_time?.value || summary?.items?.find((i) => i.id === 'start_time' || i.id === 'time')?.value || '19:00';
   const budget = profile?.budget?.value
-    ? `${(profile.budget.value).toLocaleString('vi-VN')} đ`
-    : '500.000 đ';
+    ? `${Number(profile.budget.value).toLocaleString('vi-VN')} đ`
+    : (summary?.items?.find((i) => i.id === 'budget')?.value || '500.000 đ');
 
   return (
     <div

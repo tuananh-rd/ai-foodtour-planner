@@ -68,11 +68,13 @@ export default function ClarifyQuestionCard({
             alignItems: 'center'
           }}
         >
-          {options.map((opt) => (
+          {options.map((opt, idx) => (
             <button
-              key={opt.option_id}
+              key={opt.option_id || idx}
               type="button"
               data-testid={`clarify-option-${opt.option_id}`}
+              data-option-index={idx}
+              data-option-id={opt.option_id}
               onClick={() => !busy && onPickOption && onPickOption(opt.option_id)}
               disabled={busy}
               style={{

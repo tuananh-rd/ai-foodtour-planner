@@ -191,8 +191,8 @@ export default function UnderstoodCard({
           <div style={{ display: 'flex', alignItems: 'center', gap: 8, textAlign: 'right' }}>
             {Array.isArray(allergies) && allergies.length > 0 ? (
               <span style={{ color: 'var(--ink, #231f1a)', display: 'inline-flex', alignItems: 'center' }}>
-                {allergies.map((a) => a.term || a.family || 'dị ứng').join(', ')}
-                {allergies.some((a) => a.status === 'ai_unconfirmed') && (
+                {allergies.map((a) => (typeof a === 'string' ? a : a.term || a.family || 'dị ứng')).join(', ')}
+                {allergies.some((a) => a && typeof a === 'object' && (a.status === 'ai_unconfirmed' || a.source === 'ai_unconfirmed')) && (
                   <span
                     data-testid="badge-ai-unconfirmed"
                     style={{

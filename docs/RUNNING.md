@@ -139,3 +139,39 @@ Bật bằng `FOODTOUR_CHAT_V2=1` (mặc định tắt; `/messages` cũ không �
 Hiểu tin nhắn: luật cục bộ trước (0 lượt Gemini); chỉ khi luật không chắc mới gọi Gemini tối đa 1 lần/lượt, gửi văn bản lượt hiện tại và trạng thái rút gọn (không tên quán, không toạ độ, không địa chỉ). Hết lượt/lỗi: hỏi làm rõ có nút bấm. Dị ứng: không quán nào được gắn "an toàn" (dữ liệu không có nguyên liệu).
 
 Kiểm thử: `python qa/chat/run_scenarios.py` (CH-01…12 + ADV-01…14, dữ liệu mô phỏng `contracts/fixtures/venues.chat.synthetic.json`), `python qa/chat/eval_utterances.py`, `python -m unittest discover -s backend/tests`. Gemini thật (tối đa 8 lượt): `PYTHONPATH=backend python qa/live/chat_gemini_smoke.py` — chỉ chạy khi được phép vì tiêu hạn mức ngày.
+
+## Giao diện dẫn dắt (Guided UI - Contract v1.9.1 / Task U4b)
+
+Giao diện dẫn dắt từng bước (Guided UI) triển khai theo thiết kế tài liệu `docs/ux/guided-flow-mockup.html` và hợp đồng `contract v1.9.1`. Giao diện tập trung vào việc hỗ trợ người dùng xây dựng tour ẩm thực Hà Nội theo luồng tự nhiên, điềm tĩnh:
+- **Thẻ "Mình hiểu là…" (`UnderstoodCard`):** Tóm tắt cấu trúc yêu cầu của người dùng (khu vực, số người, số quán, thời gian, buổi, ngân sách, món ưa thích, dị ứng) với khả năng chỉnh sửa từng dòng (`Sửa`/`Chọn`).
+- **Nguyên tắc một câu hỏi (`ClarifyQuestionCard`):** Tại mỗi thời điểm chỉ hiển thị tối đa đúng 1 câu hỏi làm rõ kèm các chip lựa chọn nhanh đạt chuẩn kích thước cảm ứng $\ge 44\text{px}$.
+- **Cổng kiểm soát chặt chẽ (Gate 1):** Tuyệt đối không gọi planner hoặc hiển thị timeline tour trước khi người dùng bấm xác nhận ở thẻ tóm tắt (`ConfirmSummaryCard`). Mọi nỗ lực bypass (sửa trực tiếp, gõ phím "lập tour đi", tải lại trang khi chưa giải quyết nghĩa vụ dị ứng) đều bị chặn ở tầng dữ liệu và giao diện.
+- **Google Maps miễn phí:** Liên kết mở bản đồ đi bộ miễn phí theo chuẩn URL Scheme của Google, không dùng Google Maps API key, không gửi request nền tới máy chủ Google, đảm bảo quyền riêng tư.
+- **Tiêu chuẩn trải nghiệm:** Số thao tác người dùng từ màn hình đầu tới liên kết Google Maps chỉ 7 thao tác ($\le 8$ theo quy định); thời gian phản hồi lượt đầu đạt $\sim 1.0 - 1.4\text{s}$.
+
+### Kích hoạt & Điều hướng URL
+- Mặc định khi bật cả `FOODTOUR_CHAT_V2=1` và `FOODTOUR_UI_GUIDED=1`, backend trả `features.guided_ui: true` trong `GET /v1/client-config`, ứng dụng tự động mở giao diện Guided UI trên trang chủ `/`.
+- Tham số URL:
+  - `/?guided=1` hoặc `/?ui=guided`: Ép bật giao diện dẫn dắt.
+  - `/?guided=0` hoặc `/?chat=v2`: Chuyển sang giao diện Chatbot V2 truyền thống.
+  - `/?chat=0&guided=0`: Chuyển về bảng điều khiển hợp đồng cổ điển (V1 Contract panel).
+
+### Chạy kiểm thử tự động (Serial Regression)
+Chạy độc lập từng bộ kiểm thử (không chạy đồng thời để tránh xung đột cổng):
+```powershell
+# 1. E2E trên API thật với trình duyệt thật qua CDP (Task U4b)
+node qa/e2e/test_guided_e2e.mjs         # 24/24 kiểm tra chấp nhận API thật
+
+# 2. Kiểm thử luồng giao diện mẫu synthetic 5 kịch bản (Task U4a)
+node qa/e2e/test_guided_ui.mjs          # 42/42 kiểm tra giao diện và responsive
+
+# 3. Các bộ hồi quy toàn hệ thống
+node qa/e2e/test_chat_v2.mjs            # 31/31 kiểm tra Chat V2
+node qa/e2e/test_maps_links_cdp.mjs     # 61/61 kiểm tra Google Maps URLs CDP
+node qa/e2e/test_components.mjs         # 48/48 kiểm tra React render & SSR
+node qa/e2e/test_ui_v2.mjs              # 28/28 kiểm tra UI V2 shell
+node frontend/lib/contractTest.js       # 18/18 kiểm tra hợp đồng API client
+```
+
+Bằng chứng ảnh chụp thực tế được lưu tại: `docs/reports/u4b/` (xem chi tiết tại `docs/reports/u4b/README.md`).
+

@@ -1120,9 +1120,13 @@ export async function getClientConfig(options = {}) {
         const params = new URLSearchParams(window.location.search);
         if (params.get('chat') === 'v2') {
           res.features.chat_v2 = true;
+        } else if (params.get('chat') === '0' || params.get('chat') === 'off') {
+          res.features.chat_v2 = false;
         }
         if (params.get('guided') === '1' || params.get('ui') === 'guided') {
           res.features.guided_ui = true;
+        } else if (params.get('guided') === '0' || params.get('guided') === 'off') {
+          res.features.guided_ui = false;
         }
       }
     }
@@ -1808,7 +1812,36 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
     };
   }
 
-  // Real Mode
+  // Real Mode: sanitize payload to strictly conform to Pydantic ChatRequest schema (extra='forbid')
+  let cleanAction = null;
+  if (body.action) {
+    const rawAct = body.action;
+    const actType = rawAct.type || rawAct.name;
+    cleanAction = { type: actType };
+    if (rawAct.option_id || rawAct.payload?.option_id) {
+      cleanAction.option_id = rawAct.option_id || rawAct.payload?.option_id;
+    }
+    if (rawAct.patch || (rawAct.payload && typeof rawAct.payload === 'object' && !rawAct.payload.option_id)) {
+      cleanAction.patch = rawAct.patch || rawAct.payload;
+    }
+    if (rawAct.venue_id) cleanAction.venue_id = rawAct.venue_id;
+    if (rawAct.venue_ids) cleanAction.venue_ids = rawAct.venue_ids;
+    if (rawAct.criteria) cleanAction.criteria = rawAct.criteria;
+    if (rawAct.location) cleanAction.location = rawAct.location;
+    if (rawAct.query) cleanAction.query = rawAct.query;
+  }
+
+  const reqBody = {
+    revision: body.revision ?? 0
+  };
+  if (body.text !== undefined && body.text !== null) {
+    reqBody.text = body.text;
+    reqBody.action = cleanAction || null;
+  } else if (cleanAction) {
+    reqBody.action = cleanAction;
+    reqBody.text = body.text ?? null;
+  }
+
   const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}/chat`;
   const headers = {
     'Content-Type': 'application/json',
@@ -1821,7 +1854,7 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
   return await safeFetch(url, {
     method: 'POST',
     headers,
-    body: JSON.stringify(body),
+    body: JSON.stringify(reqBody),
     signal: options?.signal
   });
 }
