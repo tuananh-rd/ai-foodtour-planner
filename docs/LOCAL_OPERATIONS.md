@@ -21,3 +21,7 @@ Gemini has bounded existing session/daily budgets and timeouts. Without a config
 Run tests with `PYTHONPATH=backend`. Use isolated synthetic app instances and unused ports; inspect listeners before start. Never terminate unknown listeners on 3000/8000/3010/8010. Stop only the exact processes started by the current test harness. Build/run on the reviewed commit; an old screenshot is not regression evidence.
 
 For functional regressions, retain the failing case and route to its owner (Codex backend; Antigravity frontend/QA). Revert only an identified local task commit after coordinating dependent frontend/contracts; do not reset worktrees or rewrite shared history. Preserve untracked plans/reviews. No remote deployment or publishing is authorised.
+
+## Reproducible offline preview
+
+From the coordinator checkout, run `tools/run_upgrade_preview.ps1 -Component backend` and `tools/run_upgrade_preview.ps1 -Component frontend` in separate Orca terminals. The explicit synthetic fixture is labelled in the app; API is real local HTTP, LLM is deterministic rules/mock, routing is estimated and no Google API/provider call is activated. Default URL is http://127.0.0.1:3020 and API http://127.0.0.1:8020. The script refuses occupied ports and stops no existing process. Pass `-DataPath` only to the backend for an authorised existing local input; do not put private paths or records in screenshots/reports. Use matching `-WebPort`/`-ApiPort` in both terminals if defaults are occupied. This development preview does not establish production readiness.

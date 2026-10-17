@@ -22,7 +22,7 @@ from app.planner.types import Preferences
 
 
 def run(n=100):
-    env = {'FOODTOUR_CHAT_V2': '1', 'FOODTOUR_GUIDED_UI': '1', 'FOODTOUR_LLM': 'off',
+    env = {'FOODTOUR_CHAT_V2': '1', 'FOODTOUR_UI_GUIDED': '1', 'FOODTOUR_LLM': 'off',
            'FOODTOUR_EXPLAIN': 'template', 'FOODTOUR_ROUTING': 'estimate', 'FOODTOUR_SESSION_DB': '',
            'FOODTOUR_RATE_LIMIT_IP': '1000000', 'FOODTOUR_RATE_LIMIT_TOKEN': '1000000',
            'FOODTOUR_EVIDENCE_PATH': ''}

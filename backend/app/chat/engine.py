@@ -1,8 +1,9 @@
 """Conversation engine: one deterministic reducer per user turn (contract v1.8).
 
-handle(state, prefs, text|action) -> TurnResult. The engine never calls the planner or a provider itself: it returns
+handle(state, prefs, text|action) -> TurnResult. The reducer never calls the planner or a provider itself: it returns
 `plan_request` when (and only when) the user confirmed a `confirm_plan` pending, and asks an optional `llm` callable to
-understand low-confidence text. Every fact in a reply comes from `tools`; missing data is "Chưa rõ".
+understand low-confidence text. After a confirmed failed plan, `after_plan` can test bounded local-only adjustments.
+Every fact in a reply comes from checked state; missing data is "Chưa rõ".
 """
 from __future__ import annotations
 
@@ -1551,8 +1552,11 @@ class ChatEngine:
             st.phase, st.tour_stale = "planned", False
             names = [tools.clean_text(self.by_id[x.venue_id].name, 80, "quán") for x in tour.stops if x.venue_id in self.by_id]
             walk = f" Tổng đi bộ khoảng {tour.walk_minutes} phút (ước tính)." if tour.walk_minutes is not None else ""
+            disclosure = (" Lịch trình đã qua kiểm tra với bằng chứng hiện có; xem nguồn và các giả định đi kèm."
+                          if tour.status == "verified_feasible" else
+                          " Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.")
             return [text_b("Mình đã lập lịch trình từ đúng " + str(len(names)) + " quán bạn đã chọn: " + " → ".join(names) + "." + walk +
-                           " Giờ mở cửa, giá theo người và tuyến đường thật chưa được xác minh — xem phần bằng chứng.")]
+                           disclosure)]
         st.phase = "choose"
         reasons = " ".join(tools.clean_text(r, 240) for r in tour.reasons)  # reasons may quote venue names: dataset text stays neutralised
         blocks = [notice_b("warning", "plan_conflict", reasons or "Chưa lập được lịch trình thoả các ràng buộc hiện tại.")]

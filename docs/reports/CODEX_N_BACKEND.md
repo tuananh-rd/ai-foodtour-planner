@@ -14,8 +14,9 @@
 
 - Correct baseline command is `PYTHONPATH=backend .venv/Scripts/python.exe -X utf8 -m unittest discover -s backend/tests -q`: **559 tests OK, 1 documented skip**. The first invocation without PYTHONPATH had 18 import errors; that was a test invocation error, corrected without dependency changes.
 - New language/obligation/no-solution suite: **9 tests OK**, with many table-driven variants; API telemetry privacy test: **1 OK**.
-- Targeted API metadata/legacy chat planning regressions: **27 OK**. Broad intermediate run caught three compatibility failures (extra legacy block and telemetry mishandling malformed test counters); both were fixed and targeted tests rerun. Final broad results are recorded on task closure.
+- Targeted API metadata/legacy chat planning regressions: **27 OK**. Broad intermediate run caught three compatibility failures (extra legacy block and telemetry mishandling malformed test counters); both were fixed and targeted tests rerun. Final backend run: **569 tests OK, 1 documented skip** (46.513 seconds).
 - `tools/export_openapi.py --check`: **matches server schema**.
+- Full CI backend runner `scripts/run_unittests.py`: **574 tests OK, 1 documented skip** (47.191 seconds), including the 5 synthetic legacy checks. Its old private-data skip was removed and repository root import path retained after chdir so legacy `backend.tests` imports work; the initial CI runner pass exposed this pre-existing import-path failure before correction.
 - Isolated real HTTP guided API suite, port 18267, mock LLM: **26/26 PASS**. No live Google/Gemini calls.
 
 ## Measurement and data limitations
@@ -24,15 +25,19 @@ Synthetic benchmark, Windows, Python 3.14.4, 20 logical CPUs, 100 warm samples p
 
 | Workload | Concurrency | Errors / n | p50 ms | p95 ms | Cold ms |
 |---|---|---|---|---|---|
-| rules API in-process, includes new session setup | 1 | 0/100 | 18.877 | 26.163 | 118.044 |
-| rules API in-process, includes new session setup | 5 | 0/100 | 99.381 | 119.931 | 118.044 |
-| direct selected-pool planner + constraint check | 1 | 0/100 | 0.415 | 0.531 | 0.661 |
-| direct selected-pool planner + constraint check | 5 | 0/100 | 0.426 | 0.643 | 0.661 |
+| rules API in-process, includes new session setup | 1 | 0/100 | 19.993 | 24.069 | 108.189 |
+| rules API in-process, includes new session setup | 5 | 0/100 | 105.195 | 123.462 | 108.189 |
+| direct selected-pool planner + constraint check | 1 | 0/100 | 0.425 | 0.612 | 0.662 |
+| direct selected-pool planner + constraint check | 5 | 0/100 | 0.426 | 0.598 | 0.662 |
 
-This does not measure browser/network latency, whole-city optimisation, live provider SLO, or real-world tour feasibility. These workloads provide no evidence that cache/index changes are needed; P2 performance optimisation is deferred rather than adding speculative cache complexity.
+Benchmark rerun explicitly enables FOODTOUR_UI_GUIDED (correct flag); the final values above supersede the first baseline run. This does not measure browser/network latency, whole-city optimisation, live provider SLO, or real-world tour feasibility. These workloads provide no evidence that cache/index changes are needed; P2 performance optimisation is deferred rather than adding speculative cache complexity.
 
 Private local count-only audit: 36 input/loaded rows, 0 rejected, 2 online-only, 36 unknown hours, 1 unknown price; overlay verified hours/prices both 0. Ten anonymous district clusters have dine-in candidate counts 6/6/5/4/3/3/3/2/1/1. These counts do not prove walkability/operating status/ingredients or authorise public reuse. The audit source remains ignored/local; no raw or derived venue records, IDs, names or coordinates are copied here. No routing or ingredient verification is claimed. Strict certification is blocked on actual evidence, not implementation work that can manufacture it.
 
+Private-local API follow-up after `0c66d8a`, isolated in-memory sessions and all live providers off: original S02 reaches explicit confirmation then returns `notice + text`, no tour and no pending relaxation loop; original S04 reaches explicit confirmation and returns **3 conditional stops**, independently rechecked with `validate_tour` against the session's stored tour preferences/snapshot and local estimator, no violations. No private venue details are included in this evidence. This is an in-process API result, not browser completion or verified real routing. Initial ad hoc probe attempts had a PowerShell stdin Unicode issue and an incorrect session-store method name; those probes were corrected (UTF-8 stdin and `owned`) before recording these outcomes and are not product failures.
+
 ## Remaining review/gates
+
+Bounded Gemini smoke: `qa/live/guided_gemini_smoke.py --max-calls 1 --only vo_cung,control_s0,control_covered`, synthetic sentences, existing configured credentials consumed by the provider without printing/inspecting values. The first daily cap of 1 was below the existing reserve of 3 and made **0 calls**; it is a reserve-gate check, not live validation. A cap of 4 with the same maximum-one-call run allowed **1 attempted call**, left reserve 3, reported 0 transport errors and 0 safety violations; both covered controls made 0 calls. The ambiguous allergy case remained `understanding=rules`, `allergy_term` unresolved and no plan. This does **not** establish validated LLM understanding or general Gemini quality. No further live calls were made; no billing/service was activated.
 
 Antigravity independently checks backend integration after the backend commit. Codex reviews its frontend diff and performs final integrated module/contract/build/browser checks with fresh desktop/mobile screenshots. Live Gemini quality at scale, external route evidence, licensed/fresh field verification, real participant usability and DB backup/restore remain explicitly unverified unless separately tested. No secrets read/printed, paid API activation, scraping, push or deploy.
