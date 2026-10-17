@@ -338,6 +338,13 @@ _THIRD = r"(?:bạn|chị|anh|em gái|em trai|mẹ|bố|ba|má|cô|chú|dì|bác
 _ABSENT = r"(?:ở nhà|không đi|không tham gia|không có mặt|vắng mặt|không cùng đi|đi vắng|không đi cùng)"
 
 
+def is_third_party(sentence: str) -> bool:
+    """The sentence is about a companion ("Bạn mình dị ứng tôm", "Mẹ dị ứng trứng"), not the speaker ("Bạn ơi, mình dị ứng tôm")."""
+    low = sentence.casefold()
+    m = re.match(r"\s*" + _THIRD + r"\b(?!\s*(?:ơi|oi|à|ạ|nè|ne|nhé|nhe|,))", low)
+    return bool(m) and not re.match(r"\s*(?:tôi|mình|em|tui|tớ)\b", low)
+
+
 def _unquote_foods(text: str) -> str:
     """Mình dị ứng "đậu phộng": a quoted NAME of a major allergen next to an allergy cue is a statement, not a draft or an example."""
     def swap(m):
@@ -355,7 +362,7 @@ def _drop_absent(text: str) -> str:
     keep = []
     for sent in re.split(r"(?<=[.;!?])\s+", text):
         low = sent.casefold()
-        if safety_parse._ALLERGY.search(low) and re.match(r"\s*" + _THIRD + r"\b", low) and not re.search(r"\b(?:tôi|mình|em|tui|tớ)\s+(?:cũng\s+)?(?:bị\s+)?dị ứng", low):
+        if safety_parse._ALLERGY.search(low) and is_third_party(sent):
             continue
         keep.append(sent)
     return " ".join(keep).strip()

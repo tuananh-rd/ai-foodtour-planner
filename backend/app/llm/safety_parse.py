@@ -98,8 +98,12 @@ _TAIL_STOP = {"vao", "trong", "nha", "nhe", "nhen", "giup", "dum", "vi", "boi", 
 
 def _cut_tail(rest: str) -> str:
     out = []
-    for w in _clean_words(rest):
+    words = _clean_words(rest)
+    for i, w in enumerate(words):
         if fold_uncached(w) in _TAIL_STOP or w in _TAIL_STOP:
+            if fold_uncached(w) == "voi" and _scan(words[i + 1:i + 4])[0]:
+                out.append(w)  # "mè với đậu phộng": 'với' joins two allergens here
+                continue
             break
         out.append(w)
     return " ".join(out)
@@ -210,7 +214,7 @@ def parse(text: str) -> SafetyParse:
                     out.negated_terms += [t for t in named if t not in out.negated_terms]
                     mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
                     continue
-                if kind in ("allergy", "symptom") and _UNSURE.search(clause):
+                if kind in ("allergy", "symptom") and _UNSURE.search(clause) and not _UNNAMED.search(clause):
                     out.issues.append("empty")  # "chưa biết có phải dị ứng không": a doubt, not a statement; keep the question open
                     mode = None
                     continue
