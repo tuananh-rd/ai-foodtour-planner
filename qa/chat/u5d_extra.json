@@ -1,0 +1,39 @@
+{
+  "baseline": {
+    "tests_run": 6,
+    "failures": [],
+    "errors": [],
+    "test_output": "----------------------------------------------------------------------\nRan 6 tests in 0.081s\n\nOK\n"
+  },
+  "mutations": [
+    {
+      "mutation": "model_symptom_guard",
+      "tests_run": 6,
+      "failures": [
+        "tests.chat.test_u5c_regressions.GuardControls.test_model_symptom_guard"
+      ],
+      "errors": [],
+      "test_output": "======================================================================\nFAIL: test_model_symptom_guard (tests.chat.test_u5c_regressions.GuardControls.test_model_symptom_guard)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\backend\\tests\\chat\\test_u5c_regressions.py\", line 142, in test_model_symptom_guard\n    self.assertFalse(r.state.allergies)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\nAssertionError: [Allergy(term='ngứa họng', family=None, source='ai_unconfirmed', venue_confirmations=[], who='self')] is not false\n\n----------------------------------------------------------------------\nRan 6 tests in 0.064s\n\nFAILED (failures=1)\n"
+    },
+    {
+      "mutation": "model_concrete_guard",
+      "tests_run": 6,
+      "failures": [
+        "tests.chat.test_u5c_regressions.GuardControls.test_model_description_guard"
+      ],
+      "errors": [],
+      "test_output": "======================================================================\nFAIL: test_model_description_guard (tests.chat.test_u5c_regressions.GuardControls.test_model_description_guard)\n----------------------------------------------------------------------\nTraceback (most recent call last):\n  File \"C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-codex-backend\\backend\\tests\\chat\\test_u5c_regressions.py\", line 149, in test_model_description_guard\n    self.assertFalse(r.state.allergies)\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^\nAssertionError: [Allergy(term='vỏ cứng', family=None, source='ai_unconfirmed', venue_confirmations=[], who='self')] is not false\n\n----------------------------------------------------------------------\nRan 6 tests in 0.065s\n\nFAILED (failures=1)\n"
+    }
+  ],
+  "confirmations": {
+    "live": 1,
+    "persisted": 1
+  },
+  "nudge_1000": {
+    "turns": 8,
+    "asked": 20,
+    "conflicts": 0,
+    "allergies": 0,
+    "shortlist": 0
+  }
+}

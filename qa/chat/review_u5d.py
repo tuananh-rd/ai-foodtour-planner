@@ -83,7 +83,8 @@ def timing():
     for mod in [coverage,safety_parse,understanding]:
         for val in vars(mod).values():
             if isinstance(val,re.Pattern): patterns[(val.pattern,val.flags)]=True
-    samples=['a','dị ứng ','bạn tôi không đi ','nếu tôi dị ứng ','không ăn được ','999999 ','<','tôi thích ','tôm còn ',' ']
+    samples=['a','dị ứng ','bạn tôi không đi ','nếu tôi dị ứng ','không ăn được ','999999 ','<','tôi thích ','tôm còn ',' ',
+             'có phải ','co phai ','không phải a ','tổng 999.','1 triệu ','dị ứng có phải ','Mẹ tôi dị ứng ']
     table=[]
     for (pat,flags) in patterns:
         rx=re.compile(pat,flags); row=dict(pattern=pat,flags=flags,times=[])
@@ -102,7 +103,7 @@ def timing():
             for _ in range(3):
                 start=time.perf_counter();eng.handle(ChatState(),Preferences(),text=text);ms.append((time.perf_counter()-start)*1000)
             engine.append(dict(prefix=cue,chars=n,median_ms=round(statistics.median(ms),4),max_ms=round(max(ms),4)))
-    save('timing_supplement',dict(method='Runtime and module-level regexes, including LLM merge grounding and absent-party retraction; finditer stress forces full scan irrespective of production operation; ten adversarial families per length',regexes=table,engine=engine))
+    save('timing_final',dict(method='Runtime and module-level regexes, including LLM merge grounding and absent-party retraction; finditer stress forces full scan irrespective of production operation; seventeen adversarial families per length',regexes=table,engine=engine))
     print('timed',len(table),'regexes')
 
 if __name__=='__main__':

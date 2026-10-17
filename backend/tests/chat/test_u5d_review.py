@@ -26,7 +26,7 @@ class Controls(unittest.TestCase):
         self.assertIn('vừng',safety_parse.parse('Vừng ăn vào là nổi mề đay.').allergies)
 
     def test_dish_scan_fronted(self):
-        self.assertIn('bánh cuốn',coverage.extras('Bánh cuốn trước nha','banh cuon truoc nha')['interests'])
+        self.assertIn('bánh cuốn',coverage.extras('Bánh cuốn trước nha','banh cuon truoc nha').get('interests',[]))
 
     def test_dish_scan_negation(self):
         self.assertNotIn('bánh cuốn',coverage.extras('Không ăn bánh cuốn','khong an banh cuon').get('interests',[]))
