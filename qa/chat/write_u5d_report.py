@@ -8,6 +8,7 @@ def read(name):
     return json.loads((R/f'qa/chat/u5d_{tag}{name}.json').read_text(encoding='utf8'))
 report=R/'docs/reports/CODEX_U5D.md'
 receipt=report.read_text(encoding='utf8').split('\n## Verdict')[0]
+receipt=receipt.replace('\n`json\n','\n```json\n').replace('\n`\n','\n```\n')
 out=[receipt,'''\n## Verdict
 
 **REQUEST-CHANGES.** Open blocker: unrelated absent-person declarations erase a present child's allergy and permit a plan. Other confirmed major findings permit plans with a missed, invented, or unresolved allergy. No production changes were made; reviewer/integrator is Claude. The evaluation task is complete even though the engine fails acceptance.
@@ -95,6 +96,7 @@ Reviewed the additional engine stale-pending cleanup ordering, `_answer` free-te
 
 MINOR: `_to_prefs` retains a previously inferred 34-minute visit when the duration changes from 120 to 240 minutes; `_visit_minutes` then returns None and the summary omits that assumption. The API hook applies only bounded integer values (20..45), and real selected-tour planning still checks actual routing/time constraints; no fabricated route or ETA is introduced by this hook. The hardcoded eight-minute leg is an internal heuristic for estimating a visit, not verified walking evidence. The stale assumption should be reconciled with displayed summary state. Probe trace:
 ''')
+out.append('Postmerge mutation totals: **21 killed, 1 survived, 0 errors** across 22 mutants (including the two supplementary model guards). The survivor is the old intermediate `one_clarify` mutant masked by the newer final guard; the behavioral final-guard mutant is killed. Therefore the literal requirement that every prior mutant be killed is not met, and no all-mutants-killed claim is made. Post-freeze corpus integrity check: 220 unique texts, zero exact sentence overlaps with v1/v2/v3, longest input 846 characters. Timing was measured while local tests/fuzz could contend for CPU; measurements are observed costs, not an isolated benchmark or complexity proof. The previous cubic absent regex is gone; repeated-cue engine growth still deserves profiling (see timing table), and a universal linear-time bound has not been established.\n')
 out.append('```json\n'+json.dumps(late['visit_update'],ensure_ascii=False,indent=2)+'\n```')
 gate=R/'qa/chat/u5d_postmerge_backend_gate.txt'
 if gate.exists():
