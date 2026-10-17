@@ -5,7 +5,8 @@ const path = require('node:path');
 const fs = require('node:fs');
 const { createRequire } = require('node:module');
 const root = path.resolve(__dirname, '..');
-const frontRequire = createRequire(path.join(root, 'frontend/package.json'));
+const frontend = path.resolve(process.env.NGONNGON_FRONTEND_DIR || path.join(root, 'frontend'));
+const frontRequire = createRequire(path.join(frontend, 'package.json'));
 const React = frontRequire('react');
 const { renderToStaticMarkup } = frontRequire('react-dom/server');
 const swc = frontRequire('next/dist/build/swc');
@@ -17,7 +18,7 @@ require.extensions['.jsx'] = (mod, filename) => {
   });
   mod._compile(result.code, filename);
 };
-const component = name => require(path.join(root, 'frontend/app/components/v2/guided', name + '.jsx')).default;
+const component = name => require(path.join(frontend, 'app/components/v2/guided', name + '.jsx')).default;
 const checks = [];
 function check(name, ok) { checks.push({ name, pass: !!ok }); console.log(`${ok ? 'PASS' : 'FAIL'} ${name}`); }
 const render = (name, props) => renderToStaticMarkup(React.createElement(component(name), props));
