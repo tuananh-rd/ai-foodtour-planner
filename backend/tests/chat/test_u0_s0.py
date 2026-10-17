@@ -20,7 +20,7 @@ S0 = ("Tôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, 
 
 def engine():
     data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
-    return ChatEngine(data.venues)
+    return ChatEngine(data.venues, guided=True)
 
 
 class S0Base(unittest.TestCase):
@@ -70,14 +70,12 @@ class AllergyAndSlots(S0Base):
         r = self.turn(llm=self.fake_llm(None))
         self.assertTrue(r.state.allergies)
 
-    @unittest.expectedFailure
     def test_a3_interests_captured(self):
         r = self.turn()
         tastes = " ".join(r.state.profile["tastes"].value or []).lower()
         self.assertIn("phở", tastes)
         self.assertIn("bún chả", tastes)
 
-    @unittest.expectedFailure
     def test_a4_three_stops_captured(self):
         r = self.turn()
         self.assertEqual(r.state.profile["stops"].value, 3)  # profile.stops added in v1.9
@@ -87,7 +85,6 @@ class AllergyAndSlots(S0Base):
         self.assertEqual(r.state.profile["duration_min"].value, 120)
         self.assertEqual(r.prefs.max_leg_min, 20)  # default stays; 120 is the whole tour
 
-    @unittest.expectedFailure
     def test_a6_budget_scope_is_asked_not_guessed(self):
         r = self.turn()
         self.assertIsNone(r.state.profile["budget"].scope)
@@ -95,7 +92,6 @@ class AllergyAndSlots(S0Base):
         self.assertEqual(len(clar), 1)
         self.assertEqual(getattr(r.state.pending, "slot", None), "budget_scope")
 
-    @unittest.expectedFailure
     def test_a7_tonight_is_a_day_part_not_a_start_time(self):
         r = self.turn()
         self.assertEqual(r.state.profile["day_part"].value, "evening")  # profile.day_part added in v1.9
@@ -105,18 +101,32 @@ class AllergyAndSlots(S0Base):
         r = self.turn()
         self.assertTrue(r.state.allergies and r.state.profile["duration_min"].known())
 
-    @unittest.expectedFailure
     def test_a9_understood_card_is_emitted(self):
         r = self.turn()
         self.assertTrue([b for b in r.blocks if b["type"] == "understood"])
 
 
 class Escalation(S0Base):
-    @unittest.expectedFailure
-    def test_a11_uncovered_signal_triggers_one_llm_call(self):
+    def test_a11_s0_is_fully_covered_so_gemini_is_not_called(self):
         r = self.turn(llm=self.fake_llm({}))
-        self.assertEqual(len(self.llm_seen), 1, "S0 has uncovered signals; the LLM must be consulted exactly once")
-        self.assertEqual(r.llm_calls, 1)
+        self.assertEqual(self.llm_seen, [])
+        self.assertEqual((r.llm_calls, r.trigger_reason), (0, None))
+        self.assertTrue(all(s["status"] == "captured" for s in r.coverage), r.coverage)
+
+    def test_a11b_unreadable_allergy_cue_consults_gemini_once_then_asks(self):
+        t = "Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn"
+        r = self.turn(t, llm=self.fake_llm(None))  # provider failed / exhausted: rules must still ask
+        self.assertEqual(len(self.llm_seen), 1)
+        self.assertEqual(r.trigger_reason, "uncovered")
+        self.assertEqual(getattr(r.state.pending, "slot", None), "allergy_term")
+        self.assertIsNone(r.plan_request)
+        self.assertEqual(len([b for b in r.blocks if b["type"] == "clarify"]), 1)
+
+    def test_a11c_no_llm_callable_still_asks_and_records_reason(self):
+        r = self.turn("Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn")
+        self.assertEqual(r.llm_calls, 0)
+        self.assertEqual(r.trigger_reason, "uncovered")
+        self.assertEqual(getattr(r.state.pending, "slot", None), "allergy_term")
 
     def test_fully_covered_confident_turn_does_not_call_llm(self):
         r = self.turn("Chào bạn", llm=self.fake_llm({}))
@@ -127,6 +137,47 @@ class Escalation(S0Base):
         r = self.eng.handle(ChatState(), Preferences(), action={"type": "search", "query": "phở"}, llm=self.fake_llm({}))
         self.assertEqual(self.llm_seen, [])
         self.assertEqual(r.llm_calls, 0)
+
+
+class GuidedFlow(S0Base):
+    """S0 end to end: one question per turn, no tour before the explicit confirmation."""
+
+    def say(self, st, pr, text=None, option=None, llm=None):
+        if option:
+            return self.eng.handle(st, pr, action={"type": "pick_option", "option_id": option})
+        return self.eng.handle(st, pr, text=text, llm=llm)
+
+    def test_full_dialogue_reaches_confirmation_then_plan(self):
+        r = self.turn()
+        self.assertEqual(r.state.pending.slot, "budget_scope")
+        r = self.say(r.state, r.prefs, option="scope:group")
+        self.assertEqual(r.state.pending.slot, "start_time")
+        self.assertEqual(r.state.profile["budget"].scope, "group")
+        r = self.say(r.state, r.prefs, "19h")
+        self.assertEqual(r.state.profile["start_time"].value, "19:00")
+        self.assertEqual(getattr(r.state.pending, "slot", None), "plan_slots")  # vehicle
+        r = self.say(r.state, r.prefs, option="veh:walk")
+        self.assertEqual(r.state.pending.slot, "propose")
+        cards = [b for b in r.blocks if b["type"] == "venue_cards"]
+        self.assertTrue(cards and 1 <= len(cards[0]["cards"]) <= 3)
+        self.assertIsNone(r.plan_request)
+        r = self.say(r.state, r.prefs, option="propose:use")
+        self.assertEqual(r.state.pending.kind, "confirm_plan")
+        self.assertIsNone(r.plan_request)
+        r = self.say(r.state, r.prefs, option="confirm_yes")
+        self.assertTrue(r.plan_request and r.plan_request["venue_ids"])
+
+    def test_typed_answers_work_too(self):
+        r = self.turn()
+        r = self.say(r.state, r.prefs, "cả nhóm nhé")
+        self.assertEqual(r.state.profile["budget"].scope, "group")
+        r = self.say(r.state, r.prefs, "bắt đầu 19:30")
+        self.assertEqual(r.state.profile["start_time"].value, "19:30")
+
+    def test_allergy_chip_answer_is_recorded(self):
+        r = self.turn("Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn")
+        r = self.say(r.state, r.prefs, option="allergy:peanut")
+        self.assertIn("đậu phộng", self.allergy_terms(r))
 
 
 if __name__ == "__main__":

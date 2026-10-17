@@ -13,7 +13,7 @@ from app.llm import safety_parse
 from app.llm.extract import MockExtractor, INJECTION
 from app.planner.relevance import fold_uncached
 from app.planner.types import Preferences
-from . import knowledge, tools
+from . import coverage, knowledge, tools
 from .state import ChatState
 
 INTENTS = ("GREET_OR_SMALLTALK", "DISCOVER_DISH", "SEARCH_VENUES", "COMPARE", "ADD", "REMOVE", "KEEP", "UPDATE_PROFILE",
@@ -155,6 +155,7 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
         patch["taste"] = ", ".join(dict.fromkeys(tastes))
     if rx.rejected_fields:
         patch["_rejected"] = list(rx.rejected_fields)
+    patch.update(coverage.extras(text, f))  # stops / day_part / interests (contract v1.9)
     return patch
 
 
@@ -258,6 +259,16 @@ def verb_classes(text: str) -> dict:
             if cls not in out and (t in words or (len(t) > 3 and _squash(t) in _SQUASHED[cls])):
                 out[cls] = i
     return out
+
+
+def effective_text(text: str) -> str:
+    """The part of a message the rules actually read: NFC, quoted drafts removed, postponed clauses trimmed."""
+    text = safety_parse.normalize_keep_case(text).strip()
+    if re.search(r"[\"“”«»]", text):
+        unq = re.sub(r"[\"“«][^\"”»]*[\"”»]", " ", text).strip()
+        if re.search(r"[A-Za-zÀ-ỹ0-9]", unq):
+            text = unq
+    return trim_deferred(text)
 
 
 def understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None) -> Understanding:
@@ -533,6 +544,29 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
                 slots["budget_scope"] = "group"
             elif re.search(r"moi nguoi|theo nguoi|mot nguoi|dau nguoi", f):
                 slots["budget_scope"] = "per_person"
+        if pending.slot in ("allergy_confirm", "propose"):
+            yes = r"\b(?:dung|co|ok|oke|duoc|vang|u|um|dong y|dung roi)\b"
+            no = r"\b(?:khong|ko|chua|thoi|sai)\b"
+            ids = {"allergy_confirm": ("allergy_ok", "allergy_no"), "propose": ("propose:use", "propose:self")}[pending.slot]
+            if re.search(no, f) and not is_negated(text, f):
+                return Understanding("ANSWER_PENDING", {"option": ids[1]}, refs, 0.9)
+            if re.search(yes, f) and len(f.split()) <= 6:
+                return Understanding("ANSWER_PENDING", {"option": ids[0]}, refs, 0.9)
+            return None
+        if pending.slot == "start_time" and "start_time" not in slots:
+            m = re.search(r"\b([01]?\d|2[0-3])\s*(?:h|gio|:)\s*([0-5]\d)?\b", f)
+            if m:
+                hh, mm = int(m.group(1)), int(m.group(2) or 0)
+                part = state.profile["day_part"].value
+                if hh < 12 and (part in ("evening", "afternoon", "late") or re.search(r"\b(?:toi|chieu)\b", f)) and hh >= 1:
+                    hh += 12
+                slots["start_time"] = f"{hh % 24:02d}:{mm:02d}"
+        if pending.slot == "allergy_term":
+            terms = safety_parse.parse("di ung " + text).allergies
+            raw = (terms[0] if terms else (text.strip() if len(f.split()) <= 3 and not re.search(r"\d", f) else ""))
+            if raw:
+                return Understanding("ANSWER_PENDING", {"allergy_text": raw[:40]}, refs, 0.9)
+            return None
         if slots:
             return Understanding("ANSWER_PENDING", slots, refs, 0.9)
         return None

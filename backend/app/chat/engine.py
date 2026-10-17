@@ -16,11 +16,15 @@ from app.llm import safety_parse
 from app.planner import allergens
 from app.planner.relevance import fold_uncached
 from app.planner.types import Preferences
-from . import knowledge, tools
+from . import coverage, knowledge, tools
 from .gazetteer import Gazetteer, Place
 from .state import (MAX_ALLERGIES, MAX_SHORTLIST, Allergy, ChatState, Field_, Pending, ShortItem)
-from .understand import CONFIDENT, Understanding, understand
+from .understand import CONFIDENT, Understanding, effective_text, understand
 
+ALLERGY_CHIPS = {"peanut": "đậu phộng", "seafood": "hải sản", "milk": "sữa", "egg": "trứng", "gluten": "gluten", "soy": "đậu nành", "sesame": "mè"}
+LABEL_OF = {"peanut": "Đậu phộng", "seafood": "Hải sản", "milk": "Sữa", "egg": "Trứng", "gluten": "Gluten", "soy": "Đậu nành", "sesame": "Mè", "other": "Khác"}
+PASSIVE = frozenset({"ANSWER_PENDING", "CONFIRM_YES", "CONFIRM_NO", "AMBIGUOUS_ACK", "GREET_OR_SMALLTALK", "UNSAFE", "OUT_OF_SCOPE",
+                     "UNKNOWN", "ADD", "REMOVE", "KEEP", "COMPARE", "ASK_DETAIL", "MODIFY_PLAN"})
 LOW_CONFIDENCE = 0.55  # below this and no LLM: ask instead of guessing
 VEHICLES = {"walk": "đi bộ", "motorbike": "xe máy", "car": "ô tô", "taxi": "taxi/Grab"}
 NO_WEATHER = "Mình chưa có dữ liệu thời tiết nên không nhận định nhiệt độ hay mưa nắng; mình chỉ dựa vào điều bạn nói."
@@ -40,6 +44,8 @@ class TurnResult:
     replace_request: Optional[dict] = None  # {"refs": [...]}: the API layer resolves tour stops and calls the planner
     llm_calls: int = 0
     error: Optional[str] = None
+    trigger_reason: Optional[str] = None  # null | low_conf | uncovered | multi_clause | conflict (contract v1.9)
+    coverage: list = field(default_factory=list)
 
 
 def text_b(t): return {"type": "text", "text": t}
@@ -47,7 +53,8 @@ def notice_b(level, code, t): return {"type": "notice", "level": level, "code": 
 
 
 class ChatEngine:
-    def __init__(self, venues, gazetteer: Optional[Gazetteer] = None):
+    def __init__(self, venues, gazetteer: Optional[Gazetteer] = None, guided: bool = False):
+        self.guided = guided  # contract v1.9 behaviours (coverage audit, guided questions); off = v1.8 behaviour
         self.venues = list(venues)
         self.by_id = {v.id: v for v in self.venues}
         self.gz = gazetteer or Gazetteer(self.venues)
@@ -59,6 +66,7 @@ class ChatEngine:
         st.turn_count += 1
         self._sync_from_prefs(st, prefs)
         R = TurnResult(st, prefs, [], "UNKNOWN")
+        snap0 = self._snapshot(st)
         if action:
             u = self._action_understanding(action, st)
             R.understanding = "action"
@@ -67,14 +75,21 @@ class ChatEngine:
                 return R
         else:
             u = understand(text or "", st, self.gz, prefs)
-            if u.confidence < CONFIDENT and llm is not None:
+            if self.guided:
+                R.coverage = self._signals(text or "", u, st)
+            reason = "low_conf" if u.confidence < CONFIDENT else (
+                (coverage.trigger(R.coverage) or ("multi_clause" if coverage.multi_clause(R.coverage) else None))
+                if self.guided and u.intent not in PASSIVE else None)
+            R.trigger_reason = reason
+            if reason and llm is not None:
                 out = llm(text or "", self.compact(st), st.llm_used)  # app.chat.llm_understand.Outcome
                 R.llm_calls = out.calls
                 st.llm_used += out.calls
                 llm_status = out.status or llm_status
                 cand = self._from_llm(out.data, st) if out.data else None
                 if cand:
-                    u, R.understanding = cand, ("cache" if out.calls == 0 else "llm")
+                    R.understanding = "cache" if out.calls == 0 else "llm"
+                    u = self._merge(u, cand, R) if self.guided else cand
             if u.intent == "UNKNOWN" and not st.pending:
                 u = self._fragment(text or "", st, u)  # dish-name-only / "A thôi"-style fragments
             st.remember("user", text or "", u.intent)
@@ -85,6 +100,8 @@ class ChatEngine:
         R.intent = u.intent
         pend0 = st.pending
         self._dispatch(R, u)
+        if self.guided:
+            self._guided_after(R, u, snap0, text or "")
         if pend0 is not None and R.state.pending is pend0 and "nudge" not in R.tools and R.intent not in ("ANSWER_PENDING", "AMBIGUOUS_ACK", "CONFIRM_YES", "CONFIRM_NO"):
             # The user moved on: a stale question must not linger (confirm_plan survives plain profile edits only).
             if not (pend0.kind == "confirm_plan" and R.intent in ("UPDATE_PROFILE", "ASK_DETAIL")):
@@ -118,6 +135,8 @@ class ChatEngine:
         if p.duration_min is not None and not st.profile["end_time"].known():
             upd("duration_min", p.duration_min)
         upd("audience", p.audience)
+        if p.max_stops != 3:
+            upd("stops", p.max_stops)
         if p.max_leg_min != 20:
             upd("max_leg_min", p.max_leg_min)
         if p.origin and (not st.profile["area"].known() or
@@ -160,6 +179,10 @@ class ChatEngine:
             kw["audience"] = st.profile["audience"].value
         if st.profile["max_leg_min"].known():
             kw["max_leg_min"] = st.profile["max_leg_min"].value
+        if st.profile["stops"].known():
+            kw["max_stops"] = st.profile["stops"].value
+        if st.profile["day_part"].known():
+            kw["meal"] = coverage.MEAL_OF.get(st.profile["day_part"].value)
         kw["allergies"] = tuple(a_.term for a_ in st.allergies)
         return replace(p, **kw)
 
@@ -277,6 +300,190 @@ class ChatEngine:
             self._do_unknown(R, u)
             return
         h(R, u)
+
+    # ------------------------------------------------------------------ guided flow (contract v1.9)
+    def _signals(self, text: str, u: Understanding, st: ChatState) -> list:
+        eff = effective_text(text)
+        f = fold_uncached(eff)
+        sp = u.extra.get("safety") or safety_parse.parse(eff)
+        patch = dict(u.patch)
+        patch.update(coverage.extras(eff, f))
+        return coverage.audit(eff, f, patch, allergy_terms=sp.allergies, allergy_negated=sp.negated or bool(sp.removed),
+                              has_budget=st.profile["budget"].known(), has_party=st.profile["party_size"].known())
+
+    def _merge(self, rules: Understanding, cand: Understanding, R) -> Understanding:
+        """Rules stay in charge of what they captured. The LLM may add what they missed; numbers/times/money that disagree
+        are asked, never picked silently; allergy terms are unioned and the LLM-only ones need the user's confirmation."""
+        if rules.confidence < CONFIDENT:
+            base = cand
+        else:
+            base = Understanding(rules.intent, dict(rules.patch), list(rules.refs), rules.confidence, rules.source, dict(rules.extra))
+            for k, v in cand.patch.items():
+                if k not in base.patch:
+                    base.patch[k] = v
+        conflicts = {}
+        for k in ("party_size", "budget_vnd", "duration_min", "start_time", "end_time", "stops", "max_leg_min"):
+            if k in rules.patch and k in cand.patch and rules.patch[k] != cand.patch[k]:
+                conflicts[k] = (rules.patch[k], cand.patch[k])
+                base.patch.pop(k, None)
+        if conflicts:
+            base.extra["conflicts"] = conflicts
+            R.trigger_reason = "conflict"
+        rs, cs = rules.extra.get("safety"), cand.extra.get("safety")
+        if rs is not None and cs is not None and cs is not rs:
+            known = {fold_uncached(t) for t in rs.allergies}
+            fresh = [t for t in cs.allergies if fold_uncached(t) not in known]
+            base.extra["safety"] = rs
+            base.extra["ai_allergies"] = fresh
+        elif cs is not None and rs is None and base.intent == "SET_ALLERGY":
+            base.extra["ai_allergies"] = list(cs.allergies)
+            base.extra.pop("safety", None)
+        return base
+
+    def _snapshot(self, st: ChatState) -> str:
+        return repr(sorted((k, repr(f.value), f.scope) for k, f in st.profile.items())) + repr(sorted(a.term for a in st.allergies)) + repr(len(st.shortlist))
+
+    def _guided_after(self, R, u: Understanding, snap0: str, text: str) -> None:
+        """After the intent handler ran: apply the slots it ignores, add LLM-only allergies, then ask ONE next thing."""
+        st = R.state
+        if R.intent in PASSIVE and R.intent != "ANSWER_PENDING" or R.plan_request or st.phase == "planned" and R.intent != "UPDATE_PROFILE":
+            return
+        eff = effective_text(text)
+        extra_keys = {k: v for k, v in u.patch.items() if k in ("stops", "day_part", "interests", "_stops_rejected")}
+        if R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID") and extra_keys:
+            self._apply_patch(R, extra_keys)
+        for term in u.extra.get("ai_allergies") or ():
+            if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
+                st.allergies.append(Allergy(term, allergens.family_of(term), "ai_unconfirmed"))
+        if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH"):
+            st.goal = "tour"
+        conflicts = u.extra.get("conflicts")
+        if conflicts and st.pending is None:
+            self._ask_conflict(R, conflicts)
+        elif st.goal == "tour" and st.pending is None:
+            self._guided_continue(R)
+        changed = self._snapshot(st) != snap0
+        if changed and R.intent not in PASSIVE:
+            self._attach_understood(R)
+            R.tools.append("understood")
+
+    def _ask_conflict(self, R, conflicts: dict) -> None:
+        st = R.state
+        key, (a, b) = next(iter(conflicts.items()))
+        label = {"party_size": "số người", "budget_vnd": "ngân sách", "duration_min": "thời lượng", "start_time": "giờ bắt đầu",
+                 "end_time": "giờ kết thúc", "stops": "số quán", "max_leg_min": "thời gian mỗi chặng"}[key]
+        fmt = (lambda v: tools.fmt_vnd(v)) if key == "budget_vnd" else (lambda v: str(v))
+        self._set_pending(st, "clarify_slot", [{"option_id": "conflict:0", "label": fmt(a)}, {"option_id": "conflict:1", "label": fmt(b)}],
+                          "conflict", {"key": key, "values": [a, b]})
+        R.blocks.append(self._clarify_block(st, f"Mình đọc {label} chưa khớp giữa hai cách hiểu. Bạn muốn dùng giá trị nào?"))
+        R.tools.append("clarify")
+
+    # one question per turn, in a fixed priority order; returns True when it asked something
+    def _guided_continue(self, R) -> bool:
+        st = R.state
+        if st.pending is not None or R.plan_request:
+            return False
+        if any(a.source == "ai_unconfirmed" for a in st.allergies):
+            terms = [a.term for a in st.allergies if a.source == "ai_unconfirmed"]
+            self._set_pending(st, "clarify_slot", [{"option_id": "allergy_ok", "label": "Đúng, mình dị ứng"}, {"option_id": "allergy_no", "label": "Không phải"}],
+                              "allergy_confirm", {"terms": terms})
+            R.blocks.append(self._clarify_block(st, "Mình hiểu bạn dị ứng với: " + ", ".join(terms) + ". Đúng không?"))
+            R.tools.append("clarify")
+            return True
+        b = st.profile["budget"]
+        if b.known() and not b.scope and (st.profile["party_size"].value or 2) >= 2:
+            self._set_pending(st, "clarify_slot", [{"option_id": "scope:group", "label": "Cả nhóm"}, {"option_id": "scope:per_person", "label": "Mỗi người"}],
+                              "budget_scope", {})
+            R.blocks.append(self._clarify_block(st, f"{tools.fmt_vnd(b.value)} là ngân sách cho cả nhóm hay cho mỗi người?"))
+            R.tools.append("clarify")
+            return True
+        if not st.profile["area"].known():
+            self._ask_area(R, "REQUEST_PLAN", {})
+            return True
+        if not st.profile["start_time"].known() and not st.profile["end_time"].known():
+            chips = {"morning": ("07:00", "08:00", "09:00"), "noon": ("11:30", "12:00", "13:00"), "afternoon": ("14:00", "15:00", "16:00"),
+                     "late": ("21:00", "22:00", "23:00")}.get(st.profile["day_part"].value, ("18:00", "19:00", "20:00"))
+            self._set_pending(st, "clarify_slot", [{"option_id": "time:" + c, "label": c} for c in chips], "start_time", {})
+            when = coverage.DAY_PARTS.get(st.profile["day_part"].value or "", "").lower()
+            R.blocks.append(self._clarify_block(st, "Bạn muốn bắt đầu lúc mấy giờ" + (f" ({when})" if when else "") + "? Chọn một giờ hoặc gõ giờ khác."))
+            R.tools.append("clarify")
+            return True
+        if not st.profile["vehicle"].known():
+            self._ask_plan_slots(R, ["vehicle"])
+            return True
+        if not st.shortlist:
+            return self._propose(R)
+        self._present_summary(R)
+        return True
+
+    def _propose(self, R) -> bool:
+        """The user asked for a whole tour: offer one venue per liked dish near the area; the tour is still built only from
+        venues the user keeps and only after an explicit confirmation."""
+        st = R.state
+        centre = self._centre(st)
+        n = st.profile["stops"].value or 3
+        prefs = self._to_prefs(st, R.prefs)
+        allergies = [a.term for a in st.allergies]
+        picks, seen = [], set()
+        for taste in (st.profile["tastes"].value or []):
+            res = tools.search(self.venues, centre, dish=taste, radius_km=1.5, prefs=prefs, allergies=allergies, exclude_ids=tuple(seen))
+            for v in res.venues[:1]:
+                picks.append((v, res.dists.get(v.id), taste))
+                seen.add(v.id)
+        if len(picks) < n:
+            res = tools.search(self.venues, centre, radius_km=1.5, prefs=prefs, allergies=allergies, exclude_ids=tuple(seen))
+            for v in res.venues[: n - len(picks)]:
+                picks.append((v, res.dists.get(v.id), None))
+        picks = picks[:n]
+        if not picks:
+            st.goal = None
+            R.blocks.append(text_b("Mình chưa tìm thấy quán phù hợp quanh khu vực này trong dữ liệu. Bạn thử mở rộng khu vực hoặc đổi món nhé."))
+            return True
+        cards, last = [], []
+        for i, (v, d, taste) in enumerate(picks):
+            lab = tools.LABELS[i]
+            cards.append(tools.card(lab, v, d, prefs, dish=taste, allergies=allergies, in_shortlist=False))
+            last.append({"label": lab, "venue_id": v.id})
+        st.last_results, st.results_stale = last, False
+        R.blocks.append(text_b(f"Mình gợi ý {len(cards)} quán quanh {self._area_label(st)} (khoảng cách ước tính, giá theo khoảng giá của quán)."))
+        if allergies:
+            R.blocks.append(notice_b("safety", "allergy_unknown", SAFETY_LINE))
+        R.blocks.append({"type": "venue_cards", "title": None, "cards": cards})
+        self._set_pending(st, "clarify_slot", [{"option_id": "propose:use", "label": "Dùng những quán này"}, {"option_id": "propose:self", "label": "Mình tự chọn"}],
+                          "propose", {"ids": [v.id for v, _d, _t in picks]})
+        R.blocks.append(self._clarify_block(st, "Bạn muốn dùng những quán này cho tour không?"))
+        R.tools.append("propose_shortlist")
+        return True
+
+    def _attach_understood(self, R) -> None:
+        st = R.state
+
+        def st_of(f):
+            return ("user" if f.source in ("user_said", "ui_form") else f.source) if f.known() else "missing"
+
+        def item(i, label, f, fmt=str):
+            return {"id": i, "label": label, "value": fmt(f.value) if f.known() else None, "status": st_of(f), "editable": True}
+        b = st.profile["budget"]
+        items = [
+            item("area", "Khu vực", st.profile["area"], lambda v: v.get("label", "")),
+            item("party", "Số người", st.profile["party_size"], lambda v: f"{v} người"),
+            item("stops", "Số quán", st.profile["stops"], lambda v: f"{v} quán"),
+            item("duration", "Tổng thời gian", st.profile["duration_min"], lambda v: f"{v} phút (cả tour)"),
+            item("day_part", "Buổi", st.profile["day_part"], lambda v: coverage.DAY_PARTS.get(v, v)),
+            item("time", "Bắt đầu lúc", st.profile["start_time"]),
+            {"id": "budget", "label": "Ngân sách", "value": (tools.fmt_vnd(b.value) + {"per_person": " mỗi người", "group": " cả nhóm"}.get(b.scope, " (chưa rõ cả nhóm hay mỗi người)")) if b.known() else None,
+             "status": st_of(b), "editable": True},
+            item("dish", "Thích", st.profile["tastes"], lambda v: ", ".join(v)),
+        ]
+        if st.profile["max_leg_min"].known():
+            items.append(item("leg_time", "Đi mỗi chặng tối đa", st.profile["max_leg_min"], lambda v: f"{v} phút"))
+        items = [i for i in items if i["value"] is not None or i["id"] in ("time", "budget", "area")]
+        card = {"type": "understood", "items": items,
+                "allergies": [{"term": a.term, "family": a.family, "status": "ai_unconfirmed" if a.source == "ai_unconfirmed" else "user"} for a in st.allergies]}
+        idx = next((i for i, x in enumerate(R.blocks) if x["type"] == "clarify"), len(R.blocks))
+        R.blocks = [x for x in R.blocks if not (x["type"] == "text" and x.get("text", "").startswith("Đã cập nhật:"))]
+        idx = next((i for i, x in enumerate(R.blocks) if x["type"] == "clarify"), len(R.blocks))
+        R.blocks.insert(idx, card)
 
     # ---- helpers
     def _centre(self, st):
@@ -410,6 +617,19 @@ class ChatEngine:
                              "duration_min": f"{patch.get('duration_min')} phút", "vehicle": VEHICLES.get(patch.get("vehicle"), ""),
                              "max_leg_min": f"không đi bộ quá {patch.get('max_leg_min')} phút mỗi chặng",
                              "audience": {"family": "đi cùng gia đình", "friends": "đi cùng bạn bè", "solo": "đi một mình"}.get(patch.get("audience"), "")}[k])
+        if "stops" in patch:
+            st.set_field("stops", patch["stops"])
+            said.append(f"{patch['stops']} quán")
+            st.tour_stale = st.tour_stale or st.phase == "planned"
+        if patch.get("_stops_rejected"):
+            R.blocks.append(notice_b("warning", "value_rejected", "Mình chỉ ghép tour từ 1 đến 5 quán. Bạn chọn lại số quán giúp mình nhé."))
+        if "day_part" in patch:
+            st.set_field("day_part", patch["day_part"])
+            said.append(coverage.DAY_PARTS.get(patch["day_part"], "").lower())
+        if patch.get("interests"):
+            cur = st.profile["tastes"].value or []
+            st.set_field("tastes", list(dict.fromkeys(cur + list(patch["interests"])))[:8])
+            said.append("thích: " + ", ".join(patch["interests"]))
         if patch.get("taste"):
             cur = st.profile["tastes"].value or []
             st.set_field("tastes", list(dict.fromkeys(cur + [patch["taste"]])))
@@ -488,7 +708,12 @@ class ChatEngine:
                    "example": "Bạn đang nêu ví dụ phải không? Mình chưa ghi nhận dị ứng nào; hãy nói rõ bạn hoặc người đi cùng dị ứng với gì.",
                    "long": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc)."}.get(
                 sp.issues[0], ("Bạn còn nhắc tới một dị ứng nữa nhưng mình chưa biết là gì; hãy nói tên thực phẩm đó." if added else "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."))
-            R.blocks.append(text_b(msg))
+            if self.guided and not added and st.pending is None:
+                self._set_pending(st, "clarify_slot", [{"option_id": "allergy:" + k, "label": LABEL_OF[k]} for k in LABEL_OF], "allergy_term", {})
+                R.blocks.append(self._clarify_block(st, msg))
+                R.tools.append("clarify")
+            else:
+                R.blocks.append(text_b(msg))
         if sp.avoid:
             self._ask_avoid(R, sp.avoid)
         if u.patch and any(k in u.patch for k in ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min",
@@ -578,6 +803,8 @@ class ChatEngine:
             R.blocks.append(text_b("Lựa chọn đó không còn hiệu lực với câu hỏi hiện tại; bạn chọn lại ở các nút mới nhất nhé."))
             R.tools.append("nudge")
             return
+        if pend.kind == "clarify_slot" and pend.slot in ("allergy_term", "allergy_confirm", "propose", "conflict") and self._answer_guided_slot(R, pend, u):
+            return
         if pend.kind == "clarify_slot":
             patch = dict(u.patch)
             opt = patch.pop("option", None)
@@ -654,7 +881,68 @@ class ChatEngine:
                 R.blocks.append(text_b("Để lập lịch trình, bạn bấm \"Xác nhận và tạo lịch trình\" hoặc nói rõ \"xác nhận\"; mình chưa tạo gì."))
                 R.tools.append("nudge")
 
+    def _answer_guided_slot(self, R, pend, u) -> bool:
+        """Answers to the v1.9 questions (allergy_term, allergy_confirm, propose, conflict). True when handled."""
+        st = R.state
+        opt = u.patch.get("option") or ""
+        slot = pend.slot
+        if slot == "allergy_term":
+            term = None
+            if opt.startswith("allergy:") and opt != "allergy:other":
+                term = ALLERGY_CHIPS.get(opt.split(":", 1)[1])
+            elif u.patch.get("allergy_text"):
+                term = str(u.patch["allergy_text"])[:40]
+            if not term:
+                R.blocks.append(text_b("Bạn gõ tên thực phẩm gây dị ứng giúp mình (ví dụ: cua, tôm, lạc)."))
+                R.tools.append("nudge")
+                return True
+            st.pending = None
+            if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
+                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said"))
+            R.blocks.append(notice_b("safety", "allergy_unknown", f"Đã ghi nhận dị ứng: {term}. {SAFETY_LINE}"))
+            if st.last_results:
+                st.results_stale = True
+            R.tools.append("answer_pending")
+            return True
+        if slot == "allergy_confirm":
+            terms = {fold_uncached(t) for t in pend.context.get("terms", [])}
+            st.pending = None
+            if opt == "allergy_ok":
+                for a in st.allergies:
+                    if a.source == "ai_unconfirmed" and fold_uncached(a.term) in terms:
+                        a.source = "user_said"
+                R.blocks.append(text_b("Đã ghi nhận. " + SAFETY_LINE))
+            else:
+                st.allergies = [a for a in st.allergies if not (a.source == "ai_unconfirmed" and fold_uncached(a.term) in terms)]
+                R.blocks.append(text_b("Ok, mình bỏ phần đó. Nếu bạn có dị ứng, hãy nói tên thực phẩm cụ thể nhé."))
+            R.tools.append("answer_pending")
+            return True
+        if slot == "propose":
+            st.pending = None
+            if opt == "propose:use":
+                self._add_ids(R, [i for i in pend.context.get("ids", []) if i in self.by_id])
+            else:
+                st.goal = None
+                R.blocks.append(text_b("Ok, bạn tự chọn bằng nút Thêm trên từng quán nhé; chọn xong cứ nói \"lập lịch trình\"."))
+            R.tools.append("answer_pending")
+            return True
+        if slot == "conflict":
+            st.pending = None
+            vals = pend.context.get("values") or []
+            if opt in ("conflict:0", "conflict:1") and len(vals) == 2:
+                key = pend.context.get("key")
+                self._apply_patch(R, {key: vals[int(opt[-1])]})
+            R.tools.append("answer_pending")
+            return True
+        return False
+
     def _option_to_patch(self, opt: str, patch: dict) -> dict:
+        if opt.startswith("veh:") and opt.split(":", 1)[1] in VEHICLES:
+            patch["vehicle"] = opt.split(":", 1)[1]
+            return patch
+        if opt.startswith("time:"):
+            patch["start_time"] = opt.split(":", 1)[1]
+            return patch
         if opt.startswith("district:"):
             pl = self.gz.resolve(opt.split(":", 1)[1])
             if pl:
@@ -896,6 +1184,10 @@ class ChatEngine:
 
     def _do_confirm_yes(self, R, u):
         st = R.state
+        if st.pending and st.pending.kind == "confirm_plan" and self.guided and any(a.source == "ai_unconfirmed" for a in st.allergies):
+            st.pending = None
+            self._guided_continue(R)
+            return
         if st.pending and st.pending.kind == "confirm_plan":
             miss = self._plan_missing(st)
             if miss:
@@ -956,6 +1248,13 @@ class ChatEngine:
 
     def _do_request_plan(self, R, u):
         st = R.state
+        if not st.shortlist and self.guided:
+            st.goal = "tour"
+            if u.patch:
+                self._apply_patch(R, u.patch)
+            if not self._guided_continue(R):
+                self._present_summary(R)
+            return
         if not st.shortlist:
             self._set_pending(st, "clarify_intent", [{"option_id": "search", "label": "Tìm quán gần tôi"}, {"option_id": "discover", "label": "Gợi ý món"}], None, {})
             R.blocks.append(text_b("Danh sách chọn đang trống — mình chỉ lập lịch trình từ các quán bạn đã chọn."))

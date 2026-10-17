@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Any, Optional
 
 PROFILE_FIELDS = ("area", "party_size", "audience", "budget", "start_time", "end_time", "duration_min",
-                  "vehicle", "tastes", "max_leg_min")
+                  "vehicle", "tastes", "max_leg_min", "stops", "day_part")
 SOURCES = ("user_said", "ui_form", "inferred", "default", "missing")
 MAX_TURNS = 8
 MAX_SHORTLIST = 5
@@ -99,6 +99,7 @@ class ChatState:
     asked: list = field(default_factory=list)  # [{"slot","turn"}] slot questions already asked (no repeats)
     llm_used: int = 0  # Gemini calls consumed by this session (per-session cap)
     tour_stale: bool = False
+    goal: Optional[str] = None  # "tour" while the guided flow is collecting what a one-shot tour request still needs
 
     def to_json(self, private: bool = False) -> dict:
         out = {
@@ -112,7 +113,7 @@ class ChatState:
         }
         if private:
             out.update({"results_stale": self.results_stale, "turns": list(self.turns), "asked": list(self.asked),
-                        "llm_used": self.llm_used, "tour_stale": self.tour_stale})
+                        "llm_used": self.llm_used, "tour_stale": self.tour_stale, "goal": self.goal})
         return out
 
     @classmethod
@@ -133,6 +134,7 @@ class ChatState:
         st.asked = list(d.get("asked", []))
         st.llm_used = int(d.get("llm_used", 0))
         st.tour_stale = bool(d.get("tour_stale", False))
+        st.goal = d.get("goal")
         return st
 
     # -- helpers used by the engine -------------------------------------------------
