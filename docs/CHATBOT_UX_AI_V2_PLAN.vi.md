@@ -5,8 +5,7 @@
 
 ## 0. Tóm tắt cho người duyệt
 
-- **Gốc lỗi AI (đã tái hiện, chỉ đọc):** chạy đúng câu của bạn qua bộ hiểu luật cho ra **một** ý định `SET_ALLERGY`, độ tin cậy **0,95**, nguồn `rules`, và patch chỉ có `party_size=2, budget=500000, duration=120, area=Hồ Gươm`. **Mất**: chất gây dị ứng (đậu phộng), sở thích (phở, bún chả), số quán (3), "tối nay", phạm vi ngân sách (cả nhóm hay mỗi người). Vì độ tin cậy 0,95 ≥ ngưỡng 0,75 nên **không bao giờ gọi Gemini** — đúng với triệu chứng "bộ luật cục bộ, counter không tăng".
-  Tức là bộ kích hoạt hiện chỉ nhìn *độ chắc chắn về ý định*, không nhìn *thông tin có bị bỏ sót không*. Đây là lỗ hổng thiết kế, không phải do Gemini hỏng.
+- **Gốc lỗi (ĐÃ HIỆU CHỈNH ở U0, xem `docs/reports/U0_S0_FAIL_BEFORE.md`):** chuỗi "Trích xuất thông tin (bộ luật cục bộ)" chỉ tồn tại ở **panel chat cũ v1** (`POST /messages`). Trên cả v1 và v2, bộ luật **có ghi dị ứng "đậu phộng"**; panel v1 chỉ *hiển thị* thời lượng/ngân sách/món/chế độ nên trông như bỏ sót dị ứng. Gemini không chạy vì v1 chỉ gọi khi thiếu điểm xuất phát/thời lượng, còn v2 chỉ nhìn độ tin cậy ý định (0,95 ≥ 0,75). Ở v2 những thứ thật sự bị rơi: món thích, số quán và "tối nay" (chưa là slot), không hỏi phạm vi ngân sách, không có thẻ "Mình hiểu là…". Bản nháp đầu của kế hoạch nói "mất dị ứng ở engine" là **sai**; mình sửa lại sau khi chạy test thật.
 - **Hướng sửa AI:** thêm lớp *"kiểm kê phủ"* (coverage audit) tất định: mỗi tín hiệu có trong câu (dị ứng, món, số quán, thời điểm, ngân sách, phạm vi) phải được ghi lại hoặc bị đánh dấu "chưa hiểu". Có tín hiệu chưa ghi nhận → hạ tin cậy + (nếu còn hạn mức) gọi Gemini; hết hạn mức → hỏi lại đúng chỗ thiếu, **không bao giờ im lặng bỏ dị ứng**. Lớp an toàn dị ứng luôn chạy bằng luật, không phụ thuộc Gemini.
 - **Hướng sửa UI:** một luồng dẫn duy nhất *Nói nhu cầu → Bot chép lại & hỏi bổ sung → Xác nhận → Tour → Mở Google Maps*; ẩn mọi thứ kỹ thuật (nguồn dữ liệu, Gemini/luật, bộ đếm) vào mục "Chi tiết" thu gọn; chỉ còn một dòng trạng thái tin cậy.
 - **Ràng buộc giữ nguyên:** không Google Maps API/key/billing (chỉ URL miễn phí), không push/deploy, không lộ `.env`/CSV, tôn trọng hạn mức Gemini free-tier.
@@ -19,19 +18,20 @@
 | # | Quan sát | Nguyên nhân (đã xác nhận / giả thuyết) |
 |---|---|---|
 | D1 | Câu đa ý → chỉ một `intent` thắng (`SET_ALLERGY`) | Xác nhận: `understand()` trả một ý định chính; phần còn lại phụ thuộc `parse_slots`. |
-| D2 | Mất "đậu phộng" dù ý định là `SET_ALLERGY` | Xác nhận: patch không chứa dị ứng. Cần xác định ở U1 là cú pháp "dị ứng X" ở cuối mệnh đề chưa vào `Allergy`, hay bị cắt bởi `trim_deferred` do câu "Hãy hỏi tôi nếu…" (giả thuyết, phải tái hiện bằng test fail-trước). |
+| D2 | Người dùng thấy "không ghi nhận" dị ứng | **Đã hiệu chỉnh:** dị ứng được ghi ở cả v1 và v2; panel v1 không hiển thị nó (`ChatPanel.jsx:131-143`). |
 | D3 | Mất món "phở", "bún chả" | Xác nhận: không có trong patch. Sở thích món chỉ được nhận khi là ý định riêng. |
 | D4 | Mất "tối nay", "3 quán" | Xác nhận: không có `start_time`/`stops` trong patch. "Tối nay" mơ hồ (giờ bắt đầu? khung giờ?) — cần quy tắc rõ, không tự đoán giờ. |
 | D5 | Ngân sách 500k "cho 2 người" ghi `budget_vnd` nhưng không có phạm vi | Xác nhận: patch không có `budget_scope`. Câu mơ hồ (500k tổng hay mỗi người) phải được hỏi, không đoán. |
-| D6 | Gemini không được gọi | Xác nhận: `confidence 0.95 ≥ CONFIDENT 0.75` nên `llm` không bao giờ bị gọi. Bộ kích hoạt không xét độ phủ. |
+| D6 | Gemini không được gọi | Xác nhận: v1 `needs_llm()` chỉ gọi khi thiếu origin/duration; v2 `confidence 0.95 ≥ 0.75`. Cả hai không xét độ phủ. |
 | D7 | Bot hỏi dài, rườm rà | Giả thuyết: do có nhiều slot thiếu được hỏi cùng lúc/ tuần tự thay vì gom và chép lại những gì đã hiểu. |
 | D8 | UI giống công cụ dev | Xác nhận từ phản hồi người dùng + rà code: ProfileBar nhiều ô điều khiển, banner nguồn dữ liệu/Gemini/bản đồ, huy hiệu "bộ luật cục bộ" (`ChatColumn.jsx`). Hiển thị thuật ngữ nội bộ cho người dùng thường. |
 
-### 1.1a Lỗi trích xuất dị ứng (ghi rõ, mức bằng chứng)
+### 1.1a Lỗi trích xuất dị ứng (ghi rõ, đã hiệu chỉnh)
 
-- **Bằng chứng đã có:** (a) phản hồi test thật của bạn: UI hiển thị "bộ luật cục bộ", không ghi nhận dị ứng đậu phộng, bộ đếm Gemini không tăng; (b) một lần chạy chỉ-đọc hàm hiểu luật với S0 (dữ liệu giả lập, không mạng): ý định `SET_ALLERGY`, độ tin cậy 0,95, patch **không có** trường dị ứng. Ý định được nhận ra nhưng nội dung (chất gây dị ứng) bị rơi: lỗi **mất dữ liệu an toàn một cách im lặng**.
-- **Chưa kiểm chứng (không khẳng định):** nguyên nhân dòng code cụ thể. Giả thuyết: câu dị ứng nằm trong câu ghép dài và bị `trim_deferred` cắt do mệnh đề "Hãy hỏi tôi nếu còn thiếu…", hoặc kết quả của `safety_parse`/`_allergies` không được đưa vào patch ở đường `SET_ALLERGY`. Tôi không có ảnh chụp màn hình trong ngữ cảnh này, nên phần UI dựa trên mô tả của bạn. Bước xác minh được đưa vào U1 như test fail-trước, không làm thêm ở lượt này.
-- **Yêu cầu sửa:** dị ứng phải được trích bởi lớp an toàn chạy **trên toàn câu gốc, độc lập với ý định thắng và với việc cắt mệnh đề hoãn**; ý định `SET_ALLERGY` mà không có chất cụ thể phải sinh câu hỏi bắt buộc, không được "thành công im lặng".
+- **Không có lỗi trích xuất dị ứng trên S0** ở `MockExtractor` (v1) và `ChatEngine` (v2): đều ghi `đậu phộng` (family `peanut`). Test A1, A1b, A5, A8 pass trên C6 và được ghim làm kiểm soát hồi quy.
+- **Lỗi thật (UX, an toàn gián tiếp):** panel v1 không hiển thị dị ứng, số người, khu vực, số quán, bữa; người dùng không có cách kiểm chứng điều hệ thống đã ghi. Đây là khoảng trống minh bạch trong an toàn, sẽ được đóng bằng thẻ "Mình hiểu là…" (có mục Dị ứng luôn hiện, kể cả khi trống: "Dị ứng: chưa có").
+- **Rủi ro còn lại cần chặn bằng test:** cú pháp dị ứng khác S0 (câu ghép dài, không dấu, "không ăn được lạc", cue không kèm chất) chưa được đo trên tập mù; U1 đo lại, không giả định đã an toàn.
+- Yêu cầu giữ: lexicon chạy trên toàn câu gốc, độc lập ý định thắng; cue không chất ⇒ hỏi bắt buộc.
 
 ### 1.1b Chính sách escalation Gemini (tóm tắt có thể kiểm thử)
 

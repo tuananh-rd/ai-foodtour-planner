@@ -257,3 +257,28 @@ Response: the existing `SessionView` **plus** `"reply": {"blocks": Block[]}` and
 - `Preferences.max_leg_min: int 3..60` (default 20) — maximum minutes of any single leg (was a planner-internal default; now round-trips so "không đi bộ quá 10 phút mỗi chặng" survives reloads). Additive.
 - Confirmed plan: the planner receives **only the shortlisted venues** as its pool, keeps every hard preference (mode, exclusions, allergies, budget, `max_leg_min`) and only drops discovery `interests`; if all shortlisted venues cannot be scheduled the response is `no_solution` with `reasons` + `proposed_changes` (never a smaller tour); strict mode keeps its `insufficient_evidence` semantics. Vehicle changes the ETA estimate (average speeds, still labelled `straight_line_estimate`), never the label.
 - `confirm_summary.items[].status` ∈ `user|inferred|default|missing`; `compare_table` unknown cells have `value:"Chưa rõ"` (optional `note`, e.g. "ít đánh giá"); `dish_suggestions.items[].venue_count` is `int|null`.
+
+## v1.9 additions (additive, U-series — docs/CHATBOT_UX_AI_V2_PLAN.vi.md; status: PROPOSED→frozen by U0 review)
+
+Flags: `features.chat_v2` (unchanged) and new `features.guided_ui` in `GET /v1/client-config` (env `FOODTOUR_UI_GUIDED=1`, default false). With the flag off every v1.8 response is byte-compatible; new fields are additive and clients must ignore unknown ones.
+
+### Turn metadata (`turn`, additive; all optional for old clients)
+`turn.trigger_reason: null | "low_conf" | "uncovered" | "multi_clause" | "conflict"` — why the LLM was (or would have been) consulted this turn; `null` when rules sufficed or the turn was an action. `turn.coverage: {"signals":[{"kind":Signal,"status":"captured"|"uncovered"|"asked"}], "complete": bool}` where `Signal ∈ allergy|dish|stops|day_part|budget|budget_scope|duration|leg_time|party|area|time|vehicle`. `turn.llm_calls: int 0..1`; `turn.llm_budget: {"session_used","session_cap","daily_remaining_public": "ok"|"low"|"exhausted"}` (the exact daily counter is never exposed). `turn.understanding` keeps `"rules"|"llm"|"cache"|"action"`. These fields contain no user text and no secrets.
+
+### Profile additions (`ChatState.profile`, additive)
+`stops: F` (int 1..5, maps to `Preferences.max_stops`), `day_part: F` ("morning"|"noon"|"afternoon"|"evening"|"late", maps to `Preferences.meal` as a soft hint: evening→dinner, late→late). `start_time` is **never inferred** from a day part. `budget` keeps `scope` ("per_person"|"group"); when the user gives an amount for N≥2 people without saying which, `scope` stays `null` and a `clarify` with slot `budget_scope` is mandatory before `confirm_plan`.
+
+### New block `understood`
+`{ "items":[{"id":Signal,"label":string,"value":string|null,"status":"user"|"ai"|"inferred"|"missing","editable":bool}], "allergies":[{"term":string,"family":string|null,"status":"user"|"ai_unconfirmed"}], "style_note"?: string }` — the human-readable "Mình hiểu là…" card, emitted on every text turn that changed the profile. `status:"ai"` means filled by the LLM and shown for user correction. `style_note` records instructions about conversation style (e.g. "hỏi tôi nếu còn thiếu"); it never triggers an action.
+
+### `clarify` additions (additive)
+`slot?: "allergy_term"|"budget_scope"|"start_time"|"stops"|"area"|…` and `chips?: [{"option_id","label","value"?}]` (≤8; free-text still allowed unless `free_text:false`). At most **one** `clarify` per reply. `allergy_term` options are the common allergen families (đậu phộng, hải sản, sữa, trứng, gluten, đậu nành, mè, khác) — selecting one is `pick_option`.
+
+### Rules
+1. **Allergy signal ⇒ term or question.** If the text contains an allergy cue (dị ứng/không ăn được/kiêng + a substance, or the cue alone) the lexicon extractor runs on the **whole raw message**, independent of the winning intent and of deferred-clause trimming. A captured term is stored (`source:"user_said"`). A cue without a term ⇒ pending `clarify_slot` slot `allergy_term`; `confirm_plan`/`tour` are impossible while it is open. Quoted, hypothetical and sarcastic allergy mentions are still not recorded (v1.8 rules).
+2. **Coverage audit.** Every signal detected in the raw text must end `captured` or `asked`; a signal left `uncovered` lowers rules confidence below `CONFIDENT` and sets `trigger_reason:"uncovered"`.
+3. **LLM escalation** (≤1 call/turn, `retry=false`, same session cap 6 and daily reserve 3 as v1.8): called when rules `confidence<CONFIDENT`, or a signal is `uncovered`, or ≥3 signal-bearing clauses were detected with <50% captured, or slots conflict. Never for `action` turns, greetings, or fully-covered confident turns. Cache first. Refused/failed ⇒ rules result + the single most important `clarify`.
+4. **Merge.** Allergies: union (LLM can add `ai_unconfirmed`, never remove a rule-captured term; an `ai_unconfirmed` allergy requires user confirmation before `confirm_plan`). Numbers/times/money: rule vs LLM disagreement ⇒ `clarify`, not a silent pick. `budget.scope`, `start_time` and `day_part`→time are never decided by the LLM when the text does not state them.
+5. **Durations.** "N phút" with tour/lịch trình/ăn/đi chơi context ⇒ `duration_min` (total). "N phút giữa các quán / mỗi chặng / đi bộ không quá N" ⇒ `max_leg_min`. Ambiguous ⇒ `clarify`.
+6. **Style directives** ("hỏi tôi nếu thiếu", "đừng lập tour vội") never act and never suppress capture of the other slots in the same message.
+7. **Honesty/safety unchanged:** no venue is "safe" for allergies, planner only after explicit `confirm_yes`, no weather/verified-hours/per-person-price claims.
