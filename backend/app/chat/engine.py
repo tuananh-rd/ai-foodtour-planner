@@ -24,6 +24,8 @@ from .understand import _THIRD, CONFIDENT, Understanding, effective_text, unders
 
 ALLERGY_CHIPS = {"peanut": "đậu phộng", "seafood": "hải sản", "milk": "sữa", "egg": "trứng", "gluten": "gluten", "soy": "đậu nành", "sesame": "mè"}
 LABEL_OF = {"peanut": "Đậu phộng", "seafood": "Hải sản", "milk": "Sữa", "egg": "Trứng", "gluten": "Gluten", "soy": "Đậu nành", "sesame": "Mè", "other": "Khác"}
+SLOT_KEYS = ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min", "vehicle", "max_leg_min", "audience")
+SLOT_SWEEP_INTENTS = frozenset({"SET_ALLERGY", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID", "GREET_OR_SMALLTALK", "ASK_DETAIL", "UPDATE_PROFILE"})
 SYMPTOM_WORDS = frozenset({"ngứa", "họng", "mẩn", "phát", "sưng", "đau", "bụng", "nôn", "tiêu", "chảy", "thở", "mề", "đay", "ho", "mũi", "khó", "chóng", "ngạt"})  # accent-sensitive: "đậu" is a bean, "đau" is pain
 PASSIVE = frozenset({"ANSWER_PENDING", "CONFIRM_YES", "CONFIRM_NO", "AMBIGUOUS_ACK", "GREET_OR_SMALLTALK", "UNSAFE", "OUT_OF_SCOPE",
                      "UNKNOWN", "ADD", "REMOVE", "KEEP", "COMPARE", "ASK_DETAIL", "MODIFY_PLAN"})
@@ -390,18 +392,21 @@ class ChatEngine:
         """After the intent handler ran: apply the slots it ignores, add LLM-only allergies, then ask ONE next thing."""
         st = R.state
         extra_keys = {k: v for k, v in u.patch.items() if k in ("stops", "day_part", "interests", "_stops_rejected")}
-        if R.intent in ("SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID"):  # their handlers ignore plain profile slots (budget stays a search price cap there)
-            extra_keys.update({k: v for k, v in u.patch.items() if k in ("duration_min", "max_leg_min", "start_time", "end_time", "vehicle", "party_size", "audience")})
-        if R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "SET_AVOID", "GREET_OR_SMALLTALK") and extra_keys \
-                and not R.plan_request:
+        if R.intent in SLOT_SWEEP_INTENTS:  # slot extraction does not depend on how the sentence was classified ("…được không?" is still a request)
+            slot_keys = {k: v for k, v in u.patch.items() if k in SLOT_KEYS}
+            if R.intent in ("SEARCH_VENUES", "DISCOVER_DISH") and not any(k in u.patch for k in ("stops", "duration_min", "party_size", "budget_scope")):
+                slot_keys.pop("budget_vnd", None)  # "quán phở dưới 50k" is a price cap for the search, not the tour budget
+                slot_keys.pop("budget_scope", None)
+            extra_keys.update(slot_keys)
+        if R.intent in SLOT_SWEEP_INTENTS and extra_keys and not R.plan_request:
             self._apply_patch(R, extra_keys)
-        if R.intent in PASSIVE and R.intent not in ("ANSWER_PENDING", "GREET_OR_SMALLTALK") or R.plan_request or st.phase == "planned" and R.intent != "UPDATE_PROFILE":
+        if R.intent in PASSIVE and R.intent not in ("ANSWER_PENDING", "GREET_OR_SMALLTALK", "ASK_DETAIL") or R.plan_request or st.phase == "planned" and R.intent != "UPDATE_PROFILE":
             return
         eff = effective_text(text)
         for term in u.extra.get("ai_allergies") or ():
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
                 st.allergies.append(Allergy(term, allergens.family_of(term), "ai_unconfirmed"))
-        if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH"):
+        if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "ASK_DETAIL"):
             st.goal = "tour"
         ai_map = {"party_size": "party_size", "budget_vnd": "budget", "duration_min": "duration_min", "max_leg_min": "max_leg_min", "start_time": "start_time",
                   "end_time": "end_time", "vehicle": "vehicle", "audience": "audience", "stops": "stops", "day_part": "day_part", "interests": "tastes"}

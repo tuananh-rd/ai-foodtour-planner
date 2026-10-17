@@ -142,22 +142,75 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
             patch["max_leg_min"] = int(leg.group(1))
         span = leg.group(0)
         stripped = stripped.replace(span, " ", 1)
+    dur_words = {"một": 1, "mot": 1, "hai": 2, "ba": 3, "bốn": 4, "bon": 4, "năm": 5, "nam": 5, "sáu": 6, "sau": 6}
+    mdur = re.search(r"(?<![\d.,])(\d{1,2}|" + "|".join(k for k in dur_words if k.isascii()) + r")\s*(?:tieng|gio dong ho|h dong ho)(?:\s*(ruoi))?(?!\s*(?:\d|sang|chieu|toi|trua))", stripped)
+    if mdur and "duration_min" not in patch:
+        n = int(mdur.group(1)) if mdur.group(1).isdigit() else dur_words[mdur.group(1)]
+        mins = n * 60 + (30 if mdur.group(2) else 0)
+        if 30 <= mins <= 720:
+            patch["duration_min"] = mins
+            stripped = stripped.replace(mdur.group(0), " ", 1)
+    mp = re.search(r"(?<![\d.,])(\d{2,3})\s*p\b(?!\w)", stripped)
+    if mp and "duration_min" not in patch and 30 <= int(mp.group(1)) <= 720:
+        patch["duration_min"] = int(mp.group(1))  # "90p"
+        stripped = stripped.replace(mp.group(0), " ", 1)
+    money = None
+    dm = re.search(r"(?<![\d.,])(\d+) (\d) (?:trieu|tr)\b", stripped)  # fold turns "1,5 triệu" into "1 5 trieu"
+    if dm:
+        money = int((int(dm.group(1)) + int(dm.group(2)) / 10) * 1_000_000)
+        stripped = stripped.replace(dm.group(0), " ", 1)
+    dm = re.search(r"(?<![\d.,])(\d+) (?:trieu|tr) (\d{3}) (?:nghin|ngan|k)\b", stripped)  # 1 triệu 500 nghìn
+    if dm:
+        money = int(dm.group(1)) * 1_000_000 + int(dm.group(2)) * 1000
+        stripped = stripped.replace(dm.group(0), " ", 1)
+    dm = re.search(r"\b(mot|hai|ba|bon|nam) trieu ruoi\b", stripped)  # một triệu rưỡi
+    if dm:
+        money = int(({"mot": 1, "hai": 2, "ba": 3, "bon": 4, "nam": 5}[dm.group(1)] + 0.5) * 1_000_000)
+        stripped = stripped.replace(dm.group(0), " ", 1)
     rx = MockExtractor().extract(stripped if stripped.strip() else "", Preferences())
     p = rx.preferences
     if "party_size" in rx.updated_fields:
         patch["party_size"] = p.party_size
+    if money is not None and "budget_vnd" not in rx.updated_fields and 0 < money <= 100_000_000:
+        patch["budget_vnd"] = money
     if "budget_vnd" in rx.updated_fields:
         patch["budget_vnd"] = p.budget_vnd
         if p.budget_scope:
             patch["budget_scope"] = p.budget_scope
     elif "budget_scope" in rx.updated_fields:
         patch["budget_scope"] = p.budget_scope
+    if "budget_vnd" in patch:
+        grp = re.search(r"ca nhom|theo nhom|ca doan|ca hoi|ca ban|tat ca|tong\s+(?:ngan sach|cong|so tien|chi|tien|nhom)|tong\s+\d+\s*(?:k\b|nghin|ngan|trieu|tr\b|dong)|quy chung|chi chung|chung\s+(?:tien|ngan sach)|nhom chi|tong cong", f)
+        per = re.search(r"moi nguoi|moi dua|moi ban|mot nguoi|1 nguoi|dau nguoi|theo dau|per person|(?:\dk|\d+ k|nghin|ngan|trieu|tr|dong)\s+nguoi\b(?!\s*(?:la|ma|di|cung))", f)
+        if (grp and per) or re.search(r"chua ro|khong biet|chua biet|khong chac", f):
+            patch.pop("budget_scope", None)  # both readings (or an open question): leave it to the clarify
+        elif grp:
+            patch["budget_scope"] = "group"
+        elif per:
+            patch["budget_scope"] = "per_person"
+        else:
+            patch.pop("budget_scope", None)
     if "duration_min" in rx.updated_fields and "end_time" not in patch:
         patch["duration_min"] = p.duration_min
     elif "end_time" not in patch and "start_time" not in patch:
         d = re.search(r"(?:tong|trong khoang|trong|khoang|tour|lich trinh|hanh trinh|ke hoach|di choi|an uong|choi|di)\s*(?:\w+\s+){0,3}?(\d{2,3})\s*phut", stripped)
         if d and 30 <= int(d.group(1)) <= 720:
             patch["duration_min"] = int(d.group(1))
+    if "party_size" not in patch:
+        words = {"mot": 1, "hai": 2, "ba": 3, "bon": 4, "nam": 5, "sau": 6, "bay": 7, "tam": 8}
+        money_per = re.search(r"(?:k|nghin|ngan|trieu|tr|dong)\s+(?:mot|1)\s+nguoi", f)
+        if re.search(r"\b(?:mot minh|di mot minh|ca nha|hai vo chong|vo chong)\b", f):
+            single = re.search(r"\bmot minh\b", f)
+            if single:
+                patch["party_size"] = 1
+            elif re.search(r"\bvo chong\b", f) and not re.search(r"\b\d+\s*nguoi\b", f):
+                patch["party_size"] = 2
+        pw = re.search(r"\b(" + "|".join(words) + r")\s*(?:nguoi|dua|ban|anh chi em|thanh vien)\b", f)
+        if pw and not (money_per and pw.group(1) == "mot"):
+            patch["party_size"] = words[pw.group(1)]
+        gd = re.search(r"(?<![\d/.,])\b(\d{1,2})\s*(?:dua|ban|thanh vien)\b", f)
+        if gd and 1 <= int(gd.group(1)) <= 20 and "party_size" not in patch:
+            patch["party_size"] = int(gd.group(1))
     if "party_size" not in patch:
         g = re.search(r"(?<![\d/.,])\b(\d{1,2})\s*ng\b", f)  # "2ng"
         if g and 1 <= int(g.group(1)) <= 20:

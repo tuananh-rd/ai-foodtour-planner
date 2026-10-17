@@ -16,8 +16,9 @@ NUMWORDS = {"mot": 1, "hai": 2, "ba": 3, "bon": 4, "tu": 4, "nam": 5}
 DAY_PARTS = {"morning": "Buổi sáng", "noon": "Buổi trưa", "afternoon": "Buổi chiều", "evening": "Buổi tối", "late": "Khuya"}
 MEAL_OF = {"evening": "dinner", "late": "late", "noon": "lunch", "morning": "breakfast", "afternoon": "snack"}
 
-_TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang)\b")
-_STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b")
+_TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\b")
+_STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b(?!\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))"
+                    r"|\bso (?:quan|diem)\s*(?:la|:)?\s*(\d{1,2})\b")
 _LIKE = re.compile(r"(?:\byêu thích\b|\bưa chuộng\b|\bđam mê\b|\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bkhoái\b|\bghiền\b|\bnghiện\b|\byeu thich\b|\bthich\b|\bmuon an\b|\bkhoai\b)"
                    r"\s*[:\-–]?\s*(?:là\s+|la\s+)?(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|\bchưa\b|\bchua\b|$)",
                    re.IGNORECASE)
@@ -51,6 +52,40 @@ def _day_part(text: str, f: str):
     return None
 
 
+_CUT_WORDS = {"ở", "trong", "cho", "vào", "lúc", "tại", "quanh", "gần", "khu", "tối", "sáng", "chiều", "trưa", "nay", "mai", "khoảng", "tầm", "qua", "để",
+              "o", "vao", "luc", "tai", "gan", "toi", "sang", "chieu", "trua", "khoang", "tam", "qua", "de", "nhung", "mà", "ma", "thôi", "thoi"}
+_DISHES = [("phở", "pho"), ("bún chả", "bun cha"), ("bún", "bun"), ("bánh cuốn", "banh cuon"), ("bánh mì", "banh mi"), ("xôi", "xoi"), ("nem", "nem"),
+           ("chả giò", "cha gio"), ("ốc", "oc"), ("lẩu", "lau"), ("chè", "che"), ("kem", "kem"), ("cà phê", "ca phe"), ("cơm", "com")]
+_NEG_BEFORE = {"không", "khong", "ko", "chẳng", "chang", "ghét", "ghet", "chán", "chan", "né", "kiêng", "kieng", "bỏ", "bo", "đừng", "dung", "dị", "ứng", "ung"}
+
+
+def _dish_scan(text: str) -> list:
+    """Known dish names mentioned anywhere (so "Phở trước nha", "bánh mì là món thích" still count). Accents required when the message has any."""
+    low = text.casefold()
+    accented = any(ord(c) > 127 for c in low)
+    out = []
+    for disp, plain in _DISHES:
+        word = disp if accented else plain
+        for m in re.finditer(r"(?<![\w])" + re.escape(word) + (r"(?!\s+(?:chả|cha))" if disp == "bún" else "") + r"(?![\w])", low):
+            prefix = low[:m.start()].split()[-3:]
+            if any(t.strip(",.;:!?\"'") in _NEG_BEFORE for t in prefix):
+                continue
+            if disp == "bún" and any(o.startswith("bún chả") for o in out):
+                continue
+            item = disp if accented else plain
+            if item not in out:
+                out.append(item)
+    return out
+
+
+def _trim_item(item: str) -> str:
+    words = item.split()
+    for i, w in enumerate(words):
+        if i > 0 and w.casefold().strip(",.") in _CUT_WORDS:
+            return " ".join(words[:i])
+    return item
+
+
 def _items(raw: str) -> list:
     out = []
     for part in _SPLIT.split(raw.strip()):
@@ -59,7 +94,7 @@ def _items(raw: str) -> list:
             words.pop()  # "phở nhé" -> "phở"
         if not words or len(words) > 3 or words[0].casefold() in _NOT_FOOD_START or any(c.isdigit() for c in part):
             continue
-        item = " ".join(words).strip(" .\"'")
+        item = _trim_item(" ".join(words).strip(" .\"'"))
         if 1 < len(item) <= 30 and item.casefold() not in {o.casefold() for o in out}:
             out.append(item)
     return out[:4]
@@ -71,7 +106,8 @@ def extras(text: str, f: str) -> dict:
     if _TOUR_CTX.search(f):
         m = _STOPS.search(f)
         if m:
-            n = int(m.group(1)) if m.group(1).isdigit() else NUMWORDS[m.group(1)]
+            g = m.group(1) or m.group(2)
+            n = int(g) if g.isdigit() else NUMWORDS[g]
             if 1 <= n <= 5:
                 out["stops"] = n
             else:
@@ -86,6 +122,9 @@ def extras(text: str, f: str) -> dict:
         if re.match(r"\s*(?:tour|lịch trình|hành trình|\d)", m.group(1), re.IGNORECASE):
             continue  # "muốn ăn tour 3 quán …" states a goal, not a dish
         items += [i for i in _items(m.group(1)) if i.casefold() not in {x.casefold() for x in items}]
+    for d in _dish_scan(text):
+        if d.casefold() not in {x.casefold() for x in items} and not any(d.casefold() in x.casefold() for x in items):
+            items.append(d)
     if items:
         out["interests"] = items[:6]
     return out
