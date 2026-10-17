@@ -379,7 +379,7 @@ class ChatEngine:
                     base.patch[k] = v
         f = fold_uncached(effective_text(text))
         clock = r"\d{1,2}\s*(?:h|gio|:)\s*(?:\d{2}|ruoi)?"
-        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|theo nhom|theo nguoi|\bchung\s+(?:tien|ngan sach|\d)|mot nguoi|ca ban|ca hoi|tong\s+(?:ngan sach|cong|so tien|chi)|tong\s+\d[\d.,]*\s*(?:k\b|nghin|ngan|trieu|tr\b|d\b|dong)",
+        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|ca chuyen|theo nhom|theo nguoi|\bchung\s+(?:tien|ngan sach|\d)|mot nguoi|ca ban|ca hoi|tong\s+(?:ngan sach|cong|so tien|chi)|tong\s+\d[\d.,]*\s*(?:k\b|nghin|ngan|trieu|tr\b|d\b|dong)",
                     "start_time": clock, "end_time": r"(?:ket thuc|xong|ve truoc|truoc luc|truoc|den|toi)\s*(?:luc\s*)?" + clock}
         for k, rx in grounded.items():
             if k not in rules.patch and k in base.patch and not re.search(rx, f):

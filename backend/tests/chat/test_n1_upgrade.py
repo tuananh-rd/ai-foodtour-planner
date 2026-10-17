@@ -84,6 +84,20 @@ class UpgradeLanguage(unittest.TestCase):
         self.assertEqual(p['start_time'], '19:00')
         self.assertNotIn('duration_min', p)
 
+    def test_budget_chip_cannot_become_duck_allergy_or_clear_obligation(self):
+        venues = load_dataset(ROOT / 'contracts/fixtures/venues.chat.synthetic.json').venues
+        eng = ChatEngine(venues, guided=True)
+        r = eng.handle(ChatState(), Preferences(), text='Tour quanh Hồ Gươm, mình dị ứng nhưng chưa nhớ tên nguyên liệu')
+        for text in ['Tôi muốn ăn tour 3 quán quanh Hoàn Kiếm tối nay', 'Đi tour vào tối nay khoảng 120 phút',
+                     'Thích các món Việt truyền thống như phở và chè', 'Ngân sách dưới 300 nghìn cho cả chuyến']:
+            r = eng.handle(r.state, r.prefs, text=text)
+            self.assertTrue(r.state.allergy_unresolved, text)
+            self.assertEqual(r.state.allergies, [], text)
+            self.assertEqual(r.state.pending.slot, 'allergy_term', text)
+        r = eng.handle(ChatState.from_json(r.state.to_json(private=True)), r.prefs, action={'type': 'confirm_yes'})
+        self.assertIsNone(r.plan_request)
+        self.assertTrue(r.state.allergy_unresolved)
+
     def test_guided_conflict_does_not_offer_untested_transport_or_repeat(self):
         venues = load_dataset(ROOT / 'contracts/fixtures/venues.chat.synthetic.json').venues
         eng = ChatEngine(venues, guided=True)

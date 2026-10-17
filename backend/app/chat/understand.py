@@ -180,7 +180,7 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     elif "budget_scope" in rx.updated_fields:
         patch["budget_scope"] = p.budget_scope
     if "budget_vnd" in patch:
-        grp = re.search(r"ca nhom|theo nhom|ca doan|ca hoi|ca ban|tat ca|tong\s+(?:ngan sach|cong|so tien|chi|tien|nhom)|tong\s+\d+\s*(?:k\b|nghin|ngan|trieu|tr\b|dong)|quy chung|chi chung|chung\s+(?:tien|ngan sach)|nhom chi|tong cong", f)
+        grp = re.search(r"ca nhom|ca chuyen|theo nhom|ca doan|ca hoi|ca ban|tat ca|tong\s+(?:ngan sach|cong|so tien|chi|tien|nhom)|tong\s+\d+\s*(?:k\b|nghin|ngan|trieu|tr\b|dong)|quy chung|chi chung|chung\s+(?:tien|ngan sach)|nhom chi|tong cong", f)
         per = re.search(r"moi nguoi|moi dua|moi ban|mot nguoi|1 nguoi|dau nguoi|theo dau|per person|(?:\dk|\d+ k|nghin|ngan|trieu|tr|dong)\s+nguoi\b(?!\s*(?:la|ma|di|cung))", f)
         if (grp and per) or re.search(r"chua ro|khong biet|chua biet|khong chac", f):
             patch.pop("budget_scope", None)  # both readings (or an open question): leave it to the clarify
@@ -724,7 +724,7 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
     if pending.kind == "clarify_slot":
         slots = {k: v for k, v in patch.items() if not k.startswith("_")}
         if pending.slot == "budget_scope":
-            if re.search(r"ca nhom|theo nhom|tong|ca ban|chung", f):
+            if re.search(r"ca nhom|ca chuyen|theo nhom|tong|ca ban|chung", f):
                 slots["budget_scope"] = "group"
             elif re.search(r"moi nguoi|theo nguoi|mot nguoi|dau nguoi", f):
                 slots["budget_scope"] = "per_person"
@@ -751,6 +751,11 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
                     hh += 12
                 slots["start_time"] = f"{hh % 24:02d}:{mm:02d}"
         if pending.slot == "allergy_term":
+            # A profile edit is not an allergen answer. In particular "ngân sách"
+            # folds to "ngan", which must never be mistaken for the duck alias.
+            numeric = any(k in slots for k in ("budget_vnd", "budget_scope", "duration_min", "party_size", "stops", "start_time", "end_time", "max_leg_min"))
+            if not re.search(r"\bdi ung\b", f) and (numeric or re.search(r"\b(?:ngan sach|tui tien|thoi gian|thoi luong|so nguoi|so quan)\b", f)):
+                return None
             terms = safety_parse.parse("di ung " + text).allergies
             plain = text.strip()
             junk = {"lap", "tao", "tour", "lich", "trinh", "ok", "oke", "okay", "di", "thoi", "xac", "nhan", "chot", "co", "khong", "ko", "u", "um", "vang", "da",
