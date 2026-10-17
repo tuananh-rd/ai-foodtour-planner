@@ -27,6 +27,22 @@
 | D7 | Bot hỏi dài, rườm rà | Giả thuyết: do có nhiều slot thiếu được hỏi cùng lúc/ tuần tự thay vì gom và chép lại những gì đã hiểu. |
 | D8 | UI giống công cụ dev | Xác nhận từ phản hồi người dùng + rà code: ProfileBar nhiều ô điều khiển, banner nguồn dữ liệu/Gemini/bản đồ, huy hiệu "bộ luật cục bộ" (`ChatColumn.jsx`). Hiển thị thuật ngữ nội bộ cho người dùng thường. |
 
+### 1.1a Lỗi trích xuất dị ứng (ghi rõ, mức bằng chứng)
+
+- **Bằng chứng đã có:** (a) phản hồi test thật của bạn: UI hiển thị "bộ luật cục bộ", không ghi nhận dị ứng đậu phộng, bộ đếm Gemini không tăng; (b) một lần chạy chỉ-đọc hàm hiểu luật với S0 (dữ liệu giả lập, không mạng): ý định `SET_ALLERGY`, độ tin cậy 0,95, patch **không có** trường dị ứng. Ý định được nhận ra nhưng nội dung (chất gây dị ứng) bị rơi: lỗi **mất dữ liệu an toàn một cách im lặng**.
+- **Chưa kiểm chứng (không khẳng định):** nguyên nhân dòng code cụ thể. Giả thuyết: câu dị ứng nằm trong câu ghép dài và bị `trim_deferred` cắt do mệnh đề "Hãy hỏi tôi nếu còn thiếu…", hoặc kết quả của `safety_parse`/`_allergies` không được đưa vào patch ở đường `SET_ALLERGY`. Tôi không có ảnh chụp màn hình trong ngữ cảnh này, nên phần UI dựa trên mô tả của bạn. Bước xác minh được đưa vào U1 như test fail-trước, không làm thêm ở lượt này.
+- **Yêu cầu sửa:** dị ứng phải được trích bởi lớp an toàn chạy **trên toàn câu gốc, độc lập với ý định thắng và với việc cắt mệnh đề hoãn**; ý định `SET_ALLERGY` mà không có chất cụ thể phải sinh câu hỏi bắt buộc, không được "thành công im lặng".
+
+### 1.1b Chính sách escalation Gemini (tóm tắt có thể kiểm thử)
+
+| Điều kiện | Hành động |
+|---|---|
+| Nút bấm (action), chào hỏi, luật phủ đủ mọi tín hiệu và tin cậy ≥ 0,75 | Không gọi Gemini |
+| Tin cậy < 0,75, **hoặc** có tín hiệu (dị ứng, món, số quán, thời điểm, tiền, phạm vi) chưa vào slot, **hoặc** câu đa ý mà luật phủ < 50%, **hoặc** slot mâu thuẫn | Gọi Gemini **tối đa 1 lần/lượt**, `retry=False`, nếu còn cap phiên (6) và dự trữ ngày (3); dùng cache trước |
+| Hết cap / lỗi / không cấu hình | Không gọi; hỏi đúng phần thiếu bằng nút; dị ứng thiếu chất → hỏi bắt buộc |
+| Kết quả Gemini | Qua `sanitize`; dị ứng hợp (union) với luật, không xoá; slot mâu thuẫn → hỏi lại; phạm vi ngân sách và giờ không do Gemini tự quyết |
+| Ghi nhận | `trigger_reason`, `llm_calls`, `budget_state` trong `TurnResult`; test khẳng định bằng các trường này |
+
 ### 1.2 Ranh giới rủi ro (không được vượt)
 
 1. **Dị ứng là ưu tiên an toàn cao nhất:** nếu câu có tín hiệu dị ứng mà không trích được chất cụ thể, hệ thống **phải hỏi lại** chứ không lập tour, và không bao giờ gắn nhãn "an toàn". Giữ nguyên quy tắc hiện có: tour có dị ứng luôn kèm `unknowns: allergy_ingredients`.
