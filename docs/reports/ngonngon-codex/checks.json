@@ -1,0 +1,93 @@
+{
+  "synthetic": true,
+  "checks": [
+    {
+      "name": "synthetic API required before any capture",
+      "pass": true
+    },
+    {
+      "name": "review browser port unused",
+      "pass": true
+    },
+    {
+      "name": "fixture requires explicit confirmation",
+      "pass": true
+    },
+    {
+      "name": "mobile viewport is actual 390px with no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "real browser confirmation creates three stops",
+      "pass": true
+    },
+    {
+      "name": "mobile has one visible active panel",
+      "pass": true
+    },
+    {
+      "name": "replacement dialog outside inert tree with initial focus",
+      "pass": true
+    },
+    {
+      "name": "replacement Tab remains inside dialog",
+      "pass": true
+    },
+    {
+      "name": "actual replacement preserves other identities and order",
+      "pass": true
+    },
+    {
+      "name": "server exposes locked other stops",
+      "pass": true
+    },
+    {
+      "name": "completed dialog returns focus into tour",
+      "pass": true
+    },
+    {
+      "name": "controlled no-candidate error preserves real server tour",
+      "pass": true
+    },
+    {
+      "name": "no-candidate closes modal and shows error",
+      "pass": true
+    },
+    {
+      "name": "concurrent safety edit opens allergy obligation",
+      "pass": true
+    },
+    {
+      "name": "real replacement409 restores new allergy question and closes old modal",
+      "pass": true
+    },
+    {
+      "name": "reload preserves safety question ahead of retained server tour",
+      "pass": true
+    },
+    {
+      "name": "trust dialog is interactive outside inert root",
+      "pass": true
+    },
+    {
+      "name": "trust Tab is contained",
+      "pass": true
+    },
+    {
+      "name": "trust click close restores opener focus",
+      "pass": true
+    },
+    {
+      "name": "budget reload preserves 150000",
+      "pass": true
+    },
+    {
+      "name": "budget reload preserves 300000",
+      "pass": true
+    },
+    {
+      "name": "budget reload preserves 1000000",
+      "pass": true
+    }
+  ]
+}
