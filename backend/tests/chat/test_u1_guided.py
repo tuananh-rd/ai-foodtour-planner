@@ -401,3 +401,28 @@ class FinalHardening(unittest.TestCase):
             r = eng.handle(r.state, r.prefs, text=f"Tôi đã gọi quán A, quán nói có tôm {i % 12}")
         sizes = [len(a.venue_confirmations) for a in r.state.allergies]
         self.assertTrue(all(n <= 10 for n in sizes), sizes)
+
+
+class IntegrationLessons(unittest.TestCase):
+    """Found by qa/e2e/test_guided_api.py on a real uvicorn: a typed command answered the allergy question and was stored as the allergen."""
+
+    def test_command_text_is_not_an_allergen_answer(self):
+        eng, _ = engine()
+        r = eng.handle(ChatState(), Preferences(), text="Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn")
+        for t in ("lập tour đi", "ok", "tạo lịch trình", "chưa biết", "xác nhận"):
+            r = eng.handle(r.state, r.prefs, text=t)
+            self.assertEqual(r.state.allergies, [], t)
+            self.assertTrue(r.state.allergy_unresolved, t)
+            self.assertIsNone(r.plan_request, t)
+        r = eng.handle(r.state, r.prefs, text="tôm")
+        self.assertFalse(r.state.allergy_unresolved)
+        self.assertEqual([a.term for a in r.state.allergies], ["tôm"])
+
+    def test_three_stops_in_two_hours_get_a_shorter_visit_instead_of_no_solution(self):
+        eng, _ = engine()
+        st = ChatState()
+        for k, v in (("stops", 3), ("duration_min", 120)):
+            st.set_field(k, v)
+        self.assertEqual(eng._visit_minutes(st), 34)
+        st.set_field("duration_min", 240)
+        self.assertIsNone(eng._visit_minutes(st))

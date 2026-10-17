@@ -719,7 +719,13 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
                 slots["start_time"] = f"{hh % 24:02d}:{mm:02d}"
         if pending.slot == "allergy_term":
             terms = safety_parse.parse("di ung " + text).allergies
-            raw = (terms[0] if terms else (text.strip() if len(f.split()) <= 3 and not re.search(r"\d", f) else ""))
+            plain = text.strip()
+            junk = {"lap", "tao", "tour", "lich", "trinh", "ok", "oke", "okay", "di", "thoi", "xac", "nhan", "chot", "co", "khong", "ko", "u", "um", "vang", "da",
+                    "roi", "xong", "tiep", "tuc", "bo", "qua", "sau", "hoi", "biet", "nho", "ro", "chua", "gi", "nao", "cai", "nay", "kia", "do", "ke"}
+            cand = terms[0] if terms else plain
+            cf = set(fold_uncached(cand).split())
+            ok_free = len(cf) <= 2 and not re.search(r"\d", cand) and not (junk & cf) and not (safety_parse._VAGUE & cf)
+            raw = cand if (allergens.recognised(cand) or ok_free) else ""
             if raw:
                 return Understanding("ANSWER_PENDING", {"allergy_text": raw[:40]}, refs, 0.9)
             return None

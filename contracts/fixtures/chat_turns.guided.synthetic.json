@@ -1041,6 +1041,13 @@
            "value": null,
            "status": "missing",
            "editable": true
+          },
+          {
+           "id": "visit_min",
+           "label": "Thời gian mỗi quán (ước tính)",
+           "value": "khoảng 34 phút",
+           "status": "inferred",
+           "editable": false
           }
          ],
          "shortlist": [
@@ -1394,6 +1401,12 @@
      "response": {
       "reply": {
        "blocks": [
+        {
+         "type": "notice",
+         "level": "info",
+         "code": "llm_unavailable",
+         "text": "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."
+        },
         {
          "type": "understood",
          "items": [

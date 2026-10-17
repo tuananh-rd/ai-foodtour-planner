@@ -112,12 +112,12 @@ class ChatEngine:
         R.intent = u.intent
         pend0 = st.pending
         self._dispatch(R, u)
-        if self.guided:
-            self._guided_after(R, u, snap0, text or "")
         if pend0 is not None and R.state.pending is pend0 and "nudge" not in R.tools and R.intent not in ("ANSWER_PENDING", "AMBIGUOUS_ACK", "CONFIRM_YES", "CONFIRM_NO"):
             # The user moved on: a stale question must not linger (confirm_plan survives plain profile edits only).
             if not (pend0.kind == "confirm_plan" and R.intent in ("UPDATE_PROFILE", "ASK_DETAIL")):
                 R.state.pending = None
+        if self.guided:  # after the stale-question cleanup, so an open safety obligation is asked again instead of vanishing
+            self._guided_after(R, u, snap0, text or "")
         return self._finish(R)
 
     def _finish(self, R: TurnResult) -> TurnResult:
@@ -171,6 +171,15 @@ class ChatEngine:
     def _same_point(area, origin) -> bool:
         return bool(area) and abs(area.get("lat", 0) - origin[0]) < 1e-6 and abs(area.get("lon", 0) - origin[1]) < 1e-6
 
+    @staticmethod
+    def _visit_minutes(st: ChatState):
+        """Minutes per stop that lets `stops` venues fit the whole-tour duration (8 min of walking per leg); None when unknown."""
+        n, d = st.profile["stops"].value, st.profile["duration_min"].value
+        if not (st.profile["stops"].known() and st.profile["duration_min"].known()):
+            return None
+        v = (d - (n - 1) * 8) // n
+        return None if v >= 45 else max(20, min(45, v))
+
     def _to_prefs(self, st: ChatState, p: Preferences) -> Preferences:
         a = st.profile["area"].value
         kw = {}
@@ -198,6 +207,9 @@ class ChatEngine:
             kw["max_leg_min"] = st.profile["max_leg_min"].value
         if st.profile["stops"].known():
             kw["max_stops"] = st.profile["stops"].value
+        vm = self._visit_minutes(st)
+        if self.guided and vm and p.visit_minutes == 45:
+            kw["visit_minutes"] = vm  # "3 quán trong 120 phút" cannot hold 3 x 45 minutes: shorten the assumed time per stop (shown to the user)
         if st.profile["day_part"].known():
             if p.meal is None:
                 kw["meal"] = coverage.MEAL_OF.get(st.profile["day_part"].value)
@@ -287,6 +299,8 @@ class ChatEngine:
             # A question is already open: never replace or repeat it, help the user answer it instead.
             self._nudge(R, why)
             return
+        if self.guided and self._open_obligation(st) and self._guided_continue(R, full=False):
+            return  # an unresolved safety/scope question beats a generic "what do you want to do?"
         self._set_pending(st, "clarify_intent", [{"option_id": "search", "label": "Tìm quán"}, {"option_id": "discover", "label": "Gợi ý món"},
                                                  {"option_id": "plan", "label": "Lập lịch trình"}], None, {})
         R.blocks.append(text_b(why + "Mình chưa chắc hiểu đúng ý bạn trong câu này, nên mình hỏi lại thay vì đoán. "
@@ -1310,6 +1324,9 @@ class ChatEngine:
             ids = [s.venue_id for s in st.shortlist]
             st.pending = None
             R.plan_request = {"venue_ids": ids, "kept": [s.venue_id for s in st.shortlist if s.status == "kept"]}
+            vm = self._visit_minutes(st) if self.guided else None
+            if vm:
+                R.plan_request["visit_minutes"] = vm  # the API applies it to the planner preferences (assumed time per stop, shown in the summary)
             R.tools.append("generate_tour")
             return
         self._do_ambiguous_ack(R, u)
@@ -1319,6 +1336,9 @@ class ChatEngine:
         if st.pending and st.pending.kind == "confirm_plan":
             st.pending = None
             R.blocks.append(text_b("Ok, mình chưa lập lịch trình. Bạn muốn sửa thông tin nào (xuất phát, giờ, phương tiện, ngân sách, danh sách quán)?"))
+        elif st.pending and self.guided and st.pending.slot in ("allergy_term", "allergy_confirm", "budget_scope"):
+            R.blocks.append(text_b("Câu hỏi này mình cần được trả lời trước khi lập lịch trình (để tránh sai về dị ứng/ngân sách). Bạn chọn một nút hoặc gõ ngắn gọn nhé."))
+            R.tools.append("nudge")
         elif st.pending:
             st.pending = None
             R.blocks.append(text_b("Ok, mình bỏ câu hỏi đó. Bạn muốn làm gì tiếp?"))
@@ -1421,6 +1441,9 @@ class ChatEngine:
              "status": "user" if st.allergies else "missing", "editable": True},
             item("max_leg_min", "Đi bộ tối đa mỗi chặng", st.profile["max_leg_min"], lambda v: f"{v} phút"),
         ]
+        vm = self._visit_minutes(st)
+        if self.guided and vm:
+            items.append({"id": "visit_min", "label": "Thời gian mỗi quán (ước tính)", "value": f"khoảng {vm} phút", "status": "inferred", "editable": False})
         warnings = []
         if st.allergies:
             warnings.append({"code": "allergy_unknown", "text": SAFETY_LINE})
