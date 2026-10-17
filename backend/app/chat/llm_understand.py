@@ -32,6 +32,7 @@ UNDERSTAND_SYSTEM = (
     "Tin nhắn nhiều ý: chọn ý chính cần xử lý trước (cập nhật thông tin/dị ứng thường trước tìm kiếm). "
     "'refs' liệt kê tham chiếu người dùng dùng: nhãn A-E, số thứ tự '1'..'5', 'last' hoặc 'all'. "
     "Dị ứng/kiêng là SET_ALLERGY (dị ứng, bệnh lý) hoặc SET_AVOID (chỉ không thích): đưa tên tác nhân vào patch.allergy. "
+    "Tin nhắn dài nhiều ý: điền patch cho MỌI thông tin được nói rõ (số quán→stops, buổi trong ngày→day_part, món thích→interests, dị ứng→allergy), không bỏ sót ý nào; 'tối nay' chỉ là day_part=evening, KHÔNG tự đặt start_time. Thời gian cả tour là duration_min, thời gian mỗi chặng đi là max_leg_min. "
     "start_time/end_time dạng HH:MM 24 giờ; budget_vnd là số đồng (200k = 200000); mỗi người = per_person, cả nhóm = group."
 )
 
@@ -39,11 +40,12 @@ ENUMS = {
     "budget_scope": ("per_person", "group"), "vehicle": ("walk", "motorbike", "car", "taxi"),
     "audience": ("solo", "friends", "family"), "mood": ("cool", "warm", "light"),
     "meal": ("breakfast", "lunch", "snack", "dinner", "late"),
+    "day_part": ("morning", "noon", "afternoon", "evening", "late"),
     "criteria": ("distance", "price", "rating", "audience", "meal", "parking_car", "outdoor", "capacity", "prep_time",
                  "hours", "quiet", "crowd", "elderly"),
     "amenity": ("parking_car", "outdoor"),
 }
-RANGES = {"party_size": (1, 20), "budget_vnd": (1, 100_000_000), "duration_min": (30, 720), "max_leg_min": (3, 60),
+RANGES = {"stops": (1, 5), "party_size": (1, 20), "budget_vnd": (1, 100_000_000), "duration_min": (30, 720), "max_leg_min": (3, 60),
           "radius_m": (100, 5000)}
 HHMM = re.compile(r"^(?:[01]\d|2[0-3]):[0-5]\d$")
 REF = re.compile(r"^(?:[A-E]|[1-5]|last|all)$")
@@ -57,12 +59,14 @@ def response_schema() -> dict:
             "intent": {"type": "STRING", "enum": [x for x in INTENTS if x != "UNKNOWN"]},
             "refs": {"type": "ARRAY", "nullable": True, "items": {"type": "STRING"}},
             "patch": {"type": "OBJECT", "nullable": True, "properties": {
-                "party_size": i, "budget_vnd": i, "duration_min": i, "max_leg_min": i, "radius_m": i,
+                "stops": i, "party_size": i, "budget_vnd": i, "duration_min": i, "max_leg_min": i, "radius_m": i,
                 "budget_scope": {"type": "STRING", "nullable": True, "enum": list(ENUMS["budget_scope"])},
                 "vehicle": {"type": "STRING", "nullable": True, "enum": list(ENUMS["vehicle"])},
                 "audience": {"type": "STRING", "nullable": True, "enum": list(ENUMS["audience"])},
                 "mood": {"type": "STRING", "nullable": True, "enum": list(ENUMS["mood"])},
                 "meal": {"type": "STRING", "nullable": True, "enum": list(ENUMS["meal"])},
+                "day_part": {"type": "STRING", "nullable": True, "enum": list(ENUMS["day_part"])},
+                "interests": {"type": "ARRAY", "nullable": True, "items": {"type": "STRING"}},
                 "amenity": {"type": "STRING", "nullable": True, "enum": list(ENUMS["amenity"])},
                 "start_time": s, "end_time": s, "taste": s, "dish": s, "area_text": s, "dislike": s,
                 "criteria": {"type": "ARRAY", "nullable": True, "items": {"type": "STRING", "enum": list(ENUMS["criteria"])}},
@@ -83,7 +87,7 @@ def sanitize(raw: dict, gz=None) -> Optional[dict]:
         v = patch_in.get(k)
         if isinstance(v, int) and not isinstance(v, bool) and lo <= v <= hi:
             patch[k] = v
-    for k in ("budget_scope", "vehicle", "audience", "mood", "meal", "amenity"):
+    for k in ("budget_scope", "vehicle", "audience", "mood", "meal", "amenity", "day_part"):
         if patch_in.get(k) in ENUMS[k]:
             patch[k] = patch_in[k]
     for k in ("start_time", "end_time"):
@@ -96,6 +100,15 @@ def sanitize(raw: dict, gz=None) -> Optional[dict]:
             v = " ".join(v.split())[:40]
             if v:
                 patch[k] = v
+    if isinstance(patch_in.get("interests"), list):
+        items = []
+        for t in patch_in["interests"][:6]:
+            if isinstance(t, str):
+                t = " ".join(re.sub(r"[^\w\s-]", " ", t).split())
+                if t and len(t.split()) <= 3 and len(t) <= 30 and t.casefold() not in {x.casefold() for x in items}:
+                    items.append(t)
+        if items:
+            patch["interests"] = items[:4]
     if isinstance(patch_in.get("criteria"), list):
         crit = [c for c in patch_in["criteria"] if c in ENUMS["criteria"]][:3]
         if crit:

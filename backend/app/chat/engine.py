@@ -87,6 +87,8 @@ class ChatEngine:
                 st.llm_used += out.calls
                 llm_status = out.status or llm_status
                 cand = self._from_llm(out.data, st) if out.data else None
+                if self.guided and not cand and reason != "low_conf":
+                    R.blocks.append(notice_b("info", "llm_unavailable", "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."))
                 if cand:
                     R.understanding = "cache" if out.calls == 0 else "llm"
                     u = self._merge(u, cand, R) if self.guided else cand
@@ -285,6 +287,8 @@ class ChatEngine:
         patch = dict(data.get("patch") or {})
         extra = {}
         terms = patch.pop("allergy", None)
+        if terms and intent not in ("SET_ALLERGY", "SET_AVOID"):
+            extra["llm_allergy"] = list(terms)  # kept for the guided merge (never recorded directly)
         if intent in ("SET_ALLERGY", "SET_AVOID") and terms:
             sp = safety_parse.SafetyParse(mentioned=True)
             (sp.allergies if intent == "SET_ALLERGY" else sp.avoid).extend(terms)
@@ -331,14 +335,18 @@ class ChatEngine:
             base.extra["conflicts"] = conflicts
             R.trigger_reason = "conflict"
         rs, cs = rules.extra.get("safety"), cand.extra.get("safety")
-        if rs is not None and cs is not None and cs is not rs:
-            known = {fold_uncached(t) for t in rs.allergies}
-            fresh = [t for t in cs.allergies if fold_uncached(t) not in known]
-            base.extra["safety"] = rs
+        known = {fold_uncached(t) for t in (rs.allergies if rs is not None else [])}
+        cterms = list(cs.allergies if cs is not None else []) + list(cand.extra.get("llm_allergy") or [])
+        fresh = [t for t in dict.fromkeys(cterms) if fold_uncached(t) not in known]
+        if rs is not None:
+            base.extra["safety"] = rs  # the rules' own parse stays authoritative
+        else:
+            base.extra.pop("safety", None)  # an LLM-only allergy is never recorded as the user's word
+            if base.intent == "SET_ALLERGY":
+                base.extra["safety"] = safety_parse.SafetyParse(mentioned=True)
+        base.extra.pop("llm_allergy", None)
+        if fresh:
             base.extra["ai_allergies"] = fresh
-        elif cs is not None and rs is None and base.intent == "SET_ALLERGY":
-            base.extra["ai_allergies"] = list(cs.allergies)
-            base.extra.pop("safety", None)
         return base
 
     def _snapshot(self, st: ChatState) -> str:
@@ -358,11 +366,15 @@ class ChatEngine:
                 st.allergies.append(Allergy(term, allergens.family_of(term), "ai_unconfirmed"))
         if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH"):
             st.goal = "tour"
-        conflicts = u.extra.get("conflicts")
-        if conflicts and st.pending is None:
-            self._ask_conflict(R, conflicts)
-        elif st.goal == "tour" and st.pending is None:
-            self._guided_continue(R)
+        for key, vals in (u.extra.get("conflicts") or {}).items():
+            if all(c.get("key") != key for c in st.conflicts):
+                st.conflicts.append({"key": key, "values": list(vals)})
+        if u.extra.get("ai_allergies") and st.pending is not None and st.pending.slot == "allergy_term":
+            gone = st.pending.pending_id
+            st.pending = None  # the model proposed a substance: confirm it instead of asking the open question again
+            R.blocks = [b for b in R.blocks if not (b["type"] == "clarify" and b.get("pending_id") == gone)]
+        if st.pending is None:
+            self._guided_continue(R, full=st.goal == "tour")
         changed = self._snapshot(st) != snap0
         if changed and R.intent not in PASSIVE:
             self._attach_understood(R)
@@ -380,21 +392,25 @@ class ChatEngine:
         R.tools.append("clarify")
 
     # one question per turn, in a fixed priority order; returns True when it asked something
-    def _guided_continue(self, R) -> bool:
+    def _guided_continue(self, R, full: bool = True) -> bool:
         st = R.state
         if st.pending is not None or R.plan_request:
             return False
-        if st.allergy_unresolved:
-            self._set_pending(st, "clarify_slot", [{"option_id": "allergy:" + k, "label": LABEL_OF[k]} for k in LABEL_OF], "allergy_term", {})
-            R.blocks.append(self._clarify_block(st, "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."))
-            R.tools.append("clarify")
-            return True
         if any(a.source == "ai_unconfirmed" for a in st.allergies):
             terms = [a.term for a in st.allergies if a.source == "ai_unconfirmed"]
             self._set_pending(st, "clarify_slot", [{"option_id": "allergy_ok", "label": "Đúng, mình dị ứng"}, {"option_id": "allergy_no", "label": "Không phải"}],
                               "allergy_confirm", {"terms": terms})
             R.blocks.append(self._clarify_block(st, "Mình hiểu bạn dị ứng với: " + ", ".join(terms) + ". Đúng không?"))
             R.tools.append("clarify")
+            return True
+        if st.allergy_unresolved:
+            self._set_pending(st, "clarify_slot", [{"option_id": "allergy:" + k, "label": LABEL_OF[k]} for k in LABEL_OF], "allergy_term", {})
+            R.blocks.append(self._clarify_block(st, "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."))
+            R.tools.append("clarify")
+            return True
+        if st.conflicts:
+            c = st.conflicts.pop(0)
+            self._ask_conflict(R, {c["key"]: tuple(c["values"][:2])})
             return True
         b = st.profile["budget"]
         if b.known() and not b.scope and (st.profile["party_size"].value or 2) >= 2:
@@ -403,6 +419,8 @@ class ChatEngine:
             R.blocks.append(self._clarify_block(st, f"{tools.fmt_vnd(b.value)} là ngân sách cho cả nhóm hay cho mỗi người?"))
             R.tools.append("clarify")
             return True
+        if not full:
+            return False
         if not st.profile["area"].known():
             self._ask_area(R, "REQUEST_PLAN", {})
             return True
@@ -727,7 +745,7 @@ class ChatEngine:
         if sp.avoid:
             self._ask_avoid(R, sp.avoid)
         if u.patch and any(k in u.patch for k in ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min",
-                                                   "vehicle", "audience", "max_leg_min")):
+                                                   "vehicle", "audience", "max_leg_min", "area", "location")):
             said = self._apply_patch(R, u.patch)
             if said:
                 R.blocks.append(text_b("Đã cập nhật: " + "; ".join(said) + "."))
@@ -919,6 +937,7 @@ class ChatEngine:
             terms = {fold_uncached(t) for t in pend.context.get("terms", [])}
             st.pending = None
             if opt == "allergy_ok":
+                st.allergy_unresolved = False
                 for a in st.allergies:
                     if a.source == "ai_unconfirmed" and fold_uncached(a.term) in terms:
                         a.source = "user_said"

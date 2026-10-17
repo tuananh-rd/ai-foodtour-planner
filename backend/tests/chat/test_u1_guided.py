@@ -157,3 +157,78 @@ class Slots(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class LLMMerge(unittest.TestCase):
+    """U2: the LLM may add what rules missed; it never records an allergy itself and never wins a numeric disagreement."""
+
+    TEXT = "Tour 2 quán quanh Hồ Gươm tối nay cho 2 người, mình dị ứng mấy thứ rang giòn"
+
+    def setUp(self):
+        self.eng, _ = engine()
+        self.calls = 0
+
+    def fake(self, data):
+        from app.chat.llm_understand import Outcome, sanitize
+
+        def call(text, compact, used):
+            self.calls += 1
+            return Outcome(sanitize(data), 1)
+        return call
+
+    def test_llm_only_allergy_is_unconfirmed_and_blocks_until_confirmed(self):
+        llm = self.fake({"intent": "SET_ALLERGY", "patch": {"allergy": ["đậu phộng"]}})
+        r = self.eng.handle(ChatState(), Preferences(), text=self.TEXT, llm=llm)
+        self.assertEqual(self.calls, 1)
+        self.assertEqual(r.trigger_reason, "uncovered")
+        self.assertEqual([a.source for a in r.state.allergies], ["ai_unconfirmed"])
+        self.assertEqual(r.state.pending.slot, "allergy_confirm")
+        self.assertEqual(len([b for b in r.blocks if b["type"] == "clarify"]), 1)
+        card = [b for b in r.blocks if b["type"] == "understood"][0]
+        self.assertEqual(card["allergies"][0]["status"], "ai_unconfirmed")
+        r = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": "allergy_ok"})
+        self.assertEqual([a.source for a in r.state.allergies], ["user_said"])
+        self.assertFalse(r.state.allergy_unresolved)
+        self.assertIsNone(r.plan_request)
+
+    def test_declined_ai_allergy_is_removed_and_asks_for_a_concrete_one(self):
+        llm = self.fake({"intent": "SET_ALLERGY", "patch": {"allergy": ["tôm"]}})
+        r = self.eng.handle(ChatState(), Preferences(), text=self.TEXT, llm=llm)
+        r = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": "allergy_no"})
+        self.assertEqual(r.state.allergies, [])
+        self.assertTrue(r.state.allergy_unresolved)  # the cue is still unresolved: planning stays blocked
+
+    def test_numeric_disagreement_is_asked_not_picked(self):
+        llm = self.fake({"intent": "SET_ALLERGY", "patch": {"allergy": ["lạc"], "party_size": 4}})
+        r = self.eng.handle(ChatState(), Preferences(), text=self.TEXT, llm=llm)
+        self.assertEqual(r.trigger_reason, "conflict")
+        self.assertEqual(r.state.pending.slot, "allergy_confirm")  # safety first; the disagreement is queued, not lost
+        self.assertEqual(r.state.conflicts[0]["key"], "party_size")
+        self.assertFalse(r.state.profile["party_size"].known())
+        r = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": "allergy_ok"})
+        self.assertEqual(r.state.pending.slot, "conflict")
+        r = self.eng.handle(r.state, r.prefs, action={"type": "pick_option", "option_id": "conflict:0"})
+        self.assertEqual(r.state.profile["party_size"].value, 2)
+
+    def test_llm_fills_a_slot_rules_missed_and_disagreement_is_asked(self):
+        llm = self.fake({"intent": "UPDATE_PROFILE", "patch": {"interests": ["bún chả"], "stops": 5}})
+        r = self.eng.handle(ChatState(), Preferences(), text=self.TEXT, llm=llm)
+        self.assertIn("bún chả", r.state.profile["tastes"].value or [])
+        self.assertNotEqual(r.state.profile["stops"].value, 5)
+        keys = [c["key"] for c in r.state.conflicts] + ([r.state.pending.context.get("key")] if r.state.pending else [])
+        self.assertIn("stops", keys)
+
+    def test_sanitize_new_fields(self):
+        from app.chat.llm_understand import sanitize
+        out = sanitize({"intent": "UPDATE_PROFILE", "patch": {"stops": 9, "day_part": "evening", "interests": ["phở", "<b>x</b>", "a b c d e"]}})
+        self.assertNotIn("stops", out["patch"])
+        self.assertEqual(out["patch"]["day_part"], "evening")
+        items = out["patch"]["interests"]
+        self.assertIn("phở", items)
+        self.assertTrue(all("<" not in i and len(i.split()) <= 3 for i in items), items)
+        self.assertEqual(sanitize({"intent": "UPDATE_PROFILE", "patch": {"day_part": "midnight"}})["patch"], {})
+
+    def test_no_llm_call_when_rules_cover_everything(self):
+        r = self.eng.handle(ChatState(), Preferences(), text="Tour 3 quán quanh Hồ Gươm tối nay 120 phút cho 2 người, mình thích phở", llm=self.fake({"intent": "UPDATE_PROFILE"}))
+        self.assertEqual(self.calls, 0)
+        self.assertIsNone(r.trigger_reason)
