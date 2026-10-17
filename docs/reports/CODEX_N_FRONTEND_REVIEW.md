@@ -20,4 +20,6 @@ These refer to the author's in-progress working tree, not a final commit; final 
 
 ## Final acceptance evidence — pending
 
+Independent `tools/check_ngonngon_render.cjs` probes (React SSR via existing Next SWC, synthetic only): unmerged baseline UI at coordinator failed 8/11 checks; author checkpoint `502972c` reviewed read-only through `NGONNGON_FRONTEND_DIR` passes 11/11. This covers empty-profile defaults, null arrival/ETA, a legitimate zero-duration inter-stop leg, warning retention, conditional label and 3/4/5-stop HTTPS walking URLs without keys. It does not cover root shell metric/header fallbacks, interaction/hydration, waypoint handling in Google, modal focus or 409; NFE findings stay open until their specific evidence is recorded. No private data or outbound request is used by this probe.
+
 Record author commits, Codex diff review result, integrated commit, contract/build/backend results, desktop/mobile browser flows, screenshots and limitations here after real verification. A running process, input acceptance or worker_done alone does not close this review. Actual screen-reader speech, real Google navigation and real-world venue facts require distinct evidence; accessibility DOM/CDP checks are not equivalent to all of them.
