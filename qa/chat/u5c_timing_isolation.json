@@ -1,0 +1,38 @@
+[
+  {
+    "chars": 250,
+    "variant": "current",
+    "median_ms": 12.267,
+    "max_ms": 26.2068
+  },
+  {
+    "chars": 250,
+    "variant": "without_absent_regex",
+    "median_ms": 1.9733,
+    "max_ms": 2.1193
+  },
+  {
+    "chars": 500,
+    "variant": "current",
+    "median_ms": 86.0457,
+    "max_ms": 103.1404
+  },
+  {
+    "chars": 500,
+    "variant": "without_absent_regex",
+    "median_ms": 3.5454,
+    "max_ms": 3.7417
+  },
+  {
+    "chars": 1000,
+    "variant": "current",
+    "median_ms": 708.0188,
+    "max_ms": 720.3117
+  },
+  {
+    "chars": 1000,
+    "variant": "without_absent_regex",
+    "median_ms": 6.4663,
+    "max_ms": 6.4736
+  }
+]

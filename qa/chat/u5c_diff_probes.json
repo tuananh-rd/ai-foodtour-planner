@@ -1,0 +1,805 @@
+[
+  {
+    "text": "Tôi dị ứng tôm nhưng bạn tôi không đi cùng",
+    "trace": [
+      {
+        "input": {
+          "text": "Tôi dị ứng tôm nhưng bạn tôi không đi cùng"
+        },
+        "intent": "GREET_OR_SMALLTALK",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Ok, mình không tính dị ứng của người không đi cùng. Nếu bạn hoặc người đi cùng có dị ứng, hãy nói để mình lưu ý."
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "intent": "REQUEST_PLAN",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+          },
+          {
+            "type": "confirm_summary",
+            "items": [
+              {
+                "id": "area",
+                "label": "Điểm xuất phát",
+                "value": "Hoàn Kiếm",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "start_time",
+                "label": "Bắt đầu",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "end_time",
+                "label": "Kết thúc trước",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "party_size",
+                "label": "Số người",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "vehicle",
+                "label": "Phương tiện",
+                "value": "đi bộ",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "budget",
+                "label": "Ngân sách",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "tastes",
+                "label": "Khẩu vị",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "allergies",
+                "label": "Dị ứng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "max_leg_min",
+                "label": "Đi bộ tối đa mỗi chặng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              }
+            ],
+            "shortlist": [
+              {
+                "venue_id": "CHT-001",
+                "name": "[SYNTHETIC] Bún Thử 1",
+                "status": "considering"
+              }
+            ],
+            "missing": [],
+            "warnings": [
+              {
+                "code": "price_not_per_person",
+                "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+              },
+              {
+                "code": "hours_unknown",
+                "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "intent": "CONFIRM_YES",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        },
+        "blocks": []
+      }
+    ]
+  },
+  {
+    "text": "Mình dị ứng sữa nhưng anh ấy không tham gia",
+    "trace": [
+      {
+        "input": {
+          "text": "Mình dị ứng sữa nhưng anh ấy không tham gia"
+        },
+        "intent": "GREET_OR_SMALLTALK",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Ok, mình không tính dị ứng của người không đi cùng. Nếu bạn hoặc người đi cùng có dị ứng, hãy nói để mình lưu ý."
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "intent": "REQUEST_PLAN",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+          },
+          {
+            "type": "confirm_summary",
+            "items": [
+              {
+                "id": "area",
+                "label": "Điểm xuất phát",
+                "value": "Hoàn Kiếm",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "start_time",
+                "label": "Bắt đầu",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "end_time",
+                "label": "Kết thúc trước",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "party_size",
+                "label": "Số người",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "vehicle",
+                "label": "Phương tiện",
+                "value": "đi bộ",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "budget",
+                "label": "Ngân sách",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "tastes",
+                "label": "Khẩu vị",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "allergies",
+                "label": "Dị ứng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "max_leg_min",
+                "label": "Đi bộ tối đa mỗi chặng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              }
+            ],
+            "shortlist": [
+              {
+                "venue_id": "CHT-001",
+                "name": "[SYNTHETIC] Bún Thử 1",
+                "status": "considering"
+              }
+            ],
+            "missing": [],
+            "warnings": [
+              {
+                "code": "price_not_per_person",
+                "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+              },
+              {
+                "code": "hours_unknown",
+                "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "intent": "CONFIRM_YES",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        },
+        "blocks": []
+      }
+    ]
+  },
+  {
+    "text": "Giả sử bạn dị ứng trứng còn tôi dị ứng lạc thật",
+    "trace": [
+      {
+        "input": {
+          "text": "Giả sử bạn dị ứng trứng còn tôi dị ứng lạc thật"
+        },
+        "intent": "AMBIGUOUS_ACK",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "clarify",
+            "pending_id": "p1",
+            "question": "Bạn muốn lập lịch trình với các quán đã chọn hay tìm thêm quán?",
+            "options": [
+              {
+                "option_id": "plan",
+                "label": "Lập lịch trình"
+              },
+              {
+                "option_id": "add_more",
+                "label": "Tìm thêm quán"
+              }
+            ],
+            "slot": null,
+            "free_text": true
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "intent": "REQUEST_PLAN",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+          },
+          {
+            "type": "confirm_summary",
+            "items": [
+              {
+                "id": "area",
+                "label": "Điểm xuất phát",
+                "value": "Hoàn Kiếm",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "start_time",
+                "label": "Bắt đầu",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "end_time",
+                "label": "Kết thúc trước",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "party_size",
+                "label": "Số người",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "vehicle",
+                "label": "Phương tiện",
+                "value": "đi bộ",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "budget",
+                "label": "Ngân sách",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "tastes",
+                "label": "Khẩu vị",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "allergies",
+                "label": "Dị ứng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "max_leg_min",
+                "label": "Đi bộ tối đa mỗi chặng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              }
+            ],
+            "shortlist": [
+              {
+                "venue_id": "CHT-001",
+                "name": "[SYNTHETIC] Bún Thử 1",
+                "status": "considering"
+              }
+            ],
+            "missing": [],
+            "warnings": [
+              {
+                "code": "price_not_per_person",
+                "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+              },
+              {
+                "code": "hours_unknown",
+                "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "intent": "CONFIRM_YES",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        },
+        "blocks": []
+      }
+    ]
+  },
+  {
+    "text": "Mình dị ứng lạc nhưng tôm thì không dị ứng",
+    "trace": [
+      {
+        "input": {
+          "text": "Mình dị ứng lạc nhưng tôm thì không dị ứng"
+        },
+        "intent": "SET_ALLERGY",
+        "allergies": [
+          "lạc"
+        ],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "notice",
+            "level": "safety",
+            "code": "allergy_unknown",
+            "text": "Đã ghi nhận dị ứng: lạc. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+          },
+          {
+            "type": "understood",
+            "items": [
+              {
+                "id": "area",
+                "label": "Khu vực",
+                "value": "Hoàn Kiếm",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "duration",
+                "label": "Tổng thời gian",
+                "value": "180 phút (cả tour)",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "time",
+                "label": "Bắt đầu lúc",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "budget",
+                "label": "Ngân sách",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              }
+            ],
+            "allergies": [
+              {
+                "term": "lạc",
+                "family": "peanut",
+                "status": "user"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "intent": "REQUEST_PLAN",
+        "allergies": [
+          "lạc"
+        ],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+          },
+          {
+            "type": "confirm_summary",
+            "items": [
+              {
+                "id": "area",
+                "label": "Điểm xuất phát",
+                "value": "Hoàn Kiếm",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "start_time",
+                "label": "Bắt đầu",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "end_time",
+                "label": "Kết thúc trước",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "party_size",
+                "label": "Số người",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "vehicle",
+                "label": "Phương tiện",
+                "value": "đi bộ",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "budget",
+                "label": "Ngân sách",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "tastes",
+                "label": "Khẩu vị",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "allergies",
+                "label": "Dị ứng",
+                "value": "lạc",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "max_leg_min",
+                "label": "Đi bộ tối đa mỗi chặng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              }
+            ],
+            "shortlist": [
+              {
+                "venue_id": "CHT-001",
+                "name": "[SYNTHETIC] Bún Thử 1",
+                "status": "considering"
+              }
+            ],
+            "missing": [],
+            "warnings": [
+              {
+                "code": "allergy_unknown",
+                "text": "Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn."
+              },
+              {
+                "code": "price_not_per_person",
+                "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+              },
+              {
+                "code": "hours_unknown",
+                "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "intent": "CONFIRM_YES",
+        "allergies": [
+          "lạc"
+        ],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        },
+        "blocks": []
+      }
+    ]
+  },
+  {
+    "text": "Tôi kiêng mè và sữa",
+    "trace": [
+      {
+        "input": {
+          "text": "Tôi kiêng mè và sữa"
+        },
+        "intent": "SET_AVOID",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "notice",
+            "level": "info",
+            "code": "llm_unavailable",
+            "text": "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."
+          },
+          {
+            "type": "text",
+            "text": "Mình chưa thấy mè trong dữ liệu quán nên chưa lọc được."
+          },
+          {
+            "type": "clarify",
+            "pending_id": "p1",
+            "question": "Bạn không ăn sữa: đây là dị ứng hay chỉ là không thích?",
+            "options": [
+              {
+                "option_id": "allergy",
+                "label": "Dị ứng"
+              },
+              {
+                "option_id": "dislike",
+                "label": "Chỉ là không thích"
+              }
+            ],
+            "slot": null,
+            "free_text": true
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "intent": "REQUEST_PLAN",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": null,
+        "blocks": [
+          {
+            "type": "text",
+            "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
+          },
+          {
+            "type": "confirm_summary",
+            "items": [
+              {
+                "id": "area",
+                "label": "Điểm xuất phát",
+                "value": "Hoàn Kiếm",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "start_time",
+                "label": "Bắt đầu",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "end_time",
+                "label": "Kết thúc trước",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "party_size",
+                "label": "Số người",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "vehicle",
+                "label": "Phương tiện",
+                "value": "đi bộ",
+                "status": "user",
+                "editable": true
+              },
+              {
+                "id": "budget",
+                "label": "Ngân sách",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "tastes",
+                "label": "Khẩu vị",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "allergies",
+                "label": "Dị ứng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              },
+              {
+                "id": "max_leg_min",
+                "label": "Đi bộ tối đa mỗi chặng",
+                "value": null,
+                "status": "missing",
+                "editable": true
+              }
+            ],
+            "shortlist": [
+              {
+                "venue_id": "CHT-001",
+                "name": "[SYNTHETIC] Bún Thử 1",
+                "status": "considering"
+              }
+            ],
+            "missing": [],
+            "warnings": [
+              {
+                "code": "price_not_per_person",
+                "text": "Giá quán là khoảng giá của quán, không phải giá theo người; mình không khẳng định tổng chi phí hay ngân sách."
+              },
+              {
+                "code": "hours_unknown",
+                "text": "Giờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở."
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "intent": "CONFIRM_YES",
+        "allergies": [],
+        "unresolved": false,
+        "pending": null,
+        "plan_request": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        },
+        "blocks": []
+      }
+    ]
+  }
+]
