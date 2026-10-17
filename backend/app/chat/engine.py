@@ -1279,6 +1279,10 @@ class ChatEngine:
             return
         self._present_summary(R)
 
+    def obligation_open(self, st) -> bool:
+        """Public: True while an allergy/budget-scope obligation forbids planning (the API refuses a plan_request then)."""
+        return self._open_obligation(st)
+
     def _open_obligation(self, st) -> bool:
         """Safety/scope questions that must be answered before any plan, whatever pending replaced them (contract v1.9 rule 1)."""
         if not self.guided:
