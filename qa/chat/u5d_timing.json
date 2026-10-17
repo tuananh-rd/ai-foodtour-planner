@@ -1,0 +1,8203 @@
+{
+  "method": "All captured runtime and module-level regexes; finditer forces full scan; ten adversarial families per length; superset of new regexes",
+  "regexes": [
+    {
+      "pattern": "^(?:Quận|Huyện)\\s+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.008,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.001,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0012,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0009,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "^(?:[Ss]ố\\s+)?\\d+[A-Za-z0-9/\\-]*\\s+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0015,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0009,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0016,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0009,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "[A-Za-zÀ-ỹ0-9]",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0502,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1269,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.2939,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3802,
+          "worst_prefix": "a"
+        }
+      ]
+    },
+    {
+      "pattern": "[\\\"“”«»]",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.002,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0025,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0048,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0076,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "như thể|nhu the la|giả sử|gia su|giả dụ|gia du|giả như|gia nhu|giá như|ví như|lỡ như|nhỡ như|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\\bvd\\b|nếu như|🤣|😂|haha|hehe|=\\)\\)|:\\)\\)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0308,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0617,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1281,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.2439,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bnếu\\b[^.?!]{0,80}\\b(?:thì sao|thì có sao|thì thế nào|thì có được không|có được không)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0456,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0909,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1872,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.374,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bnếu\\b[^.?!]{0,100}\\bthì\\b[^.?!]{0,60}(?:\\?|\\bsao\\b|\\bgì\\b|\\bnào\\b|\\bthế nào\\b)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.042,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0889,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1818,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3701,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:ở nhà|không đi|không tham gia|không có mặt|vắng mặt|không cùng đi|đi vắng|không đi cùng)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0079,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0147,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0278,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:,\\s*)?(?:hỏi\\s+)?(?:trước khi|truoc khi)\\s+\\w+(?:\\s+nha|\\s+nhé|\\s+nhe)?",
+      "flags": 2,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0195,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0303,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0544,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1017,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "[,;]",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0018,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0025,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0044,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0076,
+          "worst_prefix": "a"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bsau\\s*$",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.008,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.015,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0444,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0591,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:khong|chua|dung|dung vo)\\s+can\\s+(?:phai\\s+)?(?:tim|kiem)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0574,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:bo qua|ignore|disregard|system|prompt|reveal|jailbreak)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0575,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "api[ _-]?key|chi dan he thong|prompt he thong|system prompt|mat khau|\\btoken\\b.*\\bin\\b|\\bin\\b.*(?:key|chi dan)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0189,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0347,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0682,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1421,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\ban toan (?:cho|voi)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0072,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.014,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0289,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "[^\\w\\s-]",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0379,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0736,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1447,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3455,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "không phải\\s+(.+?)\\s+mà\\s+(?:là\\s+)?(.+?)(?:[,.;!?]|$)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.001,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0014,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0017,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0027,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![A-Za-zÀ-ỹ])([A-E])(?![A-Za-zÀ-ỹ])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0066,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0117,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0232,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0445,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:quan|cai|diem(?:\\s+dung)?|cho)\\s+thu\\s+(nhat|hai|ba|bon|tu|nam|\\d{1,2})\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0031,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0048,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0089,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0162,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:^|\\s)(?:thu)\\s+(nhat|hai|ba|bon|nam|\\d{1,2})\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0148,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0288,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0633,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:quan|cai|diem)\\s+(?:dau tien|dau)\\b|\\bcai (?:dau|nhat)\\b|\\bdau tien\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0188,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0369,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0746,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1489,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?:quan|cai|diem)\\s+(?:cuoi cung|cuoi|sau)\\b|\\bcuoi cung\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0117,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.023,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0459,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0924,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:tat ca|het danh sach|toan bo|bo het)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0287,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0556,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b([01]?\\d|2[0-3])\\s*[:h]\\s*([0-5]\\d)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0109,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.021,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0403,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0791,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bchieu\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0298,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0557,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\btoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0287,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0573,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?:tu|luc|bat dau|di)?\\s*(\\d{1,2})\\s*(?:gio|h)\\s*(\\d{2})?\\s*(?:den|toi|-)\\s*(\\d{1,2})\\s*(?:gio|h)\\s*(\\d{2})?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.5223,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 1.9296,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 7.7245,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 30.4915,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:luc|bat dau|xuat phat|di luc|tu)\\s*(\\d{1,2})\\s*(?:gio|h)\\s*(\\d{2})?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.003,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0047,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.008,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0157,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:ket thuc|xong|ve)\\s*(?:truoc|luc)?\\s*(\\d{1,2})\\s*(?:gio|h)\\s*(\\d{2})?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.002,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0032,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0056,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.011,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "(\\d{1,2})\\s*h\\s*(chieu|toi|sang)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0117,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0214,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0427,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0843,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d:])([01]?\\d|2[0-3]):([0-5]\\d)(?![\\d:])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0139,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0276,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0533,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1092,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bdi bo\\b|\\bbo bo\\b|\\bdi chan\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.029,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0554,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "xe may|\\bxe om\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0096,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0191,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0372,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0792,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bo to\\b|\\boto\\b|xe hoi|\\bxe 4 cho\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0244,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0501,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0958,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1894,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bgrab\\b|\\btaxi\\b|\\bxanh sm\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0235,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.015,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0291,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-zà-ỹ])be(?![a-zà-ỹ])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0093,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0186,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0349,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "khong\\s+(?:muon\\s+)?(?:di bo\\s+)?(?:qua|hon)\\s+(\\d{1,2})\\s*phut",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0011,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0011,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0017,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0027,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:tu|luc|bat dau|xuat phat|di luc|ket thuc|xong|ve)?\\s*(?:truoc\\s*)?\\d{1,2}\\s*(?:gio|h)\\s*\\d{0,2}(?:\\s*(?:den|toi|-)\\s*\\d{1,2}\\s*(?:gio|h)\\s*\\d{0,2})?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.951,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 3.9743,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 15.1808,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 58.8511,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "khong\\s+(?:muon\\s+)?(?:di bo\\s+)?(?:qua|hon)\\s+\\d{1,2}\\s*phut(?:\\s+(?:moi|1)\\s+(?:chang|quan))?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0052,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0012,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.002,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.003,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:moi chang|giua (?:cac|hai|2) quan|giua cac diem)[^.;]{0,14}?(?<!\\d)(\\d{1,2})\\s*phut",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0045,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0064,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.009,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0194,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<!\\d)(\\d{1,2})\\s*phut\\s*(?:moi chang|giua (?:cac|hai|2) quan)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0517,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0183,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0608,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0691,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d.,])(\\d{1,2}|mot|hai|ba|bon|nam|sau)\\s*(?:tieng|gio dong ho|h dong ho)(?:\\s*(ruoi))?(?!\\s*(?:\\d|sang|chieu|toi|trua))",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0135,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0289,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0511,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1511,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d.,])(\\d{2,3})\\s*p\\b(?!\\w)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0097,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0188,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0383,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0734,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d.,])(\\d+) (\\d) (?:trieu|tr)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.009,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0189,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0352,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0683,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d.,])(\\d+) (?:trieu|tr) (\\d{3}) (?:nghin|ngan|k)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0091,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0181,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0361,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0712,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(mot|hai|ba|bon|nam) trieu ruoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0695,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<=[.!?;])\\s+|\\n+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0087,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0157,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0344,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0598,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bnua trieu\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0564,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(\\d+(?:[.,]\\d+)?)\\s*(?:trieu|tr)\\s*ruoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0431,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0848,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1711,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3302,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(-?)(\\d+(?:[.,]\\d+)?)\\s*(trieu|tr\\b|nghin|ngan|k\\b)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0595,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1126,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.2283,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.4492,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(\\d{1,3}(?:[.,]\\d{3})+|\\d{4,})\\s*(d\\b|dong|vnd)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0337,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0663,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1307,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.2603,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:luc|vao|tu|bat dau|xuat phat)\\s*(\\d{1,2})(?::|\\s*gio\\s*|h)(\\d{2})?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0029,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0047,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0081,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0164,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(\\d+(?:[.,]\\d+)?)\\s*(?:gio|tieng)(?:\\s*(\\d{1,2})\\s*(?:phut|p)\\b)?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0518,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1018,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.2127,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.4334,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(\\d+)\\s*phut",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.019,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0375,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0755,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1442,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(\\d+)\\s*(?:quan|diem|cho)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0145,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0266,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0559,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1067,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:nhom|di|cho|ban|gia dinh)\\s*(\\d+)\\s*nguoi",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0042,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0067,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0117,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0243,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:doi thanh|doi sang|chinh thanh|chinh lai|con lai|con|co|la|gom|toi|minh|tui)\\s*(\\d+)\\s*nguoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.006,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0106,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0204,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0391,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khuya|dem khuya|an dem)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0289,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0758,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(an sang|bua sang|buoi sang)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0072,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0294,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0629,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(an trua|bua trua|buoi trua)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0291,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(buoi xe|bua xe|an chieu)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(an toi|bua toi|buoi toi)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0118,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0282,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0574,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|chang|chu|dung)\\s+(?:co |di voi |dan |phai )?(?:gia dinh|tre em|con nho|bo me|ong ba|ban be|nhom ban|dong nghiep|hop nhom)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0281,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0574,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(mot minh|di mot minh|di le)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0382,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0576,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(gia dinh|tre em|con nho|bo me|ong ba)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0148,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0296,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(ban be|nhom ban|dong nghiep|hop nhom)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.034,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "chac chan|nghiem ngat|da xac minh",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0038,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0062,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0114,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.021,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "kham pha|tham khao",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0028,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.005,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0081,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0157,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?bun\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0555,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?pho\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?banh\\ mi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0288,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0555,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?banh\\ cuon\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0286,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0555,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?che\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0576,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?nem\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0294,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0596,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?xoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0277,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0577,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?ca\\ phe\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0141,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0289,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0559,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?lau\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.028,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0588,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?oc\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.028,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0621,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?cha\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0279,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0618,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?kem\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?com\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0569,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?chao\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0286,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0549,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?mien\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0281,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0649,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?mi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0388,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0545,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?hai\\ san\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0556,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?tra\\ sua\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.015,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0555,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?an\\ vat\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0569,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?banh\\ tam\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0566,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?banh\\ uot\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0573,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(khong|tranh|tru|bo)\\s+(?:an\\s+|muon\\s+)?do\\ ngot\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0566,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbun\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0149,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0279,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0557,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bpho\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0152,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0619,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbanh\\ mi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0575,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbanh\\ cuon\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0282,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0559,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bche\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0079,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0166,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0286,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.056,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bnem\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0576,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bxoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0347,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0564,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bca\\ phe\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0148,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\blau\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0554,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\boc\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.01,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0292,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0564,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bcha\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0288,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0569,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bkem\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0335,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0577,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bcom\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0286,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0286,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.058,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bchao\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0282,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0576,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bmien\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bmi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0557,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bhai\\ san\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0091,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0141,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0281,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0559,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\btra\\ sua\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0151,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0282,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0556,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\ban\\ vat\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.073,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbanh\\ tam\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0151,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0293,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0593,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbanh\\ uot\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0148,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0293,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0603,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bdo\\ ngot\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0149,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0293,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0582,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "tre nho|em be|tre con|con nho|tre em",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0046,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0073,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0134,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0279,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:mot|1) minh\\b|\\bdi le\\b|\\bsolo\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0084,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0154,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0295,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0602,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:it|bot|khong)\\s+(?:ngot|cay|man|dau|duong|beo)\\b|\\ban nhat\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.008,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0155,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0297,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0578,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b\\d{1,2}\\s*(?:h|giờ|gio)\\s*(?:\\d{2}\\s*)?tối\\b|\\b\\d{1,2}\\s*(?:h|giờ|gio)\\s*(?:\\d{2}\\s*)?toi\\b|\\bgiờ tối\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0131,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0238,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0464,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.09,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b\\d{1,2}\\s*(?:h|giờ|gio)\\s*(?:\\d{2}\\s*)?(?:chiều|chieu)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0089,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0167,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0332,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0663,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b\\d{1,2}\\s*(?:h|giờ|gio)\\s*(?:\\d{2}\\s*)?(?:sáng|sang)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0122,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0169,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0339,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0652,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\btối nay\\b|\\bbuổi tối\\b|\\btối mai\\b|\\btối (?:thứ|chủ|cuối)|\\bđêm nay\\b|\\btoi nay\\b|\\bbuoi toi\\b|\\btoi mai\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.02,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0155,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0298,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0576,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])phở(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0085,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0272,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0534,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])bún\\ chả(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0138,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0268,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0531,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])bún(?!\\s+(?:chả|cha))(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0172,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0269,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.054,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])bánh\\ cuốn(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0138,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0267,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0529,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])bánh\\ mì(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0121,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0139,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0277,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0535,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])xôi(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0273,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0533,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])nem(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0181,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0292,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0545,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])chả\\ giò(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0273,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0566,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])ốc(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0081,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0209,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0304,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0641,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])lẩu(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0091,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0181,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0331,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0737,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])chè(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0099,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.019,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0363,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1204,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])kem(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0179,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0434,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0694,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1347,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])cà\\ phê(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0123,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0246,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0446,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1314,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\w])cơm(?![\\w])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0195,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0443,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0668,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0869,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bda (?:goi|hoi|lien he)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.012,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0178,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0392,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0657,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])sa\\ pa(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0064,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.011,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0225,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0401,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])sapa(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0058,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0113,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0213,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0394,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])da\\ nang(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0087,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0102,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0197,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0388,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ho\\ chi\\ minh(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0098,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0186,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0362,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])sai\\ gon(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0729,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0109,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0186,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.037,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hue(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0364,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0188,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0378,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hai\\ phong(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.01,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0189,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0397,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])nha\\ trang(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0107,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0191,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0467,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])da\\ lat(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0055,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0099,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0192,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0378,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ha\\ long(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0101,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0189,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0391,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])quang\\ ninh(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0102,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0245,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0393,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])can\\ tho(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0057,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0105,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0205,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0756,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])vung\\ tau(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.006,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0119,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0213,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0473,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])phu\\ quoc(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0065,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0125,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0234,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0475,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hoi\\ an(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.007,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0129,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0322,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0517,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])tokyo(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0181,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0268,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0682,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])seoul(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0069,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.013,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0248,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0497,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])bangkok(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0066,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.012,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0244,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0441,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])paris(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0063,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0122,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0216,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0431,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])london(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0062,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0121,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0229,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0419,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bchu khong phai\\b.*$",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0156,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0304,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0588,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hang\\ bun(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0097,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0186,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0549,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hang\\ gai(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0096,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0182,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0374,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])lo\\ su(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0052,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0099,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0195,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0372,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ta\\ hien(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0052,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0099,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0189,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0356,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])doi\\ can(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0097,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0183,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0407,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])nguyen\\ thai\\ hoc(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0052,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.01,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.019,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0362,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hang\\ bot(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0052,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0099,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0183,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0357,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])pham\\ van\\ dong(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.005,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0092,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0179,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0389,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])xuan\\ thuy(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0094,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0179,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0363,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])tran\\ thai\\ tong(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0182,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0371,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])tay\\ son(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0102,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0187,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0382,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])kham\\ thien(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0096,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0187,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0362,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])lang\\ ha(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0099,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0181,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0374,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])pho\\ hue(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0258,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0182,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0409,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])minh\\ khai(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.005,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0094,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0181,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0371,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])bach\\ mai(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0092,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0196,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0374,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])lac\\ long\\ quan(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0096,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0177,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0407,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])xuan\\ dieu(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0049,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0096,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0181,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0372,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])quang\\ an(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.01,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.018,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.04,
+          "worst_prefix": "a"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ho\\ guom(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0092,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0177,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0415,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ho\\ hoan\\ kiem(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.005,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0097,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0186,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0357,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])pho\\ co(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.01,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0189,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0383,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])nha\\ tho\\ lon(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0101,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0181,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.041,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ho\\ tay(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0097,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0186,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0364,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])van\\ mieu(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0095,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0187,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0364,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])lang\\ bac(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.005,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.01,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.02,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0522,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hoan\\ kiem(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0094,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0176,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0382,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])ba\\ dinh(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0052,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0098,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0184,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0367,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])cau\\ giay(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0096,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0188,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0392,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])dong\\ da(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0097,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.019,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0379,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])hai\\ ba\\ trung(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0051,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0097,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0185,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0357,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![a-z0-9])tay\\ ho(?![a-z0-9])",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0054,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0096,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0188,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0371,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "thoi tiet|troi (?:co )?(?:mua|nang|lanh)|bao nhieu do|may do\\b|\\bmua khong\\b|co mua",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0109,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0217,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0462,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0924,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bmai troi\\b|\\bhom nay bao nhieu\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0141,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0287,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0574,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bpay (?:the )?bill\\b|\\btra tien\\b|\\bdat ban\\b|\\bbook (?:a )?table\\b|\\breservation\\b|\\bdat grab\\b|\\bdat xe\\b|thanh toan|luu tour|chia se|gui link",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0555,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1079,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.2154,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.4459,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "bai toan|viet tho|lap trinh|dich giup|lop \\d",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0026,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0045,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.007,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0133,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:khong|ko|chua|thoi|that khong)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0039,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0065,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0122,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0235,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "chi dang nghi|dang soan|\\bde hoi lai\\b|chua quyet|chua thong nhat|chua dong y|con (?:dang )?can nhac|doi chut|nhan duoc roi|cho minh .{0,12}(?:suy nghi|xem lai|doc)|mot phut|doc ky|\\bneu\\b.*\\bthi sao\\b|\\bde (?:em|minh|tui|toi) nghi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0555,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1114,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.2233,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "xin (?:đợi|doi)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0011,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0011,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0016,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0025,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(.)\\1+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0106,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0191,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0768,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0764,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:tao|lap|xep|sap|len|ghep)\\b(?:\\s+\\w+){0,3}?\\s+(?:lich|tour|lich trinh|hanh trinh|ke hoach)\\b|\\bcho minh lich\\b|\\blap tour\\b|\\btao tour\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0093,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0195,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0327,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0664,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bgan\\b|xa|khoang cach|it phai di bo|it di bo|di bo it",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0118,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0221,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0439,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.089,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bre\\b|\\bmat\\b|gia\\b|gia ca|bao nhieu tien|dat",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0184,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0349,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0733,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1334,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "danh gia|diem\\b|ngon hon|tot hon|sao\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0037,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0063,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0109,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0222,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "gia dinh|nhom ban|ban be|tre em|doi tac",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0042,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0071,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0129,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0238,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "bua (?:sang|trua|toi|xe)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0009,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0011,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0016,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0027,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "o to|oto|do xe hoi|cho dau",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0031,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.009,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0159,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "ngoai troi",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0011,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0013,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0018,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.003,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "suc chua|ngoi duoc dong|dong nguoi hon|bao nhieu cho|rong",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0033,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0058,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0108,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0207,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "nhanh hon|cho lau|thoi gian cho|len mon",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0034,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0059,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0123,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.022,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "mo cua|gio mo|dong cua|mo muon|gio hoat dong",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0035,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0063,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0115,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0221,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "yen tinh|on ao|im",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0027,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.004,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0078,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0133,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "it dong|dong khach|dong duc|vang",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0027,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0047,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0079,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.016,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "nguoi lon tuoi|nguoi gia|ong ba|cao tuoi",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0036,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0062,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0108,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0332,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:khoi|dung|khong can)\\s+so sanh\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0277,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0608,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "so sanh|\\bcompare\\b|\\bdoi chieu\\b|\\bso (?:ve|theo|voi)\\b|\\bdat\\b.*\\bcanh\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0297,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0605,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1203,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.2814,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<!co )\\bquan nao\\b.*\\b(?:gan|re|mat|tot|ngon|nhanh|yen|dong|it|nhieu)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0091,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0176,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0358,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0699,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bvao (?:danh sach|tour|list)\\b|\\bcho\\b.*\\bvao\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0072,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0288,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bkhong lay\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0071,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0191,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0282,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0552,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "nhat dinh phai co|luon giu|phai co trong tour|luu lai",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0028,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0046,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0071,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0155,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbot\\b.*\\bdiem dung\\b|\\bbot mot diem\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0141,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0282,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0555,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bpho co\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.03,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0288,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0562,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bthay\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.056,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bdung\\b(?!\\s+(?:roi|vay|nhe|r)\\b)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0564,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bvao (?:danh sach|tour|list)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0553,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbo sung\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0149,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0299,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0575,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "mo cua|gio mo|dong cua|gio dong|may gio|what time|\\bgia\\b|dia chi|co cho dau|chi tiet|thong tin|menu|thuc don|ban gi|co ban\\b|an toan cho|bao nhieu|payment|thanh toan|tien mat|may i ask|\\bwhere\\b|o dau|\\bco (?:wifi|may lanh|dieu hoa|ban ngoai troi|phong rieng|cho do)\\b|\\bco \\w+(?: \\w+)? khong\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0424,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0796,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1642,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3308,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "^(?:xin chao|chao|hello|hi|hey|alo)\\b|\\bcam on\\b|\\btam biet\\b|\\bthanks\\b|\\bthank you\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0325,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0691,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1258,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3037,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\ban gi\\b|\\bmon gi\\b|\\bmon nao\\b|goi y mon|nen an|dang thu|\\bla gi\\b|co mon nao|an vat gi|mon (?:mat|am|nhe)|an sang|an trua|an toi|muon an gi|an gi do|di an dau|an dau\\b|y tuong (?:mon|an)|mon an|dac san|\\bke (?:cho|mon|ve)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0426,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0951,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.167,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3349,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bnong\\b|\\bmat\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0287,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0579,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\blanh\\b|\\bam\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0079,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0149,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0279,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0582,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "nhe nhe|\\bnhe\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0097,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0189,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0376,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0757,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bsang\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0124,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0281,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0588,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\btrua\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0566,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bsearch\\b|\\bfind\\b|\\btim\\b|(?<!hoan )\\bkiem\\b|\\bquan\\b|goi y quan|\\bco quan\\b|\\bchi\\b.*\\bnao\\b|cho an|chu nao|\\bxem them\\b|quan nao ngon",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0695,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1208,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.2539,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.5001,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "gan day|quanh day|\\bgan toi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.01,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0197,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.039,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0774,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:trong|ban kinh|cach)\\s+(\\d+)\\s*(m|km|met)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0035,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0055,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0104,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0199,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:duoi|toi da|khong qua)\\s+(\\d+)\\s*(k|nghin|ngan|tr|trieu)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0026,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0043,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0081,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0151,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "nhom ban|ban be",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0028,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0049,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0081,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0156,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bthay vi\\b|\\bdoi thanh\\b|\\bdoi sang\\b|\\bthuc ra\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbo\\s+\\w+\\s+di\\b|\\bdung (?:an|cho)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0168,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0289,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0559,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\btim\\b|\\bkiem\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0148,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0292,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0596,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bphut\\b|\\btieng\\b|\\bgio\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0288,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0589,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:tour|lich trinh|hanh trinh)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0566,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d/.,])\\b(\\d{1,3})\\s*nguoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0133,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0278,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0524,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1047,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bso nguoi\\s*(?:la|thanh|=|:)?\\s*(\\d{1,2})\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.028,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0605,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?:doi thanh|doi sang|chinh thanh|nhom|di|cho|gom|con|la)\\s*(hai|ba|bon|nam|sau|bay|tam|chin|muoi)\\s*nguoi\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.005,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0087,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0158,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0322,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(an|uong)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0564,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?:k|nghin|ngan|trieu|tr|dong)\\s+(?:mot|1)\\s+nguoi",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0039,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0066,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0119,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0228,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:mot minh|di mot minh|ca nha|hai vo chong|vo chong)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0074,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0566,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(mot|hai|ba|bon|nam|sau|bay|tam)\\s*(?:nguoi|dua|ban|anh chi em|thanh vien)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0079,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0286,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0563,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d/.,])\\b(\\d{1,2})\\s*(?:dua|ban|thanh vien)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0136,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0265,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0571,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1047,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bkhuya\\b|\\bđêm khuya\\b|\\bdem khuya\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0286,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0569,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbuổi chiều\\b|\\bchiều (?:nay|mai|thứ|chủ)|\\bbuoi chieu\\b|\\bchieu (?:nay|mai)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0144,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.028,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0565,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbuổi trưa\\b|\\btrưa (?:nay|mai|thứ|chủ)|\\bbuoi trua\\b|\\btrua (?:nay|mai)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0142,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0287,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0572,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bbuổi sáng\\b|\\bsáng (?:nay|mai|thứ|chủ)|\\bbuoi sang\\b|\\bsang (?:nay|mai)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0587,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bchieu nay\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0146,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0571,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\btoi nay\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0075,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.015,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0287,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0579,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?:tong|trong khoang|trong|khoang|tour|lich trinh|hanh trinh|ke hoach|di choi|an uong|choi|di)\\s*(?:\\w+\\s+){0,3}?(\\d{2,3})\\s*phut",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0138,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0276,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0546,
+          "worst_prefix": "a"
+        }
+      ]
+    },
+    {
+      "pattern": "cho (?:dau|do) (?:o to|oto|xe hoi)|o to",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0027,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0041,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0073,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0146,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "ban ngoai troi|ngoai troi",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0031,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0054,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0094,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.019,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "ca nhom|tong\\s+(?:ngan sach|cong|so tien|chi)|tong\\s+\\d[\\d.,]*\\s*(?:k\\b|nghin|ngan|trieu|tr\\b|d\\b|dong)|ca hoi|ca ban|\\bchung\\s+(?:tien|ngan sach|\\d)",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0106,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0209,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.042,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0813,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "moi nguoi|/\\s*nguoi|mot nguoi|dau nguoi|per person",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0032,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0047,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0079,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0149,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "ca nhom|theo nhom|ca doan|ca hoi|ca ban|tat ca|tong\\s+(?:ngan sach|cong|so tien|chi|tien|nhom)|tong\\s+\\d+\\s*(?:k\\b|nghin|ngan|trieu|tr\\b|dong)|quy chung|chi chung|chung\\s+(?:tien|ngan sach)|nhom chi|tong cong",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0068,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0118,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0229,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0447,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "moi nguoi|moi dua|moi ban|mot nguoi|1 nguoi|dau nguoi|theo dau|per person|(?:\\dk|\\d+ k|nghin|ngan|trieu|tr|dong)\\s+nguoi\\b(?!\\s*(?:la|ma|di|cung))",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0213,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0396,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0794,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1589,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "chua ro|khong biet|chua biet|khong chac",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0031,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0054,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0102,
+          "worst_prefix": "tôm còn "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0187,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "[\\\"“«]([^\\\"”»]{1,30})[\\\"”»]",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0018,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0024,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0041,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0078,
+          "worst_prefix": "tôm còn "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<![\\d/.,])\\b(\\d{1,2})\\s*ng\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0136,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0262,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.053,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1045,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "da (?:goi|hoi|lien he)|quan noi",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0027,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0046,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0077,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0139,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\s*(?:bạn|chị|anh|em gái|em trai|mẹ|bố|ba|má|cô|chú|dì|bác|ông|bà|vợ|chồng|con|cháu|người yêu|đồng nghiệp|khách)\\b(?!\\s*(?:ơi|oi|à|ạ|nè|ne|nhé|nhe|,))",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 2.3451,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 9.2989,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 37.2544,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 153.0284,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\s*(?:tôi|mình|em|tui|tớ)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.3236,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 1.2552,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 5.1167,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 19.8436,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:chat|thu|mon|loai|thuc pham|cai)\\s+(?:khac|nua)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0281,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0572,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "[,;.!?\\n]+|\\s+(?:còn|nhưng|mà|chứ)\\s+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.317,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 1.167,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 4.568,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 18.4545,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "như thể|nhu the la|giả sử|gia su|giả dụ|gia du|giả như|gia nhu|giá như|ví như|lỡ như|nhỡ như|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\\bvd\\b|nếu như|🤣|😂|haha|hehe|=\\)\\)|:\\)\\)|\\bnếu\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0386,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0718,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1497,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.2965,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?:không|chẳng|đâu|chưa)\\s+phải",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0039,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0061,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0116,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0202,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "[\\\"“«][^\\\"”»]*[\\\"”»]",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0017,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0025,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0042,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0076,
+          "worst_prefix": "a"
+        }
+      ]
+    },
+    {
+      "pattern": "\\bkhong thich\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0073,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0143,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0285,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0574,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "lam lai tu dau|bat dau lai|reset",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0024,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.003,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0053,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.01,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bdoi\\b|\\bdoi qua\\b|\\bdoi bung\\b|\\bdoi lam\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0292,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0576,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "(?<=[.;!?])\\s+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0049,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0083,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0145,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0287,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "ket thuc|xong|truoc luc|ve truoc",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0029,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0045,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0081,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0148,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bdung\\b\\s+(?:cho\\s+)?(?:quan\\s+)?",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0078,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0154,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0281,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0587,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "^(?:an|uong|do|mon)\\s+",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0009,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0011,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0009,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0007,
+          "worst_prefix": "a"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:nen|thi|dau|nhe|nha|vi|nhung|vay|nua)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0076,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0148,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0283,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0567,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "khau vi|so thich|\\bgu\\b|cap nhat|ghi nho",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.011,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0205,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0399,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0818,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:an toan|xac nhan|quy tac|moi quy tac|instructions?|rules?|prompt|api|verified|key)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0077,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0147,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.027,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0732,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "\\bco\\b.*\\b(?:khong|chu)\\b",
+      "flags": 0,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0082,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0145,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0284,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0578,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\\b",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0143,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0215,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0502,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1083,
+          "worst_prefix": "nếu tôi dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?<!giua )(?<!hon )(?<!moi )\\b(\\d{1,2}|mot|hai|ba|bon|nam)\\s*(?:quan|diem dung|diem|dia diem|chang)\\b(?!\\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))|\\bso (?:quan|diem)\\s*(?:la|:)?\\s*(\\d{1,2})\\b",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0287,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0529,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1699,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1921,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:\\byêu thích\\b|\\bưa chuộng\\b|\\bđam mê\\b|\\bthích\\b|\\bmuốn ăn\\b|\\bưa\\b|\\bmê\\b|\\bthèm\\b|\\bkhoái\\b|\\bghiền\\b|\\bnghiện\\b|\\byeu thich\\b|\\bthich\\b|\\bmuon an\\b|\\bkhoai\\b)\\s*[:\\-–]?\\s*(?:là\\s+|la\\s+)?(.+?)(?=[.,;!?\\n]|\\bnhưng\\b|\\bnhung\\b|\\bdị ứng\\b|\\bdi ung\\b|\\bkhông ăn\\b|\\bkhong an\\b|\\bhãy\\b|\\bhay\\b|\\bvà nhớ\\b|\\bchưa\\b|\\bchua\\b|$)",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.07,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1211,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.2396,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.5497,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:không|khong|ko|chẳng|chang|chả|chưa|chua|đừng|dung)\\s*(?:\\w+\\s+)?$",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.034,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0737,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1354,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3162,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "\\s*(?:,|;|\\bvà\\b|\\bva\\b|\\bvới\\b|\\bvoi\\b|\\bhoặc\\b|\\bhoac\\b|\\bhay là\\b|/)\\s*",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 7.08,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 26.9697,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 108.2807,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 436.8215,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "[,;.!?\\n]+|\\s+(?:và|va|nhưng|nhung|mà|ma|còn|con|hoặc|hoac)\\s+",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.7078,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 500,
+          "max_ms": 2.6152,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 9.2482,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 39.0525,
+          "worst_prefix": " "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:d[iị]\\s*[uưúùủũụứừửữự]ng|di ung)",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0095,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0319,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.026,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1817,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:không|khong|ko)\\s+(?:thể\\s+|the\\s+)?(?:ăn|an)(?:\\s+(?:được|duoc))?|kiêng|kieng|tránh|tranh|đừng\\s+(?:cho|ăn|lấy)|dung\\s+(?:cho|an|lay)|ghét|ghet|\\bavoid\\b|né|không chọn món(?: có)?|khong chon mon(?: co)?|không lấy món(?: có)?",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0176,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.031,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0561,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1134,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:không hề|khong he|không bao giờ|khong bao gio|chưa từng|chua tung|chưa bao giờ|không|khong|chẳng|chang|chưa|chua|ko|hết|het)\\s*(?:còn|con|bị|bi|có|co)?\\s*$",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0087,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0156,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0307,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0596,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:không có chuyện|khong co chuyen|làm gì có|lam gi co|đâu có|dau co|chẳng có chuyện|chang co chuyen)\\s*(?:mình|minh|tôi|toi|em|tui|tớ|to)?\\s*$",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0189,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0363,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0709,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1497,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:mẩn ngứa|man ngua|nổi mẩn|noi man|mề đay|me day|sưng môi|sung moi|sưng mặt|khó thở|kho tho|phát ban|phat ban|ngứa họng|ngua hong|ngứa cổ|nổi ban|sốc phản vệ)",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0438,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0874,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1806,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3358,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:chưa biết|chua biet|không chắc|khong chac|chưa rõ|chua ro|không biết có phải|khong biet co phai|có phải .* không|co phai .* khong)",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0231,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0432,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0869,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1671,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "\\b(?:nguyên liệu|nguyen lieu|chất|chat|thứ|thu|món|mon|loại|loai)\\b[^.,;]{0,25}\\b(?:chưa rõ|chua ro|không rõ|khong ro|nào đó|nao do|gì đó|gi do|khác|khac|kia)\\b",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.017,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0336,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0656,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.1279,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:ăn|an)\\s+(?:được\\s+|duoc\\s+)?(?:bình thường|binh thuong|thoải mái|thoai mai|tốt|tot)",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0111,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0182,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0365,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0737,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:hết|het|không còn|khong con|chẳng còn|chang con)\\s*(?:bị |bi )?$",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0048,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0079,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0133,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0276,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "<[^>]*>",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.043,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.1994,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.7353,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 2.8462,
+          "worst_prefix": "<"
+        }
+      ]
+    },
+    {
+      "pattern": "\\d|\\bk\\b|đồng|dong|ngân|ngan|tiền|tien|nhóm|nhom",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0317,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0601,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.3237,
+          "worst_prefix": "999999 "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.2704,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:ví dụ|vi du|vd|example)",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0022,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0024,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0042,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0135,
+          "worst_prefix": "bạn tôi không đi "
+        }
+      ]
+    },
+    {
+      "pattern": "[\\\"“”'‘’«»]",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0022,
+          "worst_prefix": "a"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0025,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0041,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0078,
+          "worst_prefix": "999999 "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:khong|ko)\\s+(?:the\\s+)?an\\s+duoc|khong the an|kieng",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0018,
+          "worst_prefix": "bạn tôi không đi "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0021,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0036,
+          "worst_prefix": "không ăn được "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0062,
+          "worst_prefix": "không ăn được "
+        }
+      ]
+    },
+    {
+      "pattern": "bỏ qua|bo qua|ignore|disregard|system\\s*:|assistant\\s*:|developer\\s*:|prompt|reveal|api[ _-]?key|\\bmode\\s*=|verified_feasible|jailbreak|quy tắc|instructions?",
+      "flags": 34,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0401,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0849,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.1881,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.3981,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "[a-zà-ỹđ]+",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0124,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0612,
+          "worst_prefix": "dị ứng "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0466,
+          "worst_prefix": "nếu tôi dị ứng "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0787,
+          "worst_prefix": "dị ứng "
+        }
+      ]
+    },
+    {
+      "pattern": "(?:trước khi \\w+|truoc khi \\w+|rồi hẵng|roi hang|chớ chưa|chứ chưa|chu chua|cho chua|để sau|de sau|thêm sau|them sau|sau nhé|sau nha)",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0066,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0114,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0222,
+          "worst_prefix": "tôi thích "
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0432,
+          "worst_prefix": "tôi thích "
+        }
+      ]
+    },
+    {
+      "pattern": "^[\\W_]+$",
+      "flags": 32,
+      "times": [
+        {
+          "chars": 250,
+          "max_ms": 0.0031,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 500,
+          "max_ms": 0.0046,
+          "worst_prefix": " "
+        },
+        {
+          "chars": 1000,
+          "max_ms": 0.0103,
+          "worst_prefix": "<"
+        },
+        {
+          "chars": 2000,
+          "max_ms": 0.0189,
+          "worst_prefix": "<"
+        }
+      ]
+    }
+  ],
+  "engine": [
+    {
+      "prefix": "a",
+      "chars": 250,
+      "median_ms": 3.2982,
+      "max_ms": 4.5994
+    },
+    {
+      "prefix": "a",
+      "chars": 500,
+      "median_ms": 5.1523,
+      "max_ms": 5.2013
+    },
+    {
+      "prefix": "a",
+      "chars": 1000,
+      "median_ms": 8.6936,
+      "max_ms": 8.7095
+    },
+    {
+      "prefix": "a",
+      "chars": 2000,
+      "median_ms": 14.5033,
+      "max_ms": 14.5458
+    },
+    {
+      "prefix": "dị ứng ",
+      "chars": 250,
+      "median_ms": 10.0638,
+      "max_ms": 10.0933
+    },
+    {
+      "prefix": "dị ứng ",
+      "chars": 500,
+      "median_ms": 26.622,
+      "max_ms": 29.6451
+    },
+    {
+      "prefix": "dị ứng ",
+      "chars": 1000,
+      "median_ms": 78.3852,
+      "max_ms": 80.8236
+    },
+    {
+      "prefix": "dị ứng ",
+      "chars": 2000,
+      "median_ms": 159.6285,
+      "max_ms": 169.5156
+    },
+    {
+      "prefix": "bạn tôi không đi ",
+      "chars": 250,
+      "median_ms": 3.9717,
+      "max_ms": 3.9832
+    },
+    {
+      "prefix": "bạn tôi không đi ",
+      "chars": 500,
+      "median_ms": 6.7105,
+      "max_ms": 6.8128
+    },
+    {
+      "prefix": "bạn tôi không đi ",
+      "chars": 1000,
+      "median_ms": 12.2521,
+      "max_ms": 12.2996
+    },
+    {
+      "prefix": "bạn tôi không đi ",
+      "chars": 2000,
+      "median_ms": 33.7177,
+      "max_ms": 60.8816
+    },
+    {
+      "prefix": "nếu tôi dị ứng ",
+      "chars": 250,
+      "median_ms": 19.2288,
+      "max_ms": 20.9955
+    },
+    {
+      "prefix": "nếu tôi dị ứng ",
+      "chars": 500,
+      "median_ms": 46.2721,
+      "max_ms": 48.8477
+    },
+    {
+      "prefix": "nếu tôi dị ứng ",
+      "chars": 1000,
+      "median_ms": 128.0283,
+      "max_ms": 130.1637
+    },
+    {
+      "prefix": "nếu tôi dị ứng ",
+      "chars": 2000,
+      "median_ms": 260.4758,
+      "max_ms": 262.8732
+    },
+    {
+      "prefix": "không ăn được ",
+      "chars": 250,
+      "median_ms": 26.1225,
+      "max_ms": 26.7689
+    },
+    {
+      "prefix": "không ăn được ",
+      "chars": 500,
+      "median_ms": 40.1698,
+      "max_ms": 41.2895
+    },
+    {
+      "prefix": "không ăn được ",
+      "chars": 1000,
+      "median_ms": 90.8264,
+      "max_ms": 98.9046
+    },
+    {
+      "prefix": "không ăn được ",
+      "chars": 2000,
+      "median_ms": 115.2689,
+      "max_ms": 134.9622
+    },
+    {
+      "prefix": "999999 ",
+      "chars": 250,
+      "median_ms": 10.5755,
+      "max_ms": 11.4388
+    },
+    {
+      "prefix": "999999 ",
+      "chars": 500,
+      "median_ms": 16.6898,
+      "max_ms": 18.4539
+    },
+    {
+      "prefix": "999999 ",
+      "chars": 1000,
+      "median_ms": 31.1174,
+      "max_ms": 32.5985
+    },
+    {
+      "prefix": "999999 ",
+      "chars": 2000,
+      "median_ms": 51.0268,
+      "max_ms": 57.7586
+    },
+    {
+      "prefix": "<",
+      "chars": 250,
+      "median_ms": 1.8113,
+      "max_ms": 1.9694
+    },
+    {
+      "prefix": "<",
+      "chars": 500,
+      "median_ms": 2.8401,
+      "max_ms": 2.8674
+    },
+    {
+      "prefix": "<",
+      "chars": 1000,
+      "median_ms": 6.6524,
+      "max_ms": 6.7532
+    },
+    {
+      "prefix": "<",
+      "chars": 2000,
+      "median_ms": 17.0431,
+      "max_ms": 17.0558
+    },
+    {
+      "prefix": "tôi thích ",
+      "chars": 250,
+      "median_ms": 11.4346,
+      "max_ms": 11.4841
+    },
+    {
+      "prefix": "tôi thích ",
+      "chars": 500,
+      "median_ms": 19.6278,
+      "max_ms": 22.1131
+    },
+    {
+      "prefix": "tôi thích ",
+      "chars": 1000,
+      "median_ms": 39.904,
+      "max_ms": 43.0098
+    },
+    {
+      "prefix": "tôi thích ",
+      "chars": 2000,
+      "median_ms": 62.4778,
+      "max_ms": 62.6246
+    },
+    {
+      "prefix": "tôm còn ",
+      "chars": 250,
+      "median_ms": 11.256,
+      "max_ms": 11.8121
+    },
+    {
+      "prefix": "tôm còn ",
+      "chars": 500,
+      "median_ms": 22.5448,
+      "max_ms": 22.7292
+    },
+    {
+      "prefix": "tôm còn ",
+      "chars": 1000,
+      "median_ms": 38.525,
+      "max_ms": 39.5305
+    },
+    {
+      "prefix": "tôm còn ",
+      "chars": 2000,
+      "median_ms": 65.0464,
+      "max_ms": 67.2397
+    },
+    {
+      "prefix": " ",
+      "chars": 250,
+      "median_ms": 0.9844,
+      "max_ms": 0.9954
+    },
+    {
+      "prefix": " ",
+      "chars": 500,
+      "median_ms": 0.9835,
+      "max_ms": 1.0026
+    },
+    {
+      "prefix": " ",
+      "chars": 1000,
+      "median_ms": 1.6105,
+      "max_ms": 1.9869
+    },
+    {
+      "prefix": " ",
+      "chars": 2000,
+      "median_ms": 2.8991,
+      "max_ms": 3.2005
+    }
+  ]
+}

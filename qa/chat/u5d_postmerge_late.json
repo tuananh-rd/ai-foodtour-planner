@@ -1,0 +1,283 @@
+{
+  "answer_filter": [
+    [
+      {
+        "input": {
+          "text": "Tôi dị ứng một thứ chưa rõ."
+        },
+        "allergies": [],
+        "pending": "allergy_term",
+        "unresolved": true,
+        "plan": null
+      },
+      {
+        "input": {
+          "text": "lên đường"
+        },
+        "allergies": [
+          "lên đường"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "allergies": [
+          "lên đường"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "allergies": [
+          "lên đường"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        }
+      }
+    ],
+    [
+      {
+        "input": {
+          "text": "Tôi dị ứng một thứ chưa rõ."
+        },
+        "allergies": [],
+        "pending": "allergy_term",
+        "unresolved": true,
+        "plan": null
+      },
+      {
+        "input": {
+          "text": "duyệt luôn"
+        },
+        "allergies": [
+          "duyệt"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "allergies": [
+          "duyệt"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "allergies": [
+          "duyệt"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        }
+      }
+    ],
+    [
+      {
+        "input": {
+          "text": "Tôi dị ứng một thứ chưa rõ."
+        },
+        "allergies": [],
+        "pending": "allergy_term",
+        "unresolved": true,
+        "plan": null
+      },
+      {
+        "input": {
+          "text": "go ahead"
+        },
+        "allergies": [
+          "go ahead"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "allergies": [
+          "go ahead"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "allergies": [
+          "go ahead"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        }
+      }
+    ],
+    [
+      {
+        "input": {
+          "text": "Tôi dị ứng một thứ chưa rõ."
+        },
+        "allergies": [],
+        "pending": "allergy_term",
+        "unresolved": true,
+        "plan": null
+      },
+      {
+        "input": {
+          "text": "tiến hành"
+        },
+        "allergies": [
+          "tiến hành"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "allergies": [
+          "tiến hành"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "allergies": [
+          "tiến hành"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        }
+      }
+    ],
+    [
+      {
+        "input": {
+          "text": "Tôi dị ứng một thứ chưa rõ."
+        },
+        "allergies": [],
+        "pending": "allergy_term",
+        "unresolved": true,
+        "plan": null
+      },
+      {
+        "input": {
+          "text": "được nha"
+        },
+        "allergies": [
+          "được"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "request_plan"
+          }
+        },
+        "allergies": [
+          "được"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": null
+      },
+      {
+        "input": {
+          "action": {
+            "type": "confirm_yes"
+          }
+        },
+        "allergies": [
+          "được"
+        ],
+        "pending": null,
+        "unresolved": false,
+        "plan": {
+          "venue_ids": [
+            "CHT-001"
+          ],
+          "kept": []
+        }
+      }
+    ]
+  ],
+  "visit_update": [
+    {
+      "text": "Tour 3 điểm 120 phút",
+      "prefs_visit": 34,
+      "duration": 120,
+      "summary_visit": 34
+    },
+    {
+      "text": "Đổi thành 240 phút",
+      "prefs_visit": 34,
+      "duration": 240,
+      "summary_visit": null
+    }
+  ]
+}
