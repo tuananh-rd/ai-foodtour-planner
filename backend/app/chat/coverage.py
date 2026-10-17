@@ -18,7 +18,8 @@ MEAL_OF = {"evening": "dinner", "late": "late", "noon": "lunch", "morning": "bre
 
 _TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang)\b")
 _STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|diem dung|diem|dia diem|chang)\b")
-_LIKE = re.compile(r"(?:\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bthich\b|\bmuon an\b)\s+(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|$)",
+_LIKE = re.compile(r"(?:\byêu thích\b|\bưa chuộng\b|\bđam mê\b|\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bkhoái\b|\bghiền\b|\bnghiện\b|\byeu thich\b|\bthich\b|\bmuon an\b|\bkhoai\b)"
+                   r"\s*[:\-–]?\s*(?:là\s+|la\s+)?(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|\bchưa\b|\bchua\b|$)",
                    re.IGNORECASE)
 _NEGATED = re.compile(r"(?:không|khong|ko|chẳng|chang|chả|chưa|chua|đừng|dung)\s*(?:\w+\s+)?$", re.IGNORECASE)
 _SPLIT = re.compile(r"\s*(?:,|;|\bvà\b|\bva\b|\bvới\b|\bvoi\b|\bhoặc\b|\bhoac\b|\bhay là\b|/)\s*")
