@@ -500,6 +500,9 @@ def chat(session_id: str, body: ChatRequest, request: Request,
             obligation = cached[1].obligation_open(result.state) or (guided and session.chat.allergy_unresolved)
             if result.plan_request and not obligation:
                 ids = result.plan_request['venue_ids']
+                vm = result.plan_request.get('visit_minutes')
+                if isinstance(vm, int) and 20 <= vm <= 45:
+                    prefs = domain_replace(prefs, visit_minutes=vm)  # guided flow: shorter assumed visit so the requested stops fit the duration
                 vehicle = result.state.profile['vehicle'].value
                 planned = plan_selected({v.id: v for v in data.venues}, ids, prefs, request.app.state.routing,
                     vehicle=vehicle, quality_weight=request.app.state.quality_weight)
