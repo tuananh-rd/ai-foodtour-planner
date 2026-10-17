@@ -9,11 +9,11 @@ Run `run_49d22e639a8a`; frontend Task `task_4127e02450c8` / Dispatch `ctx_619a2f
 | ID | Owner | State | Scope / reviewer |
 |---|---|---|---|
 | N0 | Codex | DONE | Authority override, SVG rendered/visually inspected, safe Antigravity base; affected-agent review Antigravity |
-| N1 | Codex | IMPLEMENTED + final automated gates PASS; independent QA settling | Q03/P1-01 parser/coverage, persisted numeric/allergy obligations, ngân/ngan regression, no silent relaxation |
-| N2 | Antigravity author; Codex serial reviewer/fixes | Codex source review ACCEPT for local prototype; final QA report settling | Author739ee78; NFE01–10 closed by source + browser evidence; no concurrent frontend writes after handoff; SVG comparison1440/390 |
-| N3 | Codex | IMPLEMENTED + final automated gates PASS; independent QA settling | No-solution, count-only private evidence gap, real replacement/locks/409/reload, allowlisted telemetry,100samples/workload/concurrency1,5, local runbook |
-| N4 | Antigravity + Codex | IN PROGRESS: final author evidence review/settlement | Author QA94aafbd reports62 browser checks on6415d61; Codex169+22 checks confirmed separately; final report corrections and affected preview config review requested |
-| N5 | Codex | PREPARED | Preview http://127.0.0.1:3020 / API8020; separate preview cache prevents build collision, HTTP200 and browser22/22. Final report `docs/reports/CODEX_N_INTEGRATION.md`; pending author settlement + test-server cleanup |
+| N1 | Codex | DONE, independent integration QA + final gates PASS | Q03/P1-01 parser/coverage, persisted numeric/allergy obligations, ngân/ngan regression, no silent relaxation; backend575/1optionalCSVskip |
+| N2 | Antigravity author; Codex serial reviewer/fixes | DONE, Codex ACCEPT for local prototype | Author739ee78 then QA d52335c; NFE01–10 closed by source/browser evidence; SVG comparison1440/390; explicit serial frontend handoff |
+| N3 | Codex | DONE for implementable scope; evidence blockers retained | No-solution, count-only audit, replacement/locks/409/reload, allowlisted telemetry, benchmarks/runbook; author independent real-HTTP integration plus Codex gates |
+| N4 | Antigravity + Codex | DONE, reviewed/integrated and worker released | Merge41048e7; after settlement Codex QA/report guard fixes22b3a76; integrated rerun66/66, independent169/169 +22/22, SSR11, contract18, build/drift/backend PASS. Delivery88a3 acknowledged after exact-worker release |
+| N5 | Codex | DONE for local handoff | http://127.0.0.1:3020 / API8020 remains available, HTTP200; preview cache isolated; canonical screenshots/report delivered; only test-owned8030 closed. No push/deploy; plans/reviews preserved untracked |
 
 Human/evidence blockers are not application TODOs that can be fabricated: verified local hours/prices/ingredients/routing and data reuse permission; chosen pilot verification; actual screen-reader speech/representative participants; disposable live DB backup/restore; validated Gemini quality beyond one bounded attempt. Strict mode retains insufficient-evidence refusal. P2 cache/index optimisation remains deferred because measured local workload shows no bottleneck. No extra collection/service/billing is authorised.
 

@@ -1,6 +1,6 @@
 # Codex independent review — NgonNgon frontend
 
-18/10/2026. Reviewer: Codex lead. Author/QA: Antigravity. Initial verdict: **REQUEST CHANGES on checkpoint `502972c`**. Serial review fixes through `6415d61` now pass Codex verification below; final independent author QA settlement remains separate. No frontend changes were made by Codex while Antigravity owned active writes; ownership transferred explicitly at `739ee78` before Codex fixes.
+18/10/2026. Reviewer: Codex lead. Author/QA: Antigravity. Final verdict: **ACCEPT for the local prototype, with evidence limits below**. Initial `502972c` received REQUEST CHANGES; reviewed serial fixes, independent QA and integrated reruns are now complete. Ownership transferred explicitly at `739ee78` before Codex frontend fixes; serial QA/report corrections followed worker settlement/release. No concurrent active-file edits.
 
 ## Early findings sent through Orca
 
@@ -19,7 +19,7 @@ These refer to the author's in-progress working tree, not a final commit; final 
 | NFE-09 | P2 | Desktop navigation only sets mobile-tab state while desktop ignores it; controls do nothing. | Desktop actions scroll/focus real sections, mobile tabs switch actual views; selected/current semantics exposed and keyboard reachable |
 | NFE-10 | P1 | During QA setup, author added unrestricted `window.__FOODTOUR_API_URL` endpoint override to production API client to work around an old build's baked API port. | Remove the hook; configure NEXT_PUBLIC_API_URL at scratch build time (or isolated dev startup) and validate production build separately; no arbitrary runtime token destination |
 
-## Final acceptance evidence — pending
+## Intermediate evidence before browser acceptance
 
 Independent `tools/check_ngonngon_render.cjs` probes (React SSR via existing Next SWC, synthetic only): unmerged baseline UI at coordinator failed 8/11 checks; author checkpoint `502972c` reviewed read-only through `NGONNGON_FRONTEND_DIR` passes 11/11. This covers empty-profile defaults, null arrival/ETA, a legitimate zero-duration inter-stop leg, warning retention, conditional label and 3/4/5-stop HTTPS walking URLs without keys. It does not cover root shell metric/header fallbacks, interaction/hydration, waypoint handling in Google, modal focus or 409; NFE findings stay open until their specific evidence is recorded. No private data or outbound request is used by this probe.
 
@@ -44,4 +44,4 @@ Author checkpoints `502972c` and `739ee78` were reviewed before integration. Fin
 
 Independent final application source gate:169/169 production Chrome checks, zero runtime/console errors;22/22 additional interactive checks;18/18 frontend contracts;11/11 SSR probes; production build exit0. Backend575 OK/1 optional private-CSV skip; schema drift matches. See [integration report](CODEX_N_INTEGRATION.md) and [fresh synthetic visual evidence](ngonngon-codex/README.md). Preview-only cache isolation `ac05fc8` leaves default production distDir unchanged and is additionally checked with build+preview interactions; it fixes a root build/dev artifact collision, not an application behavior change.
 
-Verdict for inspected frontend source: **local prototype is acceptable subject to final independent QA/report settlement**. No live provider, data certification, screen-reader participant or deployment acceptance is implied. Historical report claims from earlier source are superseded by the explicit base/results here and the final author QA report.
+Final verdict: **ACCEPT for the local prototype with documented evidence limits**. Antigravity settled `d52335c` and was released before Codex's serial QA/report corrections `22b3a76`; integrated author harness rerun66/66, plus169/169 independent production and22/22 supplemental interactions. Ten canonical author images were visually inspected (mobile confirmation and replacement included), duplicate copies removed, estimated quantities/session privacy/test-mode claims corrected. No live provider, data certification, screen-reader participant or deployment acceptance is implied. Historical report claims are superseded by the explicit base/results here and the integration report.
