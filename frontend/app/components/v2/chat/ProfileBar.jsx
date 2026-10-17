@@ -133,6 +133,10 @@ export default function ProfileBar({
     ? (Array.isArray(profile.tastes.value) ? profile.tastes.value.join(', ') : String(profile.tastes.value))
     : 'Chưa rõ';
 
+  const maxLegText = profile.max_leg_min?.value !== null && profile.max_leg_min?.value !== undefined && profile.max_leg_min?.value !== ''
+    ? `${profile.max_leg_min.value} phút`
+    : 'chưa đặt';
+
   const hasAllergies = allergies.length > 0;
   const allergyListText = hasAllergies
     ? allergies.map((a) => a.term).join(', ')
@@ -175,7 +179,8 @@ export default function ProfileBar({
       setStartTime(existingTime && /^([01][0-9]|2[0-3]):[0-5][0-9]$/.test(existingTime) ? existingTime : '18:00');
     } else if (fieldKey === 'max_leg_min') {
       const existingLeg = profile.max_leg_min?.value;
-      setMaxLeg(typeof existingLeg === 'number' && existingLeg >= 3 && existingLeg <= 60 ? existingLeg : 15);
+      const num = Number(existingLeg);
+      setMaxLeg(!isNaN(num) && num >= 3 && num <= 60 ? num : 15);
     } else if (fieldKey === 'audience') {
       const existingAud = profile.audience?.value;
       setAudience(existingAud || 'friends');
@@ -236,7 +241,17 @@ export default function ProfileBar({
         setErrorMsg('Số tiền phải lớn hơn 0.');
         return;
       }
-      const unitNum = parseInt(budgetUnit, 10) || 1000;
+      const ALLOWED_BUDGET_UNITS = {
+        '1': 1,
+        '1000': 1000,
+        '1000000': 1000000,
+      };
+      const rawUnit = String(budgetUnit);
+      if (!Object.prototype.hasOwnProperty.call(ALLOWED_BUDGET_UNITS, rawUnit)) {
+        setErrorMsg('Đơn vị tiền tệ không hợp lệ. Vui lòng chọn đồng, nghìn hoặc triệu.');
+        return;
+      }
+      const unitNum = ALLOWED_BUDGET_UNITS[rawUnit];
       const totalVnd = amountNum * unitNum;
       if (isNaN(totalVnd) || !isFinite(totalVnd) || totalVnd < 1 || totalVnd > 100000000) {
         setErrorMsg('Ngân sách phải là số từ 1 đến 100.000.000 ₫.');
@@ -504,6 +519,20 @@ export default function ProfileBar({
         {getSourceBadge(profile.vehicle?.source)}
       </button>
 
+      {/* Max Leg Chip */}
+      <button
+        type="button"
+        disabled={busy}
+        data-testid="chip-profile-max-leg"
+        data-testid-alt="chip-profile-max_leg_min"
+        onClick={(e) => handleOpenEdit('max_leg_min', maxLegText, e)}
+        style={getChipStyle(profile.max_leg_min)}
+      >
+        <span>⏱️</span>
+        <span>Đi bộ tối đa mỗi chặng: <strong>{maxLegText}</strong></span>
+        {getSourceBadge(profile.max_leg_min?.source)}
+      </button>
+
       {/* Tastes Chip */}
       <button
         type="button"
@@ -574,7 +603,7 @@ export default function ProfileBar({
             >
               Chỉnh sửa: {getFieldTitle(editingField)}
             </h4>
-            <form onSubmit={handleSaveEdit}>
+            <form onSubmit={handleSaveEdit} noValidate>
               {/* PARTY SIZE: Number input 1..20 */}
               {editingField === 'party_size' && (
                 <div style={{ marginBottom: 12 }}>

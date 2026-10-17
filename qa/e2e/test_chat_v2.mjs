@@ -1462,6 +1462,191 @@ async function run() {
       `controls: ${JSON.stringify(vehicleControlsCheck)}, validReq: ${JSON.stringify(validVehReq?.body?.action?.patch)}`
     );
 
+    // 3. Budget unit tampering: reject any unit value not in {1, 1000, 1000000} with inline error and send NOTHING
+    const preTamperCalls = networkTurns.length;
+    await ev(`(() => {
+      const budgetChip = document.querySelector('[data-testid="chip-profile-budget"]');
+      if (budgetChip) budgetChip.click();
+    })()`);
+    await sleep(200);
+
+    // Tamper the budget unit select in DOM with 'garbage' value (as Codex did)
+    await ev(`(() => {
+      const unitSelect = document.querySelector('#profile-budget-unit');
+      if (unitSelect && unitSelect.options.length > 0) {
+        unitSelect.options[0].value = 'garbage';
+        const proto = HTMLSelectElement.prototype;
+        Object.getOwnPropertyDescriptor(proto, 'value').set.call(unitSelect, 'garbage');
+        unitSelect.dispatchEvent(new Event('input', { bubbles: true }));
+        unitSelect.dispatchEvent(new Event('change', { bubbles: true }));
+      }
+    })()`);
+    await setInputValue('#profile-budget-amount', '600');
+    await setSelectValue('#profile-budget-scope', 'group');
+    await submitProfileEdit();
+    await sleep(250);
+
+    const budgetTamperCheck = await ev(`(() => {
+      const err = document.querySelector('[data-testid="profile-edit-error"], [role="alert"]');
+      const dialog = document.querySelector('[role="dialog"]');
+      return {
+        hasAlert: !!err,
+        text: err ? err.innerText : '',
+        dialogOpen: !!dialog,
+      };
+    })()`);
+
+    const noTamperReqSent = networkTurns.length === preTamperCalls;
+    const tamperPassed = noTamperReqSent && budgetTamperCheck.hasAlert && budgetTamperCheck.dialogOpen;
+
+    record(
+      'CH-13c-BUDGET-UNIT-TAMPER',
+      'ProfileBar budget unit rejects tampered unit value with inline Vietnamese error and sends ZERO requests (no parseInt fallback to 1000)',
+      tamperPassed,
+      `alert: "${budgetTamperCheck.text}", dialogOpen: ${budgetTamperCheck.dialogOpen}, noReqSent: ${noTamperReqSent}`
+    );
+
+    // Close dialog after tamper test
+    await ev(`(() => {
+      const cancelBtn = document.querySelector('[data-testid="btn-profile-edit-cancel"]');
+      if (cancelBtn) cancelBtn.click();
+    })()`);
+    await sleep(200);
+
+    // 4. Max-leg editor: production chip ("Đi bộ tối đa mỗi chặng: N phút" / "chưa đặt") opens 3..60 editor
+    const initialChipCheck = await ev(`(() => {
+      const chip = document.querySelector('[data-testid="chip-profile-max-leg"]');
+      return {
+        exists: !!chip,
+        text: chip ? chip.innerText : '',
+        hasInitialLabel: chip ? (chip.innerText.includes('chưa đặt') || chip.innerText.includes('Đi bộ tối đa mỗi chặng')) : false,
+      };
+    })()`);
+
+    // Probe 2: blocked inline with zero requests
+    const preMaxLeg2Calls = networkTurns.length;
+    await ev(`(() => {
+      const chip = document.querySelector('[data-testid="chip-profile-max-leg"]');
+      if (chip) chip.click();
+    })()`);
+    await sleep(200);
+
+    await setInputValue('#profile-max-leg-input', '2');
+    await submitProfileEdit();
+    await sleep(200);
+
+    const maxLeg2Check = await ev(`(() => {
+      const err = document.querySelector('[data-testid="profile-edit-error"], [role="alert"]');
+      const input = document.querySelector('#profile-max-leg-input');
+      const dialog = document.querySelector('[role="dialog"]');
+      return {
+        hasAlert: !!err,
+        text: err ? err.innerText : '',
+        dialogOpen: !!dialog,
+        valid: input ? input.checkValidity() : true,
+      };
+    })()`);
+    const noMaxLeg2ReqSent = networkTurns.length === preMaxLeg2Calls;
+    const maxLeg2Blocked = noMaxLeg2ReqSent && (maxLeg2Check.hasAlert || !maxLeg2Check.valid) && maxLeg2Check.dialogOpen;
+
+    // Probe 61: blocked inline with zero requests
+    const preMaxLeg61Calls = networkTurns.length;
+    await setInputValue('#profile-max-leg-input', '61');
+    await submitProfileEdit();
+    await sleep(200);
+
+    const maxLeg61Check = await ev(`(() => {
+      const err = document.querySelector('[data-testid="profile-edit-error"], [role="alert"]');
+      const input = document.querySelector('#profile-max-leg-input');
+      const dialog = document.querySelector('[role="dialog"]');
+      return {
+        hasAlert: !!err,
+        text: err ? err.innerText : '',
+        dialogOpen: !!dialog,
+        valid: input ? input.checkValidity() : true,
+      };
+    })()`);
+    const noMaxLeg61ReqSent = networkTurns.length === preMaxLeg61Calls;
+    const maxLeg61Blocked = noMaxLeg61ReqSent && (maxLeg61Check.hasAlert || !maxLeg61Check.valid) && maxLeg61Check.dialogOpen;
+
+    // Probe 3: accepted HTTP 200
+    const preMaxLeg3Calls = networkTurns.length;
+    await setInputValue('#profile-max-leg-input', '3');
+    await submitProfileEdit();
+    await waitForTurn(15000);
+
+    const postMaxLeg3Calls = networkTurns.slice(preMaxLeg3Calls);
+    const validMaxLeg3Req = postMaxLeg3Calls.find(t =>
+      t.body?.action?.type === 'edit_profile' &&
+      t.body?.action?.patch?.max_leg_min === 3
+    );
+
+    // Probe 60: accepted HTTP 200
+    await ev(`(() => {
+      const chip = document.querySelector('[data-testid="chip-profile-max-leg"]');
+      if (chip) chip.click();
+    })()`);
+    await sleep(200);
+
+    const preMaxLeg60Calls = networkTurns.length;
+    await setInputValue('#profile-max-leg-input', '60');
+    await submitProfileEdit();
+    await waitForTurn(15000);
+
+    const postMaxLeg60Calls = networkTurns.slice(preMaxLeg60Calls);
+    const validMaxLeg60Req = postMaxLeg60Calls.find(t =>
+      t.body?.action?.type === 'edit_profile' &&
+      t.body?.action?.patch?.max_leg_min === 60
+    );
+
+    // Probe 10: accepted HTTP 200 and sets state to 10
+    await ev(`(() => {
+      const chip = document.querySelector('[data-testid="chip-profile-max-leg"]');
+      if (chip) chip.click();
+    })()`);
+    await sleep(200);
+
+    const preMaxLeg10Calls = networkTurns.length;
+    await setInputValue('#profile-max-leg-input', '10');
+    await submitProfileEdit();
+    await waitForTurn(15000);
+
+    const postMaxLeg10Calls = networkTurns.slice(preMaxLeg10Calls);
+    const validMaxLeg10Req = postMaxLeg10Calls.find(t =>
+      t.body?.action?.type === 'edit_profile' &&
+      t.body?.action?.patch?.max_leg_min === 10
+    );
+
+    // Reload page mid-conversation and assert chip reflects chat.state.profile.max_leg_min
+    await sendCDP('Page.reload');
+    await sleep(500);
+    for (let i = 0; i < 50; i++) {
+      await sleep(150);
+      const ready = await ev(`Boolean(document.querySelector('[data-testid="zone-chat"]'))`);
+      if (ready) break;
+    }
+    await sleep(300);
+
+    const postReloadMaxLegCheck = await ev(`(() => {
+      const chip = document.querySelector('[data-testid="chip-profile-max-leg"]');
+      return {
+        exists: !!chip,
+        text: chip ? chip.innerText : '',
+        reflectsState: chip ? chip.innerText.includes('10 phút') : false,
+      };
+    })()`);
+
+    const maxLegPassed = initialChipCheck.exists && maxLeg2Blocked && maxLeg61Blocked &&
+      !!validMaxLeg3Req && !!validMaxLeg60Req && !!validMaxLeg10Req &&
+      postReloadMaxLegCheck.reflectsState;
+
+    record(
+      'CH-13d-MAX-LEG-VALIDATION',
+      'Max-leg editor: production chip opens 3..60 editor; 2 and 61 blocked inline with zero requests; 3, 10, 60 accepted (HTTP 200); chip reflects chat.state.profile.max_leg_min after reload',
+      maxLegPassed,
+      `initialChip: ${JSON.stringify(initialChipCheck)}, 2Blocked: ${maxLeg2Blocked}, 61Blocked: ${maxLeg61Blocked}, 3Req: ${!!validMaxLeg3Req}, 60Req: ${!!validMaxLeg60Req}, 10Req: ${!!validMaxLeg10Req}, postReload: ${JSON.stringify(postReloadMaxLegCheck)}`
+    );
+
     // =============================================================
     // Scenario 14: CH-14 Eight-Block Hostile Page & Shell Containment (1280 and 390)
     // =============================================================
