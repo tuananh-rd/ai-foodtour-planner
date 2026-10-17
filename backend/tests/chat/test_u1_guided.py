@@ -329,3 +329,37 @@ class BlindFindings(unittest.TestCase):
         self.assertTrue(tastes.known() and tastes.source == "ai")
         card = [b for b in r.blocks if b["type"] == "understood"][0]
         self.assertEqual([i["status"] for i in card["items"] if i["id"] == "dish"], ["ai"])
+
+
+class SafetyRegressionsFromU5a2(unittest.TestCase):
+    """Codex U5a-2 probes: policy decisions must not widen: named absence retracts only that term, dislikes stay dislikes."""
+
+    def setUp(self):
+        self.eng, self.venues = engine()
+
+    def turns(self, steps):
+        st, pr, out = ChatState(), Preferences(), []
+        for t in steps:
+            r = self.eng.handle(st, pr, text=t)
+            st, pr = r.state, r.prefs
+            out.append(r)
+        return out
+
+    def test_named_absence_does_not_clear_other_allergies(self):
+        r = self.turns(["Tôi dị ứng lạc", "Tôi không bị dị ứng tôm"])[-1]
+        self.assertEqual([a.term for a in r.state.allergies], ["lạc"])
+        self.assertNotIn("allergy_cleared", [b.get("code") for b in r.blocks])
+
+    def test_named_absence_removes_only_that_term(self):
+        r = self.turns(["Tôi dị ứng lạc và tôm", "Tôi không bị dị ứng tôm"])[-1]
+        self.assertEqual([a.term for a in r.state.allergies], ["lạc"])
+
+    def test_dislike_wording_is_not_promoted_to_allergy(self):
+        for t in ("Tôi ghét trứng", "Mình không thích sữa", "Tôi né hải sản"):
+            r = self.turns([t])[0]
+            self.assertFalse(r.state.allergies, t)
+
+    def test_another_unnamed_allergy_keeps_the_obligation_open(self):
+        r = self.turns(["Tôi dị ứng tôm và một chất khác"])[0]
+        self.assertIn("tôm", " ".join(a.term for a in r.state.allergies))
+        self.assertTrue(r.state.allergy_unresolved)

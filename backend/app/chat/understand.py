@@ -332,11 +332,13 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
 
     sp = safety_parse.parse(raw_safety if guided else text)
     if guided and sp.avoid and not pending:
-        hard = [t for t in sp.avoid if allergens.family_of(t)]  # "không ăn được lạc", "kiêng trứng": a named major allergen is treated as an allergy
+        hard = [t for t in sp.avoid_hard if allergens.family_of(t)]  # "không ăn được lạc", "kiêng trứng": a named major allergen is treated as an allergy ("ghét trứng" stays a dislike)
         if hard:
             sp.allergies += [t for t in hard if t not in sp.allergies]
             sp.avoid = [t for t in sp.avoid if t not in hard]
             sp.avoid_any = [t for t in sp.avoid_any if t not in hard]
+    if guided and sp.negated and sp.negated_terms and not sp.allergies:
+        sp.removed += [t for t in sp.negated_terms if t not in sp.removed]  # "không bị dị ứng tôm" retracts tôm only
     if guided and sp.avoid_vague and not (sp.allergies or sp.avoid):
         sp.issues.append("vague")  # it may be an allergy: ask which food instead of dropping it
     refs = parse_refs(text, f)

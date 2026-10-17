@@ -30,7 +30,7 @@ _RELATION = {"nhau", "bạn", "ban", "người", "nguoi", "mình", "minh", "tôi
 _STOP = re.compile(r"\d|\bk\b|đồng|dong|ngân|ngan|tiền|tien|nhóm|nhom")
 _EXAMPLE = re.compile(r"(?:ví dụ|vi du|vd|example)")
 _QUOTE = re.compile(r"[\"“”'‘’«»]")
-_AMBIGUOUS_RAW = {"của", "cùa", "cúa", "số", "sổ", "sỗ"}  # "của" (of) folds to "cua" (crab)
+_AMBIGUOUS_RAW = {"của", "cùa", "cúa", "số", "sổ", "sỗ", "cả", "cã"}  # "của" (of) folds to "cua" (crab)
 MAX_SCAN_WORDS = 8
 
 
@@ -54,6 +54,8 @@ class SafetyParse:
     mentioned: bool = False                       # some allergy/avoidance trigger was seen (even if negated)
     negated: bool = False                          # "không (bị) dị ứng …": an explicit absence statement
     avoid_any: list = field(default_factory=list)  # taste-level avoid terms, lexicon or not (<=3 words)
+    negated_terms: list = field(default_factory=list)  # "không bị dị ứng tôm": a named absence (removes only that term)
+    avoid_hard: list = field(default_factory=list)     # avoid terms said with a hard cue (không ăn được / kiêng): treated as allergies when guided
     avoid_vague: bool = False                      # "không ăn được vài thứ": an avoidance cue with only a description, no named food
 
 
@@ -123,6 +125,7 @@ def _terms(rest: str, issues: list) -> tuple:
     return [cand], False
 
 
+_HARD_CUE = re.compile(r"(?:khong|ko)\s+(?:the\s+)?an\s+duoc|khong the an|kieng")
 _VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "chien", "xao", "nuong", "gi"}
 _AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
 
@@ -183,6 +186,8 @@ def parse(text: str) -> SafetyParse:
                     continue
                 if _NEG.search(before) and kind == "allergy":
                     out.negated = True
+                    named, _lex = _terms(seg, [])  # a named absence only retracts that term; "gì cả/nào" retracts nothing specific
+                    out.negated_terms += [t for t in named if t not in out.negated_terms and allergens.recognised(t)]
                     mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
                     continue
                 if kind == "avoid":
@@ -191,6 +196,8 @@ def parse(text: str) -> SafetyParse:
                     if not terms and "vague" in local:
                         out.avoid_vague = True
                     out.avoid += [t for t in terms if allergens.recognised(t) and t not in out.avoid]
+                    if _HARD_CUE.search(fold_uncached(m.group(0))):
+                        out.avoid_hard += [t for t in terms if allergens.recognised(t) and t not in out.avoid_hard]
                     out.avoid_any += [t for t in terms if t not in out.avoid_any and not _STOP.search(t)]
                     mode = "avoid" if terms else None
                     continue
@@ -204,6 +211,9 @@ def parse(text: str) -> SafetyParse:
             if found:
                 bucket = out.allergies if mode == "allergy" else out.avoid
                 bucket += [t for t in found if t not in bucket]
+                continue
+            if mode == "allergy" and re.search(r"\b(?:chat|thu|mon|loai|thuc pham|cai)\s+(?:khac|nua)\b", fold_uncached(clause)):
+                out.issues.append("empty")  # "…tôm và một chất khác": another allergy was mentioned but not named
                 continue
         mode = None
     return out
