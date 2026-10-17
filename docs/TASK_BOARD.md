@@ -8,9 +8,9 @@ Run `run_49d22e639a8a`; frontend Task `task_4127e02450c8` / Dispatch `ctx_619a2f
 |---|---|---|---|
 | N0 | Codex | DONE | Authority override, SVG rendered/visually inspected, safe Antigravity base; affected-agent review Antigravity |
 | N1 | Codex | DONE, integration QA pending | Q03/P1-01 Vietnamese parser + coverage + regression; Antigravity independent integration |
-| N2 | Antigravity | IN PROGRESS | SVG-inspired real UI, Q01/Q02/Q04?Q07, frontend/QA only; Codex review |
+| N2 | Antigravity | REQUEST CHANGES, fixes active | SVG-inspired real UI, Q01/Q02/Q04?Q07, frontend/QA only; Codex review |
 | N3 | Codex | IMPLEMENTED, independent QA pending | P1-02/03/04/06/07/08: useful no-solution, data gap audit, locks/session checks, privacy-safe observability/benchmarks |
-| N4 | Antigravity + Codex | TODO | Independent QA then Codex final integration, build/contracts/backend/browser/mobile evidence |
+| N4 | Antigravity + Codex | IN PROGRESS | Independent QA then Codex final integration, build/contracts/backend/browser/mobile evidence |
 | N5 | Codex | TODO | Closure: local URL, screenshots, commits, evidence gaps; P2 only if measurement justifies |
 
 # Task board — upgrade R0 + R1-lite (docs/UPGRADE_PLAN.md), Run run_6b3e047f1a69
