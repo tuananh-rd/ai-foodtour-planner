@@ -1095,6 +1095,7 @@ export async function getClientConfig(options = {}) {
         doc: "docs/PHASE4.md"
       },
       features: {
+        guided_ui: (typeof window !== 'undefined' && (new URLSearchParams(window.location.search).get('guided') === '1' || new URLSearchParams(window.location.search).get('ui') === 'guided')) || false,
         ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || process.env.NEXT_PUBLIC_UI_V2 === '1' || false,
         chat_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat') === 'v2') || process.env.NEXT_PUBLIC_CHAT_V2 === '1' || false
       },
@@ -1110,12 +1111,19 @@ export async function getClientConfig(options = {}) {
     });
     if (res && !res.features) {
       res.features = {
+        guided_ui: (typeof window !== 'undefined' && (new URLSearchParams(window.location.search).get('guided') === '1' || new URLSearchParams(window.location.search).get('ui') === 'guided')) || false,
         ui_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('ui') === 'v2') || false,
         chat_v2: (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat') === 'v2') || false
       };
     } else if (res?.features) {
-      if (typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('chat') === 'v2') {
-        res.features.chat_v2 = true;
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('chat') === 'v2') {
+          res.features.chat_v2 = true;
+        }
+        if (params.get('guided') === '1' || params.get('ui') === 'guided') {
+          res.features.guided_ui = true;
+        }
       }
     }
     return res;
@@ -1382,6 +1390,8 @@ export async function getMapsLinks(sessionId, mode = 'walking', token = '', opti
 
 export { SYNTHETIC_CHAT_TURNS } from './chatFixtures.js';
 import { SYNTHETIC_CHAT_TURNS } from './chatFixtures.js';
+export { SYNTHETIC_GUIDED_TURNS } from './guidedFixtures.js';
+import { SYNTHETIC_GUIDED_TURNS } from './guidedFixtures.js';
 
 /**
  * 14. Conversational Chat Turn (contract v1.8, TASK C3-1)
@@ -1494,6 +1504,130 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
         llm_budget: { limit: 18, used: 2, remaining: 16, exhausted: false },
         is_mock: true
       };
+    }
+
+    // Check Guided Mode replay from SYNTHETIC_GUIDED_TURNS
+    const isGuided = body.guided || (typeof window !== 'undefined' && (new URLSearchParams(window.location.search).get('guided') === '1' || new URLSearchParams(window.location.search).get('ui') === 'guided'));
+    if (isGuided && SYNTHETIC_GUIDED_TURNS?.conversations) {
+      const convParam = body.conv || (typeof window !== 'undefined' ? (new URLSearchParams(window.location.search).get('conv') || new URLSearchParams(window.location.search).get('scenario')) : null);
+
+      const actionType = body.action?.type || body.action?.name;
+      const actionOptionId = body.action?.option_id || body.action?.payload?.option_id;
+
+      const isGuidedMatch = (req) => {
+        if (body.text && req.text) {
+          const normUser = body.text.trim().toLowerCase();
+          const normReq = req.text.trim().toLowerCase();
+          if (normUser === normReq || normUser.includes(normReq) || normReq.includes(normUser)) return true;
+        }
+        if (body.action && req.action) {
+          if (req.action.type === actionType) {
+            if (req.action.option_id && actionOptionId) {
+              return req.action.option_id === actionOptionId;
+            }
+            return true;
+          }
+        }
+        if (actionType === 'confirm_yes' && (req.action?.option_id === 'confirm_yes' || req.action?.type === 'confirm_yes')) {
+          return true;
+        }
+        if (actionType === 'confirm_no' && (req.action?.option_id === 'confirm_no' || req.action?.type === 'confirm_no')) {
+          return true;
+        }
+        return false;
+      };
+
+      let matchedGuidedTurn = null;
+
+      // 1. Check next turn in active guided sequence
+      if (session._guidedConvName && session._guidedTurnIdx !== undefined) {
+        const conv = SYNTHETIC_GUIDED_TURNS.conversations.find((c) => c.name === session._guidedConvName);
+        if (conv && conv.turns[session._guidedTurnIdx]) {
+          const candidate = conv.turns[session._guidedTurnIdx];
+          if (isGuidedMatch(candidate.request)) {
+            matchedGuidedTurn = candidate;
+            session._guidedTurnIdx++;
+          }
+        }
+      }
+
+      // 2. Search by convParam if set
+      if (!matchedGuidedTurn && convParam) {
+        const conv = SYNTHETIC_GUIDED_TURNS.conversations.find((c) => c.name === convParam);
+        if (conv) {
+          for (let i = 0; i < conv.turns.length; i++) {
+            if (isGuidedMatch(conv.turns[i].request)) {
+              matchedGuidedTurn = conv.turns[i];
+              session._guidedConvName = conv.name;
+              session._guidedTurnIdx = i + 1;
+              break;
+            }
+          }
+        }
+      }
+
+      // 3. Search all guided conversations
+      if (!matchedGuidedTurn) {
+        for (const conv of SYNTHETIC_GUIDED_TURNS.conversations) {
+          for (let i = 0; i < conv.turns.length; i++) {
+            if (isGuidedMatch(conv.turns[i].request)) {
+              matchedGuidedTurn = conv.turns[i];
+              session._guidedConvName = conv.name;
+              session._guidedTurnIdx = i + 1;
+              break;
+            }
+          }
+          if (matchedGuidedTurn) break;
+        }
+      }
+
+      if (matchedGuidedTurn) {
+        session.revision = (session.revision || 0) + 1;
+        const resp = matchedGuidedTurn.response;
+        const respChat = JSON.parse(JSON.stringify(resp.chat || {}));
+        session.chat = {
+          ...session.chat,
+          ...respChat,
+          profile: { ...(session.chat?.profile || {}), ...(respChat.profile || {}) },
+          allergies: respChat.allergies || session.chat?.allergies || []
+        };
+
+        const blocks = JSON.parse(JSON.stringify(resp.reply?.blocks || []));
+
+        // Tour generation gate: attach tour only when plan_request or confirm_yes
+        if (resp.plan_request || resp.chat?.phase === 'planned' || actionType === 'confirm_yes') {
+          if (!session.tour) {
+            session.tour = createMockTour(session.preferences || { mode: 'explore', city: 'Hà Nội' }, session.revision);
+          }
+          if (!blocks.some((b) => b.type === 'tour_ready')) {
+            blocks.push({ type: 'tour_ready', revision: session.revision });
+          }
+        }
+
+        const turnMeta = {
+          intent: 'GUIDED_TURN',
+          tools: [],
+          understanding: 'rules',
+          ...(resp.turn || {})
+        };
+        if (!turnMeta.llm_budget) {
+          const isExhausted = session._guidedConvName === 'no_gemini_budget_exhausted' || convParam === 'no_gemini_budget_exhausted';
+          turnMeta.llm_budget = {
+            session_used: isExhausted ? 6 : (turnMeta.llm_calls || 1),
+            session_cap: 6,
+            daily_remaining_public: isExhausted ? 'exhausted' : 'ok'
+          };
+        }
+
+        return {
+          reply: { blocks },
+          chat: session.chat,
+          turn: turnMeta,
+          tour: session.tour,
+          revision: session.revision,
+          is_mock: true
+        };
+      }
     }
 
     // Search for matching turn in SYNTHETIC_CHAT_TURNS
