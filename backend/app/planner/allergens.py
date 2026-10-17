@@ -25,6 +25,7 @@ FAMILIES = {
     "egg": (("trung",), ("trung", "flan", "banh flan", "egg coffee", "ca phe trung", "op la")),
     "gluten": (("gluten", "lua mi", "bot mi"), ("banh mi", "mi", "pizza", "burger", "banh ngot", "tiem banh")),
     "soy": (("dau nanh", "dau phu", "dau hu"), ("dau phu", "dau hu", "dau nanh", "sua dau nanh")),
+    "sesame": (("me", "vung", "me den"), ("me", "vung", "xoi vung", "che vung")),
 }
 _BY_WORD = {w: fam for fam, (words, _) in FAMILIES.items() for w in words}
 MAX_TERMS = 10
@@ -34,9 +35,13 @@ MAX_TERM_CHARS = 40
 def family_of(term: str):
     """Family of a user term; multi-word terms ("sữa bò") match on their longest known phrase."""
     words = fold_uncached(term).split()
+    low = term.casefold()
     for size in range(len(words), 0, -1):
         for i in range(len(words) - size + 1):
-            fam = _BY_WORD.get(" ".join(words[i:i + size]))
+            phrase = " ".join(words[i:i + size])
+            fam = _BY_WORD.get(phrase)
+            if fam == "sesame" and phrase == "me" and "mè" not in low:
+                continue  # "mẹ" (mother) and "mê" (to love) fold to "me": only the accented mè is sesame
             if fam:
                 return fam
     return None

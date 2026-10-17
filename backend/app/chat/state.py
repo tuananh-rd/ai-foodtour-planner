@@ -41,14 +41,18 @@ class Allergy:
     family: Optional[str] = None
     source: str = "user_said"
     venue_confirmations: list = field(default_factory=list)  # [{"venue_id","text","at"}]
+    who: str = "self"  # "other" = said about a companion by a third-party word (may be retracted when that person is not coming)
 
     def to_json(self) -> dict:
-        return {"term": self.term, "family": self.family, "source": self.source,
-                "venue_confirmations": list(self.venue_confirmations)}
+        out = {"term": self.term, "family": self.family, "source": self.source,
+               "venue_confirmations": list(self.venue_confirmations)}
+        if self.who != "self":
+            out["who"] = self.who
+        return out
 
     @classmethod
     def from_json(cls, d: dict) -> "Allergy":
-        return cls(d.get("term", ""), d.get("family"), d.get("source", "user_said"), list(d.get("venue_confirmations", [])))
+        return cls(d.get("term", ""), d.get("family"), d.get("source", "user_said"), list(d.get("venue_confirmations", [])), d.get("who", "self"))
 
 
 @dataclass

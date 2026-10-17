@@ -19,6 +19,11 @@ _AVOID = re.compile(r"(?:không|khong|ko)\s+(?:thể\s+|the\s+)?(?:ăn|an)(?:\s+
                     r"đừng\s+(?:cho|ăn|lấy)|dung\s+(?:cho|an|lay)|ghét|ghet|\bavoid\b|né|không chọn món(?: có)?|khong chon mon(?: co)?|không lấy món(?: có)?")
 _NEG = re.compile(r"(?:không hề|khong he|không bao giờ|khong bao gio|chưa từng|chua tung|chưa bao giờ|"
                   r"không|khong|chẳng|chang|chưa|chua|ko|hết|het)\s*(?:còn|con|bị|bi|có|co)?\s*$")
+_NEG_PREFIX = re.compile(r"(?:không có chuyện|khong co chuyen|làm gì có|lam gi co|đâu có|dau co|chẳng có chuyện|chang co chuyen)\s*(?:mình|minh|tôi|toi|em|tui|tớ|to)?\s*$", re.IGNORECASE)
+_SYMPTOM = re.compile(r"(?:mẩn ngứa|man ngua|nổi mẩn|noi man|mề đay|me day|sưng môi|sung moi|sưng mặt|khó thở|kho tho|phát ban|phat ban|ngứa họng|ngua hong|ngứa cổ|nổi ban|sốc phản vệ)", re.IGNORECASE)
+_UNSURE = re.compile(r"(?:chưa biết|chua biet|không chắc|khong chac|chưa rõ|chua ro|không biết có phải|khong biet co phai|có phải .* không|co phai .* khong)", re.IGNORECASE)
+_UNNAMED = re.compile(r"\b(?:nguyên liệu|nguyen lieu|chất|chat|thứ|thu|món|mon|loại|loai)\b[^.,;]{0,25}\b(?:chưa rõ|chua ro|không rõ|khong ro|nào đó|nao do|gì đó|gi do|khác|khac|kia)\b", re.IGNORECASE)
+_NORMAL_EAT = re.compile(r"(?:ăn|an)\s+(?:được\s+|duoc\s+)?(?:bình thường|binh thuong|thoải mái|thoai mai|tốt|tot)", re.IGNORECASE)
 _REMOVE = re.compile(r"(?:hết|het|không còn|khong con|chẳng còn|chang con)\s*(?:bị |bi )?$")
 _TAGS = re.compile(r"<[^>]*>")
 _SEVERITY = {"nhẹ", "nhe", "nặng", "nang", "vừa", "vua", "ít", "it", "lắm", "lam", "rất", "rat", "hơi", "hoi",
@@ -133,9 +138,17 @@ _VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "
 _AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
 
 
+def _before_terms(text: str) -> list:
+    """Lexicon allergens that PRECEDE a cue in the same clause: "Lạc thì mình không ăn được", "Tôm làm mình dị ứng"."""
+    words = _clean_words(text)[-8:]
+    found, _ = _scan(words)
+    return [t for t in found if not (fold_uncached(t) == "me" and "mè" not in text.casefold())]
+
+
 def _triggers(clause: str) -> list:
     """All (kind, match) triggers in a clause, in order, without overlaps."""
-    found = [("allergy", m) for m in _ALLERGY.finditer(clause)] + [("avoid", m) for m in _AVOID.finditer(clause)]
+    found = ([("allergy", m) for m in _ALLERGY.finditer(clause)] + [("symptom", m) for m in _SYMPTOM.finditer(clause)]
+             + [("avoid", m) for m in _AVOID.finditer(clause)])
     found.sort(key=lambda km: km[1].start())
     out, end = [], -1
     for kind, m in found:
@@ -171,6 +184,8 @@ def parse(text: str) -> SafetyParse:
         out.issues.append("example")
         return out
     mode = None  # "allergy" | "avoid" | None  (list continuation)
+    hard_mode = False
+    bare = []  # allergen words that formed a clause of their own ("Tôm và một chất chưa rõ làm mình dị ứng")
     for clause in _CLAUSE_SPLIT.split(text):
         clause = clause.strip()
         if not clause:
@@ -181,42 +196,82 @@ def parse(text: str) -> SafetyParse:
                 seg_end = trig[i + 1][1].start() if i + 1 < len(trig) else len(clause)
                 seg = clause[m.end():seg_end]
                 out.mentioned = True
+                before_full = clause[:m.start()]
                 before = clause[max(0, m.start() - 24):m.start()]
-                if kind == "allergy" and _REMOVE.search(before):
+                if kind in ("allergy", "symptom") and _REMOVE.search(before):
                     terms, _ = _terms(seg, [])
                     out.removed += [t for t in terms if t not in out.removed]
                     mode = None
                     continue
-                if _NEG.search(before) and kind == "allergy":
+                if kind == "allergy" and (_NEG.search(before) or _NEG_PREFIX.search(before)):
                     out.negated = True
                     named, _lex = _terms(seg, [])  # a named absence only retracts that term; "gì cả/nào" retracts nothing specific
-                    out.negated_terms += [t for t in named if t not in out.negated_terms and allergens.recognised(t)]
+                    named = [t for t in named if allergens.recognised(t)] or _before_terms(before_full)
+                    out.negated_terms += [t for t in named if t not in out.negated_terms]
                     mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
+                    continue
+                if kind in ("allergy", "symptom") and _UNSURE.search(clause):
+                    out.issues.append("empty")  # "chưa biết có phải dị ứng không": a doubt, not a statement; keep the question open
+                    mode = None
                     continue
                 if kind == "avoid":
                     local = []
                     terms, lexicon = _terms(_cut_tail(seg), local)
                     if not terms and "vague" in local:
                         out.avoid_vague = True
+                    hard = bool(_HARD_CUE.search(fold_uncached(m.group(0))))
+                    if hard:
+                        terms = [t for t in terms if allergens.recognised(t)] or _before_terms(before_full)  # "Lạc thì mình không ăn được đâu"
                     out.avoid += [t for t in terms if allergens.recognised(t) and t not in out.avoid]
-                    if _HARD_CUE.search(fold_uncached(m.group(0))):
+                    if hard:
                         out.avoid_hard += [t for t in terms if allergens.recognised(t) and t not in out.avoid_hard]
                     out.avoid_any += [t for t in terms if t not in out.avoid_any and not _STOP.search(t)]
-                    mode = "avoid" if terms else None
+                    mode, hard_mode = ("avoid" if terms else None), hard
                     continue
-                terms, lexicon = _terms(seg, out.issues)
+                local = []
+                if kind == "symptom":
+                    found, _ = _scan(_clean_words(seg))
+                    terms = found or _before_terms(before_full)
+                    if not terms:
+                        local.append("empty")
+                else:
+                    terms, lexicon = _terms(seg, local)
+                    if not terms and not local:
+                        local.append("empty")
+                    if not terms:
+                        bt = _before_terms(before_full) or ([t for t in bare if True] if "empty" in local else [])
+                        if bt:
+                            terms, local = bt, []
+                if _UNNAMED.search(clause):
+                    local.append("empty")  # "…và một nguyên liệu chưa rõ tên": another substance exists but is unnamed
+                out.issues += local
                 bucket = out.allergies
                 bucket += [t for t in terms if t not in bucket]
-                mode = kind if terms else None
+                mode, hard_mode = (kind if terms else None), False
+                if mode == "symptom":
+                    mode = "allergy"
+            bare = []
+            continue
+        if _NORMAL_EAT.search(clause):
+            named = _before_terms(clause)
+            if named:
+                out.negated = True
+                out.negated_terms += [t for t in named if t not in out.negated_terms]  # "tôm mình ăn bình thường": not an allergy
+            mode = None
             continue
         if mode:
             found = _continuation(clause)
             if found:
                 bucket = out.allergies if mode == "allergy" else out.avoid
                 bucket += [t for t in found if t not in bucket]
+                if mode == "avoid" and hard_mode:
+                    out.avoid_hard += [t for t in found if t not in out.avoid_hard]
                 continue
-            if mode == "allergy" and re.search(r"\b(?:chat|thu|mon|loai|thuc pham|cai)\s+(?:khac|nua)\b", fold_uncached(clause)):
+            if mode == "allergy" and (_UNNAMED.search(clause) or re.search(r"\b(?:chat|thu|mon|loai|thuc pham|cai)\s+(?:khac|nua)\b", fold_uncached(clause))):
                 out.issues.append("empty")  # "…tôm và một chất khác": another allergy was mentioned but not named
                 continue
+        words = _clean_words(clause)
+        f_, all_used = _scan(words)
+        bare = f_ if f_ and all_used else []
         mode = None
     return out

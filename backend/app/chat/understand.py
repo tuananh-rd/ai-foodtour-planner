@@ -279,6 +279,35 @@ def verb_classes(text: str) -> dict:
     return out
 
 
+_HYPO = (r"như thể|nhu the la|giả sử|gia su|giả dụ|gia du|giả như|gia nhu|giá như|ví như|lỡ như|nhỡ như|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|"
+         r"nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|nếu như|🤣|😂|haha|hehe|=\)\)|:\)\)")
+_THIRD = r"(?:bạn|chị|anh|em gái|em trai|mẹ|bố|ba|má|cô|chú|dì|bác|ông|bà|vợ|chồng|con|cháu|người yêu|đồng nghiệp|khách)"
+_ABSENT = r"(?:ở nhà|không đi|không tham gia|không có mặt|vắng mặt|không cùng đi|đi vắng|không đi cùng)"
+
+
+def _unquote_foods(text: str) -> str:
+    """Mình dị ứng "đậu phộng": a quoted NAME of a major allergen next to an allergy cue is a statement, not a draft or an example."""
+    def swap(m):
+        inner = m.group(1).strip()
+        return inner if (allergens.family_of(inner) and allergens.core_term(inner) == inner) else m.group(0)
+    if not safety_parse._ALLERGY.search(text):
+        return text
+    return re.sub(r"[\"“«]([^\"”»]{1,30})[\"”»]", swap, text)
+
+
+def _drop_absent(text: str) -> str:
+    """An allergy that belongs to someone who is not coming constrains nothing (sentence level)."""
+    if not re.search(_ABSENT, text.casefold()):
+        return text
+    keep = []
+    for sent in re.split(r"(?<=[.;!?])\s+", text):
+        low = sent.casefold()
+        if safety_parse._ALLERGY.search(low) and re.match(r"\s*" + _THIRD + r"\b", low) and not re.search(r"\b(?:tôi|mình|em|tui|tớ)\s+(?:cũng\s+)?(?:bị\s+)?dị ứng", low):
+            continue
+        keep.append(sent)
+    return " ".join(keep).strip()
+
+
 def effective_text(text: str) -> str:
     """The part of a message the rules actually read: NFC, quoted drafts removed, postponed clauses trimmed."""
     text = safety_parse.normalize_keep_case(text).strip()
@@ -305,17 +334,19 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
     text = safety_parse.normalize_keep_case(text).strip()
     if text and not re.search(r"[A-Za-zÀ-ỹ0-9]", text):  # emoji / punctuation only: a reaction, not a request
         return Understanding("AMBIGUOUS_ACK" if not (state.pending and state.pending.kind == "confirm_plan") else "AMBIGUOUS_ACK", confidence=0.7)
+    if guided:
+        text = _unquote_foods(text)
     if re.search(r"[\"“”«»]", text):
         unquoted = re.sub(r"[\"“«][^\"”»]*[\"”»]", " ", text).strip()  # quoted drafts / examples never act
         if not re.search(r"[A-Za-zÀ-ỹ0-9]", unquoted):
             return Understanding("UNKNOWN", confidence=0.3)
         text = unquoted
-    if re.search(r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|nếu như", text.casefold()) or \
+    if re.search(_HYPO, text.casefold()) or \
             re.search(r"\bnếu\b[^.?!]{0,80}\b(?:thì sao|thì có sao|thì thế nào|thì có được không|có được không)\b", text.casefold()) or \
             re.search(r"\bnếu\b[^.?!]{0,100}\bthì\b[^.?!]{0,60}(?:\?|\bsao\b|\bgì\b|\bnào\b|\bthế nào\b)", text.casefold()):
         keep = []
         if guided:  # a hypothetical clause never acts, but a real statement next to it still counts (fail closed for allergies)
-            hypo = r"như thể|nhu the la|giả sử|gia su|tưởng tượng|thử nói|đùa thôi|dua thoi|nói đùa|nói mỉa|noi mia|mỉa mai|mia mai|sarcasm|phá sản à|ví dụ|vi du|\bvd\b|\bnếu\b"
+            hypo = _HYPO + r"|\bnếu\b"
             keep = [c for c in re.split(r"[,;.!?\n]+", text) if c.strip() and not re.search(hypo, c.casefold()) and not re.search(r"(?:không|chẳng|đâu|chưa)\s+phải", c.casefold())]
             if not any(safety_parse._ALLERGY.search(c) for c in keep):
                 keep = []
@@ -323,6 +354,11 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
             return Understanding("AMBIGUOUS_ACK", confidence=0.7)  # hypothetical / joking wording: never act
         text = ", ".join(keep)
     if guided:  # an allergy of someone who is not coming constrains nothing
+        pre = _drop_absent(text)
+        if pre != text.strip():
+            if not re.search(r"[A-Za-zÀ-ỹ0-9]", pre):
+                return Understanding("GREET_OR_SMALLTALK", {"absent_allergy": True}, confidence=0.8)
+            text = pre
         cleaned = re.sub(r"[^,.;!?]*?(?:dị ứng|di ung)[^,.;!?]*?\s(?:nhưng|mà|song)\s+(?:\S+\s+){0,2}?(?:không|ko|chẳng)\s+(?:đi cùng|tham gia|có mặt|đi)\b[^,.;!?]*", " ", text, flags=re.IGNORECASE).strip(" ,;.")
         if cleaned != text.strip(" ,;."):
             if not re.search(r"[A-Za-zÀ-ỹ0-9]", cleaned):
@@ -356,6 +392,21 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
         sp.removed += [t for t in sp.negated_terms if t not in sp.removed]  # "không bị dị ứng tôm" retracts tôm only
     if guided and sp.avoid_vague and not (sp.allergies or sp.avoid):
         sp.issues.append("vague")  # it may be an allergy: ask which food instead of dropping it
+    if guided:
+        fix = re.search(r"không phải\s+(.+?)\s+mà\s+(?:là\s+)?(.+?)(?:[,.;!?]|$)", text.casefold())
+        if fix:  # "không phải tôm mà là lạc, mình nói nhầm"
+            wrong, right = fix.group(1).strip(), fix.group(2).strip()
+            if allergens.family_of(wrong) and allergens.family_of(right):
+                sp = safety_parse.SafetyParse(mentioned=True, allergies=[right], removed=[wrong])
+        last_user = next((t for t in reversed(state.turns) if t.get("role") == "user"), None)
+        short = len(text.split()) <= 6
+        if short and last_user and last_user.get("intent") == "SET_ALLERGY" and not sp.allergies and re.search(r"\b(?:thêm|nữa|cả|luôn)\b", text.casefold()):
+            more, _ = safety_parse._scan(safety_parse._clean_words(text))  # "À thêm sữa nữa" right after an allergy statement
+            if more:
+                sp = safety_parse.SafetyParse(mentioned=True, allergies=more)
+        if any(a.who == "other" for a in state.allergies) and not safety_parse._ALLERGY.search(text.casefold()) \
+                and re.match(r"\s*(?:" + _THIRD + r"\s+(?:ấy|kia|đó|mình|tôi|của tôi)|họ)\b", text.casefold()) and re.search(_ABSENT, text.casefold()):
+            return Understanding("GREET_OR_SMALLTALK", {"absent_person": True}, confidence=0.8)  # "Bạn ấy ở nhà không đi cùng nhé"
     refs = parse_refs(text, f)
     patch = parse_slots(text, f, prior)
     if re.search(r"\bda (?:goi|hoi|lien he)\b", f) and refs:

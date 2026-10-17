@@ -20,7 +20,7 @@ from app.planner.types import Preferences
 from . import coverage, knowledge, tools
 from .gazetteer import Gazetteer, Place
 from .state import (MAX_ALLERGIES, MAX_SHORTLIST, Allergy, ChatState, Field_, Pending, ShortItem)
-from .understand import CONFIDENT, Understanding, effective_text, understand
+from .understand import _THIRD, CONFIDENT, Understanding, effective_text, understand
 
 ALLERGY_CHIPS = {"peanut": "đậu phộng", "seafood": "hải sản", "milk": "sữa", "egg": "trứng", "gluten": "gluten", "soy": "đậu nành", "sesame": "mè"}
 LABEL_OF = {"peanut": "Đậu phộng", "seafood": "Hải sản", "milk": "Sữa", "egg": "Trứng", "gluten": "Gluten", "soy": "Đậu nành", "sesame": "Mè", "other": "Khác"}
@@ -120,6 +120,11 @@ class ChatEngine:
 
     def _finish(self, R: TurnResult) -> TurnResult:
         R.prefs = self._to_prefs(R.state, R.prefs)
+        if self.guided:
+            cl = [b for b in R.blocks if b["type"] == "clarify"]
+            if len(cl) > 1:  # contract v1.9: one question per reply - keep the one that matches the open pending
+                keep = next((b for b in cl if R.state.pending and b.get("pending_id") == R.state.pending.pending_id), cl[-1])
+                R.blocks = [b for b in R.blocks if b["type"] != "clarify" or b is keep]
         R.state.remember("assistant", " ".join(b.get("text", "") for b in R.blocks if b["type"] == "text")[:200], R.intent)
         R.state.phase = self._phase(R.state, R.plan_request)
         return R
@@ -340,8 +345,8 @@ class ChatEngine:
                 if k not in base.patch:
                     base.patch[k] = v
         f = fold_uncached(effective_text(text))
-        clock = r"\d{1,2}\s*(?:h|gio|:)\s*\d{0,2}|ruoi"
-        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|theo nhom|theo nguoi|\bchung\b|mot nguoi|ca ban|ca hoi|tong\s+(?:ngan sach|cong|so tien|chi)|tong\s+\d[\d.,]*\s*(?:k\b|nghin|ngan|trieu|tr\b|d\b|dong)",
+        clock = r"\d{1,2}\s*(?:h|gio|:)\s*(?:\d{2}|ruoi)?"
+        grounded = {"budget_scope": r"moi nguoi|dau nguoi|ca nhom|theo nhom|theo nguoi|\bchung\s+(?:tien|ngan sach|\d)|mot nguoi|ca ban|ca hoi|tong\s+(?:ngan sach|cong|so tien|chi)|tong\s+\d[\d.,]*\s*(?:k\b|nghin|ngan|trieu|tr\b|d\b|dong)",
                     "start_time": clock, "end_time": r"(?:ket thuc|xong|ve truoc|truoc luc|truoc|den|toi)\s*(?:luc\s*)?" + clock}
         for k, rx in grounded.items():
             if k not in rules.patch and k in base.patch and not re.search(rx, f):
@@ -714,6 +719,12 @@ class ChatEngine:
 
     # ================================================================== intents
     def _do_greet_or_smalltalk(self, R, u):
+        if u.patch.get("absent_person"):
+            gone = [a.term for a in R.state.allergies if a.who == "other"]
+            R.state.allergies = [a for a in R.state.allergies if a.who != "other"]
+            R.blocks.append(notice_b("info", "allergy_cleared", "Mình đã bỏ dị ứng của người không đi cùng (" + ", ".join(gone) + "). Nếu mình hiểu nhầm, bạn nói lại nhé."))
+            R.tools.append("none")
+            return
         if u.patch.get("absent_allergy"):
             R.blocks.append(text_b("Ok, mình không tính dị ứng của người không đi cùng. Nếu bạn hoặc người đi cùng có dị ứng, hãy nói để mình lưu ý."))
             R.tools.append("none")
@@ -756,7 +767,9 @@ class ChatEngine:
         added = []
         for term in sp.allergies:
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
-                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said"))
+                said = (st.turns[-1]["text"] if st.turns else "").casefold()
+                other = bool(re.match(r"\s*" + _THIRD + r"\b", said)) and not re.search(r"\b(?:tôi|mình|em|tui|tớ)\s+(?:cũng\s+)?(?:bị\s+)?dị ứng", said)
+                st.allergies.append(Allergy(term, allergens.family_of(term), "user_said", who="other" if other else "self"))
                 added.append(term)
         for term in sp.removed:
             st.allergies = [a for a in st.allergies if fold_uncached(a.term) != fold_uncached(term)]
