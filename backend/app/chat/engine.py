@@ -495,10 +495,12 @@ class ChatEngine:
             R.tools.append("clarify")
             return True
         if not st.profile["vehicle"].known():
-            self._ask_plan_slots(R, ["vehicle"])
-            return True
+            st.set_field("vehicle", "walk", "default")  # walking is assumed (shown in the summary, editable) so the flow needs one question less
         if not st.shortlist:
-            return self._propose(R)
+            if not self._propose(R):
+                return True
+            if not st.shortlist:
+                return True
         self._present_summary(R)
         return True
 
@@ -535,9 +537,8 @@ class ChatEngine:
         if allergies:
             R.blocks.append(notice_b("safety", "allergy_unknown", SAFETY_LINE))
         R.blocks.append({"type": "venue_cards", "title": None, "cards": cards})
-        self._set_pending(st, "clarify_slot", [{"option_id": "propose:use", "label": "Dùng những quán này"}, {"option_id": "propose:self", "label": "Mình tự chọn"}],
-                          "propose", {"ids": [v.id for v, _d, _t in picks]})
-        R.blocks.append(self._clarify_block(st, "Bạn muốn dùng những quán này cho tour không?"))
+        for v, _d, _t in picks:  # the proposal joins the shortlist; the tour still needs the explicit confirmation that follows in the same reply
+            st.shortlist.append(ShortItem(v.id))
         R.tools.append("propose_shortlist")
         return True
 

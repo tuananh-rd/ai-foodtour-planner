@@ -155,14 +155,12 @@ class GuidedFlow(S0Base):
         self.assertEqual(r.state.profile["budget"].scope, "group")
         r = self.say(r.state, r.prefs, "19h")
         self.assertEqual(r.state.profile["start_time"].value, "19:00")
-        self.assertEqual(getattr(r.state.pending, "slot", None), "plan_slots")  # vehicle
-        r = self.say(r.state, r.prefs, option="veh:walk")
-        self.assertEqual(r.state.pending.slot, "propose")
+        # walking is the default vehicle, so the proposal and the confirmation arrive in the same reply
         cards = [b for b in r.blocks if b["type"] == "venue_cards"]
         self.assertTrue(cards and 1 <= len(cards[0]["cards"]) <= 3)
-        self.assertIsNone(r.plan_request)
-        r = self.say(r.state, r.prefs, option="propose:use")
+        self.assertEqual(r.state.profile["vehicle"].source, "default")
         self.assertEqual(r.state.pending.kind, "confirm_plan")
+        self.assertIn("confirm_summary", [b["type"] for b in r.blocks])
         self.assertIsNone(r.plan_request)
         r = self.say(r.state, r.prefs, option="confirm_yes")
         self.assertTrue(r.plan_request and r.plan_request["venue_ids"])

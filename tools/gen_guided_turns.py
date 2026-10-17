@@ -23,7 +23,7 @@ CUE = "Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ v�
 pick = lambda oid: ("action", {"type": "pick_option", "option_id": oid})  # noqa: E731
 
 SCRIPT = [
-    ("s0_full_flow", None, [("text", S0), pick("scope:group"), ("text", "19h"), pick("veh:walk"), pick("propose:use"), pick("confirm_yes")]),
+    ("s0_full_flow", None, [("text", S0), pick("scope:group"), ("text", "19h"), pick("confirm_yes")]),
     ("allergy_chip", None, [("text", CUE), pick("allergy:peanut")]),
     ("allergy_from_gemini_unconfirmed", {"intent": "SET_ALLERGY", "patch": {"allergy": ["đậu phộng"]}}, [("text", CUE), pick("allergy_ok")]),
     ("conflict_queued", {"intent": "SET_ALLERGY", "patch": {"allergy": ["lạc"], "party_size": 4}},
