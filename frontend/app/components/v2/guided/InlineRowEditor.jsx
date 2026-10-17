@@ -61,7 +61,7 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
         fontSize: 14
       }}
     >
-      {/* Stepper for party_size */}
+      {/* Stepper for party_size (>=44px touch targets for mobile accessibility Q07) */}
       {normalizedKey === 'party_size' && (
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <button
@@ -69,14 +69,19 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
             data-testid="inline-stepper-minus"
             onClick={() => setVal((prev) => Math.max(1, Number(prev) - 1))}
             style={{
-              width: 36,
-              height: 36,
+              width: 44,
+              height: 44,
+              minWidth: 44,
+              minHeight: 44,
               borderRadius: '50%',
               border: '1px solid var(--line, #e6dfd3)',
               background: '#fff',
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: 700,
-              cursor: 'pointer'
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
             aria-label="Giảm số người"
           >
@@ -84,7 +89,7 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
           </button>
           <span
             data-testid="inline-stepper-value"
-            style={{ fontWeight: 700, minWidth: 28, textAlign: 'center', fontSize: 16 }}
+            style={{ fontWeight: 700, minWidth: 32, textAlign: 'center', fontSize: 16 }}
           >
             {val}
           </span>
@@ -94,14 +99,19 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
             data-testid="inline-stepper-plus"
             onClick={() => setVal((prev) => Math.min(20, Number(prev) + 1))}
             style={{
-              width: 36,
-              height: 36,
+              width: 44,
+              height: 44,
+              minWidth: 44,
+              minHeight: 44,
               borderRadius: '50%',
               border: '1px solid var(--line, #e6dfd3)',
               background: '#fff',
-              fontSize: 18,
+              fontSize: 20,
               fontWeight: 700,
-              cursor: 'pointer'
+              cursor: 'pointer',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center'
             }}
             aria-label="Tăng số người"
           >
@@ -234,20 +244,24 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
         </div>
       )}
 
-      {/* Action Buttons: Lưu & Huỷ */}
-      <div style={{ display: 'flex', gap: 6, marginLeft: 'auto' }}>
+      {/* Action Buttons: Lưu & Huỷ (>=44px min touch target) */}
+      <div style={{ display: 'flex', gap: 8, marginLeft: 'auto', alignItems: 'center' }}>
         <button
           type="button"
           data-testid="inline-edit-save"
           onClick={handleSave}
           style={{
-            padding: '6px 14px',
+            minHeight: 44,
+            padding: '0 16px',
             background: 'var(--accent, #c2410c)',
             color: '#fff',
             border: 'none',
             borderRadius: 8,
             fontWeight: 600,
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           Lưu
@@ -257,12 +271,16 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
           data-testid="inline-edit-cancel"
           onClick={onCancel}
           style={{
-            padding: '6px 12px',
+            minHeight: 44,
+            padding: '0 14px',
             background: 'transparent',
             border: '1px solid var(--line, #e6dfd3)',
             color: 'var(--ink, #231f1a)',
             borderRadius: 8,
-            cursor: 'pointer'
+            cursor: 'pointer',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center'
           }}
         >
           Huỷ

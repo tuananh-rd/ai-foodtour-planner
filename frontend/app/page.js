@@ -73,7 +73,7 @@ export default function Home() {
   // UI_V2 activation: features.ui_v2=true or URL ?ui=v2 (Scope Goal)
   const [isUiV2, setIsUiV2] = useState(false);
   const [isChatV2, setIsChatV2] = useState(false);
-  const [isGuidedUi, setIsGuidedUi] = useState(false);
+  const [isGuidedUi, setIsGuidedUi] = useState(true);
   const [isDevMode, setIsDevMode] = useState(false);
 
   useEffect(() => {
@@ -84,10 +84,12 @@ export default function Home() {
       }
       if (params.get('guided') === '1' || params.get('ui') === 'guided') {
         setIsGuidedUi(true);
-      } else if (params.get('guided') === '0' || params.get('guided') === 'off' || params.get('chat') === 'v2' || params.get('ui') === 'v2') {
+      } else if (params.get('guided') === '0' || params.get('guided') === 'off' || params.get('chat') === 'v2' || params.get('ui') === 'v2' || params.get('ui') === 'classic' || params.get('ui') === 'v1') {
         setIsGuidedUi(false);
       } else if (clientConfig?.features?.guided_ui !== undefined) {
         setIsGuidedUi(Boolean(clientConfig.features.guided_ui));
+      } else {
+        setIsGuidedUi(true);
       }
 
       if (params.get('chat') === 'v2') {

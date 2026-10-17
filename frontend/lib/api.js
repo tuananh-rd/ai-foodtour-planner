@@ -202,6 +202,9 @@ export function setRuntimeMockMode(enable) {
 }
 
 export function getApiBaseUrl() {
+  if (typeof window !== 'undefined' && window.__FOODTOUR_API_URL) {
+    return window.__FOODTOUR_API_URL;
+  }
   return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000';
 }
 

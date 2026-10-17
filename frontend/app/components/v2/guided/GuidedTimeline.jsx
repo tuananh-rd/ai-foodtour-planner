@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
+import { formatWarningMessage } from './ConfirmSummaryCard';
 
 /**
  * GuidedTimeline
@@ -14,6 +15,8 @@ import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
 export default function GuidedTimeline({
   tour,
   allergies = [],
+  lockedStops = [],
+  onReplaceStop,
   onChangeStop,
   onAdjustStops,
   onRestart
@@ -24,7 +27,7 @@ export default function GuidedTimeline({
 
   const stops = tour.stops;
 
-  // Build Free Google Maps Directions URL
+  // Build Free Google Maps Directions URL (Full route up to 5 stops)
   let mapsUrl = null;
   if (stops.length > 0) {
     const origin = `${stops[0].lat},${stops[0].lon}`;
@@ -48,6 +51,30 @@ export default function GuidedTimeline({
     }
   }
 
+  // Build Per-Leg Walking URLs (NFE-07 mobile fallback)
+  const legUrls = [];
+  if (stops.length > 1) {
+    for (let i = 0; i < stops.length - 1; i++) {
+      const from = stops[i];
+      const to = stops[i + 1];
+      const q = new URLSearchParams({
+        api: '1',
+        origin: `${from.lat},${from.lon}`,
+        destination: `${to.lat},${to.lon}`,
+        travelmode: 'walking'
+      });
+      const u = `https://www.google.com/maps/dir/?${q.toString()}`;
+      if (isValidGoogleMapsDirUrl(u)) {
+        legUrls.push({
+          order: i + 1,
+          fromName: from.name,
+          toName: to.name,
+          url: u
+        });
+      }
+    }
+  }
+
   // Allergy label display
   const hasAllergies = Array.isArray(allergies) && allergies.length > 0;
   const allergyTerms = hasAllergies
@@ -67,9 +94,85 @@ export default function GuidedTimeline({
         margin: '16px 0'
       }}
     >
-      <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink, #231f1a)' }}>
-        📍 Lịch trình gợi ý ({stops.length} quán)
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+        <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink, #231f1a)' }}>
+          📍 Lịch trình gợi ý ({stops.length} quán)
+        </div>
+        {tour.status && (
+          <span
+            data-testid="timeline-status-badge"
+            style={{
+              fontSize: 12,
+              background: tour.status === 'verified_feasible' ? '#E8F5E9' : tour.status === 'conditional' ? '#FEF3C7' : '#FEE2E2',
+              color: tour.status === 'verified_feasible' ? '#2E7D32' : tour.status === 'conditional' ? '#92400E' : '#991B1B',
+              border: `1px solid ${tour.status === 'verified_feasible' ? '#C8E6C9' : tour.status === 'conditional' ? '#FDE68A' : '#FECACA'}`,
+              borderRadius: 12,
+              padding: '2px 8px',
+              fontWeight: 600
+            }}
+          >
+            {tour.status === 'verified_feasible' ? 'Đã xác minh khả thi' : tour.status === 'conditional' ? 'Gợi ý có điều kiện' : 'Thiếu bằng chứng'}
+          </span>
+        )}
       </div>
+
+      {/* Tour Status & Conditional Notice (Q02) */}
+      {tour.status === 'conditional' && (
+        <div
+          data-testid="timeline-conditional-status"
+          style={{
+            background: 'var(--warnbg, #fef3c7)',
+            color: 'var(--warn, #92400e)',
+            border: '1px solid var(--warn, #92400e)',
+            borderRadius: 10,
+            padding: '10px 14px',
+            fontSize: 13,
+            lineHeight: 1.45
+          }}
+        >
+          ⚠️ <b>Lịch trình có điều kiện:</b> Một số thông tin về giờ mở cửa và giá theo người chưa được xác minh trực tiếp tại quán.
+        </div>
+      )}
+
+      {/* Route Warnings (Q02) */}
+      {Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0 && (
+        <div
+          data-testid="timeline-route-warnings"
+          style={{
+            background: '#fffbe6',
+            border: '1px solid #ffe58f',
+            borderLeft: '4px solid #faad14',
+            borderRadius: 8,
+            padding: '8px 12px',
+            fontSize: 13,
+            color: '#873800'
+          }}
+        >
+          <b>Cảnh báo tuyến đường:</b>
+          <ul style={{ margin: '4px 0 0', paddingLeft: 18 }}>
+            {tour.route_warnings.map((rw, i) => (
+              <li key={i}>{formatWarningMessage(rw)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {/* Unknowns (Q02) */}
+      {Array.isArray(tour.unknowns) && tour.unknowns.length > 0 && (
+        <div
+          data-testid="timeline-unknowns"
+          style={{
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: 8,
+            padding: '8px 12px',
+            fontSize: 12,
+            color: '#475569'
+          }}
+        >
+          <b>Thông tin chưa xác minh:</b> {tour.unknowns.map((u) => formatWarningMessage(u)).join(', ')}
+        </div>
+      )}
 
       {/* Vertical Stops List */}
       <div style={{ display: 'grid', gap: 0 }}>
@@ -83,7 +186,17 @@ export default function GuidedTimeline({
             ? stop.venue.cuisine_styles.join(' • ')
             : 'Món ngon Hà Nội';
 
-          const legMin = leg?.minutes || 5;
+          // Q01: Preserve legitimate 0; do not turn null or 0 into 5!
+          const legMinText = typeof leg?.minutes === 'number'
+            ? (leg.minutes === 0 ? '0 phút' : `~${leg.minutes} phút (ước tính)`)
+            : 'chưa tính khoảng cách';
+
+          // Q01: Preserve null arrive; do NOT fall back to '19:00'!
+          const arriveDisplay = stop.arrive
+            ? stop.arrive
+            : (stop.depart ? `đến trước ${stop.depart}` : 'Chưa rõ giờ');
+
+          const isLocked = lockedStops.includes(stop.venue_id) || stop.locked;
 
           return (
             <div
@@ -91,35 +204,74 @@ export default function GuidedTimeline({
               data-testid={`guided-stop-${idx}`}
               style={{
                 display: 'grid',
-                gridTemplateColumns: '60px 1fr',
+                gridTemplateColumns: '80px 1fr',
                 gap: 12,
                 padding: '12px 0',
                 borderTop: idx > 0 ? '1px solid var(--line, #e6dfd3)' : 'none',
                 alignItems: 'start'
               }}
             >
-              {/* Arrive Time */}
+              {/* Arrive Time (Honest: no fake 19:00) */}
               <div
                 style={{
                   fontWeight: 700,
-                  fontSize: 15,
+                  fontSize: 14,
                   color: 'var(--accent, #c2410c)',
                   paddingTop: 2
                 }}
               >
-                {stop.arrive || '19:00'}
+                {arriveDisplay}
               </div>
 
               {/* Stop Info with Honest Labels */}
               <div style={{ display: 'grid', gap: 4 }}>
-                <b style={{ fontSize: 15, color: 'var(--ink, #231f1a)' }}>
-                  {stop.name}
-                </b>
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
+                  <b style={{ fontSize: 15, color: 'var(--ink, #231f1a)' }}>
+                    {stop.name}
+                  </b>
+                  {isLocked && (
+                    <span
+                      data-testid={`stop-lock-badge-${idx}`}
+                      style={{
+                        fontSize: 11,
+                        background: '#e0f2fe',
+                        color: '#0369a1',
+                        borderRadius: 6,
+                        padding: '1px 6px',
+                        fontWeight: 600
+                      }}
+                    >
+                      🔒 Đã khóa
+                    </span>
+                  )}
+                </div>
+
                 <div style={{ fontSize: 13, color: 'var(--mute, #6b6257)', lineHeight: 1.45 }}>
                   <span>{dishStr}</span>
                   <span> • giá theo nguồn: {priceStr}</span>
-                  {idx > 0 && <span> • đi bộ ~{legMin} phút (ước tính)</span>}
+                  {idx > 0 && <span> • đi bộ {legMinText}</span>}
                   <span> • giờ mở cửa theo nguồn ghi: {stop.hours?.display || 'chưa rõ'}</span>
+                </div>
+
+                {/* Stop-level action buttons: Đổi quán */}
+                <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
+                  <button
+                    type="button"
+                    data-testid={`stop-replace-btn-${idx}`}
+                    onClick={() => onReplaceStop ? onReplaceStop(stop) : onChangeStop && onChangeStop(stop)}
+                    style={{
+                      background: 'none',
+                      border: '1px solid var(--line, #e6dfd3)',
+                      borderRadius: 6,
+                      padding: '2px 8px',
+                      fontSize: 12,
+                      fontWeight: 600,
+                      color: 'var(--ink, #231f1a)',
+                      cursor: 'pointer'
+                    }}
+                  >
+                    🔄 Đổi quán này
+                  </button>
                 </div>
               </div>
             </div>
@@ -144,30 +296,90 @@ export default function GuidedTimeline({
           : 'Dị ứng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.'}
       </div>
 
-      {/* Primary CTA: Mở lộ trình trong Google Maps (Free URL, NO API Key) */}
+      {/* Primary CTA: Mở lộ trình trong Google Maps (Free URL, NO API Key) with Q05 Disclosure */}
       {mapsUrl && (
-        <a
-          href={mapsUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          data-testid="google-maps-cta"
+        <div style={{ display: 'grid', gap: 6 }}>
+          <a
+            href={mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="google-maps-cta"
+            style={{
+              minHeight: 48,
+              borderRadius: 12,
+              background: 'var(--accent, #c2410c)',
+              color: '#fff',
+              fontWeight: 700,
+              fontSize: 15,
+              textDecoration: 'none',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              boxShadow: '0 2px 4px rgba(194, 65, 12, 0.2)',
+              cursor: 'pointer'
+            }}
+          >
+            Mở lộ trình trong Google Maps
+          </a>
+          <p
+            data-testid="google-maps-disclosure"
+            style={{
+              fontSize: 12,
+              color: 'var(--mute, #6b6257)',
+              margin: 0,
+              lineHeight: 1.45
+            }}
+          >
+            ℹ️ Mở liên kết chỉ đường trên Google Maps. Danh sách điểm đến được gắn vào URL; Google có thể tính thời gian và đường đi thực tế khác với ứng dụng.
+          </p>
+        </div>
+      )}
+
+      {/* Per-leg fallback links for mobile / multi-stop tours (NFE-07) */}
+      {legUrls.length > 0 && stops.length > 3 && (
+        <details
           style={{
-            minHeight: 48,
+            background: '#F7F8F2',
+            border: '1px solid #DDE7E1',
             borderRadius: 12,
-            background: 'var(--accent, #c2410c)',
-            color: '#fff',
-            fontWeight: 700,
-            fontSize: 15,
-            textDecoration: 'none',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 2px 4px rgba(194, 65, 12, 0.2)',
-            cursor: 'pointer'
+            padding: '10px 14px',
+            fontSize: 13
           }}
         >
-          Mở lộ trình trong Google Maps
-        </a>
+          <summary style={{ fontWeight: 600, color: '#17352B', cursor: 'pointer' }}>
+            Xem từng chặng riêng trên Google Maps ({legUrls.length} chặng)
+          </summary>
+          <div style={{ marginTop: 8, display: 'grid', gap: 6 }}>
+            <p style={{ margin: '0 0 6px 0', fontSize: 12, color: '#62736D', lineHeight: 1.4 }}>
+              Nếu ứng dụng Google Maps trên điện thoại không hỗ trợ nhiều điểm dừng cùng lúc, bạn có thể bấm mở từng chặng:
+            </p>
+            {legUrls.map((leg) => (
+              <a
+                key={leg.order}
+                href={leg.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid={`google-maps-leg-${leg.order}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 8,
+                  border: '1px solid #DDE7E1',
+                  color: '#166B52',
+                  textDecoration: 'none',
+                  fontSize: 12,
+                  fontWeight: 600
+                }}
+              >
+                <span>Chặng {leg.order}: {leg.fromName} → {leg.toName}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+        </details>
       )}
 
       {/* Three Secondary Actions */}
