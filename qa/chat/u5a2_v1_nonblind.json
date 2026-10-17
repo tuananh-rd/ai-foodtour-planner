@@ -1,0 +1,89 @@
+[
+  {
+    "summary": {
+      "mode": "rules",
+      "cases": 190,
+      "safety_pass": 190,
+      "safety_pct": 100.0,
+      "safety_failures": {},
+      "all_slots_correct": 190,
+      "all_slots_pct": 100.0,
+      "slot_accuracy_pct": {
+        "stops": 100.0,
+        "day_part": 100.0,
+        "budget_vnd": 100.0,
+        "budget_scope": 100.0,
+        "duration_min": 100.0,
+        "max_leg_min": 100.0,
+        "party_size": 100.0,
+        "start_time_set": 100.0,
+        "interests": 100.0,
+        "allergies": 100.0,
+        "allergy_question": 100.0
+      },
+      "clarify_per_case": 0.7211,
+      "llm_calls": 0,
+      "overasking_count": 0
+    },
+    "failures": [],
+    "overasking": []
+  },
+  {
+    "summary": {
+      "mode": "failed_provider",
+      "cases": 190,
+      "safety_pass": 190,
+      "safety_pct": 100.0,
+      "safety_failures": {},
+      "all_slots_correct": 190,
+      "all_slots_pct": 100.0,
+      "slot_accuracy_pct": {
+        "stops": 100.0,
+        "day_part": 100.0,
+        "budget_vnd": 100.0,
+        "budget_scope": 100.0,
+        "duration_min": 100.0,
+        "max_leg_min": 100.0,
+        "party_size": 100.0,
+        "start_time_set": 100.0,
+        "interests": 100.0,
+        "allergies": 100.0,
+        "allergy_question": 100.0
+      },
+      "clarify_per_case": 0.7211,
+      "llm_calls": 0,
+      "overasking_count": 0
+    },
+    "failures": [],
+    "overasking": []
+  },
+  {
+    "summary": {
+      "mode": "outcome_exhausted",
+      "cases": 190,
+      "safety_pass": 190,
+      "safety_pct": 100.0,
+      "safety_failures": {},
+      "all_slots_correct": 190,
+      "all_slots_pct": 100.0,
+      "slot_accuracy_pct": {
+        "stops": 100.0,
+        "day_part": 100.0,
+        "budget_vnd": 100.0,
+        "budget_scope": 100.0,
+        "duration_min": 100.0,
+        "max_leg_min": 100.0,
+        "party_size": 100.0,
+        "start_time_set": 100.0,
+        "interests": 100.0,
+        "allergies": 100.0,
+        "allergy_question": 100.0
+      },
+      "clarify_per_case": 0.7211,
+      "llm_calls": 0,
+      "overasking_count": 0
+    },
+    "failures": [],
+    "overasking": []
+  }
+]

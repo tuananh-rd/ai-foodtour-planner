@@ -1,0 +1,16 @@
+{
+  "seed": 5172026,
+  "sequences": 2500,
+  "turns": 8628,
+  "plan_requests": 27,
+  "llm_calls": 0,
+  "failure_counts": {},
+  "max_list_lengths": {
+    "turns": 8,
+    "asked": 2,
+    "conflicts": 0,
+    "allergies": 3,
+    "shortlist": 1
+  },
+  "failures": []
+}
