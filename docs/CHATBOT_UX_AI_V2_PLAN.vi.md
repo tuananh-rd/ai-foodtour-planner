@@ -261,3 +261,28 @@ Giao diện di động riêng (app), Postgres, xác thực tài khoản, thời 
 - Chỉ thêm tài liệu: file này + một dòng "Proposed — awaiting user approval" trong `docs/TASK_BOARD.md`.
 - **Không** sửa mã sản phẩm, manifest phụ thuộc, cấu hình, hành vi server; **không** tạo worker; không push/deploy.
 - Việc tái hiện S0 ở mục 0/1 chỉ là chạy hàm hiểu bằng bộ dữ liệu giả lập, không gọi mạng, không gọi Gemini, không chạm `.env`/CSV.
+
+## 11. Trạng thái triển khai (cập nhật 17/10/2026, Run `run_4cd95f8d40ed`)
+
+Người dùng đã duyệt toàn bộ kế hoạch và 9 quyết định mặc định. Ghi chú theo đợt (chi tiết ở `docs/TASK_BOARD.md`):
+
+| Đợt | Trạng thái | Bằng chứng |
+|---|---|---|
+| U0 hợp đồng v1.9/1.9.1, test fail-trước S0, mockup | Xong | `contracts/v1/CONTRACT.md`, `backend/tests/chat/test_u0_s0.py`, `docs/reports/U0_S0_FAIL_BEFORE.md`, `docs/ux/guided-flow-mockup.html`; Codex review U0 = REQUEST-CHANGES (chặn dị ứng bị bỏ qua qua `edit_profile→request_plan→confirm_yes`) → đã sửa và đóng băng ở v1.9.1 |
+| U1 engine (kiểm kê phủ, slot, luồng một câu hỏi, thẻ "Mình hiểu là…") | Xong, test xanh | `backend/app/chat/coverage.py`, `engine.py`; 557 test backend |
+| U2 Gemini theo độ phủ + hợp nhất an toàn | Xong; smoke thật 4/8 lượt | `qa/live/guided_gemini_smoke.py`; dị ứng do AI đề xuất luôn `ai_unconfirmed`; mô tả/triệu chứng bị loại |
+| U3 API (cờ `guided_ui`, metadata, sổ đếm bền, cổng chặn kế hoạch) | Xong, Codex `cc50d50` | `docs/reports/CODEX_U3_API.md` |
+| U4a giao diện dẫn dắt (fixture) | Xong, Antigravity `f0954e3`, Claude chạy lại 42/42 | `docs/reports/ANTIGRAVITY_U4A.md` |
+| **U4b giao diện với API thật + số liệu dùng thử** | **BỊ CHẶN**: Antigravity CLI không qua `agent_readiness` (5 lần thử) | cần người dùng khởi động lại phiên Antigravity |
+| U5 đánh giá độc lập (Codex: v1, v2, v3, v4 mù) | Xong, REQUEST-CHANGES ở mỗi vòng → đã sửa | `docs/reports/CODEX_U5A*.md`, `CODEX_U5C.md`, `CODEX_U5D.md` |
+| U6 tích hợp cuối | Chờ U4b | |
+
+### Số liệu mù trung thực (lần chạy đầu của từng bộ, động cơ bộ luật, không Gemini)
+| Bộ | Số ca | An toàn (bất biến) | Đúng toàn bộ slot |
+|---|---|---|---|
+| v1 (mù, trước khi sửa) | 190 | 94,7% | 66,8% |
+| v2 (mù, giữ lại) | 152 | 100% | 73,7% |
+| v3 (mù) | 225 | 89,8% | 50,7% |
+| **v4 (mù, mới nhất)** | 220 | **78,6%** | **32,3%** |
+
+Sau mỗi vòng, các ca thất bại được sửa tổng quát hoá nên v1–v4 hiện chỉ còn là **bộ phát triển (không còn mù)**: v1/v2 100%, v3 an toàn 98,7% / slot 89,3%, v4 an toàn 84,1% / slot 80,5% (chấm theo khớp đúng từ, nên "sữa" so với "sữa bò" bị tính là sai). **Kết luận trung thực:** bộ luật cục bộ không đạt "hiểu tự nhiên đáng tin" trên câu mới lạ; mỗi bộ mù mới vẫn tìm ra lỗi mới. Vì vậy an toàn dựa vào cấu trúc chứ không dựa vào độ chính xác của luật: nghĩa vụ dị ứng/ngân sách bền vững, cổng chặn lập tour ở cả engine lẫn API, dị ứng do AI luôn cần xác nhận, câu trả lời tự do ngoài từ điển phải được xác nhận, và thẻ "Mình hiểu là…" luôn hiện dòng Dị ứng. Độ chính xác slot cần Gemini (hoặc người dùng sửa trên thẻ) mới tốt hơn; chưa đo được trên quy mô lớn do hạn mức 20 lượt/ngày.
