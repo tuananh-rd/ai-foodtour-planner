@@ -24,6 +24,7 @@ from .understand import CONFIDENT, Understanding, effective_text, understand
 
 ALLERGY_CHIPS = {"peanut": "đậu phộng", "seafood": "hải sản", "milk": "sữa", "egg": "trứng", "gluten": "gluten", "soy": "đậu nành", "sesame": "mè"}
 LABEL_OF = {"peanut": "Đậu phộng", "seafood": "Hải sản", "milk": "Sữa", "egg": "Trứng", "gluten": "Gluten", "soy": "Đậu nành", "sesame": "Mè", "other": "Khác"}
+SYMPTOM_WORDS = frozenset({"ngứa", "họng", "mẩn", "phát", "sưng", "đau", "bụng", "nôn", "tiêu", "chảy", "thở", "mề", "đay", "ho", "mũi", "khó", "chóng", "ngạt"})  # accent-sensitive: "đậu" is a bean, "đau" is pain
 PASSIVE = frozenset({"ANSWER_PENDING", "CONFIRM_YES", "CONFIRM_NO", "AMBIGUOUS_ACK", "GREET_OR_SMALLTALK", "UNSAFE", "OUT_OF_SCOPE",
                      "UNKNOWN", "ADD", "REMOVE", "KEEP", "COMPARE", "ASK_DETAIL", "MODIFY_PLAN"})
 LOW_CONFIDENCE = 0.55  # below this and no LLM: ask instead of guessing
@@ -357,7 +358,7 @@ class ChatEngine:
         rs, cs = rules.extra.get("safety"), cand.extra.get("safety")
         known = {fold_uncached(t) for t in (rs.allergies if rs is not None else [])}
         cterms = list(cs.allergies if cs is not None else []) + list(cand.extra.get("llm_allergy") or [])
-        fresh = [t for t in dict.fromkeys(cterms) if fold_uncached(t) not in known]
+        fresh = [t for t in dict.fromkeys(cterms) if fold_uncached(t) not in known and not SYMPTOM_WORDS & set(t.casefold().split())]  # a symptom is not a food
         if rs is not None:
             base.extra["safety"] = rs  # the rules' own parse stays authoritative
         else:
