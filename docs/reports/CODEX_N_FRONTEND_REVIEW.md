@@ -17,6 +17,7 @@ These refer to the author's in-progress working tree, not a final commit; final 
 | NFE-07 | P2 | Unknown/status warnings need readable Vietnamese, not JSON/raw codes; map URL waypoints need honest mobile behavior. | Conditional/verified/insufficient distinctly labelled; complete warnings before confirmation and timeline; 3/4/5-stop URLs with per-leg fallback where needed and no API/embed requests |
 | NFE-08 | P2 | Header invents a Tuấn identity/avatar in an anonymous app. | Replace with anonymous/local context; no fake account/profile |
 | NFE-09 | P2 | Desktop navigation only sets mobile-tab state while desktop ignores it; controls do nothing. | Desktop actions scroll/focus real sections, mobile tabs switch actual views; selected/current semantics exposed and keyboard reachable |
+| NFE-10 | P1 | During QA setup, author added unrestricted `window.__FOODTOUR_API_URL` endpoint override to production API client to work around an old build's baked API port. | Remove the hook; configure NEXT_PUBLIC_API_URL at scratch build time (or isolated dev startup) and validate production build separately; no arbitrary runtime token destination |
 
 ## Final acceptance evidence — pending
 
