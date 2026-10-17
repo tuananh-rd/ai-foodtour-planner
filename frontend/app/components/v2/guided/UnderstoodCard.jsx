@@ -70,6 +70,16 @@ export default function UnderstoodCard({
     };
   });
 
+  // Include any extra items passed in props (e.g. visit_min, vehicle)
+  if (Array.isArray(items)) {
+    const canonicalIds = new Set(canonicalOrder.map((c) => c.id));
+    items.forEach((item) => {
+      if (item && item.id && !canonicalIds.has(item.id) && item.value !== null && item.value !== undefined && item.value !== '') {
+        displayRows.push(item);
+      }
+    });
+  }
+
   // Handle Edit Click
   const handleEditClick = (item) => {
     const isWhitelisted = WHITELISTED_INLINE_FIELDS.includes(item.id);
@@ -134,7 +144,13 @@ export default function UnderstoodCard({
                     fontWeight: isMissing ? 600 : 400
                   }}
                 >
-                  {hasValue ? item.value : 'Chưa chọn'}
+                  {hasValue ? (
+                    <>
+                      {item.value}
+                      {item.status === 'default' && <span style={{ fontSize: 11, color: '#62736D', marginLeft: 4 }}>(mặc định)</span>}
+                      {item.status === 'inferred' && <span style={{ fontSize: 11, color: '#62736D', marginLeft: 4 }}>(suy luận)</span>}
+                    </>
+                  ) : 'Chưa chọn'}
                 </span>
                 <button
                   type="button"

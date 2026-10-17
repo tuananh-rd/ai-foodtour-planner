@@ -14,6 +14,22 @@ export default function ReplaceDiffModal({
   const confirmBtnRef = useRef(null);
   const dialogRef = useRef(null);
 
+  // Background inertness (NFE-04)
+  useEffect(() => {
+    if (!isOpen) return;
+    const container = document.querySelector('[data-testid="guided-container"]') || document.querySelector('main');
+    if (container) {
+      container.setAttribute('aria-hidden', 'true');
+      try { container.inert = true; } catch (_) {}
+    }
+    return () => {
+      if (container) {
+        container.removeAttribute('aria-hidden');
+        try { container.inert = false; } catch (_) {}
+      }
+    };
+  }, [isOpen]);
+
   // Close on Escape key press
   useEffect(() => {
     if (!isOpen) return;

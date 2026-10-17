@@ -28,6 +28,22 @@ export default function TrustDisclosure({ turn, health }) {
     }, 10);
   };
 
+  // Background inertness (NFE-04)
+  useEffect(() => {
+    if (!isOpen) return;
+    const container = document.querySelector('[data-testid="guided-container"]') || document.querySelector('main');
+    if (container) {
+      container.setAttribute('aria-hidden', 'true');
+      try { container.inert = true; } catch (_) {}
+    }
+    return () => {
+      if (container) {
+        container.removeAttribute('aria-hidden');
+        try { container.inert = false; } catch (_) {}
+      }
+    };
+  }, [isOpen]);
+
   // Focus trap and Escape management (Q07)
   useEffect(() => {
     if (!isOpen) return;
@@ -110,7 +126,7 @@ export default function TrustDisclosure({ turn, health }) {
           lineHeight: 1.5
         }}
       >
-        <span>Dữ liệu quán từ Foody • giờ & giá theo nguồn ghi • khoảng cách ước tính</span>
+        <span>Dữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính</span>
         <button
           type="button"
           data-testid="trust-disclosure-btn"
@@ -159,6 +175,8 @@ export default function TrustDisclosure({ turn, health }) {
               borderRadius: 16,
               maxWidth: 500,
               width: '100%',
+              maxHeight: '90vh',
+              overflowY: 'auto',
               padding: 22,
               boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
               display: 'grid',
@@ -203,10 +221,13 @@ export default function TrustDisclosure({ turn, health }) {
                 <b>Trạng thái xử lý:</b> {budgetStatus}
               </div>
               <div>
-                <b>Trí tuệ nhân tạo (AI):</b> Yêu cầu của bạn được gửi đến bộ xử lý ngôn ngữ để trích xuất các thông tin tour (địa điểm, thời gian, khẩu vị). Không lưu trữ lịch sử cá nhân hay danh tính người dùng.
+                <b>Trí tuệ nhân tạo (AI):</b> Khi cần hiểu các yêu cầu phức tạp, văn bản yêu cầu của bạn có thể được gửi ẩn danh đến mô hình Google Gemini để nhận diện các tiêu chí tour (khu vực, thời gian, khẩu vị). Không liên kết danh tính người dùng.
               </div>
               <div>
-                <b>Nguồn dữ liệu:</b> Dữ liệu ẩm thực từ Foody Hà Nội (thử nghiệm cục bộ)
+                <b>Lưu trữ phiên:</b> Lịch sử đối thoại và các tiêu chí đã chọn chỉ được lưu tạm thời theo phiên làm việc ẩn danh để phục vụ xếp lịch trình, không lưu trữ lịch sử cá nhân lâu dài và có thể đặt lại bất cứ lúc nào qua nút &quot;Làm lại&quot;.
+              </div>
+              <div>
+                <b>Nguồn dữ liệu:</b> {health?.dataset ? `Dữ liệu ẩm thực (${health.dataset})` : 'Dữ liệu địa điểm ẩm thực Hà Nội (thử nghiệm cục bộ)'}
               </div>
               <div>
                 <b>Giờ mở cửa & giá:</b> Theo nguồn ghi nhận ban đầu, chưa qua kiểm chứng thực tế tại quán

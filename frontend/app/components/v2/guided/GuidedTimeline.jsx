@@ -2,6 +2,7 @@
 
 import React from 'react';
 import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
+import { formatWarningMessage } from './ConfirmSummaryCard';
 
 /**
  * GuidedTimeline
@@ -26,7 +27,7 @@ export default function GuidedTimeline({
 
   const stops = tour.stops;
 
-  // Build Free Google Maps Directions URL
+  // Build Free Google Maps Directions URL (Full route up to 5 stops)
   let mapsUrl = null;
   if (stops.length > 0) {
     const origin = `${stops[0].lat},${stops[0].lon}`;
@@ -47,6 +48,30 @@ export default function GuidedTimeline({
     const candidateUrl = `https://www.google.com/maps/dir/?${query.toString()}`;
     if (isValidGoogleMapsDirUrl(candidateUrl)) {
       mapsUrl = candidateUrl;
+    }
+  }
+
+  // Build Per-Leg Walking URLs (NFE-07 mobile fallback)
+  const legUrls = [];
+  if (stops.length > 1) {
+    for (let i = 0; i < stops.length - 1; i++) {
+      const from = stops[i];
+      const to = stops[i + 1];
+      const q = new URLSearchParams({
+        api: '1',
+        origin: `${from.lat},${from.lon}`,
+        destination: `${to.lat},${to.lon}`,
+        travelmode: 'walking'
+      });
+      const u = `https://www.google.com/maps/dir/?${q.toString()}`;
+      if (isValidGoogleMapsDirUrl(u)) {
+        legUrls.push({
+          order: i + 1,
+          fromName: from.name,
+          toName: to.name,
+          url: u
+        });
+      }
     }
   }
 
@@ -73,20 +98,20 @@ export default function GuidedTimeline({
         <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink, #231f1a)' }}>
           📍 Lịch trình gợi ý ({stops.length} quán)
         </div>
-        {tour.status === 'conditional' && (
+        {tour.status && (
           <span
             data-testid="timeline-status-badge"
             style={{
               fontSize: 12,
-              background: '#fef3c7',
-              color: '#92400e',
-              border: '1px solid #fde68a',
+              background: tour.status === 'verified_feasible' ? '#E8F5E9' : tour.status === 'conditional' ? '#FEF3C7' : '#FEE2E2',
+              color: tour.status === 'verified_feasible' ? '#2E7D32' : tour.status === 'conditional' ? '#92400E' : '#991B1B',
+              border: `1px solid ${tour.status === 'verified_feasible' ? '#C8E6C9' : tour.status === 'conditional' ? '#FDE68A' : '#FECACA'}`,
               borderRadius: 12,
               padding: '2px 8px',
               fontWeight: 600
             }}
           >
-            Gợi ý có điều kiện
+            {tour.status === 'verified_feasible' ? 'Đã xác minh khả thi' : tour.status === 'conditional' ? 'Gợi ý có điều kiện' : 'Thiếu bằng chứng'}
           </span>
         )}
       </div>
@@ -126,7 +151,7 @@ export default function GuidedTimeline({
           <b>Cảnh báo tuyến đường:</b>
           <ul style={{ margin: '4px 0 0', paddingLeft: 18 }}>
             {tour.route_warnings.map((rw, i) => (
-              <li key={i}>{typeof rw === 'string' ? rw : rw.message || JSON.stringify(rw)}</li>
+              <li key={i}>{formatWarningMessage(rw)}</li>
             ))}
           </ul>
         </div>
@@ -145,7 +170,7 @@ export default function GuidedTimeline({
             color: '#475569'
           }}
         >
-          <b>Thông tin chưa xác minh:</b> {tour.unknowns.join(', ')}
+          <b>Thông tin chưa xác minh:</b> {tour.unknowns.map((u) => formatWarningMessage(u)).join(', ')}
         </div>
       )}
 
@@ -308,6 +333,53 @@ export default function GuidedTimeline({
             ℹ️ Mở liên kết chỉ đường trên Google Maps. Danh sách điểm đến được gắn vào URL; Google có thể tính thời gian và đường đi thực tế khác với ứng dụng.
           </p>
         </div>
+      )}
+
+      {/* Per-leg fallback links for mobile / multi-stop tours (NFE-07) */}
+      {legUrls.length > 0 && stops.length > 3 && (
+        <details
+          style={{
+            background: '#F7F8F2',
+            border: '1px solid #DDE7E1',
+            borderRadius: 12,
+            padding: '10px 14px',
+            fontSize: 13
+          }}
+        >
+          <summary style={{ fontWeight: 600, color: '#17352B', cursor: 'pointer' }}>
+            Xem từng chặng riêng trên Google Maps ({legUrls.length} chặng)
+          </summary>
+          <div style={{ marginTop: 8, display: 'grid', gap: 6 }}>
+            <p style={{ margin: '0 0 6px 0', fontSize: 12, color: '#62736D', lineHeight: 1.4 }}>
+              Nếu ứng dụng Google Maps trên điện thoại không hỗ trợ nhiều điểm dừng cùng lúc, bạn có thể bấm mở từng chặng:
+            </p>
+            {legUrls.map((leg) => (
+              <a
+                key={leg.order}
+                href={leg.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid={`google-maps-leg-${leg.order}`}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                  padding: '8px 12px',
+                  backgroundColor: '#FFFFFF',
+                  borderRadius: 8,
+                  border: '1px solid #DDE7E1',
+                  color: '#166B52',
+                  textDecoration: 'none',
+                  fontSize: 12,
+                  fontWeight: 600
+                }}
+              >
+                <span>Chặng {leg.order}: {leg.fromName} → {leg.toName}</span>
+                <span aria-hidden="true">↗</span>
+              </a>
+            ))}
+          </div>
+        </details>
       )}
 
       {/* Three Secondary Actions */}

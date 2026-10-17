@@ -17,16 +17,20 @@ function profileToUnderstoodItems(profile = {}) {
   const items = [];
   if (profile.area?.value) {
     const areaVal = typeof profile.area.value === 'object' ? profile.area.value.label : profile.area.value;
-    items.push({ id: 'area', label: 'Khu vực', value: areaVal, status: 'user', editable: true });
+    const status = profile.area.source || 'user';
+    items.push({ id: 'area', label: 'Khu vực', value: areaVal, status, editable: true });
   }
   if (profile.party_size?.value !== null && profile.party_size?.value !== undefined) {
-    items.push({ id: 'party', label: 'Số người', value: String(profile.party_size.value), status: 'user', editable: true });
+    const status = profile.party_size.source || 'user';
+    items.push({ id: 'party', label: 'Số người', value: String(profile.party_size.value), status, editable: true });
   }
   if (profile.stops?.value !== null && profile.stops?.value !== undefined) {
-    items.push({ id: 'stops', label: 'Số quán', value: String(profile.stops.value), status: 'user', editable: true });
+    const status = profile.stops.source || 'user';
+    items.push({ id: 'stops', label: 'Số quán', value: String(profile.stops.value), status, editable: true });
   }
   if (profile.duration_min?.value !== null && profile.duration_min?.value !== undefined) {
-    items.push({ id: 'duration', label: 'Tổng thời gian', value: `${profile.duration_min.value} phút`, status: 'user', editable: true });
+    const status = profile.duration_min.source || 'user';
+    items.push({ id: 'duration', label: 'Tổng thời gian', value: `${profile.duration_min.value} phút`, status, editable: true });
   }
   if (profile.stops?.value && profile.duration_min?.value) {
     const n = Number(profile.stops.value);
@@ -40,24 +44,34 @@ function profileToUnderstoodItems(profile = {}) {
   }
   if (profile.day_part?.value) {
     const dayPartMap = { morning: 'Buổi sáng', noon: 'Buổi trưa', afternoon: 'Buổi chiều', evening: 'Buổi tối', late: 'Đêm muộn' };
-    items.push({ id: 'day_part', label: 'Buổi', value: dayPartMap[profile.day_part.value] || profile.day_part.value, status: 'user', editable: true });
+    const status = profile.day_part.source || 'user';
+    items.push({ id: 'day_part', label: 'Buổi', value: dayPartMap[profile.day_part.value] || profile.day_part.value, status, editable: true });
   }
   if (profile.start_time?.value) {
-    items.push({ id: 'time', label: 'Bắt đầu lúc', value: profile.start_time.value, status: 'user', editable: true });
+    const status = profile.start_time.source || 'user';
+    items.push({ id: 'time', label: 'Bắt đầu lúc', value: profile.start_time.value, status, editable: true });
   }
   if (profile.budget?.value !== null && profile.budget?.value !== undefined) {
+    const status = profile.budget.source || 'user';
     const bScope = profile.budget.scope === 'group' ? 'cả nhóm' : profile.budget.scope === 'per_person' ? 'mỗi người' : 'chưa rõ phạm vi';
-    items.push({ id: 'budget', label: 'Ngân sách', value: `${Number(profile.budget.value).toLocaleString('vi-VN')} đ (${bScope})`, status: 'user', editable: true });
+    items.push({ id: 'budget', label: 'Ngân sách', value: `${Number(profile.budget.value).toLocaleString('vi-VN')} đ (${bScope})`, status, editable: true });
   }
   if (profile.tastes?.value && Array.isArray(profile.tastes.value) && profile.tastes.value.length > 0) {
-    items.push({ id: 'dish', label: 'Thích', value: profile.tastes.value.join(', '), status: 'user', editable: true });
+    const status = profile.tastes.source || 'user';
+    items.push({ id: 'dish', label: 'Thích', value: profile.tastes.value.join(', '), status, editable: true });
+  }
+  if (profile.vehicle?.value) {
+    const status = profile.vehicle.source || 'default';
+    const vLabel = profile.vehicle.value === 'walk' ? 'Đi bộ' : profile.vehicle.value;
+    items.push({ id: 'vehicle', label: 'Phương tiện', value: vLabel, status, editable: true });
   }
   return items;
 }
 
 /**
- * Restore question text dynamically from state (Q04).
+ * Restore question text dynamically from state (Q04, NFE-05).
  * Never hardcodes 500k; uses actual budget value (150k, 300k, 1m, etc.).
+ * Supports newly introduced numeric slots (budget_vnd, duration_min, party_size, stops).
  */
 function getClarifyQuestionText(slot, chatState = null, profile = null) {
   if (slot === 'budget_scope') {
@@ -67,10 +81,14 @@ function getClarifyQuestionText(slot, chatState = null, profile = null) {
     }
     return 'Ngân sách này là cho cả nhóm hay cho mỗi người?';
   }
-  if (slot === 'start_time') return 'Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.';
+  if (slot === 'budget_vnd') return 'Bạn dự kiến mức ngân sách khoảng bao nhiêu tiền (VNĐ)?';
+  if (slot === 'duration_min') return 'Bạn dự kiến đi tour trong khoảng bao nhiêu phút?';
+  if (slot === 'party_size') return 'Nhóm của bạn có mấy người cùng tham gia?';
+  if (slot === 'stops') return 'Bạn muốn ghé thăm khoảng mấy quán?';
+  if (slot === 'start_time') return 'Bạn muốn bắt đầu lúc mấy giờ? Chọn một giờ hoặc gõ giờ khác.';
   if (slot === 'plan_slots' || slot === 'vehicle') return 'Bạn muốn đi bằng phương tiện gì (đi bộ, xe máy, ô tô, taxi/Grab)?';
   if (slot === 'allergy_term') return 'Bạn bị dị ứng với loại nguyên liệu nào?';
-  return 'Bạn hãy chọn một phương án bên dưới:';
+  return 'Vui lòng cho biết thêm thông tin về yêu cầu của bạn:';
 }
 
 /**
@@ -114,6 +132,8 @@ export default function GuidedLayout({
 
   const inputRef = useRef(null);
   const lastFocusedKeyRef = useRef('');
+  const chatSectionRef = useRef(null);
+  const tourSectionRef = useRef(null);
 
   useEffect(() => {
     const handleResize = () => {
@@ -582,10 +602,24 @@ export default function GuidedLayout({
         setLockedVenueIds(otherStops.map((s) => s.venue_id));
       }
     } catch (err) {
-      if (err?.status === 409) {
-        setErrorMessage('Không còn quán thay thế phù hợp thỏa mãn các điều kiện trong khu vực.');
+      const errCode = err?.code || err?.data?.code || (err?.data?.detail?.code) || '';
+      const errMsg = err?.message || err?.data?.message || err?.data?.detail?.message || '';
+      if (errCode === 'revision_conflict' || (err?.status === 409 && (errCode === 'revision_conflict' || String(errMsg).includes('thay đổi') || String(errMsg).includes('revision')))) {
+        setErrorMessage('Phiên làm việc đã có cập nhật mới hơn trên máy chủ. Đã cập nhật lại thông tin mới nhất.');
+        try {
+          const fresh = await getSession(sessionId, sessionToken);
+          if (fresh) {
+            if (fresh.revision !== undefined) setRevision(fresh.revision);
+            if (fresh.chat) setChatState(fresh.chat);
+            if (fresh.tour) setTour(fresh.tour);
+          }
+        } catch (_) {}
+      } else if (errCode === 'no_candidates' || (err?.status === 409 && (String(errMsg).includes('phương án') || String(errMsg).includes('điểm dừng') || String(errMsg).includes('thay thế')))) {
+        setErrorMessage(errMsg || 'Không có phương án thay thế thoả ràng buộc trong khu vực. Giữ nguyên tour hiện tại.');
+      } else if (errCode === 'obligation_open' || (err?.status === 409 && String(errMsg).includes('câu hỏi'))) {
+        setErrorMessage(errMsg || 'Còn câu hỏi về dị ứng hoặc ngân sách chưa được trả lời trong khung trò chuyện.');
       } else {
-        setErrorMessage('Không thể đổi quán lúc này. Bạn vui lòng thử lại.');
+        setErrorMessage(errMsg || 'Không thể đổi quán lúc này. Bạn vui lòng thử lại.');
       }
     } finally {
       setBusy(false);
@@ -816,12 +850,17 @@ export default function GuidedLayout({
     }
   }, [clarifyBlock, confirmSummaryBlock, showTour, busy]);
 
-  // Derived metrics for Right Panel
+  // Derived metrics for Right Panel (NFE-01: honest nulls/zeros, no sample 1.8km/450k)
   const stops = tour?.stops || [];
-  const distanceKm = tour?.totals?.distance_m ? (Math.round(tour.totals.distance_m / 100) / 10).toLocaleString('vi-VN') : '1,8';
-  const budgetDisplay = chatState?.profile?.budget?.value
-    ? `≈ ${Math.round(Number(chatState.profile.budget.value) / 1000)}K`
-    : '≈ 450K';
+  const distanceKm = (tour?.totals?.distance_m !== null && tour?.totals?.distance_m !== undefined)
+    ? (Math.round(tour.totals.distance_m / 100) / 10).toLocaleString('vi-VN')
+    : null;
+  const budgetVal = chatState?.profile?.budget?.value;
+  const budgetScope = chatState?.profile?.budget?.scope;
+  const budgetScopeLabel = budgetScope === 'group' ? 'cả nhóm' : 'mỗi người';
+  const budgetDisplay = (budgetVal !== null && budgetVal !== undefined && !isNaN(Number(budgetVal)))
+    ? `≈ ${Math.round(Number(budgetVal) / 1000)}K`
+    : null;
 
   return (
     <div
@@ -913,25 +952,43 @@ export default function GuidedLayout({
         >
           <button
             type="button"
-            onClick={() => setActiveMobileTab('chat')}
+            role="tab"
+            aria-selected={isDesktop || activeMobileTab === 'chat'}
+            aria-current={(isDesktop || activeMobileTab === 'chat') ? 'page' : undefined}
+            onClick={() => {
+              if (isDesktop) {
+                chatSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+                inputRef.current?.focus();
+              } else {
+                setActiveMobileTab('chat');
+              }
+            }}
             style={{
               padding: '8px 20px',
               borderRadius: 20,
-              border: 'none',
               backgroundColor: (isDesktop || activeMobileTab === 'chat') ? '#166B52' : '#FFFFFF',
               color: (isDesktop || activeMobileTab === 'chat') ? '#FFFFFF' : '#62736D',
               border: (isDesktop || activeMobileTab === 'chat') ? 'none' : '1px solid #DDE7E1',
               fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
-              minHeight: 40
+              minHeight: 44
             }}
           >
             Khám phá
           </button>
           <button
             type="button"
-            onClick={() => setActiveMobileTab('tour')}
+            role="tab"
+            aria-selected={!isDesktop && activeMobileTab === 'tour'}
+            aria-current={(!isDesktop && activeMobileTab === 'tour') ? 'page' : undefined}
+            onClick={() => {
+              if (isDesktop) {
+                tourSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+              } else {
+                setActiveMobileTab('tour');
+              }
+            }}
             style={{
               padding: '8px 20px',
               borderRadius: 20,
@@ -941,7 +998,7 @@ export default function GuidedLayout({
               fontSize: 14,
               fontWeight: 600,
               cursor: 'pointer',
-              minHeight: 40
+              minHeight: 44
             }}
           >
             Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
@@ -964,7 +1021,7 @@ export default function GuidedLayout({
               fontSize: 13,
               fontWeight: 600,
               cursor: busy ? 'not-allowed' : 'pointer',
-              minHeight: 40,
+              minHeight: 44,
               display: 'inline-flex',
               alignItems: 'center',
               gap: 4
@@ -980,20 +1037,21 @@ export default function GuidedLayout({
                 width: 38,
                 height: 38,
                 borderRadius: '50%',
-                backgroundColor: '#222B27',
-                color: '#FFFFFF',
+                backgroundColor: '#E8EFEA',
+                color: '#166B52',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontWeight: 700,
-                fontSize: 14
+                fontSize: 18,
+                border: '1px solid #DDE7E1'
               }}
+              aria-label="Khách khám phá Hà Nội"
             >
-              T
+              🍜
             </div>
             <div style={{ lineHeight: 1.25, display: isDesktop ? 'block' : 'none' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#17352B' }}>Tuấn</div>
-              <div style={{ fontSize: 11, color: '#62736D' }}>TP. Hà Nội</div>
+              <div style={{ fontSize: 13, fontWeight: 700, color: '#17352B' }}>Khách ẩm thực</div>
+              <div style={{ fontSize: 11, color: '#62736D' }}>Hà Nội</div>
             </div>
           </div>
         </div>
@@ -1016,6 +1074,9 @@ export default function GuidedLayout({
       >
         {/* LEFT COLUMN: Chat & Guided Interaction Card */}
         <section
+          ref={chatSectionRef}
+          id="guided-chat-section"
+          tabIndex={-1}
           style={{
             display: (isDesktop || activeMobileTab === 'chat') ? 'flex' : 'none',
             flexDirection: 'column',
@@ -1194,7 +1255,7 @@ export default function GuidedLayout({
                   fontWeight: 500
                 }}
               >
-                Chào Tuấn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ hỏi thêm nếu thiếu thông tin để xếp lịch trình chuẩn nhất.
+                Chào bạn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ hỏi thêm nếu thiếu thông tin để xếp lịch trình chuẩn nhất.
               </div>
             )}
 
@@ -1477,6 +1538,9 @@ export default function GuidedLayout({
 
         {/* RIGHT COLUMN: Tour Itinerary & Route Overview Panel */}
         <section
+          ref={tourSectionRef}
+          id="guided-tour-section"
+          tabIndex={-1}
           style={{
             display: (isDesktop || activeMobileTab === 'tour') ? 'flex' : 'none',
             flexDirection: 'column',
@@ -1507,11 +1571,11 @@ export default function GuidedLayout({
                   lineHeight: 1.2
                 }}
               >
-                {showTour ? (tour.title || 'Một vòng Hoàn Kiếm ngon hết ý') : 'Hành trình ẩm thực Hà Nội'}
+                {showTour ? (tour.title || (stops[0]?.district ? `Lịch trình ẩm thực ${stops[0].district}` : 'Lịch trình ẩm thực')) : 'Hành trình ẩm thực Hà Nội'}
               </h1>
               <div style={{ fontSize: 13, color: '#62736D' }}>
                 {showTour
-                  ? `${stops[0]?.arrive ? `${stops[0].arrive}–${stops[stops.length - 1]?.depart || '20:30'}` : 'Thời gian linh hoạt'} • Thứ bảy • ${stops[0]?.district || 'Hoàn Kiếm'}`
+                  ? `${stops[0]?.arrive ? `${stops[0].arrive}${stops[stops.length - 1]?.depart ? `–${stops[stops.length - 1].depart}` : ''}` : 'Thời gian linh hoạt'}${stops[0]?.district ? ` • ${stops[0].district}` : ''}`
                   : 'Chưa có lịch trình được tạo • Vui lòng chọn hoặc nhập yêu cầu ở cột bên trái'}
               </div>
             </div>
@@ -1556,7 +1620,7 @@ export default function GuidedLayout({
               }}
             >
               <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
-                {showTour ? `${distanceKm} km` : '0 km'}
+                {showTour ? (distanceKm ? `${distanceKm} km` : 'Chưa tính') : '0 km'}
               </div>
               <div style={{ fontSize: 13, color: '#62736D' }}>
                 Tổng di chuyển
@@ -1575,10 +1639,10 @@ export default function GuidedLayout({
               }}
             >
               <div style={{ fontSize: 20, fontWeight: 800, color: '#17352B' }}>
-                {showTour ? budgetDisplay : 'Theo ngân sách'}
+                {showTour ? (budgetDisplay || 'Chưa đặt') : 'Theo ngân sách'}
               </div>
               <div style={{ fontSize: 13, color: '#62736D' }}>
-                Ngân sách/người
+                {budgetScopeLabel ? `Ngân sách (${budgetScopeLabel})` : 'Ngân sách'}
               </div>
             </div>
           </div>
@@ -1774,9 +1838,9 @@ export default function GuidedLayout({
                   }}
                 >
                   <strong style={{ display: 'block', marginBottom: 4, color: '#DFF46A' }}>
-                    Mẹo nhỏ:
+                    Lưu ý:
                   </strong>
-                  Khung giờ tối quanh Phố Cổ thường đông đúc; bạn nên xuất phát trước 18:30 để có chỗ ngồi thoải mái nhất.
+                  Giờ mở cửa và mức giá thực tế của quán có thể thay đổi tùy thời điểm; bạn nên kiểm tra lại trước khi đến.
                 </div>
               </aside>
             </div>
