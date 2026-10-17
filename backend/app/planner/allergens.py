@@ -15,7 +15,7 @@ FAMILIES = {
                    ("cua", "ghe", "tom", "tep", "hai san", "lau hai san")),
     "mollusc": (("so", "oc", "ngheu", "hen", "hau", "muc", "bach tuoc", "nhuyen the"),
                 ("so", "oc", "ngheu", "hen", "hau", "muc", "bach tuoc", "hai san")),
-    "seafood": (("hai san",),
+    "seafood": (("hai san", "do bien", "mon bien"),
                 ("hai san", "cua", "ghe", "tom", "tep", "so", "oc", "ngheu", "hen", "hau", "muc", "bach tuoc",
                  "bun ca", "cha ca", "ca kho", "ca nuong", "lau ca")),
     "fish": (("ca", "mon ca"),

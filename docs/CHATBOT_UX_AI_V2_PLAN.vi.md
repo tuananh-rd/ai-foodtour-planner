@@ -273,9 +273,9 @@ Người dùng đã duyệt toàn bộ kế hoạch và 9 quyết định mặc 
 | U2 Gemini theo độ phủ + hợp nhất an toàn | Xong; smoke thật 4/8 lượt | `qa/live/guided_gemini_smoke.py`; dị ứng do AI đề xuất luôn `ai_unconfirmed`; mô tả/triệu chứng bị loại |
 | U3 API (cờ `guided_ui`, metadata, sổ đếm bền, cổng chặn kế hoạch) | Xong, Codex `cc50d50` | `docs/reports/CODEX_U3_API.md` |
 | U4a giao diện dẫn dắt (fixture) | Xong, Antigravity `f0954e3`, Claude chạy lại 42/42 | `docs/reports/ANTIGRAVITY_U4A.md` |
-| **U4b giao diện với API thật + số liệu dùng thử** | **BỊ CHẶN**: Antigravity CLI không qua `agent_readiness` (5 lần thử) | cần người dùng khởi động lại phiên Antigravity |
+| U4b/U4c/U4d giao diện với API thật, sửa theo review độc lập | Xong (Antigravity `f3da507`, `0f29013`, U4d); driver Chrome độc lập của Codex 157/157 | `docs/reports/ANTIGRAVITY_U4B.md`, `U4C`, `U4D`, ảnh ở `docs/reports/u4b/` |
 | U5 đánh giá độc lập (Codex: v1, v2, v3, v4 mù) | Xong, REQUEST-CHANGES ở mỗi vòng → đã sửa | `docs/reports/CODEX_U5A*.md`, `CODEX_U5C.md`, `CODEX_U5D.md` |
-| U6 tích hợp cuối | Chờ U4b | |
+| U6 tích hợp cuối | Xong (xem bảng dưới) | `docs/TASK_BOARD.md` |
 
 ### Số liệu mù trung thực (lần chạy đầu của từng bộ, động cơ bộ luật, không Gemini)
 | Bộ | Số ca | An toàn (bất biến) | Đúng toàn bộ slot |
@@ -286,3 +286,10 @@ Người dùng đã duyệt toàn bộ kế hoạch và 9 quyết định mặc 
 | **v4 (mù, mới nhất)** | 220 | **78,6%** | **32,3%** |
 
 Sau mỗi vòng, các ca thất bại được sửa tổng quát hoá nên v1–v4 hiện chỉ còn là **bộ phát triển (không còn mù)**: v1/v2 100%, v3 an toàn 98,7% / slot 89,3%, v4 an toàn 84,1% / slot 80,5% (chấm theo khớp đúng từ, nên "sữa" so với "sữa bò" bị tính là sai). **Kết luận trung thực:** bộ luật cục bộ không đạt "hiểu tự nhiên đáng tin" trên câu mới lạ; mỗi bộ mù mới vẫn tìm ra lỗi mới. Vì vậy an toàn dựa vào cấu trúc chứ không dựa vào độ chính xác của luật: nghĩa vụ dị ứng/ngân sách bền vững, cổng chặn lập tour ở cả engine lẫn API, dị ứng do AI luôn cần xác nhận, câu trả lời tự do ngoài từ điển phải được xác nhận, và thẻ "Mình hiểu là…" luôn hiện dòng Dị ứng. Độ chính xác slot cần Gemini (hoặc người dùng sửa trên thẻ) mới tốt hơn; chưa đo được trên quy mô lớn do hạn mức 20 lượt/ngày.
+
+### U6 — kết quả tích hợp cuối (17/10/2026)
+- Backend 559 test OK (1 skip có sẵn), OpenAPI không lệch; kiểm tra API thật trên uvicorn 26/26 (`qa/e2e/test_guided_api.py`).
+- Giao diện: guided_ui 44/44, guided real-API e2e 25/25 (đột biến fail đúng), driver Chrome độc lập của Codex `codex_guided_review.mjs` 157/157, ui_v2 28, components 48, ui_kit 11, maps 61, contractTest 18, chat_v2 31 (cờ tắt).
+- Luồng S0: 4 thao tác sau khi gõ (chọn phạm vi ngân sách, chọn giờ, "Đúng, lập tour", mở Maps) — Codex đo độc lập trên desktop và mobile.
+- Gemini thật: 7/8 lượt dùng cho cả đợt (hạt/vỏ cứng/đồ biển/không nhớ tên); không có vi phạm bất biến; mô tả mơ hồ và triệu chứng bị loại; chất do AI đề xuất luôn cần xác nhận.
+- Nhật ký các vòng review độc lập: U0 (chặn), U3, U5a/a2/c/d (4 bộ mù), U5e/U5f (trình duyệt) — mỗi vòng đều REQUEST-CHANGES và đều đã sửa; các lỗ hổng đáng kể đã tìm ra gồm: bỏ qua nghĩa vụ dị ứng qua `edit_profile→request_plan→confirm_yes`, qua `POST /tour` cũ, qua câu trả lời tự do kiểu "lập tour đi", và xoá nhầm dị ứng của người đi cùng.
