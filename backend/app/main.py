@@ -127,22 +127,26 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
 
     @app.exception_handler(APIError)
     async def api_error(request: Request, exc: APIError):
+        request.scope['foodtour_error_code'] = exc.code
         return JSONResponse(status_code=exc.status, content=exc.body())
 
     @app.exception_handler(RequestValidationError)
     async def invalid_request(request: Request, exc: RequestValidationError):
+        request.scope['foodtour_error_code'] = 'validation_error'
         return JSONResponse(status_code=422, content=APIError(
             422, "validation_error", "Yêu cầu không hợp lệ."
         ).body())
 
     @app.exception_handler(HTTPException)
     async def http_error(request: Request, exc: HTTPException):
+        request.scope['foodtour_error_code'] = 'validation_error'
         return JSONResponse(status_code=exc.status_code, content=APIError(
             exc.status_code, "validation_error", "Không thể xử lý yêu cầu."
         ).body())
 
     @app.exception_handler(Exception)
     async def unexpected_error(request: Request, exc: Exception):
+        request.scope['foodtour_error_code'] = 'internal_validation_failed'
         return JSONResponse(status_code=500, content=APIError(
             500, "internal_validation_failed", "Không thể xác minh kết quả; chưa trả điểm dừng."
         ).body())

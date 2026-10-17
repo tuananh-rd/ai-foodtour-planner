@@ -28,8 +28,16 @@ class Telemetry(unittest.TestCase):
             self.assertEqual(record['provider_attempted'], 0)
             self.assertEqual(record['provider_validated'], 0)
             self.assertEqual(record['understanding'], 'rules')
+            self.assertEqual(record['contract'], 'v1.9.3')
+            self.assertRegex(record['dataset_version'], r'^[0-9a-f]{64}$')
             self.assertGreaterEqual(record['extraction_ms'], 0)
             self.assertNotIn('planner_checked', record)
             self.assertEqual(record['route'], '/v1/sessions/{session_id}/chat')
             for value in (text, s['token'], s['session_id'], 'Hồ Gươm'):
                 self.assertNotIn(value, logs.records[-1].getMessage())
+            with self.assertLogs('foodtour.access', level='INFO') as errors:
+                conflict = client.post('/v1/sessions/' + s['session_id'] + '/chat',
+                                       headers={'X-Session-Token': s['token']},
+                                       json={'revision': s['revision'], 'text': text})
+            self.assertEqual(conflict.status_code, 409)
+            self.assertEqual(json.loads(errors.records[-1].getMessage())['error_code'], 'revision_conflict')

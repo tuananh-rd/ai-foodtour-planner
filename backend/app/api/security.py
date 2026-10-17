@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import time
 import uuid
 from collections import OrderedDict
@@ -88,6 +89,7 @@ class SecurityMiddleware:
             await send(message)
 
         async def reject(code, error_code, message):
+            scope['foodtour_error_code'] = error_code
             cors = {}
             origin = headers.get(b'origin')
             if origin in self.web_origins:
@@ -152,9 +154,17 @@ class SecurityMiddleware:
             # Fixed enums/numeric counters only: never copy an arbitrary payload or exception.
             for key, allowed in {'understanding': {'rules', 'action', 'llm', 'cache'},
                                  'planner_status': {'verified_feasible', 'conditional', 'insufficient_evidence', 'no_solution'},
-                                 'algorithm': {'guided-fixed-v1'}}.items():
+                                 'algorithm': {'guided-fixed-v1'}, 'contract': {'v1.9.3'}}.items():
                 if isinstance(pipeline.get(key), str) and pipeline[key] in allowed:
                     record[key] = pipeline[key]
+            version = pipeline.get('dataset_version')
+            if isinstance(version, str) and re.fullmatch(r'[0-9a-f]{64}', version):
+                record['dataset_version'] = version  # opaque content version, never an input path/name
+            code = scope.get('foodtour_error_code')
+            if isinstance(code, str) and code in {'validation_error', 'internal_validation_failed', 'provider_unavailable',
+                    'unauthorized_session', 'session_expired', 'revision_conflict', 'no_candidates', 'no_tour',
+                    'obligation_open', 'rate_limited'}:
+                record['error_code'] = code
             for key in ('provider_attempted', 'provider_validated', 'planner_checked'):
                 if type(pipeline.get(key)) is int and pipeline[key] in (0, 1):
                     record[key] = pipeline[key]

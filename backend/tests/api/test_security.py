@@ -71,7 +71,11 @@ class SecurityTests(unittest.TestCase):
             client.get('/unknown/SENSITIVE_SENTINEL')
         for record in captured.records:
             data = json.loads(record.getMessage())
-            self.assertEqual(set(data), {'request_id', 'route', 'status', 'latency_ms'})
+            expected = {'request_id', 'route', 'status', 'latency_ms'}
+            if data['status'] == 404:
+                expected.add('error_code')
+                self.assertEqual(data['error_code'], 'validation_error')
+            self.assertEqual(set(data), expected)
             self.assertIsInstance(data['latency_ms'], (int, float))
             self.assertNotIn(created['token'], record.getMessage())
             self.assertNotIn(created['session_id'], record.getMessage())

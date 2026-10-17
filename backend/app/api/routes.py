@@ -501,6 +501,8 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                     'provider_validated': int(result.understanding == 'llm'),
                     'extraction_ms': round((time.perf_counter() - extraction_started) * 1000, 3),
                     'algorithm': 'guided-fixed-v1',
+                    'contract': 'v1.9.3',
+                    'dataset_version': data.dataset_version,
                 }
             except Exception:
                 raise APIError(500, 'internal_validation_failed', 'Unable to validate chat result.') from None
