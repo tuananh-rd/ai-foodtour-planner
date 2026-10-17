@@ -1,0 +1,32 @@
+[
+  {
+    "id": "FLAGOFF-API",
+    "title": "Unset backend flag disables feature and chat route",
+    "passed": true,
+    "details": "{\"feature\":false,\"status\":404}"
+  },
+  {
+    "id": "FLAGOFF-WEB-1280/",
+    "title": "Legacy and UI-v2 remain reachable with chat disabled",
+    "passed": true,
+    "details": "{\"chat\":false,\"legacy\":true,\"uiV2\":false,\"rootBg\":\"\"}"
+  },
+  {
+    "id": "FLAGOFF-WEB-1280/?ui=v2",
+    "title": "Legacy and UI-v2 remain reachable with chat disabled",
+    "passed": true,
+    "details": "{\"chat\":false,\"legacy\":false,\"uiV2\":true,\"rootBg\":\"\"}"
+  },
+  {
+    "id": "FLAGOFF-WEB-390/",
+    "title": "Legacy and UI-v2 remain reachable with chat disabled",
+    "passed": true,
+    "details": "{\"chat\":false,\"legacy\":true,\"uiV2\":false,\"rootBg\":\"\"}"
+  },
+  {
+    "id": "FLAGOFF-WEB-390/?ui=v2",
+    "title": "Legacy and UI-v2 remain reachable with chat disabled",
+    "passed": true,
+    "details": "{\"chat\":false,\"legacy\":false,\"uiV2\":true,\"rootBg\":\"\"}"
+  }
+]

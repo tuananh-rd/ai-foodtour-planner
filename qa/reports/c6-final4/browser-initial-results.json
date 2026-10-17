@@ -1,0 +1,566 @@
+[
+  {
+    "id": "CH-01a",
+    "title": "Start screen: geolocation denied displays friendly fallback and district chips",
+    "passed": true,
+    "details": "deniedMsg: true, districtChips: true"
+  },
+  {
+    "id": "CH-01b",
+    "title": "Phrase 'Chiều nay nóng quá, quanh đây ăn gì được?' returns NO_WEATHER disclaimer and dish suggestions",
+    "passed": true,
+    "details": "noWeatherText: true, dishSuggestions: true"
+  },
+  {
+    "id": "CH-03a",
+    "title": "Search 'tìm quán bún' renders venue cards labelled A and B",
+    "passed": true,
+    "details": "cards: 2, badges: [\"A\",\"B\"]"
+  },
+  {
+    "id": "CH-03b",
+    "title": "Compare A and B renders table with columns A and B, distance estimate label, 'Chưa rõ' fallback cells, and unsupported criteria note",
+    "passed": true,
+    "details": "table: true, cols: true, distanceEstimate: true, chuaRo: true, noEmpty: true, injectedCell: Chưa rõ"
+  },
+  {
+    "id": "CH-04",
+    "title": "Shortlist add/remove/keep works via BOTH buttons and typed text, panel stays synchronized with server state",
+    "passed": true,
+    "details": "addBtn: 1/5, kept: true, addText: 2/5, removeText: 1/5, removeBtn: 0/5"
+  },
+  {
+    "id": "CH-05",
+    "title": "Typed 'ok' never creates a tour and displays clarification options",
+    "passed": true,
+    "details": "hasTour: false, clarifyButtons: true"
+  },
+  {
+    "id": "CH-06",
+    "title": "Allergy flow sets prominent chip, every card displays 'Chưa đủ thông tin về dị ứng', excludes crab, zero 'an toàn' claims",
+    "passed": true,
+    "details": "prominentChip: true, cardsWarned: true, containsCrab: false, unsafeClaims: false"
+  },
+  {
+    "id": "CH-08a",
+    "title": "Entering 'ở Sa Pa' displays outside-Hà-Nội warning notice",
+    "passed": true,
+    "details": "outsideNotice: \"Dữ liệu của mình hiện chỉ có quán ở Hà Nội. Bạn hãy chọn một khu vực trong Hà Nội nhé.\""
+  },
+  {
+    "id": "CH-08b-STREET",
+    "title": "Entering 'đường Xuân Thủy' shows 'xấp xỉ' approximate indicator",
+    "passed": true,
+    "details": "xuanThuy: true, xapXi: true"
+  },
+  {
+    "id": "CH-08b",
+    "title": "Entering 'ở Cầu Giấy' resolves location and opens workspace",
+    "passed": true,
+    "details": "cauGiayResolved: true, inWorkspace: true"
+  },
+  {
+    "id": "CH-08-DOUBLECLICK",
+    "title": "Rapid double-click on Add button sends exactly ONE network request",
+    "passed": true,
+    "details": "sentCalls: 1"
+  },
+  {
+    "id": "CH-08-COMPOSER-DOUBLECLICK",
+    "title": "Rapid double-submit on chat composer form sends exactly ONE network request",
+    "passed": true,
+    "details": "sentCalls: 1"
+  },
+  {
+    "id": "CH-08-409-DETECT",
+    "title": "Stale revision request correctly triggers HTTP 409 Conflict from real backend",
+    "passed": true,
+    "details": "status: 409"
+  },
+  {
+    "id": "CH-08-RELOAD",
+    "title": "Reloading mid-conversation restores chat state (shortlist and pending clarify options) from GET session",
+    "passed": true,
+    "details": "shortlistRestored: 1/1, inWorkspace: true"
+  },
+  {
+    "id": "CH-09-A11Y",
+    "title": "Keyboard navigation responsive, 1280 three side-by-side zones, 390 stacked tabs, all interactive buttons >= 44px",
+    "passed": true,
+    "details": "threeZones: true, mobileTabs: 3 (minH: 50px), smallButtons: 0"
+  },
+  {
+    "id": "CH-10-HOSTILE",
+    "title": "Hostile user text (<img onerror>, script, javascript:, long input) renders as plain text without XSS execution",
+    "passed": true,
+    "details": "xssTriggered: false, rawImg: false, rendersText: true"
+  },
+  {
+    "id": "CH-10b-HOSTILE-1280",
+    "title": "Hostile 5,000-char server name and address does not overflow viewport at 1280px (scrollWidth <= clientWidth, no XSS, no broken images)",
+    "passed": true,
+    "details": "{\"hostileInjected\":5,\"viewport\":1280,\"document\":1265,\"zone\":570,\"zoneScroll\":570,\"xss\":false,\"images\":0,\"jsLinks\":0,\"cards\":5}"
+  },
+  {
+    "id": "CH-10b-HOSTILE-390",
+    "title": "Hostile 5,000-char server name and address does not overflow viewport at 390px (scrollWidth <= clientWidth, no XSS, no broken images)",
+    "passed": true,
+    "details": "{\"hostileInjected\":5,\"viewport\":390,\"document\":390,\"zone\":390,\"zoneScroll\":390,\"xss\":false,\"images\":0,\"jsLinks\":0,\"cards\":5}"
+  },
+  {
+    "id": "CH-08-CONFIRM-DOUBLECLICK",
+    "title": "Rapid double-click on Confirm button sends exactly ONE network request",
+    "passed": true,
+    "details": "sentCalls: 1"
+  },
+  {
+    "id": "CH-09b-MAPS-TRANSLATION-1280",
+    "title": "MapsLinksBlock user-visible text is completely in Vietnamese with zero ASCII English server notes, contained at 1280px",
+    "passed": true,
+    "details": "{\"hasVietnamese\":true,\"hasEnglish\":false,\"docContained\":true,\"blocksContained\":true,\"docScroll\":1265,\"innerW\":1280}"
+  },
+  {
+    "id": "CH-09c-MAPS-TRANSLATION-390",
+    "title": "MapsLinksBlock user-visible text is completely in Vietnamese with zero ASCII English server notes, contained at 390px",
+    "passed": true,
+    "details": "{\"hasVietnamese\":true,\"hasEnglish\":false,\"docContained\":true,\"blocksContained\":true,\"docScroll\":390,\"innerW\":390}"
+  },
+  {
+    "id": "CH-09-PLAN",
+    "title": "PLAN flow: confirm_summary -> confirm_yes -> tour_ready renders ItineraryView, EvidenceStrip, and MapsLinksBlock",
+    "passed": true,
+    "details": "tourReady: true, itinerary: true, mapsBlock: true, stops: 2, mapsLinks: 1"
+  },
+  {
+    "id": "CH-12-REPLACE-STOP",
+    "title": "Itinerary 'Đổi quán' button sends text turn 'đổi quán thứ <n>' with action: null, updates tour_ready stops",
+    "passed": true,
+    "details": "sentText: đổi quán thứ 2, action: null, initialStops: [\"[SYNTHETIC] Cà Phê Thử 62\",\"[SYNTHETIC] Phở Thử 52\"], updatedStops: [\"[SYNTHETIC] Cà Phê Thử 62\",\"[SYNTHETIC] Bún Thử 50\"]"
+  },
+  {
+    "id": "budget-vnd",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "600000",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "1",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "group",
+          "valid": true
+        }
+      ],
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 600000,
+                "budget_scope": "group"
+              }
+            },
+            "revision": 15
+          },
+          "status": 200
+        }
+      ],
+      "alert": ""
+    }
+  },
+  {
+    "id": "budget-thousand",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "600",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "1000",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "group",
+          "valid": true
+        }
+      ],
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 600000,
+                "budget_scope": "group"
+              }
+            },
+            "revision": 16
+          },
+          "status": 200
+        }
+      ],
+      "alert": ""
+    }
+  },
+  {
+    "id": "budget-million",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "2",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "1000000",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "per_person",
+          "valid": true
+        }
+      ],
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "budget_vnd": 2000000,
+                "budget_scope": "per_person"
+              }
+            },
+            "revision": 17
+          },
+          "status": 200
+        }
+      ],
+      "alert": ""
+    }
+  },
+  {
+    "id": "budget-tampered-unit",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "600",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "garbage",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "group",
+          "valid": true
+        }
+      ],
+      "turns": [],
+      "alert": "⚠️ Đơn vị tiền tệ không hợp lệ. Vui lòng chọn đồng, nghìn hoặc triệu."
+    }
+  },
+  {
+    "id": "budget-empty",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "1000",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "group",
+          "valid": true
+        }
+      ],
+      "turns": [],
+      "alert": "⚠️ Vui lòng nhập số tiền hợp lệ (chỉ nhập chữ số)."
+    }
+  },
+  {
+    "id": "budget-NaN",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "1000",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "group",
+          "valid": true
+        }
+      ],
+      "turns": [],
+      "alert": "⚠️ Vui lòng nhập số tiền hợp lệ (chỉ nhập chữ số)."
+    }
+  },
+  {
+    "id": "budget-negative",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-budget-amount",
+          "value": "-250",
+          "valid": false
+        },
+        {
+          "id": "profile-budget-unit",
+          "value": "1000",
+          "valid": true
+        },
+        {
+          "id": "profile-budget-scope",
+          "value": "group",
+          "valid": true
+        }
+      ],
+      "turns": [],
+      "alert": "⚠️ Vui lòng nhập số tiền hợp lệ (chỉ nhập chữ số)."
+    }
+  },
+  {
+    "id": "max-leg-2",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-max-leg-input",
+          "value": "2",
+          "valid": false
+        }
+      ],
+      "turns": [],
+      "alert": "⚠️ Thời gian di chuyển tối đa phải từ 3 đến 60 phút."
+    }
+  },
+  {
+    "id": "max-leg-61",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-max-leg-input",
+          "value": "61",
+          "valid": false
+        }
+      ],
+      "turns": [],
+      "alert": "⚠️ Thời gian di chuyển tối đa phải từ 3 đến 60 phút."
+    }
+  },
+  {
+    "id": "max-leg-3",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-max-leg-input",
+          "value": "3",
+          "valid": true
+        }
+      ],
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "max_leg_min": 3
+              }
+            },
+            "revision": 18
+          },
+          "status": 200
+        }
+      ],
+      "alert": ""
+    }
+  },
+  {
+    "id": "max-leg-reload-3",
+    "passed": true,
+    "details": {
+      "text": "⏱️\nĐi bộ tối đa mỗi chặng: 3 phút"
+    }
+  },
+  {
+    "id": "max-leg-10",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-max-leg-input",
+          "value": "10",
+          "valid": true
+        }
+      ],
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "max_leg_min": 10
+              }
+            },
+            "revision": 19
+          },
+          "status": 200
+        }
+      ],
+      "alert": ""
+    }
+  },
+  {
+    "id": "max-leg-reload-10",
+    "passed": true,
+    "details": {
+      "text": "⏱️\nĐi bộ tối đa mỗi chặng: 10 phút"
+    }
+  },
+  {
+    "id": "max-leg-60",
+    "passed": true,
+    "details": {
+      "controls": [
+        {
+          "id": "profile-max-leg-input",
+          "value": "60",
+          "valid": true
+        }
+      ],
+      "turns": [
+        {
+          "body": {
+            "text": null,
+            "action": {
+              "type": "edit_profile",
+              "patch": {
+                "max_leg_min": 60
+              }
+            },
+            "revision": 20
+          },
+          "status": 200
+        }
+      ],
+      "alert": ""
+    }
+  },
+  {
+    "id": "max-leg-reload-60",
+    "passed": true,
+    "details": {
+      "text": "⏱️\nĐi bộ tối đa mỗi chặng: 60 phút"
+    }
+  },
+  {
+    "id": "maps-dom-1280",
+    "passed": false,
+    "details": {
+      "text": "",
+      "width": 1280,
+      "scroll": 1280,
+      "visible": false
+    }
+  },
+  {
+    "id": "maps-dom-390",
+    "passed": false,
+    "details": {
+      "text": "",
+      "width": 390,
+      "scroll": 390,
+      "visible": false
+    }
+  },
+  {
+    "id": "CH-13a-BUDGET-VALIDATION",
+    "title": "ProfileBar budget structured editor requires scope ('cả nhóm'/'mỗi người'), blocks submission with inline error when scope is missing, patches {budget_vnd: 600000, budget_scope: 'group'}",
+    "passed": true,
+    "details": "controls: {\"hasAmount\":true,\"hasUnit\":true,\"hasScope\":true}, alert: ⚠️ Vui lòng chọn phạm vi ngân sách: mỗi người hay cả nhóm., noReqSent: true, validReq: {\"budget_vnd\":600000,\"budget_scope\":\"group\"}"
+  },
+  {
+    "id": "CH-13b-VEHICLE-VALIDATION",
+    "title": "ProfileBar vehicle editor is a structured select restricted to the four supported values (walk, motorbike, car, taxi), patches 'motorbike'",
+    "passed": true,
+    "details": "controls: {\"found\":true,\"options\":[\"walk\",\"motorbike\",\"car\",\"taxi\"],\"isOnlyAllowed4\":true}, validReq: {\"vehicle\":\"motorbike\"}"
+  },
+  {
+    "id": "CH-13c-BUDGET-UNIT-TAMPER",
+    "title": "ProfileBar budget unit rejects tampered unit value with inline Vietnamese error and sends ZERO requests (no parseInt fallback to 1000)",
+    "passed": true,
+    "details": "alert: \"⚠️ Đơn vị tiền tệ không hợp lệ. Vui lòng chọn đồng, nghìn hoặc triệu.\", dialogOpen: true, noReqSent: true"
+  },
+  {
+    "id": "CH-13d-MAX-LEG-VALIDATION",
+    "title": "Max-leg editor: production chip opens 3..60 editor; 2 and 61 blocked inline with zero requests; 3, 10, 60 accepted (HTTP 200); chip reflects chat.state.profile.max_leg_min after reload",
+    "passed": true,
+    "details": "initialChip: {\"exists\":true,\"text\":\"⏱️\\nĐi bộ tối đa mỗi chặng: 60 phút\",\"hasInitialLabel\":true}, 2Blocked: true, 61Blocked: true, 3Req: true, 60Req: true, 10Req: true, postReload: {\"exists\":true,\"text\":\"⏱️\\nĐi bộ tối đa mỗi chặng: 10 phút\",\"reflectsState\":true}"
+  },
+  {
+    "id": "CH-14-HOSTILE-EIGHT-BLOCKS-1280",
+    "title": "Eight-block hostile boundary page (5k chars) has document.scrollWidth <= innerWidth AND each block scrollWidth <= clientWidth at 1280px",
+    "passed": true,
+    "details": "{\"docContained\":true,\"allSectionsContained\":true,\"scroll\":1265,\"width\":1280,\"sections\":[{\"type\":\"text\",\"client\":1265,\"scroll\":1265},{\"type\":\"notice\",\"client\":1265,\"scroll\":1265},{\"type\":\"dish_suggestions\",\"client\":1265,\"scroll\":1265},{\"type\":\"venue_cards\",\"client\":1265,\"scroll\":1265},{\"type\":\"compare_table\",\"client\":1265,\"scroll\":1265},{\"type\":\"clarify\",\"client\":1265,\"scroll\":1265},{\"type\":\"confirm_summary\",\"client\":1265,\"scroll\":1265},{\"type\":\"tour_ready\",\"client\":1265,\"scroll\":1265}]}"
+  },
+  {
+    "id": "CH-14-HOSTILE-EIGHT-BLOCKS-390",
+    "title": "Eight-block hostile boundary page (5k chars) has document.scrollWidth <= innerWidth AND each block scrollWidth <= clientWidth at 390px",
+    "passed": true,
+    "details": "{\"docContained\":true,\"allSectionsContained\":true,\"scroll\":390,\"width\":390,\"sections\":[{\"type\":\"text\",\"client\":390,\"scroll\":390},{\"type\":\"notice\",\"client\":390,\"scroll\":390},{\"type\":\"dish_suggestions\",\"client\":390,\"scroll\":390},{\"type\":\"venue_cards\",\"client\":390,\"scroll\":390},{\"type\":\"compare_table\",\"client\":390,\"scroll\":390},{\"type\":\"clarify\",\"client\":390,\"scroll\":390},{\"type\":\"confirm_summary\",\"client\":390,\"scroll\":390},{\"type\":\"tour_ready\",\"client\":390,\"scroll\":390}]}"
+  },
+  {
+    "id": "CH-14-PRODUCTION-SHELL-1280",
+    "title": "Actual production shell has document.scrollWidth <= innerWidth AND all core blocks scrollWidth <= clientWidth at 1280px",
+    "passed": true,
+    "details": "{\"width\":1280,\"scroll\":1280,\"docContained\":true,\"blocksCount\":5,\"allBlocksContained\":true}"
+  },
+  {
+    "id": "CH-14-PRODUCTION-SHELL-390",
+    "title": "Actual production shell has document.scrollWidth <= innerWidth AND all core blocks scrollWidth <= clientWidth at 390px",
+    "passed": true,
+    "details": "{\"width\":390,\"scroll\":390,\"docContained\":true,\"blocksCount\":5,\"allBlocksContained\":true}"
+  }
+]

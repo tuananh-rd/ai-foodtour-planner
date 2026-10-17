@@ -1,0 +1,30 @@
+[
+  {
+    "id": "HOSTILE-SHELL-1280",
+    "passed": true,
+    "details": {
+      "viewport": 1280,
+      "document": 1265,
+      "zone": 570,
+      "zoneScroll": 570,
+      "xss": false,
+      "images": 0,
+      "jsLinks": 0,
+      "cards": 2
+    }
+  },
+  {
+    "id": "HOSTILE-SHELL-390",
+    "passed": true,
+    "details": {
+      "viewport": 390,
+      "document": 390,
+      "zone": 390,
+      "zoneScroll": 390,
+      "xss": false,
+      "images": 0,
+      "jsLinks": 0,
+      "cards": 2
+    }
+  }
+]

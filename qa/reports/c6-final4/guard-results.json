@@ -1,0 +1,68 @@
+[
+  {
+    "id": "CH-01a",
+    "title": "Start screen: geolocation denied displays friendly fallback and district chips",
+    "passed": true,
+    "details": "deniedMsg: true, districtChips: true"
+  },
+  {
+    "id": "CH-01b",
+    "title": "Phrase 'Chiều nay nóng quá, quanh đây ăn gì được?' returns NO_WEATHER disclaimer and dish suggestions",
+    "passed": true,
+    "details": "noWeatherText: true, dishSuggestions: true"
+  },
+  {
+    "id": "CH-03a",
+    "title": "Search 'tìm quán bún' renders venue cards labelled A and B",
+    "passed": true,
+    "details": "cards: 2, badges: [\"A\",\"B\"]"
+  },
+  {
+    "id": "CH-03b",
+    "title": "Compare A and B renders table with columns A and B, distance estimate label, 'Chưa rõ' fallback cells, and unsupported criteria note",
+    "passed": true,
+    "details": "table: true, cols: true, distanceEstimate: true, chuaRo: true, noEmpty: true, injectedCell: Chưa rõ"
+  },
+  {
+    "id": "CH-04",
+    "title": "Shortlist add/remove/keep works via BOTH buttons and typed text, panel stays synchronized with server state",
+    "passed": true,
+    "details": "addBtn: 1/5, kept: true, addText: 2/5, removeText: 1/5, removeBtn: 0/5"
+  },
+  {
+    "id": "CH-05",
+    "title": "Typed 'ok' never creates a tour and displays clarification options",
+    "passed": true,
+    "details": "hasTour: false, clarifyButtons: true"
+  },
+  {
+    "id": "CH-06",
+    "title": "Allergy flow sets prominent chip, every card displays 'Chưa đủ thông tin về dị ứng', excludes crab, zero 'an toàn' claims",
+    "passed": true,
+    "details": "prominentChip: true, cardsWarned: true, containsCrab: false, unsafeClaims: false"
+  },
+  {
+    "id": "CH-08a",
+    "title": "Entering 'ở Sa Pa' displays outside-Hà-Nội warning notice",
+    "passed": true,
+    "details": "outsideNotice: \"Dữ liệu của mình hiện chỉ có quán ở Hà Nội. Bạn hãy chọn một khu vực trong Hà Nội nhé.\""
+  },
+  {
+    "id": "CH-08b-STREET",
+    "title": "Entering 'đường Xuân Thủy' shows 'xấp xỉ' approximate indicator",
+    "passed": true,
+    "details": "xuanThuy: true, xapXi: true"
+  },
+  {
+    "id": "CH-08b",
+    "title": "Entering 'ở Cầu Giấy' resolves location and opens workspace",
+    "passed": true,
+    "details": "cauGiayResolved: true, inWorkspace: true"
+  },
+  {
+    "id": "CH-08-DOUBLECLICK",
+    "title": "Rapid double-click on Add button sends exactly ONE network request",
+    "passed": false,
+    "details": "sentCalls: 2"
+  }
+]
