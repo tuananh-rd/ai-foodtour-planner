@@ -4,16 +4,18 @@
 
 ## Active upgrade N-series ? 2026-10-18
 
-Run `run_49d22e639a8a`; frontend Task `task_4127e02450c8` / Dispatch `ctx_619a2f36333e` on `term_da453134-ccff-4314-bc83-5737d3737cbb`. First readiness attempt failed before task delivery; same-terminal READY probe + retry produced `turn_started` and worker ownership confirmation, model displayed/reported Gemini 3.8 Flash (High); no duplicate worker. Backend `caf6898`: 569 tests OK (1 skip), guided HTTP 26/26, schema drift OK; review pending. Authority/design base `348b594`; plans/reviews remain untracked.
+Run `run_49d22e639a8a`; frontend Task `task_4127e02450c8` / Dispatch `ctx_619a2f36333e` on `term_da453134-ccff-4314-bc83-5737d3737cbb`. First readiness attempt failed before task delivery; same-terminal READY probe + retry produced `turn_started` and worker ownership confirmation, model displayed/reported Gemini 3.8 Flash (High); no duplicate worker. Authority/design base `348b594`; final backend575 OK/1 optional private-CSV skip, schema drift OK. Full production browser169/169, supplemental preview22/22, SSR11/11, frontend contracts18/18 and production build pass. Latest application behavior `6415d61`, preview cache isolation `ac05fc8`, replacement explanation `01d13ec`. Plans/reviews remain untracked; no push/deploy, Claude resting.
 
 | ID | Owner | State | Scope / reviewer |
 |---|---|---|---|
 | N0 | Codex | DONE | Authority override, SVG rendered/visually inspected, safe Antigravity base; affected-agent review Antigravity |
-| N1 | Codex | DONE, integration QA pending | Q03/P1-01 Vietnamese parser + coverage + regression; Antigravity independent integration |
-| N2 | Antigravity | REQUEST CHANGES, fixes active | SVG-inspired real UI, Q01/Q02/Q04?Q07, frontend/QA only; Codex review |
-| N3 | Codex | IMPLEMENTED, independent QA pending | P1-02/03/04/06/07/08: useful no-solution, data gap audit, locks/session checks, privacy-safe observability/benchmarks |
-| N4 | Antigravity + Codex | IN PROGRESS | Independent QA then Codex final integration, build/contracts/backend/browser/mobile evidence |
-| N5 | Codex | TODO | Closure: local URL, screenshots, commits, evidence gaps; P2 only if measurement justifies |
+| N1 | Codex | IMPLEMENTED + final automated gates PASS; independent QA settling | Q03/P1-01 parser/coverage, persisted numeric/allergy obligations, ngân/ngan regression, no silent relaxation |
+| N2 | Antigravity author; Codex serial reviewer/fixes | Codex source review ACCEPT for local prototype; final QA report settling | Author739ee78; NFE01–10 closed by source + browser evidence; no concurrent frontend writes after handoff; SVG comparison1440/390 |
+| N3 | Codex | IMPLEMENTED + final automated gates PASS; independent QA settling | No-solution, count-only private evidence gap, real replacement/locks/409/reload, allowlisted telemetry,100samples/workload/concurrency1,5, local runbook |
+| N4 | Antigravity + Codex | IN PROGRESS: final author evidence review/settlement | Author QA94aafbd reports62 browser checks on6415d61; Codex169+22 checks confirmed separately; final report corrections and affected preview config review requested |
+| N5 | Codex | PREPARED | Preview http://127.0.0.1:3020 / API8020; separate preview cache prevents build collision, HTTP200 and browser22/22. Final report `docs/reports/CODEX_N_INTEGRATION.md`; pending author settlement + test-server cleanup |
+
+Human/evidence blockers are not application TODOs that can be fabricated: verified local hours/prices/ingredients/routing and data reuse permission; chosen pilot verification; actual screen-reader speech/representative participants; disposable live DB backup/restore; validated Gemini quality beyond one bounded attempt. Strict mode retains insufficient-evidence refusal. P2 cache/index optimisation remains deferred because measured local workload shows no bottleneck. No extra collection/service/billing is authorised.
 
 # Task board — upgrade R0 + R1-lite (docs/UPGRADE_PLAN.md), Run run_6b3e047f1a69
 Defaults chốt: D1 UI_V2 sau cờ; D5 Gemini 18/ngày + giải thích template; D6 rating/review theo nguồn, trọng số nhỏ. D2/D3/D4/D7 hoãn.
