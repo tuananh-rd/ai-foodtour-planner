@@ -21,6 +21,11 @@ const ChatV2Layout = dynamic(() => import('./components/v2/chat/ChatV2Layout'), 
   ssr: false,
   loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FBF8F3' }} />,
 });
+
+const GuidedLayout = dynamic(() => import('./components/v2/guided/GuidedLayout'), {
+  ssr: false,
+  loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FAF7F2' }} />,
+});
 import {
   isMockMode,
   setRuntimeMockMode,
@@ -68,11 +73,15 @@ export default function Home() {
   // UI_V2 activation: features.ui_v2=true or URL ?ui=v2 (Scope Goal)
   const [isUiV2, setIsUiV2] = useState(false);
   const [isChatV2, setIsChatV2] = useState(false);
+  const [isGuidedUi, setIsGuidedUi] = useState(false);
   const [isDevMode, setIsDevMode] = useState(false);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const params = new URLSearchParams(window.location.search);
+      if (params.get('guided') === '1' || params.get('ui') === 'guided') {
+        setIsGuidedUi(true);
+      }
       if (params.get('chat') === 'v2') {
         setIsChatV2(true);
       }
@@ -86,6 +95,9 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    if (clientConfig?.features?.guided_ui) {
+      setIsGuidedUi(true);
+    }
     if (clientConfig?.features?.chat_v2) {
       setIsChatV2(true);
     }
@@ -533,6 +545,19 @@ export default function Home() {
   const lockedVenueIds = (stops.filter((s) => s.venue_id !== replaceTargetStop?.venue_id) || []).map(
     (s) => s.name || s.venue_id
   );
+
+  if (isGuidedUi) {
+    return (
+      <GuidedLayout
+        sessionId={sessionId}
+        sessionToken={sessionToken}
+        revision={revision}
+        health={health}
+        clientConfig={clientConfig}
+        onResetSession={() => initSession({ isReset: true })}
+      />
+    );
+  }
 
   if (isChatV2) {
     return (
