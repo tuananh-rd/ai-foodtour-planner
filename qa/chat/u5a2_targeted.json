@@ -1,0 +1,380 @@
+{
+  "Tôi dị ứng tôm và dị ứng": [
+    {
+      "input": {
+        "text": "Tôi dị ứng tôm và dị ứng"
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": true,
+      "pending": {
+        "pending_id": "p1",
+        "kind": "clarify_slot",
+        "options": [
+          {
+            "option_id": "allergy:peanut",
+            "label": "Đậu phộng"
+          },
+          {
+            "option_id": "allergy:seafood",
+            "label": "Hải sản"
+          },
+          {
+            "option_id": "allergy:milk",
+            "label": "Sữa"
+          },
+          {
+            "option_id": "allergy:egg",
+            "label": "Trứng"
+          },
+          {
+            "option_id": "allergy:gluten",
+            "label": "Gluten"
+          },
+          {
+            "option_id": "allergy:soy",
+            "label": "Đậu nành"
+          },
+          {
+            "option_id": "allergy:sesame",
+            "label": "Mè"
+          },
+          {
+            "option_id": "allergy:other",
+            "label": "Khác"
+          }
+        ],
+        "slot": "allergy_term"
+      },
+      "plan_request": null
+    },
+    {
+      "input": {
+        "action": {
+          "type": "request_plan"
+        }
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": true,
+      "pending": {
+        "pending_id": "p2",
+        "kind": "clarify_slot",
+        "options": [
+          {
+            "option_id": "allergy:peanut",
+            "label": "Đậu phộng"
+          },
+          {
+            "option_id": "allergy:seafood",
+            "label": "Hải sản"
+          },
+          {
+            "option_id": "allergy:milk",
+            "label": "Sữa"
+          },
+          {
+            "option_id": "allergy:egg",
+            "label": "Trứng"
+          },
+          {
+            "option_id": "allergy:gluten",
+            "label": "Gluten"
+          },
+          {
+            "option_id": "allergy:soy",
+            "label": "Đậu nành"
+          },
+          {
+            "option_id": "allergy:sesame",
+            "label": "Mè"
+          },
+          {
+            "option_id": "allergy:other",
+            "label": "Khác"
+          }
+        ],
+        "slot": "allergy_term"
+      },
+      "plan_request": null
+    },
+    {
+      "input": {
+        "action": {
+          "type": "confirm_yes"
+        }
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": true,
+      "pending": {
+        "pending_id": "p2",
+        "kind": "clarify_slot",
+        "options": [
+          {
+            "option_id": "allergy:peanut",
+            "label": "Đậu phộng"
+          },
+          {
+            "option_id": "allergy:seafood",
+            "label": "Hải sản"
+          },
+          {
+            "option_id": "allergy:milk",
+            "label": "Sữa"
+          },
+          {
+            "option_id": "allergy:egg",
+            "label": "Trứng"
+          },
+          {
+            "option_id": "allergy:gluten",
+            "label": "Gluten"
+          },
+          {
+            "option_id": "allergy:soy",
+            "label": "Đậu nành"
+          },
+          {
+            "option_id": "allergy:sesame",
+            "label": "Mè"
+          },
+          {
+            "option_id": "allergy:other",
+            "label": "Khác"
+          }
+        ],
+        "slot": "allergy_term"
+      },
+      "plan_request": null
+    }
+  ],
+  "Tôi thích phở, rồi hẵng tìm quán sau, dị ứng tôm": [
+    {
+      "input": {
+        "text": "Tôi thích phở, rồi hẵng tìm quán sau, dị ứng tôm"
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": false,
+      "pending": null,
+      "plan_request": null
+    },
+    {
+      "input": {
+        "action": {
+          "type": "request_plan"
+        }
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": false,
+      "pending": {
+        "pending_id": "p2",
+        "kind": "confirm_plan",
+        "options": [
+          {
+            "option_id": "confirm_yes",
+            "label": "Xác nhận và tạo lịch trình"
+          },
+          {
+            "option_id": "confirm_no",
+            "label": "Sửa thông tin"
+          }
+        ]
+      },
+      "plan_request": null
+    },
+    {
+      "input": {
+        "action": {
+          "type": "confirm_yes"
+        }
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": false,
+      "pending": null,
+      "plan_request": {
+        "venue_ids": [
+          "CHT-001"
+        ],
+        "kept": []
+      }
+    }
+  ],
+  "Tôi dị ứng tôm và một chất khác": [
+    {
+      "input": {
+        "text": "Tôi dị ứng tôm và một chất khác"
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": false,
+      "pending": null,
+      "plan_request": null
+    },
+    {
+      "input": {
+        "action": {
+          "type": "request_plan"
+        }
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": false,
+      "pending": {
+        "pending_id": "p2",
+        "kind": "confirm_plan",
+        "options": [
+          {
+            "option_id": "confirm_yes",
+            "label": "Xác nhận và tạo lịch trình"
+          },
+          {
+            "option_id": "confirm_no",
+            "label": "Sửa thông tin"
+          }
+        ]
+      },
+      "plan_request": null
+    },
+    {
+      "input": {
+        "action": {
+          "type": "confirm_yes"
+        }
+      },
+      "allergies": [
+        "tôm"
+      ],
+      "unresolved": false,
+      "pending": null,
+      "plan_request": {
+        "venue_ids": [
+          "CHT-001"
+        ],
+        "kept": []
+      }
+    }
+  ],
+  "dataset_venue_view": {
+    "id": "CHT-001",
+    "name": "Quán (tên không hiển thị được)",
+    "district": "Hoàn Kiếm",
+    "address": "",
+    "dish_tags": [
+      "Bún",
+      "Món nước"
+    ],
+    "price": {
+      "min_vnd": 30000,
+      "max_vnd": 60000,
+      "semantics": "venue_range",
+      "evidence": "estimate"
+    },
+    "hours": {
+      "status": "unknown",
+      "display": ""
+    },
+    "rating": null
+  },
+  "llm_guessed_scope_time": {
+    "text": "Tour 3 quán quanh Hồ Gươm tối nay 120 phút, ngân sách 500k cho 2 người, mình bị dị ứng nhẹ với mấy thứ rang giòn",
+    "llm_calls": 1,
+    "profile": {
+      "budget": {
+        "value": 500000,
+        "source": "user_said",
+        "turn": 1,
+        "confirmed": true
+      },
+      "start_time": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "tastes": {
+        "value": [
+          "bún chả"
+        ],
+        "source": "ai",
+        "turn": 1,
+        "confirmed": false
+      }
+    },
+    "understood": [
+      {
+        "type": "understood",
+        "items": [
+          {
+            "id": "area",
+            "label": "Khu vực",
+            "value": "Hồ Gươm",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "party",
+            "label": "Số người",
+            "value": "2 người",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "stops",
+            "label": "Số quán",
+            "value": "3 quán",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "duration",
+            "label": "Tổng thời gian",
+            "value": "120 phút (cả tour)",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "day_part",
+            "label": "Buổi",
+            "value": "Buổi tối",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "time",
+            "label": "Bắt đầu lúc",
+            "value": null,
+            "status": "missing",
+            "editable": true
+          },
+          {
+            "id": "budget",
+            "label": "Ngân sách",
+            "value": "500.000 đ (chưa rõ cả nhóm hay mỗi người)",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "dish",
+            "label": "Thích",
+            "value": "bún chả",
+            "status": "ai",
+            "editable": true
+          }
+        ],
+        "allergies": []
+      }
+    ]
+  }
+}

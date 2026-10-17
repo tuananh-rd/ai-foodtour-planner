@@ -1,0 +1,142 @@
+.venv/Scripts/python.exe : test_absent_relative_is_not_a_tour_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_absent_relative_is_not_a_tour_allergy) ... FAIL
+At line:2 char:59
++ ... NG='utf-8'; .venv/Scripts/python.exe -m unittest tests.chat.test_u5a2 ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (test_absent_rel...lergy) ... FAIL:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+test_additional_unnamed_substance_blocks_planning
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_additional_unnamed_substance_blocks_planning) ... FAIL
+test_conflicts_and_asked_reload_bounds
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_conflicts_and_asked_reload_bounds) ... ok
+test_explicit_dislike_is_not_a_claimed_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_explicit_dislike_is_not_a_claimed_allergy) ... FAIL
+test_hypothetical_advice_is_not_an_allergy_declaration
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_hypothetical_advice_is_not_an_allergy_declaration) ...
+FAIL
+test_model_cannot_add_end_time_without_end_time_statement
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_model_cannot_add_end_time_without_end_time_statement)
+... ok
+test_named_absence_preserves_unrelated_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_named_absence_preserves_unrelated_allergy) ...
+  test_named_absence_preserves_unrelated_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_named_absence_preserves_unrelated_allergy) (text='Tôi
+không bị dị ứng tôm') ... FAIL
+  test_named_absence_preserves_unrelated_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_named_absence_preserves_unrelated_allergy) (text='Tôi
+chưa từng dị ứng tôm') ... FAIL
+test_non_allergen_food_aversion_is_not_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_non_allergen_food_aversion_is_not_allergy) ... ok
+test_quote_of_food_is_fail_closed
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_quote_of_food_is_fail_closed) ... ok
+test_real_clause_survives_adjacent_hypothetical
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_real_clause_survives_adjacent_hypothetical) ... FAIL
+test_start_clock_does_not_ground_invented_end_clock
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_start_clock_does_not_ground_invented_end_clock) ... FAIL
+test_total_duration_does_not_ground_budget_scope
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_total_duration_does_not_ground_budget_scope) ... FAIL
+======================================================================
+FAIL: test_absent_relative_is_not_a_tour_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_absent_relative_is_not_a_tour_allergy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 47, in test_absent_relative_is_not_a_tour_allergy
+    self.assertFalse(r.state.allergies)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: [Allergy(term='tôm', family='crustacean', source='user_said', venue_confirmations=[])] is not false
+======================================================================
+FAIL: test_additional_unnamed_substance_blocks_planning
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_additional_unnamed_substance_blocks_planning)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 36, in test_additional_unnamed_substance_blocks_planning
+    self.assertTrue(r.state.allergy_unresolved)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+======================================================================
+FAIL: test_explicit_dislike_is_not_a_claimed_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_explicit_dislike_is_not_a_claimed_allergy)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 43, in test_explicit_dislike_is_not_a_claimed_allergy
+    self.assertFalse(r.state.allergies)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: [Allergy(term='trứng', family='egg', source='user_said', venue_confirmations=[])] is not false
+======================================================================
+FAIL: test_hypothetical_advice_is_not_an_allergy_declaration
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_hypothetical_advice_is_not_an_allergy_declaration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 51, in test_hypothetical_advice_is_not_an_allergy_declaration
+    self.assertFalse(r.state.allergies)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^
+AssertionError: [Allergy(term='trứng', family='egg', source='user_said', venue_confirmations=[])] is not false
+======================================================================
+FAIL: test_named_absence_preserves_unrelated_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_named_absence_preserves_unrelated_allergy) (text='Tôi
+không bị dị ứng tôm')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 31, in test_named_absence_preserves_unrelated_allergy
+    self.assertEqual([a.term for a in r.state.allergies], ['lạc'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != ['lạc']
+Second list contains 1 additional elements.
+First extra element 0:
+'lạc'
+- []
++ ['lạc']
+======================================================================
+FAIL: test_named_absence_preserves_unrelated_allergy
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_named_absence_preserves_unrelated_allergy) (text='Tôi
+chưa từng dị ứng tôm')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 31, in test_named_absence_preserves_unrelated_allergy
+    self.assertEqual([a.term for a in r.state.allergies], ['lạc'])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: [] != ['lạc']
+Second list contains 1 additional elements.
+First extra element 0:
+'lạc'
+- []
++ ['lạc']
+======================================================================
+FAIL: test_real_clause_survives_adjacent_hypothetical
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_real_clause_survives_adjacent_hypothetical)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 55, in test_real_clause_survives_adjacent_hypothetical
+    self.assertTrue(r.state.allergies or r.state.allergy_unresolved)
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true
+======================================================================
+FAIL: test_start_clock_does_not_ground_invented_end_clock
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_start_clock_does_not_ground_invented_end_clock)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 78, in test_start_clock_does_not_ground_invented_end_clock
+    self.assertFalse(r.state.profile['end_time'].known())
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: True is not false
+======================================================================
+FAIL: test_total_duration_does_not_ground_budget_scope
+(tests.chat.test_u5a2_regressions.ConfirmationRegressions.test_total_duration_does_not_ground_budget_scope)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-codex-backend\backend\tests\chat\test_u5a2_regressi
+ons.py", line 85, in test_total_duration_does_not_ground_budget_scope
+    self.assertIsNone(r.state.profile['budget'].scope)
+    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'group' is not None
+----------------------------------------------------------------------
+Ran 12 tests in 0.150s
+FAILED (failures=9)

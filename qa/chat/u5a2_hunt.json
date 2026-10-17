@@ -1,0 +1,753 @@
+[
+  {
+    "prior": [],
+    "text": "Tôi không bị dị ứng tôm",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "GREET_OR_SMALLTALK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi chưa từng dị ứng tôm",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "GREET_OR_SMALLTALK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi hết dị ứng tôm",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Nếu tôi dị ứng trứng thì sao?",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "AMBIGUOUS_ACK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Nếu tôi dị ứng trứng thì phải tránh gì?",
+    "allergies": [
+      {
+        "term": "trứng",
+        "family": "egg",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi thích phở, giả sử bạn dị ứng trứng, tôi dị ứng lạc",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "AMBIGUOUS_ACK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Bạn tôi dị ứng tôm nhưng không đi cùng",
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Mẹ tôi dị ứng tôm, còn tôi không bị dị ứng gì",
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi nói \"dị ứng tôm\", thực ra tôi dị ứng lạc",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "\"Tôi dị ứng tôm\"",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "UNKNOWN",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi dị ứng \"tôm\"",
+    "allergies": [],
+    "unresolved": true,
+    "pending": "allergy_term",
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": false
+  },
+  {
+    "prior": [],
+    "text": "Tôi không ăn được phở",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_AVOID",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi không ăn được thịt bò",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_AVOID",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi không ăn được lạc",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi ghét trứng",
+    "allergies": [
+      {
+        "term": "trứng",
+        "family": "egg",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi không thích sữa",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_AVOID",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi bị di ứng tôm",
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi dị ứng tôm và một chất khác",
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi dị ứng tôm, rồi hẵng tìm quán sau, dị ứng lạc",
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi dị ứng lạc, đùa thôi là nói về giá, tôi dị ứng tôm thật",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "AMBIGUOUS_ACK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [],
+    "text": "Tôi dị ứng lạc nhưng không bị dị ứng tôm",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi không bị dị ứng tôm",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "GREET_OR_SMALLTALK",
+    "notices": [
+      "allergy_cleared"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi chưa từng dị ứng tôm",
+    "allergies": [],
+    "unresolved": false,
+    "pending": null,
+    "intent": "GREET_OR_SMALLTALK",
+    "notices": [
+      "allergy_cleared"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi hết dị ứng tôm",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Nếu tôi dị ứng trứng thì sao?",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "AMBIGUOUS_ACK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Nếu tôi dị ứng trứng thì phải tránh gì?",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "trứng",
+        "family": "egg",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi thích phở, giả sử bạn dị ứng trứng, tôi dị ứng lạc",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "AMBIGUOUS_ACK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Bạn tôi dị ứng tôm nhưng không đi cùng",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Mẹ tôi dị ứng tôm, còn tôi không bị dị ứng gì",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi nói \"dị ứng tôm\", thực ra tôi dị ứng lạc",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "\"Tôi dị ứng tôm\"",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "UNKNOWN",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi dị ứng \"tôm\"",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": true,
+    "pending": "allergy_term",
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": false
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi không ăn được phở",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_AVOID",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi không ăn được thịt bò",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_AVOID",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi không ăn được lạc",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi ghét trứng",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "trứng",
+        "family": "egg",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi không thích sữa",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_AVOID",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi bị di ứng tôm",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi dị ứng tôm và một chất khác",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi dị ứng tôm, rồi hẵng tìm quán sau, dị ứng lạc",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      },
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [
+      "allergy_unknown"
+    ],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi dị ứng lạc, đùa thôi là nói về giá, tôi dị ứng tôm thật",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "AMBIGUOUS_ACK",
+    "notices": [],
+    "plans_after_request_confirm": true
+  },
+  {
+    "prior": [
+      "Tôi dị ứng lạc"
+    ],
+    "text": "Tôi dị ứng lạc nhưng không bị dị ứng tôm",
+    "allergies": [
+      {
+        "term": "lạc",
+        "family": "peanut",
+        "source": "user_said",
+        "venue_confirmations": []
+      }
+    ],
+    "unresolved": false,
+    "pending": null,
+    "intent": "SET_ALLERGY",
+    "notices": [],
+    "plans_after_request_confirm": true
+  }
+]

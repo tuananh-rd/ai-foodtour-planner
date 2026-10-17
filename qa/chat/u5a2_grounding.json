@@ -1,0 +1,311 @@
+[
+  {
+    "text": "Tour 3 quán quanh Hồ Gươm lúc 19h, mình dị ứng mấy thứ rang giòn",
+    "calls": 1,
+    "profile": {
+      "budget": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "start_time": {
+        "value": "19:00",
+        "source": "user_said",
+        "turn": 1,
+        "confirmed": true
+      },
+      "end_time": {
+        "value": "21:00",
+        "source": "ai",
+        "turn": 1,
+        "confirmed": false
+      },
+      "tastes": {
+        "value": [
+          "bún chả"
+        ],
+        "source": "ai",
+        "turn": 1,
+        "confirmed": false
+      }
+    },
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "ai_unconfirmed",
+        "venue_confirmations": []
+      }
+    ],
+    "pending": "allergy_confirm",
+    "understood": [
+      {
+        "type": "understood",
+        "items": [
+          {
+            "id": "area",
+            "label": "Khu vực",
+            "value": "Hồ Gươm",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "stops",
+            "label": "Số quán",
+            "value": "3 quán",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "duration",
+            "label": "Tổng thời gian",
+            "value": "180 phút (cả tour)",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "time",
+            "label": "Bắt đầu lúc",
+            "value": "19:00",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "budget",
+            "label": "Ngân sách",
+            "value": null,
+            "status": "missing",
+            "editable": true
+          },
+          {
+            "id": "dish",
+            "label": "Thích",
+            "value": "bún chả",
+            "status": "ai",
+            "editable": true
+          }
+        ],
+        "allergies": [
+          {
+            "term": "tôm",
+            "family": "crustacean",
+            "status": "ai_unconfirmed"
+          }
+        ]
+      }
+    ],
+    "plans_before_ai_confirmation": false
+  },
+  {
+    "text": "Tour 3 quán quanh Hồ Gươm tổng 120 phút ngân sách 500k cho 2 người, mình dị ứng mấy thứ rang giòn",
+    "calls": 1,
+    "profile": {
+      "budget": {
+        "value": 500000,
+        "source": "user_said",
+        "turn": 1,
+        "confirmed": true,
+        "scope": "group"
+      },
+      "start_time": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "end_time": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "tastes": {
+        "value": [
+          "bún chả"
+        ],
+        "source": "ai",
+        "turn": 1,
+        "confirmed": false
+      }
+    },
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "ai_unconfirmed",
+        "venue_confirmations": []
+      }
+    ],
+    "pending": "allergy_confirm",
+    "understood": [
+      {
+        "type": "understood",
+        "items": [
+          {
+            "id": "area",
+            "label": "Khu vực",
+            "value": "Hồ Gươm",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "party",
+            "label": "Số người",
+            "value": "2 người",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "stops",
+            "label": "Số quán",
+            "value": "3 quán",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "duration",
+            "label": "Tổng thời gian",
+            "value": "120 phút (cả tour)",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "time",
+            "label": "Bắt đầu lúc",
+            "value": null,
+            "status": "missing",
+            "editable": true
+          },
+          {
+            "id": "budget",
+            "label": "Ngân sách",
+            "value": "500.000 đ cả nhóm",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "dish",
+            "label": "Thích",
+            "value": "bún chả",
+            "status": "ai",
+            "editable": true
+          }
+        ],
+        "allergies": [
+          {
+            "term": "tôm",
+            "family": "crustacean",
+            "status": "ai_unconfirmed"
+          }
+        ]
+      }
+    ],
+    "plans_before_ai_confirmation": false
+  },
+  {
+    "text": "Tour 3 quán quanh Hồ Gươm tối nay, mình dị ứng mấy thứ rang giòn",
+    "calls": 1,
+    "profile": {
+      "budget": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "start_time": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "end_time": {
+        "value": null,
+        "source": "missing",
+        "turn": 0,
+        "confirmed": false
+      },
+      "tastes": {
+        "value": [
+          "bún chả"
+        ],
+        "source": "ai",
+        "turn": 1,
+        "confirmed": false
+      }
+    },
+    "allergies": [
+      {
+        "term": "tôm",
+        "family": "crustacean",
+        "source": "ai_unconfirmed",
+        "venue_confirmations": []
+      }
+    ],
+    "pending": "allergy_confirm",
+    "understood": [
+      {
+        "type": "understood",
+        "items": [
+          {
+            "id": "area",
+            "label": "Khu vực",
+            "value": "Hồ Gươm",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "stops",
+            "label": "Số quán",
+            "value": "3 quán",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "duration",
+            "label": "Tổng thời gian",
+            "value": "180 phút (cả tour)",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "day_part",
+            "label": "Buổi",
+            "value": "Buổi tối",
+            "status": "user",
+            "editable": true
+          },
+          {
+            "id": "time",
+            "label": "Bắt đầu lúc",
+            "value": null,
+            "status": "missing",
+            "editable": true
+          },
+          {
+            "id": "budget",
+            "label": "Ngân sách",
+            "value": null,
+            "status": "missing",
+            "editable": true
+          },
+          {
+            "id": "dish",
+            "label": "Thích",
+            "value": "bún chả",
+            "status": "ai",
+            "editable": true
+          }
+        ],
+        "allergies": [
+          {
+            "term": "tôm",
+            "family": "crustacean",
+            "status": "ai_unconfirmed"
+          }
+        ]
+      }
+    ],
+    "plans_before_ai_confirmation": false
+  }
+]

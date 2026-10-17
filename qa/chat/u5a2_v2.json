@@ -1,0 +1,2012 @@
+[
+  {
+    "summary": {
+      "mode": "rules",
+      "cases": 152,
+      "safety_pass": 152,
+      "safety_pct": 100.0,
+      "safety_failures": {},
+      "all_slots_correct": 112,
+      "all_slots_pct": 73.684,
+      "slot_accuracy_pct": {
+        "stops": 100.0,
+        "day_part": 100.0,
+        "budget_vnd": 100.0,
+        "budget_scope": 100.0,
+        "duration_min": 100.0,
+        "max_leg_min": 100.0,
+        "party_size": 100.0,
+        "start_time_set": 100.0,
+        "interests": 73.684,
+        "allergies": 100.0,
+        "allergy_question": 100.0
+      },
+      "clarify_per_case": 0.6118,
+      "llm_calls": 0,
+      "overasking_count": 0
+    },
+    "failures": [
+      {
+        "id": "v2-001",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-002",
+        "text": "Nho ban sap xep hanh trinh 3 diem khu Hoan Kiem chieu mai; danh 90 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc tom. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-003",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-004",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-005",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-006",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-007",
+        "text": "Nho ban sap xep hanh trinh 4 diem khu Hoan Kiem sang mai; danh 180 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc sua. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-008",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-009",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-010",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-011",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-012",
+        "text": "Nho ban sap xep hanh trinh 5 diem khu Hoan Kiem trua nay; danh 120 phut; ngan sach moi nguoi 750000 dong, nhom 4 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc trung. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-013",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-014",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-015",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-016",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-017",
+        "text": "Nho ban sap xep hanh trinh 2 diem khu Hoan Kiem toi nay; danh 90 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc dau phong. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-018",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-019",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-020",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-021",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-022",
+        "text": "Nho ban sap xep hanh trinh 3 diem khu Hoan Kiem chieu mai; danh 150 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc tom. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-023",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-024",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-025",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-026",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-027",
+        "text": "Nho ban sap xep hanh trinh 4 diem khu Hoan Kiem sang mai; danh 120 phut; ngan sach moi nguoi 750000 dong, nhom 4 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc sua. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-028",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-029",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-030",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-031",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-032",
+        "text": "Nho ban sap xep hanh trinh 5 diem khu Hoan Kiem trua nay; danh 180 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc trung. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-033",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-034",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-035",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-036",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-037",
+        "text": "Nho ban sap xep hanh trinh 2 diem khu Hoan Kiem toi nay; danh 150 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc dau phong. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-038",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-039",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-040",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      }
+    ],
+    "overasking": []
+  },
+  {
+    "summary": {
+      "mode": "failed_provider",
+      "cases": 152,
+      "safety_pass": 152,
+      "safety_pct": 100.0,
+      "safety_failures": {},
+      "all_slots_correct": 112,
+      "all_slots_pct": 73.684,
+      "slot_accuracy_pct": {
+        "stops": 100.0,
+        "day_part": 100.0,
+        "budget_vnd": 100.0,
+        "budget_scope": 100.0,
+        "duration_min": 100.0,
+        "max_leg_min": 100.0,
+        "party_size": 100.0,
+        "start_time_set": 100.0,
+        "interests": 73.684,
+        "allergies": 100.0,
+        "allergy_question": 100.0
+      },
+      "clarify_per_case": 0.6118,
+      "llm_calls": 0,
+      "overasking_count": 0
+    },
+    "failures": [
+      {
+        "id": "v2-001",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-002",
+        "text": "Nho ban sap xep hanh trinh 3 diem khu Hoan Kiem chieu mai; danh 90 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc tom. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-003",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-004",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-005",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-006",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-007",
+        "text": "Nho ban sap xep hanh trinh 4 diem khu Hoan Kiem sang mai; danh 180 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc sua. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-008",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-009",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-010",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-011",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-012",
+        "text": "Nho ban sap xep hanh trinh 5 diem khu Hoan Kiem trua nay; danh 120 phut; ngan sach moi nguoi 750000 dong, nhom 4 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc trung. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-013",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-014",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-015",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-016",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-017",
+        "text": "Nho ban sap xep hanh trinh 2 diem khu Hoan Kiem toi nay; danh 90 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc dau phong. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-018",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-019",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-020",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-021",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-022",
+        "text": "Nho ban sap xep hanh trinh 3 diem khu Hoan Kiem chieu mai; danh 150 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc tom. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-023",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-024",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-025",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-026",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-027",
+        "text": "Nho ban sap xep hanh trinh 4 diem khu Hoan Kiem sang mai; danh 120 phut; ngan sach moi nguoi 750000 dong, nhom 4 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc sua. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-028",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-029",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-030",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-031",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-032",
+        "text": "Nho ban sap xep hanh trinh 5 diem khu Hoan Kiem trua nay; danh 180 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc trung. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-033",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-034",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-035",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-036",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-037",
+        "text": "Nho ban sap xep hanh trinh 2 diem khu Hoan Kiem toi nay; danh 150 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc dau phong. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-038",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-039",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-040",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      }
+    ],
+    "overasking": []
+  },
+  {
+    "summary": {
+      "mode": "outcome_exhausted",
+      "cases": 152,
+      "safety_pass": 152,
+      "safety_pct": 100.0,
+      "safety_failures": {},
+      "all_slots_correct": 112,
+      "all_slots_pct": 73.684,
+      "slot_accuracy_pct": {
+        "stops": 100.0,
+        "day_part": 100.0,
+        "budget_vnd": 100.0,
+        "budget_scope": 100.0,
+        "duration_min": 100.0,
+        "max_leg_min": 100.0,
+        "party_size": 100.0,
+        "start_time_set": 100.0,
+        "interests": 73.684,
+        "allergies": 100.0,
+        "allergy_question": 100.0
+      },
+      "clarify_per_case": 0.6118,
+      "llm_calls": 0,
+      "overasking_count": 0
+    },
+    "failures": [
+      {
+        "id": "v2-001",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-002",
+        "text": "Nho ban sap xep hanh trinh 3 diem khu Hoan Kiem chieu mai; danh 90 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc tom. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-003",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-004",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-005",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-006",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-007",
+        "text": "Nho ban sap xep hanh trinh 4 diem khu Hoan Kiem sang mai; danh 180 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc sua. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-008",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-009",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-010",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-011",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-012",
+        "text": "Nho ban sap xep hanh trinh 5 diem khu Hoan Kiem trua nay; danh 120 phut; ngan sach moi nguoi 750000 dong, nhom 4 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc trung. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-013",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-014",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-015",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-016",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-017",
+        "text": "Nho ban sap xep hanh trinh 2 diem khu Hoan Kiem toi nay; danh 90 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc dau phong. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-018",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-019",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-020",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-021",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-022",
+        "text": "Nho ban sap xep hanh trinh 3 diem khu Hoan Kiem chieu mai; danh 150 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc tom. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-023",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-024",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-025",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-026",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-027",
+        "text": "Nho ban sap xep hanh trinh 4 diem khu Hoan Kiem sang mai; danh 120 phut; ngan sach moi nguoi 750000 dong, nhom 4 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc sua. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-028",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-029",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-030",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-031",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-032",
+        "text": "Nho ban sap xep hanh trinh 5 diem khu Hoan Kiem trua nay; danh 180 phut; tong ngan sach 600 nghin cho 3 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc trung. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-033",
+        "text": "Nhờ bạn sắp xếp hành trình 2 điểm khu Hoàn Kiếm tối nay; dành 90 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được đậu phộng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-034",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 90 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-035",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 120 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-036",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 120 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-037",
+        "text": "Nho ban sap xep hanh trinh 2 diem khu Hoan Kiem toi nay; danh 150 phut; ngan sach 500k cho 2 nguoi. Mon minh khoai: pho va bun cha. Minh khong an duoc dau phong. Chua lam ngay, hoi bo sung da nhe.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      },
+      {
+        "id": "v2-038",
+        "text": "Nhờ bạn sắp xếp hành trình 3 điểm khu Hoàn Kiếm chiều mai; dành 150 phút; tổng ngân sách 600 nghìn cho 3 người. Món mình khoái: phở và bún chả. Mình không ăn được tôm. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-039",
+        "text": "Nhờ bạn sắp xếp hành trình 4 điểm khu Hoàn Kiếm sáng mai; dành 180 phút; ngân sách mỗi người 750000 đồng, nhóm 4 người. Món mình khoái: phở và bún chả. Mình không ăn được sữa. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "start_time"
+      },
+      {
+        "id": "v2-040",
+        "text": "Nhờ bạn sắp xếp hành trình 5 điểm khu Hoàn Kiếm trưa nay; dành 180 phút; ngân sách 500k cho 2 người. Món mình khoái: phở và bún chả. Mình không ăn được trứng. Chưa làm ngay, hỏi bổ sung đã nhé.",
+        "prior": [],
+        "safety": [],
+        "mismatches": {
+          "interests": {
+            "expected": [
+              "phở",
+              "bún chả"
+            ],
+            "actual": []
+          }
+        },
+        "pending": "budget_scope"
+      }
+    ],
+    "overasking": []
+  }
+]
