@@ -80,6 +80,7 @@ export default function GuidedLayout({
   const [lastFailedTurn, setLastFailedTurn] = useState(null);
 
   const inputRef = useRef(null);
+  const lastFocusedKeyRef = useRef('');
 
   // Synchronize prop changes from page.js
   useEffect(() => {
@@ -316,7 +317,6 @@ export default function GuidedLayout({
         ]);
       }
     } catch (err) {
-      console.error('[GuidedLayout] Turn error:', err);
       setLastFailedTurn({ text, action });
       if (err?.status === 409) {
         setErrorMessage('Phiên làm việc đã thay đổi trên máy chủ. Đang tự động đồng bộ lại...');
@@ -329,6 +329,10 @@ export default function GuidedLayout({
             }
           })
           .catch(() => {});
+      } else if (err?.status === 422) {
+        setErrorMessage('Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.');
+      } else if (err?.status >= 500) {
+        setErrorMessage('Máy chủ đang bận xử lý. Bạn vui lòng thử lại sau giây lát.');
       } else {
         setErrorMessage('Không thể kết nối tới máy chủ lúc này. Bạn vui lòng thử lại sau ít phút.');
       }
@@ -474,28 +478,129 @@ export default function GuidedLayout({
       }
     }
   }
-  const clarifyBlock = latestBlocks.find((b) => b.type === 'clarify');
-  const confirmSummaryBlock = latestBlocks.find((b) => b.type === 'confirm_summary');
+
   const tourReadyBlock = latestBlocks.find((b) => b.type === 'tour_ready');
+  const isTourReady = Boolean(tour && (tourReadyBlock || chatState?.phase === 'planned'));
+
+  // Confirm Summary Block: active when confirmation is latest or pending confirm_plan
+  let confirmSummaryBlock = !isTourReady ? latestBlocks.find((b) => b.type === 'confirm_summary') : null;
+  if (!confirmSummaryBlock && !isTourReady && chatState?.pending?.kind === 'confirm_plan') {
+    const previousConfirm = [...messages]
+      .reverse()
+      .map((m) => m.reply?.blocks?.find((b) => b.type === 'confirm_summary'))
+      .find(Boolean);
+    if (previousConfirm) {
+      confirmSummaryBlock = previousConfirm;
+    } else {
+      confirmSummaryBlock = {
+        type: 'confirm_summary',
+        items: profileToUnderstoodItems(chatState.profile),
+        shortlist: chatState.shortlist || [],
+        missing: [],
+        warnings: []
+      };
+    }
+  }
 
   // Tour Gate: Tour is rendered ONLY when tour is available and tour_ready block or planned phase is reached
   const showTour = Boolean(tour && (tourReadyBlock || chatState?.phase === 'planned'));
 
+  // Clarify Block: active only when tour and confirm summary are not shown
+  let clarifyBlock = null;
+  if (!showTour && !confirmSummaryBlock && chatState?.pending?.kind !== 'confirm_plan') {
+    const latestClarify = latestBlocks.find((b) => b.type === 'clarify');
+    if (latestClarify) {
+      clarifyBlock = latestClarify;
+    } else if (chatState?.pending) {
+      const previousClarify = [...messages]
+        .reverse()
+        .map((m) => m.reply?.blocks?.find((b) => b.type === 'clarify'))
+        .find(Boolean);
+      if (previousClarify && (!chatState.pending.slot || previousClarify.slot === chatState.pending.slot)) {
+        clarifyBlock = previousClarify;
+      } else {
+        clarifyBlock = {
+          type: 'clarify',
+          pending_id: chatState.pending.pending_id || 'p_restored',
+          question: chatState.pending.question || chatState.pending.prompt || getClarifyQuestionText(chatState.pending.slot),
+          options: chatState.pending.options || [],
+          slot: chatState.pending.slot,
+          free_text: true
+        };
+      }
+    }
+  }
+
+  // Filter text blocks to enforce EXACTLY ONE visible decision question across DOM
+  const filteredTextBlocks = textBlocks.filter((b) => {
+    if (!b?.text) return false;
+    if ((confirmSummaryBlock || clarifyBlock) && b.text.trim().endsWith('?')) {
+      return false;
+    }
+    return true;
+  });
+
   // Allergies for display
   const currentAllergies = understoodBlock?.allergies || chatState?.allergies || [];
 
-  // Focus management: when a clarify block appears, gently focus the first option chip
+  // Focus and viewport management (F2 finding)
   useEffect(() => {
-    if (clarifyBlock && !busy) {
-      const timer = setTimeout(() => {
-        const firstChip = document.querySelector('[data-testid="clarify-option-0"]');
-        if (firstChip) {
-          firstChip.focus();
+    if (busy) return;
+    const active = typeof document !== 'undefined' ? document.activeElement : null;
+    const isUserTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+
+    if (showTour) {
+      if (lastFocusedKeyRef.current !== 'tour') {
+        lastFocusedKeyRef.current = 'tour';
+        const mapsCta = document.querySelector('[data-testid="google-maps-cta"]');
+        if (mapsCta) {
+          mapsCta.focus();
+          mapsCta.scrollIntoView({ block: 'nearest' });
         }
-      }, 80);
-      return () => clearTimeout(timer);
+      }
+      return;
     }
-  }, [clarifyBlock?.pending_id, clarifyBlock?.question, busy]);
+
+    if (confirmSummaryBlock) {
+      if (lastFocusedKeyRef.current !== 'confirm') {
+        lastFocusedKeyRef.current = 'confirm';
+        const confirmYesBtn = document.querySelector('[data-testid="confirm-yes-btn"]');
+        if (confirmYesBtn) {
+          confirmYesBtn.focus();
+          confirmYesBtn.scrollIntoView({ block: 'nearest' });
+        }
+      }
+      return;
+    }
+
+    if (clarifyBlock) {
+      const clarifyKey = `${clarifyBlock.slot || ''}_${clarifyBlock.pending_id || clarifyBlock.question || ''}`;
+      if (lastFocusedKeyRef.current !== clarifyKey) {
+        lastFocusedKeyRef.current = clarifyKey;
+        if (!isUserTyping) {
+          const tryFocus = () => {
+            const firstChip = document.querySelector('[data-testid^="clarify-option-"]');
+            if (firstChip) {
+              firstChip.focus();
+              firstChip.scrollIntoView({ block: 'nearest' });
+              return true;
+            }
+            const freeInput = document.querySelector('[data-testid="clarify-free-text-input"]');
+            if (freeInput) {
+              freeInput.focus();
+              freeInput.scrollIntoView({ block: 'nearest' });
+              return true;
+            }
+            return false;
+          };
+          if (!tryFocus()) {
+            const timer = setTimeout(tryFocus, 20);
+            return () => clearTimeout(timer);
+          }
+        }
+      }
+    }
+  }, [clarifyBlock, confirmSummaryBlock, showTour, busy]);
 
   return (
     <div
@@ -506,7 +611,7 @@ export default function GuidedLayout({
         backgroundColor: 'var(--bg, #faf7f2)',
         color: 'var(--ink, #231f1a)',
         fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        padding: '16px 12px 48px',
+        padding: '12px 12px 32px',
         boxSizing: 'border-box'
       }}
     >
@@ -535,7 +640,7 @@ export default function GuidedLayout({
           maxWidth: 720,
           margin: '0 auto',
           display: 'grid',
-          gap: 16
+          gap: 8
         }}
       >
         {/* Header */}
@@ -544,7 +649,7 @@ export default function GuidedLayout({
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            paddingBottom: 12,
+            paddingBottom: 8,
             borderBottom: '1px solid var(--line, #e6dfd3)'
           }}
         >
@@ -777,7 +882,7 @@ export default function GuidedLayout({
             data-testid="guided-stream"
             style={{
               display: 'grid',
-              gap: 16,
+              gap: 8,
               minWidth: 0,
               maxWidth: '100%'
             }}
@@ -793,11 +898,11 @@ export default function GuidedLayout({
                       justifySelf: 'end',
                       background: 'var(--accent, #c2410c)',
                       color: '#fff',
-                      padding: '12px 16px',
-                      borderRadius: 14,
+                      padding: '6px 12px',
+                      borderRadius: 12,
                       maxWidth: '85%',
-                      fontSize: 15,
-                      lineHeight: 1.45,
+                      fontSize: 14,
+                      lineHeight: 1.4,
                       wordBreak: 'break-word',
                       overflowWrap: 'anywhere'
                     }}
@@ -810,20 +915,20 @@ export default function GuidedLayout({
             })}
 
             {/* Assistant Latest Blocks in Order */}
-            <div style={{ display: 'grid', gap: 12, minWidth: 0, maxWidth: '100%' }}>
-              {/* Text blocks */}
-              {textBlocks.map((b, idx) => (
+            <div style={{ display: 'grid', gap: 8, minWidth: 0, maxWidth: '100%' }}>
+              {/* Text blocks (filtered to enforce single decision question) */}
+              {filteredTextBlocks.map((b, idx) => (
                 <div
                   key={idx}
                   data-testid="assistant-text-bubble"
                   style={{
                     background: 'var(--chip, #f3ece0)',
                     color: 'var(--ink, #231f1a)',
-                    padding: '12px 16px',
-                    borderRadius: 14,
+                    padding: '8px 12px',
+                    borderRadius: 12,
                     maxWidth: '92%',
-                    fontSize: 15,
-                    lineHeight: 1.45,
+                    fontSize: 14,
+                    lineHeight: 1.4,
                     wordBreak: 'break-word',
                     overflowWrap: 'anywhere'
                   }}
@@ -841,10 +946,10 @@ export default function GuidedLayout({
                     background: b.level === 'safety' ? 'var(--warnbg, #fef3c7)' : 'var(--chip, #f3ece0)',
                     color: b.level === 'safety' ? 'var(--warn, #92400e)' : 'var(--ink, #231f1a)',
                     border: '1px solid var(--line, #e6dfd3)',
-                    borderRadius: 12,
-                    padding: '10px 14px',
-                    fontSize: 13,
-                    lineHeight: 1.45,
+                    borderRadius: 10,
+                    padding: '6px 10px',
+                    fontSize: 12,
+                    lineHeight: 1.4,
                     wordBreak: 'break-word',
                     overflowWrap: 'anywhere'
                   }}

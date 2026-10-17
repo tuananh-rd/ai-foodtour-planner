@@ -627,57 +627,36 @@ async function run() {
     userActionCount++;
     await sendInput('19h');
 
-    // Turn 3: vehicle question
-    const vehicleQuestion = await ev(`document.querySelector('[data-testid="clarify-question-text"]')?.innerText || ''`);
-    const hasWalkChip = await ev(`document.querySelector('[data-testid="clarify-option-veh:walk"]') !== null`);
-    record('U4B-06-VEHICLE', 'Typed 19h understood -> vehicle question rendered with chips',
-      vehicleQuestion.includes('phương tiện') && hasWalkChip,
-      `hasWalk: ${hasWalkChip}`
-    );
-
-    await captureScreenshot('04_vehicle_chips_1280.png');
-    await setViewport(390, 844);
-    await captureScreenshot('04_vehicle_chips_390.png');
-    await setViewport(1280, 800);
-
-    // Pick "Đi bộ" (Action 4)
-    userActionCount++;
-    await clickOption('veh:walk');
-
-    // Turn 4: proposed venue cards + propose:use chip
+    // Turn 3: 19h delivers proposal and confirm summary in ONE reply
     const venueCardsCount = await ev(`document.querySelectorAll('[data-testid="venue-card"]').length`);
-    const hasProposeUseChip = await ev(`document.querySelector('[data-testid="clarify-option-propose:use"]') !== null`);
-    record('U4B-07-VENUE-PROPOSALS', 'Vehicle picked -> proposed venue cards rendered with "Dùng những quán này" chip',
-      venueCardsCount >= 3 && hasProposeUseChip,
-      `cards: ${venueCardsCount}, hasProposeUse: ${hasProposeUseChip}`
-    );
-
-    await captureScreenshot('05_venue_proposals_1280.png');
-    await setViewport(390, 844);
-    await captureScreenshot('05_venue_proposals_390.png');
-    await setViewport(1280, 800);
-
-    // Pick "Dùng những quán này" (Action 5)
-    userActionCount++;
-    await clickOption('propose:use');
-
-    // Turn 5: Confirm summary card
     const confirmCardVisible = await ev(`document.querySelector('[data-testid="confirm-summary-card"]') !== null`);
     const confirmYesBtn = await ev(`document.querySelector('[data-testid="confirm-yes-btn"]') !== null`);
     const confirmNoBtn = await ev(`document.querySelector('[data-testid="confirm-no-btn"]') !== null`);
     const tourBeforeConfirm2 = await ev(`document.querySelector('[data-testid="guided-timeline"]') !== null`);
 
-    record('U4B-08-CONFIRM-CARD', 'Confirm summary card rendered with Đúng, lập tour and Sửa; tour still not rendered',
-      confirmCardVisible && confirmYesBtn && confirmNoBtn && !tourBeforeConfirm2,
-      `confirmCard: ${confirmCardVisible}, yesBtn: ${confirmYesBtn}, tourStillHidden: ${!tourBeforeConfirm2}`
+    record('U4B-06-PROPOSALS-AND-CONFIRM', 'Typed 19h understood -> proposals and confirm card rendered in one reply',
+      venueCardsCount >= 1 && confirmCardVisible && confirmYesBtn && confirmNoBtn && !tourBeforeConfirm2,
+      `cards: ${venueCardsCount}, confirmCard: ${confirmCardVisible}, tourStillHidden: ${!tourBeforeConfirm2}`
     );
 
-    await captureScreenshot('06_confirm_card_1280.png');
+    const hasWalkDefault = await ev(`(document.querySelector('[data-testid="confirm-vehicle"]')?.innerText || '').includes('Đi bộ')`);
+    record('U4B-07-VEHICLE-WALK-DEFAULT', 'Vehicle defaults to walking in confirm summary card',
+      hasWalkDefault,
+      `hasWalkDefault: ${hasWalkDefault}`
+    );
+
+    const hasShortlist = await ev(`document.querySelector('[data-testid="confirm-venues-list"]') !== null`);
+    record('U4B-08-CONFIRM-SHORTLIST', 'Confirm summary card renders proposed shortlist venues and repair button',
+      hasShortlist && confirmNoBtn,
+      `hasShortlist: ${hasShortlist}, hasNoBtn: ${confirmNoBtn}`
+    );
+
+    await captureScreenshot('04_proposals_confirm_1280.png');
     await setViewport(390, 844);
-    await captureScreenshot('06_confirm_card_390.png');
+    await captureScreenshot('04_proposals_confirm_390.png');
     await setViewport(1280, 800);
 
-    // Click "Đúng, lập tour" (Action 6)
+    // Click "Đúng, lập tour" (Action 4)
     userActionCount++;
     await ev(`document.querySelector('[data-testid="confirm-yes-btn"]')?.click()`);
     await waitForTurn();
@@ -707,11 +686,11 @@ async function run() {
     await captureScreenshot('07_tour_timeline_maps_390.png');
     await setViewport(1280, 800);
 
-    // Click Maps link (Action 7)
-    userActionCount++; // Action 7: open Google Maps link
-    console.log(`[Usability] Total measured user actions to opened Maps link: ${userActionCount}`);
-    record('U4B-10-USABILITY-ACTIONS', 'Total user actions from empty page to Maps link is <= 8',
-      userActionCount <= 8,
+    // Click Maps link (Action 5: exactly 4 actions after typing S0)
+    userActionCount++; // Action 5: open Google Maps link
+    console.log(`[Usability] Total measured user actions to opened Maps link: ${userActionCount} (actions after typing S0: ${userActionCount - 1})`);
+    record('U4B-10-USABILITY-ACTIONS', 'Total user actions to Maps link <= 5 (plan target <= 4 after typing S0)',
+      userActionCount <= 5,
       `actions: ${userActionCount}`
     );
 

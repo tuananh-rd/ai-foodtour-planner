@@ -442,30 +442,17 @@ async function run() {
     console.log('-> Typing "19h"...');
     await sendChat('19h');
 
-    // Verify next question is vehicle
-    const q3Text = await ev(`document.querySelector('[data-testid="clarify-question-card"]')?.innerText || ''`);
-    const hasWalkOption = await ev(`document.querySelector('[data-testid="clarify-option-veh:walk"]') !== null`);
-    record('S0-TURN3-01', 'Advances to vehicle clarify question with walk option', hasWalkOption, q3Text);
-
-    // Turn 4: Click "Đi bộ" (veh:walk)
-    console.log('-> Clicking veh:walk chip...');
-    await ev(`document.querySelector('[data-testid="clarify-option-veh:walk"]')?.click()`);
-    await waitForTurn();
-
-    // Verify propose question
-    const hasProposeOption = await ev(`document.querySelector('[data-testid="clarify-option-propose:use"]') !== null`);
-    record('S0-TURN4-01', 'Advances to propose clarify question', hasProposeOption);
-
-    // Turn 5: Click propose:use
-    console.log('-> Clicking propose:use chip...');
-    await ev(`document.querySelector('[data-testid="clarify-option-propose:use"]')?.click()`);
-    await waitForTurn();
-
-    // Verify Confirm Summary Card appears
+    // Turn 3: 19h delivers proposal and confirm summary in ONE reply
     const hasConfirmCard = await ev(`document.querySelector('[data-testid="confirm-summary-card"]') !== null`);
     const hasConfirmYesBtn = await ev(`document.querySelector('[data-testid="confirm-yes-btn"]') !== null`);
     const hasConfirmNoBtn = await ev(`document.querySelector('[data-testid="confirm-no-btn"]') !== null`);
-    record('S0-TURN5-01', 'Confirm summary card rendered with ONE primary button and ONE secondary button', hasConfirmCard && hasConfirmYesBtn && hasConfirmNoBtn);
+    record('S0-TURN3-01', 'Advances to proposals and confirm summary in one reply', hasConfirmCard && hasConfirmYesBtn && hasConfirmNoBtn);
+
+    const hasWalkDefault = await ev(`(document.querySelector('[data-testid="confirm-vehicle"]')?.innerText || '').includes('Đi bộ')`);
+    record('S0-TURN4-01', 'Vehicle defaults to walking in confirm summary card', hasWalkDefault);
+
+    const hasVenuesList = await ev(`document.querySelector('[data-testid="confirm-venues-list"]') !== null`);
+    record('S0-TURN5-01', 'Proposed venues rendered in confirmation shortlist', hasVenuesList);
 
     // TOUR GATE: Tour is NEVER displayed before confirm_yes!
     const tourBeforeConfirm = await ev(`document.querySelector('[data-testid="guided-timeline"]') !== null`);

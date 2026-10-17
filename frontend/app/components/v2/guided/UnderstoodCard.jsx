@@ -93,13 +93,13 @@ export default function UnderstoodCard({
         background: 'var(--card, #fff)',
         border: '1px solid var(--line, #e6dfd3)',
         borderRadius: 14,
-        padding: 16,
+        padding: '10px 14px',
         display: 'grid',
-        gap: 8,
-        margin: '12px 0'
+        gap: 2,
+        margin: '4px 0'
       }}
     >
-      <h3 style={{ margin: 0, fontSize: 16, fontWeight: 700, color: 'var(--ink, #231f1a)' }}>
+      <h3 style={{ margin: '0 0 2px 0', fontSize: 15, fontWeight: 700, color: 'var(--ink, #231f1a)' }}>
         Mình hiểu là…
       </h3>
 
@@ -118,9 +118,9 @@ export default function UnderstoodCard({
                 alignItems: 'center',
                 gap: 8,
                 borderTop: idx > 0 ? '1px solid var(--line, #e6dfd3)' : 'none',
-                paddingTop: idx > 0 ? 8 : 4,
-                paddingBottom: 4,
-                fontSize: 14
+                paddingTop: idx > 0 ? 3 : 2,
+                paddingBottom: 2,
+                fontSize: 13
               }}
             >
               <b style={{ fontWeight: 600, color: 'var(--ink, #231f1a)' }}>{item.label}</b>
@@ -141,12 +141,12 @@ export default function UnderstoodCard({
                     color: 'var(--accent, #c2410c)',
                     background: 'none',
                     border: 'none',
-                    fontSize: 13,
+                    fontSize: 12,
                     fontWeight: 600,
                     textDecoration: 'underline',
                     cursor: 'pointer',
-                    minHeight: 44,
-                    padding: '0 6px',
+                    minHeight: 28,
+                    padding: '0 4px',
                     display: 'flex',
                     alignItems: 'center'
                   }}
@@ -182,9 +182,9 @@ export default function UnderstoodCard({
             alignItems: 'center',
             gap: 8,
             borderTop: '1px solid var(--line, #e6dfd3)',
-            paddingTop: 8,
-            paddingBottom: 4,
-            fontSize: 14
+            paddingTop: 3,
+            paddingBottom: 2,
+            fontSize: 13
           }}
         >
           <b style={{ fontWeight: 600, color: 'var(--ink, #231f1a)' }}>Dị ứng</b>
@@ -220,12 +220,12 @@ export default function UnderstoodCard({
                 color: 'var(--accent, #c2410c)',
                 background: 'none',
                 border: 'none',
-                fontSize: 13,
+                fontSize: 12,
                 fontWeight: 600,
                 textDecoration: 'underline',
                 cursor: 'pointer',
-                minHeight: 44,
-                padding: '0 6px',
+                minHeight: 28,
+                padding: '0 4px',
                 display: 'flex',
                 alignItems: 'center'
               }}
@@ -243,10 +243,10 @@ export default function UnderstoodCard({
           background: 'var(--warnbg, #fef3c7)',
           color: 'var(--warn, #92400e)',
           borderRadius: 10,
-          padding: '10px 14px',
-          fontSize: 13,
-          marginTop: 6,
-          lineHeight: 1.45
+          padding: '6px 10px',
+          fontSize: 12,
+          marginTop: 4,
+          lineHeight: 1.35
         }}
       >
         Dữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.

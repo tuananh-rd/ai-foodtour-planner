@@ -22,10 +22,10 @@ export default function ClarifyQuestionCard({
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const trimmed = typedText.trim();
-    if (!trimmed || busy) return;
+    const val = (typedText || e.target.querySelector('input')?.value || '').trim();
+    if (!val || busy) return;
     setTypedText('');
-    onSubmitText && onSubmitText(trimmed);
+    onSubmitText && onSubmitText(val);
   };
 
   return (
@@ -116,6 +116,16 @@ export default function ClarifyQuestionCard({
             data-testid="clarify-free-text-input"
             value={typedText}
             onChange={(e) => setTypedText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                const val = (e.target.value || typedText).trim();
+                if (val && !busy) {
+                  setTypedText('');
+                  onSubmitText && onSubmitText(val);
+                }
+              }
+            }}
             disabled={busy}
             placeholder="Hoặc gõ câu trả lời của bạn…"
             style={{

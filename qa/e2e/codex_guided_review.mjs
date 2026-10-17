@@ -87,10 +87,14 @@ try{
     const ax=await cdp('Accessibility.getFullAXTree');const inputs=ax.nodes.filter(n=>n.role?.value==='textbox').map(n=>n.name?.value||'');check(`S0 ${width} named text inputs`,inputs.length>0&&inputs.every(Boolean),inputs);
     const pos=await ev(`Object.fromEntries(['clarify-question-card','understood-row-allergies'].map(t=>{const r=document.querySelector('[data-testid="'+t+'"]')?.getBoundingClientRect();return [t,r?{top:r.top,bottom:r.bottom,viewport:innerHeight}:null]}))`);evidence.flows.push({name:`first reply positions ${width}`,pos});
     await pick('Cả nhóm',keyboard);await gate(`S0 ${width} budget answered`);
-    await send('19h',keyboard);await gate(`S0 ${width} time answered`);
-    await pick('Đi bộ',keyboard);await gate(`S0 ${width} vehicle answered`);
-    await pick('Dùng những quán này',keyboard);await pause(750);await gate(`S0 ${width} confirmation pending`);
+    await send('19h',keyboard);await pause(750);await gate(`S0 ${width} confirmation pending`);
     check(`S0 ${width} confirmation exists`,await exists('confirm-yes-btn'));
+    check(`S0 ${width} confirm venues list exists`,await exists('confirm-venues-list'));
+    check(`S0 ${width} confirm visit minutes exists`,await exists('confirm-visit-min'));
+    check(`S0 ${width} confirm vehicle defaults to walking`,await exists('confirm-vehicle')&&((await ev(`document.querySelector('[data-testid="confirm-vehicle"]')?.innerText`))||'').includes('Đi bộ'));
+    check(`S0 ${width} proposal venue cards rendered`,(await ev(`document.querySelectorAll('[data-testid="venue-card"]').length`))>=1);
+    check(`S0 ${width} confirm has repair option`,await exists('confirm-no-btn'));
+    check(`S0 ${width} time answered in profile`,await exists('understood-row-time'));
     const prompts=await ev(`Array.from(document.querySelectorAll('[data-testid="assistant-text-bubble"],[data-testid="clarify-question-text"],[data-testid="confirm-summary-card"] h3')).map(x=>x.innerText).filter(t=>t.includes('?'))`);check(`S0 ${width} one visible decision question`,prompts.length===1,{count:prompts.length});
     confirmed=true;await pick('Đúng, lập tour',keyboard);const tour=await snap(`S0 ${width} tour`);
     check(`S0 ${width} double-confirm makes one plan`,network.filter(n=>n.method==='POST'&&n.body?.includes('confirm_yes')).length===1);
@@ -110,7 +114,7 @@ try{
       await ev("document.documentElement.style.zoom='2'");await snap('200% reflow');const clipping=await ev(`Array.from(document.querySelectorAll('button,input,[data-testid^="understood-row-"]')).filter(e=>e.getBoundingClientRect().width&&e.getBoundingClientRect().right>innerWidth+1).map(e=>({testid:e.dataset.testid,right:e.getBoundingClientRect().right,width:innerWidth}))`);check('200% reflow controls not clipped',clipping.length===0,clipping);await ev("document.documentElement.style.zoom=''");
     }
   }
-  replies.length=0;network.length=0;await nav();await send(S0);await pick('Mỗi người');await send('19h');await pick('Đi bộ');await pick('Dùng những quán này');await gate('per-person confirmation');
+  replies.length=0;network.length=0;await nav();await send(S0);await pick('Mỗi người');await send('19h');await gate('per-person confirmation');
   const perPerson=await ev(`({understood:document.querySelector('[data-testid="understood-row-budget"]')?.innerText,confirm:document.querySelector('[data-testid="confirm-summary-details"]')?.innerText})`);check('confirmation preserves per-person budget scope',/mỗi người/.test(perPerson.understood||'')&&/mỗi người/.test(perPerson.confirm||''),perPerson);
   // Allergy obligations: all attacks go through visible UI and persisted sessions.
   replies.length=0;network.length=0;await nav();await send(cue);await gate('allergy cue');

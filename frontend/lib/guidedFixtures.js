@@ -1,5 +1,5 @@
 /**
- * Synthetic guided chat turns fixture (contract v1.9.1)
+ * Synthetic guided chat turns fixture (contract v1.9.2)
  */
 export const SYNTHETIC_GUIDED_TURNS = {
  "_label": "SYNTHETIC recorded guided chat turns (engine output; contract v1.9.1)",
@@ -453,186 +453,6 @@ export const SYNTHETIC_GUIDED_TURNS = {
          "text": "Đã cập nhật: bắt đầu 19:00."
         },
         {
-         "type": "clarify",
-         "pending_id": "p3",
-         "question": "Bạn muốn đi bằng phương tiện gì (đi bộ, xe máy, ô tô, taxi/Grab)?",
-         "options": [
-          {
-           "option_id": "veh:walk",
-           "label": "Đi bộ"
-          },
-          {
-           "option_id": "veh:motorbike",
-           "label": "Xe máy"
-          },
-          {
-           "option_id": "veh:car",
-           "label": "Ô tô"
-          },
-          {
-           "option_id": "veh:taxi",
-           "label": "Taxi/Grab"
-          }
-         ],
-         "slot": "plan_slots",
-         "free_text": true
-        }
-       ]
-      },
-      "chat": {
-       "phase": "discover",
-       "profile": {
-        "area": {
-         "value": {
-          "kind": "landmark",
-          "label": "Hồ Gươm",
-          "lat": 21.0285,
-          "lon": 105.8522,
-          "district": null
-         },
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "party_size": {
-         "value": 2,
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "audience": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "budget": {
-         "value": 500000,
-         "source": "user_said",
-         "turn": 2,
-         "confirmed": true,
-         "scope": "group"
-        },
-        "start_time": {
-         "value": "19:00",
-         "source": "user_said",
-         "turn": 3,
-         "confirmed": true
-        },
-        "end_time": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "duration_min": {
-         "value": 120,
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "vehicle": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "tastes": {
-         "value": [
-          "phở",
-          "bún chả"
-         ],
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "max_leg_min": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "stops": {
-         "value": 3,
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "day_part": {
-         "value": "evening",
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        }
-       },
-       "allergies": [
-        {
-         "term": "đậu phộng",
-         "family": "peanut",
-         "source": "user_said",
-         "venue_confirmations": []
-        }
-       ],
-       "shortlist": [],
-       "last_results": [],
-       "pending": {
-        "pending_id": "p3",
-        "kind": "clarify_slot",
-        "options": [
-         {
-          "option_id": "veh:walk",
-          "label": "Đi bộ"
-         },
-         {
-          "option_id": "veh:motorbike",
-          "label": "Xe máy"
-         },
-         {
-          "option_id": "veh:car",
-          "label": "Ô tô"
-         },
-         {
-          "option_id": "veh:taxi",
-          "label": "Taxi/Grab"
-         }
-        ],
-        "slot": "plan_slots"
-       },
-       "turn_count": 3
-      },
-      "turn": {
-       "intent": "ANSWER_PENDING",
-       "tools": [
-        "answer_pending",
-        "clarify"
-       ],
-       "understanding": "rules",
-       "trigger_reason": null,
-       "coverage": {
-        "signals": [],
-        "complete": true
-       },
-       "llm_calls": 0
-      },
-      "plan_request": false
-     }
-    },
-    {
-     "request": {
-      "text": null,
-      "action": {
-       "type": "pick_option",
-       "option_id": "veh:walk"
-      }
-     },
-     "response": {
-      "reply": {
-       "blocks": [
-        {
-         "type": "text",
-         "text": "Đã cập nhật: đi bộ."
-        },
-        {
          "type": "text",
          "text": "Mình gợi ý 3 quán quanh Hồ Gươm (xấp xỉ) (khoảng cách ước tính, giá theo khoảng giá của quán)."
         },
@@ -799,183 +619,6 @@ export const SYNTHETIC_GUIDED_TURNS = {
          ]
         },
         {
-         "type": "clarify",
-         "pending_id": "p4",
-         "question": "Bạn muốn dùng những quán này cho tour không?",
-         "options": [
-          {
-           "option_id": "propose:use",
-           "label": "Dùng những quán này"
-          },
-          {
-           "option_id": "propose:self",
-           "label": "Mình tự chọn"
-          }
-         ],
-         "slot": "propose",
-         "free_text": true
-        }
-       ]
-      },
-      "chat": {
-       "phase": "discover",
-       "profile": {
-        "area": {
-         "value": {
-          "kind": "landmark",
-          "label": "Hồ Gươm",
-          "lat": 21.0285,
-          "lon": 105.8522,
-          "district": null
-         },
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "party_size": {
-         "value": 2,
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "audience": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "budget": {
-         "value": 500000,
-         "source": "user_said",
-         "turn": 2,
-         "confirmed": true,
-         "scope": "group"
-        },
-        "start_time": {
-         "value": "19:00",
-         "source": "user_said",
-         "turn": 3,
-         "confirmed": true
-        },
-        "end_time": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "duration_min": {
-         "value": 120,
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "vehicle": {
-         "value": "walk",
-         "source": "user_said",
-         "turn": 4,
-         "confirmed": true
-        },
-        "tastes": {
-         "value": [
-          "phở",
-          "bún chả"
-         ],
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "max_leg_min": {
-         "value": null,
-         "source": "missing",
-         "turn": 0,
-         "confirmed": false
-        },
-        "stops": {
-         "value": 3,
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        },
-        "day_part": {
-         "value": "evening",
-         "source": "user_said",
-         "turn": 1,
-         "confirmed": true
-        }
-       },
-       "allergies": [
-        {
-         "term": "đậu phộng",
-         "family": "peanut",
-         "source": "user_said",
-         "venue_confirmations": []
-        }
-       ],
-       "shortlist": [],
-       "last_results": [
-        {
-         "label": "A",
-         "venue_id": "CHT-004"
-        },
-        {
-         "label": "B",
-         "venue_id": "CHT-011"
-        },
-        {
-         "label": "C",
-         "venue_id": "CHT-012"
-        }
-       ],
-       "pending": {
-        "pending_id": "p4",
-        "kind": "clarify_slot",
-        "options": [
-         {
-          "option_id": "propose:use",
-          "label": "Dùng những quán này"
-         },
-         {
-          "option_id": "propose:self",
-          "label": "Mình tự chọn"
-         }
-        ],
-        "slot": "propose"
-       },
-       "turn_count": 4
-      },
-      "turn": {
-       "intent": "ANSWER_PENDING",
-       "tools": [
-        "propose_shortlist",
-        "answer_pending"
-       ],
-       "understanding": "action",
-       "trigger_reason": null,
-       "coverage": {
-        "signals": [],
-        "complete": true
-       },
-       "llm_calls": 0
-      },
-      "plan_request": false
-     }
-    },
-    {
-     "request": {
-      "text": null,
-      "action": {
-       "type": "pick_option",
-       "option_id": "propose:use"
-      }
-     },
-     "response": {
-      "reply": {
-       "blocks": [
-        {
-         "type": "text",
-         "text": "Mình đã thêm [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12 vào danh sách (3/5). Bạn muốn tìm thêm món khác hay xem tiếp một lựa chọn nữa?"
-        },
-        {
          "type": "text",
          "text": "Mình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé."
         },
@@ -1014,7 +657,7 @@ export const SYNTHETIC_GUIDED_TURNS = {
            "id": "vehicle",
            "label": "Phương tiện",
            "value": "đi bộ",
-           "status": "user",
+           "status": "default",
            "editable": true
           },
           {
@@ -1044,6 +687,13 @@ export const SYNTHETIC_GUIDED_TURNS = {
            "value": null,
            "status": "missing",
            "editable": true
+          },
+          {
+           "id": "visit_min",
+           "label": "Thời gian mỗi quán (ước tính)",
+           "value": "khoảng 34 phút",
+           "status": "inferred",
+           "editable": false
           }
          ],
          "shortlist": [
@@ -1131,9 +781,9 @@ export const SYNTHETIC_GUIDED_TURNS = {
         },
         "vehicle": {
          "value": "walk",
-         "source": "user_said",
-         "turn": 4,
-         "confirmed": true
+         "source": "default",
+         "turn": 3,
+         "confirmed": false
         },
         "tastes": {
          "value": [
@@ -1200,7 +850,7 @@ export const SYNTHETIC_GUIDED_TURNS = {
         }
        ],
        "pending": {
-        "pending_id": "p5",
+        "pending_id": "p3",
         "kind": "confirm_plan",
         "options": [
          {
@@ -1213,14 +863,15 @@ export const SYNTHETIC_GUIDED_TURNS = {
          }
         ]
        },
-       "turn_count": 5
+       "turn_count": 3
       },
       "turn": {
        "intent": "ANSWER_PENDING",
        "tools": [
-        "answer_pending"
+        "answer_pending",
+        "propose_shortlist"
        ],
-       "understanding": "action",
+       "understanding": "rules",
        "trigger_reason": null,
        "coverage": {
         "signals": [],
@@ -1297,9 +948,9 @@ export const SYNTHETIC_GUIDED_TURNS = {
         },
         "vehicle": {
          "value": "walk",
-         "source": "user_said",
-         "turn": 4,
-         "confirmed": true
+         "source": "default",
+         "turn": 3,
+         "confirmed": false
         },
         "tastes": {
          "value": [
@@ -1366,7 +1017,7 @@ export const SYNTHETIC_GUIDED_TURNS = {
         }
        ],
        "pending": null,
-       "turn_count": 6
+       "turn_count": 4
       },
       "turn": {
        "intent": "CONFIRM_YES",
@@ -1397,6 +1048,12 @@ export const SYNTHETIC_GUIDED_TURNS = {
      "response": {
       "reply": {
        "blocks": [
+        {
+         "type": "notice",
+         "level": "info",
+         "code": "llm_unavailable",
+         "text": "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."
+        },
         {
          "type": "understood",
          "items": [
@@ -1441,7 +1098,7 @@ export const SYNTHETIC_GUIDED_TURNS = {
         {
          "type": "clarify",
          "pending_id": "p1",
-         "question": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc).",
+         "question": "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).",
          "options": [
           {
            "option_id": "allergy:peanut",
@@ -2807,7 +2464,7 @@ export const SYNTHETIC_GUIDED_TURNS = {
         {
          "type": "clarify",
          "pending_id": "p1",
-         "question": "Tên tác nhân dị ứng quá dài hoặc không rõ nên chưa được ghi nhận; hãy nhập ngắn gọn từng thứ (ví dụ: cua, tôm, lạc).",
+         "question": "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).",
          "options": [
           {
            "option_id": "allergy:peanut",

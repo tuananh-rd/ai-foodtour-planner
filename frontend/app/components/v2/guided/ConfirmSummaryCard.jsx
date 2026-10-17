@@ -27,6 +27,24 @@ export default function ConfirmSummaryCard({
     ? `${Number(profile.budget.value).toLocaleString('vi-VN')} đ`
     : (summary?.items?.find((i) => i.id === 'budget')?.value || '500.000 đ');
 
+  const budgetScopeItem = summary?.items?.find((i) => i.id === 'budget_scope');
+  const scopeFromProfile = profile?.budget?.scope;
+  let scopeText = 'chưa rõ cả nhóm hay mỗi người';
+  if (scopeFromProfile === 'per_person' || budgetScopeItem?.value === 'mỗi người' || String(budget).includes('mỗi người')) {
+    scopeText = 'mỗi người';
+  } else if (scopeFromProfile === 'group' || budgetScopeItem?.value === 'cả nhóm' || String(budget).includes('cả nhóm')) {
+    scopeText = 'cả nhóm';
+  }
+  const cleanBudget = String(budget).replace(/\s*\(?(mỗi người|cả nhóm|chưa rõ[^)]*)\)?/gi, '').trim();
+
+  const visitMinItem = summary?.items?.find((i) => i.id === 'visit_min');
+  const visitMinText = visitMinItem?.value || 'khoảng 30 phút/quán';
+
+  const vehicleItem = summary?.items?.find((i) => i.id === 'vehicle');
+  const vehicleVal = vehicleItem?.value || profile?.vehicle?.value || 'đi bộ';
+  const isDefaultVehicle = vehicleItem?.status === 'default' || profile?.vehicle?.source === 'default' || !profile?.vehicle?.confirmed;
+  const vehicleLabel = (vehicleVal === 'walk' || vehicleVal === 'đi bộ') ? 'Đi bộ' : vehicleVal;
+
   return (
     <div
       data-testid="confirm-summary-card"
@@ -59,8 +77,46 @@ export default function ConfirmSummaryCard({
             lineHeight: 1.45
           }}
         >
-          {party} người • từ {time} • tối đa {budget} cả nhóm
+          {party} người • từ {time} • tối đa {cleanBudget} {scopeText}
           {summary?.notes ? ` • ${summary.notes}` : ''}
+        </div>
+
+        {/* Proposed Venues List */}
+        {Array.isArray(summary?.shortlist) && summary.shortlist.length > 0 && (
+          <div
+            data-testid="confirm-venues-list"
+            style={{
+              fontSize: 13,
+              color: 'var(--ink, #231f1a)',
+              marginTop: 6
+            }}
+          >
+            <b>Quán đề xuất:</b> {summary.shortlist.map((s) => s.name || s.venue_id).join(', ')}
+          </div>
+        )}
+
+        {/* Visit Minutes per Stop */}
+        <div
+          data-testid="confirm-visit-min"
+          style={{
+            fontSize: 13,
+            color: 'var(--mute, #6b6257)',
+            marginTop: 4
+          }}
+        >
+          ⏱️ <b>Thời gian mỗi quán:</b> {visitMinText}
+        </div>
+
+        {/* Vehicle Row (default walking, editable) */}
+        <div
+          data-testid="confirm-vehicle"
+          style={{
+            fontSize: 13,
+            color: 'var(--mute, #6b6257)',
+            marginTop: 4
+          }}
+        >
+          🚶 <b>Phương tiện:</b> {vehicleLabel}{isDefaultVehicle ? ' (mặc định)' : ''}
         </div>
       </div>
 
