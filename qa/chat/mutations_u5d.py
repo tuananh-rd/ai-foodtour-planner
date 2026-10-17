@@ -1,6 +1,7 @@
 """Committed green controls only; never let known-red findings kill a mutant."""
 from adversarial_guided import *
 import importlib
+import re
 from confirm_u5a2 import mutations
 from review_u5d import save
 

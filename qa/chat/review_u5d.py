@@ -73,6 +73,12 @@ def timing():
             eng.handle(ChatState(),Preferences(),text=c['text'])
         for text in ['Bạn tôi không đi cùng','Tôi dị ứng tôm nhưng bạn tôi không đi','Nếu tôi dị ứng trứng thì phải tránh gì?','Tôi không bị dị ứng tôm','Tôi kiêng trứng']:
             eng.handle(ready(eng),Preferences(),text=text)
+        st=ready(eng);st.allergies=[Allergy('vừng','sesame',who='other')]
+        eng.handle(st,Preferences(),text='Đồng nghiệp tôi không đi.')
+        for text in ['Tour 3 quán 1 tiếng rưỡi mình dị ứng mấy thứ rang giòn',
+                     'Tour 3 quán 1 triệu 500 nghìn cho cả đoàn mình dị ứng mấy thứ rang giòn']:
+            llm=lambda *a:Outcome(sanitize({'intent':'UPDATE_PROFILE','patch':{'start_time':'19:00','end_time':'21:00','budget_scope':'group'}}),1)
+            eng.handle(ready(eng),Preferences(),text=text,llm=llm)
     # Module-level compiled patterns are not calls through re.* at runtime.
     for mod in [coverage,safety_parse,understanding]:
         for val in vars(mod).values():
@@ -96,7 +102,7 @@ def timing():
             for _ in range(3):
                 start=time.perf_counter();eng.handle(ChatState(),Preferences(),text=text);ms.append((time.perf_counter()-start)*1000)
             engine.append(dict(prefix=cue,chars=n,median_ms=round(statistics.median(ms),4),max_ms=round(max(ms),4)))
-    save('timing',dict(method='All captured runtime and module-level regexes; finditer forces full scan; ten adversarial families per length; superset of new regexes',regexes=table,engine=engine))
+    save('timing_supplement',dict(method='Runtime and module-level regexes, including LLM merge grounding and absent-party retraction; finditer stress forces full scan irrespective of production operation; ten adversarial families per length',regexes=table,engine=engine))
     print('timed',len(table),'regexes')
 
 if __name__=='__main__':
