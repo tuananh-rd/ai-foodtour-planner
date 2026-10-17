@@ -363,3 +363,29 @@ class SafetyRegressionsFromU5a2(unittest.TestCase):
         r = self.turns(["Tôi dị ứng tôm và một chất khác"])[0]
         self.assertIn("tôm", " ".join(a.term for a in r.state.allergies))
         self.assertTrue(r.state.allergy_unresolved)
+
+
+class LiveSmokeLessons(unittest.TestCase):
+    """Real Gemini returned the symptom 'ngứa họng' as an allergen for 'không nhớ tên, chỉ biết ăn vào là ngứa họng' (smoke 2026-10-17)."""
+
+    def test_llm_symptom_is_not_recorded_as_a_substance(self):
+        from app.chat.llm_understand import Outcome, sanitize
+        eng, _ = engine()
+        data = {"intent": "SET_ALLERGY", "patch": {"allergy": ["ngứa họng"]}}
+        r = eng.handle(ChatState(), Preferences(), text="Mình bị dị ứng nhưng không nhớ tên, chỉ biết ăn vào là ngứa họng, tour 2 quán quanh Hồ Gươm",
+                       llm=lambda t, c, u: Outcome(sanitize(data), 1))
+        self.assertEqual(r.state.allergies, [])
+        self.assertTrue(r.state.allergy_unresolved)
+        self.assertEqual(r.state.pending.slot, "allergy_term")
+
+    def test_llm_description_is_not_a_substance_and_rules_do_not_record_one(self):
+        from app.chat.llm_understand import Outcome, sanitize
+        eng, _ = engine()
+        data = {"intent": "SET_ALLERGY", "patch": {"allergy": ["mấy loại hạt"]}}
+        r = eng.handle(ChatState(), Preferences(), text="Con mình bé xíu, bị dị ứng mấy loại hạt, tối nay muốn ăn tour 2 quán quanh Hồ Gươm",
+                       llm=lambda t, c, u: Outcome(sanitize(data), 1))
+        self.assertEqual(r.state.allergies, [])
+        self.assertTrue(r.state.allergy_unresolved)
+        r2 = eng.handle(ChatState(), Preferences(), text="Mình dị ứng đồ có vỏ cứng, đi tour 3 quán quanh Hồ Gươm tối nay")
+        self.assertEqual(r2.state.allergies, [])  # live smoke: rules used to record "có vỏ cứng" as the user's substance
+        self.assertTrue(r2.state.allergy_unresolved)

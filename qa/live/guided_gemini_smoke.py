@@ -44,6 +44,7 @@ CASES = [
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--max-calls", type=int, default=6)
+    ap.add_argument("--only", default="", help="comma-separated case ids to run (saves live calls)")
     args = ap.parse_args()
     provider = GeminiUnderstandingProvider()
     if not provider.configured:
@@ -62,10 +63,13 @@ def main() -> int:
     budget = provider.client.budget
     before = budget.snapshot()
     data = loader.load_dataset((ROOT / "contracts/fixtures/venues.chat.synthetic.json").resolve())
-    und = LLMUnderstander(provider, budget, session_cap=args.max_calls, reserve=0, gazetteer=Gazetteer(data.venues))
+    und = LLMUnderstander(provider, budget, session_cap=args.max_calls, reserve=3, gazetteer=Gazetteer(data.venues))
     eng = ChatEngine(data.venues, guided=True)
     rows, bad, spent = [], [], 0
+    wanted = {x for x in args.only.split(",") if x}
     for cid, text, expect_call in CASES:
+        if wanted and cid not in wanted:
+            continue
         r = eng.handle(ChatState(), Preferences(), text=text, llm=lambda t, c, u: und.understand(t, c, used_in_session=0)
                        if spent < args.max_calls else und.understand(t, c, used_in_session=args.max_calls))
         spent += r.llm_calls

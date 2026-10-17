@@ -113,6 +113,9 @@ def _terms(rest: str, issues: list) -> tuple:
         issues.append("people")
         return [], False
     cand = " ".join(core)
+    if len(core) > 1 and fold_uncached(core[0]) == "co" and not allergens.family_of(cand):
+        issues.append("vague")  # "có vỏ cứng": a description of a kind of food, not a named one
+        return [], False
     if not (allergens.family_of(cand) and allergens.core_term(cand) == cand) and any(fold_uncached(w) in _VAGUE for w in core):
         issues.append("vague")  # a description ("thứ rang giòn"), not a named food: ask which one
         return [], False
@@ -126,7 +129,7 @@ def _terms(rest: str, issues: list) -> tuple:
 
 
 _HARD_CUE = re.compile(r"(?:khong|ko)\s+(?:the\s+)?an\s+duoc|khong the an|kieng")
-_VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "chien", "xao", "nuong", "gi"}
+_VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "chien", "xao", "nuong", "gi", "loai", "vo", "cung", "mem", "tuoi", "song", "chin"}
 _AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
 
 
