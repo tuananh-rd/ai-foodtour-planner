@@ -1,6 +1,6 @@
 # Codex independent review — NgonNgon frontend
 
-18/10/2026. Reviewer: Codex lead. Author/QA: Antigravity. Status: **in progress, no acceptance yet**. Review uses the SVG preview visually inspected by Codex, source diff, and later fresh browser evidence. No frontend changes made by Codex while author owns active files.
+18/10/2026. Reviewer: Codex lead. Author/QA: Antigravity. Status: **REQUEST CHANGES on checkpoint `502972c`, no acceptance yet**. Review uses the SVG preview visually inspected by Codex, source diff, and later fresh browser evidence. No frontend changes made by Codex while author owns active files.
 
 ## Early findings sent through Orca
 
@@ -15,6 +15,8 @@ These refer to the author's in-progress working tree, not a final commit; final 
 | NFE-05 | P2 | Restored profile rows label all values as user input, losing default/inferred provenance. | Reload rows preserve source, no inferred/default row becomes user; amounts 150k/300k/1m and new unread numeric questions restore correctly |
 | NFE-06 | P2 | Mockup-derived local tip promises seats by departure before 18:30 without evidence. | Remove the claim; generic advice to verify hours/prices is acceptable; no invented operational/queue information |
 | NFE-07 | P2 | Unknown/status warnings need readable Vietnamese, not JSON/raw codes; map URL waypoints need honest mobile behavior. | Conditional/verified/insufficient distinctly labelled; complete warnings before confirmation and timeline; 3/4/5-stop URLs with per-leg fallback where needed and no API/embed requests |
+| NFE-08 | P2 | Header invents a Tuấn identity/avatar in an anonymous app. | Replace with anonymous/local context; no fake account/profile |
+| NFE-09 | P2 | Desktop navigation only sets mobile-tab state while desktop ignores it; controls do nothing. | Desktop actions scroll/focus real sections, mobile tabs switch actual views; selected/current semantics exposed and keyboard reachable |
 
 ## Final acceptance evidence — pending
 
