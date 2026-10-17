@@ -377,3 +377,15 @@ class LiveSmokeLessons(unittest.TestCase):
         self.assertEqual(r.state.allergies, [])
         self.assertTrue(r.state.allergy_unresolved)
         self.assertEqual(r.state.pending.slot, "allergy_term")
+
+    def test_llm_description_is_not_a_substance_and_rules_do_not_record_one(self):
+        from app.chat.llm_understand import Outcome, sanitize
+        eng, _ = engine()
+        data = {"intent": "SET_ALLERGY", "patch": {"allergy": ["mấy loại hạt"]}}
+        r = eng.handle(ChatState(), Preferences(), text="Con mình bé xíu, bị dị ứng mấy loại hạt, tối nay muốn ăn tour 2 quán quanh Hồ Gươm",
+                       llm=lambda t, c, u: Outcome(sanitize(data), 1))
+        self.assertEqual(r.state.allergies, [])
+        self.assertTrue(r.state.allergy_unresolved)
+        r2 = eng.handle(ChatState(), Preferences(), text="Mình dị ứng đồ có vỏ cứng, đi tour 3 quán quanh Hồ Gươm tối nay")
+        self.assertEqual(r2.state.allergies, [])  # live smoke: rules used to record "có vỏ cứng" as the user's substance
+        self.assertTrue(r2.state.allergy_unresolved)

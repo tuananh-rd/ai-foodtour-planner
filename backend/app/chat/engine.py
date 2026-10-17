@@ -358,7 +358,7 @@ class ChatEngine:
         rs, cs = rules.extra.get("safety"), cand.extra.get("safety")
         known = {fold_uncached(t) for t in (rs.allergies if rs is not None else [])}
         cterms = list(cs.allergies if cs is not None else []) + list(cand.extra.get("llm_allergy") or [])
-        fresh = [t for t in dict.fromkeys(cterms) if fold_uncached(t) not in known and not SYMPTOM_WORDS & set(t.casefold().split())]  # a symptom is not a food
+        fresh = [t for t in dict.fromkeys(cterms) if fold_uncached(t) not in known and not SYMPTOM_WORDS & set(t.casefold().split()) and self._concrete(t)]  # a symptom or a description is not a food
         if rs is not None:
             base.extra["safety"] = rs  # the rules' own parse stays authoritative
         else:
@@ -369,6 +369,14 @@ class ChatEngine:
         if fresh:
             base.extra["ai_allergies"] = fresh
         return base
+
+    @staticmethod
+    def _concrete(term: str) -> bool:
+        """A model-proposed allergen must be a named food: lexicon hit, or a short phrase without vague/descriptive words."""
+        if allergens.family_of(term) and allergens.core_term(term) == term:
+            return True
+        words = [fold_uncached(w) for w in term.split()]
+        return 0 < len(words) <= 2 and not (safety_parse._VAGUE & set(words)) and words[0] != "co"
 
     def _snapshot(self, st: ChatState) -> str:
         return repr(sorted((k, repr(f.value), f.scope) for k, f in st.profile.items())) + repr(sorted(a.term for a in st.allergies)) + repr(len(st.shortlist))
