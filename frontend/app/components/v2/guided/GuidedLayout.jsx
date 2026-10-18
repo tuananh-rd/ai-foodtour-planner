@@ -8,6 +8,25 @@ import GuidedTimeline from './GuidedTimeline';
 import TrustDisclosure from './TrustDisclosure';
 import ReplaceDiffModal from '../../ReplaceDiffModal';
 import { chatTurn, createSession, getSession, replaceTourStop } from '../../../../lib/api';
+import './guided-visual.css';
+
+/* Reference glyphs (outlined paths of the design file: 4-point star, send arrow). Decorative only. */
+function StarGlyph({ color = '#DFF46A', size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="45.918 33.432 13.824 13.824" aria-hidden="true" focusable="false">
+      <path d="M52.47 47.256C52.338 46.476 51.99 45.636 51.426 44.736C50.862 43.824 50.058 42.978 49.014 42.198C47.982 41.418 46.95 40.92 45.918 40.704V39.948C46.938 39.708 47.916 39.264 48.852 38.616C49.8 37.956 50.592 37.164 51.228 36.24C51.876 35.292 52.29 34.356 52.47 33.432H53.226C53.334 34.032 53.55 34.65 53.874 35.286C54.198 35.91 54.612 36.51 55.116 37.086C55.632 37.65 56.208 38.16 56.844 38.616C57.792 39.288 58.758 39.732 59.742 39.948V40.704C59.082 40.836 58.398 41.106 57.69 41.514C56.994 41.922 56.346 42.408 55.746 42.972C55.146 43.524 54.654 44.106 54.27 44.718C53.706 45.618 53.358 46.464 53.226 47.256H52.47Z" fill={color} />
+    </svg>
+  );
+}
+
+function ArrowGlyph() {
+  return (
+    <svg width="18" height="14" viewBox="449.418 938.57 16.326 12.06" aria-hidden="true" focusable="false">
+      <path d="M458.814 950.63C458.538 950.63 458.274 950.546 458.022 950.378C457.77 950.222 457.56 950.018 457.392 949.766C457.236 949.514 457.158 949.262 457.158 949.01C457.158 948.722 457.278 948.416 457.518 948.092C457.758 947.768 458.04 947.45 458.364 947.138C458.7 946.814 458.994 946.538 459.246 946.31H451.812C451.128 946.31 450.642 946.256 450.354 946.148C450.066 946.04 449.838 945.86 449.67 945.608C449.502 945.368 449.418 945.032 449.418 944.6C449.418 944.168 449.496 943.832 449.652 943.592C449.82 943.352 450.048 943.172 450.336 943.052C450.624 942.944 451.116 942.89 451.812 942.89H459.246L458.364 942.044C457.872 941.564 457.548 941.198 457.392 940.946C457.236 940.682 457.158 940.43 457.158 940.19C457.158 939.938 457.236 939.686 457.392 939.434C457.548 939.182 457.752 938.978 458.004 938.822C458.268 938.654 458.538 938.57 458.814 938.57C459.054 938.57 459.312 938.648 459.588 938.804C459.864 938.948 460.188 939.2 460.56 939.56L465.744 944.6L460.668 949.532C460.236 949.94 459.882 950.222 459.606 950.378C459.33 950.546 459.066 950.63 458.814 950.63Z" fill="#FFFFFF" />
+    </svg>
+  );
+}
+
 
 /**
  * Helper to transform chat profile object into UnderstoodCard item rows.
@@ -739,110 +758,50 @@ export default function GuidedLayout({
     ? `${Number(budgetVal).toLocaleString('vi-VN')} đ`
     : null;
 
+  const vehicleLabel = { walk: 'Đi bộ', motorbike: 'Xe máy', car: 'Ô tô', taxi: 'Taxi/Grab' }[chatState?.profile?.vehicle?.value] || null;
+  const profileNow = chatState?.profile || {};
+  const chipOn = {
+    area: String(profileNow.area?.value?.label || '').toLowerCase().includes('hoàn kiếm'),
+    tonight: profileNow.day_part?.value === 'evening',
+    cheap: Number(profileNow.budget?.value) > 0 && Number(profileNow.budget?.value) <= 300000
+  };
+  const suggestionChips = [
+    { label: 'Hoàn Kiếm', on: chipOn.area, text: 'Tôi muốn ăn tour 3 quán quanh Hoàn Kiếm tối nay' },
+    { label: 'Tối nay', on: chipOn.tonight, text: 'Đi tour vào tối nay khoảng 120 phút' },
+    { label: 'Món Việt', on: false, text: 'Thích các món Việt truyền thống như phở và chè' },
+    { label: 'Dưới 300K', on: chipOn.cheap, text: 'Ngân sách dưới 300 nghìn cho cả chuyến' }
+  ];
+  const chatVisible = isDesktop || activeMobileTab === 'chat';
+  const tourVisible = isDesktop || activeMobileTab === 'tour';
+  const resetButton = (
+    <button type="button" data-testid="guided-reset-btn" className="nn-btn" onClick={handleRestart} disabled={busy}>
+      <span aria-hidden="true">↻</span>
+      <span>Làm lại</span>
+    </button>
+  );
+  const nodeTop = (idx, n) => (n <= 1 ? 45.8 : 12.6 + idx * (66.4 / (n - 1)));
+
   return (
-    <div
-      data-testid="guided-container"
-      aria-busy={busy}
-      style={{
-        minHeight: '100vh',
-        backgroundColor: '#F7F8F2',
-        '--accent': '#166B52',
-        '--accent-hover': '#125640',
-        '--ink': '#17352B',
-        '--mute': '#62736D',
-        '--line': '#DDE7E1',
-        '--chip': '#F0F6F2',
-        '--card': '#FFFFFF',
-        color: '#17352B',
-        fontFamily: 'system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-        display: 'flex',
-        flexDirection: 'column',
-        minWidth: 0,
-        overflowWrap: 'anywhere',
-        boxSizing: 'border-box'
-      }}
-    >
+    <div data-testid="guided-container" aria-busy={busy} className="nn-root">
       {/* Screen Reader Live Announcement Region */}
-      <div
-        aria-live="polite"
-        aria-atomic="true"
-        data-testid="guided-aria-live"
-        style={{
-          position: 'absolute',
-          width: 1,
-          height: 1,
-          padding: 0,
-          margin: -1,
-          overflow: 'hidden',
-          clip: 'rect(0,0,0,0)',
-          whiteSpace: 'nowrap',
-          border: 0
-        }}
-      >
+      <div aria-live="polite" aria-atomic="true" data-testid="guided-aria-live" className="nn-sr">
         {liveAnnouncement}
       </div>
 
-      {/* 80px SVG-Inspired Header */}
-      <header
-        style={{
-          minHeight: 80,
-          height: isDesktop ? 80 : 'auto',
-          flexWrap: 'wrap',
-          gap: 12,
-          backgroundColor: '#FFFFFF',
-          borderBottom: '1px solid #DDE7E1',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: isDesktop ? '0 32px' : '12px 16px',
-          boxSizing: 'border-box',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100
-        }}
-      >
-        {/* Brand Left */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-          <div
-            style={{
-              width: 42,
-              height: 42,
-              borderRadius: 14,
-              backgroundColor: '#166B52',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#DFF46A',
-              fontSize: 22,
-              fontWeight: 800,
-              boxShadow: '0 2px 6px rgba(22, 107, 82, 0.25)'
-            }}
-          >
-            ✦
-          </div>
+      {/* 80px header: brand · nav pills · anonymous local context (reference y0-80) */}
+      <header className="nn-header">
+        <div className="nn-brand">
+          <div className="nn-brand-tile" aria-hidden="true"><StarGlyph color="#DFF46A" size={16} /></div>
           <div>
-            <div style={{ fontSize: 18, fontWeight: 800, color: '#17352B', lineHeight: 1.2 }}>
-              NgonNgon Tour
-            </div>
-            <div style={{ fontSize: 12, color: '#62736D', fontWeight: 500 }}>
-              Ăn ngon • Đi đúng gu
-            </div>
+            <div className="nn-brand-name">NgonNgon Tour</div>
+            <div className="nn-brand-sub">Ăn ngon • Đi đúng gu</div>
           </div>
         </div>
 
-        {/* Center Navigation Pills */}
-        <nav
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            order: isDesktop ? 2 : 3,
-            width: isDesktop ? 'auto' : '100%'
-          }}
-          aria-label="Điều hướng chính"
-        >
+        <nav className="nn-nav" aria-label="Điều hướng chính">
           <button
             type="button"
+            className="nn-pill"
             aria-pressed={activeMobileTab === 'chat'}
             aria-controls="guided-chat-section"
             onClick={() => {
@@ -852,23 +811,12 @@ export default function GuidedLayout({
                 chatSectionRef.current?.focus({ preventScroll: true });
               }
             }}
-            style={{
-              padding: '8px 20px',
-              borderRadius: 20,
-              backgroundColor: activeMobileTab === 'chat' ? '#166B52' : '#FFFFFF',
-              color: activeMobileTab === 'chat' ? '#FFFFFF' : '#62736D',
-              border: '1px solid #DDE7E1',
-              flex: isDesktop ? 'none' : 1,
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              minHeight: 44
-            }}
           >
             Khám phá
           </button>
           <button
             type="button"
+            className="nn-pill"
             aria-pressed={activeMobileTab === 'tour'}
             aria-controls="guided-tour-section"
             onClick={() => {
@@ -878,350 +826,91 @@ export default function GuidedLayout({
                 tourSectionRef.current?.focus({ preventScroll: true });
               }
             }}
-            style={{
-              padding: '8px 20px',
-              borderRadius: 20,
-              backgroundColor: activeMobileTab === 'tour' ? '#166B52' : '#FFFFFF',
-              color: activeMobileTab === 'tour' ? '#FFFFFF' : '#62736D',
-              flex: isDesktop ? 'none' : 1,
-              border: '1px solid #DDE7E1',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-              minHeight: 44
-            }}
           >
             Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
           </button>
         </nav>
 
-        {/* Right Anonymous Profile & Action */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, order: isDesktop ? 3 : 2 }}>
-          <button
-            type="button"
-            data-testid="guided-reset-btn"
-            onClick={handleRestart}
-            disabled={busy}
-            style={{
-              padding: '6px 14px',
-              borderRadius: 20,
-              border: '1px solid #DDE7E1',
-              backgroundColor: '#FFFFFF',
-              color: '#62736D',
-              fontSize: 13,
-              fontWeight: 600,
-              cursor: busy ? 'not-allowed' : 'pointer',
-              minHeight: 44,
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 4
-            }}
-          >
-            <span>🔄</span>
-            <span>Làm lại</span>
-          </button>
-
-          <div style={{ display: isDesktop ? 'flex' : 'none', alignItems: 'center', gap: 10, paddingLeft: 6 }}>
-            <div
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: '50%',
-                backgroundColor: '#E8EFEA',
-                color: '#166B52',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontSize: 18,
-                border: '1px solid #DDE7E1'
-              }}
-              aria-label="Khách khám phá Hà Nội"
-            >
-              🍜
-            </div>
-            <div style={{ lineHeight: 1.25, display: isDesktop ? 'block' : 'none' }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: '#17352B' }}>Khách ẩm thực</div>
-              <div style={{ fontSize: 11, color: '#62736D' }}>Hà Nội</div>
-            </div>
+        <div className="nn-header-spacer" />
+        {!isDesktop && resetButton}
+        <div className="nn-profile">
+          <div className="nn-avatar" aria-label="Phiên ẩn danh tại Hà Nội">K</div>
+          <div className="nn-profile-text">
+            <div className="nn-profile-name">Khách ẩm thực</div>
+            <div className="nn-profile-sub">Hà Nội</div>
           </div>
         </div>
       </header>
 
-      {/* Main Two-Column Desktop Shell */}
-      <main
-        style={{
-          maxWidth: 1440,
-          width: '100%',
-          margin: '0 auto',
-          padding: isDesktop ? '32px' : '16px',
-          boxSizing: 'border-box',
-          display: 'grid',
-          gridTemplateColumns: isDesktop ? '460px minmax(0, 1fr)' : 'minmax(0, 1fr)',
-          gap: isDesktop ? 40 : 20,
-          alignItems: 'start',
-          flex: 1
-        }}
-      >
-        {/* LEFT COLUMN: Chat & Guided Interaction Card */}
-        <section
-          ref={chatSectionRef}
-          id="guided-chat-section"
-          tabIndex={-1}
-          style={{
-            display: (isDesktop || activeMobileTab === 'chat') ? 'flex' : 'none',
-            minWidth: 0,
-            flexDirection: 'column',
-            backgroundColor: '#FFFFFF',
-            borderRadius: 24,
-            border: '1px solid #DDE7E1',
-            boxShadow: '0 4px 20px rgba(22, 107, 82, 0.04)',
-            padding: 24,
-            boxSizing: 'border-box',
-            minHeight: isDesktop && !confirmSummaryBlock ? 780 : 'auto',
-            maxHeight: isDesktop && !confirmSummaryBlock ? 'calc(100vh - 144px)' : 'none',
-            position: isDesktop && !confirmSummaryBlock ? 'sticky' : 'static',
-            top: 104,
-            gap: 16
-          }}
-        >
-          {/* Assistant Header Banner */}
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingBottom: 12, borderBottom: '1px solid #F0F4EE' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-              <div
-                style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 14,
-                  backgroundColor: '#DFF46A',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 22,
-                  color: '#166B52'
-                }}
-              >
-                ✦
-              </div>
-              <div>
-                <div style={{ fontSize: 15, fontWeight: 700, color: '#17352B' }}>
-                  Lên food tour cùng Măm Măm
-                </div>
-                <div style={{ fontSize: 12, color: '#62736D' }}>
-                  Trợ lý ẩm thực địa phương
-                </div>
-              </div>
+      <main className="nn-main">
+        {/* LEFT: chat panel (reference x32-512, y108-996) */}
+        <section ref={chatSectionRef} id="guided-chat-section" tabIndex={-1} className={`nn-chat${chatVisible ? '' : ' nn-hidden'}`}>
+          <div className="nn-chat-head">
+            <div className="nn-assistant-tile" aria-hidden="true"><StarGlyph color="#166B52" size={16} /></div>
+            <div className="nn-chat-title-wrap">
+              <div className="nn-chat-title">Lên food tour cùng Măm Măm</div>
+              <div className="nn-chat-sub">Trợ lý ẩm thực địa phương</div>
             </div>
-
-            <span
-              style={{
-                fontSize: 11,
-                padding: '3px 10px',
-                borderRadius: 12,
-                backgroundColor: '#F0F6F2',
-                color: '#166B52',
-                border: '1px solid #DDE7E1',
-                fontWeight: 600
-              }}
-            >
-              Hà Nội
-            </span>
+            <span className="nn-status">Hà Nội</span>
           </div>
 
-          {/* Heading & Subtitle */}
-          <div>
-            <h2 style={{ fontSize: 22, fontWeight: 800, color: '#17352B', margin: '0 0 6px 0', lineHeight: 1.3 }}>
-              Bạn muốn ăn gì hôm nay?
-            </h2>
-            <p style={{ fontSize: 13, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
-              Cho mình biết khu vực, thời gian và khẩu vị — mình sẽ xếp một hành trình vừa ngon vừa tiện đường.
-            </p>
-          </div>
+          <h2 className="nn-h2">Bạn muốn ăn gì hôm nay?</h2>
+          <p className="nn-lead">Cho mình biết khu vực, thời gian và khẩu vị — mình sẽ xếp một hành trình vừa ngon vừa tiện đường.</p>
 
-          {/* Quick Preference / Suggestion Pills */}
-          <div
-            data-testid="suggestion-chips-container"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 8
-            }}
-          >
-            {[
-              { label: 'Hoàn Kiếm', text: 'Tôi muốn ăn tour 3 quán quanh Hoàn Kiếm tối nay' },
-              { label: 'Tối nay', text: 'Đi tour vào tối nay khoảng 120 phút' },
-              { label: 'Món Việt', text: 'Thích các món Việt truyền thống như phở và chè' },
-              { label: 'Dưới 300K', text: 'Ngân sách dưới 300 nghìn cho cả chuyến' }
-            ].map((chip, idx) => (
+          <div data-testid="suggestion-chips-container" className="nn-chips">
+            {suggestionChips.map((chip, idx) => (
               <button
                 key={idx}
                 type="button"
+                className="nn-chip"
+                aria-pressed={chip.on}
                 data-testid={`suggestion-chip-${idx}`}
                 onClick={() => handleSendMessage(chip.text)}
                 disabled={busy}
-                style={{
-                  minHeight: 44,
-                  minWidth: 44,
-                  padding: '0 16px',
-                  borderRadius: 22,
-                  border: '1px solid #DDE7E1',
-                  backgroundColor: '#FFFFFF',
-                  color: '#17352B',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  cursor: busy ? 'not-allowed' : 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
-                }}
               >
                 {chip.label}
               </button>
             ))}
           </div>
 
-          {/* Error Banner if turn failed */}
+          <div className="nn-rule" role="separator" />
+
           {errorMessage && (
-            <div
-              data-testid="guided-error-banner"
-              role="alert"
-              style={{
-                backgroundColor: '#FEF3C7',
-                color: '#92400E',
-                border: '1px solid #FDE68A',
-                borderRadius: 12,
-                padding: '10px 14px',
-                fontSize: 13,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                gap: 8
-              }}
-            >
+            <div data-testid="guided-error-banner" role="alert" className="nn-alert">
               <span>⚠️ {errorMessage}</span>
-              <button
-                type="button"
-                data-testid="guided-error-retry-btn"
-                onClick={handleRetryFailed}
-                style={{
-                  backgroundColor: '#92400E',
-                  color: '#FFFFFF',
-                  border: 'none',
-                  borderRadius: 6,
-                  padding: '6px 12px',
-                  fontWeight: 600,
-                  fontSize: 12,
-                  cursor: 'pointer',
-                  minHeight: 44
-                }}
-              >
-                Thử lại
-              </button>
+              <button type="button" data-testid="guided-error-retry-btn" onClick={handleRetryFailed}>Thử lại</button>
             </div>
           )}
 
-          {/* Scrollable Conversation Stream Area */}
-          <div
-            data-testid={isStartScreen ? 'guided-start-screen' : 'guided-stream'}
-            style={{
-              flex: 1,
-              overflowY: 'auto',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-              paddingRight: 4
-            }}
-          >
-            {/* Start Welcome Bubble when 0 messages */}
+          <div data-testid={isStartScreen ? 'guided-start-screen' : 'guided-stream'} className="nn-stream">
             {isStartScreen && (
-              <div
-                data-testid="guided-welcome-msg"
-                style={{
-                  backgroundColor: '#F0F4EE',
-                  color: '#17352B',
-                  padding: '14px 18px',
-                  borderRadius: 16,
-                  fontSize: 14,
-                  lineHeight: 1.5,
-                  fontWeight: 500
-                }}
-              >
+              <div data-testid="guided-welcome-msg" className="nn-bubble">
                 Chào bạn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ hỏi thêm nếu thiếu thông tin để xếp lịch trình chuẩn nhất.
               </div>
             )}
 
-            {/* Stream turns */}
-            {messages.map((msg, idx) => {
-              if (msg.role === 'user') {
-                return (
-                  <div
-                    key={idx}
-                    data-testid="user-msg-bubble"
-                    style={{
-                      alignSelf: 'flex-end',
-                      backgroundColor: '#166B52',
-                      color: '#FFFFFF',
-                      padding: '10px 16px',
-                      borderRadius: '16px 16px 4px 16px',
-                      maxWidth: '85%',
-                      fontSize: 14,
-                      lineHeight: 1.45,
-                      wordBreak: 'break-word',
-                      overflowWrap: 'anywhere'
-                    }}
-                  >
-                    {msg.text}
-                  </div>
-                );
-              }
-              return null;
-            })}
+            {messages.map((msg, idx) => (
+              msg.role === 'user' ? (
+                <div key={idx} data-testid="user-msg-bubble" className="nn-bubble user">{msg.text}</div>
+              ) : null
+            ))}
 
-            {/* Assistant Latest Blocks in Order */}
             {!isStartScreen && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <div className="nn-blocks">
                 {filteredTextBlocks.map((b, idx) => (
-                  <div
-                    key={idx}
-                    data-testid="assistant-text-bubble"
-                    style={{
-                      alignSelf: 'flex-start',
-                      backgroundColor: '#F0F4EE',
-                      color: '#17352B',
-                      padding: '10px 16px',
-                      borderRadius: '16px 16px 16px 4px',
-                      maxWidth: '90%',
-                      fontSize: 14,
-                      lineHeight: 1.45,
-                      border: '1px solid #DDE7E1',
-                      wordBreak: 'break-word',
-                      overflowWrap: 'anywhere'
-                    }}
-                  >
-                    {b.text}
-                  </div>
+                  <div key={idx} data-testid="assistant-text-bubble" className="nn-bubble">{b.text}</div>
                 ))}
 
-                {/* Notice blocks */}
                 {noticeBlocks.map((b, idx) => (
                   <div
                     key={idx}
                     data-testid={`notice-block-${b.code || idx}`}
-                    style={{
-                      backgroundColor: b.level === 'safety' ? '#FEF3C7' : '#F0F4EE',
-                      color: b.level === 'safety' ? '#92400E' : '#17352B',
-                      border: '1px solid #DDE7E1',
-                      borderRadius: 12,
-                      padding: '8px 12px',
-                      fontSize: 12,
-                      lineHeight: 1.4
-                    }}
+                    className={`nn-bubble notice${b.level === 'safety' ? ' safety' : ''}`}
                   >
                     {b.text}
                   </div>
                 ))}
 
-                {/* UNDERSTOOD BLOCK ("Mình hiểu là…") */}
                 {understoodBlock && (
                   <UnderstoodCard
                     items={understoodBlock.items}
@@ -1231,9 +920,8 @@ export default function GuidedLayout({
                   />
                 )}
 
-                {/* VENUE CARDS BLOCK (When proposed venues are offered) */}
                 {venueCardsBlock && (
-                  <div data-testid="venue-cards-block" style={{ display: 'grid', gap: 10, margin: '6px 0' }}>
+                  <div data-testid="venue-cards-block" className="nn-venues">
                     {(venueCardsBlock.cards || []).map((card, idx) => {
                       const v = card.venue || {};
                       const priceText = v.price?.min_vnd && v.price?.max_vnd
@@ -1245,57 +933,21 @@ export default function GuidedLayout({
                       const distText = card.distance_m !== null && card.distance_m !== undefined
                         ? `cách ~${card.distance_m} m (ước tính)`
                         : null;
-
                       return (
-                        <div
-                          key={v.id || idx}
-                          data-testid="venue-card"
-                          style={{
-                            backgroundColor: '#FFFFFF',
-                            border: '1px solid #DDE7E1',
-                            borderRadius: 14,
-                            padding: 12,
-                            display: 'grid',
-                            gap: 4
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                            <span
-                              style={{
-                                backgroundColor: '#166B52',
-                                color: '#FFFFFF',
-                                fontWeight: 700,
-                                fontSize: 12,
-                                width: 22,
-                                height: 22,
-                                borderRadius: 11,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                justifyContent: 'center'
-                              }}
-                            >
-                              {card.label || String.fromCharCode(65 + idx)}
-                            </span>
-                            <strong style={{ fontSize: 14, color: '#17352B' }}>
-                              {v.name}
-                            </strong>
+                        <div key={v.id || idx} data-testid="venue-card" className="nn-venue">
+                          <div>
+                            <span className="tag">{card.label || String.fromCharCode(65 + idx)}</span>
+                            <strong>{v.name}</strong>
                           </div>
-                          <div style={{ fontSize: 12, color: '#62736D' }}>
-                            📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}
-                          </div>
-                          <div style={{ fontSize: 12, color: '#17352B' }}>
-                            🏷️ {priceText}
-                          </div>
-                          <div style={{ fontSize: 11, color: '#62736D' }}>
-                            🕒 {hoursText}
-                          </div>
+                          <div className="meta">📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}</div>
+                          <div className="meta">🏷️ {priceText}</div>
+                          <div className="meta">🕒 {hoursText}</div>
                         </div>
                       );
                     })}
                   </div>
                 )}
 
-                {/* CLARIFY BLOCK (Single Question Rule: EXACTLY ONE question card) */}
                 {clarifyBlock && (
                   <ClarifyQuestionCard
                     clarify={clarifyBlock}
@@ -1305,7 +957,6 @@ export default function GuidedLayout({
                   />
                 )}
 
-                {/* CONFIRM SUMMARY BLOCK (with warnings & status) */}
                 {confirmSummaryBlock && (
                   <ConfirmSummaryCard
                     summary={confirmSummaryBlock}
@@ -1319,428 +970,161 @@ export default function GuidedLayout({
             )}
           </div>
 
-          {/* Tangible Polite Loading Indicator (Q06) */}
           {busy && (
-            <div
-              data-testid="guided-loading-indicator"
-              role="status"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '6px 14px',
-                backgroundColor: '#F0F6F2',
-                color: '#166B52',
-                borderRadius: 20,
-                fontSize: 13,
-                fontWeight: 600,
-                border: '1px solid #DDE7E1',
-                alignSelf: 'flex-start'
-              }}
-            >
-              <span
-                style={{
-                  display: 'inline-block',
-                  width: 12,
-                  height: 12,
-                  borderRadius: '50%',
-                  border: '2px solid #166B52',
-                  borderTopColor: 'transparent',
-                  animation: 'spin 0.8s linear infinite'
-                }}
-              />
+            <div data-testid="guided-loading-indicator" role="status" className="nn-busy">
+              <i />
               <span>{busyMessage}</span>
             </div>
           )}
 
-          {/* Pinned Bottom Composer with Orange Send Button */}
-          <div style={{ paddingTop: 8, borderTop: '1px solid #F0F4EE', display: 'flex', flexDirection: 'column', gap: 6 }}>
-            {!confirmSummaryBlock && <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                handleSendMessage();
-              }}
-              style={{
-                display: 'flex',
-                gap: 8,
-                alignItems: 'center',
-                backgroundColor: '#F4F6F0',
-                border: '1px solid #DDE7E1',
-                borderRadius: 24,
-                padding: '4px 6px 4px 16px'
-              }}
-            >
-              <input
-                ref={inputRef}
-                type="text"
-                data-testid="guided-input"
-                value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                disabled={busy}
-                placeholder="Thêm yêu cầu cho chuyến đi…"
-                style={{
-                  flex: 1,
-                  minHeight: 44,
-                  border: 'none',
-                  backgroundColor: 'transparent',
-                  fontSize: 14,
-                  color: '#17352B',
-                  outline: 'none',
-                  padding: 0
-                }}
-              />
-              <button
-                type="submit"
-                data-testid="guided-send-btn"
-                disabled={busy || !inputText.trim()}
-                aria-label="Gửi yêu cầu"
-                style={{
-                  width: 44,
-                  height: 44,
-                  minWidth: 44,
-                  minHeight: 44,
-                  borderRadius: '50%',
-                  border: 'none',
-                  backgroundColor: inputText.trim() && !busy ? '#FF6B4A' : '#DDE7E1',
-                  color: '#FFFFFF',
-                  fontSize: 18,
-                  fontWeight: 700,
-                  cursor: inputText.trim() && !busy ? 'pointer' : 'default',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  transition: 'background-color 0.15s ease',
-                  flexShrink: 0
-                }}
-              >
-                ➔
-              </button>
-            </form>}
-
-            {/* Early AI Privacy Disclosure (Q05) */}
-            <div style={{ fontSize: 11, color: '#62736D', lineHeight: 1.4, padding: '0 4px' }}>
+          <div className="nn-foot">
+            <p className="nn-legal">
               {health?.llm === 'gemini'
                 ? 'Khi cần và còn lượt, nội dung bạn nhập cùng tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu.'
                 : 'Yêu cầu đang được đọc theo quy tắc tại máy, không gửi đến AI bên ngoài trong chế độ này.'}
               {' '}Ứng dụng giữ các lượt trò chuyện gần nhất trong phiên để khôi phục khi tải lại.
-            </div>
-
-            {/* Trust line */}
+            </p>
             <TrustDisclosure turn={latestTurnMeta} health={health} />
+            {!confirmSummaryBlock && (
+              <form
+                className="nn-composer"
+                style={{ marginTop: 8 }}
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendMessage();
+                }}
+              >
+                <input
+                  ref={inputRef}
+                  type="text"
+                  data-testid="guided-input"
+                  value={inputText}
+                  onChange={(e) => setInputText(e.target.value)}
+                  disabled={busy}
+                  placeholder="Thêm yêu cầu cho chuyến đi…"
+                  aria-label="Thêm yêu cầu cho chuyến đi"
+                />
+                <button type="submit" data-testid="guided-send-btn" className="nn-send" disabled={busy || !inputText.trim()} aria-label="Gửi yêu cầu">
+                  <ArrowGlyph />
+                </button>
+              </form>
+            )}
           </div>
         </section>
 
-        {/* RIGHT COLUMN: Tour Itinerary & Route Overview Panel */}
-        <section
-          ref={tourSectionRef}
-          id="guided-tour-section"
-          data-focus-fallback
-          tabIndex={-1}
-          style={{
-            display: (isDesktop || activeMobileTab === 'tour') ? 'flex' : 'none',
-            minWidth: 0,
-            flexDirection: 'column',
-            gap: 20
-          }}
-        >
-          {/* Top Eyebrow, Title & Meta */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 12 }}>
+        {/* RIGHT: tour column (reference x560-1384) */}
+        <section ref={tourSectionRef} id="guided-tour-section" data-focus-fallback tabIndex={-1} className={`nn-tour${tourVisible ? '' : ' nn-hidden'}`}>
+          <div className="nn-tour-head">
             <div>
-              <div
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  letterSpacing: '1px',
-                  color: '#166B52',
-                  textTransform: 'uppercase',
-                  marginBottom: 4
-                }}
-              >
-                FOOD TOUR ĐỀ XUẤT
-              </div>
-              <h1
-                style={{
-                  fontSize: isDesktop ? 32 : 24,
-                  fontWeight: 800,
-                  color: '#17352B',
-                  margin: '0 0 6px 0',
-                  lineHeight: 1.2
-                }}
-              >
+              <div className="nn-eyebrow">FOOD TOUR ĐỀ XUẤT</div>
+              <h1 className="nn-title">
                 {showTour ? (tour.title || (stops[0]?.district ? `Lịch trình ẩm thực ${stops[0].district}` : 'Lịch trình ẩm thực')) : 'Hành trình ẩm thực Hà Nội'}
               </h1>
-              <div style={{ fontSize: 13, color: '#62736D' }}>
+              <div className="nn-subtitle">
                 {showTour
                   ? `${stops[0]?.arrive ? `${stops[0].arrive}${stops[stops.length - 1]?.depart ? `–${stops[stops.length - 1].depart}` : ''}` : 'Chưa rõ giờ đến'}${stops[0]?.district ? ` • ${stops[0].district}` : ''}`
                   : 'Chưa có lịch trình được tạo • Vui lòng chọn hoặc nhập yêu cầu ở cột bên trái'}
               </div>
             </div>
+            {isDesktop && resetButton}
           </div>
 
-          {/* 3 Metric Cards */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, 1fr)',
-              gap: isDesktop ? 16 : 8
-            }}
-          >
-            {/* Metric 1 */}
-            <div
-              style={{
-                backgroundColor: '#F0F6F2',
-                border: '1px solid #DDE7E1',
-                borderRadius: 16,
-                padding: isDesktop ? '16px 20px' : '12px 8px',
-                display: 'grid',
-                gap: 4
-              }}
-            >
-              <div style={{ fontSize: isDesktop ? 20 : 16, fontWeight: 800, color: '#17352B' }}>
-                {showTour ? `${stops.length} điểm` : '0 điểm'}
-              </div>
-              <div style={{ fontSize: 13, color: '#62736D' }}>
-                Quán được chọn
-              </div>
+          <div className="nn-metrics">
+            <div className="nn-tile mint">
+              <div className="nn-tile-value">{showTour ? `${stops.length} điểm` : '0 điểm'}</div>
+              <div className="nn-tile-label">Quán được chọn</div>
             </div>
-
-            {/* Metric 2 */}
-            <div
-              style={{
-                backgroundColor: '#FAF2EA',
-                border: '1px solid #E8E2D8',
-                borderRadius: 16,
-                padding: isDesktop ? '16px 20px' : '12px 8px',
-                display: 'grid',
-                gap: 4
-              }}
-            >
-              <div style={{ fontSize: isDesktop ? 20 : 16, fontWeight: 800, color: '#17352B' }}>
-                {showTour ? (distanceKm !== null ? `${distanceKm} km` : 'Chưa rõ') : '—'}
-              </div>
-              <div style={{ fontSize: 13, color: '#62736D' }}>
-                {tour?.totals?.leg_source === 'provider_route' ? 'Quãng đường theo nguồn' : 'Khoảng cách ước tính'}
-              </div>
+            <div className="nn-tile peach">
+              <div className="nn-tile-value">{showTour ? (distanceKm !== null ? `${distanceKm} km` : 'Chưa rõ') : '—'}</div>
+              <div className="nn-tile-label">{tour?.totals?.leg_source === 'provider_route' ? 'Quãng đường theo nguồn' : 'Khoảng cách ước tính'}</div>
             </div>
-
-            {/* Metric 3 */}
-            <div
-              style={{
-                backgroundColor: '#FFFFFF',
-                border: '1px solid #DDE7E1',
-                borderRadius: 16,
-                padding: isDesktop ? '16px 20px' : '12px 8px',
-                display: 'grid',
-                gap: 4
-              }}
-            >
-              <div style={{ fontSize: isDesktop ? 20 : 16, fontWeight: 800, color: '#17352B' }}>
-                {showTour ? (budgetDisplay || 'Chưa đặt') : 'Theo ngân sách'}
-              </div>
-              <div style={{ fontSize: 13, color: '#62736D' }}>
+            <div className="nn-tile">
+              <div className="nn-tile-value">{showTour ? (budgetDisplay || 'Chưa đặt') : 'Theo ngân sách'}</div>
+              <div className="nn-tile-label">
                 {budgetVal !== null && budgetVal !== undefined ? `Mức muốn chi (${budgetScopeLabel})` : 'Ngân sách chưa đặt'}
               </div>
             </div>
           </div>
 
-          {/* HONEST EMPTY STATE (When tour is not generated yet) */}
-          {!showTour && (
-            <div
-              data-testid="tour-empty-panel"
-              style={{
-                backgroundColor: '#FFFFFF',
-                borderRadius: 24,
-                border: '1px solid #DDE7E1',
-                padding: 32,
-                display: 'grid',
-                gap: 24
-              }}
-            >
-              <div>
-                <h3 style={{ fontSize: 18, fontWeight: 700, color: '#17352B', margin: '0 0 8px 0' }}>
-                  Lộ trình của bạn sẽ hiển thị tại đây
-                </h3>
-                <p style={{ fontSize: 14, color: '#62736D', margin: 0, lineHeight: 1.5 }}>
-                  Ứng dụng tuân thủ nguyên tắc trung thực bằng chứng: không hiển thị lịch trình giả định hoặc tự ý tạo tour trước khi bạn kiểm tra và xác nhận các điều kiện mong muốn.
-                </p>
-              </div>
-
-              {/* 3 Step Guide Box */}
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: isDesktop ? 'repeat(3, 1fr)' : '1fr',
-                  gap: 16
-                }}
-              >
-                <div style={{ backgroundColor: '#F0F6F2', borderRadius: 16, padding: 18, border: '1px solid #DDE7E1' }}>
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>💬</div>
-                  <strong style={{ fontSize: 14, color: '#17352B', display: 'block', marginBottom: 4 }}>
-                    1. Trò chuyện & Nêu ý
-                  </strong>
-                  <p style={{ fontSize: 12, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
-                    Cho AI biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.
-                  </p>
-                </div>
-
-                <div style={{ backgroundColor: '#F0F6F2', borderRadius: 16, padding: 18, border: '1px solid #DDE7E1' }}>
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>🔍</div>
-                  <strong style={{ fontSize: 14, color: '#17352B', display: 'block', marginBottom: 4 }}>
-                    2. Xem lại & Xác nhận
-                  </strong>
-                  <p style={{ fontSize: 12, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
-                    Kiểm tra các thông tin đã hiểu, lưu ý về giờ/giá theo nguồn và bấm xác nhận.
-                  </p>
-                </div>
-
-                <div style={{ backgroundColor: '#F0F6F2', borderRadius: 16, padding: 18, border: '1px solid #DDE7E1' }}>
-                  <div style={{ fontSize: 24, marginBottom: 8 }}>🗺️</div>
-                  <strong style={{ fontSize: 14, color: '#17352B', display: 'block', marginBottom: 4 }}>
-                    3. Nhận lịch trình & Maps
-                  </strong>
-                  <p style={{ fontSize: 12, color: '#62736D', margin: 0, lineHeight: 1.45 }}>
-                    Xem chi tiết từng điểm dừng, đổi quán linh hoạt và mở chỉ đường Google Maps miễn phí.
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* TOUR ITINERARY & ROUTE OVERVIEW (When tour is ready) */}
-          {showTour && (
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: isDesktop ? '1fr 300px' : '1fr',
-                gap: 24,
-                alignItems: 'start'
-              }}
-            >
-              {/* Timeline Column */}
-              <div>
-                <GuidedTimeline
-                  tour={tour}
-                  allergies={currentAllergies}
-                  lockedStops={lockedVenueIds}
-                  onReplaceStop={handleInitiateReplace}
-                  onChangeStop={() => {
-                    if (stops.length > 0) handleInitiateReplace(stops[0]);
-                  }}
-                  onAdjustStops={() => handleFreeFormEdit({ id: 'adjust_stops', label: 'số lượng quán' })}
-                  onRestart={handleRestart}
-                />
-              </div>
-
-              {/* Secondary Route Overview Panel ("Bản đồ tuyến") */}
-              <aside
-                style={{
-                  backgroundColor: '#FFFFFF',
-                  borderRadius: 20,
-                  border: '1px solid #DDE7E1',
-                  padding: 20,
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 16,
-                  position: isDesktop ? 'sticky' : 'static',
-                  top: 104
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ fontSize: 16, fontWeight: 700, color: '#17352B' }}>
-                    Thứ tự điểm dừng
-                  </div>
-                  <span
-                    style={{
-                      fontSize: 12,
-                      backgroundColor: '#F0F6F2',
-                      color: '#166B52',
-                      padding: '2px 10px',
-                      borderRadius: 12,
-                      fontWeight: 600,
-                      border: '1px solid #DDE7E1'
-                    }}
-                  >
-                    Đi bộ
-                  </span>
-                </div>
-
-                {/* Ordered Stops Subway-like List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: 0, position: 'relative', paddingLeft: 8 }}>
-                  {stops.map((stop, idx) => (
-                    <div
-                      key={stop.venue_id || idx}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '12px 0',
-                        position: 'relative'
-                      }}
-                    >
-                      {/* Connecting vertical line */}
-                      {idx < stops.length - 1 && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            left: 13,
-                            top: 26,
-                            bottom: -10,
-                            width: 3,
-                            backgroundColor: '#166B52',
-                            zIndex: 1
-                          }}
-                        />
-                      )}
-                      {/* Number circle */}
-                      <div
-                        style={{
-                          width: 28,
-                          height: 28,
-                          borderRadius: '50%',
-                          backgroundColor: idx === stops.length - 1 ? '#FF6B4A' : '#166B52',
-                          color: '#FFFFFF',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          fontWeight: 700,
-                          fontSize: 12,
-                          zIndex: 2,
-                          flexShrink: 0
-                        }}
-                      >
-                        {idx + 1}
-                      </div>
-                      <div style={{ minWidth: 0, overflowWrap: 'anywhere' }}>
-                        <div style={{ fontSize: 13, fontWeight: 700, color: '#17352B' }}>
-                          {stop.name}
-                        </div>
-                        <div style={{ fontSize: 11, color: '#62736D' }}>
-                          {stop.arrive ? `${stop.arrive} • ` : ''}{stop.district || 'Hà Nội'}
-                        </div>
-                      </div>
+          <div className="nn-row">
+            <div className="nn-left">
+              {!showTour ? (
+                <div data-testid="tour-empty-panel">
+                  <h3 className="nn-section-h">Lộ trình sẽ hiện ở đây</h3>
+                  {[
+                    ['Bước 1', 'Trò chuyện & nêu ý', 'Cho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.'],
+                    ['Bước 2', 'Xem lại & xác nhận', 'Kiểm tra điều mình hiểu, lưu ý về giờ/giá theo nguồn, dị ứng, rồi bấm xác nhận.'],
+                    ['Bước 3', 'Nhận lịch trình & Maps', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps miễn phí.']
+                  ].map(([pill, title, desc]) => (
+                    <div className="nn-step" key={pill}>
+                      <div className="nn-step-pills"><span className="nn-time">{pill}</span></div>
+                      <div className="nn-card"><h3>{title}</h3><p>{desc}</p></div>
                     </div>
                   ))}
                 </div>
-
-                {/* Local tip card */}
-                <div
-                  style={{
-                    backgroundColor: '#166B52',
-                    color: '#FFFFFF',
-                    borderRadius: 14,
-                    padding: 14,
-                    fontSize: 12,
-                    lineHeight: 1.45
-                  }}
-                >
-                  <strong style={{ display: 'block', marginBottom: 4, color: '#DFF46A' }}>
-                    Lưu ý:
-                  </strong>
-                  Giờ mở cửa và mức giá thực tế của quán có thể thay đổi tùy thời điểm; bạn nên kiểm tra lại trước khi đến.
-                </div>
-              </aside>
+              ) : (
+                <>
+                  <h3 className="nn-section-h">Lộ trình</h3>
+                  <GuidedTimeline
+                    tour={tour}
+                    allergies={currentAllergies}
+                    lockedStops={lockedVenueIds}
+                    onReplaceStop={handleInitiateReplace}
+                    onChangeStop={() => {
+                      if (stops.length > 0) handleInitiateReplace(stops[0]);
+                    }}
+                    onAdjustStops={() => handleFreeFormEdit({ id: 'adjust_stops', label: 'số lượng quán' })}
+                    onRestart={handleRestart}
+                  />
+                </>
+              )}
             </div>
-          )}
+
+            <aside className="nn-route" aria-label="Sơ đồ tuyến">
+              <div className="nn-route-head">
+                <h3 className="nn-route-title">Sơ đồ tuyến</h3>
+                {vehicleLabel && <span className="nn-meta" style={{ height: 35 }}>{vehicleLabel}</span>}
+              </div>
+              <div className="nn-canvas">
+                {[40, 118, 196, 274, 352].map((top, i) => (
+                  <div key={top} className={`nn-road${i % 2 ? ' short' : ''}`} style={{ top }} />
+                ))}
+                {showTour && stops.length > 0 ? (
+                  <>
+                    <div className="nn-line" style={{ left: '45.2%', top: `calc(${nodeTop(0, stops.length)}% + 20px)`, height: stops.length > 1 ? `${nodeTop(stops.length - 1, stops.length) - nodeTop(0, stops.length)}%` : 0 }} />
+                    {stops.map((stop, idx) => {
+                      const top = nodeTop(idx, stops.length);
+                      const left = idx % 2 === 0;
+                      return (
+                        <React.Fragment key={stop.venue_id || idx}>
+                          <div className={`nn-node${idx === stops.length - 1 && stops.length > 1 ? ' last' : ''}`} style={{ left: '45.2%', top: `${top}%` }}>{idx + 1}</div>
+                          <div
+                            className="nn-tag"
+                            title={stop.name}
+                            style={{ top: `calc(${top}% + 6px)`, ...(left ? { right: 'calc(54.8% + 26px)' } : { left: 'calc(45.2% + 26px)' }) }}
+                          >
+                            {stop.name}
+                          </div>
+                        </React.Fragment>
+                      );
+                    })}
+                    <ol className="nn-sr">
+                      {stops.map((stop, idx) => (
+                        <li key={stop.venue_id || idx}>{idx + 1}. {stop.name}{stop.arrive ? `, ${stop.arrive}` : ''}</li>
+                      ))}
+                    </ol>
+                  </>
+                ) : (
+                  <div className="nn-canvas-note">Sơ đồ thứ tự điểm dừng sẽ hiện sau khi bạn xác nhận lịch trình.</div>
+                )}
+              </div>
+              <p className="nn-caption">Sơ đồ thứ tự điểm dừng, không phải bản đồ thật.</p>
+              <div className="nn-tip">
+                <b>Lưu ý</b>
+                <span>Giá và giờ mở cửa lấy theo nguồn, chưa kiểm chứng; hãy kiểm tra lại trước khi đến.</span>
+              </div>
+            </aside>
+          </div>
         </section>
       </main>
 

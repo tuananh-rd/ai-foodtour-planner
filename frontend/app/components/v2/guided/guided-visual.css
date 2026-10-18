@@ -1,6 +1,7 @@
 /* NgonNgon Tour visual tokens (owner: Claude). Derived from the rendered reference at 1440x1024; see docs/design/SVG_FIDELITY_SPEC.md.
    Leaf components (Antigravity) must consume these variables and must NOT redefine them. */
-.nn-root {
+.nn-root,
+.nn-dialog {
   --nn-bg: #F7F8F2;
   --nn-card: #FFFFFF;
   --nn-ink: #17352B;
@@ -13,6 +14,9 @@
   --nn-lime: #DFF46A;
   --nn-orange: #FF7A45;
   --nn-track: #E0E8E0;
+  --nn-card-line: #D9D9D9;   /* timeline card outline (original SVG: outlined path fill #D9D9D9) */
+  --nn-card-title: #1E1E1E;  /* timeline card title (original: #1E1E1E) */
+  --nn-card-desc: #757575;   /* timeline card description (original: #757575) */
   --nn-warn-bg: #FFF6EC;
   --nn-warn-ink: #8A4B12;
   --nn-warn-line: #F1D9B8;
@@ -24,4 +28,134 @@
   font-family: var(--nn-font);
   color: var(--nn-ink);
   background: var(--nn-bg);
+}
+
+/* ===== Shell (owner: Claude). Desktop >= 1200px follows the reference geometry; below that the shell stacks. ===== */
+.nn-root { min-height: 100vh; display: flex; flex-direction: column; min-width: 0; overflow-wrap: anywhere; box-sizing: border-box; font-size: 16px; }
+.nn-root *, .nn-root *::before, .nn-root *::after { box-sizing: border-box; }
+.nn-root button { font-family: inherit; }
+.nn-sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.nn-hidden { display: none !important; }
+
+/* header */
+.nn-header { height: 80px; background: var(--nn-card); border-bottom: 1px solid var(--nn-line); display: flex; align-items: center; gap: 32px; padding: 0 32px; position: sticky; top: 0; z-index: 100; }
+.nn-brand { display: flex; align-items: center; gap: 10px; width: 186px; flex: none; }
+.nn-brand-tile { width: 42px; height: 42px; border-radius: 16px; background: var(--nn-green); display: grid; place-items: center; flex: none; }
+.nn-brand-name { font-size: 18px; font-weight: 600; line-height: 22px; color: var(--nn-ink); white-space: nowrap; }
+.nn-brand-sub { font-size: 12px; line-height: 16px; color: var(--nn-mute); white-space: nowrap; }
+.nn-nav { display: flex; align-items: center; gap: 8px; }
+.nn-pill { min-height: 35px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--nn-line); background: var(--nn-card); color: var(--nn-mute); font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap; }
+.nn-pill[aria-pressed="true"] { background: var(--nn-green); border-color: var(--nn-green); color: #fff; }
+.nn-pill:focus-visible, .nn-btn:focus-visible, .nn-chip:focus-visible, .nn-send:focus-visible { outline: 2px solid var(--nn-green); outline-offset: 2px; }
+.nn-header-spacer { flex: 1; }
+.nn-profile { display: flex; align-items: center; gap: 10px; }
+.nn-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2C2C2C; color: #fff; font-size: 14px; font-weight: 600; display: grid; place-items: center; }
+.nn-profile-name { font-size: 13px; font-weight: 600; line-height: 16px; color: var(--nn-ink); }
+.nn-profile-sub { font-size: 12px; line-height: 16px; color: var(--nn-mute); }
+.nn-btn { min-height: 44px; padding: 0 16px; border-radius: 8px; border: 1px solid #767676; background: #E3E3E3; color: #1E1E1E; font-size: 16px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
+.nn-tour-head .nn-btn { margin-top: 27px; min-height: 39px; }
+.nn-btn[disabled] { cursor: not-allowed; opacity: .6; }
+
+/* main grid */
+.nn-main { width: 100%; max-width: 1440px; margin: 0 auto; padding: 28px 56px 28px 32px; display: grid; grid-template-columns: 480px minmax(0, 1fr); column-gap: 48px; align-items: start; flex: 1; }
+
+/* chat panel */
+.nn-chat { display: flex; flex-direction: column; min-width: 0; background: var(--nn-card); border-radius: var(--nn-r-panel); box-shadow: var(--nn-shadow); padding: 24px; height: calc(100vh - 136px); min-height: 640px; position: sticky; top: 108px; }
+.nn-chat-head { display: flex; align-items: center; gap: 12px; height: 42px; flex: none; }
+.nn-assistant-tile { width: 42px; height: 42px; border-radius: 16px; background: var(--nn-lime); display: grid; place-items: center; flex: none; }
+.nn-chat-title { font-size: 18px; font-weight: 600; line-height: 22px; color: var(--nn-ink); }
+.nn-chat-sub { font-size: 12px; line-height: 16px; color: var(--nn-mute); }
+.nn-chat-title-wrap { flex: 1; min-width: 0; }
+.nn-status { margin-right: 11px; min-height: 35px; min-width: 103px; justify-content: center; padding: 0 14px; border-radius: 999px; border: 1px solid var(--nn-line); background: var(--nn-card); font-size: 13px; color: var(--nn-ink); display: inline-flex; align-items: center; flex: none; }
+.nn-h2 { margin: 17px 0 0; font-size: 24.6px; line-height: 32px; font-weight: 600; color: var(--nn-ink); flex: none; }
+.nn-lead { margin: 14px 0 0; font-size: 15px; line-height: 23px; color: var(--nn-mute); flex: none; }
+.nn-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; flex: none; }
+.nn-chip { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--nn-line); background: var(--nn-card); color: var(--nn-mute); font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; }
+.nn-chip[aria-pressed="true"] { background: var(--nn-green); border-color: var(--nn-green); color: #fff; }
+.nn-chip[disabled] { cursor: not-allowed; opacity: .7; }
+.nn-chips .nn-chip { min-height: 35px; }
+.nn-rule { height: 1px; background: var(--nn-line); margin: 17px 0 0; flex: none; }
+.nn-alert { margin-top: 12px; flex: none; background: var(--nn-warn-bg); color: var(--nn-warn-ink); border: 1px solid var(--nn-warn-line); border-radius: 16px; padding: 10px 14px; font-size: 13px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.nn-alert button { min-height: 44px; border: 0; border-radius: 8px; background: var(--nn-warn-ink); color: #fff; padding: 0 14px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.nn-stream { flex: 1; min-height: 0; overflow-y: auto; margin-top: 16px; display: flex; flex-direction: column; gap: 12px; padding-right: 2px; }
+.nn-bubble { align-self: flex-start; max-width: 410px; background: var(--nn-mint); color: var(--nn-ink); border-radius: 16px; padding: 16px; font-size: 16px; line-height: 23px; }
+.nn-bubble.user { background: var(--nn-green); color: #fff; max-width: 356px; word-break: break-word; }
+.nn-bubble.notice { font-size: 13px; line-height: 18px; padding: 10px 14px; }
+.nn-bubble.notice.safety { background: var(--nn-warn-bg); color: var(--nn-warn-ink); border: 1px solid var(--nn-warn-line); }
+.nn-blocks { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+.nn-venues { display: grid; gap: 12px; }
+.nn-venue { background: var(--nn-card); border: 1px solid var(--nn-line); border-radius: var(--nn-r-card); padding: 16px; display: grid; gap: 4px; }
+.nn-venue strong { font-size: 16px; font-weight: 600; }
+.nn-venue .meta { font-size: 13px; color: var(--nn-mute); line-height: 18px; }
+.nn-venue .tag { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 12px; background: var(--nn-green); color: #fff; font-size: 12px; font-weight: 700; margin-right: 8px; }
+.nn-busy { align-self: flex-start; display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; padding: 6px 14px; border-radius: 999px; background: var(--nn-mint); color: var(--nn-green); font-size: 13px; font-weight: 600; border: 1px solid var(--nn-line); flex: none; }
+.nn-busy i { width: 12px; height: 12px; border-radius: 50%; border: 2px solid var(--nn-green); border-top-color: transparent; display: inline-block; animation: nn-spin .8s linear infinite; }
+@keyframes nn-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .nn-busy i { animation: none; } }
+.nn-foot { flex: none; margin-top: 12px; }
+.nn-legal { font-size: 12px; line-height: 16px; color: var(--nn-mute); margin: 0 0 8px; }
+.nn-composer { height: 57px; background: var(--nn-bg); border: 1px solid var(--nn-line); border-radius: 16px; display: flex; align-items: center; gap: 8px; padding: 0 7px 0 16px; flex: none; }
+.nn-composer input { flex: 1; min-width: 0; height: 44px; border: 0; background: transparent; outline: 0; font: inherit; font-size: 15px; color: var(--nn-ink); padding: 0; }
+.nn-composer input::placeholder { color: var(--nn-mute); }
+.nn-composer:focus-within { border-color: var(--nn-green); }
+.nn-send { width: 42px; height: 42px; min-width: 44px; min-height: 44px; margin: -1px; border-radius: 16px; border: 0; background: var(--nn-orange); cursor: pointer; display: grid; place-items: center; flex: none; }
+.nn-send[disabled] { opacity: .6; cursor: default; }
+
+/* tour column */
+.nn-tour { display: flex; flex-direction: column; min-width: 0; padding-top: 24px; }
+.nn-tour-head { min-height: 93px; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.nn-eyebrow { font-size: 12.8px; line-height: 18px; font-weight: 600; letter-spacing: .02em; text-transform: uppercase; color: var(--nn-green); }
+.nn-title { margin: 4px 0 0; font-size: 36.9px; line-height: 44px; font-weight: 600; color: var(--nn-ink); }
+.nn-subtitle { margin-top: 6px; font-size: 16px; line-height: 22px; color: var(--nn-mute); }
+.nn-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 18px; }
+.nn-tile { height: 96px; border: 1px solid var(--nn-line); border-radius: 16px; padding: 15px 16px 0; background: var(--nn-card); min-width: 0; }
+.nn-tile.mint { background: var(--nn-mint); } .nn-tile.peach { background: var(--nn-peach); }
+.nn-tile-value { font-size: 18px; line-height: 24px; font-weight: 600; color: var(--nn-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nn-tile-label { margin-top: 5px; font-size: 12.5px; line-height: 16px; color: var(--nn-mute); }
+.nn-row { display: grid; grid-template-columns: 500px minmax(0, 1fr); column-gap: 18px; margin-top: 18px; align-items: stretch; min-height: 615px; }
+.nn-left { min-width: 0; }
+.nn-section-h { margin: 0 0 11px; font-size: 18.3px; line-height: 28px; font-weight: 600; color: var(--nn-ink); }
+.nn-step { margin-top: 0; } .nn-step + .nn-step { margin-top: 13px; }
+.nn-step-pills { display: flex; gap: 8px; align-items: center; margin-bottom: 8px; }
+.nn-time { height: 34px; padding: 0 14px; border-radius: 999px; background: var(--nn-green); color: #fff; font-size: 13px; font-weight: 600; display: inline-flex; align-items: center; }
+.nn-meta { height: 35px; padding: 0 14px; border-radius: 999px; background: var(--nn-card); border: 1px solid var(--nn-line); color: var(--nn-mute); font-size: 13px; display: inline-flex; align-items: center; }
+.nn-card { background: var(--nn-card); border: 1px solid var(--nn-card-line); border-radius: var(--nn-r-card); padding: 24px; }
+.nn-card h3 { margin: 0; font-size: 23.7px; line-height: 30px; font-weight: 400; color: var(--nn-card-title); }
+.nn-card p { margin: 8px 0 0; font-size: 16px; line-height: 22px; color: var(--nn-card-desc); }
+
+/* route panel */
+.nn-route { background: var(--nn-mint); border-radius: var(--nn-r-panel); padding: 18px; display: flex; flex-direction: column; min-width: 0; height: 615px; align-self: start; position: sticky; top: 108px; }
+.nn-route-head { display: flex; align-items: center; justify-content: space-between; height: 36px; }
+.nn-route-title { margin: 0; font-size: 18.4px; font-weight: 600; line-height: 24px; color: var(--nn-ink); }
+.nn-canvas { margin-top: 14px; background: var(--nn-bg); border-radius: 16px; position: relative; flex: 1; min-height: 360px; overflow: hidden; }
+.nn-road { position: absolute; left: 0; right: 0; height: 10px; border-radius: 5px; background: var(--nn-track); }
+.nn-road.short { left: 30px; right: 20px; }
+.nn-line { position: absolute; left: 50%; margin-left: -4px; width: 8px; border-radius: 4px; background: var(--nn-green); }
+.nn-node { position: absolute; left: 50%; margin-left: -20px; width: 40px; height: 40px; border-radius: 50%; background: var(--nn-green); color: #fff; font-size: 14px; font-weight: 700; display: grid; place-items: center; z-index: 2; }
+.nn-node.last { background: var(--nn-orange); }
+.nn-tag { position: absolute; max-width: 104px; height: 28px; padding: 0 10px; border-radius: 10px; background: #fff; font-size: 12.5px; line-height: 28px; color: var(--nn-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; }
+.nn-canvas-note { position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); text-align: center; color: var(--nn-mute); font-size: 13px; line-height: 18px; background: rgba(247,248,242,.92); padding: 8px; border-radius: 12px; z-index: 3; }
+.nn-caption { margin: 8px 2px 0; font-size: 12px; line-height: 16px; color: var(--nn-mute); }
+.nn-tip { margin-top: 12px; background: var(--nn-green); color: #fff; border-radius: 16px; padding: 12px 16px; min-height: 78px; }
+.nn-tip b { display: block; color: var(--nn-lime); font-size: 13px; line-height: 18px; font-weight: 600; margin-bottom: 4px; }
+.nn-tip span { font-size: 12px; line-height: 16px; }
+
+/* stacked layout (mobile / narrow) */
+@media (max-width: 1199px) {
+  .nn-header { height: auto; min-height: 64px; flex-wrap: wrap; gap: 8px 12px; padding: 10px 16px; }
+  .nn-brand { width: auto; }
+  .nn-nav { order: 3; width: 100%; } .nn-nav .nn-pill { flex: 1; min-height: 44px; }
+  .nn-header-spacer { display: none; }
+  .nn-profile-text { display: none; }
+  .nn-main { grid-template-columns: minmax(0, 1fr); padding: 16px; row-gap: 20px; }
+  .nn-chat { height: auto; min-height: 0; position: static; padding: 20px 16px; }
+  .nn-stream { overflow: visible; }
+  .nn-bubble, .nn-bubble.user { max-width: 100%; }
+  .nn-tour { padding-top: 0; }
+  .nn-title { font-size: 28px; line-height: 34px; }
+  .nn-metrics { gap: 8px; } .nn-tile { padding: 14px 10px 0; height: 92px; } .nn-tile-value { font-size: 16px; }
+  .nn-row { grid-template-columns: minmax(0, 1fr); row-gap: 20px; min-height: 0; }
+  .nn-card h3 { font-size: 20px; line-height: 26px; } .nn-card { padding: 16px; }
+  .nn-canvas { min-height: 380px; }
+  .nn-route { height: auto; position: static; }
 }

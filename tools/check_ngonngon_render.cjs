@@ -10,6 +10,8 @@ const frontRequire = createRequire(path.join(frontend, 'package.json'));
 const React = frontRequire('react');
 const { renderToStaticMarkup } = frontRequire('react-dom/server');
 const swc = frontRequire('next/dist/build/swc');
+// SSR probes verify content invariants; real browser gates verify the imported visual CSS.
+require.extensions['.css'] = () => {};
 require.extensions['.jsx'] = (mod, filename) => {
   const result = swc.transformSync(fs.readFileSync(filename, 'utf8'), {
     filename, jsc: { parser: { syntax: 'ecmascript', jsx: true }, target: 'es2022',

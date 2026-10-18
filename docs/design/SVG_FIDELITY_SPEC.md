@@ -16,7 +16,10 @@ Reference: `D:/Downloads/UI ngonngon tour.svg`, sha256 `f73364241a53daf697fd9252
 | `--nn-lime` | `#DFF46A` | assistant avatar tile, star glyph in brand tile |
 | `--nn-orange` | `#FF7A45` | send button, last route node |
 | `--nn-track` | `#E0E8E0` | route canvas road bars |
-Radii: cards (timeline) 8px · tiles/bubbles/composer/avatar tiles/inner map card 16px · panels (chat, route) 24px · pills fully round. Panel shadow: `0 8px 24px rgba(10,46,31,.10)` (chat panel only). Spacing scale 8/12/16/24/32. Font: no web-font request; stack `"Segoe UI", system-ui…` (token `--nn-font`). The reference face is Inter-like; sizes below are **calibrated for Segoe UI so rendered string widths match the reference within ±2%** (measured in Chrome).
+| `--nn-card-line` | `#D9D9D9` | timeline card outline (original: outlined path fill `#D9D9D9`; pills keep `--nn-line`) |
+| `--nn-card-title` | `#1E1E1E` | timeline card title (original `#1E1E1E`) |
+| `--nn-card-desc` | `#757575` | timeline card description (original `#757575`) |
+Tokens are defined on `.nn-root, .nn-dialog`: portals (TrustDisclosure dialog, ReplaceDiffModal) must put class `nn-dialog` on their wrapper. Radii: cards (timeline) 8px · tiles/bubbles/composer/avatar tiles/inner map card 16px · panels (chat, route) 24px · pills fully round. Panel shadow: `0 8px 24px rgba(10,46,31,.10)` (chat panel only). Spacing scale 8/12/16/24/32. Font: no web-font request; stack `"Segoe UI", system-ui…` (token `--nn-font`). The reference face is Inter-like; sizes below are **calibrated for Segoe UI so rendered string widths match the reference within ±2%** (measured in Chrome).
 
 Type scale (px, weight): brand 18/600 · tour title 36.9/600 · chat title 18/600 · chat h2 24.6/600 · section heading 18.3/500→use 600 · timeline card title 23.7/400 (lh 1.25) · body/desc 16/400 `--nn-mute` · paragraph under h2 15/400 · metric value 18/600 · metric label 12.5/400 · metadata/pills 13/500 · eyebrow 12.8/600 letter-spacing .02em uppercase · caption/legal 12/400.
 
