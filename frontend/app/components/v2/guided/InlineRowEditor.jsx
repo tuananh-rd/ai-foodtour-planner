@@ -11,6 +11,8 @@ import './guided-leaves.css';
  * - Buttons: green primary pill + outline secondary pill (min-height 44px hit area)
  * - Preserves ALL testids, steppers, presets, save/cancel handlers, and Escape dismissal
  */
+const BUDGET_MAX = 100000000; // matches backend range 1..100_000_000 VND
+
 export default function InlineRowEditor({ itemKey, currentValue, onSave, onCancel }) {
   // Normalize key
   const normalizedKey = itemKey === 'party' ? 'party_size' : itemKey;
@@ -28,8 +30,16 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
       const parsed = parseInt(currentValue, 10);
       return !isNaN(parsed) && parsed > 0 ? parsed : 3;
     }
+    if (normalizedKey === 'budget') {
+      const shown = String(currentValue ?? '').match(/^[\d.,\s]+/);
+      const parsed = shown ? parseInt(shown[0].replace(/\D/g, ''), 10) : NaN;
+      return Number.isInteger(parsed) && parsed > 0 ? parsed : null;
+    }
     return currentValue || '';
   });
+  // Custom budget amount typed by the user (digits only); empty = use the selected preset / current value.
+  const [customBudget, setCustomBudget] = useState('');
+  const [budgetError, setBudgetError] = useState('');
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -44,6 +54,24 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
 
   const handleSave = () => {
     let finalVal = val;
+    if (normalizedKey === 'budget') {
+      const typed = customBudget.trim();
+      if (typed !== '') {
+        const amount = Number(typed.replace(/[.,\s]/g, ''));
+        if (!/^(\d+|\d{1,3}([.,\s]\d{3})+)$/.test(typed) || !Number.isInteger(amount) || amount < 1 || amount > BUDGET_MAX) {
+          setBudgetError('Nhập số tiền từ 1 đến 100.000.000 đ.');
+          return;
+        }
+        finalVal = amount;
+      } else if (!Number.isInteger(Number(val)) || Number(val) < 1) {
+        setBudgetError('Chọn một mức hoặc nhập số tiền.');
+        return;
+      } else {
+        finalVal = Number(val);
+      }
+      onSave && onSave(normalizedKey, finalVal);
+      return;
+    }
     if (normalizedKey === 'party_size' || normalizedKey === 'duration' || normalizedKey === 'stops') {
       finalVal = Number(val);
     }
@@ -189,12 +217,12 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
             { label: '500k', value: 500000 },
             { label: '1 triệu', value: 1000000 }
           ].map((b) => {
-            const isSel = Number(val) === b.value;
+            const isSel = customBudget.trim() === '' && Number(val) === b.value;
             return (
               <button
                 key={b.value}
                 type="button"
-                onClick={() => setVal(b.value)}
+                onClick={() => { setVal(b.value); setCustomBudget(''); setBudgetError(''); }}
                 style={{
                   minHeight: 36,
                   padding: '0 14px',
@@ -213,6 +241,30 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
               </button>
             );
           })}
+          <div style={{ flexBasis: '100%', display: 'grid', gap: 4 }}>
+            <label htmlFor={`inline-budget-custom-${itemKey}`} style={{ fontSize: 13, color: 'var(--nn-mute, #62736D)' }}>
+              Số tiền khác (VNĐ)
+            </label>
+            <input
+              id={`inline-budget-custom-${itemKey}`}
+              data-testid="inline-budget-custom"
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              placeholder="Ví dụ 350000"
+              value={customBudget}
+              aria-invalid={budgetError ? 'true' : undefined}
+              aria-describedby={budgetError ? `inline-budget-error-${itemKey}` : undefined}
+              onChange={(e) => { setCustomBudget(e.target.value); setBudgetError(''); }}
+              onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleSave(); } }}
+              style={{ minHeight: 44, borderRadius: 8, border: '1px solid var(--nn-line, #DDE7E1)', padding: '0 12px', fontSize: 15, color: 'var(--nn-ink, #17352B)', background: 'var(--nn-card, #FFFFFF)' }}
+            />
+            {budgetError && (
+              <span id={`inline-budget-error-${itemKey}`} data-testid="inline-budget-error" role="alert" style={{ fontSize: 12.5, color: 'var(--nn-warn-ink, #8A4B12)' }}>
+                {budgetError}
+              </span>
+            )}
+          </div>
         </div>
       )}
 

@@ -81,6 +81,17 @@ try{
   mode=null;for(const requestId of heldCreates.splice(0))await cdp('Fetch.continueRequest',{requestId});
   await until(()=>ev(`!!sessionStorage.getItem('foodtour_chat_session_id')&&!document.querySelector('[aria-busy="true"]')`));
   record('delayed initialization completes with owned session',await ev(`!!sessionStorage.getItem('foodtour_chat_session_id')`));
+  await ev('sessionStorage.clear()');await cdp('Page.reload');
+  await until(()=>ev(`!!sessionStorage.getItem('foodtour_chat_session_id')&&!document.querySelector('[aria-busy="true"]')&&!!document.querySelector('[data-testid="guided-input"]')`));await pause(300);
+  await ev(`document.querySelector('[data-testid="guided-input"]').focus()`);
+  await cdp('Input.insertText',{text:'Tour ba quán Hồ Gươm 90 phút, mỗi chặng tối đa 10 phút'});
+  await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});
+  await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});
+  await until(()=>ev(`!!document.querySelector('[data-testid="understood-card"]')`));
+  const hasLegRow=()=>ev(`(()=>{const e=document.querySelector('[data-testid="understood-card"]');return !!e&&/Đi mỗi chặng tối đa\\s*10 phút/.test(e.innerText);})()`);
+  record('numeric per-leg limit is visibly understood before reload',await hasLegRow());
+  await cdp('Page.reload');await until(()=>ev(`!!document.querySelector('[data-testid="understood-card"]')`));
+  record('reload visibly restores the stated per-leg limit',await hasLegRow());
   const output={synthetic:true,web,api,method:'Actual Chrome UI; labelled failure-only CDP interception',checks};
   fs.writeFileSync(path.join(os.tmpdir(),'foodtour-fq-session-errors.json'),JSON.stringify(output,null,2));
   console.log(JSON.stringify({checks:checks.length,failed:checks.filter(x=>!x.pass).length}));

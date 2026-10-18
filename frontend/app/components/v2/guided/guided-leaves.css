@@ -434,3 +434,9 @@
   line-height: 18px;
   border-radius: 8px;
 }
+
+/* D5: larger invisible hit areas without changing the visual geometry */
+.nn-trust-btn { position: relative; min-height: 24px; display: inline-flex; align-items: center; }
+.nn-trust-btn::after { content: ''; position: absolute; left: -6px; right: -6px; top: -12px; bottom: -12px; }
+.nn-pill-action-btn { position: relative; }
+.nn-pill-action-btn::after { content: ''; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }

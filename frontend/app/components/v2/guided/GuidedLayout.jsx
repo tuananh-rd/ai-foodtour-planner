@@ -7,7 +7,7 @@ import ConfirmSummaryCard from './ConfirmSummaryCard';
 import GuidedTimeline from './GuidedTimeline';
 import TrustDisclosure from './TrustDisclosure';
 import ReplaceDiffModal from '../../ReplaceDiffModal';
-import { chatTurn, createSession, getSession, replaceTourStop } from '../../../../lib/api';
+import { chatTurn, getSession, replaceTourStop } from '../../../../lib/api';
 import './guided-visual.css';
 
 /* Reference glyphs (outlined paths of the design file: 4-point star, send arrow). Decorative only. */
@@ -146,6 +146,9 @@ export default function GuidedLayout({
   revision: initialRevision = 0,
   health,
   clientConfig,
+  initError = null,
+  initializing = false,
+  onRetryInit,
   onResetSession
 }) {
   const [sessionId, setSessionId] = useState(initialSessionId);
@@ -176,6 +179,7 @@ export default function GuidedLayout({
 
   const inputRef = useRef(null);
   const lastFocusedKeyRef = useRef('');
+  const restoredRef = useRef(false);
   const chatSectionRef = useRef(null);
   const tourSectionRef = useRef(null);
 
@@ -214,72 +218,64 @@ export default function GuidedLayout({
     }
   }, [initialSessionId, initialSessionToken, initialRevision]);
 
-  // Initialize session or restore existing session on reload (Q04 restore check)
+  // Load the owned snapshot once the parent (page.js) has created or restored the session.
+  // The parent owns session creation and the stored pointer; this component never creates or
+  // replaces a session during initialization, so there is no double-init race and a transient
+  // failure cannot overwrite the stored credential.
+  const [loadNonce, setLoadNonce] = useState(0);
   useEffect(() => {
-    const storedId = typeof window !== 'undefined'
-      ? (sessionStorage.getItem('foodtour_chat_session_id') || new URLSearchParams(window.location.search).get('session_id'))
-      : null;
-    const storedToken = typeof window !== 'undefined'
-      ? (sessionStorage.getItem('foodtour_chat_session_token') || '')
-      : '';
-
-    const targetId = sessionId || storedId;
-    const targetToken = sessionToken || storedToken;
-
-    if (targetId) {
-      setBusy(true);
-      setBusyMessage('Đang tải phiên làm việc…');
-      getSession(targetId, targetToken)
-        .then((s) => {
-          if (s && (s.session_id || targetId)) {
-            const activeId = s.session_id || targetId;
-            const activeToken = s.token || targetToken;
-            setSessionId(activeId);
-            setSessionToken(activeToken);
-            setRevision(s.revision || 0);
-            if (typeof window !== 'undefined') {
-              sessionStorage.setItem('foodtour_chat_session_id', activeId);
-              if (activeToken) sessionStorage.setItem('foodtour_chat_session_token', activeToken);
-            }
-            restoreOwnedSnapshot(s);
-          }
-          setBusy(false);
-        })
-        .catch(() => {
-          createSession()
-            .then((fresh) => {
-              setSessionId(fresh.session_id);
-              setSessionToken(fresh.token || '');
-              setRevision(fresh.revision || 0);
-              if (typeof window !== 'undefined') {
-                sessionStorage.setItem('foodtour_chat_session_id', fresh.session_id);
-                if (fresh.token) sessionStorage.setItem('foodtour_chat_session_token', fresh.token);
-              }
-              setBusy(false);
-            })
-            .catch(() => setBusy(false));
-        });
-    } else {
-      setBusy(true);
-      setBusyMessage('Đang khởi tạo phiên mới…');
-      createSession()
-        .then((s) => {
-          setSessionId(s.session_id);
-          setSessionToken(s.token || '');
+    const targetId = initialSessionId;
+    const targetToken = initialSessionToken || '';
+    if (!targetId) return undefined;
+    let cancelled = false;
+    setBusy(true);
+    setBusyMessage('Đang tải phiên làm việc…');
+    getSession(targetId, targetToken)
+      .then((s) => {
+        if (cancelled) return;
+        if (s && (s.session_id || targetId)) {
+          setSessionId(s.session_id || targetId);
+          setSessionToken(s.token || targetToken);
           setRevision(s.revision || 0);
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('foodtour_chat_session_id', s.session_id);
-            if (s.token) sessionStorage.setItem('foodtour_chat_session_token', s.token);
-          }
-          setBusy(false);
-        })
-        .catch(() => setBusy(false));
-    }
-  }, []);
+          restoredRef.current = true;
+          restoreOwnedSnapshot(s);
+          setSnapshotFailed(false);
+          setErrorMessage(null);
+        }
+        setBusy(false);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        setBusy(false);
+        if ([401, 403, 404, 410].includes(err?.status) && onResetSession) {
+          onResetSession();
+          return;
+        }
+        setErrorMessage('Chưa tải lại được phiên của bạn. Phiên cũ vẫn được giữ; bấm Thử lại để khôi phục.');
+        setSnapshotFailed(true);
+      });
+    return () => { cancelled = true; };
+  }, [initialSessionId, initialSessionToken, loadNonce]);
+  const [snapshotFailed, setSnapshotFailed] = useState(false);
 
   // Execute turn action or text with Q06 polite live region & draft preservation
   const executeTurn = async ({ text = null, action = null, onFail = null }) => {
     if (busy || (!text && !action)) return;
+    if (initializing || !sessionId) {
+      // The parent (page.js) is the single owner of session creation: never create a second session here.
+      if (!initializing && initError?.kind === 'start' && onRetryInit) onRetryInit();
+      setErrorMessage(initializing
+        ? 'Đang khởi tạo phiên, nội dung bạn nhập vẫn được giữ; hãy gửi lại sau giây lát.'
+        : 'Phiên chưa sẵn sàng; nội dung bạn nhập vẫn được giữ. Đang thử khởi tạo lại, hãy gửi lại sau giây lát.');
+      if (onFail) onFail();
+      return;
+    }
+    if (initError?.kind === 'restore' || snapshotFailed) {
+      // The previous session has not been restored yet: keep the draft and ask for a retry instead of acting on it blindly.
+      setErrorMessage('Hãy khôi phục phiên trước (bấm Thử lại); nội dung bạn nhập vẫn được giữ.');
+      if (onFail) onFail();
+      return;
+    }
     setBusy(true);
     setErrorMessage(null);
 
@@ -300,27 +296,10 @@ export default function GuidedLayout({
       ]);
     }
 
-    let activeSessionId = sessionId;
-    let activeToken = sessionToken;
-    if (!activeSessionId && typeof window !== 'undefined') {
-      activeSessionId = sessionStorage.getItem('foodtour_chat_session_id');
-      activeToken = sessionStorage.getItem('foodtour_chat_session_token') || activeToken;
-    }
+    const activeSessionId = sessionId;
+    const activeToken = sessionToken;
 
     try {
-      if (!activeSessionId) {
-        const fresh = await createSession();
-        activeSessionId = fresh.session_id;
-        activeToken = fresh.token || '';
-        setSessionId(activeSessionId);
-        setSessionToken(activeToken);
-        setRevision(fresh.revision || 0);
-        if (typeof window !== 'undefined') {
-          sessionStorage.setItem('foodtour_chat_session_id', activeSessionId);
-          if (activeToken) sessionStorage.setItem('foodtour_chat_session_token', activeToken);
-        }
-      }
-
       const convParam = typeof window !== 'undefined'
         ? (new URLSearchParams(window.location.search).get('conv') || new URLSearchParams(window.location.search).get('scenario'))
         : null;
@@ -391,6 +370,8 @@ export default function GuidedLayout({
         } catch (_) { setErrorMessage('Chưa tải được phiên mới nhất. Bạn vui lòng tải lại trước khi tiếp tục.'); }
       } else if (err?.status === 422) {
         setErrorMessage('Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.');
+      } else if (err?.code === 'provider_unavailable' && err?.details && typeof err.details === 'object' && 'originalError' in err.details) {
+        setErrorMessage('Không kết nối được tới máy chủ. Hãy kiểm tra mạng rồi bấm Thử lại; nội dung bạn nhập vẫn được giữ.');
       } else if (err?.status >= 500) {
         setErrorMessage('Máy chủ đang bận xử lý. Bạn vui lòng thử lại sau giây lát.');
       } else {
@@ -402,6 +383,8 @@ export default function GuidedLayout({
   };
 
   const handleRetryFailed = () => {
+    if (initError && onRetryInit) { setErrorMessage(null); onRetryInit(); return; }
+    if (snapshotFailed) { setSnapshotFailed(false); setErrorMessage(null); setLoadNonce((n) => n + 1); return; }
     if (!lastFailedTurn) return;
     setErrorMessage(null);
     executeTurn(lastFailedTurn);
@@ -453,13 +436,21 @@ export default function GuidedLayout({
     });
   };
 
+  // The editor uses short slot names; the chat API patch uses the contract field names.
   const handleInlineSave = (slotKey, value) => {
+    if (slotKey === 'stops') {
+      // The patch contract has no stop count; say it in words so the engine asks/confirms as usual.
+      executeTurn({ text: `Đổi sang tour ${value} quán` });
+      return;
+    }
+    const field = { budget: 'budget_vnd', duration: 'duration_min', party: 'party_size', time: 'start_time' }[slotKey] || slotKey;
+    const patchValue = slotKey === 'vehicle' && value === 'motorcycle' ? 'motorbike' : value;
     executeTurn({
       action: {
         name: 'edit_profile',
-        payload: { [slotKey]: value },
+        payload: { [field]: patchValue },
         type: 'edit_profile',
-        patch: { [slotKey]: value }
+        patch: { [field]: patchValue }
       }
     });
   };
@@ -542,19 +533,10 @@ export default function GuidedLayout({
         sessionStorage.removeItem('foodtour_chat_session_token');
       } catch (_) {}
     }
-    setBusy(true);
-    setBusyMessage('Đang tạo phiên mới…');
-    try {
-      const fresh = await createSession();
-      setSessionId(fresh.session_id);
-      setSessionToken(fresh.token || '');
-      setRevision(fresh.revision || 0);
-      if (typeof window !== 'undefined') {
-        sessionStorage.setItem('foodtour_chat_session_id', fresh.session_id);
-        if (fresh.token) sessionStorage.setItem('foodtour_chat_session_token', fresh.token);
-      }
-    } catch (_) {}
-    setBusy(false);
+    // The parent owns session creation (single owner, no duplicate create): clear local ids and let it create the new one.
+    setSessionId(null);
+    setSessionToken('');
+    setRevision(0);
     onResetSession && onResetSession();
   };
 
@@ -686,6 +668,13 @@ export default function GuidedLayout({
   // Focus and viewport management
   useEffect(() => {
     if (busy) return;
+    if (restoredRef.current && (showTour || confirmSummaryBlock || clarifyBlock)) {
+      // Session restored on page load: show it where the user left it, do not steal focus or scroll.
+      restoredRef.current = false;
+      lastFocusedKeyRef.current = showTour ? 'tour' : confirmSummaryBlock ? 'confirm'
+        : `${clarifyBlock.slot || ''}_${clarifyBlock.pending_id || clarifyBlock.question || ''}`;
+      return;
+    }
     const active = typeof document !== 'undefined' ? document.activeElement : null;
     const isUserTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
 
@@ -875,9 +864,9 @@ export default function GuidedLayout({
 
           <div className="nn-rule" role="separator" />
 
-          {errorMessage && (
+          {(errorMessage || initError) && (
             <div data-testid="guided-error-banner" role="alert" className="nn-alert">
-              <span>⚠️ {errorMessage}</span>
+              <span>⚠️ {errorMessage || initError.message}</span>
               <button type="button" data-testid="guided-error-retry-btn" onClick={handleRetryFailed}>Thử lại</button>
             </div>
           )}
@@ -985,7 +974,7 @@ export default function GuidedLayout({
               {health?.llm === 'gemini'
                 ? 'Khi cần và còn lượt, nội dung bạn nhập cùng tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu.'
                 : 'Yêu cầu đang được đọc theo quy tắc tại máy, không gửi đến AI bên ngoài trong chế độ này.'}
-              {' '}Ứng dụng giữ các lượt trò chuyện gần nhất trong phiên để khôi phục khi tải lại.
+              {' '}Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên, không hiện lại từng tin nhắn.
             </p>
             <TrustDisclosure turn={latestTurnMeta} health={health} />
             {!confirmSummaryBlock && (
