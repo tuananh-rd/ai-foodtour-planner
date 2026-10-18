@@ -143,7 +143,8 @@
 /* stacked layout (mobile / narrow) */
 @media (max-width: 1199px) {
   .nn-header { height: auto; min-height: 64px; flex-wrap: wrap; gap: 8px 12px; padding: 10px 16px; }
-  .nn-brand { width: auto; }
+  .nn-brand { width: auto; flex: 1; min-width: 0; }
+  .nn-profile { width: auto; }
   .nn-nav { order: 3; width: 100%; } .nn-nav .nn-pill { flex: 1; min-height: 44px; }
   .nn-header-spacer { display: none; }
   .nn-profile-text { display: none; }

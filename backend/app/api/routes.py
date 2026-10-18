@@ -359,8 +359,10 @@ def replace(session_id: str, body: ReplaceRequest, request: Request,
             if current.dataset_version != data.dataset_version:
                 raise APIError(409, "dataset_changed", "Dữ liệu đã đổi; hãy lập lại lịch trình trước khi thay quán.")
             data = current
-        result = engine.replace_stop(data.venues, session.preferences, session.tour,
-                                     body.venue_id, request.app.state.routing,
+        prefs = session.tour_preferences or session.preferences
+        routes = routing_for(session.tour_vehicle, request.app.state.routing)
+        result = engine.replace_stop(data.venues, prefs, session.tour,
+                                     body.venue_id, routes,
                                      quality_weight=request.app.state.quality_weight)
         if not result.ok:
             raise APIError(409, "no_candidates", "Không có phương án thay thế thoả ràng buộc.",
@@ -373,7 +375,15 @@ def replace(session_id: str, body: ReplaceRequest, request: Request,
             and body.venue_id not in new_ids and tuple(result.tour.locks) == locks)
         if not preserves_others:
             raise APIError(500, "internal_validation_failed", "Phương án thay thế không giữ các điểm đã khoá.")
-        return commit(session, session.preferences, result.tour, data, request)
+        # Keep the confirmed tour's validation context (including agreed visit
+        # duration/vehicle) rather than replacing it with serialized UI slots.
+        session.tour, session.snapshot = result.tour, data
+        session.tour_preferences = prefs
+        session.tour_selected_ids = tuple(new_ids)
+        session.revision += 1
+        view = session_view(session, result.tour, data, request)
+        view.notes = list(dict.fromkeys(session.notes))
+        return view
 
 
 def chat_enabled():

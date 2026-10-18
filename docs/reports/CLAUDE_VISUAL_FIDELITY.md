@@ -64,3 +64,15 @@ Regression: test_ngonngon_qa 66/66 PASS on this change.
 
 ## 9. Header profile slot (approved by coordinator)
 Profile name shortened to the truthful "Khách" (sub "Hà Nội"); `.nn-profile` fixed 97px so the avatar sits at x1311 and the name at x1353 exactly like the reference (measured 1440×1024). No identity or status invented. After compact warnings (2dcdc8a) the first pill row starts at y≈570 (was 594); heading→warning gap (~24px) and warning→unknowns gap (~0–8px) remain; the deliberate warning block height is assessed separately from the reference in the final verdict.
+
+## 10. Final visual findings on integrated b31a4f1 (INTERIM until corrected mobile capture)
+Viewed: original render, `svg-fidelity/integrated_composite_{side_by_side,overlay}_1440.png`, Codex `interactions/mobile-{tour,confirm}.png`, plus my own re-render at 390×844.
+**Matches (frame):** header 80px; chat panel 32/108 480×888; tour column 824 (tiles x560); route panel x1078 306×615 (also with a 15px default scrollbar gutter, absorbed by page padding); metric tiles; "Lộ trình" heading row; compact stop cards 130px (reference 129/107); pill row (time pill, meta pill; real "Đổi quán" at the right); route canvas, nodes, tip card; composer/send; star/arrow glyph sizes; header profile avatar x1311 / name x1353.
+**Deviations (enumerated):**
+1. Third card bottom y1091 > 1024 (3 full cards not visible): cause is the mandatory warning stack (~140px) above the first pill row; reference has none. Brief: merge into one block (see below), target ≤ ~55px, third card bottom ≈1000.
+2. Card title/desc strings and metric values are real or "[SYNTHETIC]" data, not the reference sample content (by design). Descriptions include "nguồn ghi" hours text, so card text is 2 lines where the reference has 1-2.
+3. Header: "Bộ sưu tập" and "Tuấn/TP. Hà Nội"/"Đang online" intentionally absent (no fake features/identity); nav shows "Lịch trình (3)".
+4. "Lưu lịch trình" is the real "Làm lại" (same 118×39 slot).
+5. Chat bubble content differs (real chat; the intro and a "Minh hiểu là…" card sit in the stream); the chat stream scrolls internally.
+6. Mobile: header now one row (brand, Làm lại, avatar) after my fix (it had wrapped the avatar to row 2); tour tab and confirm views are legible with no horizontal scroll.
+**Residual measured:** only the items above; not claimed as 1–2px overall: the tour state differs by the warning height and real strings.
