@@ -21,3 +21,11 @@ Scope reviewed (read-only, root 0cda532 + uncommitted): `backend/app/chat/covera
 
 ## Limits
 Read-only review of the diff and the 186 chat tests; no browser, no live/private API, no provider calls.
+
+---
+# Update 2 — tightened helper + greeting branch (read-only review of the uncommitted diff on 39fa6fc)
+## Verdict: APPROVE
+- **Helper (coverage.py)** is now three narrow rules: `tour` (any case) before a digit; a day-part phrase (`tối|sáng|chiều|trưa` + `nay|mai`, with/without diacritics) before a digit; and the lowercase generic words `trong|cho|khoảng|khoang|tầm|tam` before a digit. Probes: `tour3`→`tour 3`, `Tối nay120`→`Tối nay 120`, `sáng mai9h`→`sáng mai 9h`, `cho2người`→`cho 2người`, `trong180`→`trong 180`; unchanged: `Quán Mai2`, `Tam3 Thuong`, `Trong5`, `tối nay 19h`, `hôm nay120`. My note 1 (capitalised names) is resolved; `extras('Quán Trong5 ba quán', folded)` returns `{}`, so folding does not reintroduce a rewrite visible in results. Remaining, harmless: a bare `mai`/`nay` without a day-part word is not separated (`hôm nay120` stays), so that phrasing still depends on the spaced form.
+- **Greeting branch (understand.py)**: a greeting/thanks message that also carries a parsed profile patch now returns `UPDATE_PROFILE` with that patch (confidence 0.9); a bare greeting still returns `GREET_OR_SMALLTALK`. Probes: `xin chào`/`cảm ơn` → GREET; `hello, tour3 quán Hồ Gươm tối nay120 phút` → UPDATE_PROFILE {duration 120, stops 3, day_part evening}; `chào, ngân sách 300 nghìn` → UPDATE_PROFILE {budget_vnd 300000}. No plan can start from this branch (it only updates the profile; the confirmation obligation is downstream and unchanged).
+- **Risk noted (not a regression):** `hi mình không dị ứng gì` still returns GREET_OR_SMALLTALK although the patch carries `no_allergy`; this stays on the safe side (the allergy obligation is not silently closed by a greeting message), and the diff does not change it. Worth a product decision only if QA expects the allergy declaration to be applied in that message.
+- **Tests**: `python -m unittest discover -s tests/chat -t .` from backend: **188 tests OK** (includes the new regressions). Not run: full backend suite, live LLM path, browser. No source edits by me.
