@@ -9,7 +9,7 @@ import net from 'node:net';
 import {spawn, execFileSync} from 'node:child_process';
 const web=process.env.FQ_WEB || 'http://127.0.0.1:3050';
 const api=process.env.FQ_API || 'http://127.0.0.1:8050';
-const port=19710, checks=[];
+const port=Number(process.env.FQ_CDP || 19710), checks=[];
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(fn){for(let n=0;n<200;n++){if(await fn())return;await pause(100);}throw Error('Timed out waiting for observable UI state');}
 const free=await new Promise(resolve=>{const p=net.createServer();p.once('error',()=>resolve(false));p.listen(port,'127.0.0.1',()=>p.close(()=>resolve(true)));});
@@ -17,7 +17,7 @@ if(!free)throw Error('Dedicated browser port occupied; no process stopped');
 if((await(await fetch(api+'/health')).json()).dataset_source!=='synthetic')throw Error('Synthetic-only capture guard');
 const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'fq-session-errors-'));
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking',`--remote-debugging-port=${port}`,`--user-data-dir=${scratch}`,'about:blank'],{stdio:'ignore',windowsHide:true});
-let ws, mode=null, id=0; const pending=new Map(); const counts={startupFaults:0,restoreFaults:0,creates:0};
+let ws, mode=null, id=0; const pending=new Map(), heldCreates=[]; const counts={startupFaults:0,restoreFaults:0,creates:0};
 const record=(name,pass)=>{checks.push({name,pass:!!pass});console.log(JSON.stringify(checks.at(-1)));};
 try{
   let target;
@@ -28,7 +28,9 @@ try{
     if(m.method!=='Fetch.requestPaused')return;
     const p=m.params,u=new URL(p.request.url),method=p.request.method;
     if(method==='POST'&&u.pathname==='/v1/sessions')counts.creates++;
-    if(mode==='startup'&&method==='POST'&&u.pathname==='/v1/sessions'){
+    if(mode==='delay_startup'&&method==='POST'&&u.pathname==='/v1/sessions'){
+      heldCreates.push(p.requestId);
+    }else if(mode==='startup'&&method==='POST'&&u.pathname==='/v1/sessions'){
       counts.startupFaults++;await cdp('Fetch.failRequest',{requestId:p.requestId,errorReason:'ConnectionFailed'});
     }else if(mode==='restore'&&method==='GET'&&/^\/v1\/sessions\/[^/]+$/.test(u.pathname)){
       counts.restoreFaults++;await cdp('Fetch.fulfillRequest',{requestId:p.requestId,responseCode:503,responseHeaders:[{name:'Content-Type',value:'application/json'},{name:'Access-Control-Allow-Origin',value:web},{name:'Access-Control-Allow-Credentials',value:'true'}],body:Buffer.from(JSON.stringify({detail:{code:'temporarily_unavailable'}})).toString('base64')});
@@ -67,6 +69,18 @@ try{
   record('original server session retains parsed preferences',retained.chat?.profile?.duration_min?.value===90);
   mode=null;const retriedRestore=await retry();record('transient restore provides actionable retry',retriedRestore);
   if(retriedRestore){await until(()=>ev(`!!document.querySelector('[data-testid="understood-card"]')`));record('retry restores original identity and preferences',original===await ev(`sessionStorage.getItem('foodtour_chat_session_id')`)&&await ev(`document.querySelector('[data-testid="understood-card"]').innerText.includes('90 phút')`));}
+  // Delay only session creation, then attempt a rapid user submit while initialization is pending.
+  await ev('sessionStorage.clear()');mode='delay_startup';await cdp('Page.reload');
+  await until(async()=>heldCreates.length>0&&await ev(`!!document.querySelector('[data-testid="guided-input"]')`));
+  await pause(300);const createsWhileWaiting=counts.creates;
+  const canType=await ev(`(()=>{const e=document.querySelector('[data-testid="guided-input"]');e.focus();return !e.disabled&&!e.readOnly;})()`);
+  if(canType){await cdp('Input.insertText',{text:'Đang chờ phiên, muốn tour ba quán'});await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});}
+  await pause(500);
+  record('submit during initialization does not start competing session',counts.creates===createsWhileWaiting);
+  record('pending initialization preserves typed draft or disables entry',!canType||await ev(`document.querySelector('[data-testid="guided-input"]').value.includes('Đang chờ phiên')`));
+  mode=null;for(const requestId of heldCreates.splice(0))await cdp('Fetch.continueRequest',{requestId});
+  await until(()=>ev(`!!sessionStorage.getItem('foodtour_chat_session_id')&&!document.querySelector('[aria-busy="true"]')`));
+  record('delayed initialization completes with owned session',await ev(`!!sessionStorage.getItem('foodtour_chat_session_id')`));
   const output={synthetic:true,web,api,method:'Actual Chrome UI; labelled failure-only CDP interception',checks};
   fs.writeFileSync(path.join(os.tmpdir(),'foodtour-fq-session-errors.json'),JSON.stringify(output,null,2));
   console.log(JSON.stringify({checks:checks.length,failed:checks.filter(x=>!x.pass).length}));
