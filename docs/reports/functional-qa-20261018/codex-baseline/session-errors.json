@@ -1,0 +1,44 @@
+{
+  "synthetic": true,
+  "web": "http://127.0.0.1:3050",
+  "api": "http://127.0.0.1:8050",
+  "method": "Actual Chrome UI; labelled failure-only CDP interception",
+  "checks": [
+    {
+      "name": "startup failure is actually injected",
+      "pass": true
+    },
+    {
+      "name": "startup failure displays recoverable alert",
+      "pass": false
+    },
+    {
+      "name": "startup failure provides actionable retry",
+      "pass": false
+    },
+    {
+      "name": "transient restore 503 actually injected",
+      "pass": true
+    },
+    {
+      "name": "transient restore preserves stored session identity",
+      "pass": false
+    },
+    {
+      "name": "transient restore does not create replacement session",
+      "pass": false
+    },
+    {
+      "name": "transient restore shows recoverable alert",
+      "pass": false
+    },
+    {
+      "name": "original server session retains parsed preferences",
+      "pass": true
+    },
+    {
+      "name": "transient restore provides actionable retry",
+      "pass": false
+    }
+  ]
+}
