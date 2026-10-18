@@ -1117,11 +1117,11 @@ export default function GuidedLayout({
                 ) : (
                   <div className="nn-canvas-note">Sơ đồ thứ tự điểm dừng sẽ hiện sau khi bạn xác nhận lịch trình.</div>
                 )}
+                <p className="nn-caption">Sơ đồ thứ tự điểm dừng, không phải bản đồ thật.</p>
               </div>
-              <p className="nn-caption">Sơ đồ thứ tự điểm dừng, không phải bản đồ thật.</p>
               <div className="nn-tip">
                 <b>Lưu ý</b>
-                <span>Giá và giờ mở cửa lấy theo nguồn, chưa kiểm chứng; hãy kiểm tra lại trước khi đến.</span>
+                <span>Giá, giờ mở cửa lấy theo nguồn, chưa kiểm chứng; hãy kiểm tra lại.</span>
               </div>
             </aside>
           </div>
