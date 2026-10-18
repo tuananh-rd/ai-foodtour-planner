@@ -382,6 +382,8 @@ async function main() {
     await snapScreenshot(tourDesktopPath);
 
     console.log('\n=== Step 4: Extract Real UI DOM Geometry & Typography Metrics ===');
+    const sourceHead = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: REPO_ROOT }).toString().trim();
+    const frontendDirty = execFileSync('git', ['status', '--porcelain', 'frontend'], { cwd: REPO_ROOT }).toString().trim().length > 0;
     const domMetrics = await ev(`(() => {
       const getRect = (sel) => {
         const el = document.querySelector(sel);
@@ -396,17 +398,31 @@ async function main() {
           height: Math.round(r.height),
           backgroundColor: style.backgroundColor,
           borderRadius: style.borderRadius,
+          border: style.border,
           padding: style.padding,
           margin: style.margin,
           gap: style.gap,
           fontSize: style.fontSize,
           fontWeight: style.fontWeight,
+          fontFamily: style.fontFamily,
           color: style.color
         };
       };
 
       return {
-        viewport: { width: window.innerWidth, height: window.innerHeight, scrollY: window.scrollY },
+        provenance: {
+          sourceHead: ${JSON.stringify(sourceHead)},
+          frontendDirty: ${frontendDirty},
+          timestamp: new Date().toISOString()
+        },
+        viewport: {
+          innerWidth: window.innerWidth,
+          innerHeight: window.innerHeight,
+          clientWidth: document.documentElement.clientWidth,
+          clientHeight: document.documentElement.clientHeight,
+          scrollY: window.scrollY,
+          devicePixelRatio: window.devicePixelRatio
+        },
         header: getRect('header'),
         headerLogo: getRect('header > div:first-child > div:first-child'),
         headerTitle: getRect('header > div:first-child > div:last-child > div:first-child'),
@@ -433,19 +449,35 @@ async function main() {
             height: Math.round(r.height),
             backgroundColor: style.backgroundColor,
             borderRadius: style.borderRadius,
+            fontSize: style.fontSize,
+            fontFamily: style.fontFamily,
             text: el.innerText.trim().replace(/\\n/g, ' ')
           };
         }),
         timelineContainer: getRect('[data-testid="guided-timeline"]'),
-        stopCards: Array.from(document.querySelectorAll('[data-testid^="timeline-stop-card"]')).map((el, i) => {
+        stopCards: Array.from(document.querySelectorAll('[data-testid^="timeline-stop-card-"]')).map((el, i) => {
           const r = el.getBoundingClientRect();
+          const style = window.getComputedStyle(el);
+          const titleEl = el.querySelector('h3, .nn-timeline-card-title');
+          const titleStyle = titleEl ? window.getComputedStyle(titleEl) : null;
+          const descEl = el.querySelector('p, .nn-timeline-card-desc');
+          const descStyle = descEl ? window.getComputedStyle(descEl) : null;
           return {
             index: i,
             x: Math.round(r.x),
             y: Math.round(r.y),
             width: Math.round(r.width),
             height: Math.round(r.height),
-            text: el.innerText.slice(0, 80).replace(/\\n/g, ' ')
+            backgroundColor: style.backgroundColor,
+            borderRadius: style.borderRadius,
+            border: style.border,
+            titleText: titleEl?.innerText || '',
+            titleFontSize: titleStyle?.fontSize,
+            titleFontWeight: titleStyle?.fontWeight,
+            titleFontFamily: titleStyle?.fontFamily,
+            titleColor: titleStyle?.color,
+            descFontSize: descStyle?.fontSize,
+            descColor: descStyle?.color
           };
         }),
         routeAside: getRect('#guided-tour-section aside')
