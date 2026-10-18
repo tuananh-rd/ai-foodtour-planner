@@ -12,10 +12,12 @@ New human request after visual closure: prior PASS counts do not prove the produ
 |---|---|---|---|
 | FQ0 | Codex | DONE | Environment/session/lifecycle inventory;3020?8020 private/mock/estimate,3040?8040 synthetic/mock/estimate; no verified live Gemini endpoint or budget |
 | FQ1 | Antigravity | IN PROGRESS | Exploratory UI against actual local/private backend and separate synthetic reproduction; full requested matrix, exact attached Vietnamese input plus clarify/budgetedit; own qa/exploratory/ and docs/reports/functional-qa-20261018/ only; no app-source edits |
-| FQ2 | Codex + affected owner | QUEUED on findings | Triage P0/P1 then main-flow P2; Claude UI, Codex backend/contracts/integration, Antigravity bounded assignments; record file ownership before fixes |
-| FQ3 | Antigravity + Codex | QUEUED | Retest each defect on changed build, independent regression and truthful PASS/FAIL/BLOCKED/NOT TESTED matrix, real screenshots with sensitive data removed |
+| FQ2 | Codex + affected owner | IN PROGRESS | Actual UI attached-number/goal loss and follow-up dead-air BUG-001/002, plus compound greeting slot loss: backend fix8d3a379. Claude affected review39fa6fc/f6ed645 APPROVE, backend580 OK/1optional private-CSV skip. Backend-only ownership; no UI source changes. Claude task_f9cc7b0d069d/ctx_e0bddc39828e additionally audits UI read-only before scoped fixes |
+| FQ3 | Antigravity + Codex | IN PROGRESS | Fresh isolated fixed previews3050/API8050 synthetic and3051/API8051 local-private, source8d3a379; HTTP200 and health verified. Actual HTTP exact-input/clarify/start-time/budget-edit sequence fixed on both. Antigravity UI retest/full matrix pending; independent fresh production browser regression running. Initial broad harness PASS criteria rejected: individual GPS/409/offline/keyboard/Maps order cases must be tested separately |
 
 Live Gemini currently BLOCKED: active backend health is mock and no budget evidence; no keys read or service activation. QA synthetic screenshots must remain labelled. Private venue data/IDs/coordinates/tokens must never enter Git or report images. Keep SVG layout, no expanded features, no user server shutdown, no push/deploy.
+
+Fixed preview3051 uses the documented existing local input outside Git; its venue identities/count match the old8020 loader, but dataset hashes differ, so it is a new environment, not proof of identical dataset version. Both new previews use rules/mock + estimated routing + no geocoder; session memory is ephemeral. Old3020/3040 services remain untouched. Windows shell inline Unicode probe initially corrupted accents; discarded as a test execution error and replaced by UTF-8 source-file probes, never counted as a product failure.
 
 ## Active SVG fidelity revision — VF-series, 2026-10-18
 
