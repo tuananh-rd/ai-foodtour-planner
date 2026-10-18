@@ -188,25 +188,36 @@ export default function GuidedTimeline({
       <div style={{ display: 'grid', gap: 13, maxWidth: 500, width: '100%' }}>
         {stops.map((stop, idx) => {
           const leg = stop.leg_from_previous;
-          const priceMinK = stop.price?.min_vnd ? `${Math.round(stop.price.min_vnd / 1000)}k` : null;
-          const priceMaxK = stop.price?.max_vnd ? `${Math.round(stop.price.max_vnd / 1000)}k` : null;
-          const priceShortForm = priceMinK && priceMaxK ? `${priceMinK}–${priceMaxK}` : priceMaxK ? `≤${priceMaxK}` : null;
+          const hasMin = typeof stop.price?.min_vnd === 'number';
+          const hasMax = typeof stop.price?.max_vnd === 'number';
+          const priceMinK = hasMin ? `${Math.round(stop.price.min_vnd / 1000)}k` : null;
+          const priceMaxK = hasMax ? `${Math.round(stop.price.max_vnd / 1000)}k` : null;
+          const priceShortForm = hasMin && hasMax
+            ? (priceMinK === priceMaxK ? priceMinK : `${priceMinK}–${priceMaxK}`)
+            : hasMax
+            ? `≤${priceMaxK}`
+            : hasMin
+            ? `≥${priceMinK}`
+            : null;
 
+          // Neutral dish unknown: never invent specific dish/source claim
           const dishStr = Array.isArray(stop.venue?.cuisine_styles) && stop.venue.cuisine_styles.length > 0
             ? stop.venue.cuisine_styles.join(' • ')
-            : 'Món đặc trưng theo nguồn';
+            : (stop.dish || 'Chưa có thông tin món cụ thể');
 
           // Q01: Preserve legitimate 0; do not turn null or 0 into 5!
           const legMinText = typeof leg?.minutes === 'number'
-            ? (leg.minutes === 0 ? '0p' : `${leg.minutes}p đi bộ`)
+            ? (leg.minutes === 0 ? '0 phút' : `~${leg.minutes} phút (ước tính)`)
             : null;
 
           // Price + leg ONLY in metapill per visual owner specification
           const metaParts = [];
           if (priceShortForm) {
-            metaParts.push(`≈${priceShortForm}`);
+            metaParts.push(`≈${priceShortForm} (theo nguồn)`);
           } else if (stop.price?.price_range) {
             metaParts.push(stop.price.price_range);
+          } else {
+            metaParts.push('giá theo nguồn: chưa rõ');
           }
           if (idx > 0 && legMinText) {
             metaParts.push(legMinText);
@@ -220,8 +231,10 @@ export default function GuidedTimeline({
 
           const isLocked = lockedStops.includes(stop.venue_id) || stop.locked;
 
-          // Hours inside desc 'nguồn ghi:…', no extra hour row
-          const hoursNote = stop.hours?.display ? ` · nguồn ghi: ${stop.hours.display}` : '';
+          // Hours inside desc: preserve explicit 'chưa rõ' when missing
+          const hoursNote = stop.hours?.display
+            ? ` · giờ mở cửa theo nguồn ghi: ${stop.hours.display}`
+            : ' · giờ mở cửa: chưa rõ';
           const fullDesc = `${dishStr}${hoursNote}`;
 
           return (
