@@ -22,7 +22,7 @@
 
 | Component Property | Reference SVG Spec | Baseline (Before) | Compacted Integrated (Final) | Status / Classification |
 |---|---|---|---|---|
-| **Header Profile Slot** | ~97 px width | 130 px ("Khách ẩm thực") | **97 px** (`x: 1311, w: 97, h: 32`) | **Exact Geometry Match** |
+| **Header Profile Slot** | ~97 px width | 130 px ("Khách ẩm thực") | **97 px** (`x: 1311, w: 97, h: 32`) | **Target Match** (97 px wide; x: 1311 accommodates gutter) |
 | **Timeline Column Width** | 500 px | 537 px | **500 px** (`x: 560, w: 500`) | **Exact Geometry Match** |
 | **Warning Container** | Compact warning | 140 px (split divs) | **54 px** (`x: 560, y: 399, w: 500, h: 54`, r8) | **Target Compaction Achieved** |
 | **Stop Card Dimensions** | 500w × 129h / 107h | Flex (~537px) × 216h | **500w × 130h** (y: 509, 695, 881) | **Target Match** (130h vs 129h ref, down from 216h) |
@@ -33,7 +33,7 @@
 | **Stop Card Title Typography** | 23.7 px / 400, `#1E1E1E` | 18 px / 700, `#17352B` | **23.7 px / 400, `rgb(30, 30, 30)`** | Audited Typography Match |
 | **Stop Card Desc Typography** | 16 px / 1.35, `#757575` | 13 px, `#62736D` | **16 px / 22px line, `rgb(117, 117, 117)`** | Audited Typography Match |
 | **Stop Actions** | Pill row action (visual 34h / 44h hit) | Rectangular buttons | **Pill action button (`.nn-pill-action-btn`, 34h visual, 44h hit)** | Conforming |
-| **Route Aside Panel** | 306w × 615h, mint `#EFF7F1`, r24 | 300w × 380h, white | **306w × 615h** (`x: 1078, y: 358`, mint `#EFF7F1`, r24) | **Exact Match** (306w × 615h at x1078) |
+| **Route Aside Panel** | 306w × 615h, mint `#EFF7F1`, r24 | 300w × 380h, white | **306w × 615h** (`x: 1078, y: 358`, mint `#EFF7F1`, r24) | **Target Match** (306w × 615h at x: 1078) |
 | **Understood Card Style** | N/A (not in SVG) | White bordered box | **Mint bubble (`.nn-assistant-bubble`, `#EFF7F1`, r16)** | Derived Extension (Provisional) |
 | **Understood Rows** | N/A (not in SVG) | Gray table | **Label 13 mute, Val 15/600, 1px line, Dị ứng always visible** | Derived Extension (Provisional) |
 | **Clarify Options** | N/A (not in SVG) | Square buttons | **Reference pills (`.nn-pill`, 35h/44h, green selected)** | Derived Extension (Provisional) |
@@ -61,7 +61,10 @@
   - Allergy safety disclaimer preserved with calm warning in peach box (`--nn-peach`).
   - Budget ceiling note and dynamic scope restore (`mỗi người` vs `cả nhóm`) fully preserved.
   - Single clarify question rule and confirmation gate preserved.
-  - Stop replacement 409 revision conflict handling & state reconstruction preserved.
+  - **Stop Replacement Distinctions:**
+    - *Controlled no-candidates 409 test probe (Step 7):* Uses controlled HTTP 409 `error: no_candidates` to verify UI catch block, modal closure, and truthful Vietnamese notification without silent relaxation of constraints.
+    - *Real server replacement (Step 7b):* Authentic backend replacement with valid candidates, confirming replacement diff view and stop locking behavior.
+    - *Real concurrent revision conflict 409 (Step 8):* Genuine multi-tab/revision conflict on stale revision, triggering rehydration and notification.
   - Free Google Maps walking directions CTA without paid API keys preserved (`https://www.google.com/maps/dir/?api=1&travelmode=walking...`).
 - **Accessibility & Mobile UX:**
   - Zero horizontal overflow at 390px mobile viewport (`scrollWidth <= 390`).
