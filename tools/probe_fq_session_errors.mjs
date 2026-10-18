@@ -38,7 +38,7 @@ try{
   };
   const ev=async expression=>{const r=await cdp('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error('UI evaluation failed');return r.result.value;};
   const capture=async name=>{if(!process.env.FQ_CAPTURE)return;fs.mkdirSync(process.env.FQ_CAPTURE,{recursive:true});const r=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(process.env.FQ_CAPTURE,name+'.png'),Buffer.from(r.data,'base64'));};
-  const retry=async()=>{const selector=await ev(`(()=>{const b=[...document.querySelectorAll('[role="alert"] button')].find(b=>/Thử lại/.test(b.innerText));if(!b)return false;b.focus();return true;})()`);if(!selector)return false;await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});return true;};
+  const retry=async()=>{const point=await ev(`(()=>{const b=[...document.querySelectorAll('[role="alert"] button')].find(b=>/Thử lại/.test(b.innerText));if(!b)return null;b.scrollIntoView({block:'nearest'});const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)return false;await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});return true;};
   for(const domain of ['Page','Runtime','Network'])await cdp(domain+'.enable');
   await cdp('Emulation.setDeviceMetricsOverride',{width:1440,height:1024,deviceScaleFactor:1,mobile:false});
   await cdp('Fetch.enable',{patterns:[{urlPattern:api+'/v1/sessions*',requestStage:'Request'}]});
