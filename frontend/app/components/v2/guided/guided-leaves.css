@@ -1,0 +1,345 @@
+/* NgonNgon Tour Leaf Component Styles (owner: Antigravity)
+   Derived from docs/design/SVG_FIDELITY_SPEC.md section 4.
+   Consumes --nn-* tokens from .nn-root / .nn-dialog without redefining them. */
+
+/* Timeline Container */
+.nn-timeline {
+  display: grid;
+  gap: 13px;
+  width: 500px;
+  max-width: 100%;
+}
+
+@media (max-width: 1199px) {
+  .nn-timeline {
+    width: 100%;
+  }
+}
+
+/* Timeline Stop Item */
+.nn-timeline-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.nn-timeline-pills {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.nn-time-pill {
+  height: 34px;
+  min-height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--nn-green, #166B52);
+  color: #FFFFFF;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.nn-meta-pill {
+  height: 35px;
+  min-height: 35px;
+  padding: 0 14px;
+  border-radius: 999px;
+  background: var(--nn-card, #FFFFFF);
+  border: 1px solid var(--nn-line, #DDE7E1);
+  color: var(--nn-mute, #62736D);
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* Timeline Stop Card */
+.nn-timeline-card {
+  background: var(--nn-card, #FFFFFF);
+  border: 1px solid var(--nn-card-line, #D9D9D9);
+  border-radius: var(--nn-r-card, 8px);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (max-width: 1199px) {
+  .nn-timeline-card {
+    padding: 16px;
+  }
+}
+
+.nn-timeline-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nn-timeline-card-title {
+  margin: 0;
+  font-size: 23.7px;
+  line-height: 1.25;
+  font-weight: 400;
+  color: var(--nn-card-title, #1E1E1E);
+}
+
+@media (max-width: 1199px) {
+  .nn-timeline-card-title {
+    font-size: 20px;
+    line-height: 1.3;
+  }
+}
+
+.nn-timeline-card-desc {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--nn-card-desc, #757575);
+}
+
+.nn-timeline-card-hours {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--nn-mute, #62736D);
+}
+
+/* Ghost Pill Action Buttons */
+.nn-ghost-pill {
+  min-height: 44px;
+  height: 34px;
+  padding: 0 14px;
+  border-radius: 999px;
+  border: 1px solid var(--nn-line, #DDE7E1);
+  background: var(--nn-card, #FFFFFF);
+  color: var(--nn-ink, #17352B);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.nn-ghost-pill:hover:not([disabled]) {
+  border-color: var(--nn-green, #166B52);
+  color: var(--nn-green, #166B52);
+  background: var(--nn-mint, #EFF7F1);
+}
+
+.nn-ghost-pill:focus-visible {
+  outline: 2px solid var(--nn-green, #166B52);
+  outline-offset: 2px;
+}
+
+.nn-ghost-pill[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Free Google Maps Walking CTA */
+.nn-maps-pill {
+  min-height: 44px;
+  height: 44px;
+  padding: 0 24px;
+  border-radius: 999px;
+  background: var(--nn-green, #166B52);
+  color: #FFFFFF !important;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(22, 107, 82, 0.2);
+  cursor: pointer;
+  transition: background 0.15s ease;
+  width: 100%;
+}
+
+.nn-maps-pill:hover {
+  background: var(--nn-green-dark, #125640);
+}
+
+.nn-maps-pill:focus-visible {
+  outline: 2px solid var(--nn-green, #166B52);
+  outline-offset: 2px;
+}
+
+/* Primary Green Pill (Confirmation Yes) */
+.nn-confirm-primary {
+  min-height: 44px;
+  height: 44px;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: var(--nn-green, #166B52);
+  color: #FFFFFF;
+  border: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(22, 107, 82, 0.2);
+  transition: background 0.15s ease;
+}
+
+.nn-confirm-primary:hover:not([disabled]) {
+  background: var(--nn-green-dark, #125640);
+}
+
+.nn-confirm-primary:focus-visible {
+  outline: 2px solid var(--nn-green, #166B52);
+  outline-offset: 2px;
+}
+
+.nn-confirm-primary[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Secondary Outline Pill (Confirmation Edit) */
+.nn-confirm-secondary {
+  min-height: 44px;
+  height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  background: var(--nn-card, #FFFFFF);
+  border: 1px solid var(--nn-line, #DDE7E1);
+  color: var(--nn-ink, #17352B);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.nn-confirm-secondary:hover:not([disabled]) {
+  border-color: var(--nn-green, #166B52);
+  color: var(--nn-green, #166B52);
+}
+
+.nn-confirm-secondary:focus-visible {
+  outline: 2px solid var(--nn-green, #166B52);
+  outline-offset: 2px;
+}
+
+/* Assistant Mint Bubble Card Style */
+.nn-assistant-bubble {
+  background: var(--nn-mint, #EFF7F1);
+  border-radius: var(--nn-r-tile, 16px);
+  padding: 16px;
+  max-width: 410px;
+  width: 100%;
+  color: var(--nn-ink, #17352B);
+  font-size: 16px;
+  line-height: 1.45;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+@media (max-width: 1199px) {
+  .nn-assistant-bubble {
+    max-width: 100%;
+  }
+}
+
+/* Understood Rows */
+.nn-row-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--nn-line, #DDE7E1);
+  gap: 8px;
+}
+
+.nn-row-label {
+  font-size: 13px;
+  color: var(--nn-mute, #62736D);
+  flex: 1;
+}
+
+.nn-row-val {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--nn-ink, #17352B);
+  text-align: right;
+}
+
+.nn-row-action {
+  min-height: 44px;
+  min-width: 44px;
+  background: none;
+  border: none;
+  color: var(--nn-green, #166B52);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 6px;
+}
+
+.nn-row-action:focus-visible {
+  outline: 2px solid var(--nn-green, #166B52);
+  outline-offset: 2px;
+}
+
+/* Inline Popover Editor */
+.nn-inline-popover {
+  border-radius: var(--nn-r-tile, 16px);
+  background: var(--nn-card, #FFFFFF);
+  border: 1px solid var(--nn-line, #DDE7E1);
+  box-shadow: var(--nn-shadow, 0 8px 24px rgba(10, 46, 31, 0.10));
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.nn-inline-popover input,
+.nn-inline-popover select {
+  height: 40px;
+  border-radius: var(--nn-r-card, 8px);
+  border: 1px solid var(--nn-line, #DDE7E1);
+  padding: 0 10px;
+  font-size: 14px;
+  font-family: inherit;
+  color: var(--nn-ink, #17352B);
+  background: var(--nn-bg, #F7F8F2);
+}
+
+.nn-inline-popover input:focus,
+.nn-inline-popover select:focus {
+  outline: 2px solid var(--nn-green, #166B52);
+  border-color: var(--nn-green, #166B52);
+}
+
+/* Calm Warnings in Peach */
+.nn-peach-box {
+  background: var(--nn-warn-bg, #FFF6EC);
+  color: var(--nn-warn-ink, #8A4B12);
+  border: 1px solid var(--nn-warn-line, #F1D9B8);
+  border-radius: var(--nn-r-tile, 16px);
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.45;
+}

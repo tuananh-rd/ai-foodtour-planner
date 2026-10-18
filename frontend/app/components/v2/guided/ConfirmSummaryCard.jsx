@@ -1,14 +1,20 @@
 'use client';
 
 import React from 'react';
+import './guided-leaves.css';
 
 export function formatWarningMessage(w) {
   if (!w) return '';
   if (typeof w === 'string') {
     const raw = w.trim();
-    const fields = { allergy_ingredients: 'Chưa xác minh thành phần để đánh giá dị ứng', hours: 'Chưa xác minh giờ mở cửa',
-      price_per_person: 'Chưa có giá theo người đã xác minh', route: 'Chưa có tuyến đường thực đã xác minh',
-      route_time: 'Chưa rõ thời gian di chuyển', budget: 'Chưa xác minh chi phí theo ngân sách' };
+    const fields = {
+      allergy_ingredients: 'Chưa xác minh thành phần để đánh giá dị ứng',
+      hours: 'Chưa xác minh giờ mở cửa',
+      price_per_person: 'Chưa có giá theo người đã xác minh',
+      route: 'Chưa có tuyến đường thực đã xác minh',
+      route_time: 'Chưa rõ thời gian di chuyển',
+      budget: 'Chưa xác minh chi phí theo ngân sách'
+    };
     if (fields[raw]) return fields[raw];
     if (raw === 'conditional') return 'Lịch trình có điều kiện (cần đối chiếu thông tin thực tế).';
     if (raw === 'verified_feasible') return 'Đã xác minh đầy đủ tính khả thi.';
@@ -41,10 +47,13 @@ export function formatWarningMessage(w) {
 
 /**
  * ConfirmSummaryCard
- * Step 4 Confirmation Card matching docs/ux/guided-flow-mockup.html
- * - Summary of tour to be generated
- * - ONE primary button: "Đúng, lập tour"
- * - ONE secondary button: "Sửa"
+ * Step 4 Confirmation Card conforming to SVG fidelity spec (owner: Antigravity)
+ * - Mint assistant bubble style (--nn-mint, r16, padding 16, max-width 410)
+ * - Summary details with dynamic budget scope label
+ * - Venue names shortlist
+ * - Calm warnings in peach (--nn-peach)
+ * - Primary green pill (44h, white 14/600) + secondary outline pill (44h)
+ * - Preserves ALL testids, handlers, and confirmation gates
  */
 export default function ConfirmSummaryCard({
   summary,
@@ -53,7 +62,7 @@ export default function ConfirmSummaryCard({
   onConfirmNo,
   busy = false
 }) {
-  const item = (...ids) => summary?.items?.find(entry => ids.includes(entry.id))?.value;
+  const item = (...ids) => summary?.items?.find((entry) => ids.includes(entry.id))?.value;
   const stops = profile?.stops?.value ?? (summary?.shortlist?.length || summary?.venues?.length || item('stops') || null);
   const duration = profile?.duration_min?.value ?? item('duration_min', 'duration');
   const stopsText = stops == null ? 'chưa rõ số quán' : /quán/.test(String(stops)) ? stops : `${stops} quán`;
@@ -97,15 +106,8 @@ export default function ConfirmSummaryCard({
   return (
     <div
       data-testid="confirm-summary-card"
-      style={{
-        background: 'var(--card, #fff)',
-        border: '1px solid var(--line, #e6dfd3)',
-        borderRadius: 14,
-        padding: 16,
-        display: 'grid',
-        gap: 12,
-        margin: '12px 0'
-      }}
+      className="nn-assistant-bubble"
+      style={{ margin: '8px 0' }}
     >
       <div>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8, margin: '0 0 6px 0' }}>
@@ -113,8 +115,9 @@ export default function ConfirmSummaryCard({
             style={{
               margin: 0,
               fontSize: 16,
-              fontWeight: 700,
-              color: 'var(--ink, #231f1a)'
+              fontWeight: 600,
+              color: 'var(--nn-ink, #17352B)',
+              lineHeight: 1.3
             }}
           >
             Lập tour {stopsText}, {durationText}, {area}?
@@ -137,11 +140,12 @@ export default function ConfirmSummaryCard({
             </span>
           )}
         </div>
+
         <div
           data-testid="confirm-summary-details"
           style={{
             fontSize: 14,
-            color: 'var(--mute, #6b6257)',
+            color: 'var(--nn-mute, #62736D)',
             lineHeight: 1.45
           }}
         >
@@ -155,7 +159,7 @@ export default function ConfirmSummaryCard({
             data-testid="confirm-venues-list"
             style={{
               fontSize: 13,
-              color: 'var(--ink, #231f1a)',
+              color: 'var(--nn-ink, #17352B)',
               marginTop: 6
             }}
           >
@@ -169,7 +173,7 @@ export default function ConfirmSummaryCard({
             data-testid="confirm-visit-min"
             style={{
               fontSize: 13,
-              color: 'var(--mute, #6b6257)',
+              color: 'var(--nn-mute, #62736D)',
               marginTop: 4
             }}
           >
@@ -177,12 +181,12 @@ export default function ConfirmSummaryCard({
           </div>
         )}
 
-        {/* Vehicle Row (default walking, editable) */}
+        {/* Vehicle Row */}
         <div
           data-testid="confirm-vehicle"
           style={{
             fontSize: 13,
-            color: 'var(--mute, #6b6257)',
+            color: 'var(--nn-mute, #62736D)',
             marginTop: 4
           }}
         >
@@ -193,7 +197,7 @@ export default function ConfirmSummaryCard({
         <div
           style={{
             fontSize: 12,
-            color: 'var(--mute, #6b6257)',
+            color: 'var(--nn-mute, #62736D)',
             marginTop: 4,
             fontStyle: 'italic'
           }}
@@ -201,26 +205,17 @@ export default function ConfirmSummaryCard({
           💡 Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.
         </div>
 
-        {/* Conditional / Warnings / Missing Info (Q02) */}
+        {/* Conditional / Warnings / Missing Info in Peach Box (Q02) */}
         {((Array.isArray(summary?.warnings) && summary.warnings.length > 0) ||
           (Array.isArray(summary?.missing) && summary.missing.length > 0) ||
           (Array.isArray(summary?.route_warnings) && summary.route_warnings.length > 0) ||
           summary?.status === 'conditional') && (
           <div
             data-testid="confirm-summary-warnings"
-            style={{
-              background: 'var(--warnbg, #fef3c7)',
-              border: '1px solid var(--warn, #92400e)',
-              borderRadius: 10,
-              padding: '10px 14px',
-              fontSize: 13,
-              color: 'var(--warn, #92400e)',
-              display: 'grid',
-              gap: 4,
-              marginTop: 8
-            }}
+            className="nn-peach-box"
+            style={{ marginTop: 8 }}
           >
-            <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <span>⚠️</span>
               <span>Lưu ý & thông tin chưa xác minh (Gợi ý có điều kiện):</span>
             </div>
@@ -240,28 +235,14 @@ export default function ConfirmSummaryCard({
         )}
       </div>
 
-      {/* Button Group: Exactly ONE primary, ONE secondary */}
-      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center' }}>
+      {/* Button Group: ONE primary green pill, ONE secondary outline pill */}
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', alignItems: 'center', marginTop: 4 }}>
         <button
           type="button"
           data-testid="confirm-yes-btn"
           onClick={onConfirmYes}
           disabled={busy}
-          style={{
-            minHeight: 48,
-            padding: '0 20px',
-            borderRadius: 12,
-            border: 'none',
-            background: busy ? 'var(--chip, #f3ece0)' : 'var(--accent, #c2410c)',
-            color: busy ? 'var(--mute, #6b6257)' : '#fff',
-            fontSize: 15,
-            fontWeight: 700,
-            cursor: busy ? 'not-allowed' : 'pointer',
-            boxShadow: '0 2px 4px rgba(194, 65, 12, 0.15)',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          className="nn-confirm-primary"
         >
           {busy ? 'Đang tạo tour…' : 'Đúng, lập tour'}
         </button>
@@ -271,20 +252,7 @@ export default function ConfirmSummaryCard({
           data-testid="confirm-no-btn"
           onClick={onConfirmNo}
           disabled={busy}
-          style={{
-            minHeight: 48,
-            padding: '0 18px',
-            borderRadius: 12,
-            border: '1px solid var(--line, #e6dfd3)',
-            background: 'transparent',
-            color: 'var(--ink, #231f1a)',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: busy ? 'not-allowed' : 'pointer',
-            display: 'inline-flex',
-            alignItems: 'center',
-            justifyContent: 'center'
-          }}
+          className="nn-confirm-secondary"
         >
           Sửa
         </button>
@@ -293,7 +261,7 @@ export default function ConfirmSummaryCard({
       <div
         style={{
           fontSize: 12,
-          color: 'var(--mute, #6b6257)',
+          color: 'var(--nn-mute, #62736D)',
           marginTop: -2
         }}
       >
