@@ -1,0 +1,159 @@
+{
+  "timestamp": "2026-10-18T08:50:00+07:00",
+  "environment": {
+    "frontend_port_synthetic": 3040,
+    "backend_port_synthetic": 8040,
+    "frontend_port_private": 3020,
+    "backend_port_private": 8020,
+    "cdp_port": 19700,
+    "git_commit": "0c332d6",
+    "frontend_source": "d828e68",
+    "browser": "Google Chrome Headless (CDP)",
+    "operating_system": "Windows",
+    "node_version": "v24.19.0",
+    "python_version": "3.14.4 (.venv)"
+  },
+  "matrix": [
+    {
+      "id": "M1",
+      "name": "Greetings / natural conversation / multi-turn context",
+      "status": "FAIL",
+      "details": "Greeting prefix in compound sentence ('Chào bạn, mình muốn tour 3 quán quanh Hồ Gươm tối nay trong120phút,ngân sách500nghìn cho2người') routes to pure greeting intent; parsed tour patch is completely discarded, leaving all preference slots as 'Chưa chọn'.",
+      "evidence": "m1_greeting_request.png"
+    },
+    {
+      "id": "M2",
+      "name": "Vietnamese attached/word numbers, group/per-person budgets, people/stops, duration vs max-per-leg",
+      "status": "FAIL",
+      "details": "Attached numbers without spaces fail regex tokenization: 'tour3 quán' leaves Số quán as 'Chưa chọn'; 'nay120 phút' leaves Buổi as 'Chưa chọn'. Word numbers ('ba quán', 'hai người') parse correctly.",
+      "evidence": "m2_attached_numbers.png"
+    },
+    {
+      "id": "M3",
+      "name": "Place / GPS allowed / denied / manual",
+      "status": "FAIL",
+      "details": "Hoàn Kiếm quick chip works; however landmark 'Chợ Đồng Xuân' in natural query failed to resolve to Hoàn Kiếm / Phố Cổ area without explicit district mention.",
+      "evidence": "m3_landmark_dong_xuan.png"
+    },
+    {
+      "id": "M4",
+      "name": "Preferences / negation / allergies + edit / reclarify",
+      "status": "PASS",
+      "details": "Allergy 'đậu phộng' preserved in UnderstoodCard; honest disclaimer banner displayed; negation ('không ăn cay, không thịt bò') respected; UnderstoodCard inline edit updates party size from 2 to 3.",
+      "evidence": "m4_allergy_negation.png"
+    },
+    {
+      "id": "M5",
+      "name": "Confirmation / create tour / no-solution / explicit user relaxation only",
+      "status": "PASS",
+      "details": "1000đ budget triggers no-solution warning without tour creation; standard S0 flow displays ConfirmSummaryCard, confirms via 'confirm-yes-btn', and creates 3-stop timeline.",
+      "evidence": "m5_planned_tour.png"
+    },
+    {
+      "id": "M6",
+      "name": "Replace / locks / stale 409 / repeated replacement",
+      "status": "PASS",
+      "details": "Clicking 'stop-replace-btn-0' opens ReplaceDiffModal with tour locking notice; clicking 'Thay quán này' replaces stop #1 from '[SYNTHETIC] Chè Thử 12' to '[SYNTHETIC] Kem Thử 24' while locking stops #2 and #3.",
+      "evidence": "m6_after_replacement_success.png"
+    },
+    {
+      "id": "M7",
+      "name": "Reset / new session / restore / reload / back navigation",
+      "status": "PASS",
+      "details": "Page reload mid-flow restores state from GET /v1/sessions/{id}; clicking 'Làm lại' (↻) button successfully resets session and returns to empty start screen.",
+      "evidence": "m7_after_reset.png"
+    },
+    {
+      "id": "M8",
+      "name": "Loading / rapid sends / timeout / offline / backend errors / provider errors",
+      "status": "PASS",
+      "details": "Long message (3000 characters) and prompt injection string (<script>alert(1)</script>) handled gracefully with Vietnamese error notice, no raw JSON, no script execution.",
+      "evidence": "m8_long_text.png"
+    },
+    {
+      "id": "M9",
+      "name": "Free Google Maps URL stop order / mode / split route, no API / billing",
+      "status": "PASS",
+      "details": "Free Google Maps walking URL (https://www.google.com/maps/dir/?api=1&...&travelmode=walking) generated with correct stop order; 0 paid Google Maps API requests; 0 billing dependencies.",
+      "evidence": "m9_maps_links.png"
+    },
+    {
+      "id": "M10",
+      "name": "Visible controls, scroll, keyboard / focus, desktop 1440x1024 and mobile 390x844",
+      "status": "PASS",
+      "details": "Desktop 1440x1024 scrollWidth=1425 (no horizontal scroll); Mobile 390x844 scrollWidth=390 (no horizontal scroll); tab switching between 'Khám phá' and 'Lịch trình' works cleanly.",
+      "evidence": "m10_mobile_390_tour.png"
+    },
+    {
+      "id": "LIVE-GEMINI",
+      "name": "Live Gemini Provider & Quota",
+      "status": "BLOCKED",
+      "details": "Effective positive evidence verifies health.llm='mock', health.llm_provider='rules', llm_budget=null on both 8020/8040. No live Gemini provider endpoint configured. Key access and config mutation prohibited.",
+      "evidence": null
+    },
+    {
+      "id": "PRIVATE-3020",
+      "name": "Private Backend (Port 3020 / 8020) Functional Health",
+      "status": "PASS",
+      "details": "Tested real UI 3020 against real private backend 8020; UnderstoodCard renders 10 item rows; zero private venue data, coordinates, or addresses stored in Git/reports.",
+      "evidence": null
+    }
+  ],
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "severity": "P1",
+      "component": "Backend (Regex Tokenizer)",
+      "title": "Attached numbers without spaces fail stop and day_part extraction",
+      "steps": "Type: 'tour3 quán quanh Hồ Gươm tối nay120 phút,500nghìn cho2người,thích phở và bún chả,dị ứng đậu phộng'",
+      "expected": "Số quán = 3, Buổi = Buổi tối / Tối nay",
+      "actual": "Số quán = Chưa chọn, Buổi = Chưa chọn",
+      "evidence": "m2_attached_numbers.png",
+      "owner": "Codex"
+    },
+    {
+      "id": "BUG-002",
+      "severity": "P1",
+      "component": "Backend & UI (Chat Flow Progression)",
+      "title": "Picking clarification chip 'scope:group' leaves chat.pending: null and causes UI dead-air",
+      "steps": "Send S0 prompt -> UI presents '500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?' -> Click 'Cả nhóm'",
+      "expected": "Backend advances to next missing slot (e.g. start_time/vehicle) or initiates tour proposal",
+      "actual": "Backend returns text-only reply 'Đã cập nhật: ngân sách tính cả nhóm.' with chat.pending=null; UI clarifyCard disappears and no next question or tour is shown",
+      "evidence": "03_3040_after_budget_scope.png",
+      "owner": "Codex / Claude"
+    },
+    {
+      "id": "BUG-003",
+      "severity": "P2",
+      "component": "Frontend (UnderstoodCard Inline Edit)",
+      "title": "Budget inline editor only provides preset chips without free-form numeric input",
+      "steps": "In UnderstoodCard, click 'Sửa' on Ngân sách row",
+      "expected": "Input modal or field allowing arbitrary budget amount (e.g. 700k, 350k)",
+      "actual": "Only 4 preset chips appear (200k, 300k, 500k, 1 triệu) with Lưu/Huỷ",
+      "evidence": "05a_3040_edit_budget_modal.png",
+      "owner": "Claude"
+    },
+    {
+      "id": "BUG-004",
+      "severity": "P1",
+      "component": "Backend (Chat Intent Classifier)",
+      "title": "Greeting prefix in compound sentence drops all parsed tour request slots",
+      "steps": "Type: 'Chào bạn, mình muốn tour 3 quán quanh Hồ Gươm tối nay trong120phút,ngân sách500nghìn cho2người'",
+      "expected": "UnderstoodCard populated with Hồ Gươm, 120 phút, 500k, 2 người, 3 quán",
+      "actual": "Entire tour request dropped; backend routes solely to greeting reply; all UnderstoodCard rows remain 'Chưa chọn'",
+      "evidence": "m1_greeting_request.png",
+      "owner": "Codex"
+    },
+    {
+      "id": "BUG-005",
+      "severity": "P2",
+      "component": "Backend (Area Landmark Resolution)",
+      "title": "Landmark 'Chợ Đồng Xuân' fails to resolve to Hoàn Kiếm / Phố Cổ area",
+      "steps": "Type: 'Tour quanh Chợ Đồng Xuân 90 phút ngân sách 200k một người'",
+      "expected": "Origin or Area resolved to Chợ Đồng Xuân / Hoàn Kiếm",
+      "actual": "Khu vực remains 'Chưa chọn'",
+      "evidence": "m3_landmark_dong_xuan.png",
+      "owner": "Codex"
+    }
+  ]
+}
