@@ -11,8 +11,8 @@ User rejects prior visual acceptance for the new requirement; functional N-serie
 | ID | Owner | State | Owned files / gate |
 |---|---|---|---|
 | VF0 | Codex | DONE | Current authority overrides in rules/board; safe baseline5411e4f; existing Claude resumed and Antigravity worktree fast-forwarded without reset |
-| VF1 | Claude | IN PROGRESS, actual rendering/viewing confirmed | GuidedLayout.jsx + new scoped visual CSS; SVG_FIDELITY_SPEC.md and CLAUDE_VISUAL_FIDELITY.md. Precise desktop1440×1024 shell/type/spacing/tokens; send measured component brief to Codex |
-| VF2 | Antigravity | IN PROGRESS, tooling first | Initially only qa/visual/ and docs/reports/svg-fidelity/; isolated synthetic baseline/after screenshots, side-by-side/overlay, gap inventory. Component scope follows Claude spec with explicit non-overlapping paths |
+| VF1 | Claude | IN PROGRESS, measured spec/tokens committed a0d3b43 | GuidedLayout.jsx + guided-visual.css; SVG_FIDELITY_SPEC.md and CLAUDE_VISUAL_FIDELITY.md. Precise desktop1440×1024 shell/type/spacing; final visual owner |
+| VF2 | Antigravity | IN PROGRESS, component scope AUTHORISED via msg_9ce9bbf7b5e3 | qa/visual/ + docs/reports/svg-fidelity/, AND exact six leaves under frontend/app/components/v2/guided/: UnderstoodCard.jsx, ClarifyQuestionCard.jsx, ConfirmSummaryCard.jsx, GuidedTimeline.jsx, TrustDisclosure.jsx, InlineRowEditor.jsx; new guided-leaves.css. Follow a0d3b43 spec section4. NO GuidedLayout/guided-visual/ReplaceDiffModal/globals/backend/contracts edits. Ports13400/18400/19600; Claude13300/18300/19500; Codex13100/18100/19300 |
 | VF3 | Codex | QUEUED on reviewed implementation | Review/integrate commits; preserve backend/contracts/functionality; module/contract/build/browser desktop/mobile/error/409/replacement regression on final source |
 | VF4 | Claude + Codex | QUEUED on integrated evidence | Claude mandatory final visual review of original vs actual1440×1024 and mobile; fix material deviations, document honest residuals; Codex releases/reuses settled workers and reports URL/commits/screenshots |
 
