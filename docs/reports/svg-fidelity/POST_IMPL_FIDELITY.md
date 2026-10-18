@@ -5,11 +5,13 @@
 - **Card Compaction & Layout Refinement:** Timeline stop cards were compacted from an initial 216px down to **130px** (conforming to the reference target of 129h for two-line descriptions and 107h for one-line descriptions). Replaced the redundant inline card hour and action rows by moving the replace button ("Đổi quán") and lock status to the right side of the pill row (visual 34h with >=44px touch hit area), and embedding source hours compactly into the description. Coordinated a single `"Lộ trình"` section heading (18.3px / 600, line-height 28px, margin-bottom 11px) with the status badge aligned to the right.
 - **Harness & Tooling:** Reusable CDP visual fidelity suite at `qa/visual/capture_fidelity.mjs`, running on isolated ports (Web: 13400, API: 18400, CDP: 19600) with TCP preflight refusal, synthetic health pre-check (`health.dataset_source === "synthetic"`), Google host blocking, strict scroll normalization (`window.scrollY === 0`), and unmasked 2880×1024 side-by-side and 1440×1024 50% overlay composites.
 - **Provenance & Environment:**
-  - `sourceHead`: `f7354a1de09ac435da772f6a8618b9ac238f0122`
+  - `sourceHead`: `639679599a78fbc7fdac09e0b0da75d28cb955b1`
   - `frontendDirty`: `false`
   - Viewport: `innerWidth: 1440`, `clientHeight: 1024`, `clientWidth: 1425` (15px default scrollbar gutter), `scrollY: 0`
   - Font family: `"Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif`
-- **Regression Suite:** `qa/e2e/test_ngonngon_qa.mjs` executed 66 interaction checks across desktop (1440×1024) and mobile (390×844) — **66/66 PASSED (100%)**. Historical `docs/reports/ngonngon/*.png` evidence was cleanly restored to `5633203` per coordinator instruction.
+- **Regression & Probe Suites:**
+  - `tools/check_ngonngon_render.cjs` executed 13 React SSR semantic probes — **13/13 PASSED (100%)**, verifying zero-minute leg format (`0 phút`), explicit zero venue range (`0k`), explicit missing hours (`giờ mở cửa: chưa rõ`), and walking Maps links.
+  - `qa/e2e/test_ngonngon_qa.mjs` executed 66 interaction checks across desktop (1440×1024) and mobile (390×844) — **66/66 PASSED (100%)**. Historical `docs/reports/ngonngon/*.png` evidence was cleanly restored to `5633203` per coordinator instruction.
 - **Visual Gate:** Final visual acceptance is owned exclusively by Claude Sonnet 5.5.
 
 ---
@@ -18,15 +20,15 @@
 
 | Component Property | Reference SVG Spec | Baseline (Before) | Initial Post-Impl | Compacted Post-Impl (Latest) | Status / Classification |
 |---|---|---|---|---|---|
-| **Timeline Column Width** | 500 px | 537 px | 500 px | **485–500 px** (`x: 560`) | Conforming |
-| **Stop Card Dimensions** | 500w × 129h / 107h | Flex (~537px) | 500w × 216h | **485w × 130h** | **Target Match** (130h vs 129h ref, down from 216h) |
+| **Timeline Column Width** | 500 px | 537 px | 500 px | **500 px** (`x: 560, w: 500`) | Exact Geometry Match |
+| **Stop Card Dimensions** | 500w × 129h / 107h | Flex (~537px) | 500w × 216h | **500w × 130h** | **Target Match** (130h vs 129h ref, down from 216h) |
 | **Stop Item Structure** | Dual Pill Row + Card | Single badge in card | Pill row + card | **Time pill (34h) + Meta pill (35h) + Pill Actions + Card (130h)** | Conforming to Claude spec |
 | **Stop Card Radius** | 8 px (`--nn-r-card`) | 16 px | 8 px | **8 px** (`var(--nn-r-card, 8px)`) | Exact Geometry Match |
 | **Stop Card Border** | `#D9D9D9` (`--nn-card-line`) | `#DDE7E1` | `#D9D9D9` | **`1px solid rgb(217, 217, 217)`** | Audited Color Match |
 | **Stop Card Title Typography** | 23.7 px / 400, `#1E1E1E` | 18 px / 700, `#17352B` | 23.7 px / 400 | **23.7 px / 400, `rgb(30, 30, 30)`** | Audited Typography Match |
 | **Stop Card Desc Typography** | 16 px / 1.35, `#757575` | 13 px, `#62736D` | 16 px / 1.35 | **16 px / 22px line, `rgb(117, 117, 117)`** | Audited Typography Match |
 | **Stop Actions** | Pill row action (visual 34h / 44h hit) | Rectangular buttons | Card bottom row | **Pill action button (`.nn-pill-action-btn`, 34h visual, 44h hit)** | Conforming |
-| **Route Aside Panel** | 306w × 615h, mint `#EFF7F1`, r24 | 300w × 380h, white | 291w × 615h | **306w × 615h** (`x: 1063`, mint `#EFF7F1`, r24) | **Exact Match** (306w × 615h) |
+| **Route Aside Panel** | 306w × 615h, mint `#EFF7F1`, r24 | 300w × 380h, white | 291w × 615h | **306w × 615h** (`x: 1078`, mint `#EFF7F1`, r24) | **Exact Match** (306w × 615h at x1078) |
 | **Understood Card Style** | N/A (not in SVG) | White bordered box | Mint bubble | **Mint bubble (`.nn-assistant-bubble`, `#EFF7F1`, r16)** | Derived Extension (Provisional) |
 | **Understood Rows** | N/A (not in SVG) | Gray table | Label/Val rows | **Label 13 mute, Val 15/600, 1px line, Dị ứng always visible** | Derived Extension (Provisional) |
 | **Clarify Options** | N/A (not in SVG) | Square buttons | Reference pills | **Reference pills (`.nn-pill`, 35h/44h, green selected)** | Derived Extension (Provisional) |
