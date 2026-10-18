@@ -1,0 +1,27 @@
+/* NgonNgon Tour visual tokens (owner: Claude). Derived from the rendered reference at 1440x1024; see docs/design/SVG_FIDELITY_SPEC.md.
+   Leaf components (Antigravity) must consume these variables and must NOT redefine them. */
+.nn-root {
+  --nn-bg: #F7F8F2;
+  --nn-card: #FFFFFF;
+  --nn-ink: #17352B;
+  --nn-mute: #62736D;
+  --nn-line: #DDE7E1;
+  --nn-green: #166B52;
+  --nn-green-dark: #125640;
+  --nn-mint: #EFF7F1;
+  --nn-peach: #FFF6EC;
+  --nn-lime: #DFF46A;
+  --nn-orange: #FF7A45;
+  --nn-track: #E0E8E0;
+  --nn-warn-bg: #FFF6EC;
+  --nn-warn-ink: #8A4B12;
+  --nn-warn-line: #F1D9B8;
+  --nn-r-card: 8px;
+  --nn-r-tile: 16px;
+  --nn-r-panel: 24px;
+  --nn-shadow: 0 8px 24px rgba(10, 46, 31, 0.10);
+  --nn-font: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--nn-font);
+  color: var(--nn-ink);
+  background: var(--nn-bg);
+}
