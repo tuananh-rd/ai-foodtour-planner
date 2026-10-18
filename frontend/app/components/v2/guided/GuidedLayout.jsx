@@ -836,7 +836,7 @@ export default function GuidedLayout({
         <div className="nn-profile">
           <div className="nn-avatar" aria-label="Phiên ẩn danh tại Hà Nội">K</div>
           <div className="nn-profile-text">
-            <div className="nn-profile-name">Khách ẩm thực</div>
+            <div className="nn-profile-name">Khách</div>
             <div className="nn-profile-sub">Hà Nội</div>
           </div>
         </div>

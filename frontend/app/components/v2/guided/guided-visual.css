@@ -48,7 +48,7 @@
 .nn-pill[aria-pressed="true"] { background: var(--nn-green); border-color: var(--nn-green); color: #fff; }
 .nn-pill:focus-visible, .nn-btn:focus-visible, .nn-chip:focus-visible, .nn-send:focus-visible { outline: 2px solid var(--nn-green); outline-offset: 2px; }
 .nn-header-spacer { flex: 1; }
-.nn-profile { display: flex; align-items: center; gap: 10px; }
+.nn-profile { display: flex; align-items: center; gap: 10px; width: 97px; flex: none; }
 .nn-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2C2C2C; color: #fff; font-size: 14px; font-weight: 600; display: grid; place-items: center; }
 .nn-profile-name { font-size: 13px; font-weight: 600; line-height: 16px; color: var(--nn-ink); }
 .nn-profile-sub { font-size: 12px; line-height: 16px; color: var(--nn-mute); }
