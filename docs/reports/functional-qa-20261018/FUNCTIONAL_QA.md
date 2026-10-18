@@ -85,6 +85,9 @@
 | **CASE-8** | Keyboard Focus Traversal to Interactive Controls | `http://127.0.0.1:3050` | **PASS**: Tab from composer focuses Send button (`BUTTON [data-testid="guided-send-btn"]`) with active focus ring. | `m10_keyboard_traversal.png` |
 | **CASE-9** | Browser Geolocation / GPS Capability Status | `http://127.0.0.1:3050` | **NOT TESTED**: UI does not implement an HTML5 Geolocation button (`hasGpsInvoke: false`). Manual landmark/address is the supported mode. | N/A |
 | **CASE-10** | Private Preview 3051 Full E2E Flow | `http://127.0.0.1:3051` | **PASS**: UnderstoodCard (`true`, 10 rows); Confirm card (`true`); Honest Tour/No-Solution Gate (`true`: returns explicit `plan_conflict` warning when venues insufficient, refusing to invent fake tours). Zero private venue data exposed. | Aggregate booleans only |
+| **CASE-11** | Startup Failure & Recoverable Alert Handling | `http://127.0.0.1:3050` | **FAIL (BUG-007)**: Aborting initial `POST /v1/sessions` leaves fresh UI without recoverable alert or actionable retry button. | `codex-startup-failure.png` |
+| **CASE-12** | Transient Session-Restore 503 Pointer Overwrite | `http://127.0.0.1:3050` | **FAIL (BUG-008)**: 503 on `GET /v1/sessions/{id}` triggers unintended replacement `POST /v1/sessions`, silently overwriting client `sessionStorage` and discarding active session preferences. | `codex-restore-failure.png` |
+| **CASE-13** | Written Vietnamese Walking Per-Leg Limit | `http://127.0.0.1:3050` | **FAIL (BUG-009)**: Input `"Tour ba quán quanh Hồ Gươm cho hai người, một tiếng rưỡi, năm trăm nghìn cả hội, mỗi chặng đi bộ tối đa mười phút"` results in `max_leg_min: null` and empty `unparsed_slots: []`; per-leg constraint is silently ignored. | `bug009_written_leg_3050.png` |
 
 ---
 
@@ -157,6 +160,47 @@
 
 ---
 
+### BUG-007: Failed Session Creation Leaves Fresh UI Without Alert or Retry
+- **Severity:** P1
+- **Component:** Frontend Shell (`page.js` / `GuidedLayout.jsx`)
+- **Status:** **OPEN** (Assigned to Claude UI owner under 6-file scope).
+- **Steps to Reproduce:**
+  1. Intercept initial `POST /v1/sessions` via CDP `Fetch.failRequest` (`ConnectionFailed`).
+  2. Navigate fresh browser to `http://127.0.0.1:3050/`.
+- **Expected Behavior:** System renders a user-visible, recoverable alert banner with an actionable `"Thử lại"` button.
+- **Actual Behavior:** UI displays no alert (`role="alert"` absent) and no retry button; user is left stranded on an uninitialized empty interface.
+- **Evidence:** `codex-startup-failure.png`.
+
+---
+
+### BUG-008: Transient Session-Restore 503 Silently Overwrites Client Session Pointer
+- **Severity:** P1
+- **Component:** Frontend Shell (`page.js` / session management)
+- **Status:** **OPEN** (Assigned to Claude UI owner under 6-file scope).
+- **Steps to Reproduce:**
+  1. Initialize session and submit preferences (`Tour ba quán Hồ Gươm 90 phút, 500 nghìn cả nhóm cho hai người`).
+  2. Intercept stored-session `GET /v1/sessions/{id}` via CDP `Fetch.fulfillRequest` with HTTP 503 (`temporarily_unavailable`).
+  3. Reload page.
+- **Expected Behavior:** Client preserves stored session ID in `sessionStorage`, displays a recoverable alert, and offers `"Thử lại"`.
+- **Actual Behavior:** Client initiates a replacement `POST /v1/sessions`, silently overwrites the stored `foodtour_chat_session_id`, and loses all parsed user preferences, despite the original session remaining intact on the server.
+- **Evidence:** `codex-restore-failure.png`.
+
+---
+
+### BUG-009: Written Vietnamese Walking Limit Silently Omitted
+- **Severity:** P1
+- **Component:** Backend Parser (`backend/app/chat/intent.py` / `engine.py`)
+- **Status:** **OPEN** (Codex fix candidate `f2dd5da` pending integration).
+- **Steps to Reproduce:**
+  1. Open fresh session on `http://127.0.0.1:3050/`.
+  2. Send prompt: `'Tour ba quán quanh Hồ Gươm cho hai người, một tiếng rưỡi, năm trăm nghìn cả hội, mỗi chặng đi bộ tối đa mười phút'`.
+  3. Inspect UnderstoodCard rows and backend `GET /v1/sessions/{id}` profile.
+- **Expected Behavior:** Parser extracts `max_leg_min: 10` (or surfaces `max_leg_min` in `unparsed_slots` with clarification prompt).
+- **Actual Behavior:** `duration_min: 90` is captured, but `max_leg_min` remains `null` (`source: 'missing'`) and `unparsed_slots` is empty (`[]`). The written walking constraint `"mỗi chặng đi bộ tối đa mười phút"` is silently dropped without acknowledgement or constraint enforcement.
+- **Evidence:** `bug009_written_leg_3050.png`, `bug009_written_leg.json`.
+
+---
+
 ## 5. Durable Screenshots & Provenance
 
 All screenshots were captured in real headless Google Chrome via Chrome DevTools Protocol (CDP) on port 19700 and are permanently committed:
@@ -170,6 +214,9 @@ All screenshots were captured in real headless Google Chrome via Chrome DevTools
 - [`retest_3050_greeting_request.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/retest_3050_greeting_request.png): Retest of BUG-004 on fixed build 3050 (PASS).
 - [`bug006_no_allergy_initial.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/bug006_no_allergy_initial.png): Reproduction of BUG-006 Turn 1 dead-air state.
 - [`bug006_no_allergy_after_19h.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/bug006_no_allergy_after_19h.png): Reproduction of BUG-006 Turn 2 rejected start time.
+- [`codex-startup-failure.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/codex-startup-failure.png): Reproduction of BUG-007 startup failure with missing recoverable alert.
+- [`codex-restore-failure.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/codex-restore-failure.png): Reproduction of BUG-008 transient 503 restore session overwrite.
+- [`bug009_written_leg_3050.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/bug009_written_leg_3050.png): Reproduction of BUG-009 silently dropped written walking limit (`"mỗi chặng đi bộ tối đa mười phút"`).
 - [`m6_real_409_conflict_observed.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/m6_real_409_conflict_observed.png): Real concurrent 409 revision conflict and auto-resync in UI.
 - [`m6_repeated_replace_verified.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/m6_repeated_replace_verified.png): Repeated stop replacement with persistent locks on stops #2 and #3.
 - [`m8_offline_calm_error.png`](file:///C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-antigravity-web/docs/reports/functional-qa-20261018/m8_offline_calm_error.png): Real offline network disconnection handling and retry button.
