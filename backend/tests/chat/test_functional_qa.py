@@ -78,3 +78,32 @@ class CompactTourConversation(unittest.TestCase):
         self.assertTrue(any(b['type'] == 'understood' for b in result.blocks))
         self.turn('19h')
         self.assertEqual(self.state.pending.kind, 'confirm_plan')
+
+    def test_written_per_leg_limit_stays_separate_from_total_duration(self):
+        for leg in ('mỗi chặng đi bộ tối đa mười phút', 'không đi bộ quá mười lăm phút mỗi chặng',
+                    'hai mươi lăm phút mỗi chặng'):
+            with self.subTest(leg=leg):
+                result = self.engine.handle(ChatState(), Preferences(), text='Tour ba quán quanh Hồ Gươm cho hai người, một tiếng rưỡi, năm trăm nghìn cả hội, ' + leg)
+                self.assertEqual(result.state.profile['duration_min'].value, 90)
+                self.assertEqual(result.state.profile['max_leg_min'].value, 10 if leg.startswith('mỗi') else 15 if leg.startswith('không') else 25)
+                self.assertIsNone(result.plan_request)
+
+    def test_unread_leg_constraint_blocks_and_survives_state_restore(self):
+        self.turn('Tour ba quán Hồ Gươm 90 phút, mỗi chặng tối đa 70 phút')
+        self.assertEqual(self.state.profile['duration_min'].value, 90)
+        self.assertIsNone(self.state.profile['max_leg_min'].value)
+        self.assertIn('max_leg_min', self.state.unparsed_slots)
+        self.assertEqual(self.state.pending.slot, 'max_leg_min')
+        self.state = ChatState.from_json(self.state.to_json(private=True))
+        self.assertIn('max_leg_min', self.state.unparsed_slots)
+        self.turn('10 phút')
+        self.assertEqual(self.state.profile['duration_min'].value, 90)
+        self.assertEqual(self.state.profile['max_leg_min'].value, 10)
+        self.assertNotIn('max_leg_min', self.state.unparsed_slots)
+
+    def test_leg_only_never_becomes_total_tour_time(self):
+        for phrase in ('mỗi chặng đi bộ tối đa mười phút', 'mỗi chặng tối đa 70 phút'):
+            with self.subTest(phrase=phrase):
+                result = self.engine.handle(ChatState(), Preferences(), text='Tour ba quán Hồ Gươm, ' + phrase)
+                self.assertIsNone(result.state.profile['duration_min'].value)
+                self.assertIsNone(result.plan_request)

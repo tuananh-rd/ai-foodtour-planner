@@ -114,7 +114,7 @@ class ChatEngine:
                 R.blocks.append(notice_b("info", "llm_unavailable", "Mình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé."))
             if self.guided and u.intent not in PASSIVE:
                 R.coverage = self._signals(text or "", u, st)
-                slots = {"budget": "budget_vnd", "party": "party_size", "duration": "duration_min", "stops": "stops"}
+                slots = {"budget": "budget_vnd", "party": "party_size", "duration": "duration_min", "stops": "stops", "leg_time": "max_leg_min"}
                 for signal in R.coverage:
                     key = slots.get(signal["kind"])
                     if key and signal["status"] == "uncovered" and key not in st.unparsed_slots:
@@ -508,6 +508,7 @@ class ChatEngine:
             question = {"budget_vnd": "Mình chưa đọc rõ số tiền bạn nêu. Ngân sách là bao nhiêu đồng (ví dụ 400k), cho cả nhóm hay mỗi người?",
                         "duration_min": "Mình chưa đọc rõ thời lượng bạn nêu. Bạn có bao nhiêu phút cho cả tour (ví dụ 90 phút)?",
                         "party_size": "Mình chưa đọc rõ số người bạn nêu. Có bao nhiêu người đi cùng tour?",
+                        "max_leg_min": "Mình chưa đọc rõ giới hạn mỗi chặng. Bạn muốn đi bộ tối đa bao nhiêu phút mỗi chặng (từ 3 đến 60 phút)?",
                         "stops": "Mình chưa đọc rõ số quán bạn muốn. Bạn muốn ghé bao nhiêu quán?"}[key]
             self._set_pending(st, "clarify_slot", [], key, {})
             R.blocks.append(self._clarify_block(st, question))

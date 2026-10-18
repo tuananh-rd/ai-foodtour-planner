@@ -185,6 +185,9 @@ def audit(text: str, f: str, patch: dict, *, allergy_terms: Iterable[str] = (), 
         add("party", "party_size" in patch)
     if _CUES["duration"].search(f) and re.search(r"\bphut\b|\btieng\b|\bgio\b", f):
         add("duration", any(k in patch for k in ("duration_min", "max_leg_min", "start_time", "end_time")))
+    if re.search(r'\b(?:moi chang|giua (?:cac|hai|2) quan|giua cac diem)\b[^.;]{0,40}\bphut\b'
+                 r'|\bphut\s+moi chang\b|\bkhong\s+(?:muon\s+)?di bo\s+(?:qua|hon)\b[^.;]{0,30}\bphut\b', f):
+        add('leg_time', 'max_leg_min' in patch)
     if _TOUR_CTX.search(f) and _STOPS.search(f):
         add("stops", "stops" in patch or "_stops_rejected" in patch)
     if _day_part(text, f):

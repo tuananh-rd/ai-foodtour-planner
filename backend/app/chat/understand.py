@@ -116,9 +116,43 @@ def parse_vehicle(f: str, text: str = "") -> Optional[str]:
     return None
 
 
+_LEG_DIGITS = {'mot': 1, 'hai': 2, 'ba': 3, 'bon': 4, 'tu': 4, 'nam': 5, 'lam': 5,
+               'sau': 6, 'bay': 7, 'tam': 8, 'chin': 9}
+_LEG_WORDS = r'(?:mot|hai|ba|bon|tu|nam|lam|sau|bay|tam|chin|muoi)'
+_LEG_NUMBER = _LEG_WORDS + r'(?:\s+' + _LEG_WORDS + r'){0,2}'
+
+
+def _leg_number(words: str) -> Optional[int]:
+    parts = words.split()
+    if words.isdigit():
+        return int(words)
+    if len(parts) == 1:
+        return 10 if words == 'muoi' else _LEG_DIGITS.get(words)
+    if parts[0] == 'muoi' and len(parts) == 2 and parts[1] in _LEG_DIGITS:
+        return 10 + _LEG_DIGITS[parts[1]]
+    if len(parts) in (2, 3) and parts[0] in _LEG_DIGITS and parts[1] == 'muoi':
+        if len(parts) == 3 and parts[2] not in _LEG_DIGITS:
+            return None
+        return _LEG_DIGITS[parts[0]] * 10 + (0 if len(parts) == 2 else _LEG_DIGITS[parts[2]])
+    return None
+
+
+def _written_leg_numbers(f: str) -> str:
+    """Normalize numerals only inside explicit per-leg minute constraints."""
+    prefix = (r'(?P<prefix>\b(?:moi chang|giua (?:cac|hai|2) quan|giua cac diem)\s+'
+              r'(?:di bo\s+)?(?:(?:toi da|khong qua|khong hon)\s+)?|'
+              r'\bkhong\s+(?:muon\s+)?(?:di bo\s+)?(?:qua|hon)\s+)')
+    def replace(m):
+        n = _leg_number(m.group('number'))
+        return m.group(0) if n is None else (m.groupdict().get('prefix') or '') + str(n) + m.group('suffix')
+    f = re.sub(prefix + r'(?P<number>' + _LEG_NUMBER + r')(?P<suffix>\s+phut\b)', replace, f)
+    return re.sub(r'\b(?P<number>' + _LEG_NUMBER + r')(?P<suffix>\s+phut\s+moi chang\b)', replace, f)
+
+
 def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     """Profile patch from explicit statements."""
     patch = {}
+    f = _written_leg_numbers(f)
     patch.update(parse_times(f))
     clock = re.search(r"(?<![\d:])([01]?\d|2[0-3]):([0-5]\d)(?![\d:])", text)  # "18:45" loses its colon when folded
     if clock and "start_time" not in patch and "end_time" not in patch:
@@ -137,8 +171,8 @@ def parse_slots(text: str, f: str, prior: Preferences) -> dict:
     stripped = re.sub(r"khong\s+(?:muon\s+)?(?:di bo\s+)?(?:qua|hon)\s+\d{1,2}\s*phut(?:\s+(?:moi|1)\s+(?:chang|quan))?", " ", stripped)
     leg = (re.search(r"(?:moi chang|giua (?:cac|hai|2) quan|giua cac diem)[^.;]{0,14}?(?<!\d)(\d{1,2})\s*phut", f)
            or re.search(r"(?<!\d)(\d{1,2})\s*phut\s*(?:moi chang|giua (?:cac|hai|2) quan)", f))
-    if leg and 3 <= int(leg.group(1)) <= 60:
-        if "max_leg_min" not in patch:
+    if leg:
+        if 3 <= int(leg.group(1)) <= 60 and "max_leg_min" not in patch:
             patch["max_leg_min"] = int(leg.group(1))
         span = leg.group(0)
         stripped = stripped.replace(span, " ", 1)
@@ -725,6 +759,12 @@ def _answer(text, f, refs, patch, pending, state) -> Optional[Understanding]:
         return None  # edits to the profile keep the confirmation open
     if pending.kind == "clarify_slot":
         slots = {k: v for k, v in patch.items() if not k.startswith("_")}
+        if pending.slot == 'max_leg_min':
+            minute_answer = re.fullmatch(r'(\d{1,2}|' + _LEG_NUMBER + r')(?:\s*phut)?', f.strip())
+            n = _leg_number(minute_answer.group(1)) if minute_answer else None
+            if n is not None and 3 <= n <= 60:
+                slots.pop('duration_min', None)
+                slots['max_leg_min'] = n
         if pending.slot == "budget_scope":
             if re.search(r"ca nhom|ca chuyen|theo nhom|tong|ca ban|chung", f):
                 slots["budget_scope"] = "group"
