@@ -1,13 +1,13 @@
 {
-  "timestamp": "2026-10-18T02:00:47.971Z",
+  "timestamp": "2026-10-18T02:25:52.196Z",
   "preview_synthetic_url": "http://127.0.0.1:3050",
   "preview_private_url": "http://127.0.0.1:3051",
   "subcases": [
     {
       "id": "CASE-1",
       "title": "Compound no-allergy prompt flow",
-      "status": "FAIL",
-      "details": "Reproduced BUG-006: explicit \"không dị ứng gì\" causes goal none and dead-air state",
+      "status": "PASS",
+      "details": "Compound no-allergy prompt correctly advanced flow",
       "evidence": "bug006_no_allergy_initial.png"
     },
     {
@@ -74,17 +74,5 @@
       "evidence": null
     }
   ],
-  "bugs": [
-    {
-      "id": "BUG-006",
-      "severity": "P1",
-      "component": "Backend Engine (No-Allergy Compound Goal Discard)",
-      "title": "Explicit \"không dị ứng gì\" in compound tour prompt clears pending and drops tour proposal",
-      "steps": "Send: \"Tour ba quán quanh Hồ Gươm tối nay một tiếng rưỡi, năm trăm nghìn cả hội cho hai người, không dị ứng gì\" -> Turn 1 leaves pending=null -> Send: \"19h\"",
-      "expected": "UnderstoodCard displays preferences and prompts for start time or proposes tour",
-      "actual": "Turn 1 leaves chat.pending=null with no clarify card; sending \"19h\" triggers clarify_intent (\"Bạn muốn mình làm gì trước?\") and start_time remains Chưa chọn",
-      "evidence": "bug006_no_allergy_initial.png",
-      "owner": "Codex"
-    }
-  ]
+  "bugs": []
 }

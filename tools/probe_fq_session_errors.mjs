@@ -87,8 +87,8 @@ try{
   await cdp('Input.insertText',{text:'Tour ba quán Hồ Gươm 90 phút, mỗi chặng tối đa 10 phút'});
   await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});
   await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});
-  await until(()=>ev(`!!document.querySelector('[data-testid="understood-card"]')`));
   const hasLegRow=()=>ev(`(()=>{const e=document.querySelector('[data-testid="understood-card"]');return !!e&&/Đi mỗi chặng tối đa\\s*10 phút/.test(e.innerText);})()`);
+  await until(hasLegRow);
   record('numeric per-leg limit is visibly understood before reload',await hasLegRow());
   await cdp('Page.reload');await until(()=>ev(`!!document.querySelector('[data-testid="understood-card"]')`));
   record('reload visibly restores the stated per-leg limit',await hasLegRow());

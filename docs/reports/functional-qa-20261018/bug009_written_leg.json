@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-18T02:08:57.272Z",
+  "timestamp": "2026-10-18T02:24:20.135Z",
   "scenario": "BUG-009 Written Per-Leg Walking Limit (mười phút)",
   "url": "http://127.0.0.1:3050",
   "prompt": "Tour ba quán quanh Hồ Gươm cho hai người, một tiếng rưỡi, năm trăm nghìn cả hội, mỗi chặng đi bộ tối đa mười phút",
@@ -13,6 +13,7 @@
     "Bắt đầu lúc\nChưa chọn\nChọn",
     "Ngân sách\n500.000 đ (cả nhóm)\nSửa",
     "Thích\nChưa chọn\nChọn",
+    "Đi mỗi chặng tối đa\n10 phút\nSửa",
     "Thời gian mỗi quán (ước tính)\nkhoảng 24 phút(suy luận)\nSửa",
     "Phương tiện\nĐi bộ\nSửa",
     "Dị ứng\nChưa có\nChọn"
@@ -26,10 +27,10 @@
       "confirmed": true
     },
     "max_leg_min": {
-      "value": null,
-      "source": "missing",
-      "turn": 0,
-      "confirmed": false
+      "value": 10,
+      "source": "user_said",
+      "turn": 1,
+      "confirmed": true
     },
     "unparsed_slots": [],
     "pending": {
@@ -52,11 +53,11 @@
       "slot": "start_time"
     }
   },
-  "outcome": "FAIL (BUG-009 CONFIRMED)",
+  "outcome": "PASS",
   "bug_analysis": {
     "bug_id": "BUG-009",
     "severity": "P1",
     "description": "Written Vietnamese walking per-leg limit (\"mỗi chặng đi bộ tối đa mười phút\") is silently omitted by the parser on current 3050/8050 build. max_leg_min is neither extracted into profile nor added to unparsed_slots.",
-    "reproduced": true
+    "reproduced": false
   }
 }

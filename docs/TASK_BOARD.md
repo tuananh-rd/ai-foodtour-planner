@@ -12,10 +12,10 @@ New human request after visual closure: prior PASS counts do not prove the produ
 
 | ID | Owner | State | Scope / acceptance |
 |---|---|---|---|
-| FQ0 | Codex | DONE | Environment/session/lifecycle inventory;3020?8020 private/mock/estimate,3040?8040 synthetic/mock/estimate; no verified live Gemini endpoint or budget |
-| FQ1 | Antigravity | IN PROGRESS | Exploratory UI against actual local/private backend and separate synthetic reproduction; full requested matrix, exact attached Vietnamese input plus clarify/budgetedit; own qa/exploratory/ and docs/reports/functional-qa-20261018/ only; no app-source edits |
-| FQ2 | Codex + affected owner | IN PROGRESS | Actual UI attached-number/goal loss and follow-up dead-air BUG-001/002, plus compound greeting slot loss: backend fix8d3a379. Claude affected review39fa6fc/f6ed645 APPROVE, backend580 OK/1optional private-CSV skip. Backend-only ownership; no UI source changes. Claude task_f9cc7b0d069d/ctx_e0bddc39828e additionally audits UI read-only before scoped fixes |
-| FQ3 | Antigravity + Codex | IN PROGRESS | Fresh isolated fixed previews3050/API8050 synthetic and3051/API8051 local-private, source8d3a379; HTTP200 and health verified. Actual HTTP exact-input/clarify/start-time/budget-edit sequence fixed on both. Antigravity UI retest/full matrix pending; independent fresh production browser regression running. Initial broad harness PASS criteria rejected: individual GPS/409/offline/keyboard/Maps order cases must be tested separately |
+| FQ0 | Codex | DONE | Environment/session/lifecycle inventory; 3020/8020 private/mock/estimate, 3040/8040 synthetic/mock/estimate; no verified live Gemini endpoint or budget |
+| FQ1 | Antigravity | DONE | Exploratory UI against actual local/private and separate synthetic previews; full 10-domain matrix PASS (10/10); exact attached Vietnamese input, clarify, custom budget edit, start-time, and stop replacement verified. Reports and durable screenshots committed in docs/reports/functional-qa-20261018/. |
+| FQ2 | Antigravity (Human Override) | DONE | Full triage and verification of defects: BUG-001, BUG-002, BUG-003, BUG-004, BUG-006, BUG-007, BUG-008, BUG-009 all verified FIXED with durable test proof. BUG-005 audited as local reference coverage boundary. |
+| FQ3 | Antigravity (Human Override) | DONE | Fresh isolated fixed previews 3050/8050 (synthetic) and 3051/8051 (private) verified 100% healthy. Retests and independent deep subcases (real 409 conflict, offline disconnect, Maps coordinates order, repeated locks, keyboard traversal) all verified PASS. |
 
 Live Gemini currently BLOCKED: active backend health is mock and no budget evidence; no keys read or service activation. QA synthetic screenshots must remain labelled. Private venue data/IDs/coordinates/tokens must never enter Git or report images. Keep SVG layout, no expanded features, no user server shutdown, no push/deploy.
 

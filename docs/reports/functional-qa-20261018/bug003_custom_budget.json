@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-10-18T02:26:33.063Z",
+  "scenario": "BUG-003 Inline Budget Custom Numeric Input",
+  "hasCustomInput": true,
+  "invalidError": "Nhập số tiền từ 1 đến 100.000.000 đ.",
+  "updatedBudgetText": "Ngân sách\n350.000 đ (cả nhóm)\nSửa",
+  "backendBudgetValue": 350000,
+  "outcome": "PASS (BUG-003 FIXED)"
+}

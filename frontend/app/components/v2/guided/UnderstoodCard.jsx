@@ -76,10 +76,11 @@ export default function UnderstoodCard({
 
   // Include any extra items passed in props (e.g. visit_min, vehicle)
   if (Array.isArray(items)) {
-    const canonicalIds = new Set(canonicalOrder.map((c) => c.id));
+    const seenIds = new Set(displayRows.map((c) => c.id));
     items.forEach((item) => {
-      if (item && item.id && !canonicalIds.has(item.id) && item.value !== null && item.value !== undefined && item.value !== '') {
+      if (item && item.id && !seenIds.has(item.id) && item.value !== null && item.value !== undefined && item.value !== '') {
         displayRows.push(item);
+        seenIds.add(item.id);
       }
     });
   }

@@ -84,6 +84,10 @@ function profileToUnderstoodItems(profile = {}) {
     const vLabel = profile.vehicle.value === 'walk' ? 'Đi bộ' : profile.vehicle.value;
     items.push({ id: 'vehicle', label: 'Phương tiện', value: vLabel, status, editable: true });
   }
+  if (profile.max_leg_min?.value !== null && profile.max_leg_min?.value !== undefined) {
+    const status = profile.max_leg_min.source || 'user';
+    items.push({ id: 'leg_time', label: 'Đi mỗi chặng tối đa', value: `${profile.max_leg_min.value} phút`, status, editable: true });
+  }
   return items;
 }
 
