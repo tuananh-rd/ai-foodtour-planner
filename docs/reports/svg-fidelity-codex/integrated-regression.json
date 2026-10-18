@@ -1,11 +1,17 @@
 ﻿{
-    "sourceHead":  "4b6f064",
+    "sourceHead":  "8b5d140",
+    "frontendSource":  "d1ef307",
     "synthetic":  true,
-    "method":  "Independent real Chrome/CDP, scratch production Next build, real synthetic API",
+    "method":  "Independent real Chrome/CDP, scratch production Next build, real synthetic SQLite API; current backend diff later committed8b5d140",
     "checks":  169,
     "failed":  0,
     "runtimeExceptions":  0,
     "consoleErrors":  0,
-    "scope":  "Desktop/mobile chat, clarify, confirmation visibility, tour, free Maps URLs, reload, errors, stale409, obligation and feature-flag gates",
-    "followup":  "Final compact guest label and margin-only refinements are covered by the final author/browser captures and supplemental interaction rerun."
+    "scope":  "Desktop/mobile chat, clarify, full confirmation visibility, tour, free Maps URLs, reload, errors, stale409, obligation and feature-flag gates",
+    "supplementalChecks":  22,
+    "supplementalFailures":  0,
+    "backendTests":  576,
+    "backendSkipped":  1,
+    "schemaDrift":  "PASS",
+    "productionBuild":  "PASS"
 }
