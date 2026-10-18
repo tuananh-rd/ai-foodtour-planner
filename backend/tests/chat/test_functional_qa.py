@@ -107,3 +107,11 @@ class CompactTourConversation(unittest.TestCase):
                 result = self.engine.handle(ChatState(), Preferences(), text='Tour ba quán Hồ Gươm, ' + phrase)
                 self.assertIsNone(result.state.profile['duration_min'].value)
                 self.assertIsNone(result.plan_request)
+
+    def test_explicit_stop_count_edits_accept_digits_and_words(self):
+        self.turn(EXACT)
+        self.turn('Đổi số quán thành 4')
+        self.assertEqual(self.state.profile['stops'].value, 4)
+        self.turn('Đổi số quán thành năm')
+        self.assertEqual(self.state.profile['stops'].value, 5)
+        self.assertEqual(self.state.profile['duration_min'].value, 120)
