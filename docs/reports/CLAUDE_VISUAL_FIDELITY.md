@@ -44,3 +44,13 @@ Visually (overlay): header, chat panel frame, composer, divider, metric tiles, t
 - `qa/e2e/test_ngonngon_qa.mjs` (66 interaction/regression checks, synthetic isolated build): **66/66 PASS** on 5633203 and on the follow-up tweaks. (The run overwrites tracked `docs/reports/ngonngon/*.png`; I restored them with `git checkout`, nothing committed.)
 - `qa/e2e/test_guided_ui.mjs`: FAILS at START-02 **before any of my changes too** (the assertion expects a welcome sentence ending “nếu thiếu.” while the shipped text — which I did not alter — continues “nếu thiếu thông tin để xếp lịch trình chuẩn nhất.”); reported to Codex, not masked.
 - Mobile 390×844 screenshots reviewed: no horizontal overflow (scrollWidth 390), stacked chat → tour tabs, composer reachable.
+
+## 7. Decision-state fix (Codex finding: confirmation card cropped at 1280×800)
+Root cause: the confirm card was the last item of an internally scrolling stream, below the understood card. Fix (shell only): the pending Clarify or Confirm card is pinned first in the chat panel (`.nn-pin`, order -1); while deciding, the intro (h2/lead/chips/rule) collapses, and the confirming panel grows (`height:auto`, not sticky) instead of scrolling inside itself. All warnings stay in the card; nothing hidden or removed; mobile stacked layout unchanged.
+
+Measured (synthetic, default scrollbars, Chrome 1280×800, scrollY 0, innerWidth 1280, documentElement.clientWidth 1265 = 15px gutter):
+- confirm card y202–657.3; "Đúng, lập tour" button y564.3–612.3 (fully inside 800).
+- clarify card y202–419.5 (question + options in first viewport).
+- route panel stays 306 wide (x903) with the gutter; at 1440×1024 without scroll clientWidth 1440, route x1078 w306, tiles 824 wide; with the 15px gutter (clientWidth 1425) tiles are 809 wide, route still 306.
+- `qa/e2e/test_ngonngon_qa.mjs`: 66/66 PASS after the fix (tracked `docs/reports/ngonngon` restored, not committed).
+- Icon glyphs calibrated to reference: star 13.824², arrow 16.326×12.06.

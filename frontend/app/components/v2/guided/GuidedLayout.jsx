@@ -11,7 +11,7 @@ import { chatTurn, createSession, getSession, replaceTourStop } from '../../../.
 import './guided-visual.css';
 
 /* Reference glyphs (outlined paths of the design file: 4-point star, send arrow). Decorative only. */
-function StarGlyph({ color = '#DFF46A', size = 16 }) {
+function StarGlyph({ color = '#DFF46A', size = 13.824 }) {
   return (
     <svg width={size} height={size} viewBox="45.918 33.432 13.824 13.824" aria-hidden="true" focusable="false">
       <path d="M52.47 47.256C52.338 46.476 51.99 45.636 51.426 44.736C50.862 43.824 50.058 42.978 49.014 42.198C47.982 41.418 46.95 40.92 45.918 40.704V39.948C46.938 39.708 47.916 39.264 48.852 38.616C49.8 37.956 50.592 37.164 51.228 36.24C51.876 35.292 52.29 34.356 52.47 33.432H53.226C53.334 34.032 53.55 34.65 53.874 35.286C54.198 35.91 54.612 36.51 55.116 37.086C55.632 37.65 56.208 38.16 56.844 38.616C57.792 39.288 58.758 39.732 59.742 39.948V40.704C59.082 40.836 58.398 41.106 57.69 41.514C56.994 41.922 56.346 42.408 55.746 42.972C55.146 43.524 54.654 44.106 54.27 44.718C53.706 45.618 53.358 46.464 53.226 47.256H52.47Z" fill={color} />
@@ -21,7 +21,7 @@ function StarGlyph({ color = '#DFF46A', size = 16 }) {
 
 function ArrowGlyph() {
   return (
-    <svg width="18" height="14" viewBox="449.418 938.57 16.326 12.06" aria-hidden="true" focusable="false">
+    <svg width="16.326" height="12.06" viewBox="449.418 938.57 16.326 12.06" aria-hidden="true" focusable="false">
       <path d="M458.814 950.63C458.538 950.63 458.274 950.546 458.022 950.378C457.77 950.222 457.56 950.018 457.392 949.766C457.236 949.514 457.158 949.262 457.158 949.01C457.158 948.722 457.278 948.416 457.518 948.092C457.758 947.768 458.04 947.45 458.364 947.138C458.7 946.814 458.994 946.538 459.246 946.31H451.812C451.128 946.31 450.642 946.256 450.354 946.148C450.066 946.04 449.838 945.86 449.67 945.608C449.502 945.368 449.418 945.032 449.418 944.6C449.418 944.168 449.496 943.832 449.652 943.592C449.82 943.352 450.048 943.172 450.336 943.052C450.624 942.944 451.116 942.89 451.812 942.89H459.246L458.364 942.044C457.872 941.564 457.548 941.198 457.392 940.946C457.236 940.682 457.158 940.43 457.158 940.19C457.158 939.938 457.236 939.686 457.392 939.434C457.548 939.182 457.752 938.978 458.004 938.822C458.268 938.654 458.538 938.57 458.814 938.57C459.054 938.57 459.312 938.648 459.588 938.804C459.864 938.948 460.188 939.2 460.56 939.56L465.744 944.6L460.668 949.532C460.236 949.94 459.882 950.222 459.606 950.378C459.33 950.546 459.066 950.63 458.814 950.63Z" fill="#FFFFFF" />
     </svg>
   );
@@ -791,7 +791,7 @@ export default function GuidedLayout({
       {/* 80px header: brand · nav pills · anonymous local context (reference y0-80) */}
       <header className="nn-header">
         <div className="nn-brand">
-          <div className="nn-brand-tile" aria-hidden="true"><StarGlyph color="#DFF46A" size={16} /></div>
+          <div className="nn-brand-tile" aria-hidden="true"><StarGlyph color="#DFF46A" /></div>
           <div>
             <div className="nn-brand-name">NgonNgon Tour</div>
             <div className="nn-brand-sub">Ăn ngon • Đi đúng gu</div>
@@ -844,9 +844,9 @@ export default function GuidedLayout({
 
       <main className="nn-main">
         {/* LEFT: chat panel (reference x32-512, y108-996) */}
-        <section ref={chatSectionRef} id="guided-chat-section" tabIndex={-1} className={`nn-chat${chatVisible ? '' : ' nn-hidden'}`}>
+        <section ref={chatSectionRef} id="guided-chat-section" tabIndex={-1} className={`nn-chat${chatVisible ? '' : ' nn-hidden'}${confirmSummaryBlock && !isStartScreen ? ' confirming' : (clarifyBlock && !isStartScreen ? ' deciding' : '')}`}>
           <div className="nn-chat-head">
-            <div className="nn-assistant-tile" aria-hidden="true"><StarGlyph color="#166B52" size={16} /></div>
+            <div className="nn-assistant-tile" aria-hidden="true"><StarGlyph color="#166B52" /></div>
             <div className="nn-chat-title-wrap">
               <div className="nn-chat-title">Lên food tour cùng Măm Măm</div>
               <div className="nn-chat-sub">Trợ lý ẩm thực địa phương</div>
@@ -948,24 +948,27 @@ export default function GuidedLayout({
                   </div>
                 )}
 
-                {clarifyBlock && (
-                  <ClarifyQuestionCard
-                    clarify={clarifyBlock}
-                    onPickOption={handlePickOption}
-                    onSubmitText={(txt) => handleSendMessage(txt)}
-                    busy={busy}
-                  />
-                )}
-
-                {confirmSummaryBlock && (
-                  <ConfirmSummaryCard
-                    summary={confirmSummaryBlock}
-                    profile={chatState?.profile}
-                    onConfirmYes={handleConfirmYes}
-                    onConfirmNo={handleConfirmNo}
-                    busy={busy}
-                  />
-                )}
+              </div>
+            )}
+            {clarifyBlock && !confirmSummaryBlock && !isStartScreen && (
+              <div className="nn-pin">
+                <ClarifyQuestionCard
+                  clarify={clarifyBlock}
+                  onPickOption={handlePickOption}
+                  onSubmitText={(txt) => handleSendMessage(txt)}
+                  busy={busy}
+                />
+              </div>
+            )}
+            {confirmSummaryBlock && !isStartScreen && (
+              <div className="nn-pin">
+                <ConfirmSummaryCard
+                  summary={confirmSummaryBlock}
+                  profile={chatState?.profile}
+                  onConfirmYes={handleConfirmYes}
+                  onConfirmNo={handleConfirmNo}
+                  busy={busy}
+                />
               </div>
             )}
           </div>
