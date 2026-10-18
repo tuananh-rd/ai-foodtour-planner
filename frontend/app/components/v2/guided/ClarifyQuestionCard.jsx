@@ -1,12 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
+import './guided-leaves.css';
 
 /**
  * ClarifyQuestionCard
- * Renders EXACTLY ONE clarify question card at a time.
- * - Options rendered as chip buttons (wrap, min-touch 44px)
- * - Free-text composer below chips
+ * Renders EXACTLY ONE clarify question card at a time conforming to SVG fidelity spec (owner: Antigravity)
+ * - Mint assistant bubble style (--nn-mint, r16, padding 16, max-width 410)
+ * - Question text 16/600
+ * - Options rendered as reference pills (visual 34h / touch 44h, 13/500, selected = filled green)
+ * - Free-text composer styled like reference composer (r16, --nn-bg)
+ * - Preserves ALL testids, handlers, options, and keyboard submission
  */
 export default function ClarifyQuestionCard({
   clarify,
@@ -31,33 +35,23 @@ export default function ClarifyQuestionCard({
   return (
     <div
       data-testid="clarify-question-card"
-      style={{
-        background: 'var(--card, #fff)',
-        border: '1px solid var(--line, #e6dfd3)',
-        borderRadius: 14,
-        padding: 16,
-        display: 'grid',
-        gap: 12,
-        margin: '12px 0'
-      }}
+      className="nn-assistant-bubble"
+      style={{ margin: '8px 0' }}
     >
-      {/* Bot message bubble for the question */}
+      {/* Bot message question text */}
       <div
         data-testid="clarify-question-text"
         style={{
-          background: 'var(--chip, #f3ece0)',
-          color: 'var(--ink, #231f1a)',
-          padding: '12px 14px',
-          borderRadius: 12,
           fontWeight: 600,
-          fontSize: 15,
-          lineHeight: 1.45
+          fontSize: 16,
+          lineHeight: 1.45,
+          color: 'var(--nn-ink, #17352B)'
         }}
       >
         {clarify.question}
       </div>
 
-      {/* Option Chips (wrap, min-touch 44px) */}
+      {/* Option Chips (wrap, min-touch 44px, reference pill styling) */}
       {options.length > 0 && (
         <div
           data-testid="clarify-options-container"
@@ -68,46 +62,54 @@ export default function ClarifyQuestionCard({
             alignItems: 'center'
           }}
         >
-          {options.map((opt, idx) => (
-            <button
-              key={opt.option_id || idx}
-              type="button"
-              data-testid={`clarify-option-${opt.option_id}`}
-              data-option-index={idx}
-              data-option-id={opt.option_id}
-              onClick={() => !busy && onPickOption && onPickOption(opt.option_id)}
-              disabled={busy}
-              style={{
-                minHeight: 44,
-                minWidth: 44,
-                padding: '0 16px',
-                borderRadius: 22,
-                border: '1px solid var(--line, #e6dfd3)',
-                background: 'var(--card, #fff)',
-                color: 'var(--ink, #231f1a)',
-                fontSize: 14,
-                fontWeight: 500,
-                cursor: busy ? 'not-allowed' : 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-                transition: 'all 0.15s ease'
-              }}
-            >
-              {opt.label || opt.option_id}
-            </button>
-          ))}
+          {options.map((opt, idx) => {
+            const isSelected = opt.selected === true;
+            return (
+              <button
+                key={opt.option_id || idx}
+                type="button"
+                data-testid={`clarify-option-${opt.option_id}`}
+                data-option-index={idx}
+                data-option-id={opt.option_id}
+                onClick={() => !busy && onPickOption && onPickOption(opt.option_id)}
+                disabled={busy}
+                style={{
+                  minHeight: 44,
+                  height: 35,
+                  padding: '0 16px',
+                  borderRadius: 999,
+                  border: `1px solid ${isSelected ? 'var(--nn-green, #166B52)' : 'var(--nn-line, #DDE7E1)'}`,
+                  background: isSelected ? 'var(--nn-green, #166B52)' : 'var(--nn-card, #FFFFFF)',
+                  color: isSelected ? '#FFFFFF' : 'var(--nn-ink, #17352B)',
+                  fontSize: 13,
+                  fontWeight: 500,
+                  cursor: busy ? 'not-allowed' : 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  transition: 'all 0.15s ease',
+                  whiteSpace: 'nowrap'
+                }}
+              >
+                {opt.label || opt.option_id}
+              </button>
+            );
+          })}
         </div>
       )}
 
-      {/* Free-text input below chips */}
+      {/* Free-text input below chips styled like reference composer */}
       {(clarify.free_text !== false) && (
         <form
           onSubmit={handleFormSubmit}
           style={{
             display: 'flex',
             gap: 8,
+            alignItems: 'center',
+            background: 'var(--nn-bg, #F7F8F2)',
+            border: '1px solid var(--nn-line, #DDE7E1)',
+            borderRadius: 16,
+            padding: '4px 6px 4px 14px',
             marginTop: 4
           }}
         >
@@ -130,14 +132,13 @@ export default function ClarifyQuestionCard({
             placeholder="Hoặc gõ câu trả lời của bạn…"
             style={{
               flex: 1,
-              minHeight: 44,
-              border: '1px solid var(--line, #e6dfd3)',
-              borderRadius: 12,
-              padding: '0 14px',
+              minHeight: 40,
+              border: 'none',
+              background: 'transparent',
               fontSize: 14,
-              color: 'var(--ink, #231f1a)',
-              background: '#fff',
-              outline: 'none'
+              color: 'var(--nn-ink, #17352B)',
+              outline: 'none',
+              fontFamily: 'inherit'
             }}
           />
           <button
@@ -145,15 +146,20 @@ export default function ClarifyQuestionCard({
             data-testid="clarify-free-text-submit"
             disabled={busy || !typedText.trim()}
             style={{
-              minHeight: 44,
-              padding: '0 18px',
+              minHeight: 40,
+              height: 40,
+              padding: '0 16px',
               borderRadius: 12,
               border: 'none',
-              background: typedText.trim() && !busy ? 'var(--accent, #c2410c)' : 'var(--chip, #f3ece0)',
-              color: typedText.trim() && !busy ? '#fff' : 'var(--mute, #6b6257)',
-              fontSize: 14,
+              background: typedText.trim() && !busy ? 'var(--nn-green, #166B52)' : 'var(--nn-line, #DDE7E1)',
+              color: typedText.trim() && !busy ? '#FFFFFF' : 'var(--nn-mute, #62736D)',
+              fontSize: 13,
               fontWeight: 600,
-              cursor: typedText.trim() && !busy ? 'pointer' : 'default'
+              cursor: typedText.trim() && !busy ? 'pointer' : 'default',
+              display: 'inline-flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              transition: 'background 0.15s ease'
             }}
           >
             Gửi

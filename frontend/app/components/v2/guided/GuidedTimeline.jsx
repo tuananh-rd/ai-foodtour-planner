@@ -3,14 +3,16 @@
 import React from 'react';
 import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
 import { formatWarningMessage } from './ConfirmSummaryCard';
+import './guided-leaves.css';
 
 /**
  * GuidedTimeline
- * Step 5 Vertical Timeline matching docs/ux/guided-flow-mockup.html
- * - Honest labels: price "theo nguồn", distance "ước tính", hours "nguồn ghi"
- * - Allergy note: "chưa quán nào được xác nhận an toàn dị ứng"
- * - Primary CTA: "Mở lộ trình trong Google Maps" (free URL)
- * - Three secondary actions: "Đổi quán", "Bớt / thêm quán", "Làm lại từ đầu"
+ * Step 5 Vertical Timeline conforming to SVG fidelity spec (owner: Antigravity)
+ * - 500px width on desktop (responsive on mobile)
+ * - Reference stop pair: pill row (34h green time pill + 35h meta pill) + 8px radius card
+ * - Audited colors: titles #1E1E1E, descriptions #757575, borders #D9D9D9
+ * - Ghost pill buttons (min-height 44 hit area, visual 34)
+ * - Preserves ALL testids, handlers, allergy disclaimers, status badges, and Google Maps CTA
  */
 export default function GuidedTimeline({
   tour,
@@ -84,18 +86,12 @@ export default function GuidedTimeline({
   return (
     <div
       data-testid="guided-timeline"
-      style={{
-        background: 'transparent',
-        border: 'none',
-        borderRadius: 16,
-        padding: 0,
-        display: 'grid',
-        gap: 16,
-        margin: 0
-      }}
+      className="nn-timeline"
+      style={{ margin: 0, padding: 0 }}
     >
+      {/* Top Header & Tour Status */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <div style={{ fontWeight: 700, fontSize: 16, color: 'var(--ink, #231f1a)' }}>
+        <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--nn-ink, #17352B)' }}>
           📍 Lịch trình gợi ý ({stops.length} quán)
         </div>
         {tour.status && (
@@ -120,15 +116,7 @@ export default function GuidedTimeline({
       {tour.status === 'conditional' && (
         <div
           data-testid="timeline-conditional-status"
-          style={{
-            background: 'var(--warnbg, #fef3c7)',
-            color: 'var(--warn, #92400e)',
-            border: '1px solid var(--warn, #92400e)',
-            borderRadius: 10,
-            padding: '10px 14px',
-            fontSize: 13,
-            lineHeight: 1.45
-          }}
+          className="nn-peach-box"
         >
           ⚠️ <b>Lịch trình có điều kiện:</b> Còn bằng chứng chưa được xác minh; hãy xem các thông tin cần kiểm tra bên dưới.
         </div>
@@ -174,13 +162,14 @@ export default function GuidedTimeline({
         </div>
       )}
 
-      {/* Vertical Stops List */}
-      <div style={{ display: 'grid', gap: 0 }}>
+      {/* Vertical Stops List conforming to reference geometry */}
+      <div style={{ display: 'grid', gap: 13 }}>
         {stops.map((stop, idx) => {
           const leg = stop.leg_from_previous;
-          const priceMin = stop.price?.min_vnd ? `${Math.round(stop.price.min_vnd / 1000)}k` : null;
-          const priceMax = stop.price?.max_vnd ? `${Math.round(stop.price.max_vnd / 1000)}k` : null;
-          const priceStr = priceMin && priceMax ? `${priceMin}–${priceMax}` : priceMax ? `tối đa tham khảo ${priceMax}` : 'chưa rõ khoảng giá';
+          const priceMinK = stop.price?.min_vnd ? `${Math.round(stop.price.min_vnd / 1000)}k` : null;
+          const priceMaxK = stop.price?.max_vnd ? `${Math.round(stop.price.max_vnd / 1000)}k` : null;
+          const priceStr = priceMinK && priceMaxK ? `${priceMinK}–${priceMaxK}` : priceMaxK ? `tối đa tham khảo ${priceMaxK}` : 'chưa rõ khoảng giá';
+          const priceShortForm = priceMinK && priceMaxK ? `${priceMinK}–${priceMaxK}` : priceMaxK ? `<=${priceMaxK}` : null;
 
           const dishStr = Array.isArray(stop.venue?.cuisine_styles) && stop.venue.cuisine_styles.length > 0
             ? stop.venue.cuisine_styles.join(' • ')
@@ -189,7 +178,19 @@ export default function GuidedTimeline({
           // Q01: Preserve legitimate 0; do not turn null or 0 into 5!
           const legMinText = typeof leg?.minutes === 'number'
             ? (leg.minutes === 0 ? '0 phút' : `~${leg.minutes} phút (ước tính)`)
-            : 'chưa rõ thời gian chặng';
+            : null;
+
+          // Meta pill text: leg duration + price short form
+          const metaParts = [];
+          if (idx > 0 && legMinText) {
+            metaParts.push(legMinText);
+          }
+          if (priceShortForm) {
+            metaParts.push(`${priceShortForm} (theo nguồn)`);
+          } else {
+            metaParts.push('giá theo nguồn: ' + priceStr);
+          }
+          const metaDisplay = metaParts.length > 0 ? metaParts.join(' • ') : 'Thông tin theo nguồn';
 
           // Q01: Preserve null arrive; do NOT fall back to '19:00'!
           const arriveDisplay = stop.arrive
@@ -202,35 +203,27 @@ export default function GuidedTimeline({
             <div
               key={stop.venue_id || idx}
               data-testid={`guided-stop-${idx}`}
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'minmax(0, 1fr)',
-                gap: 8,
-                padding: '10px 0',
-                alignItems: 'start'
-              }}
+              className="nn-timeline-step"
             >
-              {/* Arrive Time (Honest: no fake 19:00) */}
-              <div
-                style={{
-                  fontWeight: 700,
-                  fontSize: 14,
-                  color: '#FFFFFF',
-                  background: '#166B52',
-                  borderRadius: 20,
-                  padding: '6px 14px',
-                  width: 'fit-content'
-                }}
-              >
-                {arriveDisplay}
+              {/* Dual Pill Row: 34px Green Time Pill + 35px Meta Pill */}
+              <div className="nn-timeline-pills">
+                <span className="nn-time-pill">
+                  {arriveDisplay}
+                </span>
+                <span className="nn-meta-pill">
+                  {metaDisplay}
+                </span>
               </div>
 
-              {/* Stop Info with Honest Labels */}
-              <div style={{ display: 'grid', gap: 10, minWidth: 0, padding: 20, background: '#FFFFFF', border: '1px solid #DDE7E1', borderRadius: 12 }}>
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                  <b style={{ fontSize: 20, color: 'var(--ink, #231f1a)' }}>
+              {/* Stop Card with 8px radius and #D9D9D9 border */}
+              <div
+                data-testid={`timeline-stop-card-${idx}`}
+                className="nn-timeline-card"
+              >
+                <div className="nn-timeline-card-header">
+                  <h3 className="nn-timeline-card-title">
                     {stop.name}
-                  </b>
+                  </h3>
                   {isLocked && (
                     <span
                       data-testid={`stop-lock-badge-${idx}`}
@@ -248,31 +241,23 @@ export default function GuidedTimeline({
                   )}
                 </div>
 
-                <div style={{ fontSize: 13, color: 'var(--mute, #6b6257)', lineHeight: 1.45 }}>
-                  <span>{dishStr}</span>
-                  <span> • giá theo nguồn: {priceStr}</span>
-                  {idx > 0 && <span> • đi bộ {legMinText}</span>}
+                <p className="nn-timeline-card-desc">
+                  {dishStr}
+                </p>
+
+                <div className="nn-timeline-card-hours">
+                  <span>giá theo nguồn: {priceStr}</span>
+                  {idx > 0 && legMinText && <span> • đi bộ {legMinText}</span>}
                   <span> • giờ mở cửa theo nguồn ghi: {stop.hours?.display || 'chưa rõ'}</span>
                 </div>
 
-                {/* Stop-level action buttons: Đổi quán */}
+                {/* Stop-level action buttons: Ghost Pill "Đổi quán này" */}
                 <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                   <button
                     type="button"
                     data-testid={`stop-replace-btn-${idx}`}
                     onClick={() => onReplaceStop ? onReplaceStop(stop) : onChangeStop && onChangeStop(stop)}
-                    style={{
-                      background: 'none',
-                      border: '1px solid var(--line, #e6dfd3)',
-                      borderRadius: 6,
-                      padding: '8px 12px',
-                      minHeight: 44,
-                      color: '#166B52',
-                      fontSize: 12,
-                      fontWeight: 600,
-                      color: 'var(--ink, #231f1a)',
-                      cursor: 'pointer'
-                    }}
+                    className="nn-ghost-pill"
                   >
                     🔄 Đổi quán này
                   </button>
@@ -286,14 +271,7 @@ export default function GuidedTimeline({
       {/* Allergy Safety Disclaimer */}
       <div
         data-testid="timeline-allergy-note"
-        style={{
-          background: 'var(--warnbg, #fef3c7)',
-          color: 'var(--warn, #92400e)',
-          borderRadius: 10,
-          padding: '10px 14px',
-          fontSize: 13,
-          lineHeight: 1.45
-        }}
+        className="nn-peach-box"
       >
         {hasAllergies
           ? `Dị ứng ${allergyTerms}: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.`
@@ -308,20 +286,7 @@ export default function GuidedTimeline({
             target="_blank"
             rel="noopener noreferrer"
             data-testid="google-maps-cta"
-            style={{
-              minHeight: 48,
-              borderRadius: 12,
-              background: 'var(--accent, #c2410c)',
-              color: '#fff',
-              fontWeight: 700,
-              fontSize: 15,
-              textDecoration: 'none',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: '0 2px 4px rgba(194, 65, 12, 0.2)',
-              cursor: 'pointer'
-            }}
+            className="nn-maps-pill"
           >
             Mở lộ trình trong Google Maps
           </a>
@@ -329,7 +294,7 @@ export default function GuidedTimeline({
             data-testid="google-maps-disclosure"
             style={{
               fontSize: 12,
-              color: 'var(--mute, #6b6257)',
+              color: 'var(--nn-mute, #62736D)',
               margin: 0,
               lineHeight: 1.45
             }}
@@ -343,18 +308,18 @@ export default function GuidedTimeline({
       {legUrls.length > 0 && stops.length > 3 && (
         <details
           style={{
-            background: '#F7F8F2',
-            border: '1px solid #DDE7E1',
+            background: 'var(--nn-bg, #F7F8F2)',
+            border: '1px solid var(--nn-line, #DDE7E1)',
             borderRadius: 12,
             padding: '10px 14px',
             fontSize: 13
           }}
         >
-          <summary style={{ fontWeight: 600, color: '#17352B', cursor: 'pointer' }}>
+          <summary style={{ fontWeight: 600, color: 'var(--nn-ink, #17352B)', cursor: 'pointer' }}>
             Xem từng chặng riêng trên Google Maps ({legUrls.length} chặng)
           </summary>
           <div style={{ marginTop: 8, display: 'grid', gap: 6 }}>
-            <p style={{ margin: '0 0 6px 0', fontSize: 12, color: '#62736D', lineHeight: 1.4 }}>
+            <p style={{ margin: '0 0 6px 0', fontSize: 12, color: 'var(--nn-mute, #62736D)', lineHeight: 1.4 }}>
               Nếu ứng dụng Google Maps trên điện thoại không hỗ trợ nhiều điểm dừng cùng lúc, bạn có thể bấm mở từng chặng:
             </p>
             {legUrls.map((leg) => (
@@ -369,10 +334,10 @@ export default function GuidedTimeline({
                   alignItems: 'center',
                   justifyContent: 'space-between',
                   padding: '8px 12px',
-                  backgroundColor: '#FFFFFF',
+                  backgroundColor: 'var(--nn-card, #FFFFFF)',
                   borderRadius: 8,
-                  border: '1px solid #DDE7E1',
-                  color: '#166B52',
+                  border: '1px solid var(--nn-line, #DDE7E1)',
+                  color: 'var(--nn-green, #166B52)',
                   textDecoration: 'none',
                   fontSize: 12,
                   fontWeight: 600
@@ -386,25 +351,14 @@ export default function GuidedTimeline({
         </details>
       )}
 
-      {/* Three Secondary Actions */}
+      {/* Three Secondary Actions as Ghost Pills */}
       <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
         <button
           type="button"
           data-testid="action-change-stop"
           onClick={onChangeStop}
-          style={{
-            flex: 1,
-            minHeight: 44,
-            padding: '0 12px',
-            borderRadius: 10,
-            border: '1px solid var(--line, #e6dfd3)',
-            background: 'transparent',
-            color: 'var(--ink, #231f1a)',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            textAlign: 'center'
-          }}
+          className="nn-ghost-pill"
+          style={{ flex: 1, justifyContent: 'center' }}
         >
           Đổi quán
         </button>
@@ -413,19 +367,8 @@ export default function GuidedTimeline({
           type="button"
           data-testid="action-adjust-stops"
           onClick={onAdjustStops}
-          style={{
-            flex: 1,
-            minHeight: 44,
-            padding: '0 12px',
-            borderRadius: 10,
-            border: '1px solid var(--line, #e6dfd3)',
-            background: 'transparent',
-            color: 'var(--ink, #231f1a)',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            textAlign: 'center'
-          }}
+          className="nn-ghost-pill"
+          style={{ flex: 1, justifyContent: 'center' }}
         >
           Bớt / thêm quán
         </button>
@@ -434,19 +377,8 @@ export default function GuidedTimeline({
           type="button"
           data-testid="action-restart"
           onClick={onRestart}
-          style={{
-            flex: 1,
-            minHeight: 44,
-            padding: '0 12px',
-            borderRadius: 10,
-            border: '1px solid var(--line, #e6dfd3)',
-            background: 'transparent',
-            color: 'var(--ink, #231f1a)',
-            fontSize: 14,
-            fontWeight: 600,
-            cursor: 'pointer',
-            textAlign: 'center'
-          }}
+          className="nn-ghost-pill"
+          style={{ flex: 1, justifyContent: 'center' }}
         >
           Làm lại từ đầu
         </button>
@@ -456,7 +388,7 @@ export default function GuidedTimeline({
       <details
         style={{
           fontSize: 13,
-          color: 'var(--mute, #6b6257)',
+          color: 'var(--nn-mute, #62736D)',
           marginTop: 4,
           cursor: 'pointer'
         }}

@@ -2,12 +2,14 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import './guided-leaves.css';
 
 /**
  * TrustDisclosure
- * Exactly ONE quiet line under stream:
- * "Dữ liệu quán từ Foody • giờ & giá theo nguồn ghi • khoảng cách ước tính" + "Chi tiết"
- * Opens a calm disclosure modal with focus management (Q07) and AI/Google Maps transparency (Q05).
+ * Exactly ONE quiet line under composer conforming to SVG fidelity spec (owner: Antigravity):
+ * "Dữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính" + "Chi tiết"
+ * Modal uses token host class .nn-dialog for styling outside .nn-root.
+ * Retains focus trap, background inertness, and all disclosures.
  */
 export default function TrustDisclosure({ turn, health }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -49,7 +51,6 @@ export default function TrustDisclosure({ turn, health }) {
   useEffect(() => {
     if (!isOpen) return;
 
-    // Focus close button initially
     const timer = setTimeout(() => {
       closeBtnRef.current?.focus();
     }, 20);
@@ -113,18 +114,18 @@ export default function TrustDisclosure({ turn, health }) {
   }
 
   return (
-    <div style={{ marginTop: 12 }}>
-      {/* Exactly ONE quiet line under stream */}
+    <div style={{ marginTop: 8 }}>
+      {/* Exactly ONE quiet 12px mute line under stream/composer */}
       <div
         data-testid="trust-line"
         style={{
           fontSize: 12,
-          color: 'var(--mute, #6b6257)',
+          color: 'var(--nn-mute, #62736D)',
           display: 'flex',
           gap: 6,
           alignItems: 'center',
           flexWrap: 'wrap',
-          lineHeight: 1.5
+          lineHeight: 1.4
         }}
       >
         <span>Dữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính</span>
@@ -135,7 +136,7 @@ export default function TrustDisclosure({ turn, health }) {
           style={{
             background: 'none',
             border: 'none',
-            color: 'var(--accent, #c2410c)',
+            color: 'var(--nn-green, #166B52)',
             textDecoration: 'underline',
             fontSize: 12,
             fontWeight: 600,
@@ -147,13 +148,14 @@ export default function TrustDisclosure({ turn, health }) {
         </button>
       </div>
 
-      {/* Calm Modal / Drawer with accessible focus management (Q07) */}
+      {/* Calm Modal / Drawer with accessible focus management and .nn-dialog token host */}
       {isOpen && createPortal(
         <div
           role="dialog"
           aria-modal="true"
           aria-labelledby="trust-modal-title"
           data-testid="trust-disclosure-modal"
+          className="nn-dialog"
           style={{
             position: 'fixed',
             inset: 0,
@@ -172,19 +174,20 @@ export default function TrustDisclosure({ turn, health }) {
             ref={dialogRef}
             tabIndex={-1}
             style={{
-              background: '#fff',
+              background: 'var(--nn-card, #FFFFFF)',
               borderRadius: 16,
               maxWidth: 500,
               width: '100%',
               maxHeight: '90vh',
               overflowY: 'auto',
-              padding: 22,
-              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.15)',
+              padding: 24,
+              boxShadow: 'var(--nn-shadow, 0 8px 24px rgba(10, 46, 31, 0.10))',
               display: 'grid',
               gap: 14,
-              color: 'var(--ink, #231f1a)',
+              color: 'var(--nn-ink, #17352B)',
               fontSize: 14,
-              outline: 'none'
+              outline: 'none',
+              border: '1px solid var(--nn-line, #DDE7E1)'
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -204,7 +207,7 @@ export default function TrustDisclosure({ turn, health }) {
                   border: 'none',
                   fontSize: 20,
                   cursor: 'pointer',
-                  color: 'var(--mute, #6b6257)',
+                  color: 'var(--nn-mute, #62736D)',
                   padding: '4px 8px',
                   lineHeight: 1
                 }}
@@ -239,15 +242,7 @@ export default function TrustDisclosure({ turn, health }) {
               <div>
                 <b>Chỉ đường Google Maps:</b> Khi bấm mở lộ trình, ứng dụng tạo liên kết HTTPS chứa toạ độ các quán để mở trên Google Maps. Google Maps tính toán lại tuyến đường và thời gian thực tế độc lập với ứng dụng.
               </div>
-              <div
-                style={{
-                  background: 'var(--warnbg, #fef3c7)',
-                  color: 'var(--warn, #92400e)',
-                  borderRadius: 8,
-                  padding: '8px 12px',
-                  fontSize: 13
-                }}
-              >
+              <div className="nn-peach-box" style={{ fontSize: 13 }}>
                 Lưu ý an toàn: Dữ liệu không có thông tin nguyên liệu thành phần; chưa quán nào được xác nhận an toàn dị ứng.
               </div>
             </div>
@@ -256,22 +251,14 @@ export default function TrustDisclosure({ turn, health }) {
               <button
                 type="button"
                 onClick={handleClose}
-                style={{
-                  padding: '8px 18px',
-                  borderRadius: 10,
-                  border: '1px solid var(--line, #e6dfd3)',
-                  background: 'var(--chip, #f3ece0)',
-                  color: 'var(--ink, #231f1a)',
-                  fontWeight: 600,
-                  cursor: 'pointer',
-                  minHeight: 44
-                }}
+                className="nn-ghost-pill"
               >
                 Đóng
               </button>
             </div>
           </div>
-        </div>, document.body
+        </div>,
+        document.body
       )}
     </div>
   );
