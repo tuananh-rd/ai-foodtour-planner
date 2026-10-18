@@ -54,3 +54,10 @@ Measured (synthetic, default scrollbars, Chrome 1280×800, scrollY 0, innerWidth
 - route panel stays 306 wide (x903) with the gutter; at 1440×1024 without scroll clientWidth 1440, route x1078 w306, tiles 824 wide; with the 15px gutter (clientWidth 1425) tiles are 809 wide, route still 306.
 - `qa/e2e/test_ngonngon_qa.mjs`: 66/66 PASS after the fix (tracked `docs/reports/ngonngon` restored, not committed).
 - Icon glyphs calibrated to reference: star 13.824², arrow 16.326×12.06.
+
+## 8. Native gutter / frame sizing (on integrated root e3f8251)
+Problem: with a 15px default scrollbar (innerWidth 1440, clientWidth 1425) the tour column shrank to 809, so with the route panel fixed at 306 the timeline cards became 485 instead of 500.
+Fix: `.nn-main` right padding is `clamp(32px, 56px - (1440px - 100%), 56px)`: the 15px gutter is absorbed by the right page padding (56 to 41) instead of squeezing the content; no scaling, no masking, no `scrollbar-gutter` hack. Measured at 1440×1024 default scrollbars (clientWidth 1425, scrollY 0): tiles x560 w824, route panel x1078 w306 (exactly the reference columns); at 1280×800 (clientWidth 1265): route x927 w306, tiles w673. Tip card text no longer clipped (display:block span, 78px).
+Residual (honest): below ~1425px the tour column shrinks, as designed for responsive desktop; the reference exists only at 1440.
+Post-tour stream: the chat stream keeps normal chat behaviour (scrolls to latest bubble); intro stays as in the reference. No facts removed.
+Regression: test_ngonngon_qa 66/66 PASS on this change.
