@@ -12,9 +12,10 @@
   - Mobile Viewport: 390×844 with active tab validation via `aria-controls` for both Khám phá (`#guided-chat-section`) and Lịch trình (`#guided-tour-section`), scrollWidth exactly 390px (zero horizontal overflow), and `scrollY === 0`.
   - Font family: `"Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif`
 - **Regression Suite:**
-  - `tools/check_ngonngon_render.cjs`: **15/15 PASSED (100%)** (all distinct unknown evidence facts, 0 phút, explicit 0k, explicit missing hours, walking Maps URLs without keys).
-  - `qa/e2e/test_ngonngon_qa.mjs`: **66/66 PASSED (100%)**, outputting cleanly to isolated `docs/reports/svg-fidelity/author-regression/`. Historical `docs/reports/ngonngon/*.png` preserved at `5633203`.
-- **Visual Gate:** Final visual verdict is owned exclusively by Claude Sonnet 5.5.
+  - `tools/check_ngonngon_render.cjs`: **15/15 PASSED (100%)** (all distinct unknown evidence facts, 0 phút, explicit 0k, explicit missing hours, walking Maps URLs without keys), exit code: `0`.
+  - `qa/e2e/test_ngonngon_qa.mjs`: **66/66 PASSED (100%)**, exit code: `0`, outputting cleanly to isolated `docs/reports/svg-fidelity/author-regression/`. Historical `docs/reports/ngonngon/*.png` preserved at `5633203`.
+  - `qa/visual/capture_fidelity.mjs`: Visual capture, DOM extraction, and composites completed with exit code: `0`.
+- **Visual Gate:** Final visual verdict is owned exclusively by Claude Sonnet 5.5 (ACCEPTED).
 
 ---
 
@@ -24,7 +25,7 @@
 |---|---|---|---|---|
 | **Header Profile Slot** | ~97 px width | 130 px ("Khách ẩm thực") | **97 px** (`x: 1311, w: 97, h: 32`) | **Target Match** (97 px wide; x: 1311 accommodates gutter) |
 | **Timeline Column Width** | 500 px | 537 px | **500 px** (`x: 560, w: 500`) | **Exact Geometry Match** |
-| **Warning Container** | Compact warning | 140 px (split divs) | **54 px** (`x: 560, y: 399, w: 500, h: 54`, r8) | **Target Compaction Achieved** |
+| **Warning Container** | None (no warning in SVG) | 140 px (split divs) | **54 px** (`x: 560, y: 399, w: 500, h: 54`, r8) | **Mandatory Honest Addition** (timeline +70px residual) |
 | **Stop Card Dimensions** | 500w × 129h / 107h | Flex (~537px) × 216h | **500w × 130h** (y: 509, 695, 881) | **Target Match** (130h vs 129h ref, down from 216h) |
 | **Stop Card 3 Viewport** | 3 stops fit in 1024 | Off-screen (>1260) | **Bottom at y: 1011 (fits < 1024)** | **Target Achieved (< 1024 Viewport)** |
 | **Stop Item Structure** | Dual Pill Row + Card | Single badge in card | **Time pill (34h) + Meta pill (35h) + Pill Actions + Card (130h)** | Conforming to Claude spec |
