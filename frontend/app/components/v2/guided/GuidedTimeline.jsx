@@ -12,6 +12,7 @@ import './guided-leaves.css';
  * - Reference stop pair: pill row (34h green time pill + 35h meta pill) + 8px radius card
  * - Audited colors: titles #1E1E1E, descriptions #757575, borders #D9D9D9
  * - Ghost pill buttons (min-height 44 hit area, visual 34)
+ * - Single clean status badge row (coordinating with root's Lộ trình section header)
  * - Preserves ALL testids, handlers, allergy disclaimers, status badges, and Google Maps CTA
  */
 export default function GuidedTimeline({
@@ -89,12 +90,9 @@ export default function GuidedTimeline({
       className="nn-timeline"
       style={{ margin: 0, padding: 0 }}
     >
-      {/* Top Header & Tour Status */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
-        <div style={{ fontWeight: 600, fontSize: 16, color: 'var(--nn-ink, #17352B)' }}>
-          📍 Lịch trình gợi ý ({stops.length} quán)
-        </div>
-        {tour.status && (
+      {/* Tour Status Badge row (single heading hierarchy coordination with root Lộ trình) */}
+      {tour.status && (
+        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 4 }}>
           <span
             data-testid="timeline-status-badge"
             style={{
@@ -109,8 +107,8 @@ export default function GuidedTimeline({
           >
             {tour.status === 'verified_feasible' ? 'Đã xác minh khả thi' : tour.status === 'conditional' ? 'Gợi ý có điều kiện' : 'Thiếu bằng chứng'}
           </span>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Tour Status & Conditional Notice (Q02) */}
       {tour.status === 'conditional' && (
@@ -215,7 +213,7 @@ export default function GuidedTimeline({
                 </span>
               </div>
 
-              {/* Stop Card with 8px radius and #D9D9D9 border */}
+              {/* Stop Card with 8px radius, #D9D9D9 border, title #1E1E1E, desc #757575 */}
               <div
                 data-testid={`timeline-stop-card-${idx}`}
                 className="nn-timeline-card"
