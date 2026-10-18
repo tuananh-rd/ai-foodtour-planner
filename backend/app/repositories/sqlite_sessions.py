@@ -5,6 +5,7 @@ import secrets
 import sqlite3
 import time
 from contextlib import contextmanager
+from dataclasses import replace
 from pathlib import Path
 
 from app.api.errors import APIError
@@ -102,10 +103,16 @@ class SQLiteSessionStore:
         if encoded_tour is None:
             return session
         record = json.loads(encoded_tour)
-        if not {'dataset_version', 'stops'} <= set(record) or set(record) - {'dataset_version', 'stops', 'preferences', 'vehicle', 'selected_ids', 'locks'} or not isinstance(record['stops'], list):
+        if not {'dataset_version', 'stops'} <= set(record) or set(record) - {'dataset_version', 'stops', 'preferences', 'vehicle', 'selected_ids', 'locks', 'visit_minutes'} or not isinstance(record['stops'], list):
             raise ValueError('invalid tour record')
         if record.get('preferences'):
             prefs = PreferencesSchema.model_validate(record['preferences']).domain()
+            # Internal planner assumption already shown at confirmation; the public
+            # preferences contract deliberately does not expose this as an editable slot.
+            visit = record.get('visit_minutes', 45)
+            if type(visit) is not int or not 20 <= visit <= 45:
+                raise ValueError('invalid visit duration')
+            prefs = replace(prefs, visit_minutes=visit)
             session.tour_preferences = prefs
         session.tour_vehicle = record.get('vehicle')
         session.tour_selected_ids = tuple(record.get('selected_ids', ()))
@@ -185,6 +192,7 @@ class SQLiteSessionStore:
             if session.tour is not None:
                 encoded_tour = json.dumps({'dataset_version': session.snapshot.dataset_version,
                     **({'preferences': PreferencesSchema.from_domain(session.tour_preferences or session.preferences).model_dump(),
+                        'visit_minutes': (session.tour_preferences or session.preferences).visit_minutes,
                         'vehicle': session.tour_vehicle, 'selected_ids': list(session.tour_selected_ids)}
                         if session.chat.turn_count else {}),
                     'locks': list(session.tour.locks),

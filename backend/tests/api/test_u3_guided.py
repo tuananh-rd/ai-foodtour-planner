@@ -49,6 +49,29 @@ class GuidedAPI(unittest.TestCase):
     def act(self, kind, **args):
         return self.post(action={'type': kind, **args})
 
+    def test_confirmed_short_visit_tour_survives_durable_reload(self):
+        self.post(text='Tôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng.')
+        self.act('pick_option', option_id='scope:group')
+        proposed = self.post(text='19h')
+        self.assertEqual(proposed['chat']['pending']['kind'], 'confirm_plan')
+        planned = self.act('confirm_yes')
+        self.assertEqual(len(planned['tour']['stops']), 3)
+        self.restart()
+        response = self.client.get(self.url, headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        restored = response.json()['tour']
+        self.assertIsNotNone(restored, 'Confirmed tour must retain its agreed visit duration after SQLite reload')
+        self.assertEqual(restored['stops'], planned['tour']['stops'])
+        self.assertEqual(restored['assumptions'], planned['tour']['assumptions'])
+        with closing(sqlite3.connect(self.db)) as db:
+            record = json.loads(db.execute('SELECT tour FROM sessions WHERE id=?', (self.sid,)).fetchone()[0])
+        for invalid in (True, 19, 46, '30'):
+            with self.subTest(invalid=invalid):
+                corrupted = {**record, 'visit_minutes': invalid}
+                with closing(sqlite3.connect(self.db)) as db, db:
+                    db.execute('UPDATE sessions SET tour=? WHERE id=?', (json.dumps(corrupted), self.sid))
+                self.assertEqual(self.client.get(self.url, headers=self.headers).status_code, 503)
+
     def seed(self, pending='allergy_term', unresolved=True):
         with self.app.state.sessions.owned(self.sid, self.token) as s:
             st = s.chat
