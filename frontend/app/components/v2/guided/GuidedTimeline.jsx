@@ -131,56 +131,58 @@ export default function GuidedTimeline({
         )}
       </div>
 
-      {/* Tour Status & Conditional Notice (Q02) */}
-      {tour.status === 'conditional' && (
-        <div
-          data-testid="timeline-conditional-status"
-          className="nn-peach-box"
-          style={{ marginBottom: 13 }}
-        >
-          ⚠️ <b>Lịch trình có điều kiện:</b> Còn bằng chứng chưa được xác minh; hãy xem các thông tin cần kiểm tra bên dưới.
-        </div>
-      )}
+      {/* Warnings / Notices Section (Single Spacing Container) */}
+      {(tour.status === 'conditional' || (Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0) || (Array.isArray(tour.unknowns) && tour.unknowns.length > 0)) && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 13, maxWidth: 500, width: '100%' }}>
+          {tour.status === 'conditional' && (
+            <div
+              data-testid="timeline-conditional-status"
+              className="nn-peach-box"
+              style={{ margin: 0 }}
+            >
+              ⚠️ <b>Lịch trình có điều kiện:</b> Còn bằng chứng chưa được xác minh; hãy xem các thông tin cần kiểm tra bên dưới.
+            </div>
+          )}
 
-      {/* Route Warnings (Q02) */}
-      {Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0 && (
-        <div
-          data-testid="timeline-route-warnings"
-          style={{
-            background: '#fffbe6',
-            border: '1px solid #ffe58f',
-            borderLeft: '4px solid #faad14',
-            borderRadius: 8,
-            padding: '8px 12px',
-            fontSize: 13,
-            color: '#873800',
-            marginBottom: 13
-          }}
-        >
-          <b>Cảnh báo tuyến đường:</b>
-          <ul style={{ margin: '4px 0 0', paddingLeft: 18 }}>
-            {tour.route_warnings.map((rw, i) => (
-              <li key={i}>{formatWarningMessage(rw)}</li>
-            ))}
-          </ul>
-        </div>
-      )}
+          {Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0 && (
+            <div
+              data-testid="timeline-route-warnings"
+              style={{
+                margin: 0,
+                background: '#fffbe6',
+                border: '1px solid #ffe58f',
+                borderLeft: '4px solid #faad14',
+                borderRadius: 8,
+                padding: '6px 12px',
+                fontSize: 12.5,
+                color: '#873800'
+              }}
+            >
+              <b>Cảnh báo tuyến đường:</b>
+              <ul style={{ margin: '2px 0 0', paddingLeft: 18 }}>
+                {tour.route_warnings.map((rw, i) => (
+                  <li key={i}>{formatWarningMessage(rw)}</li>
+                ))}
+              </ul>
+            </div>
+          )}
 
-      {/* Unknowns (Q02) */}
-      {Array.isArray(tour.unknowns) && tour.unknowns.length > 0 && (
-        <div
-          data-testid="timeline-unknowns"
-          style={{
-            background: '#f8fafc',
-            border: '1px solid #e2e8f0',
-            borderRadius: 8,
-            padding: '8px 12px',
-            fontSize: 12,
-            color: '#475569',
-            marginBottom: 13
-          }}
-        >
-          <b>Thông tin chưa xác minh:</b> {tour.unknowns.map((u) => formatWarningMessage(u)).join(', ')}
+          {Array.isArray(tour.unknowns) && tour.unknowns.length > 0 && (
+            <div
+              data-testid="timeline-unknowns"
+              style={{
+                margin: 0,
+                background: '#f8fafc',
+                border: '1px solid #e2e8f0',
+                borderRadius: 8,
+                padding: '6px 12px',
+                fontSize: 12,
+                color: '#475569'
+              }}
+            >
+              <b>Thông tin chưa xác minh:</b> {tour.unknowns.map((u) => formatWarningMessage(u)).join(', ')}
+            </div>
+          )}
         </div>
       )}
 
