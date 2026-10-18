@@ -1067,7 +1067,6 @@ export default function GuidedLayout({
                 </div>
               ) : (
                 <>
-                  <h3 className="nn-section-h">Lộ trình</h3>
                   <GuidedTimeline
                     tour={tour}
                     allergies={currentAllergies}
