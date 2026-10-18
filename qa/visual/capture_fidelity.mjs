@@ -487,20 +487,41 @@ async function main() {
     console.log('\n=== Step 5: Capture Mobile 390x844 States ===');
     await setViewport(390, 844, true);
     await pause(300);
-    await assertScrollYZero('mobile tour tab');
 
-    // Mobile Tour Tab
-    const mobileTourPath = path.join(REPORT_DIR, `${FILE_TAG}_mobile_390_tour.png`);
-    await snapScreenshot(mobileTourPath);
-
-    // Switch to Mobile Chat Tab
-    const hasChatTab = await ev(`!!document.querySelector('nav button:first-child')`);
-    if (hasChatTab) {
-      await click('nav button:first-child');
+    // 1. Mobile Chat Tab
+    const chatBtnSel = 'button[aria-controls="guided-chat-section"], nav button:first-child';
+    if (await ev(`!!document.querySelector('${chatBtnSel}')`)) {
+      await click(chatBtnSel);
       await pause(300);
+      const isChatVisible = await ev(`(()=>{
+        const chat = document.querySelector('#guided-chat-section');
+        const tour = document.querySelector('#guided-tour-section');
+        return chat && window.getComputedStyle(chat).display !== 'none' && tour && window.getComputedStyle(tour).display === 'none';
+      })()`);
+      console.log(`Mobile chat tab active check: ${isChatVisible ? 'OK' : 'FAIL'}`);
+      const chatScrollW = await ev('document.documentElement.scrollWidth');
+      console.log(`Mobile chat scrollWidth: ${chatScrollW} (max 390)`);
       await assertScrollYZero('mobile chat tab');
       const mobileChatPath = path.join(REPORT_DIR, `${FILE_TAG}_mobile_390_chat.png`);
       await snapScreenshot(mobileChatPath);
+    }
+
+    // 2. Switch to Mobile Tour Tab
+    const tourBtnSel = 'button[aria-controls="guided-tour-section"], nav button:nth-child(2)';
+    if (await ev(`!!document.querySelector('${tourBtnSel}')`)) {
+      await click(tourBtnSel);
+      await pause(300);
+      const isTourVisible = await ev(`(()=>{
+        const chat = document.querySelector('#guided-chat-section');
+        const tour = document.querySelector('#guided-tour-section');
+        return tour && window.getComputedStyle(tour).display !== 'none' && chat && window.getComputedStyle(chat).display === 'none';
+      })()`);
+      console.log(`Mobile tour tab active check: ${isTourVisible ? 'OK' : 'FAIL'}`);
+      const tourScrollW = await ev('document.documentElement.scrollWidth');
+      console.log(`Mobile tour scrollWidth: ${tourScrollW} (max 390)`);
+      await assertScrollYZero('mobile tour tab');
+      const mobileTourPath = path.join(REPORT_DIR, `${FILE_TAG}_mobile_390_tour.png`);
+      await snapScreenshot(mobileTourPath);
     }
 
     console.log('\n=== Step 6: Render Reference SVG at 1440x1024 ===');
