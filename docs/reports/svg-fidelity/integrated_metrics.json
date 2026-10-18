@@ -1,8 +1,8 @@
 {
   "provenance": {
-    "sourceHead": "beb246cf1e311f31a5b9e6302f775a1e894d3c8d",
+    "sourceHead": "355933ad3fa0508bc7e6173d72c58504d26f8df3",
     "frontendDirty": false,
-    "timestamp": "2026-10-18T00:55:12.091Z"
+    "timestamp": "2026-10-18T01:13:43.964Z"
   },
   "viewport": {
     "innerWidth": 1440,
@@ -21,7 +21,7 @@
     "backgroundColor": "rgb(255, 255, 255)",
     "borderRadius": "0px",
     "border": "",
-    "padding": "0px 32px",
+    "padding": "0px 17px 0px 32px",
     "margin": "0px",
     "gap": "32px",
     "fontSize": "16px",
@@ -82,7 +82,7 @@
   },
   "headerProfile": {
     "selector": "header > div:last-child",
-    "x": 1296,
+    "x": 1311,
     "y": 24,
     "width": 97,
     "height": 32,
@@ -102,7 +102,7 @@
     "x": 0,
     "y": 80,
     "width": 1425,
-    "height": 1303,
+    "height": 1223,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -187,7 +187,7 @@
     "x": 560,
     "y": 108,
     "width": 824,
-    "height": 1247,
+    "height": 1167,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -310,7 +310,7 @@
     "x": 560,
     "y": 358,
     "width": 500,
-    "height": 997,
+    "height": 917,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -322,11 +322,28 @@
     "fontFamily": "\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
     "color": "rgb(23, 53, 43)"
   },
+  "timelineWarning": {
+    "selector": "[data-testid=\"timeline-conditional-status\"], .nn-warn-one",
+    "x": 560,
+    "y": 399,
+    "width": 500,
+    "height": 54,
+    "backgroundColor": "rgb(255, 246, 236)",
+    "borderRadius": "8px",
+    "border": "1px solid rgb(241, 217, 184)",
+    "padding": "8px 12px",
+    "margin": "0px",
+    "gap": "normal",
+    "fontSize": "13px",
+    "fontWeight": "400",
+    "fontFamily": "\"Segoe UI\", system-ui, -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+    "color": "rgb(138, 75, 18)"
+  },
   "stopCards": [
     {
       "index": 0,
       "x": 560,
-      "y": 589,
+      "y": 509,
       "width": 500,
       "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
@@ -343,7 +360,7 @@
     {
       "index": 1,
       "x": 560,
-      "y": 775,
+      "y": 695,
       "width": 500,
       "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
@@ -360,7 +377,7 @@
     {
       "index": 2,
       "x": 560,
-      "y": 961,
+      "y": 881,
       "width": 500,
       "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
@@ -375,6 +392,7 @@
       "descColor": "rgb(117, 117, 117)"
     }
   ],
+  "thirdCardBottom": 1011,
   "routeAside": {
     "selector": "#guided-tour-section aside",
     "x": 1078,

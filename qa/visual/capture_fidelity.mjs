@@ -455,6 +455,7 @@ async function main() {
           };
         }),
         timelineContainer: getRect('[data-testid="guided-timeline"]'),
+        timelineWarning: getRect('[data-testid="timeline-conditional-status"], .nn-warn-one'),
         stopCards: Array.from(document.querySelectorAll('[data-testid^="timeline-stop-card-"]')).map((el, i) => {
           const r = el.getBoundingClientRect();
           const style = window.getComputedStyle(el);
@@ -480,6 +481,14 @@ async function main() {
             descColor: descStyle?.color
           };
         }),
+        thirdCardBottom: (() => {
+          const cards = document.querySelectorAll('[data-testid^="timeline-stop-card-"]');
+          if (cards.length >= 3) {
+            const r = cards[2].getBoundingClientRect();
+            return Math.round(r.y + r.height);
+          }
+          return null;
+        })(),
         routeAside: getRect('#guided-tour-section aside')
       };
     })()`);
