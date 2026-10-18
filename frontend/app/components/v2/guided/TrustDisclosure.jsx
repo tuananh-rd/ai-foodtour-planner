@@ -132,6 +132,7 @@ export default function TrustDisclosure({ turn, health }) {
         <button
           type="button"
           data-testid="trust-disclosure-btn"
+          className="nn-trust-btn"
           onClick={handleOpen}
           style={{
             background: 'none',
@@ -228,7 +229,7 @@ export default function TrustDisclosure({ turn, health }) {
                 <b>Trí tuệ nhân tạo (AI):</b> Khi Gemini được cấu hình và còn lượt, văn bản bạn nhập cùng các tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu. Chế độ quy tắc tại máy không gửi yêu cầu đến AI bên ngoài.
               </div>
               <div>
-                <b>Lưu trữ phiên:</b> Ứng dụng giữ các lượt trò chuyện gần nhất và tiêu chí trong phiên để khôi phục khi tải lại; phiên mặc định hết hạn sau một giờ. &quot;Làm lại&quot; mở phiên mới, không phải cam kết xóa ngay phiên cũ trên máy chủ.
+                <b>Lưu trữ phiên:</b> Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên, không hiện lại từng tin nhắn; phiên mặc định hết hạn sau một giờ. &quot;Làm lại&quot; mở phiên mới, không phải cam kết xóa ngay phiên cũ trên máy chủ.
               </div>
               <div>
                 <b>Nguồn dữ liệu:</b> {health?.dataset_source === 'synthetic' ? 'Dữ liệu tổng hợp (synthetic), chỉ để kiểm thử' : health?.dataset_source === 'private' ? 'Dữ liệu địa điểm thử nghiệm cục bộ, chưa có quyền công bố' : 'Chưa rõ nguồn dữ liệu'}

@@ -148,7 +148,7 @@ class ChatState:
         st.goal = d.get("goal")
         st.conflicts = [c for c in d.get("conflicts", []) if isinstance(c, dict)][:8]
         st.allergy_unresolved = bool(d.get("allergy_unresolved", False))
-        st.unparsed_slots = [k for k in d.get("unparsed_slots", []) if k in ("budget_vnd", "party_size", "duration_min", "stops")][:4]
+        st.unparsed_slots = [k for k in d.get("unparsed_slots", []) if k in ("budget_vnd", "party_size", "duration_min", "stops", "max_leg_min")][:5]
         st.attempted_adjustments = [s for s in d.get("attempted_adjustments", []) if isinstance(s, str) and len(s) < 100][:32]
         return st
 

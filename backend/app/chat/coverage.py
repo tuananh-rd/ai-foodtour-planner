@@ -16,9 +16,19 @@ NUMWORDS = {"mot": 1, "hai": 2, "ba": 3, "bon": 4, "tu": 4, "nam": 5}
 DAY_PARTS = {"morning": "Buổi sáng", "noon": "Buổi trưa", "afternoon": "Buổi chiều", "evening": "Buổi tối", "late": "Khuya"}
 MEAL_OF = {"evening": "dinner", "late": "late", "noon": "lunch", "morning": "breakfast", "afternoon": "snack"}
 
-_TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\b")
+
+def numeric_prefix_spacing(text: str) -> str:
+    """Separate known request prefixes from attached digits, without rewriting IDs/addresses."""
+    text = re.sub(r'\b(tour)(?=\d)', r'\1 ', text, flags=re.IGNORECASE)
+    text = re.sub(r'\b((?:tối|toi|sáng|sang|chiều|chieu|trưa|trua)\s+(?:nay|mai))(?=\d)',
+                  r'\1 ', text, flags=re.IGNORECASE)
+    # Lowercase request words only: capitalised venue/address labels such as
+    # "Mai2", "Tam3" and "Trong5" must remain intact for lookup.
+    return re.sub(r'\b(trong|cho|khoảng|khoang|tầm|tam)(?=\d)', r'\1 ', text)
+
+_TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|so quan|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\b")
 _STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|hang an|hang|diem dung|diem|dia diem|chang)\b(?!\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))"
-                    r"|\bso (?:quan|diem)\s*(?:la|:)?\s*(\d{1,2})\b")
+                    r"|\bso (?:quan|diem)\s*(?:la|thanh|sang|:)?\s*(\d{1,2}|mot|hai|ba|bon|nam)\b")
 _LIKE = re.compile(r"(?:\byêu thích\b|\bưa chuộng\b|\bđam mê\b|\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bkhoái\b|\bghiền\b|\bnghiện\b|\byeu thich\b|\bthich\b|\bmuon an\b|\bkhoai\b)"
                    r"\s*[:\-–]?\s*(?:là\s+|la\s+)?(.+?)(?=[.,;!?\n]|\bnhưng\b|\bnhung\b|\bdị ứng\b|\bdi ung\b|\bkhông ăn\b|\bkhong an\b|\bhãy\b|\bhay\b|\bvà nhớ\b|\bchưa\b|\bchua\b|$)",
                    re.IGNORECASE)
@@ -122,6 +132,7 @@ def _items(raw: str) -> list:
 
 def extras(text: str, f: str) -> dict:
     """{stops?: int 1..5, day_part?, interests?: [str], _stops_rejected?: int} — only what the text states."""
+    text, f = numeric_prefix_spacing(text), numeric_prefix_spacing(f)
     out = {}
     if _TOUR_CTX.search(f):
         m = _STOPS.search(f)
@@ -174,6 +185,9 @@ def audit(text: str, f: str, patch: dict, *, allergy_terms: Iterable[str] = (), 
         add("party", "party_size" in patch)
     if _CUES["duration"].search(f) and re.search(r"\bphut\b|\btieng\b|\bgio\b", f):
         add("duration", any(k in patch for k in ("duration_min", "max_leg_min", "start_time", "end_time")))
+    if re.search(r'\b(?:moi chang|giua (?:cac|hai|2) quan|giua cac diem)\b[^.;]{0,40}\bphut\b'
+                 r'|\bphut\s+moi chang\b|\bkhong\s+(?:muon\s+)?di bo\s+(?:qua|hon)\b[^.;]{0,30}\bphut\b', f):
+        add('leg_time', 'max_leg_min' in patch)
     if _TOUR_CTX.search(f) and _STOPS.search(f):
         add("stops", "stops" in patch or "_stops_rejected" in patch)
     if _day_part(text, f):

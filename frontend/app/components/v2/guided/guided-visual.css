@@ -168,3 +168,6 @@
 .nn-chat.deciding .nn-h2, .nn-chat.deciding .nn-lead, .nn-chat.deciding .nn-chips, .nn-chat.deciding .nn-rule { display: none; }
 .nn-chat.confirming .nn-stream { overflow: visible; margin-top: 16px; }
 .nn-chat.deciding .nn-stream { margin-top: 16px; }
+
+/* D1: the error banner retry button must never wrap */
+.nn-alert button { white-space: nowrap; flex: none; }

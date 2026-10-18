@@ -64,6 +64,7 @@ export default function Home() {
   // Session & revision state
   const [sessionId, setSessionId] = useState(null);
   const [sessionToken, setSessionToken] = useState('');
+  const [initError, setInitError] = useState(null);
   const [revision, setRevision] = useState(0);
   const [preferences, setPreferences] = useState(DEFAULT_PREFERENCES);
   
@@ -267,6 +268,7 @@ export default function Home() {
     const token = cancelAllPendingActions();
     setSessionEpoch((prev) => prev + 1);
     setBusy(true);
+    setInitError(null);
     clearAllErrors();
     // Synchronously reset session-owned state in React memory
     setSessionId(null);
@@ -329,8 +331,24 @@ export default function Home() {
               } catch (_) {}
               return;
             }
-          } catch (_) {
-            // Expired or invalid stored session, fall through to createSession
+          } catch (restoreErr) {
+            if (restoreErr?.name === 'AbortError') return;
+            const expired = [401, 403, 404, 410].includes(restoreErr?.status);
+            if (!expired) {
+              // Transient failure (network, 5xx, 429): keep the stored session pointer and credential,
+              // do NOT create a replacement session; let the user retry the restore.
+              if (token !== requestTokenRef.current) return;
+              setInitError({
+                kind: 'restore',
+                message: 'Chưa tải lại được phiên của bạn (kết nối hoặc máy chủ tạm thời lỗi). Phiên cũ vẫn được giữ; bấm Thử lại để khôi phục.'
+              });
+              return;
+            }
+            // Expired or invalid stored session (401/403/404/410): fall through to a new session
+            try {
+              sessionStorage.removeItem('foodtour_chat_session_id');
+              sessionStorage.removeItem('foodtour_chat_session_token');
+            } catch (_) {}
           }
         }
       }
@@ -371,6 +389,10 @@ export default function Home() {
     } catch (err) {
       if (token !== requestTokenRef.current) return;
       if (err.name === 'AbortError') return;
+      setInitError({
+        kind: 'start',
+        message: 'Chưa khởi tạo được phiên mới (kết nối hoặc máy chủ tạm thời lỗi). Nội dung bạn nhập vẫn được giữ; bấm Thử lại.'
+      });
       handleApiError(err, { type: 'init' });
     } finally {
       if (token === requestTokenRef.current) {
@@ -566,6 +588,9 @@ export default function Home() {
         revision={revision}
         health={health}
         clientConfig={clientConfig}
+        initError={initError}
+        initializing={busy}
+        onRetryInit={() => initSession()}
         onResetSession={() => initSession({ isReset: true })}
       />
     );
