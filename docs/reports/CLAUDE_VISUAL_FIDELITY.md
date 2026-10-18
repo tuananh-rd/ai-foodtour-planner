@@ -1,6 +1,7 @@
 # Claude visual fidelity report (owner: Claude) — task_7c68da1f86e6
 
 Status: **FINAL VISUAL VERDICT issued (section 13)** on integrated source 355933a (contains d828e68), default scrollbars. Not pixel-identical: see residuals.
+Note: the original SVG has NO warning block and no evidence disclosure; the merged warning (54px) is a deliberate addition required by the honesty rules, not a reference element.
 
 ## 1. Reference inspection
 - Original: `D:/Downloads/UI ngonngon tour.svg`, sha256 `f73364241a53daf697fd92521ee7aab5ff4cba843c2bf27fb0b14063428eb41d`, 844 982 bytes, `viewBox 0 0 1440 1024`, text outlined to paths (no fonts embedded). Treated as untrusted design data; nothing from it is executed or shipped as a static UI. Only two icon glyph paths (4-point star, send arrow) are inlined as decorative SVG.
