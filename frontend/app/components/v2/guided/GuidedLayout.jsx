@@ -394,10 +394,48 @@ export default function GuidedLayout({
     executeTurn(lastFailedTurn);
   };
 
+  // Real browser geolocation invocation (GPS)
+  const triggerGeolocation = () => {
+    if (typeof navigator === 'undefined' || !navigator.geolocation) {
+      setErrorMessage('Trình duyệt của bạn không hỗ trợ định vị (Geolocation API). Bạn hãy nhập khu vực hoặc chọn quận.');
+      return;
+    }
+    setBusy(true);
+    setBusyMessage('Đang lấy toạ độ GPS…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        executeTurn({
+          action: {
+            type: 'set_location',
+            name: 'set_location',
+            location: {
+              lat,
+              lon,
+              label: `Toạ độ GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`
+            }
+          }
+        });
+      },
+      (err) => {
+        setBusy(false);
+        setErrorMessage('Không thể lấy vị trí từ trình duyệt (hoặc bạn đã từ chối cấp quyền). Bạn hãy nhập tên khu vực hoặc chọn quận.');
+      },
+      { timeout: 10000, enableHighAccuracy: true }
+    );
+  };
+
   // Preserves draft on error (Q06)
   const handleSendMessage = (textToSend = null) => {
     const text = (textToSend || inputText).trim();
     if (!text || busy) return;
+    const lower = text.toLowerCase();
+    if (/^(?:bật định vị|lấy vị trí gps|dùng gps|vị trí của tôi|định vị tôi)$/i.test(lower)) {
+      if (!textToSend) setInputText('');
+      triggerGeolocation();
+      return;
+    }
     const currentDraft = inputText;
     if (!textToSend) setInputText('');
     executeTurn({
@@ -409,6 +447,10 @@ export default function GuidedLayout({
   };
 
   const handlePickOption = (option_id) => {
+    if (option_id === 'geo') {
+      triggerGeolocation();
+      return;
+    }
     executeTurn({
       action: {
         name: 'pick_option',
@@ -442,12 +484,7 @@ export default function GuidedLayout({
 
   // The editor uses short slot names; the chat API patch uses the contract field names.
   const handleInlineSave = (slotKey, value) => {
-    if (slotKey === 'stops') {
-      // The patch contract has no stop count; say it in words so the engine asks/confirms as usual.
-      executeTurn({ text: `Đổi sang tour ${value} quán` });
-      return;
-    }
-    const field = { budget: 'budget_vnd', duration: 'duration_min', party: 'party_size', time: 'start_time' }[slotKey] || slotKey;
+    const field = { budget: 'budget_vnd', duration: 'duration_min', party: 'party_size', time: 'start_time', leg_time: 'max_leg_min', stops: 'stops' }[slotKey] || slotKey;
     const patchValue = slotKey === 'vehicle' && value === 'motorcycle' ? 'motorbike' : value;
     executeTurn({
       action: {
@@ -762,7 +799,8 @@ export default function GuidedLayout({
     { label: 'Hoàn Kiếm', on: chipOn.area, text: 'Tôi muốn ăn tour 3 quán quanh Hoàn Kiếm tối nay' },
     { label: 'Tối nay', on: chipOn.tonight, text: 'Đi tour vào tối nay khoảng 120 phút' },
     { label: 'Món Việt', on: false, text: 'Thích các món Việt truyền thống như phở và chè' },
-    { label: 'Dưới 300K', on: chipOn.cheap, text: 'Ngân sách dưới 300 nghìn cho cả chuyến' }
+    { label: 'Dưới 300K', on: chipOn.cheap, text: 'Ngân sách dưới 300 nghìn cho cả chuyến' },
+    { label: '📍 Vị trí GPS', on: false, isGeo: true }
   ];
   const chatVisible = isDesktop || activeMobileTab === 'chat';
   const tourVisible = isDesktop || activeMobileTab === 'tour';
@@ -794,6 +832,7 @@ export default function GuidedLayout({
         <nav className="nn-nav" aria-label="Điều hướng chính">
           <button
             type="button"
+            data-testid="mobile-tab-chat"
             className="nn-pill"
             aria-pressed={activeMobileTab === 'chat'}
             aria-controls="guided-chat-section"
@@ -809,6 +848,7 @@ export default function GuidedLayout({
           </button>
           <button
             type="button"
+            data-testid="mobile-tab-tour"
             className="nn-pill"
             aria-pressed={activeMobileTab === 'tour'}
             aria-controls="guided-tour-section"
@@ -858,7 +898,7 @@ export default function GuidedLayout({
                 className="nn-chip"
                 aria-pressed={chip.on}
                 data-testid={`suggestion-chip-${idx}`}
-                onClick={() => handleSendMessage(chip.text)}
+                onClick={() => chip.isGeo ? triggerGeolocation() : handleSendMessage(chip.text)}
                 disabled={busy}
               >
                 {chip.label}

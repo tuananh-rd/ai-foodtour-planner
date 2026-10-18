@@ -13,7 +13,8 @@ const WHITELISTED_INLINE_FIELDS = [
   'vehicle',
   'stops',
   'audience',
-  'max_leg_min'
+  'max_leg_min',
+  'leg_time'
 ];
 
 /**

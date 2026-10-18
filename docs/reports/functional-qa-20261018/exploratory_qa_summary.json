@@ -1,0 +1,37 @@
+[
+  {
+    "journey": "Journey 1: Single Full Prompt & Allergies",
+    "status": "PASS",
+    "details": "Stops: 3, Maps: Valid free Google Maps link, Allergies Note: Disclosed"
+  },
+  {
+    "journey": "Journey 2: Multi-turn Piecewise Specification",
+    "status": "PASS",
+    "details": "All 7 slots sequentially resolved via natural text. Stops: 3"
+  },
+  {
+    "journey": "Journey 3: Mid-flow Modification & Inline Editors",
+    "status": "PASS",
+    "details": "Party stepper (+2), custom budget 600k, leg preset 15m, chat stops to 2, and stop replace verified."
+  },
+  {
+    "journey": "Journey 4: Invalid Gate & Recovery",
+    "status": "PASS",
+    "details": "Polite constraint explanation on 1k đ, recovered to 500k/120min with valid itinerary."
+  },
+  {
+    "journey": "Journey 5: State Restoration via sessionStorage",
+    "status": "PASS",
+    "details": "Both mid-flow profile and confirmed tour timeline persisted across page reloads without data loss."
+  },
+  {
+    "journey": "Journey 6: Mobile Responsive (390x844)",
+    "status": "PASS",
+    "details": "Zero horizontal overflow (width 390px), mobile tab switching, >=44px touch targets."
+  },
+  {
+    "journey": "Private Dataset Integration (3051)",
+    "status": "PASS",
+    "details": "Stops: 2, Zero private identifiers logged."
+  }
+]
