@@ -13,7 +13,7 @@ const out=process.env.U5F_OUTPUT || process.env.U5E_OUTPUT || path.join(os.tmpdi
 const mutation=process.env.U5E_MUTATION;
 const S0='Tôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.';
 const cue='Tour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn';
-const env={...process.env,FOODTOUR_LLM:'mock',FOODTOUR_CHAT_V2:'1',FOODTOUR_UI_GUIDED:'1',FOODTOUR_UI_V2:'1',FOODTOUR_ROUTING:'estimate',FOODTOUR_GEOCODER:'off',FOODTOUR_RATE_LIMIT_TOKEN:'10000',FOODTOUR_RATE_LIMIT_IP:'10000',WEB_ORIGIN:'http://127.0.0.1:13100',PYTHONPATH:path.join(root,'backend'),PYTHONIOENCODING:'utf-8',FOODTOUR_DATA_PATH:path.join(root,'contracts/fixtures/venues.chat.synthetic.json'),NEXT_PUBLIC_API_URL:'http://127.0.0.1:18100',NEXT_PUBLIC_API_MODE:'real',NEXT_PUBLIC_UI_GUIDED:'1',NEXT_PUBLIC_CHAT_V2:'1',NEXT_PUBLIC_UI_V2:'1'};
+const env={...process.env,NEXT_TELEMETRY_DISABLED:'1',FOODTOUR_PREVIEW:'0',FOODTOUR_LLM:'mock',FOODTOUR_CHAT_V2:'1',FOODTOUR_UI_GUIDED:'1',FOODTOUR_UI_V2:'1',FOODTOUR_ROUTING:'estimate',FOODTOUR_GEOCODER:'off',FOODTOUR_RATE_LIMIT_TOKEN:'10000',FOODTOUR_RATE_LIMIT_IP:'10000',WEB_ORIGIN:'http://127.0.0.1:13100',PYTHONPATH:path.join(root,'backend'),PYTHONIOENCODING:'utf-8',FOODTOUR_DATA_PATH:path.join(root,'contracts/fixtures/venues.chat.synthetic.json'),NEXT_PUBLIC_API_URL:'http://127.0.0.1:18100',NEXT_PUBLIC_API_MODE:'real',NEXT_PUBLIC_UI_GUIDED:'1',NEXT_PUBLIC_CHAT_V2:'1',NEXT_PUBLIC_UI_V2:'1'};
 for(const k of Object.keys(env)) if(/KEY|SECRET|TOKEN/.test(k)&&!k.startsWith('FOODTOUR_RATE')) delete env[k];
 const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'codex-u5e-'));
 env.FOODTOUR_SESSION_DB=path.join(scratch,'sessions.sqlite');
@@ -49,7 +49,7 @@ try{
   const direct=await fetch(`http://127.0.0.1:18100/v1/sessions/${legacy.session_id}/tour`,{method:'POST',headers:{'Content-Type':'application/json','X-Session-Token':legacy.token},body:JSON.stringify({base_revision:legacy.revision})});const directBody=await direct.json();
   check('legacy tour endpoint respects guided open obligation',!directBody.tour,{status:direct.status,tour:!!directBody.tour,tourStatus:directBody.tour?.status,stops:directBody.tour?.stops?.length});
   const web=path.join(scratch,'web');
-  fs.cpSync(path.join(root,'frontend'),web,{recursive:true,filter:s=>!s.split(path.sep).some(x=>['node_modules','.next'].includes(x)||x.startsWith('.env'))});
+  fs.cpSync(path.join(root,'frontend'),web,{recursive:true,filter:s=>!s.split(path.sep).some(x=>x==='node_modules'||x.startsWith('.next')||x.startsWith('.env'))});
   fs.symlinkSync(path.join(root,'frontend/node_modules'),path.join(web,'node_modules'),'junction');
   const layout=path.join(web,'app/components/v2/guided/GuidedLayout.jsx');
   if(mutation==='questions')fs.writeFileSync(layout,fs.readFileSync(layout,'utf8').replace('{clarifyBlock && (','{clarifyBlock && (<div><div data-testid="clarify-question-card">Câu hỏi thêm?</div>').replace(/busy=\{busy\}\r?\n                \/>\r?\n              \)\}/,'busy={busy}\n                /></div>\n              )}'));
