@@ -63,6 +63,17 @@ class GuidedAPI(unittest.TestCase):
         self.assertIsNotNone(restored, 'Confirmed tour must retain its agreed visit duration after SQLite reload')
         self.assertEqual(restored['stops'], planned['tour']['stops'])
         self.assertEqual(restored['assumptions'], planned['tour']['assumptions'])
+        old_ids = [stop['venue_id'] for stop in restored['stops']]
+        replacement = self.client.post(self.url+'/tour/replace', headers=self.headers,
+            json={'base_revision': planned['revision'], 'venue_id': old_ids[1]})
+        self.assertEqual(replacement.status_code, 200, replacement.text)
+        changed = replacement.json()['tour']
+        new_ids = [stop['venue_id'] for stop in changed['stops']]
+        self.assertEqual(new_ids[::2], old_ids[::2])
+        self.assertNotIn(old_ids[1], new_ids)
+        self.assertEqual(changed['assumptions'], restored['assumptions'])
+        self.restart()
+        self.assertEqual(self.client.get(self.url, headers=self.headers).json()['tour']['stops'], changed['stops'])
         with closing(sqlite3.connect(self.db)) as db:
             record = json.loads(db.execute('SELECT tour FROM sessions WHERE id=?', (self.sid,)).fetchone()[0])
         for invalid in (True, 19, 46, '30'):
