@@ -90,13 +90,12 @@ export default function GuidedTimeline({
       className="nn-timeline"
       style={{ margin: 0, padding: 0 }}
     >
-      {/* Top Single Heading Row: ONE heading 'Lộ trình' 18.3px/600 line 28 margin-bottom 11, status right */}
+      {/* Top Single Heading Row: ONE heading 'Lộ trình' 18.3px/600 line 28, status right */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: 11,
           maxWidth: 500,
           width: '100%'
         }}
@@ -133,7 +132,7 @@ export default function GuidedTimeline({
 
       {/* Warnings / Notices Section (Single Spacing Container) */}
       {(tour.status === 'conditional' || (Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0) || (Array.isArray(tour.unknowns) && tour.unknowns.length > 0)) && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginBottom: 13, maxWidth: 500, width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 500, width: '100%' }}>
           {tour.status === 'conditional' && (
             <div
               data-testid="timeline-conditional-status"
