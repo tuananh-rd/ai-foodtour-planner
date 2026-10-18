@@ -231,6 +231,7 @@ async function run() {
   let msgId = 0;
   const pending = new Map();
   const networkRequests = [];
+  let controlledNoCandidate = false;
 
   ws.onmessage = (e) => {
     const m = JSON.parse(e.data);
@@ -243,6 +244,17 @@ async function run() {
     }
     if (m.method === 'Network.requestWillBeSent' && m.params?.request?.url) {
       networkRequests.push(m.params.request.url);
+    }
+    if (m.method === 'Fetch.requestPaused') {
+      const p = m.params;
+      const reply = controlledNoCandidate && p.request.method === 'POST'
+        ? cdp('Fetch.fulfillRequest', { requestId: p.requestId, responseCode: 409,
+            responseHeaders: [{ name: 'Content-Type', value: 'application/json' },
+              { name: 'Access-Control-Allow-Origin', value: `http://127.0.0.1:${PORT_WEB}` }],
+            body: Buffer.from(JSON.stringify({ error: { code: 'no_candidates',
+              message: '[SYNTHETIC] Không có quán thay thế thoả các ràng buộc; giữ nguyên lịch trình.' } })).toString('base64') })
+        : cdp('Fetch.continueRequest', { requestId: p.requestId });
+      reply.catch(error => console.error('Controlled no-candidate transport failed:', error.message));
     }
     if (m.method === 'Runtime.consoleAPICalled') {
       console.log('Browser console:', m.params.type, (m.params.args || []).map(a => a.value || a.description || '').join(' '));
@@ -561,13 +573,19 @@ async function run() {
   check('NFE-04: Modal closes on cancel button click', modalClosedOnCancel);
 
   // STEP 7: No-Candidate Preservation Verification (NFE-02)
-  // For S0, strict phở & bún chả interests leave no remaining candidates in Hoàn Kiếm.
-  // The system must preserve the existing tour and inform the user without silent relaxation.
+  // Controlled HTTP409 tests the error UI independently of candidate availability.
+  // The confirmed pool may legitimately allow replacements; successful HTTP
+  // replacement and a real concurrent safety409 are exercised below.
+  controlledNoCandidate = true;
+  await cdp('Fetch.enable', { patterns: [{ urlPattern: `http://127.0.0.1:${PORT_API}/*/tour/replace`, requestStage: 'Request' }] });
   await click('[data-testid="stop-replace-btn-0"]');
   await pause(250);
   await clickByText('button', 'Thay quán này');
   await pause(500);
   await waitIdle();
+
+  controlledNoCandidate = false;
+  await cdp('Fetch.disable');
 
   const modalClosedOnNoCandidate = await ev(`!document.querySelector('[role="dialog"]')`);
   check('NFE-02: Modal closed on no-candidate response', modalClosedOnNoCandidate);
