@@ -1,8 +1,8 @@
 {
   "provenance": {
-    "sourceHead": "639679599a78fbc7fdac09e0b0da75d28cb955b1",
+    "sourceHead": "2dcdc8ab84ce62bbdf30e7a4a88d90e1a57a1142",
     "frontendDirty": false,
-    "timestamp": "2026-10-18T00:41:44.802Z"
+    "timestamp": "2026-10-18T00:44:59.218Z"
   },
   "viewport": {
     "innerWidth": 1440,
@@ -102,7 +102,7 @@
     "x": 0,
     "y": 80,
     "width": 1425,
-    "height": 1351,
+    "height": 1327,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -187,7 +187,7 @@
     "x": 560,
     "y": 108,
     "width": 824,
-    "height": 1295,
+    "height": 1271,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -310,7 +310,7 @@
     "x": 560,
     "y": 358,
     "width": 500,
-    "height": 1045,
+    "height": 1021,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -326,7 +326,7 @@
     {
       "index": 0,
       "x": 560,
-      "y": 637,
+      "y": 613,
       "width": 500,
       "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
@@ -343,7 +343,7 @@
     {
       "index": 1,
       "x": 560,
-      "y": 823,
+      "y": 799,
       "width": 500,
       "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
@@ -360,7 +360,7 @@
     {
       "index": 2,
       "x": 560,
-      "y": 1009,
+      "y": 985,
       "width": 500,
       "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
