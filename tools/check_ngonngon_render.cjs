@@ -52,6 +52,14 @@ const timeline = render('GuidedTimeline', { tour, allergies: [], onChangeStop: n
 check('null timeline never invents 19:00 or five-minute legs', !/19:00|~5\b/.test(text(timeline)));
 check('conditional status is explicit', /có điều kiện/i.test(text(timeline)));
 check('route warning survives timeline render', text(timeline).includes(tour.route_warnings[0]));
+const evidenceTour = structuredClone(tour);
+evidenceTour.unknowns = ['allergy_ingredients', 'hours', 'price_per_person', 'route', '[SYNTHETIC] Cầu thang cần xác minh'];
+const evidenceTimeline = text(render('GuidedTimeline', { tour: evidenceTour }));
+check('compact evidence warning retains all four distinct unknowns',
+      /chưa|không/i.test(evidenceTimeline) && /thành phần.*dị ứng/i.test(evidenceTimeline)
+      && /giờ mở cửa/i.test(evidenceTimeline) && /giá theo người/i.test(evidenceTimeline)
+      && /tuyến đường thực/i.test(evidenceTimeline));
+check('unrecognised readable evidence notice is retained', evidenceTimeline.includes('[SYNTHETIC] Cầu thang cần xác minh'));
 const zeroTour = structuredClone(tour);
 zeroTour.stops[1].leg_from_previous = { minutes: 0, km: 0, source: 'straight_line_estimate', route_provider: null };
 const zeroTimeline = text(render('GuidedTimeline', { tour: zeroTour }));
