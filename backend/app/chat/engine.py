@@ -422,7 +422,11 @@ class ChatEngine:
     def _guided_after(self, R, u: Understanding, snap0: str, text: str) -> None:
         """After the intent handler ran: apply the slots it ignores, add LLM-only allergies, then ask ONE next thing."""
         st = R.state
+        compound_no_allergy_request = (R.intent == "GREET_OR_SMALLTALK" and u.patch.get("no_allergy")
+                                       and any(k in u.patch for k in SLOT_KEYS))
         extra_keys = {k: v for k, v in u.patch.items() if k in ("stops", "day_part", "interests", "_stops_rejected")}
+        if compound_no_allergy_request and "area" in u.patch:
+            extra_keys["area"] = u.patch["area"]
         if R.intent in SLOT_SWEEP_INTENTS:  # slot extraction does not depend on how the sentence was classified ("…được không?" is still a request)
             slot_keys = {k: v for k, v in u.patch.items() if k in SLOT_KEYS}
             if R.intent in ("SEARCH_VENUES", "DISCOVER_DISH") and not any(k in u.patch for k in ("stops", "duration_min", "party_size", "budget_scope")):
@@ -437,7 +441,7 @@ class ChatEngine:
         for term in u.extra.get("ai_allergies") or ():
             if all(fold_uncached(term) != fold_uncached(a.term) for a in st.allergies) and len(st.allergies) < MAX_ALLERGIES:
                 st.allergies.append(Allergy(term, allergens.family_of(term), "ai_unconfirmed"))
-        if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "ASK_DETAIL"):
+        if re.search(r"\b(?:tour|lich trinh|hanh trinh)\b", fold_uncached(eff)) and (R.intent in ("SET_ALLERGY", "UPDATE_PROFILE", "REQUEST_PLAN", "SEARCH_VENUES", "DISCOVER_DISH", "ASK_DETAIL") or compound_no_allergy_request):
             st.goal = "tour"
         ai_map = {"party_size": "party_size", "budget_vnd": "budget", "duration_min": "duration_min", "max_leg_min": "max_leg_min", "start_time": "start_time",
                   "end_time": "end_time", "vehicle": "vehicle", "audience": "audience", "stops": "stops", "day_part": "day_part", "interests": "tastes"}
@@ -455,7 +459,7 @@ class ChatEngine:
         if st.pending is None:
             self._guided_continue(R, full=st.goal == "tour")
         changed = self._snapshot(st) != snap0
-        if changed and R.intent not in PASSIVE:
+        if changed and (R.intent not in PASSIVE or compound_no_allergy_request):
             self._attach_understood(R)
             R.tools.append("understood")
 

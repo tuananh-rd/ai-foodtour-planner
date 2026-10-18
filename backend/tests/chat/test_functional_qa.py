@@ -66,3 +66,15 @@ class CompactTourConversation(unittest.TestCase):
     def test_numeric_spacing_preserves_capitalised_labels_and_clock(self):
         text = 'Quán Mai2, Tam3, Trong5 lúc 19h30 ở số 12A'
         self.assertEqual(numeric_prefix_spacing(text), text)
+
+    def test_no_allergy_declaration_keeps_compound_tour_goal_and_question(self):
+        result = self.turn('Tour ba quán quanh Hồ Gươm tối nay một tiếng rưỡi, năm trăm nghìn cả hội cho hai người, không dị ứng gì')
+        self.assertEqual(self.state.goal, 'tour')
+        self.assertEqual(self.state.profile['duration_min'].value, 90)
+        self.assertEqual(self.state.profile['budget'].value, 500000)
+        self.assertEqual(self.state.profile['budget'].scope, 'group')
+        self.assertEqual(self.state.profile['party_size'].value, 2)
+        self.assertEqual(self.state.pending.slot, 'start_time')
+        self.assertTrue(any(b['type'] == 'understood' for b in result.blocks))
+        self.turn('19h')
+        self.assertEqual(self.state.pending.kind, 'confirm_plan')
