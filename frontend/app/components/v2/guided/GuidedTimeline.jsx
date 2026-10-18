@@ -90,9 +90,30 @@ export default function GuidedTimeline({
       className="nn-timeline"
       style={{ margin: 0, padding: 0 }}
     >
-      {/* Tour Status Badge row (single heading hierarchy coordination with root Lộ trình) */}
-      {tour.status && (
-        <div style={{ display: 'flex', justifyContent: 'flex-start', alignItems: 'center', marginBottom: 4 }}>
+      {/* Top Single Heading Row: ONE heading 'Lộ trình' 18.3px/600 line 28 margin-bottom 11, status right */}
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 11,
+          maxWidth: 500,
+          width: '100%'
+        }}
+      >
+        <h3
+          className="nn-section-h"
+          style={{
+            margin: 0,
+            fontSize: 18.3,
+            fontWeight: 600,
+            lineHeight: '28px',
+            color: 'var(--nn-ink, #17352B)'
+          }}
+        >
+          Lộ trình
+        </h3>
+        {tour.status && (
           <span
             data-testid="timeline-status-badge"
             style={{
@@ -107,14 +128,15 @@ export default function GuidedTimeline({
           >
             {tour.status === 'verified_feasible' ? 'Đã xác minh khả thi' : tour.status === 'conditional' ? 'Gợi ý có điều kiện' : 'Thiếu bằng chứng'}
           </span>
-        </div>
-      )}
+        )}
+      </div>
 
       {/* Tour Status & Conditional Notice (Q02) */}
       {tour.status === 'conditional' && (
         <div
           data-testid="timeline-conditional-status"
           className="nn-peach-box"
+          style={{ marginBottom: 13 }}
         >
           ⚠️ <b>Lịch trình có điều kiện:</b> Còn bằng chứng chưa được xác minh; hãy xem các thông tin cần kiểm tra bên dưới.
         </div>
@@ -131,7 +153,8 @@ export default function GuidedTimeline({
             borderRadius: 8,
             padding: '8px 12px',
             fontSize: 13,
-            color: '#873800'
+            color: '#873800',
+            marginBottom: 13
           }}
         >
           <b>Cảnh báo tuyến đường:</b>
@@ -153,7 +176,8 @@ export default function GuidedTimeline({
             borderRadius: 8,
             padding: '8px 12px',
             fontSize: 12,
-            color: '#475569'
+            color: '#475569',
+            marginBottom: 13
           }}
         >
           <b>Thông tin chưa xác minh:</b> {tour.unknowns.map((u) => formatWarningMessage(u)).join(', ')}
@@ -161,34 +185,33 @@ export default function GuidedTimeline({
       )}
 
       {/* Vertical Stops List conforming to reference geometry */}
-      <div style={{ display: 'grid', gap: 13 }}>
+      <div style={{ display: 'grid', gap: 13, maxWidth: 500, width: '100%' }}>
         {stops.map((stop, idx) => {
           const leg = stop.leg_from_previous;
           const priceMinK = stop.price?.min_vnd ? `${Math.round(stop.price.min_vnd / 1000)}k` : null;
           const priceMaxK = stop.price?.max_vnd ? `${Math.round(stop.price.max_vnd / 1000)}k` : null;
-          const priceStr = priceMinK && priceMaxK ? `${priceMinK}–${priceMaxK}` : priceMaxK ? `tối đa tham khảo ${priceMaxK}` : 'chưa rõ khoảng giá';
-          const priceShortForm = priceMinK && priceMaxK ? `${priceMinK}–${priceMaxK}` : priceMaxK ? `<=${priceMaxK}` : null;
+          const priceShortForm = priceMinK && priceMaxK ? `${priceMinK}–${priceMaxK}` : priceMaxK ? `≤${priceMaxK}` : null;
 
           const dishStr = Array.isArray(stop.venue?.cuisine_styles) && stop.venue.cuisine_styles.length > 0
             ? stop.venue.cuisine_styles.join(' • ')
-            : 'Chưa có thông tin món cụ thể';
+            : 'Món đặc trưng theo nguồn';
 
           // Q01: Preserve legitimate 0; do not turn null or 0 into 5!
           const legMinText = typeof leg?.minutes === 'number'
-            ? (leg.minutes === 0 ? '0 phút' : `~${leg.minutes} phút (ước tính)`)
+            ? (leg.minutes === 0 ? '0p' : `${leg.minutes}p đi bộ`)
             : null;
 
-          // Meta pill text: leg duration + price short form
+          // Price + leg ONLY in metapill per visual owner specification
           const metaParts = [];
+          if (priceShortForm) {
+            metaParts.push(`≈${priceShortForm}`);
+          } else if (stop.price?.price_range) {
+            metaParts.push(stop.price.price_range);
+          }
           if (idx > 0 && legMinText) {
             metaParts.push(legMinText);
           }
-          if (priceShortForm) {
-            metaParts.push(`${priceShortForm} (theo nguồn)`);
-          } else {
-            metaParts.push('giá theo nguồn: ' + priceStr);
-          }
-          const metaDisplay = metaParts.length > 0 ? metaParts.join(' • ') : 'Thông tin theo nguồn';
+          const metaDisplay = metaParts.length > 0 ? metaParts.join(' · ') : 'Thông tin theo nguồn';
 
           // Q01: Preserve null arrive; do NOT fall back to '19:00'!
           const arriveDisplay = stop.arrive
@@ -197,69 +220,58 @@ export default function GuidedTimeline({
 
           const isLocked = lockedStops.includes(stop.venue_id) || stop.locked;
 
+          // Hours inside desc 'nguồn ghi:…', no extra hour row
+          const hoursNote = stop.hours?.display ? ` · nguồn ghi: ${stop.hours.display}` : '';
+          const fullDesc = `${dishStr}${hoursNote}`;
+
           return (
             <div
               key={stop.venue_id || idx}
               data-testid={`guided-stop-${idx}`}
               className="nn-timeline-step"
             >
-              {/* Dual Pill Row: 34px Green Time Pill + 35px Meta Pill */}
+              {/* Dual Pill Row: Left: Time Pill + Meta Pill; Right: Real Lock / Replace Actions */}
               <div className="nn-timeline-pills">
-                <span className="nn-time-pill">
-                  {arriveDisplay}
-                </span>
-                <span className="nn-meta-pill">
-                  {metaDisplay}
-                </span>
-              </div>
-
-              {/* Stop Card with 8px radius, #D9D9D9 border, title #1E1E1E, desc #757575 */}
-              <div
-                data-testid={`timeline-stop-card-${idx}`}
-                className="nn-timeline-card"
-              >
-                <div className="nn-timeline-card-header">
-                  <h3 className="nn-timeline-card-title">
-                    {stop.name}
-                  </h3>
+                <div className="nn-timeline-pills-left">
+                  <span className="nn-time-pill">
+                    {arriveDisplay}
+                  </span>
+                  <span className="nn-meta-pill">
+                    {metaDisplay}
+                  </span>
+                </div>
+                <div className="nn-timeline-pills-right">
                   {isLocked && (
                     <span
                       data-testid={`stop-lock-badge-${idx}`}
-                      style={{
-                        fontSize: 11,
-                        background: '#e0f2fe',
-                        color: '#0369a1',
-                        borderRadius: 6,
-                        padding: '1px 6px',
-                        fontWeight: 600
-                      }}
+                      className="nn-lock-badge"
                     >
                       🔒 Đã khóa
                     </span>
                   )}
-                </div>
-
-                <p className="nn-timeline-card-desc">
-                  {dishStr}
-                </p>
-
-                <div className="nn-timeline-card-hours">
-                  <span>giá theo nguồn: {priceStr}</span>
-                  {idx > 0 && legMinText && <span> • đi bộ {legMinText}</span>}
-                  <span> • giờ mở cửa theo nguồn ghi: {stop.hours?.display || 'chưa rõ'}</span>
-                </div>
-
-                {/* Stop-level action buttons: Ghost Pill "Đổi quán này" */}
-                <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                   <button
                     type="button"
                     data-testid={`stop-replace-btn-${idx}`}
                     onClick={() => onReplaceStop ? onReplaceStop(stop) : onChangeStop && onChangeStop(stop)}
-                    className="nn-ghost-pill"
+                    className="nn-pill-action-btn"
+                    aria-label={`Đổi quán ${stop.name}`}
                   >
-                    🔄 Đổi quán này
+                    🔄 Đổi quán
                   </button>
                 </div>
+              </div>
+
+              {/* Stop Card: 500w, r8, border #D9D9D9, padding 24, title 23.7/400 #1E1E1E, desc 16 #757575, target 129h/107h */}
+              <div
+                data-testid={`timeline-stop-card-${idx}`}
+                className="nn-timeline-card"
+              >
+                <h3 className="nn-timeline-card-title">
+                  {stop.name}
+                </h3>
+                <p className="nn-timeline-card-desc">
+                  {fullDesc}
+                </p>
               </div>
             </div>
           );

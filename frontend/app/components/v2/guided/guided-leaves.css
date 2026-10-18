@@ -30,6 +30,39 @@
   flex-wrap: wrap;
 }
 
+.nn-timeline-step {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-width: 500px;
+  width: 100%;
+}
+
+.nn-timeline-pills {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
+  flex-wrap: wrap;
+}
+
+.nn-timeline-pills-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nn-timeline-pills-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .nn-time-pill {
   height: 34px;
   min-height: 34px;
@@ -41,7 +74,9 @@
   font-weight: 600;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   white-space: nowrap;
+  box-sizing: border-box;
 }
 
 .nn-meta-pill {
@@ -56,18 +91,78 @@
   font-weight: 500;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  box-sizing: border-box;
+}
+
+.nn-pill-action-btn {
+  height: 34px;
+  min-height: 34px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid var(--nn-card-line, #D9D9D9);
+  background: var(--nn-card, #FFFFFF);
+  color: var(--nn-ink, #17352B);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  position: relative;
+  box-sizing: border-box;
+}
+
+/* Hit area enlargement for accessibility / touch targets (min 44px hit) */
+.nn-pill-action-btn::after {
+  content: '';
+  position: absolute;
+  top: -5px;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  min-height: 44px;
+}
+
+.nn-pill-action-btn:hover:not([disabled]) {
+  border-color: var(--nn-green, #166B52);
+  color: var(--nn-green, #166B52);
+  background: var(--nn-mint, #EFF7F1);
+}
+
+.nn-pill-action-btn:focus-visible {
+  outline: 2px solid var(--nn-green, #166B52);
+  outline-offset: 2px;
+}
+
+.nn-lock-badge {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: #E0F2FE;
+  color: #0369A1;
+  font-size: 11px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
   white-space: nowrap;
 }
 
-/* Timeline Stop Card */
+/* Timeline Stop Card conforming to reference density */
 .nn-timeline-card {
+  width: 100%;
+  max-width: 500px;
+  box-sizing: border-box;
   background: var(--nn-card, #FFFFFF);
   border: 1px solid var(--nn-card-line, #D9D9D9);
   border-radius: var(--nn-r-card, 8px);
   padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
 }
 
 @media (max-width: 1199px) {
@@ -76,17 +171,10 @@
   }
 }
 
-.nn-timeline-card-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
 .nn-timeline-card-title {
   margin: 0;
   font-size: 23.7px;
-  line-height: 1.25;
+  line-height: 28px;
   font-weight: 400;
   color: var(--nn-card-title, #1E1E1E);
 }
@@ -101,15 +189,10 @@
 .nn-timeline-card-desc {
   margin: 0;
   font-size: 16px;
-  line-height: 1.35;
+  line-height: 22px;
+  font-weight: 400;
   color: var(--nn-card-desc, #757575);
-}
-
-.nn-timeline-card-hours {
-  margin: 0;
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--nn-mute, #62736D);
+  word-break: break-word;
 }
 
 /* Ghost Pill Action Buttons */
