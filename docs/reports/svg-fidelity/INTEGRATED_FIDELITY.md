@@ -1,17 +1,18 @@
 # SVG Visual Fidelity Integrated Final Report
 
 ## 1. Executive Summary
-- **Ownership Scope:** Antigravity implemented and compacted the 6 authorized leaf components (`UnderstoodCard.jsx`, `ClarifyQuestionCard.jsx`, `ConfirmSummaryCard.jsx`, `GuidedTimeline.jsx`, `TrustDisclosure.jsx`, `InlineRowEditor.jsx`) and `frontend/app/components/v2/guided/guided-leaves.css` per Claude visual specifications and coordinator guidance.
-- **Root & Shell Integration:** Merged Claude's final shell commits `14bafaf` (single heading coordination), `051f168` (gutter absorption), and `e419ca8` (compact "Khách" header profile at 97w, x1296) and Codex's test output isolation `ab253fc`.
-- **Spacing Normalization:** Removed redundant `marginBottom: 11` on heading and `marginBottom: 13` on the warning container in `GuidedTimeline.jsx`, allowing `.nn-timeline`'s `gap: 13px` to act as the sole outer vertical spacing. This shifted stop card 0 up to `y: 589` (from initial `y: 637`). Stop card 2 starts at `y: 961` inside the initial 1024 viewport (bottom at `y: 1091`, with remaining content reachable via natural scroll).
+- **Ownership Scope:** Antigravity implemented and compacted the authorized leaf components and visual comparison harness. Transferred `GuidedTimeline.jsx` final warning compaction to Claude, then cleanly merged Claude's root commit `d828e68` (incorporating Codex's harness fix `951d935`) into the active branch while preserving all QA harness improvements and mobile assertions.
+- **Root & Shell Integration:** Merged Claude's root commit `d828e68` combining timeline warnings into one compact `.nn-warn-one` block (height: 54px), compact "Khách" header profile (97w, x1311), and default scrollbar gutter compensation (`padding: 0px 17px 0px 32px`).
+- **Compaction & Viewport Geometry:** The single merged peach warning container (`height: 54px`, `padding: 8px 12px`, `font: 13px / 18px`) allows all three stop cards to start at `y: 509`, `y: 695`, and `y: 881`. The bottom of the third card ends at **`y: 1011`**, successfully fitting all three stop cards entirely within the standard **1024px desktop viewport** (`thirdCardBottom: 1011 < 1024`).
 - **Harness & Tooling:** Reusable CDP visual fidelity suite at `qa/visual/capture_fidelity.mjs`, running on isolated ports (Web: 13400, API: 18400, CDP: 19600) with TCP preflight refusal, synthetic health pre-check (`health.dataset_source === "synthetic"`), Google host blocking, strict scroll normalization (`window.scrollY === 0`), and unmasked 2880×1024 side-by-side and 1440×1024 50% overlay composites under `--tag integrated`.
 - **Provenance & Environment:**
-  - `sourceHead`: `ee26b6562662470dd0dacaa4c7cc8b77538f7690`
+  - `sourceHead`: `355933ad3fa0508bc7e6173d72c58504d26f8df3` (clean merge of root freeze `d828e68`)
   - `frontendDirty`: `false`
   - Viewport: `innerWidth: 1440`, `clientHeight: 1024`, `clientWidth: 1425` (15px default scrollbar gutter), `scrollY: 0`
+  - Mobile Viewport: 390×844 with active tab validation via `aria-controls` for both Khám phá (`#guided-chat-section`) and Lịch trình (`#guided-tour-section`), scrollWidth exactly 390px (zero horizontal overflow), and `scrollY === 0`.
   - Font family: `"Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif`
 - **Regression Suite:**
-  - `tools/check_ngonngon_render.cjs`: **13/13 PASSED (100%)** (zero-minute `0 phút`, explicit zero price range `0k`, explicit missing hours `giờ mở cửa: chưa rõ`, walking Maps URLs without keys).
+  - `tools/check_ngonngon_render.cjs`: **15/15 PASSED (100%)** (all distinct unknown evidence facts, 0 phút, explicit 0k, explicit missing hours, walking Maps URLs without keys).
   - `qa/e2e/test_ngonngon_qa.mjs`: **66/66 PASSED (100%)**, outputting cleanly to isolated `docs/reports/svg-fidelity/author-regression/`. Historical `docs/reports/ngonngon/*.png` preserved at `5633203`.
 - **Visual Gate:** Final visual verdict is owned exclusively by Claude Sonnet 5.5.
 
@@ -21,10 +22,11 @@
 
 | Component Property | Reference SVG Spec | Baseline (Before) | Compacted Integrated (Final) | Status / Classification |
 |---|---|---|---|---|
-| **Header Profile Slot** | ~97 px width | 130 px ("Khách ẩm thực") | **97 px** (`x: 1296, w: 97, h: 32`) | **Exact Geometry Match** |
+| **Header Profile Slot** | ~97 px width | 130 px ("Khách ẩm thực") | **97 px** (`x: 1311, w: 97, h: 32`) | **Exact Geometry Match** |
 | **Timeline Column Width** | 500 px | 537 px | **500 px** (`x: 560, w: 500`) | **Exact Geometry Match** |
-| **Stop Card Dimensions** | 500w × 129h / 107h | Flex (~537px) × 216h | **500w × 130h** (y: 589, 775, 961) | **Target Match** (130h vs 129h ref, down from 216h) |
-| **Stop Card 3 Viewport** | Scrollable below fold | Off-screen (>1260) | **Starts at y: 961, bottom 1091** | Truthfully reported (top visible in 1024 viewport) |
+| **Warning Container** | Compact warning | 140 px (split divs) | **54 px** (`x: 560, y: 399, w: 500, h: 54`, r8) | **Target Compaction Achieved** |
+| **Stop Card Dimensions** | 500w × 129h / 107h | Flex (~537px) × 216h | **500w × 130h** (y: 509, 695, 881) | **Target Match** (130h vs 129h ref, down from 216h) |
+| **Stop Card 3 Viewport** | 3 stops fit in 1024 | Off-screen (>1260) | **Bottom at y: 1011 (fits < 1024)** | **Target Achieved (< 1024 Viewport)** |
 | **Stop Item Structure** | Dual Pill Row + Card | Single badge in card | **Time pill (34h) + Meta pill (35h) + Pill Actions + Card (130h)** | Conforming to Claude spec |
 | **Stop Card Radius** | 8 px (`--nn-r-card`) | 16 px | **8 px** (`var(--nn-r-card, 8px)`) | Exact Geometry Match |
 | **Stop Card Border** | `#D9D9D9` (`--nn-card-line`) | `#DDE7E1` | **`1px solid rgb(217, 217, 217)`** | Audited Color Match |
