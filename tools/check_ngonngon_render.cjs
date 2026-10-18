@@ -57,6 +57,18 @@ zeroTour.stops[1].leg_from_previous = { minutes: 0, km: 0, source: 'straight_lin
 const zeroTimeline = text(render('GuidedTimeline', { tour: zeroTour }));
 check('zero-minute leg remains zero', /0\s*phút/.test(zeroTimeline));
 
+const freeTour = structuredClone(tour);
+for (const stop of freeTour.stops) stop.price = { min_vnd: 0, max_vnd: 0, semantics: 'venue_range', evidence: 'unknown' };
+check('explicit zero venue range is not discarded as missing', /(?:^|\W)0[kK](?:\W|$)/.test(text(render('GuidedTimeline', { tour: freeTour }))));
+
+// Known schedule/price removes unrelated "unknown time/price" labels from this hours probe.
+const missingHoursTour = structuredClone(tour);
+for (const stop of missingHoursTour.stops) {
+  stop.arrive = '19:00'; stop.depart = '19:20';
+  stop.price = { min_vnd: 45000, max_vnd: 65000, semantics: 'venue_range', evidence: 'unknown' };
+}
+check('missing venue hours remain explicitly unknown', /giờ[^•\n]*chưa rõ/i.test(text(render('GuidedTimeline', { tour: missingHoursTour }))));
+
 for (const count of [3, 4, 5]) {
   const t = structuredClone(tour);
   while (t.stops.length < count) t.stops.push({ ...t.stops.at(-1), venue_id: 'SYN-URL-' + t.stops.length, order: t.stops.length + 1, lat: 21.03 + t.stops.length * .001 });
