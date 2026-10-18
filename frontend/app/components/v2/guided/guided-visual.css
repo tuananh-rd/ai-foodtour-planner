@@ -57,7 +57,7 @@
 .nn-btn[disabled] { cursor: not-allowed; opacity: .6; }
 
 /* main grid */
-.nn-main { width: 100%; max-width: 1440px; margin: 0 auto; padding: 28px 56px 28px 32px; display: grid; grid-template-columns: 480px minmax(0, 1fr); column-gap: 48px; align-items: start; flex: 1; }
+.nn-main { width: 100%; max-width: 1440px; margin: 0 auto; padding: 28px clamp(32px, calc(56px - (1440px - 100%)), 56px) 28px 32px; display: grid; grid-template-columns: 480px minmax(0, 1fr); column-gap: 48px; align-items: start; flex: 1; }
 
 /* chat panel */
 .nn-chat { display: flex; flex-direction: column; min-width: 0; background: var(--nn-card); border-radius: var(--nn-r-panel); box-shadow: var(--nn-shadow); padding: 24px; height: calc(100vh - 136px); min-height: 640px; position: sticky; top: 108px; }
@@ -136,9 +136,9 @@
 .nn-tag { position: absolute; max-width: 104px; height: 28px; padding: 0 10px; border-radius: 10px; background: #fff; font-size: 12.5px; line-height: 28px; color: var(--nn-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; }
 .nn-canvas-note { position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); text-align: center; color: var(--nn-mute); font-size: 13px; line-height: 18px; background: rgba(247,248,242,.92); padding: 8px; border-radius: 12px; z-index: 3; }
 .nn-caption { position: absolute; left: 10px; right: 10px; bottom: 8px; margin: 0; padding: 4px 8px; border-radius: 8px; background: rgba(247,248,242,.94); font-size: 12px; line-height: 16px; color: var(--nn-mute); z-index: 3; }
-.nn-tip { margin-top: 14px; height: 78px; flex: none; background: var(--nn-green); color: #fff; border-radius: 16px; padding: 12px 16px; }
-.nn-tip b { display: block; color: var(--nn-lime); font-size: 13px; line-height: 18px; font-weight: 600; margin-bottom: 4px; }
-.nn-tip span { font-size: 12px; line-height: 16px; }
+.nn-tip { margin-top: 14px; height: 78px; flex: none; background: var(--nn-green); color: #fff; border-radius: 16px; padding: 10px 16px; overflow: hidden; }
+.nn-tip b { display: block; color: var(--nn-lime); font-size: 13px; line-height: 18px; font-weight: 600; margin-bottom: 2px; }
+.nn-tip span { display: block; font-size: 12px; line-height: 16px; }
 
 /* stacked layout (mobile / narrow) */
 @media (max-width: 1199px) {
