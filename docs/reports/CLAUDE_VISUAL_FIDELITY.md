@@ -100,3 +100,6 @@ Residuals (honest, enumerated):
 
 Regression/gate evidence (reported by Codex, not re-run by me on reserved ports): production browser 169/169, preview 22/22, SSR 15/15, contract 18/18, backend 576 (1 skip); my own runs: `test_ngonngon_qa` 66/66 on my earlier shell commits (restored tracked ngonngon PNGs), `check_ngonngon_render` 15/15 on d828e68, `tests.api.test_u3_guided` 17/17. The Antigravity author 66-run result is awaited.
 Review limits: visual judgement from PNG viewing and CDP geometry; no pixel-diff threshold claimed; mobile viewed at 390×844 only; one scroll position (0).
+
+
+**Codex integration note after Claude settlement:** Antigravity author QA subsequently confirmed66/66 and capture exit0 in `bba17d9`, integrated with no frontend drift from `d828e68`. Both live Dispatches settled succeeded; Claude external session retained by runtime, Antigravity owned terminal released. This note records integration accounting and does not alter Claude's visual judgement above.
