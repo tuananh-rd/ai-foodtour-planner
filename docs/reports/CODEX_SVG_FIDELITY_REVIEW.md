@@ -15,7 +15,7 @@ No full-SVG screenshot/image overlay may replace the live UI. Extracting a small
 | Gate | Required evidence | State |
 |---|---|---|
 | Reference inspection | Claude's direct original rendering/viewing + measured spec | Confirmed; a0d3b43 measured spec/tokens committed |
-| Primary implementation | Claude-owned layout/scoped CSS commit; no overlapping frontend writes | In progress |
+| Primary implementation | Claude-owned layout/scoped CSS commit; no overlapping frontend writes | Shell5633203 committed; final integrated review pending |
 | Component implementation | Exact Claude brief, Codex-routed Antigravity file scope and commit | Brief a0d3b43 delivered msg_9ce9bbf7b5e3; implementation active |
 | Visual desktop | Fresh actual synthetic1440×1024 screenshot + side-by-side/overlay + material deviations fixed | Pending |
 | Mobile/accessibility |390×844, no horizontal overflow, clear decisions/warnings, actual controls/focus | Pending |
@@ -24,3 +24,14 @@ No full-SVG screenshot/image overlay may replace the live UI. Extracting a small
 | Lifecycle/handoff | Both task outcomes, correct release/reuse, final local URL and commits | Pending |
 
 Prior tests575backend(1optional-CSVskip), frontend contracts18, production browser169, supplemental22 and independent author interaction62/integrated66 are a regression baseline, not new visual evidence. Screenshots use labelled synthetic data only; no private preview venue rows, tokens or location history in artifacts. User servers remain running; temporary services use checked separate ports. No Maps API/key/billing, external provider calls, dependency upgrades, push/deploy or new data collection is authorised for this visual revision.
+
+## Intermediate findings routed to owners
+
+| ID | Finding / evidence | Owner / disposition |
+|---|---|---|
+| VF-C01 | Actual production browser on5633203:168/169 pass,1failure. At1280×800 the confirmation card is y340.875..853.172, height512.297, so the prior full-decision visibility gate fails. Zero runtime/console errors. [Count-only evidence](svg-fidelity-codex/shell-regression.json). | Claude root presentation/focus; OPEN until repaired and final leaf-integrated rerun. Do not weaken the gate. |
+| VF-C02 | Original SVG timeline title paths fill1E1E1E, description757575 and border outlineD9D9D9; they differ from global green ink/muted/border tokens. | Claude added distinct card tokens/spec in5633203; Antigravity must apply to leaf cards. |
+| VF-C03 | First baseline tour comparison was scrolled down, omitting title/metrics under sticky header; annotation also covered header geometry. Such a comparison cannot prove alignment. | Antigravity: reset/assert scrollY0, retain unmasked1440×1024 images/overlay and measured anchors; recapture pending. |
+| VF-C04 | Baseline capture main printed success but left WebSocket/owned subprocess handles open; actual node stayed running and the worker awaited a background task forever. | Antigravity observed/terminated only its own test task, added success cleanup/explicit exit. Verify clean process exit, then continue component work. |
+
+Codex's original XML audit confirms the reference SHA and palette independently; Claude's region pixel-error claims remain provisional until its images/method are exported and viewed. Frame geometry, typography and honest dynamic content are assessed separately. A failed legacy test that expects stale welcome copy is not silently converted to PASS; the legacy `test_guided_ui.mjs` port-killing preflight must not be used against unknown listeners. Current isolated production browser/module/contract gates remain required.

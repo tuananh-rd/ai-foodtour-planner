@@ -1,0 +1,19 @@
+{
+  "source": "5633203",
+  "mode": "scratch-production synthetic rules/mock, real HTTP and Chrome",
+  "checks": 169,
+  "failed": [
+    {
+      "name": "S0 1280 entire confirmation visible without fixed overlap",
+      "details": {
+        "top": 340.875,
+        "bottom": 853.171875,
+        "height": 512.296875,
+        "viewport": 800,
+        "overlaps": 0
+      }
+    }
+  ],
+  "runtime_exceptions": 0,
+  "console_errors": 0
+}

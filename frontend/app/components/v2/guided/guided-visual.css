@@ -112,7 +112,7 @@
 .nn-tile.mint { background: var(--nn-mint); } .nn-tile.peach { background: var(--nn-peach); }
 .nn-tile-value { font-size: 18px; line-height: 24px; font-weight: 600; color: var(--nn-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .nn-tile-label { margin-top: 5px; font-size: 12.5px; line-height: 16px; color: var(--nn-mute); }
-.nn-row { display: grid; grid-template-columns: 500px minmax(0, 1fr); column-gap: 18px; margin-top: 18px; align-items: stretch; min-height: 615px; }
+.nn-row { display: grid; grid-template-columns: minmax(0, 1fr) 306px; column-gap: 18px; margin-top: 18px; align-items: stretch; min-height: 615px; }
 .nn-left { min-width: 0; }
 .nn-section-h { margin: 0 0 11px; font-size: 18.3px; line-height: 28px; font-weight: 600; color: var(--nn-ink); }
 .nn-step { margin-top: 0; } .nn-step + .nn-step { margin-top: 13px; }
@@ -135,8 +135,8 @@
 .nn-node.last { background: var(--nn-orange); }
 .nn-tag { position: absolute; max-width: 104px; height: 28px; padding: 0 10px; border-radius: 10px; background: #fff; font-size: 12.5px; line-height: 28px; color: var(--nn-ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; z-index: 2; }
 .nn-canvas-note { position: absolute; left: 16px; right: 16px; top: 50%; transform: translateY(-50%); text-align: center; color: var(--nn-mute); font-size: 13px; line-height: 18px; background: rgba(247,248,242,.92); padding: 8px; border-radius: 12px; z-index: 3; }
-.nn-caption { margin: 8px 2px 0; font-size: 12px; line-height: 16px; color: var(--nn-mute); }
-.nn-tip { margin-top: 12px; background: var(--nn-green); color: #fff; border-radius: 16px; padding: 12px 16px; min-height: 78px; }
+.nn-caption { position: absolute; left: 10px; right: 10px; bottom: 8px; margin: 0; padding: 4px 8px; border-radius: 8px; background: rgba(247,248,242,.94); font-size: 12px; line-height: 16px; color: var(--nn-mute); z-index: 3; }
+.nn-tip { margin-top: 14px; height: 78px; flex: none; background: var(--nn-green); color: #fff; border-radius: 16px; padding: 12px 16px; }
 .nn-tip b { display: block; color: var(--nn-lime); font-size: 13px; line-height: 18px; font-weight: 600; margin-bottom: 4px; }
 .nn-tip span { font-size: 12px; line-height: 16px; }
 
@@ -159,3 +159,11 @@
   .nn-canvas { min-height: 380px; }
   .nn-route { height: auto; position: static; }
 }
+
+/* decision state: the confirmation card is pinned first and fully visible; the intro collapses, the panel grows instead of scrolling inside itself */
+.nn-pin { order: -1; min-width: 0; }
+.nn-chat.confirming { height: auto; min-height: calc(100vh - 136px); position: static; }
+.nn-chat.confirming .nn-h2, .nn-chat.confirming .nn-lead, .nn-chat.confirming .nn-chips, .nn-chat.confirming .nn-rule,
+.nn-chat.deciding .nn-h2, .nn-chat.deciding .nn-lead, .nn-chat.deciding .nn-chips, .nn-chat.deciding .nn-rule { display: none; }
+.nn-chat.confirming .nn-stream { overflow: visible; margin-top: 16px; }
+.nn-chat.deciding .nn-stream { margin-top: 16px; }
