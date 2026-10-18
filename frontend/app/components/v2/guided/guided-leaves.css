@@ -426,3 +426,11 @@
   font-size: 13px;
   line-height: 1.45;
 }
+
+/* single merged evidence warning above the first stop: compact, still fully readable */
+.nn-peach-box.nn-warn-one {
+  padding: 8px 12px;
+  font-size: 13px;
+  line-height: 18px;
+  border-radius: 8px;
+}

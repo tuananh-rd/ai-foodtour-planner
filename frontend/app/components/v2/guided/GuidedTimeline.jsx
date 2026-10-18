@@ -5,6 +5,30 @@ import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
 import { formatWarningMessage } from './ConfirmSummaryCard';
 import './guided-leaves.css';
 
+
+// One short sentence for the evidence gaps; every distinct unknown is kept, unrecognised ones keep their full readable text.
+const COMPACT_UNKNOWN = {
+  allergy_ingredients: 'thành phần để đánh giá dị ứng',
+  hours: 'giờ mở cửa',
+  price_per_person: 'giá theo người',
+  route: 'tuyến đường thực',
+  route_time: 'thời gian di chuyển',
+  budget: 'chi phí theo ngân sách'
+};
+function compactUnknowns(unknowns) {
+  const known = [];
+  const other = [];
+  for (const u of unknowns) {
+    const key = typeof u === 'string' ? u.trim() : '';
+    if (COMPACT_UNKNOWN[key]) known.push(COMPACT_UNKNOWN[key]);
+    else if (u) other.push(formatWarningMessage(u));
+  }
+  const parts = [];
+  if (known.length) parts.push(`Chưa xác minh: ${known.join(' · ')}.`);
+  parts.push(...other);
+  return parts.join(' ');
+}
+
 /**
  * GuidedTimeline
  * Step 5 Vertical Timeline conforming to SVG fidelity spec (owner: Antigravity)
@@ -29,6 +53,7 @@ export default function GuidedTimeline({
   }
 
   const stops = tour.stops;
+  const hasUnknowns = Array.isArray(tour.unknowns) && tour.unknowns.length > 0;
 
   // Build Free Google Maps Directions URL (Full route up to 5 stops)
   let mapsUrl = null;
@@ -133,13 +158,17 @@ export default function GuidedTimeline({
       {/* Warnings / Notices Section (Single Spacing Container) */}
       {(tour.status === 'conditional' || (Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0) || (Array.isArray(tour.unknowns) && tour.unknowns.length > 0)) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 500, width: '100%' }}>
-          {tour.status === 'conditional' && (
+          {(tour.status === 'conditional' || hasUnknowns) && (
             <div
-              data-testid="timeline-conditional-status"
-              className="nn-peach-box"
-              style={{ margin: 0 }}
+              data-testid={tour.status === 'conditional' ? 'timeline-conditional-status' : undefined}
+              className="nn-peach-box nn-warn-one"
             >
-              ⚠️ <b>Lịch trình có điều kiện:</b> Còn bằng chứng chưa được xác minh; hãy xem các thông tin cần kiểm tra bên dưới.
+              ⚠️ <b>{tour.status === 'conditional' ? 'Lịch trình có điều kiện:' : 'Thông tin chưa xác minh:'}</b>{' '}
+              {hasUnknowns ? (
+                <span data-testid="timeline-unknowns">{compactUnknowns(tour.unknowns)}</span>
+              ) : (
+                'Còn bằng chứng chưa được xác minh; hãy kiểm tra lại trước khi đi.'
+              )}
             </div>
           )}
 
@@ -163,23 +192,6 @@ export default function GuidedTimeline({
                   <li key={i}>{formatWarningMessage(rw)}</li>
                 ))}
               </ul>
-            </div>
-          )}
-
-          {Array.isArray(tour.unknowns) && tour.unknowns.length > 0 && (
-            <div
-              data-testid="timeline-unknowns"
-              style={{
-                margin: 0,
-                background: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: 8,
-                padding: '6px 12px',
-                fontSize: 12,
-                color: '#475569'
-              }}
-            >
-              <b>Thông tin chưa xác minh:</b> {tour.unknowns.map((u) => formatWarningMessage(u)).join(', ')}
             </div>
           )}
         </div>
