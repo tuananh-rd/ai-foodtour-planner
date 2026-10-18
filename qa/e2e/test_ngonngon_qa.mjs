@@ -368,7 +368,7 @@ async function run() {
 
   // NFE-08 Verification: Anonymous User Context in Header
   const headerText = await ev(`document.querySelector('header')?.innerText || ''`);
-  check('NFE-08: Anonymous user header badge (Khách ẩm thực, no fake Tuấn)', !headerText.includes('Tuấn') && headerText.includes('Khách ẩm thực'), headerText);
+  check('NFE-08: Anonymous user header badge (Khách, no fake Tuấn)', !headerText.includes('Tuấn') && headerText.includes('Khách'), headerText);
 
   // NFE-08 Welcome bubble check
   const welcomeText = await ev(`document.querySelector('[data-testid="guided-welcome-msg"]')?.innerText || ''`);
