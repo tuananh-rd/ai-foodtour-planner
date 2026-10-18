@@ -16,7 +16,7 @@ User rejects prior visual acceptance for the new requirement; functional N-serie
 | VF3 | Codex | IN PROGRESS, functional gates PASS; final visual review open | Backend576/1optional CSV skip, module15/15, frontendcontract18/18, build/drift PASS; fresh independent production browser169/169 and supplemental22/22 on SQLite. Durable reload/replacement context fixesf5d1c56/8b5d140 approved by Claude with fail-before tests. Native scrollbar/header and warning compaction final images pending; old N PNGs preserved, new evidence isolated |
 | VF4 | Claude + Codex | QUEUED on integrated evidence | Claude mandatory final visual review of original vs actual1440×1024 and mobile; fix material deviations, document honest residuals; Codex releases/reuses settled workers and reports URL/commits/screenshots |
 
-Resume checkpoint: Claude ACK ready on the same live dispatch; Antigravity source writes held pending explicit ACK to transfer only `GuidedTimeline.jsx` to Claude for the final compact warning implementation. Antigravity retains QA/harness/report ownership; no overlapping writes are permitted.
+Resume checkpoint: Claude ACK ready on the same live dispatch; Antigravity explicitly released clean `GuidedTimeline.jsx` via msg_9fa8b91187b1; ONLY that file now transfers to Claude for final compact warning implementation. All other leaf source stays frozen. Antigravity retains QA/harness/report ownership; no overlapping writes are permitted.
 
 No visual PASS is inherited from N-series; no static SVG overlay is the functional UI. Dynamic honest facts may differ from mockup text, but geometry/hierarchy must match closely and deviations must be measured and shown.
 
