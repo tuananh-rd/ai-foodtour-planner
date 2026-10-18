@@ -28,7 +28,7 @@ import { fileURLToPath } from 'node:url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const REPO_ROOT = path.resolve(__dirname, '../..');
-const REPORT_DIR = path.join(REPO_ROOT, 'docs', 'reports', 'ngonngon');
+const REPORT_DIR = path.resolve(process.env.NGONNGON_QA_OUTPUT || path.join(REPO_ROOT, 'docs', 'reports', 'ngonngon'));
 
 if (!fs.existsSync(REPORT_DIR)) {
   fs.mkdirSync(REPORT_DIR, { recursive: true });

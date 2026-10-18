@@ -7,7 +7,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
 const web='http://127.0.0.1:3020', api='http://127.0.0.1:8030', port=19310;
-const out=path.resolve('docs/reports/ngonngon-codex');fs.mkdirSync(out,{recursive:true});
+const out=path.resolve(process.env.NGONNGON_REVIEW_OUTPUT || 'docs/reports/ngonngon-codex');fs.mkdirSync(out,{recursive:true});
 const checks=[];const pause=ms=>new Promise(r=>setTimeout(r,ms));
 function check(name,ok){checks.push({name,pass:!!ok});console.log(`${ok?'PASS':'FAIL'} ${name}`);if(!ok)throw Error(name);}
 async function until(fn,ms=20000){const t=Date.now();while(Date.now()-t<ms){try{if(await fn())return;}catch{}await pause(70);}throw Error('Timed out waiting for test state');}
