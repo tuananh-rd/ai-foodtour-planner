@@ -1,17 +1,20 @@
 ﻿{
-    "sourceHead":  "8b5d140",
-    "frontendSource":  "d1ef307",
+    "sourceHead":  "d828e68",
     "synthetic":  true,
-    "method":  "Independent real Chrome/CDP, scratch production Next build, real synthetic SQLite API; current backend diff later committed8b5d140",
+    "method":  "Independent real Chrome/CDP, scratch production Next build, real synthetic SQLite API",
     "checks":  169,
     "failed":  0,
     "runtimeExceptions":  0,
     "consoleErrors":  0,
     "scope":  "Desktop/mobile chat, clarify, full confirmation visibility, tour, free Maps URLs, reload, errors, stale409, obligation and feature-flag gates",
+    "supplementalPreviewSource":  "d828e68",
+    "supplementalPreviewURL":  "http://127.0.0.1:3040",
     "supplementalChecks":  22,
     "supplementalFailures":  0,
     "backendTests":  576,
     "backendSkipped":  1,
+    "moduleChecks":  15,
+    "frontendContractChecks":  18,
     "schemaDrift":  "PASS",
     "productionBuild":  "PASS"
 }
