@@ -38,7 +38,7 @@
 .nn-hidden { display: none !important; }
 
 /* header */
-.nn-header { height: 80px; background: var(--nn-card); border-bottom: 1px solid var(--nn-line); display: flex; align-items: center; gap: 32px; padding: 0 32px; position: sticky; top: 0; z-index: 100; }
+.nn-header { height: 80px; background: var(--nn-card); border-bottom: 1px solid var(--nn-line); display: flex; align-items: center; gap: 32px; padding: 0 clamp(16px, calc(32px - (1440px - 100%)), 32px) 0 32px; position: sticky; top: 0; z-index: 100; }
 .nn-brand { display: flex; align-items: center; gap: 10px; width: 186px; flex: none; }
 .nn-brand-tile { width: 42px; height: 42px; border-radius: 16px; background: var(--nn-green); display: grid; place-items: center; flex: none; }
 .nn-brand-name { font-size: 18px; font-weight: 600; line-height: 22px; color: var(--nn-ink); white-space: nowrap; }
