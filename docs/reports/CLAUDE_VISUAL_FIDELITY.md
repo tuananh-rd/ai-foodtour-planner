@@ -1,6 +1,6 @@
 # Claude visual fidelity report (owner: Claude) — task_7c68da1f86e6
 
-Status: **INTERIM (shell checkpoint 5633203 + follow-up).** Final verdict is issued only after Codex supplies integrated leaf (Antigravity) + browser evidence.
+Status: **FINAL VISUAL VERDICT issued (section 13)** on integrated source 355933a (contains d828e68), default scrollbars. Not pixel-identical: see residuals.
 
 ## 1. Reference inspection
 - Original: `D:/Downloads/UI ngonngon tour.svg`, sha256 `f73364241a53daf697fd92521ee7aab5ff4cba843c2bf27fb0b14063428eb41d`, 844 982 bytes, `viewBox 0 0 1440 1024`, text outlined to paths (no fonts embedded). Treated as untrusted design data; nothing from it is executed or shipped as a static UI. Only two icon glyph paths (4-point star, send arrow) are inlined as decorative SVG.
@@ -82,3 +82,20 @@ Correction to sections 9/10: my x1311/x1353 measurement was taken with hidden sc
 
 ## 12. Merged evidence warning (GuidedTimeline.jsx, ownership released to Claude)
 The two stacked blocks (conditional status + unknowns) became ONE peach block above the first card: "⚠️ Lịch trình có điều kiện: Chưa xác minh: thành phần để đánh giá dị ứng · giờ mở cửa · giá theo người · tuyến đường thực." Testids kept (`timeline-conditional-status` outer, `timeline-unknowns` inner span, `timeline-route-warnings` unchanged); all four distinct unknowns kept, unrecognised ones appended with full text; no hide/clamp; no allergy-safety claim. Measured (Chrome 1440×1024, default scrollbars, clientWidth 1425, synthetic fixture): warning box 500×54 (was ~140 total); cards y509/695/881, h130 each; third card bottom y1011 ≤ 1024 → three full cards visible. SSR `tools/check_ngonngon_render.cjs` 15/15 PASS.
+
+## 13. FINAL VISUAL VERDICT (integrated source 355933a, frontendDirty=false, 2026-10-18T01:13:43Z)
+Viewed by Claude: original `docs/design/ngonngon-tour-reference.png`, Antigravity `integrated_composite_side_by_side_1440.png`, `integrated_composite_overlay_1440.png`, `integrated_desktop_1440_tour.png`, `integrated_mobile_390_tour.png`, `integrated_mobile_390_chat.png`; metrics `integrated_metrics.json` (innerWidth 1440, clientWidth 1425 default scrollbar, scrollY 0).
+**Verdict: ACCEPTED as a faithful, honest, functional implementation of the reference frame; NOT pixel-identical and not claimed to be.**
+
+Measured agreement (default scrollbar, clientWidth 1425): header 80px, padding 0 17 0 32 (gutter-compensated); profile slot x1311 w97 (avatar x1311, name x1353 = reference); nav pills from x250; chat panel 32/108 480×888; tour column tiles x560 w824; timeline cards 500 wide; route panel x1078 w306×615; tip card 270×78; stop cards 130 high (reference 129/107); three full cards visible (y509–639, 695–825, 881–1011, last bottom 1011 ≤ 1024); mobile 390: single-row header, tabs work (tour tab shows tour, chat tab shows chat), no horizontal scroll.
+
+Residuals (honest, enumerated):
+1. **Vertical +70px offset of the timeline** (cards y509/695/881 vs reference 439/624/809, +70/+71/+72): caused by the mandatory merged evidence warning (54px + 13px gap + 3px heading row difference). Intentional; cannot be removed without hiding required evidence disclosure. The overlay therefore shows a ghosted double image of the timeline column; this is the offset, not a layout error.
+2. **Font fallback**: reference face is Inter-like (outlined paths); shipped stack is `Segoe UI, system-ui…` (no web-font request). Sizes calibrated to equal reference string widths within ±2%, glyph shapes and line breaks differ (e.g. two-line chip, tile text slightly narrower). Visible as soft ghosting in overlay text.
+3. **Content (by design)**: real/synthetic strings instead of "Tuấn / TP. Hà Nội", "Đang online", "Bộ sưu tập", "Lưu lịch trình" (replaced by real "Làm lại"), sample venues/prices; title "Lịch trình ẩm thực Hoàn Kiếm"; route schematic titled "Sơ đồ tuyến" with the caption that it is not a real map; real "Đổi quán" action in the pill row; card text shows "nguồn ghi" hours; tip card text is the honest source-check note.
+4. **Chat panel**: the stream is real chat (user bubble, plan summary, "Minh hiểu là…" card) and scrolls internally; privacy/trust lines sit above the composer (mandatory honesty copy), so the composer box keeps its reference y but the stream area is shorter.
+5. **Header nav label** "Lịch trình (3)" (real count) vs "Lịch trình".
+6. Below clientWidth ≈1425 the tour column narrows (responsive); the reference exists only at 1440.
+
+Regression/gate evidence (reported by Codex, not re-run by me on reserved ports): production browser 169/169, preview 22/22, SSR 15/15, contract 18/18, backend 576 (1 skip); my own runs: `test_ngonngon_qa` 66/66 on my earlier shell commits (restored tracked ngonngon PNGs), `check_ngonngon_render` 15/15 on d828e68, `tests.api.test_u3_guided` 17/17. The Antigravity author 66-run result is awaited.
+Review limits: visual judgement from PNG viewing and CDP geometry; no pixel-diff threshold claimed; mobile viewed at 390×844 only; one scroll position (0).
