@@ -393,7 +393,7 @@ def _drop_absent(text: str) -> str:
 
 def effective_text(text: str) -> str:
     """The part of a message the rules actually read: NFC, quoted drafts removed, postponed clauses trimmed."""
-    text = safety_parse.normalize_keep_case(text).strip()
+    text = coverage.numeric_prefix_spacing(safety_parse.normalize_keep_case(text).strip())
     if re.search(r"[\"“”«»]", text):
         unq = re.sub(r"[\"“«][^\"”»]*[\"”»]", " ", text).strip()
         if re.search(r"[A-Za-zÀ-ỹ0-9]", unq):
@@ -414,7 +414,7 @@ def understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences
 
 def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preferences] = None, guided: bool = False) -> Understanding:
     prior = prior or Preferences()
-    text = safety_parse.normalize_keep_case(text).strip()
+    text = coverage.numeric_prefix_spacing(safety_parse.normalize_keep_case(text).strip())
     if text and not re.search(r"[A-Za-zÀ-ỹ0-9]", text):  # emoji / punctuation only: a reaction, not a request
         return Understanding("AMBIGUOUS_ACK" if not (state.pending and state.pending.kind == "confirm_plan") else "AMBIGUOUS_ACK", confidence=0.7)
     if guided:
@@ -639,6 +639,8 @@ def _understand(text: str, state: ChatState, gz=None, prior: Optional[Preference
                   "allergy_safety" if "an toan" in f else "menu" if re.search(r"menu|thuc don|ban gi|it duong|co ban\b", f) else "detail")
         return Understanding("ASK_DETAIL", {**patch, "field": field_}, refs, 0.85)
     if re.search(r"^(?:xin chao|chao|hello|hi|hey|alo)\b|\bcam on\b|\btam biet\b|\bthanks\b|\bthank you\b", f):
+        if patch:
+            return Understanding("UPDATE_PROFILE", patch, refs, 0.9)
         return Understanding("GREET_OR_SMALLTALK", confidence=0.9)
 
     # --- discover vs search vs profile

@@ -16,6 +16,16 @@ NUMWORDS = {"mot": 1, "hai": 2, "ba": 3, "bon": 4, "tu": 4, "nam": 5}
 DAY_PARTS = {"morning": "Buổi sáng", "noon": "Buổi trưa", "afternoon": "Buổi chiều", "evening": "Buổi tối", "late": "Khuya"}
 MEAL_OF = {"evening": "dinner", "late": "late", "noon": "lunch", "morning": "breakfast", "afternoon": "snack"}
 
+
+def numeric_prefix_spacing(text: str) -> str:
+    """Separate known request prefixes from attached digits, without rewriting IDs/addresses."""
+    text = re.sub(r'\b(tour)(?=\d)', r'\1 ', text, flags=re.IGNORECASE)
+    text = re.sub(r'\b((?:tối|toi|sáng|sang|chiều|chieu|trưa|trua)\s+(?:nay|mai))(?=\d)',
+                  r'\1 ', text, flags=re.IGNORECASE)
+    # Lowercase request words only: capitalised venue/address labels such as
+    # "Mai2", "Tam3" and "Trong5" must remain intact for lookup.
+    return re.sub(r'\b(trong|cho|khoảng|khoang|tầm|tam)(?=\d)', r'\1 ', text)
+
 _TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\b")
 _STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|hang an|hang|diem dung|diem|dia diem|chang)\b(?!\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))"
                     r"|\bso (?:quan|diem)\s*(?:la|:)?\s*(\d{1,2})\b")
@@ -122,6 +132,7 @@ def _items(raw: str) -> list:
 
 def extras(text: str, f: str) -> dict:
     """{stops?: int 1..5, day_part?, interests?: [str], _stops_rejected?: int} — only what the text states."""
+    text, f = numeric_prefix_spacing(text), numeric_prefix_spacing(f)
     out = {}
     if _TOUR_CTX.search(f):
         m = _STOPS.search(f)
