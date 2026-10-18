@@ -1,8 +1,8 @@
 {
   "provenance": {
-    "sourceHead": "41cb2fec09a11c50d5f1b1202fe2bad11d82b252",
-    "frontendDirty": true,
-    "timestamp": "2026-10-18T00:29:00.790Z"
+    "sourceHead": "f7354a1de09ac435da772f6a8618b9ac238f0122",
+    "frontendDirty": false,
+    "timestamp": "2026-10-18T00:37:22.981Z"
   },
   "viewport": {
     "innerWidth": 1440,
@@ -102,7 +102,7 @@
     "x": 0,
     "y": 80,
     "width": 1425,
-    "height": 1609,
+    "height": 1351,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -187,7 +187,7 @@
     "x": 560,
     "y": 108,
     "width": 809,
-    "height": 1553,
+    "height": 1295,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -308,9 +308,9 @@
   "timelineContainer": {
     "selector": "[data-testid=\"guided-timeline\"]",
     "x": 560,
-    "y": 397,
-    "width": 500,
-    "height": 1264,
+    "y": 358,
+    "width": 485,
+    "height": 1045,
     "backgroundColor": "rgba(0, 0, 0, 0)",
     "borderRadius": "0px",
     "border": "0px none rgb(23, 53, 43)",
@@ -326,9 +326,9 @@
     {
       "index": 0,
       "x": 560,
-      "y": 639,
-      "width": 500,
-      "height": 216,
+      "y": 637,
+      "width": 485,
+      "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
       "borderRadius": "8px",
       "border": "1px solid rgb(217, 217, 217)",
@@ -343,9 +343,9 @@
     {
       "index": 1,
       "x": 560,
-      "y": 910,
-      "width": 500,
-      "height": 216,
+      "y": 823,
+      "width": 485,
+      "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
       "borderRadius": "8px",
       "border": "1px solid rgb(217, 217, 217)",
@@ -360,9 +360,9 @@
     {
       "index": 2,
       "x": 560,
-      "y": 1182,
-      "width": 500,
-      "height": 216,
+      "y": 1009,
+      "width": 485,
+      "height": 130,
       "backgroundColor": "rgb(255, 255, 255)",
       "borderRadius": "8px",
       "border": "1px solid rgb(217, 217, 217)",
@@ -377,9 +377,9 @@
   ],
   "routeAside": {
     "selector": "#guided-tour-section aside",
-    "x": 1078,
+    "x": 1063,
     "y": 358,
-    "width": 291,
+    "width": 306,
     "height": 615,
     "backgroundColor": "rgb(239, 247, 241)",
     "borderRadius": "24px",
