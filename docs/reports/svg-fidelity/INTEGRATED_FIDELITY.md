@@ -6,9 +6,10 @@
 - **Spacing Normalization:** Removed redundant `marginBottom: 11` on heading and `marginBottom: 13` on the warning container in `GuidedTimeline.jsx`, allowing `.nn-timeline`'s `gap: 13px` to act as the sole outer vertical spacing. This shifted stop card 0 up to `y: 589` (from initial `y: 637`). Stop card 2 starts at `y: 961` inside the initial 1024 viewport (bottom at `y: 1091`, with remaining content reachable via natural scroll).
 - **Harness & Tooling:** Reusable CDP visual fidelity suite at `qa/visual/capture_fidelity.mjs`, running on isolated ports (Web: 13400, API: 18400, CDP: 19600) with TCP preflight refusal, synthetic health pre-check (`health.dataset_source === "synthetic"`), Google host blocking, strict scroll normalization (`window.scrollY === 0`), and unmasked 2880×1024 side-by-side and 1440×1024 50% overlay composites under `--tag integrated`.
 - **Provenance & Environment:**
-  - `sourceHead`: `ee26b6562662470dd0dacaa4c7cc8b77538f7690`
+  - `sourceHead`: `beb246cf1e311f31a5b9e6302f775a1e894d3c8d`
   - `frontendDirty`: `false`
   - Viewport: `innerWidth: 1440`, `clientHeight: 1024`, `clientWidth: 1425` (15px default scrollbar gutter), `scrollY: 0`
+  - Mobile Viewport: 390×844 with active tab validation via `aria-controls` for both Khám phá (`#guided-chat-section`) and Lịch trình (`#guided-tour-section`), scrollWidth exactly 390px (zero horizontal overflow), and `scrollY === 0`.
   - Font family: `"Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, Roboto, "Helvetica Neue", Arial, sans-serif`
 - **Regression Suite:**
   - `tools/check_ngonngon_render.cjs`: **13/13 PASSED (100%)** (zero-minute `0 phút`, explicit zero price range `0k`, explicit missing hours `giờ mở cửa: chưa rõ`, walking Maps URLs without keys).
