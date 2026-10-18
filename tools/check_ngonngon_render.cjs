@@ -54,7 +54,9 @@ check('conditional status is explicit', /có điều kiện/i.test(text(timeline
 check('route warning survives timeline render', text(timeline).includes(tour.route_warnings[0]));
 const evidenceTour = structuredClone(tour);
 evidenceTour.unknowns = ['allergy_ingredients', 'hours', 'price_per_person', 'route', '[SYNTHETIC] Cầu thang cần xác minh'];
-const evidenceTimeline = text(render('GuidedTimeline', { tour: evidenceTour }));
+const evidenceHtml = render('GuidedTimeline', { tour: evidenceTour });
+// Only inspect disclosure before the first stop, not repeated labels lower down.
+const evidenceTimeline = text(evidenceHtml.slice(0, evidenceHtml.indexOf('data-testid="guided-stop-0"')));
 check('compact evidence warning retains all four distinct unknowns',
       /chưa|không/i.test(evidenceTimeline) && /thành phần.*dị ứng/i.test(evidenceTimeline)
       && /giờ mở cửa/i.test(evidenceTimeline) && /giá theo người/i.test(evidenceTimeline)
