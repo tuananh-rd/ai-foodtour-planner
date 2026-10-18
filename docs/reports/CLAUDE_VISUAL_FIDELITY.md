@@ -61,3 +61,6 @@ Fix: `.nn-main` right padding is `clamp(32px, 56px - (1440px - 100%), 56px)`: th
 Residual (honest): below ~1425px the tour column shrinks, as designed for responsive desktop; the reference exists only at 1440.
 Post-tour stream: the chat stream keeps normal chat behaviour (scrolls to latest bubble); intro stays as in the reference. No facts removed.
 Regression: test_ngonngon_qa 66/66 PASS on this change.
+
+## 9. Header profile slot (approved by coordinator)
+Profile name shortened to the truthful "Khách" (sub "Hà Nội"); `.nn-profile` fixed 97px so the avatar sits at x1311 and the name at x1353 exactly like the reference (measured 1440×1024). No identity or status invented. After compact warnings (2dcdc8a) the first pill row starts at y≈570 (was 594); heading→warning gap (~24px) and warning→unknowns gap (~0–8px) remain; the deliberate warning block height is assessed separately from the reference in the final verdict.
