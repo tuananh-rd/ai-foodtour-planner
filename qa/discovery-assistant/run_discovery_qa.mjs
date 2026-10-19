@@ -977,9 +977,12 @@ async function main() {
 
   if (evidence.summary.failed > 0) {
     console.error('QA SUITE FAILED with ' + evidence.summary.failed + ' failed check(s).');
+    cleanup();
     process.exit(1);
   } else {
     console.log('ALL DISCOVERY ASSISTANT UI CHECKS PASSED SUCCESSFULLY WITH WARM EDITORIAL FIDELITY!');
+    cleanup();
+    process.exit(0);
   }
 }
 

@@ -8,10 +8,8 @@ import GuidedTimeline from './GuidedTimeline';
 import TrustDisclosure from './TrustDisclosure';
 import ReplaceDiffModal from '../../ReplaceDiffModal';
 import { chatTurn, getSession, replaceTourStop } from '../../../../lib/api';
-import OnlineSearchResults from './OnlineSearchResults';
 import PilotMap from './PilotMap';
 import './guided-visual.css';
-import './online-assistant.css';
 
 /* Reference glyphs (outlined paths of the design file: 4-point star, send arrow). Decorative only. */
 function StarGlyph({ color = '#DFF46A', size = 13.824 }) {
@@ -184,8 +182,7 @@ export default function GuidedLayout({
   const [isDesktop, setIsDesktop] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('chat'); // 'chat' | 'tour'
 
-  // Online Assistant extensions: web search opt-in and route panel view mode
-  const [webSearch, setWebSearch] = useState(false);
+  // Route panel view mode
   const [viewMode, setViewMode] = useState('schematic'); // 'schematic' | 'map'
 
   const inputRef = useRef(null);
@@ -272,7 +269,7 @@ export default function GuidedLayout({
   const [snapshotFailed, setSnapshotFailed] = useState(false);
 
   // Execute turn action or text with Q06 polite live region & draft preservation
-  const executeTurn = async ({ text = null, action = null, onFail = null, webSearch = false }) => {
+  const executeTurn = async ({ text = null, action = null, onFail = null }) => {
     if (busy || (!text && !action)) return;
     if (initializing || !sessionId) {
       // The parent (page.js) is the single owner of session creation: never create a second session here.
@@ -325,9 +322,6 @@ export default function GuidedLayout({
       };
       if (text) {
         body.text = text;
-        if (webSearch) {
-          body.web_search = true;
-        }
       } else if (action) {
         body.action = action;
       }
@@ -362,29 +356,20 @@ export default function GuidedLayout({
           setLiveAnnouncement(textBlock.text);
         }
 
-        // Ensure web_search blocks retain originating query for per-message retry
-        const replyBlocks = rawReplyBlocks.map((b) => {
-          if (b.type === 'web_search') {
-            return { ...b, query: b.query || (webSearch ? text : null) };
-          }
-          return b;
-        });
-
         // Append assistant response to stream
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            reply: { ...(res.reply || {}), blocks: replyBlocks },
+            reply: res.reply || {},
             chat: res.chat,
             tour: res.tour,
-            originating_query: webSearch ? text : null,
             timestamp: Date.now()
           }
         ]);
       }
     } catch (err) {
-      setLastFailedTurn({ text, action, webSearch });
+      setLastFailedTurn({ text, action });
       if (onFail) onFail();
 
       if (err?.status === 409) {
@@ -462,15 +447,11 @@ export default function GuidedLayout({
       return;
     }
     const currentDraft = inputText;
-    const sendWithWebSearch = Boolean(webSearch);
     if (!textToSend) setInputText('');
-    setWebSearch(false); // Reset one-turn opt-in immediately upon sending
     executeTurn({
       text,
-      webSearch: sendWithWebSearch,
       onFail: () => {
         if (!textToSend) setInputText(currentDraft);
-        if (sendWithWebSearch) setWebSearch(true); // Preserve draft and opt-in on failure
       }
     });
   };
@@ -597,7 +578,6 @@ export default function GuidedLayout({
     setLockedVenueIds([]);
     setIsReplaceModalOpen(false);
     setActiveMobileTab('chat');
-    setWebSearch(false);
     setViewMode('schematic');
     restoredRef.current = false;
     lastFocusedKeyRef.current = '';
@@ -1125,18 +1105,6 @@ export default function GuidedLayout({
                     </div>
                   ))}
 
-                  {latestBlocks.filter((b) => b.type === 'web_search').map((b, idx) => (
-                    <OnlineSearchResults
-                      key={b.block_id || idx}
-                      block={b}
-                      onRetry={(retryQuery) => {
-                        const queryToReplay = retryQuery || b.query || latestAssistantMsg?.originating_query;
-                        if (queryToReplay) {
-                          executeTurn({ text: queryToReplay, webSearch: true });
-                        }
-                      }}
-                    />
-                  ))}
 
                   {understoodBlock && (
                     <UnderstoodCard
@@ -1235,25 +1203,7 @@ export default function GuidedLayout({
 
               {!confirmSummaryBlock && (
                 <>
-                  <div className="nn-web-optin-container">
-                    <label className="nn-web-optin-row" data-testid="online-search-toggle">
-                      <input
-                        type="checkbox"
-                        data-testid="web-search-optin-checkbox"
-                        className="nn-web-optin-checkbox"
-                        checked={webSearch}
-                        onChange={(e) => setWebSearch(e.target.checked)}
-                        disabled={busy}
-                      />
-                      <span>Tra web</span>
-                      <span className="nn-web-optin-badge">Tavily</span>
-                    </label>
-                    {webSearch && (
-                      <div className="nn-web-optin-explanation" data-testid="web-search-optin-explanation">
-                        Chỉ câu hỏi ngắn của lượt này được gửi đến công cụ tìm kiếm Tavily; không gửi vị trí GPS hay lịch sử trò chuyện. Không nhập thông tin cá nhân.
-                      </div>
-                    )}
-                  </div>
+
 
                   <form
                     className="nn-composer"

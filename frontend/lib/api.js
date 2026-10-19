@@ -1410,8 +1410,8 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
   if (body.text === undefined && body.action === undefined) {
     throw new ApiError('validation_error', 'Cần có text hoặc action.', null, 422);
   }
-  if (Boolean(body.action) && Boolean(body.web_search)) {
-    throw new ApiError('validation_error', 'Không thể kết hợp action với web_search.', null, 422);
+  if (body.web_search !== undefined && body.web_search !== false) {
+    throw new ApiError('validation_error', 'Tính năng tra web (web_search) đã ngừng hỗ trợ và bị loại bỏ.', null, 422);
   }
 
   if (isMockMode()) {
@@ -1457,49 +1457,6 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
     }
 
     session.chat.turn_count = (session.chat.turn_count || 0) + 1;
-
-    // For body.web_search, short-circuit immediately per review requirement (msg_9b93380962c7):
-    // Returns labelled unavailable web block with completely UNCHANGED preferences, pending,
-    // allergies, shortlist, and tour. Never feeds query into slot/profile/tour mutation.
-    if (body.text && body.web_search) {
-      session.revision = (session.revision || 0) + 1;
-      return {
-        reply: {
-          blocks: [
-            {
-              type: 'text',
-              text: '[MOCK] Dịch vụ tra cứu web đang ở chế độ thử nghiệm cục bộ; chưa kết nối nhà cung cấp bên ngoài.'
-            },
-            {
-              type: 'web_search',
-              status: 'unavailable',
-              sources: [],
-              fetched_at: null,
-              credits: 0,
-              cached: false,
-              query: body.text
-            }
-          ]
-        },
-        chat: session.chat,
-        turn: {
-          intent: 'WEB_SEARCH',
-          tools: ['web_search'],
-          understanding: 'rules',
-          llm_budget: {
-            session_used: 0,
-            session_cap: 6,
-            daily_remaining_public: 'ok'
-          }
-        },
-        tour: session.tour || null,
-        revision: session.revision,
-        extraction_source: 'web_search',
-        llm_calls: 0,
-        llm_budget: { limit: 18, used: 0, remaining: 18, exhausted: false },
-        is_mock: true
-      };
-    }
 
     // Handle local deterministic actions
     if (body.action?.type === 'add' && body.action.venue_id) {
@@ -1669,16 +1626,6 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
           };
         }
 
-        if (body.text && body.web_search && !blocks.some((b) => b.type === 'web_search')) {
-          blocks.push({
-            type: 'web_search',
-            status: 'unavailable',
-            sources: [],
-            fetched_at: null,
-            credits: 0,
-            cached: false
-          });
-        }
 
         return {
           reply: { blocks },
@@ -1791,16 +1738,7 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
       }
 
       const replyObj = JSON.parse(JSON.stringify(matchedTurn.response.reply));
-      if (body.text && body.web_search && replyObj.blocks && !replyObj.blocks.some((b) => b.type === 'web_search')) {
-        replyObj.blocks.push({
-          type: 'web_search',
-          status: 'unavailable',
-          sources: [],
-          fetched_at: null,
-          credits: 0,
-          cached: false
-        });
-      }
+
 
       return {
         reply: replyObj,
@@ -1863,16 +1801,7 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
         text: `[MOCK] Phản hồi giả lập cho: "${body.text || body.action?.type || 'lượt trò chuyện'}"`
       }
     ];
-    if (body.text && body.web_search) {
-      fallbackBlocks.push({
-        type: 'web_search',
-        status: 'unavailable',
-        sources: [],
-        fetched_at: null,
-        credits: 0,
-        cached: false
-      });
-    }
+
 
     return {
       reply: {
@@ -1918,9 +1847,7 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
   if (body.text !== undefined && body.text !== null) {
     reqBody.text = body.text;
     reqBody.action = cleanAction || null;
-    if (body.web_search) {
-      reqBody.web_search = true;
-    }
+
   } else if (cleanAction) {
     reqBody.action = cleanAction;
     reqBody.text = body.text ?? null;

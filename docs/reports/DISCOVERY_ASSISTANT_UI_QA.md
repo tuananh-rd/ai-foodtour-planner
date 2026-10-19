@@ -94,10 +94,34 @@ Dữ liệu chi tiết trích xuất từ `qa/discovery-assistant/evidence.json`
 
 ## 4. Danh sách tệp scoped đã cập nhật
 
-- `frontend/lib/discoveryApi.js`: Bổ sung timeout, `AbortController`, định dạng lỗi 422 chi tiết, bảo vệ phân tích cú pháp.
+- `frontend/lib/discoveryApi.js`: Bổ sung timeout (AbortController 15s), định dạng lỗi 422 chi tiết, bảo vệ phân tích cú pháp.
 - `frontend/app/components/v2/guided/DiscoveryLayout.jsx`: Xây dựng lại hoàn chỉnh khung vỏ Warm editorial (Sidebar 232px, Canvas vàng `#F9C53D`, Card chat 668px), hợp đồng hồ sơ nullable, xử lý lỗi 404, modal trợ năng WAI-ARIA và tích hợp timeline/maps.
 - `frontend/app/components/v2/guided/discovery-visual.css`: Thêm các luật responsive ẩn thanh tab mobile trên desktop và kích hoạt trên màn hình nhỏ.
 - `frontend/app/page.js`: Định tuyến dynamic import và truyền tham số session chuẩn xác.
-- `qa/discovery-assistant/run_discovery_qa.mjs`: Bộ test cô lập 26 kịch bản kiểm thử kèm bộ tạo ảnh so sánh song song.
-- `qa/discovery-assistant/evidence.json`: Bằng chứng kết quả đo lường và trạng thái kiểm thử.
+- `frontend/lib/api.js`: Loại bỏ toàn bộ nhánh tra cứu `body.web_search` cũ; từ chối mọi yêu cầu có `web_search !== undefined && web_search !== false` bằng mã HTTP 422 `validation_error`.
+- `frontend/app/components/v2/guided/GuidedLayout.jsx`: Gỡ bỏ hoàn toàn hộp kiểm/UI opt-in tra web Tavily (`.nn-web-optin-container`), tham số `webSearch` trong lượt gửi, và khối hiển thị kết quả `OnlineSearchResults`.
+- `frontend/app/components/v2/guided/OnlineSearchResults.jsx`: Đã xoá (`git rm`) tệp component kết quả tra web ngoài đã ngừng sử dụng.
+- `frontend/app/components/v2/guided/online-assistant.css`: Đã xoá (`git rm`) tệp kiểu CSS tra web ngoài đã ngừng sử dụng.
+- `qa/discovery-assistant/run_discovery_qa.mjs`: Bộ test cô lập 26 kịch bản kiểm thử kèm bộ tạo ảnh so sánh song song và giải phóng tài nguyên tiến trình.
+- `qa/discovery-assistant/evidence.json`: Bằng chứng kết quả đo lường và trạng thái kiểm thử (26/26 PASS).
 - `docs/reports/DISCOVERY_ASSISTANT_UI_QA.md`: Báo cáo kiểm định hoàn thiện.
+
+---
+
+## 5. Dọn dẹp dứt điểm Tavily / Tra cứu Web ngoài (Retired Tavily Cleanup)
+
+Thực hiện theo chỉ đạo bổ sung của Điều phối viên Codex (`msg_1788c6810c8e`):
+1. **Frontend API Contract (`frontend/lib/api.js`):**
+   - Đã gỡ bỏ toàn bộ logic giả lập trả kết quả tra web (`web_search`), không còn gắn khối `type: 'web_search'` vào phản hồi `chatTurn`.
+   - Bổ sung chốt chặn xác thực tại đầu hàm `chatTurn`: nếu yêu cầu chứa `body.web_search !== undefined && body.web_search !== false`, ném ngay lỗi `ApiError('validation_error', 'Tính năng tra web (web_search) đã ngừng hỗ trợ và bị loại bỏ.', null, 422)`.
+   - Gỡ bỏ hoàn toàn tham số `reqBody.web_search` trong bộ dựng dữ liệu gửi lên máy chủ thật.
+2. **Giao diện Guided Tour (`GuidedLayout.jsx`):**
+   - Gỡ bỏ import `OnlineSearchResults` và `online-assistant.css`.
+   - Gỡ bỏ state `webSearch`, tham số `webSearch` trong `executeTurn` và `handleSendMessage`.
+   - Gỡ bỏ khối giao diện hộp kiểm opt-in tra web Tavily (`.nn-web-optin-container`) ở chân thẻ trò chuyện.
+   - Gỡ bỏ component render `OnlineSearchResults` trong luồng tin nhắn.
+3. **Xoá tệp mồ côi:**
+   - Đã loại bỏ hoàn toàn `frontend/app/components/v2/guided/OnlineSearchResults.jsx` và `frontend/app/components/v2/guided/online-assistant.css` khỏi cây mã nguồn bằng `git rm`.
+4. **Kiểm tra biên dịch & hồi quy:**
+   - Chạy `npm run build` trên thư mục `frontend/`: biên dịch thành công 100% trong 1.7 giây, không còn bất kỳ tham chiếu nào đến các tệp đã xoá.
+
