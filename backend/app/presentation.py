@@ -17,4 +17,5 @@ _EMOJI = re.compile(
 
 def plain_text(text: str) -> str:
     """Remove emoji sequences while retaining Vietnamese, numbers and line breaks."""
-    return re.sub(r'[ \t]{2,}', ' ', _EMOJI.sub('', text)).strip()
+    # Keep a separator: "20<pictograph>30" must not become the new number2030.
+    return re.sub(r'[ \t]{2,}', ' ', _EMOJI.sub(' ', text)).strip()

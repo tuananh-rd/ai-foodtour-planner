@@ -13,6 +13,7 @@ class PresentationTests(unittest.TestCase):
         text = 'Phở \U0001f35c 70.000 đ, 2 người\n\U0001f1fb\U0001f1f3 \U0001f469\U0001f3fd\u200d\U0001f373 1\ufe0f\u20e3 \u26a0\ufe0f Chưa rõ giờ'
         self.assertEqual(plain_text(text), 'Phở 70.000 đ, 2 người\n Chưa rõ giờ')
         self.assertEqual(plain_text('18:00 → 19:00; 0–5 phút'), '18:00 → 19:00; 0–5 phút')
+        self.assertEqual(plain_text('20\U0001f35c30 Phở\U0001f35cngon'), '20 30 Phở ngon')
 
     def test_generated_text_cleaned_before_validation(self):
         tools = Tools(State(), fixture(), StraightLineEstimator())
