@@ -15,12 +15,12 @@ This is an implementation checkpoint, not final acceptance. Codex coordinates/re
 | Live Tavily | BLOCKED | No local key configured. Future configuration belongs in ignored backend/.env; never send a key through chat. Enabled/free-only flags and absolute persistent ledger are required; the app cannot certify shared account allowance from local counters |
 | Live Gemini | PARTIAL | Existing gemini-3.5-flash-lite configuration, at most2 generic public calls with persistent accounting: one accepted greeting, one rejected result. Rejection cause was not retained; do not assert an exact cause or full multi-turn quality PASS. No sensitive data, grounding or paid-service activation |
 | Public local basemap | Extracted and measured |2,138,597bytes; Protomaps20261018, OSM freshness2026-10-18T04:00Z; source/license/hash in frontend/public/maps/README.md. Actual same-origin Range probe returned206 and bytes0-126/2138597 with127 bytes and ETag |
-| Interactive map/citations UI | IN PROGRESS | Antigravity task task_529bb1dff2e5 / ctx_262125b4904a, actual turn/output and exact ownership ACK observed. Codex review already flagged map error/lifecycle/accessibility and search-retry/read-only mock boundaries; fixes and browser acceptance pending |
-| Final browser/visual regression | NOT TESTED | tools/probe_online_ui.mjs is prepared and syntax-checked. Existing regression counts and historical screenshots are not acceptance of this initiative |
+| Interactive map/citations UI | CANDIDATE REJECTED / UIR1 ACTIVE | d9c2971 integrated2602cd6 for review only. UIR1 task task_6735006d7387 / ctx_fc855380ac48 has current ownership ACK. Worker rendering, initial markers, retries, errors, privacy and report corrections remain review gates |
+| Final browser/visual regression | CANDIDATE FAIL / FINAL PENDING | Actual synthetic API journey33/35 checks on candidate; both initial-marker checks failed. Visual/runtime inspection additionally found blank basemap/worker-load error. CODEX_REVIEW.md and codex-candidate/codex-map-diagnostic preserve evidence. Extended retry, keyboard, replace and offline probe is prepared; final integration must rerun it |
 
 ## Runtime and ownership
 
-Run run_928fb169d5d9, runtime ff583610-c1ff-4566-ad85-2a1ca62d1e8b, Orca1.4.219. Codex terminal term_ecb79c94-80cb-4298-9e27-6720faa54e6e. Same Antigravity terminal term_37bc1a97-029f-4e92-8ca7-da75d3689675; no duplicate agent was created.
+Run run_928fb169d5d9, runtime ff583610-c1ff-4566-ad85-2a1ca62d1e8b, Orca1.4.219. Codex terminal term_24c3a210-7070-4dd5-b703-f12f516a70b0 (rebound consumer generation2 after old terminal exited). Same Antigravity terminal term_37bc1a97-029f-4e92-8ca7-da75d3689675; no duplicate agent was created.
 
 Managed UI attempts ctx_3e03c3d2ba85 and ctx_8ab3fec3a84e failed readiness before input despite an actual readiness-only READY reply. The version-matched low-level lane was used for the fresh UI Task/Dispatch. Orca therefore labels its process-resource lane unsupervised; Task authority, inbox, actual output and code are monitored. The prior settled managed resource ctx_dbcd66807adb is explicitly retained per the user's direction to preserve the existing agent. Do not release that terminal while the current task runs. Never replay old lifecycle messages.
 
@@ -31,3 +31,7 @@ Antigravity owns the exact frontend list in its dispatch, qa/online-assistant/, 
 - http://127.0.0.1:3060 → API8060; synthetic data, LLM mock/rules, route estimates, web disabled, source2389908 at process startup.
 - API terminal term_993488d0-5b49-40f7-ba8c-fb4a69a15608; web terminal term_83065e6b-0639-4f84-8483-5565ead4be4b. These were created by this task after free-port checks; user servers were not stopped.
 - Final integration must restart only these task-owned processes as needed, verify the actual commit/health/build, run desktop/mobile journeys and failures, capture source comparison evidence, and report one final verified URL. Do not describe the development preview as the completed upgrade.
+
+## Recovery continuation
+
+Commit1f823c6 preserves and reviews the personal-data/key protection WIP rather than discarding it. Targeted assistant and9 API integration tests pass, OpenAPI drift check matches,18 mock-client contract checks pass. Full backend discovery is running; no result claimed yet. UIR1 is the single active Antigravity task; OA3 remains undispatched. No new agent/model/service activation.

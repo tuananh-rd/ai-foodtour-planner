@@ -19,15 +19,16 @@ const evidence={web,api,ui_commit:execFileSync('git',['rev-parse','HEAD'],{encod
 const record=(name,pass,details)=>{const entry={name,pass:!!pass,...(details===undefined?{}:{details})};evidence.checks.push(entry);console.log(JSON.stringify(entry));};
 const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'foodtour-online-ui-'));
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking','--enable-unsafe-swiftshader',`--remote-debugging-port=${port}`,`--user-data-dir=${scratch}`,'about:blank'],{stdio:'ignore',windowsHide:true});
-let ws,seq=0;const pending=new Map(),origins=new Set();let chatResponses=0;
+let ws,seq=0;const pending=new Map(),origins=new Set();let chatResponses=0;const chatRequests=[];
 try{
   let target;await until(async()=>{target=(await(await fetch(`http://127.0.0.1:${port}/json`)).json()).find(t=>t.type==='page');return target;});
   ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
   const cdp=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
   ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p?.reject(Error(m.error.message)):p?.resolve(m.result);return;}
+    if(m.method==='Fetch.requestPaused'){cdp('Fetch.failRequest',{requestId:m.params.requestId,errorReason:'InternetDisconnected'}).catch(()=>{});return;}
     if(m.method==='Runtime.consoleAPICalled'&&m.params.type==='error')evidence.consoleErrors.push((m.params.args||[]).map(a=>typeof a.value==='string'?a.value:a.description||'').join(' ').replace(/[a-f0-9]{32,64}/gi,'[redacted]').slice(0,700));
     if(m.method==='Runtime.exceptionThrown')evidence.consoleErrors.push(String(m.params.exceptionDetails?.exception?.description||m.params.exceptionDetails?.text||'Browser exception').slice(0,700));
-    if(m.method==='Network.requestWillBeSent'){const u=new URL(m.params.request.url);if(/^https?:$/.test(u.protocol)&&![new URL(web).origin,new URL(api).origin].includes(u.origin))origins.add(u.origin);}
+    if(m.method==='Network.requestWillBeSent'){if(/\/chat$/.test(m.params.request.url)&&m.params.request.postData){try{chatRequests.push(JSON.parse(m.params.request.postData));}catch{}}const u=new URL(m.params.request.url);if(/^https?:$/.test(u.protocol)&&![new URL(web).origin,new URL(api).origin].includes(u.origin))origins.add(u.origin);}
     if(m.method==='Network.responseReceived'){
       if(/\/chat$/.test(m.params.response.url))chatResponses++;
       if(m.params.response.url.endsWith('.pmtiles'))evidence.network.pmtilesRanges.push({status:m.params.response.status,range:Object.entries(m.params.response.headers).find(([k])=>k.toLowerCase()==='content-range')?.[1]||null});
@@ -73,15 +74,37 @@ try{
     await click(sel('pilot-markers-toggle'));await pause(200);record('marker toggle off '+width,(await markerCount())===0);
     await click(sel('pilot-markers-toggle'));await pause(200);record('marker toggle on '+width,(await markerCount())===3);
     record('map no mobile overflow '+width,await ev('document.documentElement.scrollWidth<=innerWidth'));
+    const buttonMarker=await ev(`document.querySelector('.maplibregl-marker')?.tagName==='BUTTON'`);
+    record('native keyboard marker '+width,buttonMarker);
+    if(buttonMarker){await ev(`document.querySelector('.maplibregl-marker').focus()`);await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await pause(200);record('keyboard marker opens popup '+width,await ev(`!!document.querySelector('.maplibregl-popup')`));}
     await capture('tour-map-'+width);
     await cdp('Page.reload');await until(()=>exists('guided-timeline'));record('tour reload retained '+width,await ev(`document.querySelectorAll('[data-testid^="timeline-stop-card-"]').length===3`));
+    const names=()=>ev(`Array.from(document.querySelectorAll('.nn-timeline-card-title')).map(e=>e.textContent.trim())`);
+    const originalNames=await names();
+    await click(sel('stop-replace-btn-0'));await until(()=>exists('replace-modal-cancel-btn'));
+    await click(sel('replace-modal-cancel-btn'));record('cancel replacement preserves tour '+width,JSON.stringify(await names())===JSON.stringify(originalNames));
+    await click(sel('stop-replace-btn-0'));await click(sel('replace-modal-confirm-btn'));await idle();
+    const replaced=await exists('replace-modal-done-btn');
+    if(replaced){await click(sel('replace-modal-done-btn'));const changed=await names();record('replace changes only requested stop '+width,changed.length===3&&changed[0]!==originalNames[0]&&changed.slice(1).every((n,i)=>n===originalNames[i+1]));}
+    else record('replace returns explicit failure preserving tour '+width,JSON.stringify(await names())===JSON.stringify(originalNames)&&await ev(`!!document.querySelector('[role="alert"]')`));
     await mobileChat();await until(()=>exists('guided-input'));await click(sel('online-search-toggle'));
     await send('giờ mở cửa phở quanh Hồ Gươm');await until(()=>exists('online-search-results'));
     record('missing Tavily key honest disabled '+width,await exists('web-search-status-disabled'));
     record('lookup keeps tour '+width,await exists('guided-timeline'));
     await capture('web-disabled-'+width);
+    const retrySelector='[data-testid="web-search-retry-btn"]';
+    const retryVisible=await ev(`!!document.querySelector(${JSON.stringify(retrySelector)})`);
+    record('disabled result offers retry '+width,retryVisible);
+    if(retryVisible){const before=chatResponses;await click(retrySelector);await until(()=>chatResponses>before);await idle();const request=chatRequests.at(-1);record('retry keeps originating query and web flag '+width,request?.text==='gi? m? c?a ph? quanh H? G??m'&&request?.web_search===true);}
+
     await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab'});
     record('keyboard focus exists '+width,await ev('document.activeElement!==document.body'));
+    await cdp('Fetch.enable',{patterns:[{urlPattern:'*.pmtiles*',requestStage:'Request'}]});
+    await cdp('Page.reload');await until(()=>exists('guided-timeline'));
+    await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-fallback'),14000);
+    record('map offline has bounded fallback '+width,await exists('pilot-map-fallback'));
+    record('map offline preserves tour '+width,await exists('guided-timeline'));
+    await capture('map-offline-'+width);await cdp('Fetch.disable');
   }
   evidence.network.remoteOrigins=[...origins];
   record('no external map/provider requests in deterministic UI lane',origins.size===0);
