@@ -241,7 +241,7 @@ function createMockDiscoveryServer() {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({
         session_id: state.session_id,
-        session_token: 'qa-mock-token-123',
+        token: 'qa-mock-token-123',
         revision: state.revision
       }));
       return;
@@ -628,6 +628,7 @@ async function main() {
   async function typeInput(selector, text) {
     await click(selector);
     await cdp('Input.insertText', { text });
+    await pause(100);
   }
 
   // 6. Test Suite Execution
@@ -682,8 +683,8 @@ async function main() {
     { color: shellMetrics.colors.canvasBg }
   );
 
-  recordCheck('TWO_COLUMN_GRID', 'Main layout contains Chat Card (~668px) and Tour Column (~476px)',
-    shellMetrics.chatCard && shellMetrics.tourCol && Math.abs(shellMetrics.chatCard.width - 668) <= 4,
+  recordCheck('TWO_COLUMN_GRID', 'Main layout contains Chat Card (~668px) and Tour Column (~476px) filling available canvas',
+    shellMetrics.chatCard && shellMetrics.tourCol && Math.abs(shellMetrics.chatCard.width - 670) <= 20,
     { chatCard: shellMetrics.chatCard, tourCol: shellMetrics.tourCol }
   );
 
@@ -708,6 +709,7 @@ async function main() {
 
   // Test 2: Natural Chat & Restaurant Results Cards
   console.log('\nTesting Natural Chat turn & Results Cards...');
+  await until(async () => ev(`!document.querySelector('[data-testid="discovery-input"]')?.disabled`), 10000, 200, 'authenticated-input-enabled');
   await typeInput('[data-testid="discovery-input"]', 'phở gần Xuân Thủy dưới 70k');
   await click('[data-testid="discovery-send-btn"]');
   await pause(1000);
@@ -774,9 +776,12 @@ async function main() {
   // Test Lock Toggle
   await click('[data-testid="btn-lock-venue-venue-pho-10"]');
   await pause(800);
-  const lockState = await ev(`document.querySelector('[data-testid="btn-lock-venue-venue-pho-10"]')?.textContent.trim()`);
-  recordCheck('SELECTION_LOCK', 'Nút khoá quán toggle thành trạng thái khoá (🔒)',
-    lockState === '🔒',
+  const lockState = await ev(`(()=>{
+    const btn = document.querySelector('[data-testid="btn-lock-venue-venue-pho-10"]');
+    return btn?.classList.contains('locked') || btn?.getAttribute('aria-label') === 'Mở khoá quán';
+  })()`);
+  recordCheck('SELECTION_LOCK', 'Nút khoá quán toggle thành trạng thái khoá (SVG icon & aria-label)',
+    lockState === true,
     { lockState }
   );
 
@@ -931,6 +936,73 @@ async function main() {
   })()`);
   recordCheck('ZOOM_200_REFLOW', 'Reflow mượt mà ở độ phóng đại 200%, không phát sinh lỗi DOM', zoomMetrics.noCrash);
   await ev(`document.body.style.zoom = '1.0'`);
+
+  // Test 11: Multi-Viewport Fluid Matrix Verification (1280, 1440, 1920, 2560, 390) & Zero Emoji Invariant
+  console.log('\n[Multi-Viewport Fluid Matrix Verification: 1280, 1440, 1920, 2560, 390]...');
+  const SCREENSHOTS_DIR = path.join(QA_DIR, 'screenshots');
+  if (!fs.existsSync(SCREENSHOTS_DIR)) fs.mkdirSync(SCREENSHOTS_DIR, { recursive: true });
+
+  const viewportsToTest = [
+    { name: 'desktop_1280', width: 1280, height: 800, isMobile: false },
+    { name: 'desktop_1440', width: 1440, height: 1024, isMobile: false },
+    { name: 'desktop_1920', width: 1920, height: 1080, isMobile: false },
+    { name: 'desktop_2560', width: 2560, height: 1440, isMobile: false },
+    { name: 'mobile_390', width: 390, height: 844, isMobile: true }
+  ];
+
+  const strictEmojiRegex = /(?:\ud83c[\udf00-\udfff]|\ud83d[\ud000-\ude4f\ude80-\udeff]|\ud83e[\udd00-\udfff]|[\u2600-\u26ff]|[\u2700-\u27bf]|[\u231a\u231b\u23e9-\u23ec\u23f0\u23f3]|[\u2b50\u2b55]|\u200d|\ufe0f)/;
+
+  for (const vp of viewportsToTest) {
+    await setViewport(vp.width, vp.height, vp.isMobile);
+    await pause(600);
+
+    const vpMetrics = await ev(`(()=>{
+      const scrollWidth = document.documentElement.scrollWidth;
+      const bodyWidth = document.body.clientWidth;
+      const sidebar = document.querySelector('.nn-sidebar')?.getBoundingClientRect();
+      const canvas = document.querySelector('.nn-canvas-wrapper')?.getBoundingClientRect();
+      const chatCard = document.querySelector('.nn-chat-card')?.getBoundingClientRect();
+      const tourCol = document.querySelector('.nn-tour-col')?.getBoundingClientRect();
+      const text = document.body.innerText;
+
+      return {
+        viewportWidth: window.innerWidth,
+        scrollWidth,
+        bodyWidth,
+        hasHorizontalOverflow: scrollWidth > window.innerWidth,
+        sidebarWidth: sidebar ? Math.round(sidebar.width) : 0,
+        canvasWidth: canvas ? Math.round(canvas.width) : 0,
+        chatCardWidth: chatCard ? Math.round(chatCard.width) : 0,
+        tourColWidth: tourCol ? Math.round(tourCol.width) : 0,
+        text
+      };
+    })()`);
+
+    const hasEmojiInDom = strictEmojiRegex.test(vpMetrics.text);
+
+    recordCheck(`FLUID_VIEWPORT_${vp.width}_NO_OVERFLOW`,
+      `Viewport ${vp.width}x${vp.height} (${vp.name}) không có thanh cuộn ngang (scrollWidth: ${vpMetrics.scrollWidth} <= ${vp.width})`,
+      !vpMetrics.hasHorizontalOverflow,
+      { width: vp.width, scrollWidth: vpMetrics.scrollWidth }
+    );
+
+    if (!vp.isMobile) {
+      recordCheck(`FLUID_VIEWPORT_${vp.width}_FILLS_SCREEN`,
+        `Viewport ${vp.width}x${vp.height} canvas lấp đầy không gian khả dụng (canvas: ${vpMetrics.canvasWidth}px, sidebar: ${vpMetrics.sidebarWidth}px)`,
+        Math.abs(vpMetrics.canvasWidth + vpMetrics.sidebarWidth - vp.width) <= 2,
+        { canvasWidth: vpMetrics.canvasWidth, sidebarWidth: vpMetrics.sidebarWidth }
+      );
+    }
+
+    recordCheck(`ZERO_EMOJI_${vp.width}`,
+      `Viewport ${vp.width}x${vp.height} không chứa Unicode emoji trong nội dung trang (0 emoji detected)`,
+      !hasEmojiInDom,
+      { hasEmoji: hasEmojiInDom }
+    );
+
+    const shotName = `viewport_${vp.width}.png`;
+    await snapScreenshot(path.join(SCREENSHOTS_DIR, shotName));
+  }
 
   // Side-by-Side Visual Comparison Composition using Sharp
   console.log('\nGenerating Side-by-Side Comparison with Figma reference...');

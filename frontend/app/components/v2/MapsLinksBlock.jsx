@@ -24,6 +24,93 @@ import { isValidGoogleMapsDirUrl, translateSkippedReason, translateServerNote } 
  * - Generation and sessionEpoch guards prevent stale responses from overwriting newer mode/revision state.
  * - Errors route through StatusQueue with an accessible Retry button; stable callbacks prevent loops.
  */
+function CompassGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+    </svg>
+  );
+}
+
+function WalkGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" />
+      <path d="m9 20 3-6 3 2v4" />
+      <path d="m6 10 4-1 2 3 3-1" />
+    </svg>
+  );
+}
+
+function CarGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.5 2.8C2 10.9 2 11 2 11.2V16c0 .6.4 1 1 1h2" />
+      <circle cx="7" cy="17" r="2" />
+      <circle cx="17" cy="17" r="2" />
+    </svg>
+  );
+}
+
+function WarningGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
+function AlertGlyph() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  );
+}
+
+function InfoGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  );
+}
+
+function MapGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
+      <line x1="9" y1="3" x2="9" y2="18" />
+      <line x1="15" y1="6" x2="15" y2="21" />
+    </svg>
+  );
+}
+
+function LockGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
+
+function ClockGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
 export default function MapsLinksBlock({
   tour,
   sessionId,
@@ -279,7 +366,7 @@ export default function MapsLinksBlock({
               wordBreak: 'break-word',
             }}
           >
-            <span style={{ flexShrink: 0 }}>🧭</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><CompassGlyph /></span>
             <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Mở trên Google Maps</span>
           </h4>
           <p
@@ -341,7 +428,7 @@ export default function MapsLinksBlock({
               outline: 'none',
             }}
           >
-            <span aria-hidden="true">🚶</span>
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}><WalkGlyph /></span>
             <span>Đi bộ</span>
           </button>
           <button
@@ -374,7 +461,7 @@ export default function MapsLinksBlock({
               outline: 'none',
             }}
           >
-            <span aria-hidden="true">🚗</span>
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}><CarGlyph /></span>
             <span>Lái xe</span>
           </button>
         </div>
@@ -399,7 +486,7 @@ export default function MapsLinksBlock({
             boxSizing: 'border-box',
           }}
         >
-          <span aria-hidden="true">⚠️</span>
+          <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center' }}><WarningGlyph /></span>
           <span>Một liên kết không hợp lệ đã bị bỏ qua</span>
         </div>
       )}
@@ -441,7 +528,7 @@ export default function MapsLinksBlock({
             boxSizing: 'border-box',
           }}
         >
-          <span aria-hidden="true" style={{ fontSize: '16px' }}>⚠️</span>
+          <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', marginTop: '2px' }}><WarningGlyph /></span>
           <div style={{ flex: 1 }}>
             <div>
               <strong>Lịch trình một phần:</strong>{' '}
@@ -487,7 +574,7 @@ export default function MapsLinksBlock({
             boxSizing: 'border-box',
           }}
         >
-          <span aria-hidden="true" style={{ fontSize: '16px' }}>⛔</span>
+          <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', marginTop: '2px' }}><AlertGlyph /></span>
           <div style={{ flex: 1 }}>
             <div>
               <strong>Không thể tạo liên kết bản đồ:</strong>{' '}
@@ -536,8 +623,9 @@ export default function MapsLinksBlock({
           }}
         >
           {serverNotes.map((note, idx) => (
-            <div key={idx} data-maps-note style={{ marginBottom: idx < serverNotes.length - 1 ? '4px' : 0, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-              ℹ️ {translateServerNote(String(note))}
+            <div key={idx} data-maps-note style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: idx < serverNotes.length - 1 ? '4px' : 0, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+              <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><InfoGlyph /></span>
+              <span>{translateServerNote(String(note))}</span>
             </div>
           ))}
         </div>
@@ -578,7 +666,7 @@ export default function MapsLinksBlock({
               whiteSpace: 'normal',
             }}
           >
-            <span aria-hidden="true" style={{ flexShrink: 0 }}>🗺️</span>
+            <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><MapGlyph /></span>
             <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Xem lịch trình trên Google Maps</span>
           </a>
         </div>
@@ -640,7 +728,7 @@ export default function MapsLinksBlock({
                     flexShrink: 0,
                   }}
                 >
-                  Mở Maps ↗
+                  Mở Maps
                 </span>
               </a>
             );
@@ -668,11 +756,13 @@ export default function MapsLinksBlock({
           wordBreak: 'break-word',
         }}
       >
-        <div style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-          🔒 Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới Google khi bạn mở liên kết.
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><LockGlyph /></span>
+          <span>Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới Google khi bạn mở liên kết.</span>
         </div>
-        <div style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-          ⏱️ Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác.
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><ClockGlyph /></span>
+          <span>Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác.</span>
         </div>
       </div>
     </section>

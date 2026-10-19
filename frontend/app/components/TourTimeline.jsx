@@ -160,7 +160,10 @@ export default function TourTimeline({
                     }}
                     title={`Đổi điểm dừng #${s.order} này trong khi các điểm dừng khác được khóa giữ nguyên`}
                   >
-                    🔄 Đổi quán
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <path d="M21 2v6h-6"/><path d="M3 12a9 9 0 0 1 15-6.7L21 8"/><path d="M3 22v-6h6"/><path d="M21 12a9 9 0 0 1-15 6.7L3 16"/>
+                    </svg>
+                    Đổi quán
                   </button>
                 </div>
               </div>
@@ -179,7 +182,12 @@ export default function TourTimeline({
                   borderRadius: 8
                 }}
               >
-                <span>🕒 Đến: <strong>{s.arrive || '--:--'}</strong></span>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                  </svg>
+                  Đến: <strong>{s.arrive || '--:--'}</strong>
+                </span>
                 <span>→</span>
                 <span style={{ fontSize: 11, color: 'var(--text-muted)' }}>
                   (ước tính {tour?.assumptions?.visit_minutes_per_stop ? `${tour.assumptions.visit_minutes_per_stop}p` : 'thời gian'} dừng)
@@ -226,7 +234,7 @@ export default function TourTimeline({
                       onClick={(e) => e.stopPropagation()}
                       style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 600 }}
                     >
-                      Nguồn quán ↗
+                      Nguồn quán
                     </a>
                   )}
                   ·
@@ -237,7 +245,7 @@ export default function TourTimeline({
                     onClick={(e) => e.stopPropagation()}
                     style={{ color: 'var(--accent-primary)', textDecoration: 'none', fontWeight: 600 }}
                   >
-                    OSM ↗
+                    OSM
                   </a>
                 </div>
               </div>

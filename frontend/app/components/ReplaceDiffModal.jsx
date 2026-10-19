@@ -162,7 +162,7 @@ export default function ReplaceDiffModal({
       >
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 14 }}>
           <h3 id="modal-title" style={{ fontSize: 17, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-            {isCompleted ? `✅ Đã Đổi Xong Điểm Dừng #${oldStop.order}` : `🔄 Xác nhận Đổi Điểm Dừng #${oldStop.order}`}
+            {isCompleted ? `Đã Đổi Xong Điểm Dừng #${oldStop.order}` : `Xác nhận Đổi Điểm Dừng #${oldStop.order}`}
           </h3>
           <button
             type="button"
@@ -178,7 +178,7 @@ export default function ReplaceDiffModal({
               padding: '4px 8px'
             }}
           >
-            ✕
+            ×
           </button>
         </div>
 
@@ -194,7 +194,7 @@ export default function ReplaceDiffModal({
             color: '#334155'
           }}
         >
-          <strong>🔒 Cơ chế Khóa hành trình (Tour Locking):</strong>
+          <strong>Cơ chế Khóa hành trình (Tour Locking):</strong>
           <p style={{ marginTop: 2, marginBottom: 0 }}>
             Chỉ đổi quán tại điểm dừng #{oldStop.order}; giữ nguyên các quán khác và thứ tự của chúng. Thời gian và chặng đi ước tính sẽ được tính lại.
           </p>
@@ -237,7 +237,7 @@ export default function ReplaceDiffModal({
               }}
             >
               <div style={{ fontWeight: 700, marginBottom: 4 }}>
-                ℹ️ Lựa chọn từ Máy chủ (Server-selected):
+                Lựa chọn từ Máy chủ (Server-selected):
               </div>
               <p style={{ margin: 0, fontSize: 12, lineHeight: 1.5 }}>
                 Quán thay thế sẽ do máy chủ tính toán tự động dựa trên ngân sách, sở thích ẩm thực và cự ly đi bộ khả thi của bạn. Hệ thống cam kết không hiển thị quán suy đoán giả lập trước khi máy chủ xác nhận.

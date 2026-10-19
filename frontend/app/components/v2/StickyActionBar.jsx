@@ -57,7 +57,7 @@ export default function StickyActionBar({
             disabled={busy}
             style={{ flex: 1, minHeight: '44px' }}
           >
-            ⚙️ Tuỳ chọn
+            Tuỳ chọn
           </Button>
         </>
       ) : (
@@ -67,7 +67,7 @@ export default function StickyActionBar({
             onClick={onOpenMap}
             style={{ flex: 1.5, minHeight: '44px', fontWeight: 700 }}
           >
-            📍 Xem bản đồ
+            Xem bản đồ
           </Button>
           <Button
             variant="secondary"
@@ -75,7 +75,7 @@ export default function StickyActionBar({
             disabled={busy}
             style={{ flex: 1, minHeight: '44px' }}
           >
-            ⚙️ Tuỳ chọn
+            Tuỳ chọn
           </Button>
           <Button
             variant="ghost"

@@ -422,7 +422,6 @@ export default function ChatV2Layout({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 22 }}>🍜</span>
           <strong style={{ fontSize: 16, fontWeight: 800, color: '#C8431A' }}>
             AI FoodTour Planner
           </strong>
@@ -538,7 +537,7 @@ export default function ChatV2Layout({
                   cursor: 'pointer',
                 }}
               >
-                💬 Trò chuyện
+                Trò chuyện
               </button>
               <button
                 type="button"
@@ -559,7 +558,7 @@ export default function ChatV2Layout({
                   cursor: 'pointer',
                 }}
               >
-                🥣 Danh sách ({chatState?.shortlist?.length || 0})
+                Danh sách ({chatState?.shortlist?.length || 0})
               </button>
               <button
                 type="button"
@@ -580,7 +579,7 @@ export default function ChatV2Layout({
                   cursor: 'pointer',
                 }}
               >
-                ✨ Khám phá
+                Khám phá
               </button>
             </nav>
           )}

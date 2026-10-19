@@ -194,7 +194,7 @@ export default function GuidedLayout({
 
   useEffect(() => {
     const handleResize = () => {
-      setIsDesktop(document.documentElement.clientWidth >= 1200);
+      setIsDesktop(document.documentElement.clientWidth >= 1024);
     };
     handleResize();
     window.addEventListener('resize', handleResize);
@@ -885,7 +885,7 @@ export default function GuidedLayout({
     { label: 'Hẹn hò cuối tuần', on: false, text: 'Lịch trình nhẹ nhàng cho 2 người đi ăn tối cuối tuần' },
     { label: 'Quán local', on: false, text: 'Quán local chuẩn vị Hà Nội' },
     { label: 'Dưới 300K', on: chipOn.cheap, text: 'Ngân sách dưới 300 nghìn cho cả chuyến' },
-    { label: '📍 Vị trí GPS', on: false, isGeo: true }
+    { label: 'Vị trí GPS', on: false, isGeo: true }
   ];
   const chatVisible = isDesktop || activeMobileTab === 'chat';
   const tourVisible = isDesktop || activeMobileTab === 'tour';
@@ -930,7 +930,7 @@ export default function GuidedLayout({
                 }
               }}
             >
-              <span className="nn-nav-icon">✦</span> Trò chuyện
+              <span className="nn-nav-icon"><StarGlyph size={12} color="currentColor" /></span> Trò chuyện
             </button>
             <button
               type="button"
@@ -1021,7 +1021,7 @@ export default function GuidedLayout({
           >
             <div className="nn-chat-card-header">
               <div className="nn-assistant-badge">
-                <span>✦</span> MĂM MĂM AI
+                <StarGlyph size={12} color="#CF542F" /> MĂM MĂM AI
               </div>
               <span className="nn-assistant-tagline">Người bạn sành ăn của bạn</span>
             </div>
@@ -1060,7 +1060,7 @@ export default function GuidedLayout({
 
             {(errorMessage || initError) && (
               <div data-testid="guided-error-banner" role="alert" className="nn-alert">
-                <span>⚠️ {errorMessage || initError.message}</span>
+                <span>{errorMessage || initError.message}</span>
                 <button type="button" data-testid="guided-error-retry-btn" onClick={handleRetryFailed}>Thử lại</button>
               </div>
             )}
@@ -1069,7 +1069,7 @@ export default function GuidedLayout({
             <div data-testid={isStartScreen ? 'guided-start-screen' : 'guided-stream'} className="nn-stream">
               {isStartScreen && (
                 <div data-testid="guided-welcome-msg" className="nn-editorial-welcome">
-                  <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                  <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
                   <div className="nn-bubble editorial-body">
                     Chào bạn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ gợi ý món ngon và xếp một lộ trình chuẩn bài nhất.
                   </div>
@@ -1088,7 +1088,7 @@ export default function GuidedLayout({
                 <div className="nn-blocks">
                   {filteredTextBlocks.map((b, idx) => (
                     <div key={idx} className="nn-editorial-assistant">
-                      <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                      <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
                       <div data-testid="assistant-text-bubble" className="nn-bubble editorial-body">
                         {b.text}
                       </div>
@@ -1134,9 +1134,9 @@ export default function GuidedLayout({
                               <span className="tag">{card.label || String.fromCharCode(65 + idx)}</span>
                               <strong>{v.name}</strong>
                             </div>
-                            <div className="meta">📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}</div>
-                            <div className="meta">🏷️ {priceText}</div>
-                            <div className="meta">🕒 {hoursText}</div>
+                            <div className="meta">{v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}</div>
+                            <div className="meta">{priceText}</div>
+                            <div className="meta">{hoursText}</div>
                           </div>
                         );
                       })}
@@ -1283,7 +1283,7 @@ export default function GuidedLayout({
                 {/* Hero Card */}
                 <div className="nn-hero-card">
                   <div className="nn-hero-tag">
-                    ✦ {showTour ? (stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS') : 'HANOI AFTER HOURS'}
+                    <StarGlyph size={10} color="#E8B85C" /> {showTour ? (stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS') : 'HANOI AFTER HOURS'}
                   </div>
                   <h3 className="nn-hero-title">
                     {(() => {

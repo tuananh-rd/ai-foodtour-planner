@@ -8,25 +8,25 @@ import Chip from '../../ui/Chip';
 export const SUGGESTION_CHIPS = [
   {
     id: 'pho_cafe',
-    label: '🍜 Phở & Cà phê quanh Hồ Gươm',
+    label: 'Phở & Cà phê quanh Hồ Gươm',
     text: 'Ăn sáng phở và cà phê quanh Hồ Gươm 2 tiếng, 150k mỗi người',
     prefs: { duration_min: 120, budget_vnd: 150000, budget_scope: 'per_person', interests: ['phở', 'cà phê'] },
   },
   {
     id: 'snack_3stops',
-    label: '🍢 Ăn vặt 3 quán chiều nay',
+    label: 'Ăn vặt 3 quán chiều nay',
     text: 'Ăn vặt Phố Cổ chiều nay 3 quán: bún chả, nem rán, chè',
     prefs: { duration_min: 150, max_stops: 3, interests: ['bún chả', 'nem rán', 'chè'] },
   },
   {
     id: 'strict_mode',
-    label: '🛡️ Nghiêm ngặt đủ bằng chứng',
+    label: 'Nghiêm ngặt đủ bằng chứng',
     text: 'Tour ẩm thực nghiêm ngặt kiểm tra bằng chứng giờ và tuyến',
     prefs: { mode: 'strict' },
   },
   {
     id: 'budget',
-    label: '💸 Dưới 100k/người',
+    label: 'Dưới 100k/người',
     text: 'Ngân sách dưới 100k mỗi người, món bún hoặc bánh mì',
     prefs: { budget_vnd: 100000, budget_scope: 'per_person', interests: ['bún', 'bánh mì'] },
   },
@@ -234,7 +234,7 @@ export default function RequestArea({
           }}
         >
           <strong style={{ display: 'block', marginBottom: '6px', color: '#92400E' }}>
-            ❓ Cần thêm thông tin để lập lịch trình:
+            Cần thêm thông tin để lập lịch trình:
           </strong>
           <ul style={{ margin: 0, paddingLeft: '20px' }}>
             {questions.map((q, idx) => (
@@ -255,7 +255,7 @@ export default function RequestArea({
                     onClick={() => handleQuickAnswer('Đi trong 60 phút')}
                     style={quickChipStyle}
                   >
-                    ⏱️ 60 phút
+                    60 phút
                   </button>
                   <button
                     type="button"
@@ -263,7 +263,7 @@ export default function RequestArea({
                     onClick={() => handleQuickAnswer('Đi trong 120 phút')}
                     style={quickChipStyle}
                   >
-                    ⏱️ 120 phút
+                    120 phút
                   </button>
                   <button
                     type="button"
@@ -271,7 +271,7 @@ export default function RequestArea({
                     onClick={() => handleQuickAnswer('Đi trong 180 phút')}
                     style={quickChipStyle}
                   >
-                    ⏱️ 180 phút
+                    180 phút
                   </button>
                 </>
               )}
@@ -283,7 +283,7 @@ export default function RequestArea({
                     onClick={() => handleQuickAnswer('Ngân sách tính theo mỗi người')}
                     style={quickChipStyle}
                   >
-                    👤 Mỗi người
+                    Mỗi người
                   </button>
                   <button
                     type="button"
@@ -291,7 +291,7 @@ export default function RequestArea({
                     onClick={() => handleQuickAnswer('Ngân sách tính cho cả nhóm')}
                     style={quickChipStyle}
                   >
-                    👥 Cả nhóm
+                    Cả nhóm
                   </button>
                 </>
               )}
@@ -316,7 +316,7 @@ export default function RequestArea({
           }}
         >
           <strong style={{ display: 'block', marginBottom: '4px' }}>
-            💬 Lưu ý từ hệ thống trích xuất yêu cầu:
+            Lưu ý từ hệ thống trích xuất yêu cầu:
           </strong>
           <ul style={{ margin: 0, paddingLeft: '20px' }}>
             {notes.map((n, idx) => (
@@ -415,7 +415,7 @@ export default function RequestArea({
                 fontWeight: 600,
               }}
             >
-              ⚙️ Tuỳ chọn & Điểm xuất phát
+              Tuỳ chọn & Điểm xuất phát
             </Button>
           )}
         </div>
@@ -455,9 +455,9 @@ export default function RequestArea({
               DỮ LIỆU GIẢ LẬP
             </span>
           )}
-          <span>📍 Dữ liệu: {provenanceText} · Dữ liệu cục bộ chưa xác minh</span>
+          <span>Dữ liệu: {provenanceText} · Dữ liệu cục bộ chưa xác minh</span>
         </div>
-        <span>🚶 Đi bộ tối ưu trong Phố Cổ</span>
+        <span>Đi bộ tối ưu trong Phố Cổ</span>
       </div>
     </section>
   );

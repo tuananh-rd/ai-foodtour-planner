@@ -9,6 +9,45 @@ import { useStatusQueue } from './StatusQueue.js';
  * All user-facing text in Vietnamese, zero developer jargon.
  * Accessible with role="alert" or role="status", dismiss button with min-height >= 44px.
  */
+function AlertIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  );
+}
+
+function WarningIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 export default function Banner({
   type = 'info',
   title = null,
@@ -26,7 +65,7 @@ export default function Banner({
           backgroundColor: 'var(--banner-error-bg, #FEF2F2)',
           color: 'var(--banner-error-text, #7F1D1D)',
           borderColor: 'var(--banner-error-border, #FECACA)',
-          icon: '⛔',
+          icon: <AlertIcon />,
           defaultTitle: 'Đã có lỗi xảy ra',
           role: 'alert',
         };
@@ -35,7 +74,7 @@ export default function Banner({
           backgroundColor: 'var(--banner-warning-bg, #FFFBEB)',
           color: 'var(--banner-warning-text, #78350F)',
           borderColor: 'var(--banner-warning-border, #FDE68A)',
-          icon: '⚠️',
+          icon: <WarningIcon />,
           defaultTitle: 'Lưu ý',
           role: 'alert',
         };
@@ -45,7 +84,7 @@ export default function Banner({
           backgroundColor: 'var(--banner-info-bg, #EFF6FF)',
           color: 'var(--banner-info-text, #1E3A8A)',
           borderColor: 'var(--banner-info-border, #BFDBFE)',
-          icon: 'ℹ️',
+          icon: <InfoIcon />,
           defaultTitle: 'Thông tin',
           role: 'status',
         };
@@ -142,7 +181,7 @@ export default function Banner({
               boxSizing: 'border-box',
             }}
           >
-            ✕
+            <CloseIcon />
           </button>
         )}
       </div>

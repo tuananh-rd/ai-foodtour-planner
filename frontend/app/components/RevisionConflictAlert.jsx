@@ -21,7 +21,7 @@ export default function RevisionConflictAlert({ conflictError, onReloadSession, 
       <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
         <div>
           <strong style={{ color: '#cf1322', fontSize: 14, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>⚠️</span> {datasetChanged ? 'Dữ liệu đã thay đổi (409 dataset_changed)' : 'Xung đột phiên bản (409 Revision Conflict)'}
+            {datasetChanged ? 'Dữ liệu đã thay đổi (409 dataset_changed)' : 'Xung đột phiên bản (409 Revision Conflict)'}
           </strong>
           <p style={{ fontSize: 13, color: '#434343', marginTop: 4, lineHeight: 1.45 }}>
             {conflictError.message || 'Phiên làm việc đã bị thay đổi bởi thao tác khác. Vui lòng tải lại dữ liệu mới nhất từ máy chủ.'}
@@ -60,7 +60,7 @@ export default function RevisionConflictAlert({ conflictError, onReloadSession, 
                 cursor: 'pointer'
               }}
             >
-              ✕
+              ×
             </button>
           )}
         </div>

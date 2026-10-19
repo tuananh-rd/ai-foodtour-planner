@@ -24,7 +24,7 @@ import {
 
 function assert(condition, message) {
   if (!condition) {
-    console.error(`❌ ASSERTION FAILED: ${message}`);
+    console.error(`[FAIL] ASSERTION FAILED: ${message}`);
     process.exit(1);
   }
 }
@@ -40,7 +40,7 @@ async function runTests() {
   assert(health.status === "ok", "health.status must be 'ok'");
   assert(health.dataset_loaded === true, "health.dataset_loaded must be true");
   assert(health.is_mock === true, "health.is_mock must be true");
-  console.log("  ✓ Health passed:", health);
+  console.log("  [PASS] Health passed:", health);
 
   // 2. Venues endpoint
   console.log("Test 2: GET /v1/venues");
@@ -49,7 +49,7 @@ async function runTests() {
   assert(venuesRes.venues.length === 5, "venues length must be 5");
   assert(venuesRes.total >= 8, "venues total must be >= 8");
   assert(venuesRes.is_mock === true, "is_mock must be true");
-  console.log("  ✓ Venues list passed:", venuesRes.venues.length, "items");
+  console.log("  [PASS] Venues list passed:", venuesRes.venues.length, "items");
 
   // 3. Venue detail
   console.log("Test 3: GET /v1/venues/{id}");
@@ -57,7 +57,7 @@ async function runTests() {
   assert(venue.id === "SYN-001", "id must match SYN-001");
   assert(venue.synthetic === true, "must be synthetic");
   assert(typeof venue.lat === "number" && typeof venue.lon === "number", "coords must be numbers");
-  console.log("  ✓ Venue detail passed:", venue.name);
+  console.log("  [PASS] Venue detail passed:", venue.name);
 
   // 4. Create Session
   console.log("Test 4: POST /v1/sessions");
@@ -65,7 +65,7 @@ async function runTests() {
   assert(session.session_id.startsWith("mock-session"), "session_id format");
   assert(typeof session.token === "string" && session.token.length > 5, "token valid");
   assert(session.revision === 0, "initial revision must be 0");
-  console.log("  ✓ Session created:", session.session_id, "revision:", session.revision);
+  console.log("  [PASS] Session created:", session.session_id, "revision:", session.revision);
 
   // 5. Send message with missing slot
   console.log("Test 5: POST /v1/sessions/{id}/messages (missing slot)");
@@ -75,7 +75,7 @@ async function runTests() {
   assert(Array.isArray(missingRes.missing_slots) && missingRes.missing_slots.length > 0, "missing_slots present");
   assert(Array.isArray(missingRes.questions) && missingRes.questions.length > 0, "questions present");
   assert(missingRes.dataset_source === "synthetic", "dataset_source must be synthetic");
-  console.log("  ✓ Missing slot handled properly. Missing:", missingRes.missing_slots, "Questions:", missingRes.questions);
+  console.log("  [PASS] Missing slot handled properly. Missing:", missingRes.missing_slots, "Questions:", missingRes.questions);
 
   // 6. Send message with full details -> Generates Tour
   console.log("Test 6: POST /v1/sessions/{id}/messages (full preferences -> Tour)");
@@ -95,7 +95,7 @@ async function runTests() {
   assert(stop1.order === 1, "stop order is 1");
   assert(stop1.hours.open_at_arrival === null, "open_at_arrival must be null, never true without verification");
   assert(stop1.price.semantics === "venue_range", "price semantics must be venue_range");
-  console.log("  ✓ Full tour generated properly. Stops:", fullRes.tour.stops.map(s => s.name).join(" -> "));
+  console.log("  [PASS] Full tour generated properly. Stops:", fullRes.tour.stops.map(s => s.name).join(" -> "));
 
   // 7. Update preferences with revision conflict check
   console.log("Test 7: PUT /v1/sessions/{id}/preferences (409 Revision Conflict)");
@@ -106,7 +106,7 @@ async function runTests() {
   } catch (err) {
     if (err instanceof ApiError && err.status === 409 && err.code === "revision_conflict") {
       threwConflict = true;
-      console.log("  ✓ Expected 409 revision conflict caught successfully:", err.message);
+      console.log("  [PASS] Expected 409 revision conflict caught successfully:", err.message);
     }
   }
   assert(threwConflict, "Must throw 409 revision conflict on stale base_revision");
@@ -116,14 +116,14 @@ async function runTests() {
   const updateRes = await updatePreferences(session.session_id, 2, { max_stops: 4 }, session.token);
   assert(updateRes.revision === 3, "revision incremented to 3");
   assert(updateRes.preferences.max_stops === 4, "max_stops updated");
-  console.log("  ✓ Preferences updated successfully. Revision:", updateRes.revision);
+  console.log("  [PASS] Preferences updated successfully. Revision:", updateRes.revision);
 
   // 8. Plan tour
   console.log("Test 8: POST /v1/sessions/{id}/tour");
   const planRes = await planTour(session.session_id, 3, session.token);
   assert(planRes.revision === 4, "tour revision incremented to 4");
   assert(planRes.tour.stops.length === 3, "tour has stops");
-  console.log("  ✓ Plan tour succeeded. Revision:", planRes.revision);
+  console.log("  [PASS] Plan tour succeeded. Revision:", planRes.revision);
 
   // 9. Replace one stop with locks
   console.log("Test 9: POST /v1/sessions/{id}/tour/replace");
@@ -135,7 +135,7 @@ async function runTests() {
   assert(replaceRes.tour.locks.includes(planRes.tour.stops[0].venue_id), "stop 1 must be locked");
   assert(replaceRes.tour.locks.includes(planRes.tour.stops[2].venue_id), "stop 3 must be locked");
   assert(!replaceRes.tour.locks.includes(stopToReplace.venue_id), "replaced stop is not locked");
-  console.log("  ✓ Replace stop succeeded with locks!");
+  console.log("  [PASS] Replace stop succeeded with locks!");
   console.log("    Before:", planRes.tour.stops.map(s => s.venue_id));
   console.log("    After: ", replaceRes.tour.stops.map(s => s.venue_id));
   console.log("    Locks: ", replaceRes.tour.locks);
@@ -146,7 +146,7 @@ async function runTests() {
   assert(impRes.tour.status === "no_solution", "status must be no_solution");
   assert(impRes.tour.reasons.length > 0, "reasons must be present");
   assert(impRes.tour.proposed_changes.length > 0, "proposed_changes must be present");
-  console.log("  ✓ Impossible request handled properly. Reasons:", impRes.tour.reasons);
+  console.log("  [PASS] Impossible request handled properly. Reasons:", impRes.tour.reasons);
 
   // 11. Strict mode insufficient evidence check
   console.log("Test 11: Strict mode insufficient evidence check");
@@ -155,7 +155,7 @@ async function runTests() {
   assert(strictRes.tour.status === "insufficient_evidence", "status must be insufficient_evidence");
   assert(strictRes.tour.reasons.length > 0, "reasons must be present");
   assert(strictRes.tour.proposed_changes.length > 0, "proposed_changes must be present");
-  console.log("  ✓ Strict mode insufficient evidence handled properly. Reasons:", strictRes.tour.reasons);
+  console.log("  [PASS] Strict mode insufficient evidence handled properly. Reasons:", strictRes.tour.reasons);
 
   // 12. Legacy endpoint
   console.log("Test 12: POST /v1/plans (legacy)");
@@ -169,7 +169,7 @@ async function runTests() {
   });
   assert(legacyRes.stops.length > 0, "legacy stops present");
   assert(legacyRes.is_mock === true, "legacy is_mock true");
-  console.log("  ✓ Legacy endpoint passed:", legacyRes.stops.length, "stops");
+  console.log("  [PASS] Legacy endpoint passed:", legacyRes.stops.length, "stops");
 
   // 13. getVenuesMap in MOCK mode
   console.log("Test 13: GET /v1/venues/map (mock mode contract)");
@@ -185,7 +185,7 @@ async function runTests() {
   assert(mapRes.is_mock === true, "mapRes.is_mock must be true");
   assert(mapRes.dataset_source === "synthetic", "mapRes.dataset_source must be synthetic");
   assert(mapRes.items.every(v => !v.online_only), "items must not contain online-only venues");
-  console.log("  ✓ Mock map venues passed:", mapRes.items.length, "items, truncated:", mapRes.truncated);
+  console.log("  [PASS] Mock map venues passed:", mapRes.items.length, "items, truncated:", mapRes.truncated);
 
   // 14. getVenuesMap in REAL mode: must NOT fall back to synthetic fixtures on error
   console.log("Test 14: GET /v1/venues/map (real mode error propagation, no silent fallback)");
@@ -204,7 +204,7 @@ async function runTests() {
     setRuntimeMockMode(true);
   }
   assert(caughtRealError === true, "Real mode getVenuesMap MUST throw on failure instead of fabricating synthetic data");
-  console.log("  ✓ Real mode getVenuesMap properly propagated error without synthetic fallback");
+  console.log("  [PASS] Real mode getVenuesMap properly propagated error without synthetic fallback");
 
   // 15. getVenuesMap AbortSignal handling: must propagate AbortError
   console.log("Test 15: GET /v1/venues/map (AbortSignal handling)");
@@ -221,7 +221,7 @@ async function runTests() {
     setRuntimeMockMode(true);
   }
   assert(caughtAbort === true, "Must propagate AbortError when signal is aborted");
-  console.log("  ✓ AbortError properly propagated without being swallowed");
+  console.log("  [PASS] AbortError properly propagated without being swallowed");
 
   // 16. getMapsLinks contract v1.7 (mock mode, travelmode, limits, 409 no_tour)
   console.log("Test 16: GET /v1/sessions/{id}/tour/maps-links (contract v1.7)");
@@ -259,7 +259,7 @@ async function runTests() {
   const drivingLinks = await getMapsLinks(session.session_id, 'driving', session.token);
   assert(drivingLinks.travelmode === 'driving', "travelmode must be driving");
   assert(drivingLinks.links[0].url.includes('travelmode=driving'), "url travelmode driving");
-  console.log("  ✓ Free Google Maps URLs contract v1.7 verified in mock mode");
+  console.log("  [PASS] Free Google Maps URLs contract v1.7 verified in mock mode");
 
   // 17. getMapsLinks real mode error propagation
   console.log("Test 17: GET /v1/sessions/{id}/tour/maps-links (real mode error propagation)");
@@ -276,7 +276,7 @@ async function runTests() {
     setRuntimeMockMode(true);
   }
   assert(caughtRealMapsErr === true, "Real mode must propagate errors without fabricating URLs");
-  console.log("  ✓ Real mode getMapsLinks error propagation passed");
+  console.log("  [PASS] Real mode getMapsLinks error propagation passed");
 
   // 18. chatTurn and getChatState (contract v1.8)
   console.log("Test 18: POST /v1/sessions/{id}/chat and getChatState (contract v1.8)");
@@ -323,9 +323,9 @@ async function runTests() {
   assert(turn3.revision === 2, "revision must increment to 2");
   const areaVal = turn3.chat.profile.area.value;
   assert(areaVal === "Cầu Giấy" || areaVal?.label === "Cầu Giấy" || areaVal?.district === "Cầu Giấy", "profile.area must be updated to Cầu Giấy");
-  console.log("  ✓ Conversational chat turn and getChatState contract v1.8 verified");
+  console.log("  [PASS] Conversational chat turn and getChatState contract v1.8 verified");
 
-  console.log("\n🎉 ALL 18 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
+  console.log("\nALL 18 CONTRACT INVARIANT TESTS PASSED SUCCESSFULLY!");
 }
 
 runTests().catch(err => {

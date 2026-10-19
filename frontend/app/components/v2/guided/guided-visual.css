@@ -334,12 +334,13 @@
 .nn-canvas-wrapper {
   flex: 1;
   min-width: 0;
+  width: 100%;
+  max-width: 100%;
   background: #F9C53D;
   display: flex;
   flex-direction: column;
   padding: 24px 32px 40px 32px;
   box-sizing: border-box;
-  max-width: 1208px;
 }
 
 .nn-topbar {
@@ -385,23 +386,29 @@
 }
 
 /* =========================================================================
-   3. MAIN CONTENT GRID (668px Chat Card + 452px Tour Column)
+   3. MAIN CONTENT GRID (Proportional Chat Card + Tour Column)
    ========================================================================= */
 .nn-main-grid {
   display: grid;
-  grid-template-columns: 668px 452px;
+  grid-template-columns: minmax(0, 1.478fr) minmax(0, 1fr);
   column-gap: 24px;
   align-items: start;
-  width: 1144px;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
 }
 
 /* =========================================================================
-   4. LEFT CHAT CARD (668px x 886px)
+   4. LEFT CHAT CARD (Fluid Width x 886px)
    ========================================================================= */
 .nn-chat-card {
-  width: 668px;
-  height: 886px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: calc(100dvh - 138px);
+  min-height: 560px;
+  max-height: 960px;
   background: #FFFEFA;
   border-radius: 26px;
   box-shadow: 0 12px 36px rgba(112, 41, 20, 0.08);
@@ -566,7 +573,7 @@
 
 .nn-bubble {
   align-self: flex-start;
-  max-width: 480px;
+  max-width: 85%;
   background: #FAF4EE;
   color: #231815;
   border-radius: 16px;
@@ -783,11 +790,15 @@
 }
 
 /* =========================================================================
-   5. RIGHT TOUR COLUMN (452px x 886px)
+   5. RIGHT TOUR COLUMN (Fluid Width x 886px)
    ========================================================================= */
 .nn-tour-col {
-  width: 452px;
-  height: 886px;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  height: calc(100dvh - 138px);
+  min-height: 560px;
+  max-height: 960px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -1133,9 +1144,9 @@
 }
 
 /* =========================================================================
-   6. RESPONSIVE MOBILE ADAPTATION (< 1200px / 390px)
+   6. RESPONSIVE MOBILE ADAPTATION (< 1024px / 390px)
    ========================================================================= */
-@media (max-width: 1199px) {
+@media (max-width: 1023px) {
   .nn-root {
     flex-direction: column;
     background: #F9C53D;

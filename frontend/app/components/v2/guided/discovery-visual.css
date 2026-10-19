@@ -630,12 +630,12 @@
   font-size: 11px;
 }
 
-/* Mobile Tab Navigation: hidden on desktop (>=1024px), active on mobile */
+/* Mobile Tab Navigation: hidden on desktop (>=1024px), active on mobile (<1024px) */
 .nn-mobile-tabs {
   display: none;
 }
 
-@media (max-width: 1024px) {
+@media (max-width: 1023px) {
   .nn-mobile-tabs {
     display: flex;
     align-items: center;

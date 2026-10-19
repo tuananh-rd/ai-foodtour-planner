@@ -134,7 +134,7 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
       linkEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${stop.name} ${stop.address || stop.district || 'Hà Nội'}`)}`;
       linkEl.target = '_blank';
       linkEl.rel = 'noopener noreferrer';
-      linkEl.textContent = 'Mở Google Maps ↗';
+      linkEl.textContent = 'Mở Google Maps';
       popupContent.appendChild(linkEl);
 
       const popup = new maplibregl.Popup({ offset: 15, closeButton: true }).setDOMContent(popupContent);
@@ -389,13 +389,13 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
 
         {outOfBoundsCount > 0 && (
           <span className="nn-map-coverage-warning" data-testid="map-coverage-warning">
-            ⚠️ {outOfBoundsCount} điểm ngoài khu vực thí điểm
+            Lưu ý: {outOfBoundsCount} điểm ngoài khu vực thí điểm
           </span>
         )}
 
         {missingCoordsCount > 0 && (
           <span className="nn-map-coverage-warning" data-testid="map-missing-coords-warning">
-            ℹ️ {missingCoordsCount} điểm chưa có toạ độ
+            Thông tin: {missingCoordsCount} điểm chưa có toạ độ
           </span>
         )}
       </div>
@@ -429,7 +429,7 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
       {/* Visible Attribution */}
       <div className="nn-map-attribution" data-testid="map-attribution">
         <span>
-          ©{' '}
+          (c) 
           <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
             OpenStreetMap
           </a>{' '}

@@ -74,6 +74,51 @@ export default function BlockRenderer({
       );
     }
 
+function InfoGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  );
+}
+
+function SafetyGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+    </svg>
+  );
+}
+
+function WarningGlyph() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
+function PinGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+function StarGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
     case 'notice': {
       const isSafety = block.level === 'safety';
       const isWarning = block.level === 'warning';
@@ -81,18 +126,18 @@ export default function BlockRenderer({
       let bg = '#EFF6FF';
       let border = '#BFDBFE';
       let textCol = '#1E3A8A';
-      let icon = 'ℹ️';
+      let icon = <InfoGlyph />;
 
       if (isSafety) {
         bg = '#FEF2F2';
         border = '#F87171';
         textCol = '#991B1B';
-        icon = '🛡️';
+        icon = <SafetyGlyph />;
       } else if (isWarning) {
         bg = '#FFFBEB';
         border = '#FDE68A';
         textCol = '#92400E';
-        icon = '⚠️';
+        icon = <WarningGlyph />;
       }
 
       return (
@@ -177,8 +222,8 @@ export default function BlockRenderer({
                   <SafeText text={item.blurb} />
                 </p>
                 {hasCount && (
-                  <div style={{ fontSize: 12, color: '#6B6259', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-                    📍 {item.venue_count} quán trong {item.radius_m || 1500} m
+                  <div style={{ fontSize: 12, color: '#6B6259', display: 'flex', alignItems: 'center', gap: 4, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+                    <PinGlyph /> <span>{item.venue_count} quán trong {item.radius_m || 1500} m</span>
                   </div>
                 )}
               </div>
@@ -217,7 +262,7 @@ export default function BlockRenderer({
               // 3. Rating line only count >= 5 and 'theo nguồn', else 'ít đánh giá'
               let ratingText = 'ít đánh giá';
               if (v.rating && v.rating.count >= 5 && v.rating.value !== null) {
-                ratingText = `⭐ ${v.rating.value} (${v.rating.count} đánh giá, theo nguồn)`;
+                ratingText = `${v.rating.value}/5 (${v.rating.count} đánh giá, theo nguồn)`;
               }
 
               // 4. Distance 'cách ~N m (ước tính)'
@@ -382,7 +427,7 @@ export default function BlockRenderer({
                         gap: 6,
                       }}
                     >
-                      <span>⚠️</span>
+                      <span style={{ display: 'inline-flex', alignItems: 'center' }}><WarningGlyph /></span>
                       <strong>Chưa đủ thông tin về dị ứng</strong>
                     </div>
                   )}
@@ -594,7 +639,7 @@ export default function BlockRenderer({
           }}
         >
           <h4 style={{ margin: '0 0 10px', fontSize: 16, fontWeight: 700, color: '#1F1B16' }}>
-            📋 Bản xác nhận thông tin lịch trình
+            Bản xác nhận thông tin lịch trình
           </h4>
 
           {/* Profile fields summary */}
@@ -653,8 +698,8 @@ export default function BlockRenderer({
           {warnings.length > 0 && (
             <div style={{ background: '#FFFBEB', border: '1px solid #FDE68A', borderRadius: 8, padding: '8px 12px', marginBottom: 12, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere' }}>
               {warnings.map((w, wIdx) => (
-                <div key={w.code || wIdx} style={{ fontSize: 12, color: '#92400E', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-                  ⚠️ <SafeText text={w.text} />
+                <div key={w.code || wIdx} style={{ fontSize: 12, color: '#92400E', display: 'flex', alignItems: 'center', gap: 6, minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
+                  <WarningGlyph /> <SafeText text={w.text} />
                 </div>
               ))}
             </div>

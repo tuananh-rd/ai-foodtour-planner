@@ -83,7 +83,7 @@ export default function ChatColumn({
       >
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: '#6B6259', padding: '40px 10px', fontSize: 13 }}>
-            👋 Hãy bắt đầu bằng cách gõ tin nhắn hoặc chọn gợi ý bên dưới.
+            Hãy bắt đầu bằng cách gõ tin nhắn hoặc chọn gợi ý bên dưới.
           </div>
         )}
 

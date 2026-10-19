@@ -15,6 +15,15 @@ import BlockRenderer from './BlockRenderer';
  *   - tour_ready (ItineraryView + MapsLinksBlock)
  * - Touch targets >= 44px
  */
+function SearchGlyph() {
+  return (
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" style={{ color: '#8C827A' }}>
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+  );
+}
+
 export default function ExploreColumn({
   latestExploreBlocks = [],
   onAction,
@@ -62,7 +71,7 @@ export default function ExploreColumn({
             border: '1px dashed #DFD5C6',
           }}
         >
-          <div style={{ fontSize: 28, marginBottom: 8 }}>🔍</div>
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 8 }}><SearchGlyph /></div>
           <p style={{ margin: '0 0 6px', fontWeight: 600, color: '#1F1B16' }}>Chưa có thẻ quán nào</p>
           <p style={{ margin: 0 }}>
             Kết quả tìm kiếm, thẻ quán, bảng so sánh hoặc bản xác nhận lịch trình sẽ hiển thị ở đây.

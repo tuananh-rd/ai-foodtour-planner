@@ -441,7 +441,6 @@ export default function PreferencesPanel({
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 20 }}>⚙️</span>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
             Tùy Chọn Chuyến Đi (Cấu trúc)
           </h3>
@@ -491,7 +490,6 @@ export default function PreferencesPanel({
                 cursor: busy || geoLoading ? 'not-allowed' : 'pointer'
               }}
             >
-              <span>📍</span>
               <span>{geoLoading ? 'Đang định vị…' : 'Dùng vị trí hiện tại'}</span>
             </button>
           </div>
@@ -512,7 +510,7 @@ export default function PreferencesPanel({
                 lineHeight: 1.4
               }}
             >
-              ⚠️ {geoError}
+              {geoError}
             </div>
           )}
 
@@ -632,7 +630,7 @@ export default function PreferencesPanel({
                       cursor: 'pointer'
                     }}
                   >
-                    📍 {r.label}
+                    {r.label}
                   </button>
                 ))}
               </div>
@@ -737,7 +735,7 @@ export default function PreferencesPanel({
               lineHeight: 1.5
             }}
           >
-            🔒 <strong>Dữ liệu gửi tới Google:</strong>
+            <strong>Dữ liệu gửi tới Google:</strong>
             <ul style={{ margin: '4px 0 0 0', paddingLeft: 16 }}>
               <li>
                 <strong>Vị trí hiện tại:</strong> Ứng dụng chỉ hỏi vị trí khi bạn bấm nút &quot;Dùng vị trí hiện tại&quot;. Tuỳ trình duyệt, trình duyệt có thể dùng dịch vụ vị trí riêng của hãng (nằm ngoài kiểm soát của ứng dụng). Toạ độ được lưu vào phiên làm việc trên máy chủ (TTL/SQLite) khi lưu tuỳ chọn hoặc lập lịch trình.
@@ -949,7 +947,7 @@ export default function PreferencesPanel({
                 disabled={busy}
                 style={chipStyle}
               >
-                ✕ {item}
+                + {item}
               </button>
             ))}
           </div>
@@ -1008,7 +1006,7 @@ export default function PreferencesPanel({
               cursor: busy ? 'not-allowed' : 'pointer'
             }}
           >
-            {busy ? 'Đang tối ưu…' : '🚀 Lập lịch trình'}
+            {busy ? 'Đang tối ưu…' : 'Lập lịch trình'}
           </button>
         </div>
       </form>

@@ -198,7 +198,6 @@ export default function StartScreen({
               gap: 8,
             }}
           >
-            <span>📍</span>
             <span>Bật định vị</span>
           </button>
         )}
@@ -218,7 +217,7 @@ export default function StartScreen({
               textAlign: 'left',
             }}
           >
-            ⚠️ {geoState.errorMsg}
+            {geoState.errorMsg}
           </div>
         )}
 
@@ -235,7 +234,7 @@ export default function StartScreen({
             }}
           >
             <div style={{ fontSize: 14, color: '#6E4300', marginBottom: 12 }}>
-              📍 <strong>Vị trí ước tính {geoState.label} (xấp xỉ)</strong>
+              <strong>Vị trí ước tính {geoState.label} (xấp xỉ)</strong>
             </div>
             <div style={{ display: 'flex', justifyContent: 'center', gap: 10 }}>
               <button
@@ -379,7 +378,7 @@ export default function StartScreen({
                 cursor: busy ? 'not-allowed' : 'pointer',
               }}
             >
-              💡 {chip}
+              {chip}
             </button>
           ))}
         </div>

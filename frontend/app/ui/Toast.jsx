@@ -25,6 +25,53 @@ export default function Toast({
     }
   }, [duration, onClose]);
 
+function AlertIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </svg>
+  );
+}
+
+function WarningIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function InfoIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="16" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12.01" y2="8" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
   const getTypeStyles = () => {
     switch (type) {
       case 'error':
@@ -32,21 +79,21 @@ export default function Toast({
           backgroundColor: 'var(--banner-error-bg, #FEF2F2)',
           color: 'var(--banner-error-text, #7F1D1D)',
           borderColor: 'var(--banner-error-border, #FECACA)',
-          icon: '⛔',
+          icon: <AlertIcon />,
         };
       case 'warning':
         return {
           backgroundColor: 'var(--banner-warning-bg, #FFFBEB)',
           color: 'var(--banner-warning-text, #78350F)',
           borderColor: 'var(--banner-warning-border, #FDE68A)',
-          icon: '⚠️',
+          icon: <WarningIcon />,
         };
       case 'success':
         return {
           backgroundColor: 'var(--evidence-verified-bg, #EAF7EC)',
           color: 'var(--evidence-verified-text, #195624)',
           borderColor: 'var(--evidence-verified-border, #9ED4A7)',
-          icon: '✓',
+          icon: <CheckIcon />,
         };
       case 'info':
       default:
@@ -54,7 +101,7 @@ export default function Toast({
           backgroundColor: 'var(--card-bg, #FFFFFF)',
           color: 'var(--text, #1F1B16)',
           borderColor: 'var(--border, #DFD5C6)',
-          icon: 'ℹ️',
+          icon: <InfoIcon />,
         };
     }
   };
@@ -112,7 +159,7 @@ export default function Toast({
             boxSizing: 'border-box',
           }}
         >
-          ✕
+          <CloseIcon />
         </button>
       )}
     </div>

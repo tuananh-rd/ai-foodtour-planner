@@ -11,7 +11,7 @@ export function PriceBadge({ minVnd, maxVnd, evidence = 'estimate', semantics = 
 
   const bg = isVerified ? 'var(--badge-verified-bg)' : isEstimate ? 'var(--badge-estimate-bg)' : 'var(--badge-unknown-bg)';
   const color = isVerified ? 'var(--badge-verified-text)' : isEstimate ? 'var(--badge-estimate-text)' : 'var(--badge-unknown-text)';
-  const symbol = isVerified ? '✓' : isEstimate ? '≈' : '?';
+  const symbol = isVerified ? '[V]' : isEstimate ? '≈' : '?';
   const label = isVerified ? 'XÁC MINH' : isEstimate ? 'ƯỚC TÍNH' : 'CHƯA RÕ';
 
   let displayStr = 'Chưa có thông tin giá';
@@ -92,7 +92,7 @@ export function HoursBadge({ hours }) {
       }}
       title={`Trạng thái giờ mở cửa: ${hours.status}. open_at_arrival: ${hours.open_at_arrival}`}
     >
-      🕒 Giờ: {displayHours} · {statusText}
+      Giờ: {displayHours} · {statusText}
     </span>
   );
 }
@@ -126,7 +126,7 @@ export function LegSourceBadge({ leg }) {
       }}
       title={`Nguồn dữ liệu chặng: ${leg.source}`}
     >
-      🚶 {leg.minutes != null ? `${leg.minutes} phút` : 'Ước tính'} ({leg.km} km) · {label}
+      {leg.minutes != null ? `${leg.minutes} phút` : 'Ước tính'} ({leg.km} km) · {label}
     </span>
   );
 }
@@ -149,7 +149,7 @@ export function LockBadge({ isLocked }) {
       }}
       title="Điểm dừng này đã được cố định danh tính và vị trí thứ tự trong tour."
     >
-      🔒 ĐÃ KHÓA
+      ĐÃ KHÓA
     </span>
   );
 }

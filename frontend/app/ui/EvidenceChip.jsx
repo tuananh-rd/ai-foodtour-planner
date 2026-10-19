@@ -2,9 +2,17 @@
 
 import React from 'react';
 
+function CheckIcon() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
 const EVIDENCE_CONFIG = {
   verified: {
-    icon: '✓',
+    icon: <CheckIcon />,
     defaultLabel: 'Đã xác minh',
     title: 'Thông tin đã được xác minh độc lập từ nguồn dữ liệu chính xác',
     bg: 'var(--evidence-verified-bg, #EAF7EC)',
@@ -33,7 +41,7 @@ const EVIDENCE_CONFIG = {
  * EvidenceChip component for UI_V2.
  * Levels: 'verified' | 'estimate' | 'unknown'
  * Strict rule: NEVER color only. Always displays:
- * - Status icon (✓, ≈, ?)
+ * - Status icon (check, approx, question)
  * - Vietnamese descriptive text
  * - Title tooltip explaining the evidence status
  */

@@ -451,7 +451,7 @@ export default function ProfileBar({
       }}
     >
       <span style={{ fontSize: 12, fontWeight: 700, color: '#6B6259', display: 'flex', alignItems: 'center', gap: 4 }}>
-        ⚙️ Hồ sơ:
+        Hồ sơ:
       </span>
 
       {/* Area Chip */}
@@ -462,7 +462,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('area', areaDisplayText, e)}
         style={getChipStyle(profile.area)}
       >
-        <span>📍</span>
         <span>Khu vực: <strong>{areaDisplayText}</strong></span>
         {getSourceBadge(profile.area?.source)}
       </button>
@@ -475,7 +474,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('party_size', partyText, e)}
         style={getChipStyle(profile.party_size)}
       >
-        <span>👥</span>
         <span>Số người: <strong>{partyText}</strong></span>
         {getSourceBadge(profile.party_size?.source)}
       </button>
@@ -488,7 +486,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('budget', budgetText, e)}
         style={getChipStyle(profile.budget)}
       >
-        <span>💰</span>
         <span>Ngân sách: <strong>{budgetText}</strong></span>
         {getSourceBadge(profile.budget?.source)}
       </button>
@@ -501,7 +498,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('start_time', timeText, e)}
         style={getChipStyle(profile.start_time)}
       >
-        <span>🕒</span>
         <span>Thời gian: <strong>{timeText}</strong></span>
         {getSourceBadge(profile.start_time?.source)}
       </button>
@@ -514,7 +510,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('vehicle', vehicleText, e)}
         style={getChipStyle(profile.vehicle)}
       >
-        <span>🚶</span>
         <span>Phương tiện: <strong>{vehicleText}</strong></span>
         {getSourceBadge(profile.vehicle?.source)}
       </button>
@@ -528,7 +523,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('max_leg_min', maxLegText, e)}
         style={getChipStyle(profile.max_leg_min)}
       >
-        <span>⏱️</span>
         <span>Đi bộ tối đa mỗi chặng: <strong>{maxLegText}</strong></span>
         {getSourceBadge(profile.max_leg_min?.source)}
       </button>
@@ -541,7 +535,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('tastes', tastesDisplayText, e)}
         style={getChipStyle(profile.tastes)}
       >
-        <span>🍜</span>
         <span>Khẩu vị: <strong>{tastesDisplayText}</strong></span>
         {getSourceBadge(profile.tastes?.source)}
       </button>
@@ -556,7 +549,6 @@ export default function ProfileBar({
         onClick={(e) => handleOpenEdit('allergies', allergyListText, e)}
         style={getChipStyle(null, hasAllergies)}
       >
-        <span>🛡️</span>
         <span>Dị ứng: <strong>{allergyListText}</strong></span>
         {hasAllergies && (
           <span style={{ fontSize: 10, background: '#DC2626', color: '#FFFFFF', padding: '1px 5px', borderRadius: 4 }}>
@@ -987,8 +979,11 @@ export default function ProfileBar({
               )}
 
               {errorMsg && (
-                <div role="alert" data-testid="profile-edit-error" style={{ color: '#DC2626', fontSize: 12, marginBottom: 10 }}>
-                  ⚠️ {errorMsg}
+                <div role="alert" data-testid="profile-edit-error" style={{ color: '#DC2626', fontSize: 12, marginBottom: 10, display: 'flex', alignItems: 'center', gap: 6 }}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                  </svg>
+                  <span>{errorMsg}</span>
                 </div>
               )}
 

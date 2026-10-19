@@ -132,7 +132,7 @@ export default function GuidedTimeline({
               data-testid={tour.status === 'conditional' ? 'timeline-conditional-status' : undefined}
               className="nn-peach-box nn-warn-one"
             >
-              ⚠️ <b>{tour.status === 'conditional' ? 'Lịch trình có điều kiện:' : 'Thông tin chưa xác minh:'}</b>{' '}
+              <b>{tour.status === 'conditional' ? 'Lịch trình có điều kiện:' : 'Thông tin chưa xác minh:'}</b>{' '}
               {hasUnknowns ? (
                 <span data-testid="timeline-unknowns">{compactUnknowns(tour.unknowns)}</span>
               ) : (
@@ -235,7 +235,7 @@ export default function GuidedTimeline({
                         data-testid={`stop-lock-badge-${idx}`}
                         className="nn-lock-badge"
                       >
-                        🔒 Đã khóa
+                        Đã khóa
                       </span>
                     )}
                     <button
@@ -245,7 +245,7 @@ export default function GuidedTimeline({
                       className="nn-pill-action-btn"
                       aria-label={`Đổi quán ${stop.name}`}
                     >
-                      🔄 Đổi quán
+                      Đổi quán
                     </button>
                   </div>
                 </div>
@@ -264,11 +264,11 @@ export default function GuidedTimeline({
                 {/* Visible compact source-labeled price and estimated leg info */}
                 <div className="nn-timeline-pills nn-stop-meta-line" data-testid={`stop-meta-line-${idx}`}>
                   <span className="nn-meta-pill" data-testid={`stop-price-pill-${idx}`}>
-                    🏷️ {priceShortForm ? `Khoảng giá ≈${priceShortForm} (theo nguồn)` : (stop.price?.price_range ? `${stop.price.price_range} (theo nguồn)` : 'giá theo nguồn: chưa rõ')}
+                    {priceShortForm ? `Khoảng giá ≈${priceShortForm} (theo nguồn)` : (stop.price?.price_range ? `${stop.price.price_range} (theo nguồn)` : 'giá theo nguồn: chưa rõ')}
                   </span>
                   {idx > 0 && legMinText && (
                     <span className="nn-meta-pill nn-leg-pill" data-testid={`stop-leg-pill-${idx}`}>
-                      🚶 {legMinText}
+                      {legMinText}
                     </span>
                   )}
                   {/* Semantic time pill for test backwards-compatibility */}
@@ -311,7 +311,7 @@ export default function GuidedTimeline({
             data-testid="google-maps-disclosure"
             className="nn-maps-disclosure"
           >
-            ℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.{mapsUrlInfo?.disclosureNote ? ` ${mapsUrlInfo.disclosureNote}` : ''}
+            Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.{mapsUrlInfo?.disclosureNote ? ` ${mapsUrlInfo.disclosureNote}` : ''}
           </p>
         </div>
       )}
@@ -354,7 +354,7 @@ export default function GuidedTimeline({
                 }}
               >
                 <span>Chặng {leg.order}: {leg.fromName} → {leg.toName}</span>
-                <span>Mở Maps ↗</span>
+                <span>Mở Maps</span>
               </a>
             ))}
           </div>
@@ -369,7 +369,7 @@ export default function GuidedTimeline({
           className="nn-ghost-pill"
           aria-label="Điều chỉnh danh sách điểm dừng"
         >
-          ✏️ Điều chỉnh điểm dừng
+          Điều chỉnh điểm dừng
         </button>
         <button
           type="button"
@@ -377,7 +377,7 @@ export default function GuidedTimeline({
           className="nn-ghost-pill"
           aria-label="Làm mới lịch trình"
         >
-          ↻ Lên food tour mới
+          Lên food tour mới
         </button>
       </div>
     </div>

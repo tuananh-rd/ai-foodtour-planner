@@ -103,7 +103,7 @@ function GalleryInner() {
               data-testid="toggle-dark-mode"
               aria-label="Chuyển chế độ màu sáng hoặc tối"
             >
-              {theme === 'dark' ? '☀️ Chế độ sáng' : '🌙 Chế độ tối'}
+              {theme === 'dark' ? 'Chế độ sáng' : 'Chế độ tối'}
             </Button>
           </div>
         </header>
@@ -243,7 +243,7 @@ function GalleryInner() {
                     fontWeight: 600,
                   }}
                 >
-                  ✓ Đã xác minh (Verified)
+                  Đã xác minh (Verified)
                 </span>
                 <span
                   data-testid="token-evidence-estimate"
@@ -367,7 +367,6 @@ function GalleryInner() {
                 selected={selectedChips.includes('breakfast')}
                 onClick={() => handleChipClick('breakfast')}
                 data-testid="chip-multi-1"
-                icon="🍜"
               >
                 Ăn sáng 2 giờ
               </Chip>
@@ -376,7 +375,6 @@ function GalleryInner() {
                 selected={selectedChips.includes('streetfood')}
                 onClick={() => handleChipClick('streetfood')}
                 data-testid="chip-multi-2"
-                icon="🌙"
               >
                 Ăn vặt chiều tối
               </Chip>
@@ -385,7 +383,6 @@ function GalleryInner() {
                 selected={selectedChips.includes('family')}
                 onClick={() => handleChipClick('family')}
                 data-testid="chip-multi-3"
-                icon="👨‍👩‍👧"
               >
                 Đi gia đình
               </Chip>
@@ -394,7 +391,11 @@ function GalleryInner() {
                 selected={selectedChips.includes('budget')}
                 onClick={() => handleChipClick('budget')}
                 data-testid="chip-multi-4"
-                icon="💸"
+                icon={
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+                  </svg>
+                }
               >
                 Dưới 100k/người
               </Chip>

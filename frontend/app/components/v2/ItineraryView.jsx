@@ -133,7 +133,7 @@ export default function ItineraryView({
               onClick={onOpenMap}
               style={{ minHeight: '44px', padding: '8px 14px', fontSize: '13px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'normal' }}
             >
-              📍 Xem bản đồ
+              Xem bản đồ
             </Button>
           )}
           {onOpenPreferences && (
@@ -142,7 +142,7 @@ export default function ItineraryView({
               onClick={onOpenPreferences}
               style={{ minHeight: '44px', padding: '8px 12px', fontSize: '13px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word', whiteSpace: 'normal' }}
             >
-              ⚙️ Tuỳ chọn
+              Tuỳ chọn
             </Button>
           )}
         </div>

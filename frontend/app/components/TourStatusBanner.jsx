@@ -1,37 +1,73 @@
 'use client';
 
+function CheckIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function ZapIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+    </svg>
+  );
+}
+
+function AlertIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
+function XIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
+    </svg>
+  );
+}
+
 const STATUS_CONFIG = {
   verified_feasible: {
     title: 'Lịch trình đã đủ bằng chứng xác thực',
-    badge: '✓ ĐÃ XÁC MINH',
+    badge: 'ĐÃ XÁC MINH',
     bg: '#e8f5e9',
     border: '#a5d6a7',
     textColor: '#1b5e20',
-    icon: '✅'
+    icon: <CheckIcon />
   },
   conditional: {
     title: 'Gợi ý có điều kiện (Conditional)',
-    badge: '⚡ CÓ ĐIỀU KIỆN',
+    badge: 'CÓ ĐIỀU KIỆN',
     bg: '#fff8e1',
     border: '#ffe082',
     textColor: '#795548',
-    icon: '⚡'
+    icon: <ZapIcon />
   },
   insufficient_evidence: {
     title: 'Chưa đủ bằng chứng để lập lịch (Insufficient Evidence)',
-    badge: '⚠️ THIẾU BẰNG CHỨNG',
+    badge: 'THIẾU BẰNG CHỨNG',
     bg: '#fff3e0',
     border: '#ffcc80',
     textColor: '#e65100',
-    icon: '⚠️'
+    icon: <AlertIcon />
   },
   no_solution: {
     title: 'Không tìm được lịch trình thoả các ràng buộc (No Solution)',
-    badge: '❌ KHÔNG CÓ LỘ TRÌNH',
+    badge: 'KHÔNG CÓ LỘ TRÌNH',
     bg: '#ffebee',
     border: '#ffcdd2',
     textColor: '#c62828',
-    icon: '❌'
+    icon: <XIcon />
   }
 };
 
@@ -137,7 +173,7 @@ export default function TourStatusBanner({ tour, onSwitchToExplore, onAdjustPref
       {/* Proposed Changes from server */}
       {proposedChanges.length > 0 && (
         <div style={{ marginTop: 12, paddingTop: 10, borderTop: `1px dashed ${cfg.border}` }}>
-          <strong style={{ fontSize: 13, color: cfg.textColor }}>💡 Đề xuất điều chỉnh (Gợi ý, không tự ý áp đặt):</strong>
+          <strong style={{ fontSize: 13, color: cfg.textColor }}>Đề xuất điều chỉnh (Gợi ý, không tự ý áp đặt):</strong>
           <ul style={{ paddingLeft: 20, marginTop: 4, marginBottom: 10, fontSize: 13, color: cfg.textColor }}>
             {proposedChanges.map((c, i) => (
               <li key={i}>{c}</li>

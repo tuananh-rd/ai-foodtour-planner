@@ -15,6 +15,76 @@ import Button from '../../ui/Button';
  * - Leg line 'ước tính ~N phút'
  * - 'Đổi quán' button and locked badge
  */
+function StarGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="none" aria-hidden="true">
+      <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+    </svg>
+  );
+}
+
+function WalkGlyph() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="5" r="2" />
+      <path d="m9 20 3-6 3 2v4" />
+      <path d="m6 10 4-1 2 3 3-1" />
+    </svg>
+  );
+}
+
+function PinGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+      <circle cx="12" cy="10" r="3" />
+    </svg>
+  );
+}
+
+function LockGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
+
+function LightGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <line x1="12" y1="2" x2="12" y2="4" />
+      <line x1="12" y1="20" x2="12" y2="22" />
+      <line x1="4.93" y1="4.93" x2="6.34" y2="6.34" />
+      <line x1="17.66" y1="17.66" x2="19.07" y2="19.07" />
+      <line x1="2" y1="12" x2="4" y2="12" />
+      <line x1="20" y1="12" x2="22" y2="12" />
+      <line x1="4.93" y1="19.07" x2="6.34" y2="17.66" />
+      <line x1="17.66" y1="6.34" x2="19.07" y2="4.93" />
+    </svg>
+  );
+}
+
+function PriceGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="12" y1="1" x2="12" y2="23" />
+      <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+    </svg>
+  );
+}
+
+function ClockGlyph() {
+  return (
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" />
+      <polyline points="12 6 12 12 16 14" />
+    </svg>
+  );
+}
+
 export default function StopCard({
   stop,
   index,
@@ -42,8 +112,8 @@ export default function StopCard({
     const formattedScore = Number(ratingVal).toFixed(1).replace('.', ',');
     const formattedCount = rating.count >= 1000 ? `${(rating.count / 1000).toFixed(1).replace('.', ',')}k` : rating.count;
     ratingDisplay = (
-      <span data-venue-rating className="ft-tabular-nums" style={{ color: '#D97706', fontWeight: 600 }}>
-        ★ {formattedScore} <span style={{ color: 'var(--muted, #6B6259)', fontWeight: 400 }}>({formattedCount} đánh giá theo nguồn)</span>
+      <span data-venue-rating className="ft-tabular-nums" style={{ color: '#D97706', fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+        <StarGlyph /> {formattedScore} <span style={{ color: 'var(--muted, #6B6259)', fontWeight: 400 }}>({formattedCount} đánh giá theo nguồn)</span>
       </span>
     );
   } else {
@@ -125,7 +195,7 @@ export default function StopCard({
             whiteSpace: 'normal',
           }}
         >
-          <span style={{ flexShrink: 0 }}>🚶</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><WalkGlyph /></span>
           <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
             {index === 0 ? 'Từ điểm xuất phát: ' : ''}
             Ước tính ~{legMinutes} phút {legKm ? `(${legKm} km)` : ''}
@@ -179,7 +249,9 @@ export default function StopCard({
             </div>
             {stop.address && (
               <div style={{ fontSize: '12px', color: 'var(--muted, #6B6259)', marginBottom: '8px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-                📍 {stop.address}
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                  <PinGlyph /> {stop.address}
+                </span>
               </div>
             )}
           </div>
@@ -197,13 +269,15 @@ export default function StopCard({
                 backgroundColor: '#F3F4F6',
                 color: '#4B5563',
                 border: '1px solid #D1D5DB',
-                display: 'inline-block',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '4px',
                 whiteSpace: 'normal',
                 overflowWrap: 'anywhere',
                 wordBreak: 'break-word',
               }}
             >
-              🔒 Giữ nguyên
+              <LockGlyph /> Giữ nguyên
             </span>
           ) : (
             <Button
@@ -256,7 +330,7 @@ export default function StopCard({
                 whiteSpace: 'normal',
               }}
             >
-              <span style={{ flexShrink: 0 }}>💡</span>
+              <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><LightGlyph /></span>
               <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{why.text}</span>
             </span>
           ))}
@@ -288,7 +362,7 @@ export default function StopCard({
             whiteSpace: 'normal',
           }}
         >
-          <span style={{ flexShrink: 0 }}>💸</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><PriceGlyph /></span>
           <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{priceText}</span>
         </span>
 
@@ -314,7 +388,7 @@ export default function StopCard({
             whiteSpace: 'normal',
           }}
         >
-          <span style={{ flexShrink: 0 }}>🕒</span>
+          <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><ClockGlyph /></span>
           <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{hoursText}</span>
         </span>
       </div>

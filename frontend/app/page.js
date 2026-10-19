@@ -677,7 +677,6 @@ export default function Home() {
       >
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <span style={{ fontSize: 24 }}>🍜</span>
             <h1 style={{ fontSize: 20, fontWeight: 800, margin: 0, color: 'var(--accent-primary)' }}>
               AI FoodTour Hà Nội
             </h1>
@@ -702,7 +701,7 @@ export default function Home() {
             )}
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>
-            Trợ lý lập lịch trình ẩm thực Phố Cổ minh bạch bằng chứng · Đi bộ tối ưu
+            Trợ lý lập lịch trình ẩm thực Phổ Cổ minh bạch bằng chứng · Đi bộ tối ưu
           </p>
         </div>
 
@@ -723,7 +722,7 @@ export default function Home() {
             }}
             title="Khởi tạo phiên làm việc mới"
           >
-            🔄 Tạo phiên mới
+            Tạo phiên mới
           </button>
 
           <span
@@ -776,7 +775,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong style={{ color: '#d46b08' }}>⚠️ Không còn quán thay thế phù hợp (409 No Candidates):</strong>
+            <strong style={{ color: '#d46b08' }}>Không còn quán thay thế phù hợp (409 No Candidates):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
               {noCandidatesError.message || 'Không tìm được quán thay thế nào thỏa mãn ràng buộc trong khu vực. Lịch trình hiện tại vẫn được giữ nguyên.'}
             </p>
@@ -785,9 +784,9 @@ export default function Home() {
             type="button"
             onClick={() => setNoCandidatesError(null)}
             aria-label="Đóng cảnh báo"
-            style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: '#8c8c8c' }}
+            style={{ background: 'transparent', border: 'none', fontSize: 13, cursor: 'pointer', color: '#8c8c8c' }}
           >
-            ✕
+            Đóng
           </button>
         </div>
       )}
@@ -810,7 +809,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong style={{ color: '#cf1322' }}>🔒 Lỗi xác thực hoặc phiên hết hạn (401/403/410):</strong>
+            <strong style={{ color: '#cf1322' }}>Lỗi xác thực hoặc phiên hết hạn (401/403/410):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#434343' }}>
               {authError.message || 'Phiên làm việc không hợp lệ hoặc đã hết hạn. Vui lòng tạo phiên làm việc mới.'}
             </p>
@@ -844,7 +843,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong style={{ color: '#d46b08' }}>⏳ Đã đạt giới hạn yêu cầu (429 Rate Limited):</strong>
+            <strong style={{ color: '#d46b08' }}>Đã đạt giới hạn yêu cầu (429 Rate Limited):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
               {rateLimitError.message || 'Hệ thống đang tiếp nhận nhiều yêu cầu. Vui lòng đợi trong giây lát rồi thử lại.'}
             </p>
@@ -853,9 +852,9 @@ export default function Home() {
             type="button"
             onClick={() => setRateLimitError(null)}
             aria-label="Đóng cảnh báo"
-            style={{ background: 'transparent', border: 'none', fontSize: 16, cursor: 'pointer', color: '#8c8c8c' }}
+            style={{ background: 'transparent', border: 'none', fontSize: 13, cursor: 'pointer', color: '#8c8c8c' }}
           >
-            ✕
+            Đóng
           </button>
         </div>
       )}
@@ -878,7 +877,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong style={{ color: '#237804' }}>ℹ️ Dịch vụ tạm thời không khả dụng (503 Provider Unavailable):</strong>
+            <strong style={{ color: '#237804' }}>Dịch vụ tạm thời không khả dụng (503 Provider Unavailable):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#389e0d' }}>
               {providerUnavailableError.message || 'Dịch vụ xử lý ngôn ngữ tự nhiên đang tạm gián đoạn. Bạn có thể sử dụng trực tiếp tab "Tùy chọn" để chọn địa điểm và lập lịch.'}
             </p>
@@ -911,7 +910,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong>⚠️ Lỗi:</strong> {error.message || 'Không thể xử lý yêu cầu.'}
+            <strong>Lỗi:</strong> {error.message || 'Không thể xử lý yêu cầu.'}
           </div>
           <button
             type="button"
@@ -948,7 +947,7 @@ export default function Home() {
             color: '#1d39c4'
           }}
         >
-          <strong>💬 Lưu ý từ hệ thống trích xuất yêu cầu:</strong>
+          <strong>Lưu ý từ hệ thống trích xuất yêu cầu:</strong>
           <ul style={{ margin: '4px 0 0', paddingLeft: 20 }}>
             {notes.map((note, idx) => (
               <li key={idx}>{note}</li>
@@ -986,7 +985,7 @@ export default function Home() {
             cursor: 'pointer'
           }}
         >
-          💬 Chat
+          Chat
         </button>
         <button
           type="button"
@@ -1004,7 +1003,7 @@ export default function Home() {
             cursor: 'pointer'
           }}
         >
-          ⚙️ Tùy chọn
+          Tùy chọn
         </button>
         <button
           type="button"
@@ -1022,7 +1021,7 @@ export default function Home() {
             cursor: 'pointer'
           }}
         >
-          📍 Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
+          Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
         </button>
         <button
           type="button"
@@ -1040,7 +1039,7 @@ export default function Home() {
             cursor: 'pointer'
           }}
         >
-          🗺️ Bản đồ
+          Bản đồ
         </button>
       </nav>
 
@@ -1116,7 +1115,6 @@ export default function Home() {
                   gap: 8
                 }}
               >
-                <span>⚠️</span>
                 <span>
                   <strong>Giới hạn tập tìm kiếm:</strong> Đang xét {tour.assumptions.search_pool} quán gần nhất (trên tổng số {tour.assumptions.eligible_total} quán phù hợp) để đảm bảo thời gian phản hồi.
                 </span>
@@ -1152,7 +1150,6 @@ export default function Home() {
                   boxShadow: 'var(--shadow-sm)'
                 }}
               >
-                <span style={{ fontSize: 40, display: 'block', marginBottom: 12 }}>🧭</span>
                 <h3 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 6px', color: 'var(--text-primary)' }}>
                   Chưa có lịch trình được tạo
                 </h3>
@@ -1215,7 +1212,7 @@ export default function Home() {
               }}
             >
               <div style={{ fontWeight: 700, color: 'var(--accent-primary)', marginBottom: 4 }}>
-                📍 Điểm đang chọn trên bản đồ:
+                Điểm đang chọn trên bản đồ:
               </div>
               {(() => {
                 const s = stops.find((stop) => stop.venue_id === highlightedStopId);

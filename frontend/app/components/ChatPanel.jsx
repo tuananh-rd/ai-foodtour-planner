@@ -50,7 +50,6 @@ export default function ChatPanel({
     >
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12, borderBottom: '1px solid #f0ede4', paddingBottom: 10 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 20 }}>💬</span>
           <h2 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
             Trợ lý Lập Tour Tiếng Việt
           </h2>
@@ -161,7 +160,7 @@ export default function ChatPanel({
             }}
           >
             <strong style={{ display: 'block', marginBottom: 6, color: '#e65100' }}>
-              ❓ Cần thêm thông tin để lập lịch trình:
+              Cần thêm thông tin để lập lịch trình:
             </strong>
             <ul style={{ paddingLeft: 18, margin: 0, display: 'grid', gap: 4 }}>
               {questions.map((q, idx) => (
@@ -178,21 +177,21 @@ export default function ChatPanel({
                     onClick={() => onQuickAnswer ? onQuickAnswer('duration_min', 60) : setInputText('Đi trong 60 phút')}
                     style={chipStyle}
                   >
-                    ⏱️ 60 phút
+                    60 phút
                   </button>
                   <button
                     type="button"
                     onClick={() => onQuickAnswer ? onQuickAnswer('duration_min', 120) : setInputText('Đi trong 120 phút')}
                     style={chipStyle}
                   >
-                    ⏱️ 120 phút
+                    120 phút
                   </button>
                   <button
                     type="button"
                     onClick={() => onQuickAnswer ? onQuickAnswer('duration_min', 180) : setInputText('Đi trong 180 phút')}
                     style={chipStyle}
                   >
-                    ⏱️ 180 phút
+                    180 phút
                   </button>
                 </>
               )}
@@ -203,14 +202,14 @@ export default function ChatPanel({
                     onClick={() => onQuickAnswer ? onQuickAnswer('budget_scope', 'per_person') : setInputText('Ngân sách mỗi người')}
                     style={chipStyle}
                   >
-                    👤 Cho mỗi người
+                    Cho mỗi người
                   </button>
                   <button
                     type="button"
                     onClick={() => onQuickAnswer ? onQuickAnswer('budget_scope', 'group') : setInputText('Ngân sách cả nhóm')}
                     style={chipStyle}
                   >
-                    👥 Cho cả nhóm
+                    Cho cả nhóm
                   </button>
                 </>
               )}
@@ -221,14 +220,14 @@ export default function ChatPanel({
                     onClick={() => onQuickAnswer ? onQuickAnswer('origin', 'hoankiem') : setInputText('Xuất phát từ Hồ Hoàn Kiếm')}
                     style={chipStyle}
                   >
-                    📍 Hồ Hoàn Kiếm
+                    Hồ Hoàn Kiếm
                   </button>
                   <button
                     type="button"
                     onClick={() => onQuickAnswer ? onQuickAnswer('origin', 'phoco') : setInputText('Xuất phát từ Phố Cổ')}
                     style={chipStyle}
                   >
-                    📍 Phố Cổ
+                    Phố Cổ
                   </button>
                 </>
               )}

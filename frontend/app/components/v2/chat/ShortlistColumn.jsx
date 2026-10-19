@@ -62,7 +62,7 @@ export default function ShortlistColumn({
         {count === 0 && (
           <div
             style={{
-              padding: '32px 16px',
+              padding: '30px 14px',
               textAlign: 'center',
               color: '#6B6259',
               fontSize: 13,
@@ -71,7 +71,6 @@ export default function ShortlistColumn({
               border: '1px dashed #DFD5C6',
             }}
           >
-            <div style={{ fontSize: 24, marginBottom: 8 }}>🥣</div>
             <p style={{ margin: '0 0 4px', fontWeight: 600, color: '#1F1B16' }}>Chưa có quán nào</p>
             <p style={{ margin: 0 }}>
               Hãy tìm quán ở khung Trò chuyện hoặc Khám phá rồi bấm <strong>"Thêm vào food tour"</strong>.
@@ -108,7 +107,7 @@ export default function ShortlistColumn({
 
               {v.district && (
                 <div style={{ fontSize: 12, color: '#6B6259', marginBottom: 8 }}>
-                  📍 {v.district}
+                  {v.district}
                 </div>
               )}
 
@@ -131,7 +130,7 @@ export default function ShortlistColumn({
                     cursor: busy ? 'not-allowed' : 'pointer',
                   }}
                 >
-                  {isKept ? '✓ Giữ' : 'Giữ'}
+                  {isKept ? 'Đã giữ' : 'Giữ'}
                 </button>
                 <button
                   type="button"

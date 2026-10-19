@@ -177,7 +177,7 @@ export default function ConfirmSummaryCard({
               marginTop: 4
             }}
           >
-            ⏱️ <b>Thời gian mỗi quán:</b> {visitMinText}
+            <b>Thời gian mỗi quán:</b> {visitMinText}
           </div>
         )}
 
@@ -190,7 +190,7 @@ export default function ConfirmSummaryCard({
             marginTop: 4
           }}
         >
-          🚶 <b>Phương tiện:</b> {vehicleLabel}{isDefaultVehicle ? ' (mặc định)' : ''}
+          <b>Phương tiện:</b> {vehicleLabel}{isDefaultVehicle ? ' (mặc định)' : ''}
         </div>
 
         {/* Budget distinction note (Q02) */}
@@ -202,7 +202,7 @@ export default function ConfirmSummaryCard({
             fontStyle: 'italic'
           }}
         >
-          💡 Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.
+          Lưu ý: Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.
         </div>
 
         {/* Conditional / Warnings / Missing Info in Peach Box (Q02) */}
@@ -216,7 +216,6 @@ export default function ConfirmSummaryCard({
             style={{ marginTop: 8 }}
           >
             <div style={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
-              <span>⚠️</span>
               <span>Lưu ý & thông tin chưa xác minh (Gợi ý có điều kiện):</span>
             </div>
             <ul style={{ margin: 0, paddingLeft: 20 }}>

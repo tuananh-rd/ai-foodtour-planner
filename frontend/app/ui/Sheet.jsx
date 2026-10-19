@@ -17,6 +17,15 @@ import React, { useEffect, useRef, useState } from 'react';
  * - Inert backdrop dismissing on click
  * - Close button with min-height/width >= 44px
  */
+function CloseIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 export default function Sheet({
   isOpen,
   onClose,
@@ -277,7 +286,7 @@ export default function Sheet({
               boxSizing: 'border-box',
             }}
           >
-            ✕
+            <CloseIcon />
           </button>
         </div>
 

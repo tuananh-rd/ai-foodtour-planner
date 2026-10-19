@@ -531,8 +531,8 @@ export default function MapView({
             venuePin.setAttribute('tabindex', '0');
             venuePin.setAttribute('aria-label', `Quán ăn: ${venue.name}`);
             venuePin.innerHTML = `
-              <div style="background:#0284c7;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 1px 4px rgba(0,0,0,0.3);border:2px solid #fff;cursor:pointer;">
-                🍜
+              <div style="background:#0284c7;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);border:2px solid #fff;cursor:pointer;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
               </div>
             `;
 
@@ -597,7 +597,6 @@ export default function MapView({
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 20 }}>🗺️</span>
           <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
             Bản Đồ Tuyến Đường (Google Maps)
           </h3>
@@ -625,7 +624,6 @@ export default function MapView({
               transition: 'all 0.15s ease'
             }}
           >
-            <span>🍜</span>
             <span>{showVenues ? 'Đang hiện quán ăn' : 'Hiện quán ăn trên bản đồ'}</span>
           </button>
         </div>
@@ -649,7 +647,6 @@ export default function MapView({
             gap: 6
           }}
         >
-          <span>⚠️</span>
           <span>{venuesError}</span>
         </div>
       )}
@@ -671,7 +668,6 @@ export default function MapView({
             gap: 6
           }}
         >
-          <span>🔍</span>
           <span>Khu vực có quá nhiều quán ăn (đã đạt giới hạn 500 quán); hãy phóng to bản đồ để xem chi tiết hơn.</span>
         </div>
       )}
@@ -716,7 +712,6 @@ export default function MapView({
               color: 'var(--text-primary)'
             }}
           >
-            <span style={{ fontSize: 40, marginBottom: 12 }}>📍</span>
             <h4 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 8px 0', color: 'var(--text-primary)' }}>
               Bản đồ Google Maps chưa khả dụng
             </h4>
@@ -760,7 +755,7 @@ export default function MapView({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <h4 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 4px 0', color: 'var(--text-primary)' }}>
-                🍜 {selectedVenue.name}
+                {selectedVenue.name}
               </h4>
               <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
                 Khu vực: {selectedVenue.district || 'Hà Nội'}
@@ -778,13 +773,13 @@ export default function MapView({
               style={{
                 background: 'transparent',
                 border: 'none',
-                fontSize: 16,
+                fontSize: 18,
                 cursor: 'pointer',
                 color: 'var(--text-muted)',
                 padding: 4
               }}
             >
-              ✕
+              ×
             </button>
           </div>
 
@@ -801,7 +796,7 @@ export default function MapView({
               lineHeight: 1.4
             }}
           >
-            ⚠️ Lưu ý bằng chứng: Giờ mở cửa theo ngày chưa được xác minh (không khẳng định quán đang mở cửa).
+            Lưu ý bằng chứng: Giờ mở cửa theo ngày chưa được xác minh (không khẳng định quán đang mở cửa).
             Khoảng giá quán (nếu có) là khoảng giá tham khảo, không bảo đảm chi phí cho mỗi người.
           </div>
         </div>
@@ -823,8 +818,7 @@ export default function MapView({
             lineHeight: 1.5
           }}
         >
-          <div style={{ fontWeight: 700, marginBottom: 4, display: 'flex', alignItems: 'center', gap: 6 }}>
-            <span>⚠️</span>
+          <div style={{ fontWeight: 700, marginBottom: 4 }}>
             <span>Cảnh báo tuyến đi bộ (Google Routes):</span>
           </div>
           <ul style={{ margin: 0, paddingLeft: 18 }}>

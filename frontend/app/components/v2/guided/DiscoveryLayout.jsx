@@ -40,6 +40,59 @@ function ArrowGlyph() {
   );
 }
 
+function CheckGlyph({ size = 14, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <path d="M13.5 4.5L6.5 11.5L3 8" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function CloseGlyph({ size = 12, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 16 16" fill="none" aria-hidden="true" focusable="false" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <path d="M12 4L4 12M4 4L12 12" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function LockGlyph({ size = 14, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+    </svg>
+  );
+}
+
+function UnlockGlyph({ size = 14, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+      <path d="M7 11V7a5 5 0 0 1 9.9-1" />
+    </svg>
+  );
+}
+
+function AlertGlyph({ size = 14, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+      <line x1="12" y1="9" x2="12" y2="13" />
+      <line x1="12" y1="17" x2="12.01" y2="17" />
+    </svg>
+  );
+}
+
+function GearGlyph({ size = 13, color = 'currentColor' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke={color} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" focusable="false" style={{ display: 'inline-block', verticalAlign: 'middle' }}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+    </svg>
+  );
+}
+
 // Strict nullable profile contract according to docs/DISCOVERY_ASSISTANT_CONTRACT.md
 const INITIAL_NULLABLE_PROFILE = {
   area: null,
@@ -688,7 +741,7 @@ export default function DiscoveryLayout({
                 chatSectionRef.current?.scrollIntoView({ block: 'start' });
               }}
             >
-              <span className="nn-nav-icon">✦</span> Trò chuyện
+              <span className="nn-nav-icon"><StarGlyph size={12} color="currentColor" /></span> Trò chuyện
             </button>
             <button
               type="button"
@@ -708,7 +761,7 @@ export default function DiscoveryLayout({
               className="nn-sidebar-nav-item"
               onClick={() => setProfileDrawerOpen((prev) => !prev)}
             >
-              <span className="nn-nav-icon">⚙</span> Tuỳ chỉnh hồ sơ
+              <span className="nn-nav-icon"><GearGlyph size={13} color="currentColor" /></span> Tuỳ chỉnh hồ sơ
             </button>
           </nav>
 
@@ -819,7 +872,7 @@ export default function DiscoveryLayout({
           >
             <div className="nn-chat-card-header">
               <div className="nn-assistant-badge">
-                <span>✦</span> MĂM MĂM AI
+                <StarGlyph size={12} color="#CF542F" /> MĂM MĂM AI
               </div>
               <span className="nn-assistant-tagline">Người bạn sành ăn của bạn</span>
             </div>
@@ -863,7 +916,7 @@ export default function DiscoveryLayout({
                 onClick={() => handleTriggerGPS()}
                 disabled={!sessionReady || busy}
               >
-                📍 Vị trí GPS
+                Vị trí GPS
               </button>
             </div>
 
@@ -872,8 +925,9 @@ export default function DiscoveryLayout({
             {/* Error / Conflict Alert Banner */}
             {(errorBanner || initError || parentInitializing) && (
               <div data-testid="guided-error-banner" role="alert" className="nn-alert" style={{ margin: '8px 0 12px 0' }}>
-                <span>
-                  ⚠️ {parentInitializing
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                  <AlertGlyph size={14} color="#C44A24" />
+                  {parentInitializing
                     ? 'Đang khởi tạo phiên làm việc…'
                     : (errorBanner || initError?.message)}
                 </span>
@@ -1015,7 +1069,7 @@ export default function DiscoveryLayout({
                         className="nn-action-chip-btn"
                         style={{ height: '24px', fontSize: '11px' }}
                       >
-                        📍 Lấy vị trí GPS hiện tại
+                        Lấy vị trí GPS hiện tại
                       </button>
                     </div>
                     {geoNotice && (
@@ -1096,7 +1150,7 @@ export default function DiscoveryLayout({
             <div className="nn-stream" ref={chatScrollRef} data-testid="discovery-messages-list">
               {/* Initial Assistant Welcome */}
               <div className="nn-editorial-welcome">
-                <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
                 <div className="nn-bubble editorial-body">
                   {view.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}
                 </div>
@@ -1115,7 +1169,7 @@ export default function DiscoveryLayout({
                   </div>
                 ) : (
                   <div key={idx} className="nn-editorial-assistant">
-                    <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                    <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
                     <div className="nn-bubble editorial-body">
                       {m.text}
                     </div>
@@ -1148,8 +1202,8 @@ export default function DiscoveryLayout({
                             <div className="nn-restaurant-name-row">
                               <h4 className="nn-restaurant-name">{r.name}</h4>
                               {isSelected && (
-                                <span style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 700 }}>
-                                  ✓ Đã thêm vào tour
+                                <span style={{ fontSize: '11px', color: '#2E7D32', fontWeight: 700, display: 'inline-flex', alignItems: 'center', gap: '3px' }}>
+                                  <CheckGlyph size={12} color="#2E7D32" /> Đã thêm vào tour
                                 </span>
                               )}
                             </div>
@@ -1170,22 +1224,22 @@ export default function DiscoveryLayout({
                             <div className="nn-restaurant-meta-row">
                               {r.price && (r.price.min_vnd || r.price.max_vnd) ? (
                                 <span className="nn-restaurant-meta-item" title="Khoảng giá quán">
-                                  💵 {Number(r.price.min_vnd || 0).toLocaleString('vi-VN')} – {Number(r.price.max_vnd || 0).toLocaleString('vi-VN')} đ
+                                  Giá: {Number(r.price.min_vnd || 0).toLocaleString('vi-VN')} – {Number(r.price.max_vnd || 0).toLocaleString('vi-VN')} đ
                                   <span style={{ fontSize: '10.5px', color: '#8C7872' }}> (khoảng giá quán)</span>
                                 </span>
                               ) : (
                                 <span className="nn-restaurant-meta-item" style={{ color: '#8C7872' }}>
-                                  💵 Giá: Chưa xác minh
+                                  Giá: Chưa xác minh
                                 </span>
                               )}
 
                               {r.hours?.display ? (
                                 <span className="nn-restaurant-meta-item">
-                                  🕒 {r.hours.display}
+                                  Giờ: {r.hours.display}
                                 </span>
                               ) : (
                                 <span className="nn-restaurant-meta-item" style={{ color: '#8C7872' }}>
-                                  🕒 Giờ: Chưa xác minh
+                                  Giờ: Chưa xác minh
                                 </span>
                               )}
                             </div>
@@ -1204,7 +1258,7 @@ export default function DiscoveryLayout({
                                       color: '#E65100'
                                     }}
                                   >
-                                    ⚠ Chưa rõ: {formatUnknownLabel(u)}
+                                    Chưa rõ: {formatUnknownLabel(u)}
                                   </span>
                                 ))}
                               </div>
@@ -1222,7 +1276,11 @@ export default function DiscoveryLayout({
                               onClick={() => isSelected ? handleRemoveVenue(r.id) : handleAddVenue(r)}
                               disabled={!sessionReady || busy}
                             >
-                              {isSelected ? '✓ Đã chọn' : '+ Chọn vào tour'}
+                              {isSelected ? (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <CheckGlyph size={12} color="currentColor" /> Đã chọn
+                                </span>
+                              ) : '+ Chọn vào tour'}
                             </button>
 
                             <button
@@ -1232,7 +1290,11 @@ export default function DiscoveryLayout({
                               onClick={() => handleToggleCompareSelect(r.id)}
                               disabled={!sessionReady || busy}
                             >
-                              {isCompareSelected ? '✓ Đang so sánh' : 'So sánh'}
+                              {isCompareSelected ? (
+                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                  <CheckGlyph size={12} color="currentColor" /> Đang so sánh
+                                </span>
+                              ) : 'So sánh'}
                             </button>
 
                             <button
@@ -1254,7 +1316,7 @@ export default function DiscoveryLayout({
                               className="nn-source-link"
                               title="Nguồn thông tin địa điểm (không phải trích dẫn web trực tiếp)"
                             >
-                              <span>Nguồn dữ liệu ↗</span>
+                              <span>Nguồn dữ liệu</span>
                             </a>
                           )}
                         </div>
@@ -1285,7 +1347,7 @@ export default function DiscoveryLayout({
               {view.comparison && (
                 <div className="nn-comparison-card" data-testid="discovery-comparison-view">
                   <h4 className="nn-comparison-title">
-                    <span>⚖ So sánh chi tiết các địa điểm</span>
+                    <span>So sánh chi tiết các địa điểm</span>
                   </h4>
                   <div className="nn-comparison-grid">
                     {(view.comparison.venues || []).map((cv) => (
@@ -1313,7 +1375,11 @@ export default function DiscoveryLayout({
                             onClick={() => handleAddVenue(cv)}
                             disabled={!sessionReady || busy || selectedVenueIds.has(cv.id)}
                           >
-                            {selectedVenueIds.has(cv.id) ? '✓ Đã chọn' : '+ Chọn quán này'}
+                            {selectedVenueIds.has(cv.id) ? (
+                              <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                                <CheckGlyph size={12} color="currentColor" /> Đã chọn
+                              </span>
+                            ) : '+ Chọn quán này'}
                           </button>
                         </div>
                       </div>
@@ -1322,7 +1388,7 @@ export default function DiscoveryLayout({
 
                   {Array.isArray(view.comparison.unknowns) && view.comparison.unknowns.length > 0 && (
                     <div style={{ marginTop: '10px', fontSize: '11.5px', color: '#8A4B12' }}>
-                      ⚠ Các yếu tố chưa có bằng chứng xác minh: {view.comparison.unknowns.map(formatUnknownLabel).join(', ')}.
+                      Lưu ý: Các yếu tố chưa có bằng chứng xác minh: {view.comparison.unknowns.map(formatUnknownLabel).join(', ')}.
                     </div>
                   )}
                 </div>
@@ -1332,7 +1398,6 @@ export default function DiscoveryLayout({
               {view.confirmation && (
                 <div className="nn-discovery-confirmation" data-testid="discovery-confirmation-card">
                   <div className="nn-confirm-header">
-                    <span className="nn-confirm-icon">📋</span>
                     <div>
                       <h4 className="nn-confirm-title">Xác nhận trước khi tạo lịch trình</h4>
                       <p style={{ fontSize: '12.5px', color: '#6C554E', margin: 0 }}>
@@ -1344,30 +1409,30 @@ export default function DiscoveryLayout({
                   {/* Summary chips */}
                   <div className="nn-confirm-summary-list">
                     {view.profile?.area && (
-                      <span className="nn-confirm-summary-chip">📍 Khu vực: {view.profile.area}</span>
+                      <span className="nn-confirm-summary-chip">Khu vực: {view.profile.area}</span>
                     )}
                     {view.profile?.party_size && (
-                      <span className="nn-confirm-summary-chip">👥 {view.profile.party_size} người</span>
+                      <span className="nn-confirm-summary-chip">Số người: {view.profile.party_size}</span>
                     )}
                     {view.profile?.budget_vnd && (
                       <span className="nn-confirm-summary-chip">
-                        💵 {Number(view.profile.budget_vnd).toLocaleString('vi-VN')} đ ({view.profile.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'})
+                        Ngân sách: {Number(view.profile.budget_vnd).toLocaleString('vi-VN')} đ ({view.profile.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'})
                       </span>
                     )}
                     {view.profile?.start_time && (
-                      <span className="nn-confirm-summary-chip">🕒 Bắt đầu: {view.profile.start_time}</span>
+                      <span className="nn-confirm-summary-chip">Bắt đầu: {view.profile.start_time}</span>
                     )}
                     {view.profile?.duration_min && (
-                      <span className="nn-confirm-summary-chip">⏱ {view.profile.duration_min} phút</span>
+                      <span className="nn-confirm-summary-chip">Thời lượng: {view.profile.duration_min} phút</span>
                     )}
                     {view.profile?.vehicle && (
                       <span className="nn-confirm-summary-chip">
-                        🚗 Phương tiện: {view.profile.vehicle === 'walk' ? 'Đi bộ' : view.profile.vehicle}
+                        Phương tiện: {view.profile.vehicle === 'walk' ? 'Đi bộ' : view.profile.vehicle}
                       </span>
                     )}
                     {view.selection?.length > 0 && (
                       <span className="nn-confirm-summary-chip">
-                        🍽 {view.selection.length} quán đã chọn
+                        Quán đã chọn: {view.selection.length}
                       </span>
                     )}
                   </div>
@@ -1376,7 +1441,9 @@ export default function DiscoveryLayout({
                   {Array.isArray(view.confirmation.warnings) && view.confirmation.warnings.length > 0 && (
                     <div className="nn-confirm-warnings">
                       <div className="nn-confirm-warning-title">
-                        <span>⚠ Lưu ý an toàn & dữ liệu</span>
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                          <AlertGlyph size={14} color="#C44A24" /> Lưu ý an toàn & dữ liệu
+                        </span>
                       </div>
                       {view.confirmation.warnings.map((w, wIdx) => (
                         <p key={wIdx} className="nn-confirm-warning-text">• {w}</p>
@@ -1393,7 +1460,9 @@ export default function DiscoveryLayout({
                       onClick={() => handleExplicitConfirm(view.confirmation.id)}
                       disabled={!sessionReady || busy}
                     >
-                      ✓ Xác nhận tạo lịch trình ngay
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                        <CheckGlyph size={14} color="currentColor" /> Xác nhận tạo lịch trình ngay
+                      </span>
                     </button>
                     <button
                       type="button"
@@ -1529,7 +1598,7 @@ export default function DiscoveryLayout({
                 {/* Hero Card */}
                 <div className="nn-hero-card">
                   <div className="nn-hero-tag">
-                    ✦ {stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS'}
+                    <StarGlyph size={10} color="#E8B85C" /> {stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS'}
                   </div>
                   <h3 className="nn-hero-title">
                     {view.tour?.title || 'Đi một vòng, ngon một tối.'}
@@ -1592,7 +1661,7 @@ export default function DiscoveryLayout({
                     {editingSelectionAfterTour && (
                       <div className="nn-edit-selection-banner" data-testid="editing-selection-banner">
                         <div className="nn-edit-selection-header">
-                          <span className="nn-edit-badge">✏️ ĐIỀU CHỈNH ĐIỂM DỪNG TOUR</span>
+                          <span className="nn-edit-badge">ĐIỀU CHỈNH ĐIỂM DỪNG TOUR</span>
                           <button
                             type="button"
                             className="nn-back-tour-btn"
@@ -1602,7 +1671,7 @@ export default function DiscoveryLayout({
                             }}
                             aria-label="Quay lại xem lịch trình hiện tại"
                           >
-                            ✕ Xem tour hiện tại
+                            Xem tour hiện tại
                           </button>
                         </div>
                         <p className="nn-edit-selection-text">
@@ -1655,7 +1724,11 @@ export default function DiscoveryLayout({
                                 aria-label={item.locked ? 'Mở khoá quán' : 'Khoá quán'}
                                 disabled={!sessionReady || busy}
                               >
-                                {item.locked ? '🔒' : '🔓'}
+                                {item.locked ? (
+                                  <LockGlyph size={14} color="#CF542F" />
+                                ) : (
+                                  <UnlockGlyph size={14} color="#7A625A" />
+                                )}
                               </button>
                               <button
                                 type="button"
@@ -1666,7 +1739,7 @@ export default function DiscoveryLayout({
                                 aria-label="Xoá quán"
                                 disabled={!sessionReady || busy}
                               >
-                                ✕
+                                <CloseGlyph size={12} color="currentColor" />
                               </button>
                             </div>
                           </div>
@@ -1690,7 +1763,7 @@ export default function DiscoveryLayout({
                             disabled={!sessionReady || busy}
                           >
                             {editingSelectionAfterTour
-                              ? `✦ Lập lại lịch trình từ ${view.selection.length} quán →`
+                              ? `Lập lại lịch trình từ ${view.selection.length} quán →`
                               : `Tạo lịch trình từ ${view.selection.length} quán đã chọn →`}
                           </button>
                         </div>
@@ -1798,13 +1871,16 @@ export default function DiscoveryLayout({
                 style={{
                   border: 'none',
                   background: 'none',
-                  fontSize: '20px',
                   cursor: 'pointer',
-                  color: '#8C7872'
+                  color: '#8C7872',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '4px'
                 }}
                 aria-label="Đóng cửa sổ chi tiết quán"
               >
-                ✕
+                <CloseGlyph size={14} color="#8C7872" />
               </button>
             </div>
 
@@ -1837,7 +1913,7 @@ export default function DiscoveryLayout({
                     rel="noopener noreferrer"
                     style={{ color: '#CF542F', textDecoration: 'underline' }}
                   >
-                    Xem liên kết gốc ↗
+                    Xem liên kết gốc
                   </a>
                   <span style={{ display: 'block', fontSize: '11px', color: '#8C7872', marginTop: '2px' }}>
                     (Mô tả nguồn gốc địa điểm thực tế, không phải kết quả tra cứu web thời gian thực)
@@ -1867,7 +1943,11 @@ export default function DiscoveryLayout({
                 }}
                 disabled={!sessionReady || busy || selectedVenueIds.has(detailVenue.id)}
               >
-                {selectedVenueIds.has(detailVenue.id) ? '✓ Đã trong tour' : '+ Thêm vào tour'}
+                {selectedVenueIds.has(detailVenue.id) ? (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+                    <CheckGlyph size={12} color="currentColor" /> Đã trong tour
+                  </span>
+                ) : '+ Thêm vào tour'}
               </button>
             </div>
           </div>
