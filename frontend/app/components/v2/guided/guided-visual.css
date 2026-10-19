@@ -417,21 +417,23 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 36px;
   flex: none;
 }
 
 .nn-assistant-badge {
+  height: 36px;
   background: #F8E4D9;
   color: #CF542F;
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 700;
   letter-spacing: 0.8px;
-  padding: 4px 10px;
+  padding: 0 14px;
   border-radius: 999px;
   display: inline-flex;
   align-items: center;
   gap: 4px;
+  box-sizing: border-box;
 }
 
 .nn-assistant-tagline {
@@ -441,20 +443,22 @@
 }
 
 .nn-hero-heading {
-  font-size: 42px;
-  font-weight: 800;
-  line-height: 50px;
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 60px;
   color: #231815;
-  margin: 0 0 10px;
+  margin: 0 0 16px;
   letter-spacing: -0.5px;
   flex: none;
 }
 
 .nn-hero-sub {
-  font-size: 14.5px;
-  line-height: 1.5;
+  font-size: 15px;
+  line-height: 24px;
+  font-weight: 400;
   color: #7A625A;
-  margin: 0 0 14px;
+  max-width: 530px;
+  margin: 0 0 28px;
   flex: none;
 }
 
@@ -462,7 +466,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-bottom: 14px;
+  margin-bottom: 18px;
   flex: none;
 }
 
@@ -795,16 +799,17 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 38px;
+  height: 40px;
+  margin-bottom: 18px;
   flex: none;
 }
 
 .nn-tour-heading {
-  font-size: 28px;
-  font-weight: 800;
+  font-size: 32px;
+  font-weight: 600;
   color: #231815;
   margin: 0;
-  line-height: 1.2;
+  line-height: 40px;
 }
 
 .nn-view-mode-toggle {
@@ -853,7 +858,7 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   padding-right: 2px;
 }
 
@@ -861,8 +866,8 @@
 .nn-hero-card {
   background: #CF542F;
   border-radius: 20px;
-  padding: 16px 20px;
-  min-height: 138px;
+  padding: 22px 24px;
+  min-height: 190px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -880,9 +885,9 @@
 }
 
 .nn-hero-title {
-  font-size: 30px;
-  font-weight: 800;
-  line-height: 36px;
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 44px;
   color: #FFFFFF;
   margin: 4px 0;
 }
@@ -894,7 +899,7 @@
 
 /* 3-Column Metrics Card */
 .nn-metrics-card {
-  height: 56px;
+  height: 66px;
   background: #FFFEFA;
   border: 1px solid #EFE6DD;
   border-radius: 14px;
@@ -916,22 +921,22 @@
 
 .nn-metric-val {
   font-size: 16px;
-  font-weight: 800;
+  font-weight: 700;
   color: #231815;
   line-height: 1.2;
   white-space: nowrap;
 }
 
 .nn-metric-lbl {
-  font-size: 10.5px;
+  font-size: 11px;
   color: #7A625A;
-  margin-top: 2px;
+  margin-top: 3px;
   white-space: nowrap;
 }
 
 .nn-metric-divider {
   width: 1px;
-  height: 28px;
+  height: 32px;
   background: #EFE6DD;
 }
 
@@ -940,7 +945,8 @@
   background: #FFFEFA;
   border: 1px solid #EFE7E0;
   border-radius: 16px;
-  padding: 12px 16px;
+  padding: 14px 18px;
+  min-height: 112px;
   box-shadow: 0 4px 16px rgba(112, 41, 20, 0.04);
   display: flex !important;
   flex-direction: row !important;
@@ -994,7 +1000,7 @@
 
 .nn-stop-name {
   font-size: 15px;
-  font-weight: 700;
+  font-weight: 600;
   color: #231815;
   margin: 0;
   line-height: 1.25;
@@ -1012,20 +1018,20 @@
 .nn-empty-steps-list {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 /* Dark CTA Card */
 .nn-dark-cta-card {
   background: #312820;
   border-radius: 20px;
-  padding: 16px 20px;
-  min-height: 132px;
+  padding: 20px 22px;
+  min-height: 150px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 10px;
+  gap: 12px;
   margin-top: 2px;
   box-shadow: 0 8px 24px rgba(49, 40, 32, 0.3);
 }
@@ -1036,7 +1042,7 @@
 }
 
 .nn-cta-title {
-  font-size: 17px;
+  font-size: 17.5px;
   font-weight: 700;
   color: #FFFFFF;
   margin: 0;
@@ -1051,35 +1057,38 @@
 }
 
 .nn-cta-btn {
-  height: 42px;
-  border-radius: 999px;
-  background: #C44A24;
-  color: #FFFFFF !important;
-  font-size: 13.5px;
+  height: 44px;
+  border-radius: 12px;
+  background: #FAF4EE;
+  color: #231815 !important;
+  font-size: 14px;
   font-weight: 700;
   text-decoration: none;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: none;
+  border: 1px solid #E2D7CC;
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .nn-cta-btn:hover:not([disabled]) {
-  background: #B33D1E;
+  background: #EDE2D5;
+  border-color: #D6C8BB;
 }
 
 .nn-cta-btn:focus-visible {
-  outline: 2px solid #FFFFFF;
+  outline: 2px solid #FAF4EE;
   outline-offset: 2px;
 }
 
 .nn-cta-btn.disabled {
   background: #4A3E38;
   color: #8A7E78 !important;
+  border-color: transparent;
   cursor: not-allowed;
 }
 

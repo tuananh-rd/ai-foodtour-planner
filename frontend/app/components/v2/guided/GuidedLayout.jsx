@@ -871,7 +871,29 @@ export default function GuidedLayout({
   };
   const areaDisplay = stops[0]?.district || (areaVal ? (AREA_LABELS[areaVal] || areaVal) : null);
 
-  const vehicleLabel = { walk: 'Đi bộ', motorbike: 'Xe máy', car: 'Ô tô', taxi: 'Taxi/Grab' }[chatState?.profile?.vehicle?.value] || null;
+  const currentVehicle = chatState?.profile?.vehicle?.value || 'walk';
+  const distanceUnitLabel = currentVehicle === 'walk'
+    ? 'ước tính đi bộ'
+    : (currentVehicle === 'motorbike'
+      ? 'ước tính xe máy'
+      : (currentVehicle === 'car'
+        ? 'ước tính ô tô'
+        : (currentVehicle === 'taxi'
+          ? 'ước tính taxi/grab'
+          : 'khoảng cách ước tính')));
+
+  const handleNavigateToChatAndFocus = (initialDraft = null) => {
+    setActiveMobileTab('chat');
+    if (typeof initialDraft === 'string') {
+      setInputText(initialDraft);
+    }
+    setTimeout(() => {
+      inputRef.current?.focus();
+      chatSectionRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+    }, 60);
+  };
+
+  const vehicleLabel = { walk: 'Đi bộ', motorbike: 'Xe máy', car: 'Ô tô', taxi: 'Taxi/Grab' }[currentVehicle] || null;
   const profileNow = chatState?.profile || {};
   const chipOn = {
     area: String(profileNow.area?.value?.label || '').toLowerCase().includes('hoàn kiếm'),
@@ -953,30 +975,21 @@ export default function GuidedLayout({
               <button
                 type="button"
                 className="nn-recent-item"
-                onClick={() => {
-                  setInputText('Một tối ẩm thực quanh Hồ Gươm');
-                  inputRef.current?.focus();
-                }}
+                onClick={() => handleNavigateToChatAndFocus('Một tối ẩm thực quanh Hồ Gươm')}
               >
                 Một tối quanh Hồ Gươm
               </button>
               <button
                 type="button"
                 className="nn-recent-item"
-                onClick={() => {
-                  setInputText('Food tour phố cổ cho 2 người');
-                  inputRef.current?.focus();
-                }}
+                onClick={() => handleNavigateToChatAndFocus('Food tour phố cổ cho 2 người')}
               >
                 Food tour phố cổ 2 người
               </button>
               <button
                 type="button"
                 className="nn-recent-item"
-                onClick={() => {
-                  setInputText('Cà phê & món tráng miệng');
-                  inputRef.current?.focus();
-                }}
+                onClick={() => handleNavigateToChatAndFocus('Cà phê & món tráng miệng')}
               >
                 Cà phê & món tráng miệng
               </button>
@@ -993,8 +1006,8 @@ export default function GuidedLayout({
           <div className="nn-profile-footer">
             <div className="nn-profile-avatar" aria-label="Khách ẩm thực">K</div>
             <div className="nn-profile-info">
-              <div className="nn-profile-name">Phiên cục bộ</div>
-              <div className="nn-profile-sub">Lưu trữ trên trình duyệt</div>
+              <div className="nn-profile-name">Phiên hiện tại</div>
+              <div className="nn-profile-sub">Phiên làm việc cục bộ</div>
             </div>
           </div>
         </div>
@@ -1323,9 +1336,22 @@ export default function GuidedLayout({
                     ✦ {showTour ? (stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS') : 'HANOI AFTER HOURS'}
                   </div>
                   <h3 className="nn-hero-title">
-                    {showTour
-                      ? (tour.title || 'Đi một vòng, ngon một tối.')
-                      : <>Đi một vòng,<br className="nn-hero-break" />ngon một tối.</>}
+                    {(() => {
+                      const titleStr = showTour ? (tour.title || 'Đi một vòng, ngon một tối.') : 'Đi một vòng, ngon một tối.';
+                      if (titleStr.includes(',')) {
+                        const commaIdx = titleStr.indexOf(',');
+                        const firstPart = titleStr.slice(0, commaIdx + 1);
+                        const restPart = titleStr.slice(commaIdx + 1).trim();
+                        return (
+                          <>
+                            {firstPart}
+                            <br className="nn-hero-break" />
+                            {restPart}
+                          </>
+                        );
+                      }
+                      return titleStr;
+                    })()}
                   </h3>
                   <div className="nn-hero-meta">
                     {showTour
@@ -1346,7 +1372,7 @@ export default function GuidedLayout({
                       {showTour ? (distanceKm !== null ? `${distanceKm} km` : '—') : '—'}
                     </div>
                     <div data-testid="metric-distance-lbl" className="nn-metric-lbl">
-                      {showTour ? 'ước tính đi bộ' : 'khoảng cách (ước tính đi bộ)'}
+                      {showTour ? distanceUnitLabel : `khoảng cách (${distanceUnitLabel})`}
                     </div>
                   </div>
                   <div className="nn-metric-divider" />
@@ -1388,11 +1414,9 @@ export default function GuidedLayout({
                       </div>
                       <button
                         type="button"
+                        data-testid="start-suggesting-cta-btn"
                         className="nn-cta-btn"
-                        onClick={() => {
-                          inputRef.current?.focus();
-                          chatSectionRef.current?.scrollIntoView({ block: 'start' });
-                        }}
+                        onClick={() => handleNavigateToChatAndFocus()}
                       >
                         Bắt đầu gợi ý →
                       </button>

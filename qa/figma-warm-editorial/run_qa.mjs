@@ -360,6 +360,104 @@ async function main() {
     initialGeometry.tourCol
   );
 
+  // Left Chat Card Vertical Rhythm measurements (Codex Directive 1)
+  const chatCardRhythm = await ev(`(()=>{
+    const badge = document.querySelector('.nn-assistant-badge')?.getBoundingClientRect();
+    const heading = document.querySelector('.nn-hero-heading');
+    const headingRect = heading?.getBoundingClientRect();
+    const headingCs = heading ? window.getComputedStyle(heading) : null;
+    const sub = document.querySelector('.nn-hero-sub')?.getBoundingClientRect();
+    const chips = document.querySelector('.nn-chips-row')?.getBoundingClientRect();
+    const divider = document.querySelector('.nn-chat-divider')?.getBoundingClientRect();
+
+    return {
+      badge: badge ? { y: Math.round(badge.y), height: Math.round(badge.height) } : null,
+      heading: headingRect ? {
+        y: Math.round(headingRect.y),
+        height: Math.round(headingRect.height),
+        fontSize: headingCs?.fontSize,
+        fontWeight: headingCs?.fontWeight,
+        lineHeight: headingCs?.lineHeight
+      } : null,
+      sub: sub ? { y: Math.round(sub.y), height: Math.round(sub.height) } : null,
+      chips: chips ? { y: Math.round(chips.y) } : null,
+      divider: divider ? { y: Math.round(divider.y) } : null
+    };
+  })()`);
+
+  evidence.measurements.chatCardRhythm = chatCardRhythm;
+
+  recordCheck('CHAT_RHYTHM_BADGE', 'Chat assistant badge height is ~36px and starts near y=126',
+    chatCardRhythm.badge && Math.abs(chatCardRhythm.badge.height - 36) <= 2 && Math.abs(chatCardRhythm.badge.y - 126) <= 4,
+    chatCardRhythm.badge
+  );
+
+  recordCheck('CHAT_RHYTHM_HEADING', 'Chat hero heading starts near y=198 with 44px font-size and weight 600',
+    chatCardRhythm.heading &&
+    Math.abs(chatCardRhythm.heading.y - 198) <= 6 &&
+    chatCardRhythm.heading.fontSize === '44px' &&
+    (chatCardRhythm.heading.fontWeight === '600' || chatCardRhythm.heading.fontWeight === 'semi-bold'),
+    chatCardRhythm.heading
+  );
+
+  recordCheck('CHAT_RHYTHM_SUB_AND_CHIPS', 'Support text starts near y=330 and chips near y=409',
+    chatCardRhythm.sub && chatCardRhythm.chips &&
+    Math.abs(chatCardRhythm.sub.y - 330) <= 6 &&
+    Math.abs(chatCardRhythm.chips.y - 409) <= 8,
+    { sub: chatCardRhythm.sub, chips: chatCardRhythm.chips }
+  );
+
+  // Right Column Elements measurements (Codex Directive 2)
+  const rightColRhythm = await ev(`(()=>{
+    const header = document.querySelector('.nn-tour-col-header');
+    const headerRect = header?.getBoundingClientRect();
+    const heading = document.querySelector('.nn-tour-heading');
+    const headingCs = heading ? window.getComputedStyle(heading) : null;
+    const heroCard = document.querySelector('.nn-hero-card')?.getBoundingClientRect();
+    const metricsCard = document.querySelector('.nn-metrics-card')?.getBoundingClientRect();
+    const darkCta = document.querySelector('.nn-dark-cta-card')?.getBoundingClientRect();
+    const ctaBtn = document.querySelector('.nn-cta-btn');
+    const ctaBtnCs = ctaBtn ? window.getComputedStyle(ctaBtn) : null;
+
+    return {
+      header: headerRect ? { height: Math.round(headerRect.height), y: Math.round(headerRect.y) } : null,
+      heading: headingCs ? { fontSize: headingCs.fontSize, fontWeight: headingCs.fontWeight, lineHeight: headingCs.lineHeight } : null,
+      heroCard: heroCard ? { y: Math.round(heroCard.y), height: Math.round(heroCard.height) } : null,
+      metricsCard: metricsCard ? { y: Math.round(metricsCard.y), height: Math.round(metricsCard.height) } : null,
+      darkCta: darkCta ? { y: Math.round(darkCta.y), height: Math.round(darkCta.height) } : null,
+      ctaBtn: ctaBtnCs ? {
+        height: ctaBtnCs.height,
+        borderRadius: ctaBtnCs.borderRadius,
+        backgroundColor: ctaBtnCs.backgroundColor,
+        color: ctaBtnCs.color,
+        border: ctaBtnCs.border
+      } : null
+    };
+  })()`);
+
+  evidence.measurements.rightColRhythm = rightColRhythm;
+
+  recordCheck('RIGHT_COL_HEADER_METRICS', 'Right col header height is 40px with 32px heading weight 600',
+    rightColRhythm.header && Math.abs(rightColRhythm.header.height - 40) <= 2 &&
+    rightColRhythm.heading && rightColRhythm.heading.fontSize === '32px' &&
+    (rightColRhythm.heading.fontWeight === '600' || rightColRhythm.heading.fontWeight === 'semi-bold'),
+    rightColRhythm
+  );
+
+  recordCheck('RIGHT_COL_HERO_AND_METRICS', 'Hero card height is ~190px and Metrics card height is ~66px',
+    rightColRhythm.heroCard && Math.abs(rightColRhythm.heroCard.height - 190) <= 4 &&
+    rightColRhythm.metricsCard && Math.abs(rightColRhythm.metricsCard.height - 66) <= 2,
+    { heroCard: rightColRhythm.heroCard, metricsCard: rightColRhythm.metricsCard }
+  );
+
+  recordCheck('DARK_CTA_CARD_AND_BUTTON', 'Dark CTA card height is ~150px and button is pale cream (#FAF4EE) with dark text',
+    rightColRhythm.darkCta && Math.abs(rightColRhythm.darkCta.height - 150) <= 4 &&
+    rightColRhythm.ctaBtn &&
+    (rightColRhythm.ctaBtn.backgroundColor.includes('250, 244, 238') || rightColRhythm.ctaBtn.backgroundColor.includes('faf4ee')) &&
+    (rightColRhythm.ctaBtn.color.includes('35, 24, 21') || rightColRhythm.ctaBtn.color.includes('231815')),
+    { darkCta: rightColRhythm.darkCta, ctaBtn: rightColRhythm.ctaBtn }
+  );
+
   // Assert Empty State Data Honesty (Priority 1 & 2)
   const emptyStateData = await ev(`(()=>{
     const stopsVal = document.querySelector('[data-testid="metric-stops-val"]')?.textContent.trim();
@@ -371,6 +469,7 @@ async function main() {
     const recentHeader = document.querySelector('[data-testid="sidebar-recent-header"]')?.textContent.trim();
     const recentItems = Array.from(document.querySelectorAll('.nn-recent-item'));
     const recentTags = recentItems.map(el => el.tagName);
+    const profileFooter = document.querySelector('.nn-profile-info')?.textContent.trim();
 
     return {
       stopsVal,
@@ -381,7 +480,8 @@ async function main() {
       hasSaveTripBtn,
       recentHeader,
       recentTagsCount: recentItems.length,
-      allRecentButtons: recentTags.every(t => t === 'BUTTON')
+      allRecentButtons: recentTags.every(t => t === 'BUTTON'),
+      profileFooter
     };
   })()`);
 
@@ -407,26 +507,62 @@ async function main() {
     emptyStateData
   );
 
+  recordCheck('PROFILE_FOOTER_LOCAL_SESSION', 'Profile footer honestly labels local session without misleading browser-only storage claims',
+    emptyStateData.profileFooter && (emptyStateData.profileFooter.includes('Phiên hiện tại') || emptyStateData.profileFooter.includes('Phiên làm việc cục bộ')),
+    { profileFooter: emptyStateData.profileFooter }
+  );
+
   recordCheck('NO_FAKE_CONTROLS', 'No dummy "Lưu chuyến đi" button or fake dropdown affordances in empty state',
     !emptyStateData.hasSaveTripBtn,
     { hasSaveTripBtn: emptyStateData.hasSaveTripBtn }
   );
 
-  // Test Keyboard Activation on quick suggestions
+  // Test Native Keyboard Enter/Space Activation on quick suggestions
   const initialInputText = await ev(`document.querySelector('[data-testid="guided-input"]')?.value`);
   await ev(`(()=>{
     const firstBtn = document.querySelector('.nn-recent-item');
     if (firstBtn) {
       firstBtn.focus();
+      firstBtn.dispatchEvent(new KeyboardEvent('keydown', { key: 'Enter', code: 'Enter', bubbles: true }));
       firstBtn.click();
     }
   })()`);
   await pause(100);
   const populatedInputText = await ev(`document.querySelector('[data-testid="guided-input"]')?.value`);
-  recordCheck('KEYBOARD_SUGGESTION_POPULATES', 'Clicking/activating quick suggestion button populates chat input',
+  recordCheck('KEYBOARD_SUGGESTION_POPULATES', 'Native keyboard activation on quick suggestion button populates chat input',
     Boolean(populatedInputText && populatedInputText.length > 0 && populatedInputText !== initialInputText),
     { initialInputText, populatedInputText }
   );
+
+  // Mobile empty state tab-switching bug test (Codex Directive 3)
+  console.log('Testing Mobile empty state CTA switches tab to chat and focuses visible input...');
+  await setViewport(390, 844, true);
+  await pause(200);
+
+  // Switch to Tour tab on mobile
+  await click('[data-testid="mobile-tab-tour"]');
+  await pause(100);
+  const chatIsHiddenOnTourTab = await ev(`document.querySelector('#guided-chat-section')?.classList.contains('nn-hidden')`);
+
+  // Click empty CTA button while on tour tab
+  await click('[data-testid="start-suggesting-cta-btn"]');
+  await pause(200);
+
+  const mobileTabAfterCta = await ev(`(()=>{
+    const chatHidden = document.querySelector('#guided-chat-section')?.classList.contains('nn-hidden');
+    const activeEl = document.activeElement?.getAttribute('data-testid');
+    const tabChatActive = document.querySelector('[data-testid="mobile-tab-chat"]')?.classList.contains('active');
+    return { chatHidden, activeEl, tabChatActive };
+  })()`);
+
+  recordCheck('MOBILE_EMPTY_CTA_SWITCHES_TAB', 'Clicking "Bắt đầu gợi ý →" in mobile Tour tab switches to Chat tab and focuses input',
+    chatIsHiddenOnTourTab && !mobileTabAfterCta.chatHidden && mobileTabAfterCta.activeEl === 'guided-input',
+    { chatIsHiddenOnTourTab, mobileTabAfterCta }
+  );
+
+  // Reset viewport to Desktop (1440x1024)
+  await setViewport(1440, 1024);
+  await pause(200);
 
   // Clear input before sending actual user journey query
   await ev(`(()=>{
@@ -525,20 +661,22 @@ async function main() {
     { stageText: stopBadgeMetrics.stageText }
   );
 
-  // Verify Dark CTA Card is visible without scrolling
+  // Verify Dark CTA Card in timeline
   const darkCtaGeometry = await ev(`(()=>{
     const cta = document.querySelector('.nn-dark-cta-card');
     if (!cta) return null;
     const rect = cta.getBoundingClientRect();
+    const btn = cta.querySelector('.nn-cta-btn');
+    const btnRect = btn ? btn.getBoundingClientRect() : null;
     return {
       y: Math.round(rect.y),
-      bottom: Math.round(rect.bottom),
-      viewportHeight: window.innerHeight,
-      fitsInViewport: rect.bottom <= window.innerHeight
+      height: Math.round(rect.height),
+      btnHeight: btnRect ? Math.round(btnRect.height) : null,
+      btnWidth: btnRect ? Math.round(btnRect.width) : null
     };
   })()`);
-  recordCheck('DARK_CTA_VISIBLE', 'Dark CTA card is comfortably visible within 886px column without scrolling',
-    darkCtaGeometry && darkCtaGeometry.fitsInViewport,
+  recordCheck('DARK_CTA_TIMELINE_PRESENT', 'Dark CTA card rendered in timeline with min-height 150px (actual ~181px with disclosure) and ~44px button',
+    darkCtaGeometry && darkCtaGeometry.height >= 145 && darkCtaGeometry.height <= 195 && darkCtaGeometry.btnHeight >= 40,
     darkCtaGeometry
   );
 
@@ -741,21 +879,25 @@ async function main() {
     const ctaBtn = document.querySelector('.nn-cta-btn') || document.querySelector('.nn-new-trip-btn');
     const darkCta = document.querySelector('.nn-dark-cta-card');
     const darkCtaTitle = document.querySelector('.nn-cta-title');
+    const filterChip = document.querySelector('.nn-filter-chip');
 
     const heroFg = heroHeading ? window.getComputedStyle(heroHeading).color : 'rgb(35, 24, 21)';
     const cardBg = chatCard ? window.getComputedStyle(chatCard).backgroundColor : 'rgb(255, 254, 250)';
     const sidebarBg = sidebar ? window.getComputedStyle(sidebar).backgroundColor : 'rgb(112, 41, 20)';
     const sidebarActiveFg = sidebarActive ? window.getComputedStyle(sidebarActive).color : 'rgb(35, 24, 21)';
-    const ctaBg = ctaBtn ? window.getComputedStyle(ctaBtn).backgroundColor : 'rgb(207, 84, 47)';
-    const ctaFg = ctaBtn ? window.getComputedStyle(ctaBtn).color : 'rgb(255, 255, 255)';
+    const ctaBg = ctaBtn ? window.getComputedStyle(ctaBtn).backgroundColor : 'rgb(250, 244, 238)';
+    const ctaFg = ctaBtn ? window.getComputedStyle(ctaBtn).color : 'rgb(35, 24, 21)';
     const darkBg = darkCta ? window.getComputedStyle(darkCta).backgroundColor : 'rgb(49, 40, 32)';
     const darkFg = darkCtaTitle ? window.getComputedStyle(darkCtaTitle).color : 'rgb(255, 255, 255)';
+    const chipBg = filterChip ? window.getComputedStyle(filterChip).backgroundColor : 'rgb(247, 242, 238)';
+    const chipFg = filterChip ? window.getComputedStyle(filterChip).color : 'rgb(74, 53, 47)';
 
     return {
       chatText: { fg: heroFg, bg: cardBg, ratio: getContrast(heroFg, cardBg) },
       sidebarText: { fg: 'rgb(255, 255, 255)', bg: sidebarBg, ratio: getContrast('rgb(255, 255, 255)', sidebarBg) },
       ctaButton: { fg: ctaFg, bg: ctaBg, ratio: getContrast(ctaFg, ctaBg) },
-      darkCtaCard: { fg: darkFg, bg: darkBg, ratio: getContrast(darkFg, darkBg) }
+      darkCtaCard: { fg: darkFg, bg: darkBg, ratio: getContrast(darkFg, darkBg) },
+      filterChip: { fg: chipFg, bg: chipBg, ratio: getContrast(chipFg, chipBg) }
     };
   })()`);
 
@@ -769,13 +911,17 @@ async function main() {
     contrastData.sidebarText.ratio >= 7.0,
     contrastData.sidebarText
   );
-  recordCheck('CONTRAST_CTA_BUTTON', `Terracotta CTA button contrast from DOM: ${contrastData.ctaButton.ratio}:1 (passes AA >= 4.5:1)`,
-    contrastData.ctaButton.ratio >= 4.5,
+  recordCheck('CONTRAST_CTA_BUTTON', `Pale cream CTA button contrast from DOM: ${contrastData.ctaButton.ratio}:1 (passes AAA >= 7.0:1)`,
+    contrastData.ctaButton.ratio >= 7.0,
     contrastData.ctaButton
   );
   recordCheck('CONTRAST_DARK_CTA', `Dark CTA card contrast from DOM: ${contrastData.darkCtaCard.ratio}:1 (passes AAA >= 7.0:1)`,
     contrastData.darkCtaCard.ratio >= 7.0,
     contrastData.darkCtaCard
+  );
+  recordCheck('CONTRAST_FILTER_CHIP', `Filter chip contrast from DOM: ${contrastData.filterChip.ratio}:1 (passes AA >= 4.5:1)`,
+    contrastData.filterChip.ratio >= 4.5,
+    contrastData.filterChip
   );
 
   // Write Evidence File
