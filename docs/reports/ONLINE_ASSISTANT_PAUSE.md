@@ -1,5 +1,7 @@
 # Online assistant — RESUMED, 2026-10-19
 
+Final resumed outcome: local integration3696001 accepted after focus repair6816b23, final browser190/190, refreshed actual UI60/60 and production build PASS. Both clarify-focus failures are closed. Read-only QA and bounded focus-repair tasks settled; same Antigravity retained, no active editor. This update supersedes the open-focus/active-QA checkpoint below. Tavily live remains BLOCKED and Gemini PARTIAL; see ONLINE_ASSISTANT_ACCEPTANCE.md. Agent billing state is unverified; no platform spending-lock claim is made.
+
 The user explicitly resumed the whole team from HEAD4897418. The prior usage pause below is historical and no longer blocks authorized work. Codex continues coordination/review/integration; Antigravity retains read-only QA task_773e0849bceb/ctx_bc7440d9491f on term_37bc1a97-029f-4e92-8ca7-da75d3689675. The user supplies exactly one continuation prompt; Codex does not duplicate it or redispatch this task. Current terminal output shows that continuation and resumed generation; wait for actual QA output and settlement. Existing WIP, file ownership and servers remain preserved.
 
 Stop and report if agent usage is exhausted or continuation requires paid credits; no model change or automatic credit fallback is authorized. Tavily live remains BLOCKED without a local key; Gemini remains PARTIAL pending actual evidence. Two desktop/mobile clarify-focus failures remain open; no final acceptance is implied by resumption.

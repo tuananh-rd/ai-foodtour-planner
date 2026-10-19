@@ -89,5 +89,5 @@ In [`frontend/app/components/v2/guided/GuidedLayout.jsx`](file:///C:/Users/tuana
 
 - **Test Fixtures:** All tests were run with synthetic fixtures (`venues.chat.synthetic.json`) and deterministic rules assistants. No external network traffic was permitted.
 - **Provider State:** Live Tavily search is fail-closed (0 credits used, 0 external calls). Live Gemini model calls were not executed.
-- **Visual Fidelity:** Verified responsive layout constraints and DOM container visibility (chat and tour columns, mobile navigation tabs). Comprehensive visual pixel matching against `D:/Downloads/UI ngonngon tour.svg` remains Claude's primary visual ownership scope.
+- **Visual Fidelity:** This QA checked responsive layout constraints and DOM container visibility only; it does not establish pixel matching. Current online-assistant authority is Codex coordination/review/integration and bounded Antigravity implementation, with Claude inactive. Separate actual SVG comparison artifacts are maintained in the coordinator's acceptance evidence.
 - **Server Safety:** Isolated verification was executed strictly on `127.0.0.1:13100` / `18100` / `19300`. Coordinator servers `3060` and `8060` remained running and unmodified.

@@ -2,6 +2,8 @@
 
 ## Active online assistant initiative
 
+Final local gate accepted at3696001: focus task6816b23 reviewed/integrated,7 targeted tests pass; one final broad browser run190/190 and refreshed production UI60/60 pass; build PASS148kB. Backend unchanged1509005 retains661 tests/OpenAPI/18 contracts. Production URL3060 is synthetic/rules, not live. Tavily live BLOCKED/no key, Gemini PARTIAL. Screenshots and limits: reports/ONLINE_ASSISTANT_ACCEPTANCE.md. Antigravity retained, no active editor. The earlier open-focus/task statements below are historical.
+
 Latest event: final read-only QA settled e1c86af; Codex requires correction of unsupported focus root-cause/visual claims and mismatched test names before acceptance. Fresh same-terminal task_1ecaea329bef owns only GuidedLayout.jsx, final-integration QA evidence/harness and FINAL_QA.md to verify/fix the two focus failures. No overlapping editor; targeted checks only until final regression gate. Earlier active-QA statements below are historical.
 
 Latest checkpoint1509005: OA1/contextual state and OA3 guarded retrieval adapter integrated; OA2/OA4 production UI/map60/60 final-source checks pass. Full backend661 tests PASS (one optional private-data skip),138.892s; OpenAPI drift and18 mock-client contracts PASS. Fresh broad browser regression190 checks has188 PASS and2 initial-clarification focus failures; do not close this gate until classified/fixed. Same retained Antigravity now executes read-only final QA/review task_773e0849bceb / ctx_bc7440d9491f, exact report/evidence ownership ACK verified and actual review output observed. No concurrent product editor. Live Tavily BLOCKED/no key; Gemini PARTIAL. Historical task states below are superseded by this checkpoint.
