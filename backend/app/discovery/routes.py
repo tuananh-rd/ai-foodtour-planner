@@ -7,6 +7,7 @@ from .schemas import Turn, AssistantView
 from .state import State
 from .tools import Tools, routing_for
 from .engine import handle
+from app.presentation import plain_text
 
 router = APIRouter()
 
@@ -31,12 +32,15 @@ def view(identity, session, state, tools, data, request, result=None, provider=N
     return {'contract': 'discovery-v1', 'session_id': identity, 'revision': session.revision,
             'profile_version': state.profile_version, 'selection_version': state.selection_version,
             'profile': state.profile.model_dump(), 'status': result['status'],
-            'reply': {'text': result['text'], 'question': result.get('question')},
+            'reply': {'text': plain_text(result['text']),
+                      'question': plain_text(result['question']) if result.get('question') else None},
             'results': [tools.restaurant(i, chr(65+n)) for n, i in enumerate(state.results) if i in tools.by_id],
             'selection': [tools.restaurant(x['id']) for x in state.selection if x['id'] in tools.by_id],
             'comparison': {'venues': [tools.restaurant(i) for i in state.comparison if i in tools.by_id],
                 'criteria': ['address', 'price', 'hours'], 'unknowns': ['sweetness', 'ingredient_allergy_safety', 'elderly_access']} if state.comparison else None,
-            'confirmation': state.confirmation, 'messages': state.messages, 'tour': tour,
+            'confirmation': state.confirmation,
+            'messages': [{**m, 'text': plain_text(m['text'])} if m['role'] == 'assistant' else m
+                         for m in state.messages], 'tour': tour,
             'source': {'dataset_source': 'synthetic' if data.dataset_source == 'synthetic' else 'private', 'dataset_version': data.dataset_version},
             'provider': provider or {'mode': getattr(request.app.state.discovery_model, 'mode', 'gemini') if request.app.state.discovery_model.configured else 'rules', 'calls': 0},
             'diagnostics': {'tool_calls': tools.calls, 'elapsed_ms': round(elapsed_ms, 2), 'weather': 'unavailable'}}

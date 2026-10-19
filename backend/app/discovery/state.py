@@ -4,6 +4,7 @@ import copy
 import json
 from app.assistant.conversation import redact_sensitive
 from .schemas import Profile
+from app.presentation import plain_text
 
 
 @dataclass
@@ -101,6 +102,8 @@ class State:
 
     def remember(self, role, text):
         # Keep a bounded local replay; credentials and exact coordinates are redacted.
+        if role == 'assistant':
+            text = plain_text(str(text))
         safe = redact_sensitive(str(text))[:700].encode('utf-8')[:900].decode('utf-8', errors='ignore')
         self.messages.append({'role': role, 'text': safe})
         self.messages = self.messages[-16:]

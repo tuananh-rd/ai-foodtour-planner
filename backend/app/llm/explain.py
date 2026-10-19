@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from app.planner.types import Tour, Venue
+from app.presentation import plain_text
 
 LABEL = {
     "verified_feasible": "Lịch trình đã đủ bằng chứng.",
@@ -32,7 +33,7 @@ def explain(tour: Tour, venues: list) -> str:
     parts.extend(tour.reasons if not tour.stops else ())
     if tour.proposed_changes:
         parts.append("Đề xuất: " + " ".join(tour.proposed_changes))
-    return " ".join(parts)
+    return plain_text(" ".join(parts))
 
 
 # ---------------------------------------------------------------------------
@@ -210,6 +211,8 @@ class CheckedExplainer:
                 break
             try:
                 text = self.provider.explain(facts, deadline_s=remaining)
+                if isinstance(text, str):
+                    text = plain_text(text)
                 problems = check_explanation(text, facts)
             except Exception:
                 text, problems = None, ["provider_error"]

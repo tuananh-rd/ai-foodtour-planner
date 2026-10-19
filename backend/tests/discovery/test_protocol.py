@@ -38,6 +38,24 @@ def response(parts):
 
 
 class ProtocolTests(unittest.TestCase):
+    def test_all_native_parameter_references_resolve_at_document_root(self):
+        for declaration in declarations():
+            root = declaration['parametersJsonSchema']
+            def check(value):
+                if isinstance(value, dict):
+                    if '$ref' in value:
+                        self.assertTrue(value['$ref'].startswith('#/'))
+                        target = root
+                        for key in value['$ref'][2:].split('/'):
+                            target = target[key]
+                        self.assertIsInstance(target, dict)
+                    for child in value.values():
+                        check(child)
+                elif isinstance(value, list):
+                    for child in value:
+                        check(child)
+            check(root)
+
     def tools(self):
         return Tools(State(), fixture(), StraightLineEstimator())
 

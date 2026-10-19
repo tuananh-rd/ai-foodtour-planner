@@ -6,6 +6,7 @@ import re
 
 from app.planner.relevance import fold_uncached
 from app.chat.coverage import _DISHES
+from app.presentation import plain_text
 
 
 def private_turn(text):
@@ -62,7 +63,7 @@ def decorate_reply(assistant, result, user_text, recent_turns, *, budget, sessio
         result.state.llm_used += calls
         status = reply.status if reply.status in ('ok', 'disabled', 'unavailable', 'quota', 'rejected') else 'rejected'
         meta = {'status': status, 'provider': 'gemini' if reply.provider == 'gemini' else 'none', 'llm_calls': calls}
-        text = reply.text
+        text = plain_text(reply.text) if isinstance(reply.text, str) else reply.text
         if status != 'ok' or not isinstance(text, str) or not text.strip() or len(text) > 600:
             return meta
         # Keep the single deterministic decision question and all warnings/facts.

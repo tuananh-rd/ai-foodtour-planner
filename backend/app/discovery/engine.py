@@ -11,6 +11,7 @@ from app.chat.conversation_reply import private_turn
 from app.assistant.conversation import is_health_or_allergy_disclosure
 from app.llm import safety_parse
 from app.llm.provider import ProviderError
+from app.presentation import plain_text
 from app.planner.relevance import fold_uncached
 
 
@@ -194,6 +195,8 @@ def tool_projection(result):
 
 
 def safe_answer(text, tools, tool_results):
+    if isinstance(text, str):
+        text = plain_text(text)
     if not isinstance(text, str) or not text.strip() or len(text) > 1200 or '?' in text:
         return None
     if any(pattern.search(text) for pattern in (RE_ALLERGY_CLEARANCE, RE_OPERATIONAL_CLAIM, RE_ETA_CLAIM,

@@ -464,7 +464,10 @@ class ConversationalAssistant:
         reply = raw.get("reply")
         if not isinstance(reply, str) or not reply.strip():
             return False, None
-        reply = reply.strip()
+        from app.presentation import plain_text
+        reply = plain_text(reply)
+        if not reply:
+            return False, None
         if len(reply) > MAX_REPLY_CHARS:
             return False, None
 

@@ -1,0 +1,53 @@
+{
+  "contract": "discovery-v1",
+  "dataset": "private",
+  "live": true,
+  "limits": {
+    "chat_turns": 3,
+    "model_transports": 6,
+    "automatic_retries": 0
+  },
+  "transports": [
+    {
+      "number": 1,
+      "http_status": 400,
+      "input_bytes": 468,
+      "error_kind": "unavailable"
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "http_status": 200,
+      "status": "ok",
+      "provider": {
+        "mode": "rules",
+        "calls": 1,
+        "reason": "unavailable_rules_fallback"
+      },
+      "actual_model_transports": 1,
+      "results_count": 0,
+      "comparison_count": 0,
+      "has_reply": true
+    }
+  ],
+  "tools": [],
+  "outcome": "blocked_or_partial",
+  "dataset_count": 1702,
+  "configured_model": "gemini-3.5-flash-lite",
+  "budget_before": {
+    "limit": 20,
+    "used": 0,
+    "remaining": 20,
+    "exhausted": false
+  },
+  "session_cap": 6,
+  "reserve": 3,
+  "budget_after": {
+    "limit": 20,
+    "used": 1,
+    "remaining": 19,
+    "exhausted": false
+  },
+  "model_transport_count": 1
+}

@@ -1,5 +1,23 @@
 # Discovery-first assistant task board
 
+## Current continuation — 2026-10-20
+
+Direct user authority: fluid Warm editorial at 1280/1440/1920/2560 desktop and 390 mobile; no Unicode emoji anywhere in the product UI; actual configured Gemini and local dataset. This explicit request authorizes at most three smoke chat turns and six total model requests including tool continuations, without automatic retries, model/cap increases, Tavily or paid Maps. Historical no-live-probe statements below describe the prior delivery only.
+
+Baseline `4b57fe6`, UI `41b1d33`. New runtime `a71c4070-c37a-46f3-a54c-103d39af39e7`, current coordinator terminal `term_f4235d70-7974-4a00-b0e5-9a9fa3a4141b`, Run `run_a4b75f502189`. Old handles are not authority. Existing Antigravity terminal was rediscovered, positively acknowledged readiness, and shows Gemini 3.8 Flash/high; no model override or duplicate agent. Two readiness detector timeouts produced failed attempts without task delivery; documented low-level dispatch `task_90f732d804e0` / `ctx_110dc582c012` was injected and acknowledged. This is an unsupervised terminal lifecycle lane, not proof that Orca owns its process.
+
+| Work | Owner | Current evidence |
+|---|---|---|
+| Fluid layout, frontend emoji removal, resize/QA/build | Antigravity, Codex review/integration | Active bounded frontend/QA task; preserve all existing WIP/server/privacy/confirmation controls |
+| Generated text emoji policy | Codex, affected review pending | Shared plain-text presentation policy, discovery and legacy conversation/explanation guards; 77 targeted backend tests PASS |
+| Native tool-schema correction | Codex, affected review pending | Nested Profile `$defs` moved to parameter-document root so `#/$defs/Origin` resolves; offline reference-resolution regression PASS |
+| Actual Gemini smoke | Codex | COMPLETE: three total chat turns / five model transports, zero automatic retries. Initial HTTP400 retained; after schema fix four HTTP200 responses name configured `gemini-3.5-flash-lite`, native search/compare + result continuation. Local private dataset, no exported records. Comparison honestly reports unknown fields. No further smoke model traffic authorized under this run's three-turn limit |
+| Current runtime | Codex | New task-owned API8300, private data + existing Gemini configuration, persistent budget ledger; final frontend URL/build and integration checks pending |
+
+Sanitized provider evidence: `discovery-live-20261020.json` (initial failure) and `discovery-live-20261020-schema-fixed.json` (two remaining turns). Combined ledger used0→5 with configured daily20/session6/reserve3 during smoke. Existing local launcher further restricts daily allowance to18 without resetting used calls or changing `.env`. No user process stopped; Claude remains inactive.
+
+## Previous completed delivery
+
 Direct user request2026-10-19. Baselinebe2bb8f; rules and requirements supersede historical Tavily/checklist behavior. Codex coordinator/backend/contracts/review, Antigravity bounded frontend/QA, Claude inactive. No Tavily calls or new live probes/cap increases. Preserve private inputs/ledgers/WIP/servers.
 
 | Phase | Owner | State | Gate |

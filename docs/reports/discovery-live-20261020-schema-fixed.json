@@ -1,0 +1,120 @@
+{
+  "contract": "discovery-v1",
+  "dataset": "private",
+  "live": true,
+  "limits": {
+    "chat_turns": 3,
+    "model_transports": 6,
+    "automatic_retries": 0
+  },
+  "transports": [
+    {
+      "number": 1,
+      "http_status": 200,
+      "input_bytes": 516,
+      "response_model": "gemini-3.5-flash-lite",
+      "finish_reason": "STOP",
+      "native_tools": [
+        "search_restaurants"
+      ],
+      "has_text": false
+    },
+    {
+      "number": 2,
+      "http_status": 200,
+      "input_bytes": 4307,
+      "response_model": "gemini-3.5-flash-lite",
+      "finish_reason": "STOP",
+      "native_tools": [],
+      "has_text": true
+    },
+    {
+      "number": 3,
+      "http_status": 200,
+      "input_bytes": 756,
+      "response_model": "gemini-3.5-flash-lite",
+      "finish_reason": "STOP",
+      "native_tools": [
+        "compare_restaurants"
+      ],
+      "has_text": false
+    },
+    {
+      "number": 4,
+      "http_status": 200,
+      "input_bytes": 2562,
+      "response_model": "gemini-3.5-flash-lite",
+      "finish_reason": "STOP",
+      "native_tools": [],
+      "has_text": true
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "http_status": 200,
+      "status": "ok",
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "reason": null
+      },
+      "actual_model_transports": 2,
+      "results_count": 5,
+      "comparison_count": 0,
+      "has_reply": true
+    },
+    {
+      "number": 2,
+      "http_status": 200,
+      "status": "unknown",
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "reason": null
+      },
+      "actual_model_transports": 2,
+      "results_count": 5,
+      "comparison_count": 2,
+      "has_reply": true
+    }
+  ],
+  "tools": [
+    {
+      "name": "update_preferences",
+      "status": "ok"
+    },
+    {
+      "name": "search_restaurants",
+      "status": "ok"
+    },
+    {
+      "name": "update_preferences",
+      "status": "ok"
+    },
+    {
+      "name": "compare_restaurants",
+      "status": "unknown"
+    }
+  ],
+  "outcome": "live_success",
+  "prior_model_transports": 1,
+  "prior_chat_turns": 1,
+  "dataset_count": 1702,
+  "configured_model": "gemini-3.5-flash-lite",
+  "budget_before": {
+    "limit": 20,
+    "used": 1,
+    "remaining": 19,
+    "exhausted": false
+  },
+  "session_cap": 6,
+  "reserve": 3,
+  "budget_after": {
+    "limit": 20,
+    "used": 5,
+    "remaining": 15,
+    "exhausted": false
+  },
+  "model_transport_count": 4
+}
