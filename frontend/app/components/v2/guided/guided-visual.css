@@ -134,7 +134,7 @@
   width: 100%;
   height: 42px;
   border-radius: 999px;
-  background: #CF542F;
+  background: #C44A24;
   color: #FFFFFF;
   font-size: 13.5px;
   font-weight: 600;
@@ -241,11 +241,23 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  padding: 2px 0;
+  padding: 4px 6px;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+  font-family: inherit;
+  border-radius: 6px;
 }
 
 .nn-recent-item:hover {
   color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.nn-recent-item:focus-visible {
+  outline: 2px solid #FFFFFF;
+  outline-offset: 2px;
 }
 
 .nn-sidebar-bottom {
@@ -325,7 +337,7 @@
   background: #F9C53D;
   display: flex;
   flex-direction: column;
-  padding: 24px 32px 32px 32px;
+  padding: 24px 32px 40px 32px;
   box-sizing: border-box;
   max-width: 1208px;
 }
@@ -334,8 +346,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 42px;
-  margin-bottom: 24px;
+  height: 38px;
+  margin-bottom: 36px;
   flex: none;
 }
 
@@ -429,11 +441,11 @@
 }
 
 .nn-hero-heading {
-  font-size: 38px;
+  font-size: 42px;
   font-weight: 800;
-  line-height: 1.15;
+  line-height: 50px;
   color: #231815;
-  margin: 0 0 8px;
+  margin: 0 0 10px;
   letter-spacing: -0.5px;
   flex: none;
 }
@@ -841,16 +853,16 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
   padding-right: 2px;
 }
 
 /* Hero Card */
 .nn-hero-card {
   background: #CF542F;
-  border-radius: 24px;
-  padding: 22px 24px;
-  min-height: 180px;
+  border-radius: 20px;
+  padding: 16px 20px;
+  min-height: 138px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
@@ -868,24 +880,24 @@
 }
 
 .nn-hero-title {
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 800;
-  line-height: 1.25;
+  line-height: 36px;
   color: #FFFFFF;
-  margin: 6px 0;
+  margin: 4px 0;
 }
 
 .nn-hero-meta {
-  font-size: 13.5px;
+  font-size: 13px;
   color: rgba(255, 255, 255, 0.85);
 }
 
 /* 3-Column Metrics Card */
 .nn-metrics-card {
-  height: 66px;
+  height: 56px;
   background: #FFFEFA;
   border: 1px solid #EFE6DD;
-  border-radius: 16px;
+  border-radius: 14px;
   display: grid;
   grid-template-columns: 1fr auto 1fr auto 1fr;
   align-items: center;
@@ -903,7 +915,7 @@
 }
 
 .nn-metric-val {
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 800;
   color: #231815;
   line-height: 1.2;
@@ -911,7 +923,7 @@
 }
 
 .nn-metric-lbl {
-  font-size: 11px;
+  font-size: 10.5px;
   color: #7A625A;
   margin-top: 2px;
   white-space: nowrap;
@@ -919,7 +931,7 @@
 
 .nn-metric-divider {
   width: 1px;
-  height: 32px;
+  height: 28px;
   background: #EFE6DD;
 }
 
@@ -927,24 +939,24 @@
 .nn-editorial-stop-card {
   background: #FFFEFA;
   border: 1px solid #EFE7E0;
-  border-radius: 18px;
-  padding: 14px 18px;
+  border-radius: 16px;
+  padding: 12px 16px;
   box-shadow: 0 4px 16px rgba(112, 41, 20, 0.04);
-  display: flex;
+  display: flex !important;
+  flex-direction: row !important;
   gap: 14px;
   align-items: flex-start;
-  min-height: 112px;
   box-sizing: border-box;
   width: 100%;
 }
 
 .nn-stop-badge {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   background: #F9E1CF;
   color: #CF542F;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 800;
   display: grid;
   place-items: center;
@@ -956,7 +968,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 3px;
 }
 
 .nn-stop-stage-row {
@@ -981,18 +993,18 @@
 }
 
 .nn-stop-name {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: #231815;
   margin: 0;
-  line-height: 1.3;
+  line-height: 1.25;
 }
 
 .nn-stop-desc {
-  font-size: 12.5px;
+  font-size: 12px;
   color: #7A625A;
   margin: 0;
-  line-height: 1.45;
+  line-height: 1.4;
   word-break: break-word;
 }
 
@@ -1000,21 +1012,21 @@
 .nn-empty-steps-list {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
 /* Dark CTA Card */
 .nn-dark-cta-card {
   background: #312820;
-  border-radius: 24px;
-  padding: 20px 22px;
-  min-height: 146px;
+  border-radius: 20px;
+  padding: 16px 20px;
+  min-height: 132px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 12px;
-  margin-top: 4px;
+  gap: 10px;
+  margin-top: 2px;
   box-shadow: 0 8px 24px rgba(49, 40, 32, 0.3);
 }
 
@@ -1041,7 +1053,7 @@
 .nn-cta-btn {
   height: 42px;
   border-radius: 999px;
-  background: #CF542F;
+  background: #C44A24;
   color: #FFFFFF !important;
   font-size: 13.5px;
   font-weight: 700;

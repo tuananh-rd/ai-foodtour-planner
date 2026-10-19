@@ -245,14 +245,14 @@ export default function GuidedTimeline({
             : ' · giờ mở cửa: chưa rõ';
           const fullDesc = `${dishStr}${hoursNote}`;
 
-          const stageLabel = idx === 0 ? 'MỞ ĐẦU' : (idx === stops.length - 1 ? 'TRÁNG MIỆNG' : 'MÓN CHÍNH');
+          const stageLabel = stop.role || stop.category || `ĐIỂM DỪNG ${idx + 1}`;
           const badgeNumber = idx + 1 < 10 ? `0${idx + 1}` : String(idx + 1);
 
           return (
             <div
               key={stop.venue_id || idx}
               data-testid={`guided-stop-${idx}`}
-              className="nn-editorial-stop-card nn-timeline-step"
+              className="nn-editorial-stop-card"
             >
               <div className="nn-stop-badge">{badgeNumber}</div>
               <div className="nn-stop-body">

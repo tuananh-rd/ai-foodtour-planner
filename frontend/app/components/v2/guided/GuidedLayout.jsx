@@ -859,6 +859,17 @@ export default function GuidedLayout({
   const budgetDisplay = (budgetVal !== null && budgetVal !== undefined && !isNaN(Number(budgetVal)))
     ? `${Number(budgetVal).toLocaleString('vi-VN')} đ`
     : null;
+  const rawArea = chatState?.profile?.area?.value;
+  const areaVal = typeof rawArea === 'object' ? (rawArea?.label || rawArea?.district || null) : (typeof rawArea === 'string' ? rawArea : null);
+  const AREA_LABELS = {
+    hoan_kiem: 'Hoàn Kiếm, Hà Nội',
+    ba_dinh: 'Ba Đình, Hà Nội',
+    tay_ho: 'Tây Hồ, Hà Nội',
+    dong_da: 'Đống Đa, Hà Nội',
+    hai_ba_trung: 'Hai Bà Trưng, Hà Nội',
+    cau_giay: 'Cầu Giấy, Hà Nội'
+  };
+  const areaDisplay = stops[0]?.district || (areaVal ? (AREA_LABELS[areaVal] || areaVal) : null);
 
   const vehicleLabel = { walk: 'Đi bộ', motorbike: 'Xe máy', car: 'Ô tô', taxi: 'Taxi/Grab' }[chatState?.profile?.vehicle?.value] || null;
   const profileNow = chatState?.profile || {};
@@ -932,58 +943,43 @@ export default function GuidedLayout({
                 }
               }}
             >
-              <span className="nn-nav-icon">◇</span> Khám phá {stops.length > 0 ? `(${stops.length})` : ''}
-            </button>
-            <button
-              type="button"
-              className="nn-sidebar-nav-item inactive"
-              disabled
-              aria-disabled="true"
-              title="Tính năng đang được phát triển"
-            >
-              <span className="nn-nav-icon">♡</span> Đã lưu
-            </button>
-            <button
-              type="button"
-              className="nn-sidebar-nav-item inactive"
-              onClick={() => {
-                if (chatState?.history?.length > 0) {
-                  setActiveMobileTab('chat');
-                  chatSectionRef.current?.scrollIntoView({ block: 'start' });
-                }
-              }}
-            >
-              <span className="nn-nav-icon">🕒</span> Lịch sử
+              <span className="nn-nav-icon">◇</span> Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
             </button>
           </nav>
 
           <div className="nn-sidebar-recent">
-            <div className="nn-recent-header">CHUYẾN ĐI GẦN ĐÂY</div>
+            <div data-testid="sidebar-recent-header" className="nn-recent-header">GỢI Ý NHANH</div>
             <div className="nn-recent-list">
-              <div
+              <button
+                type="button"
                 className="nn-recent-item"
-                onClick={() => handleSendMessage('Một tối ở Hà Nội')}
-                role="button"
-                tabIndex={0}
+                onClick={() => {
+                  setInputText('Một tối ẩm thực quanh Hồ Gươm');
+                  inputRef.current?.focus();
+                }}
               >
-                {tour?.title || 'Một tối ở Hà Nội'}
-              </div>
-              <div
+                Một tối quanh Hồ Gươm
+              </button>
+              <button
+                type="button"
                 className="nn-recent-item"
-                onClick={() => handleSendMessage('Cuối tuần cùng hội bạn')}
-                role="button"
-                tabIndex={0}
+                onClick={() => {
+                  setInputText('Food tour phố cổ cho 2 người');
+                  inputRef.current?.focus();
+                }}
               >
-                Cuối tuần cùng hội bạn
-              </div>
-              <div
+                Food tour phố cổ 2 người
+              </button>
+              <button
+                type="button"
                 className="nn-recent-item"
-                onClick={() => handleSendMessage('Cà phê & chuyện trò')}
-                role="button"
-                tabIndex={0}
+                onClick={() => {
+                  setInputText('Cà phê & món tráng miệng');
+                  inputRef.current?.focus();
+                }}
               >
-                Cà phê & chuyện trò
-              </div>
+                Cà phê & món tráng miệng
+              </button>
             </div>
           </div>
         </div>
@@ -995,10 +991,10 @@ export default function GuidedLayout({
           </div>
 
           <div className="nn-profile-footer">
-            <div className="nn-profile-avatar" aria-label="Khách ẩn danh">K</div>
+            <div className="nn-profile-avatar" aria-label="Khách ẩm thực">K</div>
             <div className="nn-profile-info">
-              <div className="nn-profile-name">Khách ẩn danh</div>
-              <div className="nn-profile-sub">Hà Nội · Phiên cục bộ ˅</div>
+              <div className="nn-profile-name">Phiên cục bộ</div>
+              <div className="nn-profile-sub">Lưu trữ trên trình duyệt</div>
             </div>
           </div>
         </div>
@@ -1012,11 +1008,11 @@ export default function GuidedLayout({
             KHÁM PHÁ / TRỢ LÝ FOOD TOUR
           </div>
           <div className="nn-topbar-utilities">
-            <div className="nn-util-chip" title="Khu vực hoạt động">
-              <span className="nn-target-icon">⌖</span> {stops[0]?.district || 'Hai Bà Trưng, Hà Nội'}
+            <div className="nn-util-chip" title="Khu vực khảo sát">
+              <span className="nn-target-icon">⌖</span> {areaDisplay || 'Hà Nội'}
             </div>
             <div className="nn-util-chip" title="Ngôn ngữ giao diện">
-              Tiếng Việt ˅
+              Tiếng Việt
             </div>
           </div>
         </header>
@@ -1040,7 +1036,7 @@ export default function GuidedLayout({
             <h2 className="nn-hero-heading">
               {confirmSummaryBlock
                 ? 'Xem lại lịch trình của bạn'
-                : (clarifyBlock ? 'Một chút điều chỉnh nữa nhé' : 'Hôm nay, mình ăn cả Hà Nội nhé?')}
+                : (clarifyBlock ? 'Một chút điều chỉnh nữa nhé' : <>Hôm nay, mình<br className="nn-heading-break" />ăn cả Hà Nội nhé?</>)}
             </h2>
             <p className="nn-hero-sub">
               {confirmSummaryBlock
@@ -1327,37 +1323,39 @@ export default function GuidedLayout({
                     ✦ {showTour ? (stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS') : 'HANOI AFTER HOURS'}
                   </div>
                   <h3 className="nn-hero-title">
-                    {showTour ? (tour.title || 'Đi một vòng, ngon một tối.') : 'Đi một vòng, ngon một tối.'}
+                    {showTour
+                      ? (tour.title || 'Đi một vòng, ngon một tối.')
+                      : <>Đi một vòng,<br className="nn-hero-break" />ngon một tối.</>}
                   </h3>
                   <div className="nn-hero-meta">
                     {showTour
-                      ? `${stops[0]?.district || 'Hà Nội'} • ${stops[0]?.arrive || '18:00'} — ${stops[stops.length - 1]?.depart || stops[stops.length - 1]?.arrive || '20:30'}`
-                      : `${stops[0]?.district || 'Hai Bà Trưng'} • 18:00 — 20:30`}
+                      ? `${stops[0]?.district || 'Hà Nội'}${stops[0]?.arrive ? ` • ${stops[0].arrive}` : ''}${stops[stops.length - 1]?.depart ? ` — ${stops[stops.length - 1].depart}` : ''}`
+                      : (areaDisplay ? `${areaDisplay} • Đang lên ý tưởng` : 'Hà Nội • Chưa tạo lịch trình')}
                   </div>
                 </div>
 
                 {/* 3-Column Metrics Card */}
                 <div className="nn-metrics-card">
                   <div className="nn-metric-col">
-                    <div className="nn-metric-val">{showTour ? `${stops.length < 10 ? '0' : ''}${stops.length}` : '03'}</div>
-                    <div className="nn-metric-lbl">điểm dừng</div>
+                    <div data-testid="metric-stops-val" className="nn-metric-val">{showTour ? `${stops.length < 10 ? '0' : ''}${stops.length}` : '—'}</div>
+                    <div data-testid="metric-stops-lbl" className="nn-metric-lbl">điểm dừng</div>
                   </div>
                   <div className="nn-metric-divider" />
                   <div className="nn-metric-col">
-                    <div className="nn-metric-val">
-                      {showTour ? (distanceKm !== null ? `${distanceKm} km` : '2,5h') : '2,5h'}
+                    <div data-testid="metric-distance-val" className="nn-metric-val">
+                      {showTour ? (distanceKm !== null ? `${distanceKm} km` : '—') : '—'}
                     </div>
-                    <div className="nn-metric-lbl">
-                      {showTour && tour?.totals?.leg_source === 'provider_route' ? 'theo nguồn' : 'trải nghiệm'}
+                    <div data-testid="metric-distance-lbl" className="nn-metric-lbl">
+                      {showTour ? 'ước tính đi bộ' : 'khoảng cách (ước tính đi bộ)'}
                     </div>
                   </div>
                   <div className="nn-metric-divider" />
                   <div className="nn-metric-col">
-                    <div className="nn-metric-val">
-                      {showTour ? (budgetDisplay || '≈ 450K') : '≈ 450K'}
+                    <div data-testid="metric-budget-val" className="nn-metric-val">
+                      {showTour ? (budgetDisplay || '—') : (budgetDisplay || '—')}
                     </div>
-                    <div className="nn-metric-lbl">
-                      {showTour ? (budgetVal !== null ? `mỗi người` : 'theo ngân sách') : 'mỗi người'}
+                    <div data-testid="metric-budget-scope" className="nn-metric-lbl">
+                      {budgetScopeLabel}
                     </div>
                   </div>
                 </div>
@@ -1366,14 +1364,16 @@ export default function GuidedLayout({
                 {!showTour ? (
                   <div data-testid="tour-empty-panel" className="nn-empty-steps-list">
                     {[
-                      ['01', '18:00 · MỞ ĐẦU', 'Trò chuyện & nêu ý', 'Cho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.'],
-                      ['02', '18:55 · MÓN CHÍNH', 'Xem lại & xác nhận', 'Kiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.'],
-                      ['03', '20:05 · TRÁNG MIỆNG', 'Nhận lịch trình & Maps', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.']
+                      ['01', 'BƯỚC 1', 'Trò chuyện & nêu ý', 'Cho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.'],
+                      ['02', 'BƯỚC 2', 'Xem lại & xác nhận', 'Kiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.'],
+                      ['03', 'BƯỚC 3', 'Nhận lịch trình & Maps', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.']
                     ].map(([badge, stage, title, desc]) => (
                       <div className="nn-editorial-stop-card" key={badge}>
                         <div className="nn-stop-badge">{badge}</div>
                         <div className="nn-stop-body">
-                          <div className="nn-stop-stage">{stage}</div>
+                          <div className="nn-stop-stage-row">
+                            <span className="nn-stop-stage nn-empty-step-badge">{stage}</span>
+                          </div>
                           <h4 className="nn-stop-name">{title}</h4>
                           <p className="nn-stop-desc">{desc}</p>
                         </div>
@@ -1384,14 +1384,17 @@ export default function GuidedLayout({
                     <div className="nn-dark-cta-card">
                       <div className="nn-cta-header">
                         <h4 className="nn-cta-title">Sẵn sàng cho một buổi tối ngon?</h4>
-                        <p className="nn-cta-desc">Lưu lại để cả nhóm cùng lên đường.</p>
+                        <p className="nn-cta-desc">Nhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.</p>
                       </div>
                       <button
                         type="button"
-                        className="nn-cta-btn disabled"
-                        disabled
+                        className="nn-cta-btn"
+                        onClick={() => {
+                          inputRef.current?.focus();
+                          chatSectionRef.current?.scrollIntoView({ block: 'start' });
+                        }}
                       >
-                        Lưu chuyến đi →
+                        Bắt đầu gợi ý →
                       </button>
                     </div>
                   </div>

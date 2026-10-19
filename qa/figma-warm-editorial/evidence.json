@@ -1,7 +1,7 @@
 {
-  "testedAt": "2026-10-19T11:20:38.344Z",
+  "testedAt": "2026-10-19T11:49:15.143Z",
   "targetFigmaFrame": "frame 1:145 \"02 — Măm Măm / Warm editorial\" (1440x1024)",
-  "referenceImagePath": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-antigravity-web\\frontend\\public\\warm-editorial\\reference-1440x1024.png",
+  "referenceImagePath": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-antigravity-web\\qa\\figma-warm-editorial\\reference-1440x1024.png",
   "checks": [
     {
       "id": "PREFLIGHT_PORTS",
@@ -79,24 +79,91 @@
     },
     {
       "id": "CHAT_CARD_GEOMETRY",
-      "name": "Chat Card width is 668px at x=264",
+      "name": "Chat Card width is 668px at x=264, y=98",
       "pass": true,
       "details": {
         "x": 264,
-        "y": 90,
+        "y": 98,
         "width": 668,
         "height": 886
       }
     },
     {
       "id": "TOUR_COLUMN_GEOMETRY",
-      "name": "Tour Column width is 452px at x=956",
+      "name": "Tour Column width is 452px at x=956, y=98",
       "pass": true,
       "details": {
         "x": 956,
-        "y": 90,
+        "y": 98,
         "width": 452,
         "height": 886
+      }
+    },
+    {
+      "id": "EMPTY_METRICS_HONEST",
+      "name": "Empty state shows honest em-dash (—) for stops & distance, with honest distance label",
+      "pass": true,
+      "details": {
+        "stopsVal": "—",
+        "distanceVal": "—",
+        "distanceLbl": "khoảng cách (ước tính đi bộ)",
+        "budgetScope": "chưa rõ phạm vi",
+        "emptyStepsBadges": [
+          "BƯỚC 1",
+          "BƯỚC 2",
+          "BƯỚC 3"
+        ],
+        "hasSaveTripBtn": false,
+        "recentHeader": "GỢI Ý NHANH",
+        "recentTagsCount": 3,
+        "allRecentButtons": true
+      }
+    },
+    {
+      "id": "EMPTY_STEPS_INSTRUCTIONAL",
+      "name": "Empty steps use neutral BƯỚC 1/2/3 without invented arrival times",
+      "pass": true,
+      "details": [
+        "BƯỚC 1",
+        "BƯỚC 2",
+        "BƯỚC 3"
+      ]
+    },
+    {
+      "id": "SIDEBAR_SUGGESTIONS_NATIVE",
+      "name": "Sidebar quick suggestions labeled GỢI Ý NHANH and rendered as native <button> elements",
+      "pass": true,
+      "details": {
+        "stopsVal": "—",
+        "distanceVal": "—",
+        "distanceLbl": "khoảng cách (ước tính đi bộ)",
+        "budgetScope": "chưa rõ phạm vi",
+        "emptyStepsBadges": [
+          "BƯỚC 1",
+          "BƯỚC 2",
+          "BƯỚC 3"
+        ],
+        "hasSaveTripBtn": false,
+        "recentHeader": "GỢI Ý NHANH",
+        "recentTagsCount": 3,
+        "allRecentButtons": true
+      }
+    },
+    {
+      "id": "NO_FAKE_CONTROLS",
+      "name": "No dummy \"Lưu chuyến đi\" button or fake dropdown affordances in empty state",
+      "pass": true,
+      "details": {
+        "hasSaveTripBtn": false
+      }
+    },
+    {
+      "id": "KEYBOARD_SUGGESTION_POPULATES",
+      "name": "Clicking/activating quick suggestion button populates chat input",
+      "pass": true,
+      "details": {
+        "initialInputText": "",
+        "populatedInputText": "Một tối ẩm thực quanh Hồ Gươm"
       }
     },
     {
@@ -140,15 +207,38 @@
       }
     },
     {
-      "id": "STOP_NUMBER_BADGES",
-      "name": "Stop cards have peach number badges (01, 02, 03)",
+      "id": "STOP_BADGE_GEOMETRY",
+      "name": "Stop badge 01 horizontally aligned at x=972 and body at x=1018",
       "pass": true,
       "details": {
-        "badges": [
-          "01",
-          "02",
-          "03"
-        ]
+        "badgeText": "01",
+        "badgeRect": {
+          "x": 973,
+          "width": 32
+        },
+        "bodyRect": {
+          "x": 1019
+        },
+        "stageText": "18:04 · ĐIỂM DỪNG 1"
+      }
+    },
+    {
+      "id": "STOP_STAGE_NEUTRAL",
+      "name": "Stop stage uses neutral stop numbering instead of hardcoded meal course",
+      "pass": true,
+      "details": {
+        "stageText": "18:04 · ĐIỂM DỪNG 1"
+      }
+    },
+    {
+      "id": "DARK_CTA_VISIBLE",
+      "name": "Dark CTA card is comfortably visible within 886px column without scrolling",
+      "pass": true,
+      "details": {
+        "y": 758,
+        "bottom": 924,
+        "viewportHeight": 1024,
+        "fitsInViewport": true
       }
     },
     {
@@ -168,21 +258,46 @@
     },
     {
       "id": "REPLACE_MODAL_OPENS",
-      "name": "Replace stop modal opens on click",
+      "name": "Replace stop modal opens on click with confirm button ready",
       "pass": true,
       "details": {}
     },
     {
-      "id": "REPLACE_MODAL_CLOSES",
-      "name": "Replace stop modal closes cleanly",
+      "id": "REPLACE_DIFF_RENDERED",
+      "name": "Server returned Before/After replacement diff with [replace-modal-done-btn]",
       "pass": true,
       "details": {}
+    },
+    {
+      "id": "REPLACE_MODAL_COMMITTED",
+      "name": "Replace modal closes after commit",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "STOP_REPLACEMENT_APPLIED",
+      "name": "Tour stop updated in itinerary after server replacement",
+      "pass": true,
+      "details": {
+        "before": "[SYNTHETIC] Chè Thử 12",
+        "after": "[SYNTHETIC] Kem Thử 24"
+      }
     },
     {
       "id": "PILOT_MAP_ACTIVE",
       "name": "Interactive PilotMap view mode activates on toggle",
       "pass": true,
       "details": {}
+    },
+    {
+      "id": "MAP_MARKERS_SYNC",
+      "name": "Map markers count syncs with tour stops count (or controlled fallback in headless GPU-less environment)",
+      "pass": true,
+      "details": {
+        "markerCount": 3,
+        "hasFallback": false,
+        "currentStopsCount": 0
+      }
     },
     {
       "id": "VIEW_MODE_SCHEMATIC",
@@ -223,27 +338,43 @@
     },
     {
       "id": "CONTRAST_CHAT_TEXT",
-      "name": "Primary chat text contrast: 17.16:1 (passes AAA >= 7.0:1)",
+      "name": "Primary chat text contrast from DOM: 17.16:1 (passes AAA >= 7.0:1)",
       "pass": true,
-      "details": {}
+      "details": {
+        "fg": "rgb(35, 24, 21)",
+        "bg": "rgb(255, 254, 250)",
+        "ratio": 17.16
+      }
     },
     {
       "id": "CONTRAST_SIDEBAR",
-      "name": "Sidebar brand/nav contrast: 10.42:1 (passes AAA >= 7.0:1)",
+      "name": "Sidebar brand/nav contrast from DOM: 10.42:1 (passes AAA >= 7.0:1)",
       "pass": true,
-      "details": {}
+      "details": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(112, 41, 20)",
+        "ratio": 10.42
+      }
     },
     {
       "id": "CONTRAST_CTA_BUTTON",
-      "name": "Terracotta CTA button contrast: 4.83:1 (passes AA >= 4.5:1)",
+      "name": "Terracotta CTA button contrast from DOM: 4.83:1 (passes AA >= 4.5:1)",
       "pass": true,
-      "details": {}
+      "details": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(196, 74, 36)",
+        "ratio": 4.83
+      }
     },
     {
       "id": "CONTRAST_DARK_CTA",
-      "name": "Dark CTA card contrast: 14.43:1 (passes AAA >= 7.0:1)",
+      "name": "Dark CTA card contrast from DOM: 14.43:1 (passes AAA >= 7.0:1)",
       "pass": true,
-      "details": {}
+      "details": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(49, 40, 32)",
+        "ratio": 14.43
+      }
     }
   ],
   "measurements": {
@@ -262,13 +393,13 @@
       },
       "chatCard": {
         "x": 264,
-        "y": 90,
+        "y": 98,
         "width": 668,
         "height": 886
       },
       "tourCol": {
         "x": 956,
-        "y": 90,
+        "y": 98,
         "width": 452,
         "height": 886
       },
@@ -281,32 +412,29 @@
   },
   "contrast": {
     "chatText": {
-      "ratio": 17.16,
-      "required": 4.5,
-      "passesAA": true,
-      "passesAAA": true
+      "fg": "rgb(35, 24, 21)",
+      "bg": "rgb(255, 254, 250)",
+      "ratio": 17.16
     },
     "sidebarText": {
-      "ratio": 10.42,
-      "required": 4.5,
-      "passesAA": true,
-      "passesAAA": true
+      "fg": "rgb(255, 255, 255)",
+      "bg": "rgb(112, 41, 20)",
+      "ratio": 10.42
     },
     "ctaButton": {
-      "ratio": 4.83,
-      "required": 4.5,
-      "passesAA": true
+      "fg": "rgb(255, 255, 255)",
+      "bg": "rgb(196, 74, 36)",
+      "ratio": 4.83
     },
     "darkCtaCard": {
-      "ratio": 14.43,
-      "required": 4.5,
-      "passesAA": true,
-      "passesAAA": true
+      "fg": "rgb(255, 255, 255)",
+      "bg": "rgb(49, 40, 32)",
+      "ratio": 14.43
     }
   },
   "summary": {
-    "total": 28,
-    "passed": 28,
+    "total": 38,
+    "passed": 38,
     "failed": 0
   }
 }
