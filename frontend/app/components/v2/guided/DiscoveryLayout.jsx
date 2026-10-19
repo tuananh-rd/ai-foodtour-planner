@@ -20,6 +20,7 @@ import {
   formatUnknownLabel,
   DiscoveryApiError
 } from '../../../../lib/discoveryApi';
+import { normalizeDisplayText, sanitizeViewForDisplay } from '../../../../lib/emojiSanitizer';
 import './guided-visual.css';
 import './discovery-visual.css';
 
@@ -196,6 +197,10 @@ export default function DiscoveryLayout({
     session_id: sessionId,
     revision: parentRevision || 0
   }));
+
+  // Display-only projection with Unicode emojis stripped from human-facing text
+  // Preserves raw identity, tokens, coordinates, locks, and revisions identically
+  const displayView = useMemo(() => sanitizeViewForDisplay(view), [view]);
 
   const [sessionError, setSessionError] = useState(null);
   const [initialLoaded, setInitialLoaded] = useState(false);
@@ -1152,17 +1157,17 @@ export default function DiscoveryLayout({
               <div className="nn-editorial-welcome">
                 <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
                 <div className="nn-bubble editorial-body">
-                  {view.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}
+                  {displayView.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}
                 </div>
-                {view.reply?.question && (
+                {displayView.reply?.question && (
                   <div style={{ marginTop: '6px', fontWeight: 600, color: 'var(--nn-accent, #C44A24)', fontSize: '13.5px' }}>
-                    {view.reply.question}
+                    {displayView.reply.question}
                   </div>
                 )}
               </div>
 
               {/* Historical Messages */}
-              {Array.isArray(view.messages) && view.messages.map((m, idx) => (
+              {Array.isArray(displayView.messages) && displayView.messages.map((m, idx) => (
                 m.role === 'user' ? (
                   <div key={idx} className="nn-bubble user">
                     {m.text}
@@ -1178,14 +1183,14 @@ export default function DiscoveryLayout({
               ))}
 
               {/* Restaurant Results Cards */}
-              {Array.isArray(view.results) && view.results.length > 0 && (
+              {Array.isArray(displayView.results) && displayView.results.length > 0 && (
                 <div className="nn-discovery-results">
                   <div className="nn-discovery-results-header">
                     <span>Gợi ý quán phù hợp{view.profile?.area ? ` tại ${view.profile.area}` : ''}</span>
-                    <span className="nn-results-count-badge">{view.results.length} địa điểm</span>
+                    <span className="nn-results-count-badge">{displayView.results.length} địa điểm</span>
                   </div>
 
-                  {view.results.map((r, idx) => {
+                  {displayView.results.map((r, idx) => {
                     const isSelected = selectedVenueIds.has(r.id);
                     const isCompareSelected = selectedForCompare.includes(r.id);
                     const badgeLabel = r.label || String.fromCharCode(65 + (idx % 26));
@@ -1344,13 +1349,13 @@ export default function DiscoveryLayout({
               )}
 
               {/* Comparison View */}
-              {view.comparison && (
+              {displayView.comparison && (
                 <div className="nn-comparison-card" data-testid="discovery-comparison-view">
                   <h4 className="nn-comparison-title">
                     <span>So sánh chi tiết các địa điểm</span>
                   </h4>
                   <div className="nn-comparison-grid">
-                    {(view.comparison.venues || []).map((cv) => (
+                    {(displayView.comparison.venues || []).map((cv) => (
                       <div key={cv.id} className="nn-comparison-col">
                         <div className="nn-comparison-col-header">
                           <span>{cv.name}</span>
@@ -1438,14 +1443,14 @@ export default function DiscoveryLayout({
                   </div>
 
                   {/* Warnings box */}
-                  {Array.isArray(view.confirmation.warnings) && view.confirmation.warnings.length > 0 && (
+                  {Array.isArray(displayView.confirmation?.warnings) && displayView.confirmation.warnings.length > 0 && (
                     <div className="nn-confirm-warnings">
                       <div className="nn-confirm-warning-title">
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
                           <AlertGlyph size={14} color="#C44A24" /> Lưu ý an toàn & dữ liệu
                         </span>
                       </div>
-                      {view.confirmation.warnings.map((w, wIdx) => (
+                      {displayView.confirmation.warnings.map((w, wIdx) => (
                         <p key={wIdx} className="nn-confirm-warning-text">• {w}</p>
                       ))}
                     </div>
@@ -1645,7 +1650,7 @@ export default function DiscoveryLayout({
                 {/* When Tour has been created and user is not editing selection */}
                 {view.tour && !editingSelectionAfterTour ? (
                   <GuidedTimeline
-                    tour={view.tour}
+                    tour={displayView.tour || view.tour}
                     allergies={view.profile?.allergies || []}
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
                     origin={view.profile?.origin}
@@ -1691,9 +1696,9 @@ export default function DiscoveryLayout({
                       </span>
                     </div>
 
-                    {Array.isArray(view.selection) && view.selection.length > 0 ? (
+                    {Array.isArray(displayView.selection) && displayView.selection.length > 0 ? (
                       <>
-                        {view.selection.map((item, idx) => (
+                        {displayView.selection.map((item, idx) => (
                           <div
                             key={item.id}
                             data-testid={`selected-venue-card-${item.id}`}

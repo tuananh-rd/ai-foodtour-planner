@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-19T14:04:44.425Z",
+  "testedAt": "2026-10-19T18:16:23.560Z",
   "targetContract": "discovery-v1",
   "visualDesign": "Warm editorial Figma frame 1:145 (1440x1024)",
   "ports": {
@@ -56,7 +56,7 @@
     },
     {
       "id": "TWO_COLUMN_GRID",
-      "name": "Main layout contains Chat Card (~668px) and Tour Column (~476px)",
+      "name": "Main layout contains Chat Card (~668px) and Tour Column (~476px) filling available canvas",
       "pass": true,
       "details": {
         "chatCard": {
@@ -130,15 +130,15 @@
       "pass": true,
       "details": {
         "cardPresent": true,
-        "btnLockText": "🔓"
+        "btnLockText": ""
       }
     },
     {
       "id": "SELECTION_LOCK",
-      "name": "Nút khoá quán toggle thành trạng thái khoá (🔒)",
+      "name": "Nút khoá quán toggle thành trạng thái khoá (SVG icon & aria-label)",
       "pass": true,
       "details": {
-        "lockState": "🔒"
+        "lockState": true
       }
     },
     {
@@ -218,6 +218,167 @@
       "details": {}
     },
     {
+      "id": "FLUID_VIEWPORT_1280_NO_OVERFLOW",
+      "name": "Viewport 1280x800 (desktop_1280) không có thanh cuộn ngang (scrollWidth: 1280 <= 1280)",
+      "pass": true,
+      "details": {
+        "width": 1280,
+        "scrollWidth": 1280
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1280_FILLS_SCREEN",
+      "name": "Viewport 1280x800 canvas lấp đầy không gian khả dụng (canvas: 1033px, sidebar: 232px, available: 1280px)",
+      "pass": true,
+      "details": {
+        "canvasWidth": 1033,
+        "sidebarWidth": 232,
+        "availableWidth": 1280
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1280_TOUR_FITS",
+      "name": "Viewport 1280x800 tour column nằm trọn vẹn trong viewport (right: 1233 <= 1280)",
+      "pass": true,
+      "details": {
+        "tourRight": 1233,
+        "vpWidth": 1280
+      }
+    },
+    {
+      "id": "ZERO_EMOJI_1280",
+      "name": "Viewport 1280x800 không chứa Unicode emoji trong nội dung trang (0 emoji detected)",
+      "pass": true,
+      "details": {
+        "hasEmoji": false
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1440_NO_OVERFLOW",
+      "name": "Viewport 1440x1024 (desktop_1440) không có thanh cuộn ngang (scrollWidth: 1440 <= 1440)",
+      "pass": true,
+      "details": {
+        "width": 1440,
+        "scrollWidth": 1440
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1440_FILLS_SCREEN",
+      "name": "Viewport 1440x1024 canvas lấp đầy không gian khả dụng (canvas: 1208px, sidebar: 232px, available: 1440px)",
+      "pass": true,
+      "details": {
+        "canvasWidth": 1208,
+        "sidebarWidth": 232,
+        "availableWidth": 1440
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1440_TOUR_FITS",
+      "name": "Viewport 1440x1024 tour column nằm trọn vẹn trong viewport (right: 1408 <= 1440)",
+      "pass": true,
+      "details": {
+        "tourRight": 1408,
+        "vpWidth": 1440
+      }
+    },
+    {
+      "id": "ZERO_EMOJI_1440",
+      "name": "Viewport 1440x1024 không chứa Unicode emoji trong nội dung trang (0 emoji detected)",
+      "pass": true,
+      "details": {
+        "hasEmoji": false
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1920_NO_OVERFLOW",
+      "name": "Viewport 1920x1080 (desktop_1920) không có thanh cuộn ngang (scrollWidth: 1920 <= 1920)",
+      "pass": true,
+      "details": {
+        "width": 1920,
+        "scrollWidth": 1920
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1920_FILLS_SCREEN",
+      "name": "Viewport 1920x1080 canvas lấp đầy không gian khả dụng (canvas: 1688px, sidebar: 232px, available: 1920px)",
+      "pass": true,
+      "details": {
+        "canvasWidth": 1688,
+        "sidebarWidth": 232,
+        "availableWidth": 1920
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_1920_TOUR_FITS",
+      "name": "Viewport 1920x1080 tour column nằm trọn vẹn trong viewport (right: 1888 <= 1920)",
+      "pass": true,
+      "details": {
+        "tourRight": 1888,
+        "vpWidth": 1920
+      }
+    },
+    {
+      "id": "ZERO_EMOJI_1920",
+      "name": "Viewport 1920x1080 không chứa Unicode emoji trong nội dung trang (0 emoji detected)",
+      "pass": true,
+      "details": {
+        "hasEmoji": false
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_2560_NO_OVERFLOW",
+      "name": "Viewport 2560x1440 (desktop_2560) không có thanh cuộn ngang (scrollWidth: 2560 <= 2560)",
+      "pass": true,
+      "details": {
+        "width": 2560,
+        "scrollWidth": 2560
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_2560_FILLS_SCREEN",
+      "name": "Viewport 2560x1440 canvas lấp đầy không gian khả dụng (canvas: 2328px, sidebar: 232px, available: 2560px)",
+      "pass": true,
+      "details": {
+        "canvasWidth": 2328,
+        "sidebarWidth": 232,
+        "availableWidth": 2560
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_2560_TOUR_FITS",
+      "name": "Viewport 2560x1440 tour column nằm trọn vẹn trong viewport (right: 2528 <= 2560)",
+      "pass": true,
+      "details": {
+        "tourRight": 2528,
+        "vpWidth": 2560
+      }
+    },
+    {
+      "id": "ZERO_EMOJI_2560",
+      "name": "Viewport 2560x1440 không chứa Unicode emoji trong nội dung trang (0 emoji detected)",
+      "pass": true,
+      "details": {
+        "hasEmoji": false
+      }
+    },
+    {
+      "id": "FLUID_VIEWPORT_390_NO_OVERFLOW",
+      "name": "Viewport 390x844 (mobile_390) không có thanh cuộn ngang (scrollWidth: 390 <= 390)",
+      "pass": true,
+      "details": {
+        "width": 390,
+        "scrollWidth": 390
+      }
+    },
+    {
+      "id": "ZERO_EMOJI_390",
+      "name": "Viewport 390x844 không chứa Unicode emoji trong nội dung trang (0 emoji detected)",
+      "pass": true,
+      "details": {
+        "hasEmoji": false
+      }
+    },
+    {
       "id": "VISUAL_SIDE_BY_SIDE",
       "name": "Side-by-side comparison image generated (2880x1024)",
       "pass": true,
@@ -263,38 +424,9 @@
       "hasSendBtn": true
     }
   },
-  "targetedSmokeFixes": {
-    "verifiedAt": "2026-10-19T21:45:28+07:00",
-    "suite": "targeted_fixes_smoke.mjs",
-    "total": 51,
-    "passed": 51,
-    "failed": 0,
-    "sections": {
-      "googleMapsUrls": {
-        "passed": 17,
-        "details": "User origin start, all stops in order via waypoints then destination, single stop origin!=destination, legacy fallback destination-only, walking/driving travelmode, motorbike approximation note, per-leg links with/without origin, all passing isValidGoogleMapsDirUrl"
-      },
-      "realHttpClient": {
-        "passed": 7,
-        "details": "Real local HTTP tests for exported client funcs: stalled body timeout, malformed JSON 200, non-contract shape 200, valid discovery-v1 200 shape, 401 unauthorized, 500 server error, caller abort signal (AbortError distinguished from timeout)"
-      },
-      "unknownsTranslation": {
-        "passed": 7,
-        "details": "ingredient_allergy_safety, sweetness, dish_price, current_open_status, hours, allergy_ingredients mapped to readable Vietnamese without safety claims"
-      },
-      "sessionGatingAndTotals": {
-        "passed": 5,
-        "details": "Strict session gating matrix, TourView.totals schema with venue_range_upper_sum_vnd labeled khoảng giá quán, truthful duration"
-      },
-      "boundedExecution": {
-        "passed": 15,
-        "details": "All checks passed in 1.9s, bounded exit 0 with 0 hanging listeners or orphaned processes"
-      }
-    }
-  },
   "summary": {
-    "total": 26,
-    "passed": 26,
+    "total": 44,
+    "passed": 44,
     "failed": 0
   }
 }

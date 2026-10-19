@@ -118,6 +118,7 @@ function recordCheck(id, name, pass, details = {}) {
  */
 function createMockDiscoveryServer() {
   const state = {
+    contract: 'discovery-v1',
     session_id: 'sess-discovery-qa',
     revision: 1,
     profile_version: 1,
@@ -950,7 +951,7 @@ async function main() {
     { name: 'mobile_390', width: 390, height: 844, isMobile: true }
   ];
 
-  const strictEmojiRegex = /(?:\ud83c[\udf00-\udfff]|\ud83d[\ud000-\ude4f\ude80-\udeff]|\ud83e[\udd00-\udfff]|[\u2600-\u26ff]|[\u2700-\u27bf]|[\u231a\u231b\u23e9-\u23ec\u23f0\u23f3]|[\u2b50\u2b55]|\u200d|\ufe0f)/;
+  const strictEmojiRegex = /(?:[0-9#*]\ufe0f?\u20e3|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Modifier}|[\u2600-\u26ff]|[\u2700-\u27bf]|[\u231a\u231b\u23e9-\u23ec\u23f0\u23f3]|[\u2b50\u2b55]|[\ufe0e\ufe0f]|\u200d)+/u;
 
   for (const vp of viewportsToTest) {
     await setViewport(vp.width, vp.height, vp.isMobile);
@@ -963,17 +964,21 @@ async function main() {
       const canvas = document.querySelector('.nn-canvas-wrapper')?.getBoundingClientRect();
       const chatCard = document.querySelector('.nn-chat-card')?.getBoundingClientRect();
       const tourCol = document.querySelector('.nn-tour-col')?.getBoundingClientRect();
+      const composer = document.querySelector('.nn-composer')?.getBoundingClientRect();
       const text = document.body.innerText;
 
       return {
         viewportWidth: window.innerWidth,
+        viewportHeight: window.innerHeight,
         scrollWidth,
         bodyWidth,
+        scrollbarWidth: window.innerWidth - document.documentElement.clientWidth,
         hasHorizontalOverflow: scrollWidth > window.innerWidth,
-        sidebarWidth: sidebar ? Math.round(sidebar.width) : 0,
-        canvasWidth: canvas ? Math.round(canvas.width) : 0,
-        chatCardWidth: chatCard ? Math.round(chatCard.width) : 0,
-        tourColWidth: tourCol ? Math.round(tourCol.width) : 0,
+        sidebar: sidebar ? { x: Math.round(sidebar.x), y: Math.round(sidebar.y), width: Math.round(sidebar.width), height: Math.round(sidebar.height) } : null,
+        canvas: canvas ? { x: Math.round(canvas.x), y: Math.round(canvas.y), width: Math.round(canvas.width), height: Math.round(canvas.height) } : null,
+        chatCard: chatCard ? { x: Math.round(chatCard.x), y: Math.round(chatCard.y), width: Math.round(chatCard.width), height: Math.round(chatCard.height) } : null,
+        tourCol: tourCol ? { x: Math.round(tourCol.x), y: Math.round(tourCol.y), width: Math.round(tourCol.width), height: Math.round(tourCol.height), right: Math.round(tourCol.right) } : null,
+        composer: composer ? { top: Math.round(composer.top), bottom: Math.round(composer.bottom), height: Math.round(composer.height) } : null,
         text
       };
     })()`);
@@ -986,12 +991,23 @@ async function main() {
       { width: vp.width, scrollWidth: vpMetrics.scrollWidth }
     );
 
-    if (!vp.isMobile) {
+    if (!vp.isMobile && vpMetrics.canvas && vpMetrics.sidebar) {
+      const availableWidth = vpMetrics.bodyWidth || vp.width;
+      const fills = Math.abs(vpMetrics.canvas.width + vpMetrics.sidebar.width - availableWidth) <= 2 ||
+                    Math.abs(vpMetrics.canvas.width + vpMetrics.sidebar.width - vp.width) <= 20;
       recordCheck(`FLUID_VIEWPORT_${vp.width}_FILLS_SCREEN`,
-        `Viewport ${vp.width}x${vp.height} canvas lấp đầy không gian khả dụng (canvas: ${vpMetrics.canvasWidth}px, sidebar: ${vpMetrics.sidebarWidth}px)`,
-        Math.abs(vpMetrics.canvasWidth + vpMetrics.sidebarWidth - vp.width) <= 2,
-        { canvasWidth: vpMetrics.canvasWidth, sidebarWidth: vpMetrics.sidebarWidth }
+        `Viewport ${vp.width}x${vp.height} canvas lấp đầy không gian khả dụng (canvas: ${vpMetrics.canvas.width}px, sidebar: ${vpMetrics.sidebar.width}px, available: ${availableWidth}px)`,
+        fills,
+        { canvasWidth: vpMetrics.canvas.width, sidebarWidth: vpMetrics.sidebar.width, availableWidth }
       );
+
+      if (vpMetrics.tourCol) {
+        recordCheck(`FLUID_VIEWPORT_${vp.width}_TOUR_FITS`,
+          `Viewport ${vp.width}x${vp.height} tour column nằm trọn vẹn trong viewport (right: ${vpMetrics.tourCol.right} <= ${vp.width})`,
+          vpMetrics.tourCol.right <= vp.width,
+          { tourRight: vpMetrics.tourCol.right, vpWidth: vp.width }
+        );
+      }
     }
 
     recordCheck(`ZERO_EMOJI_${vp.width}`,

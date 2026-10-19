@@ -4,6 +4,7 @@ import React from 'react';
 import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
 import { buildDiscoveryMapsUrl, buildDiscoveryLegUrls } from '../../../../lib/discoveryMaps';
 import { formatWarningMessage } from './ConfirmSummaryCard';
+import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import './guided-leaves.css';
 
 // One short sentence for the evidence gaps; every distinct unknown is kept, unrecognised ones keep their full readable text.
@@ -227,7 +228,7 @@ export default function GuidedTimeline({
               <div className="nn-stop-body">
                 <div className="nn-stop-stage-row">
                   <span className="nn-stop-stage">
-                    {arriveDisplay} · {stageLabel}
+                    {arriveDisplay} · {normalizeDisplayText(stageLabel)}
                   </span>
                   <div className="nn-stop-actions">
                     {isLocked && (
@@ -243,7 +244,7 @@ export default function GuidedTimeline({
                       data-testid={`stop-replace-btn-${idx}`}
                       onClick={() => onReplaceStop ? onReplaceStop(stop) : onChangeStop && onChangeStop(stop)}
                       className="nn-pill-action-btn"
-                      aria-label={`Đổi quán ${stop.name}`}
+                      aria-label={`Đổi quán ${normalizeDisplayText(stop.name)}`}
                     >
                       Đổi quán
                     </button>
@@ -254,11 +255,11 @@ export default function GuidedTimeline({
                   data-testid={`timeline-stop-card-${idx}`}
                   className="nn-stop-name nn-timeline-card-title"
                 >
-                  {stop.name}
+                  {normalizeDisplayText(stop.name)}
                 </h4>
 
                 <p className="nn-stop-desc nn-timeline-card-desc">
-                  {fullDesc}
+                  {normalizeDisplayText(fullDesc)}
                 </p>
 
                 {/* Visible compact source-labeled price and estimated leg info */}
