@@ -257,6 +257,13 @@ class HTTPTests(unittest.TestCase):
         self.assertTrue(confirmed['tour']['stops'])
         restored = self.client.get(self.url, headers=self.headers)
         self.assertEqual(restored.status_code, 200, restored.text)
+        class NoExtraModel:
+            def explain(self, *args, **kwargs):
+                raise AssertionError('Discovery restore must not invoke legacy explanation model')
+        self.app.state.explainer = NoExtraModel()
+        legacy_restore = self.client.get(self.url.removesuffix('/assistant'), headers=self.headers)
+        self.assertEqual(legacy_restore.status_code, 200, legacy_restore.text)
+        self.assertTrue(legacy_restore.json()['tour']['stops'])
 
     def test_no_web_contract_and_no_auto_plan(self):
         r = self.client.post(self.url, headers=self.headers, json={'revision': 0, 'text': 'phở', 'web_search': True})

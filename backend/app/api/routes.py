@@ -409,7 +409,8 @@ def health_budget(request):
 def session_view(session, tour, data, request):
     # A stale tour retains its original validation context until explicit replanning.
     view = state_view(session.tour_preferences or session.preferences, tour, data, session.revision,
-                      routing_for(session.tour_vehicle, request.app.state.routing), request.app.state.explainer)
+                      routing_for(session.tour_vehicle, request.app.state.routing),
+                      None if session.chat.discovery else request.app.state.explainer)
     view.preferences = PreferencesSchema.from_domain(session.preferences)
     view.missing_slots = engine.missing_slots(session.preferences)
     view.questions = [QUESTIONS[m] for m in view.missing_slots if m in QUESTIONS]
