@@ -1,5 +1,9 @@
 # Codex review — candidate905e6ea not accepted
 
+## Integrated25cd216 — final gate remains open
+
+Reviewed2a82b48 fixes chat/hero rhythm and mobile navigation; integrated25cd216 for verification. A single final broad browser run yields187/190, exit1 (figma-warm-editorial-regression-final.json). Two timeline checks depend on changed source wording; classify separately from product. Real WE-11:200% CSS text reflow390px clips map-toggle/right422px and replacement/right427px. WE-12: GuidedTimeline renders price/leg metadata only in nn-sr, hiding facts from sighted users. Same-owner task_f223894221b3 repairs these with targeted evidence; no acceptance yet. Build147kB passes. Actual font rendering, dynamic warning/scroll layout and omitted unsupported sidebar features remain visual differences; no pixel-identical or fullWCAG claim.
+
 ## Second candidate9da1fcb — changes still required
 
 Codex inspected refreshed actual side-by-side/mobile screenshots and semantic diff. Unknown facts, group-budget labeling, neutral stop labels and keyboard suggestions improved;38 targeted checks pass according to implementer. Candidate is not integrated. Fresh same-owner task_0b8beaeb46b6 addresses remaining issues without repeated full-suite execution.

@@ -1,0 +1,2797 @@
+{
+  "mutation": null,
+  "checks": [
+    {
+      "name": "open allergy blocks request_plan ",
+      "pass": true
+    },
+    {
+      "name": "open allergy blocks confirm_yes ",
+      "pass": true
+    },
+    {
+      "name": "open allergy blocks pick_option confirm_yes",
+      "pass": true
+    },
+    {
+      "name": "open allergy blocks pick_option propose:use",
+      "pass": true
+    },
+    {
+      "name": "open allergy blocks confirm_no ",
+      "pass": true
+    },
+    {
+      "name": "proposal preplaces shortlist with default source",
+      "pass": true
+    },
+    {
+      "name": "request_plan with preplaced venues only asks confirmation",
+      "pass": true
+    },
+    {
+      "name": "stale confirm revision rejected",
+      "pass": true
+    },
+    {
+      "name": "confirm after Sửa without new summary cannot plan",
+      "pass": true
+    },
+    {
+      "name": "new allergy cue invalidates proposed confirmation",
+      "pass": true
+    },
+    {
+      "name": "preplaced venues plus allergy cannot confirm",
+      "pass": true
+    },
+    {
+      "name": "legacy tour endpoint respects guided open obligation",
+      "pass": true,
+      "details": {
+        "status": 409,
+        "tour": false
+      }
+    },
+    {
+      "name": "built static bundle credential scan",
+      "pass": true,
+      "details": {
+        "files": 27,
+        "matchingFiles": 0
+      }
+    },
+    {
+      "name": "S0 1280 first reply: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "S0 1280 first reply: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "S0 1280 first reply: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 exact understood rows",
+      "pass": true,
+      "details": {
+        "understood-row-area": "Khu vực\nHồ Gươm\nSửa",
+        "understood-row-party": "Số người\n2\nSửa",
+        "understood-row-stops": "Số quán\n3\nSửa",
+        "understood-row-duration": "Tổng thời gian\n120 phút\nSửa",
+        "understood-row-day_part": "Buổi\nBuổi tối\nSửa",
+        "understood-row-time": "Bắt đầu lúc\nChưa chọn\nChọn",
+        "understood-row-budget": "Ngân sách\n500.000 đ (chưa rõ phạm vi)\nSửa",
+        "understood-row-dish": "Thích\nphở, bún chả\nSửa",
+        "understood-row-visit_min": "Thời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa",
+        "understood-row-allergies": "Dị ứng\nđậu phộng\nSửa"
+      }
+    },
+    {
+      "name": "S0 1280 visible allergy row",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 accessible chip buttons",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 focus on first question chip",
+      "pass": true,
+      "details": "clarify-option-scope:group"
+    },
+    {
+      "name": "S0 1280 aria live announcement",
+      "pass": true,
+      "details": "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?"
+    },
+    {
+      "name": "S0 1280 named text inputs",
+      "pass": true,
+      "details": [
+        "Thêm yêu cầu cho chuyến đi",
+        "Hoặc gõ câu trả lời của bạn…"
+      ]
+    },
+    {
+      "name": "S0 1280 budget answered: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "S0 1280 budget answered: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "S0 1280 budget answered: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 confirmation pending: single question",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "S0 1280 confirmation pending: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "S0 1280 confirmation pending: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 confirmation exists",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 confirm venues list exists",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 confirm visit minutes exists",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 confirm vehicle defaults to walking",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 proposal venue cards rendered",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 confirm has repair option",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 time answered in profile",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 one visible decision question",
+      "pass": true,
+      "details": {
+        "count": 1
+      }
+    },
+    {
+      "name": "S0 1280 entire confirmation visible without fixed overlap",
+      "pass": true,
+      "details": {
+        "top": 217,
+        "bottom": 623.015625,
+        "height": 406.015625,
+        "viewport": 800,
+        "overlaps": 0
+      }
+    },
+    {
+      "name": "S0 1280 double-confirm makes one plan",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 timeline labels",
+      "pass": false
+    },
+    {
+      "name": "S0 1280 free Maps URL",
+      "pass": true
+    },
+    {
+      "name": "S0 1280 at most four semantic actions after initial submission",
+      "pass": true,
+      "details": {
+        "afterInitialSubmission": 4,
+        "labels": [
+          "Cả nhóm",
+          "type and send",
+          "Đúng, lập tour",
+          "open Maps"
+        ]
+      }
+    },
+    {
+      "name": "S0 1280 no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "S0 390 first reply: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "S0 390 first reply: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "S0 390 first reply: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "S0 390 exact understood rows",
+      "pass": true,
+      "details": {
+        "understood-row-area": "Khu vực\nHồ Gươm\nSửa",
+        "understood-row-party": "Số người\n2\nSửa",
+        "understood-row-stops": "Số quán\n3\nSửa",
+        "understood-row-duration": "Tổng thời gian\n120 phút\nSửa",
+        "understood-row-day_part": "Buổi\nBuổi tối\nSửa",
+        "understood-row-time": "Bắt đầu lúc\nChưa chọn\nChọn",
+        "understood-row-budget": "Ngân sách\n500.000 đ (chưa rõ phạm vi)\nSửa",
+        "understood-row-dish": "Thích\nphở, bún chả\nSửa",
+        "understood-row-visit_min": "Thời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa",
+        "understood-row-allergies": "Dị ứng\nđậu phộng\nSửa"
+      }
+    },
+    {
+      "name": "S0 390 visible allergy row",
+      "pass": true
+    },
+    {
+      "name": "S0 390 accessible chip buttons",
+      "pass": true
+    },
+    {
+      "name": "S0 390 focus on first question chip",
+      "pass": true,
+      "details": "clarify-option-scope:group"
+    },
+    {
+      "name": "S0 390 aria live announcement",
+      "pass": true,
+      "details": "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?"
+    },
+    {
+      "name": "S0 390 named text inputs",
+      "pass": true,
+      "details": [
+        "Hoặc gõ câu trả lời của bạn…",
+        "Thêm yêu cầu cho chuyến đi"
+      ]
+    },
+    {
+      "name": "S0 390 budget answered: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "S0 390 budget answered: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "S0 390 budget answered: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "S0 390 confirmation pending: single question",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "S0 390 confirmation pending: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "S0 390 confirmation pending: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "S0 390 confirmation exists",
+      "pass": true
+    },
+    {
+      "name": "S0 390 confirm venues list exists",
+      "pass": true
+    },
+    {
+      "name": "S0 390 confirm visit minutes exists",
+      "pass": true
+    },
+    {
+      "name": "S0 390 confirm vehicle defaults to walking",
+      "pass": true
+    },
+    {
+      "name": "S0 390 proposal venue cards rendered",
+      "pass": true
+    },
+    {
+      "name": "S0 390 confirm has repair option",
+      "pass": true
+    },
+    {
+      "name": "S0 390 time answered in profile",
+      "pass": true
+    },
+    {
+      "name": "S0 390 one visible decision question",
+      "pass": true,
+      "details": {
+        "count": 1
+      }
+    },
+    {
+      "name": "S0 390 entire confirmation visible without fixed overlap",
+      "pass": true,
+      "details": {
+        "top": 62.984375,
+        "bottom": 619.75,
+        "height": 556.765625,
+        "viewport": 844,
+        "overlaps": 0
+      }
+    },
+    {
+      "name": "S0 390 double-confirm makes one plan",
+      "pass": true
+    },
+    {
+      "name": "S0 390 timeline labels",
+      "pass": false
+    },
+    {
+      "name": "S0 390 free Maps URL",
+      "pass": true
+    },
+    {
+      "name": "S0 390 at most four semantic actions after initial submission",
+      "pass": true,
+      "details": {
+        "afterInitialSubmission": 4,
+        "labels": [
+          "Cả nhóm",
+          "type and send",
+          "Đúng, lập tour",
+          "open Maps"
+        ]
+      }
+    },
+    {
+      "name": "S0 390 no horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "200% page scale overflow",
+      "pass": true
+    },
+    {
+      "name": "200% reflow controls not clipped",
+      "pass": false,
+      "details": [
+        {
+          "testid": "pilot-map-toggle",
+          "right": 422.171875,
+          "width": 390
+        },
+        {
+          "testid": "stop-replace-btn-0",
+          "right": 427.4375,
+          "width": 390
+        },
+        {
+          "testid": "stop-replace-btn-1",
+          "right": 427.4375,
+          "width": 390
+        },
+        {
+          "testid": "stop-replace-btn-2",
+          "right": 427.4375,
+          "width": 390
+        }
+      ]
+    },
+    {
+      "name": "per-person confirmation: single question",
+      "pass": true,
+      "details": 0
+    },
+    {
+      "name": "per-person confirmation: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "per-person confirmation: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "confirmation preserves per-person budget scope",
+      "pass": true,
+      "details": {
+        "understood": "Ngân sách\n500.000 đ (mỗi người)\nSửa",
+        "confirm": "2 người • từ 19:00 • mức bạn muốn chi: 500.000 đ (mỗi người)"
+      }
+    },
+    {
+      "name": "confirmation reload preserves venue names",
+      "pass": true,
+      "details": {
+        "before": "Quán đề xuất: [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12",
+        "after": "Quán đề xuất: [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12"
+      }
+    },
+    {
+      "name": "confirmation reload preserves visit minutes",
+      "pass": true,
+      "details": {
+        "before": "⏱️ Thời gian mỗi quán: khoảng 34 phút",
+        "after": "⏱️ Thời gian mỗi quán: khoảng 34 phút"
+      }
+    },
+    {
+      "name": "confirmation reload preserves scope and start",
+      "pass": true,
+      "details": {
+        "before": "2 người • từ 19:00 • mức bạn muốn chi: 500.000 đ (mỗi người)",
+        "after": "2 người • từ 19:00 • mức bạn muốn chi: 500.000 đ (mỗi người)"
+      }
+    },
+    {
+      "name": "Sửa exits confirmation into editing",
+      "pass": true
+    },
+    {
+      "name": "shortlist accepts removal after Sửa",
+      "pass": true
+    },
+    {
+      "name": "shortlist edit after Sửa never creates tour",
+      "pass": true
+    },
+    {
+      "name": "stated motorbike survives walking default",
+      "pass": true,
+      "details": {
+        "row": "Phương tiện\nmotorbike\nSửa",
+        "confirm": "🚶 Phương tiện: xe máy"
+      }
+    },
+    {
+      "name": "vehicle editable through Sửa and text",
+      "pass": true
+    },
+    {
+      "name": "confirmation exposes decision buttons rather than text composer",
+      "pass": true
+    },
+    {
+      "name": "unsupported area calm and no tour",
+      "pass": true
+    },
+    {
+      "name": "409 replacing confirmation with safety question shows current obligation",
+      "pass": true
+    },
+    {
+      "name": "reload after real conflict shows current obligation",
+      "pass": true
+    },
+    {
+      "name": "allergy cue: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy cue: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy cue: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy bypass lập tour đi: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy bypass lập tour đi: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy bypass lập tour đi: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy obligation remains answerable after lập tour đi",
+      "pass": true,
+      "details": {
+        "questions": [
+          "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+        ]
+      }
+    },
+    {
+      "name": "allergy bypass ok: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy bypass ok: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy bypass ok: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy obligation remains answerable after ok",
+      "pass": true,
+      "details": {
+        "questions": [
+          "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+        ]
+      }
+    },
+    {
+      "name": "allergy bypass xác nhận: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy bypass xác nhận: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy bypass xác nhận: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy obligation remains answerable after xác nhận",
+      "pass": true,
+      "details": {
+        "questions": [
+          "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+        ]
+      }
+    },
+    {
+      "name": "pending safety question survives 409 resync",
+      "pass": true
+    },
+    {
+      "name": "pending safety question survives 409 and reload",
+      "pass": true
+    },
+    {
+      "name": "allergy inline edit: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy inline edit: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy inline edit: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy inline edit stops: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy inline edit stops: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy inline edit stops: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy inline edit duration: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy inline edit duration: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy inline edit duration: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy inline edit time: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy inline edit time: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy inline edit time: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy inline edit budget: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy inline edit budget: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy inline edit budget: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary mobile-tab-chat: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary mobile-tab-chat: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary mobile-tab-chat: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary mobile-tab-tour: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary mobile-tab-tour: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary mobile-tab-tour: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary suggestion-chip-0: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary suggestion-chip-0: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary suggestion-chip-0: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary suggestion-chip-1: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary suggestion-chip-1: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary suggestion-chip-1: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary suggestion-chip-2: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary suggestion-chip-2: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary suggestion-chip-2: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary suggestion-chip-3: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary suggestion-chip-3: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary suggestion-chip-3: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary suggestion-chip-4: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary suggestion-chip-4: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary suggestion-chip-4: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary inline-edit-save: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary inline-edit-save: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary inline-edit-save: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary inline-edit-cancel: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary inline-edit-cancel: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary inline-edit-cancel: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary trust-disclosure-btn: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary trust-disclosure-btn: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary trust-disclosure-btn: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary view-mode-schematic-btn: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary view-mode-schematic-btn: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary view-mode-schematic-btn: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy primary pilot-map-toggle: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy primary pilot-map-toggle: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy primary pilot-map-toggle: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "allergy reload: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "allergy reload: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "allergy reload: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "same-session second tab obligation restored",
+      "pass": true,
+      "details": {
+        "tour": false,
+        "question": "Bạn bị dị ứng với loại nguyên liệu nào?",
+        "url": "http://127.0.0.1:13100/",
+        "sameSession": true,
+        "text": "măm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gia"
+      }
+    },
+    {
+      "name": "same-session second tab typed bypass",
+      "pass": true
+    },
+    {
+      "name": "stale visible chip after second-tab turn: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "stale visible chip after second-tab turn: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "stale visible chip after second-tab turn: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "unknown allergen wasabi: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "unknown allergen wasabi: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "unknown allergen wasabi: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "wasabi asks explicit confirmation",
+      "pass": true
+    },
+    {
+      "name": "stale detached chip: single question",
+      "pass": true,
+      "details": 1
+    },
+    {
+      "name": "stale detached chip: explicit confirmation gate",
+      "pass": true,
+      "details": {
+        "tour": false
+      }
+    },
+    {
+      "name": "stale detached chip: no premature planning request",
+      "pass": true
+    },
+    {
+      "name": "hostile 5000 contained",
+      "pass": true
+    },
+    {
+      "name": "hostile 5000 calm error",
+      "pass": true
+    },
+    {
+      "name": "hostile 73 contained",
+      "pass": true
+    },
+    {
+      "name": "hostile 73 calm error",
+      "pass": true
+    },
+    {
+      "name": "hostile 400 contained",
+      "pass": true
+    },
+    {
+      "name": "hostile 400 calm error",
+      "pass": true
+    },
+    {
+      "name": "HTTP 500 Vietnamese calm message",
+      "pass": true
+    },
+    {
+      "name": "HTTP 409 Vietnamese calm message",
+      "pass": true
+    },
+    {
+      "name": "offline calm feedback",
+      "pass": true
+    },
+    {
+      "name": "client-config flags {\"guided_ui\":false,\"chat_v2\":true}",
+      "pass": true
+    },
+    {
+      "name": "client-config flags {\"guided_ui\":false,\"chat_v2\":false,\"ui_v2\":false}",
+      "pass": true
+    },
+    {
+      "name": "client-config flags {\"guided_ui\":true,\"chat_v2\":true}",
+      "pass": true
+    },
+    {
+      "name": "contrast light",
+      "pass": true,
+      "details": [
+        {
+          "text": "Dữ liệu quán không có thông tin nguyên liệu; ",
+          "fg": "rgb(138, 75, 18)",
+          "bg": "rgb(255, 246, 236)",
+          "ratio": 6.345825164975136
+        },
+        {
+          "text": "500.000 đ là ngân sách cho cả nhóm hay cho mỗ",
+          "fg": "rgb(35, 24, 21)",
+          "bg": "rgb(250, 244, 238)",
+          "ratio": 15.8619290435176
+        },
+        {
+          "text": "Cả nhóm",
+          "fg": "rgb(35, 24, 21)",
+          "bg": "rgb(255, 254, 250)",
+          "ratio": 17.155858849086005
+        },
+        {
+          "text": "Mỗi người",
+          "fg": "rgb(35, 24, 21)",
+          "bg": "rgb(255, 254, 250)",
+          "ratio": 17.155858849086005
+        }
+      ]
+    },
+    {
+      "name": "contrast dark",
+      "pass": true,
+      "details": [
+        {
+          "text": "Dữ liệu quán không có thông tin nguyên liệu; ",
+          "fg": "rgb(138, 75, 18)",
+          "bg": "rgb(255, 246, 236)",
+          "ratio": 6.345825164975136
+        },
+        {
+          "text": "500.000 đ là ngân sách cho cả nhóm hay cho mỗ",
+          "fg": "rgb(35, 24, 21)",
+          "bg": "rgb(250, 244, 238)",
+          "ratio": 15.8619290435176
+        },
+        {
+          "text": "Cả nhóm",
+          "fg": "rgb(35, 24, 21)",
+          "bg": "rgb(255, 254, 250)",
+          "ratio": 17.155858849086005
+        },
+        {
+          "text": "Mỗi người",
+          "fg": "rgb(35, 24, 21)",
+          "bg": "rgb(255, 254, 250)",
+          "ratio": 17.155858849086005
+        }
+      ]
+    },
+    {
+      "name": "no runtime exceptions",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "no console.error",
+      "pass": true,
+      "details": []
+    },
+    {
+      "name": "no Google Maps API requests",
+      "pass": true
+    },
+    {
+      "name": "no credential URLs or page source",
+      "pass": true
+    }
+  ],
+  "flows": [
+    {
+      "name": "S0 1280 first reply",
+      "text": "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nGỢI Ý NHANH\nMột tối quanh Hồ Gươm\nFood tour phố cổ 2 người\nCà phê & món tráng miệng\nĂn như người bản địa\nNhững ngõ nhỏ luôn có câu chuyện ngon.\nK\nPhiên hiện tại\nPhiên làm việc cục bộ\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\nĐã ghi nhận dị ứng: đậu phộng. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (chưa rõ phạm vi)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?\nCả nhóm\nMỗi người\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY\nGửi tin nhắn\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n500.000 đ\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (chưa rõ phạm vi)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-scope:group",
+      "live": "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Cả nhóm"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mỗi người"
+        }
+      ]
+    },
+    {
+      "name": "first reply positions 1280",
+      "pos": {
+        "clarify-question-card": {
+          "top": 175,
+          "bottom": 354.1875,
+          "viewport": 800
+        },
+        "understood-row-allergies": {
+          "top": 1170.234375,
+          "bottom": 1230.234375,
+          "viewport": 800
+        }
+      }
+    },
+    {
+      "name": "S0 1280 budget answered",
+      "text": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nGỢI Ý NHANH\nMột tối quanh Hồ Gươm\nFood tour phố cổ 2 người\nCà phê & món tráng miệng\nĂn như người bản địa\nNhững ngõ nhỏ luôn có câu chuyện ngon.\nK\nPhiên hiện tại\nPhiên làm việc cục bộ\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n✦ MĂM MĂM\nĐã cập nhật: ngân sách tính cả nhóm.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.\n18:00\n19:00\n20:00\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY\nGửi tin nhắn\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n500.000 đ\ncả nhóm\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-time:18:00",
+      "live": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "18:00"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "19:00"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "20:00"
+        }
+      ]
+    },
+    {
+      "name": "S0 1280 confirmation pending",
+      "text": "Đã cập nhật: bắt đầu 19:00.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nGỢI Ý NHANH\nMột tối quanh Hồ Gươm\nFood tour phố cổ 2 người\nCà phê & món tráng miệng\nĂn như người bản địa\nNhững ngõ nhỏ luôn có câu chuyện ngon.\nK\nPhiên hiện tại\nPhiên làm việc cục bộ\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nXem lại lịch trình của bạn\n\nKiểm tra thông tin điểm dừng, lưu ý theo nguồn và xác nhận để tạo lộ trình.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n19h\n✦ MĂM MĂM\nĐã cập nhật: bắt đầu 19:00.\n✦ MĂM MĂM\nMình gợi ý 3 quán quanh Hồ Gươm (xấp xỉ) (khoảng cách ước tính, giá theo khoảng giá của quán).\n✦ MĂM MĂM\nMình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé.\nDữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nA[SYNTHETIC] Phở Thử 4\n📍 Số 14 Tạ Hiện, Hoàn Kiếm, Hà Nội · cách ~420 m (ước tính)\n🏷️ Khoảng giá: 35.000 – 75.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nB[SYNTHETIC] Chè Thử 11\n📍 Số 21 Lò Sũ, Hoàn Kiếm, Hà Nội · cách ~180 m (ước tính)\n🏷️ Khoảng giá: 15.000 – 45.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nC[SYNTHETIC] Chè Thử 12\n📍 Số 22 Tạ Hiện, Hoàn Kiếm, Hà Nội · cách ~240 m (ước tính)\n🏷️ Khoảng giá: 15.000 – 45.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nLập tour 3 quán, 120 phút, Hồ Gươm?\n2 người • từ 19:00 • mức bạn muốn chi: 500.000 đ (cả nhóm)\nQuán đề xuất: [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12\n⏱️ Thời gian mỗi quán: khoảng 34 phút\n🚶 Phương tiện: Đi bộ (mặc định)\n💡 Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.\n⚠️\nLưu ý & thông tin chưa xác minh (Gợi ý có điều kiện):\nDữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nGiờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở.\nĐúng, lập tour\nSửa\nChỉ lập tour sau khi bạn bấm xác nhận.\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n500.000 đ\ncả nhóm\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": "confirm-yes-btn",
+      "live": "Đã cập nhật: bắt đầu 19:00.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "S0 1280 tour",
+      "text": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình (3)\nGỢI Ý NHANH\nMột tối quanh Hồ Gươm\nFood tour phố cổ 2 người\nCà phê & món tráng miệng\nĂn như người bản địa\nNhững ngõ nhỏ luôn có câu chuyện ngon.\nK\nPhiên hiện tại\nPhiên làm việc cục bộ\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHoàn Kiếm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n19h\n✦ MĂM MĂM\nMình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY\nGửi tin nhắn\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS · HOÀN KIẾM\nĐi một vòng,\nngon một tối.\nHoàn Kiếm • 19:04 — 20:55\n03\nđiểm dừng\n0,8 km\nước tính đi bộ\n500.000 đ\ncả nhóm\nLộ trình ẩm thực\nGợi ý có điều kiện\n⚠️ Lịch trình có điều kiện: Chưa xác minh: thành phần để đánh giá dị ứng · giờ mở cửa · giá theo người · tuyến đường thực.\n01\n19:04 · ĐIỂM DỪNG 1\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 12\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:04\n≈15k–45k (theo nguồn)\n02\n19:41 · ĐIỂM DỪNG 2\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 11\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:41\n≈15k–45k (theo nguồn) · ~3 phút (ước tính)\n03\n20:21 · ĐIỂM DỪNG 3\n🔄 Đổi quán\n[SYNTHETIC] Phở Thử 4\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n20:21\n≈35k–75k (theo nguồn) · ~6 phút (ước tính)\nDị ứng đậu phộng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.\nSẵn sàng cho một buổi tối ngon?\n\nLịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.\n\nMở lộ trình trên Google Maps →\n\nℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.\n\n✏️ Đổi số lượng quán\n↻ Lên food tour mới",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": true,
+      "focus": "google-maps-cta",
+      "live": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "metrics 1280",
+      "semanticActions": 5,
+      "actionLabels": [
+        "type and send",
+        "Cả nhóm",
+        "type and send",
+        "Đúng, lập tour",
+        "open Maps"
+      ],
+      "physicalActionsExcludingFocusAndTabs": 7,
+      "additionalConfirmStressActivations": 1,
+      "firstReplyIncludingTypingMs": 436,
+      "domFirstReplyMs": 61.60000002384186,
+      "keyboardOnly": false,
+      "mapsTargetOpened": true
+    },
+    {
+      "name": "S0 390 first reply",
+      "text": "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\nĐã ghi nhận dị ứng: đậu phộng. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (chưa rõ phạm vi)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?\nCả nhóm\nMỗi người\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (chưa rõ phạm vi)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-scope:group",
+      "live": "500.000 đ là ngân sách cho cả nhóm hay cho mỗi người?",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Cả nhóm"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mỗi người"
+        }
+      ]
+    },
+    {
+      "name": "first reply positions 390",
+      "pos": {
+        "clarify-question-card": {
+          "top": 472.984375,
+          "bottom": 675.359375,
+          "viewport": 844
+        },
+        "understood-row-allergies": {
+          "top": 1565.4375,
+          "bottom": 1625.4375,
+          "viewport": 844
+        }
+      }
+    },
+    {
+      "name": "S0 390 budget answered",
+      "text": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n✦ MĂM MĂM\nĐã cập nhật: ngân sách tính cả nhóm.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.\n18:00\n19:00\n20:00\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-time:18:00",
+      "live": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "18:00"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "19:00"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "20:00"
+        }
+      ]
+    },
+    {
+      "name": "S0 390 confirmation pending",
+      "text": "Đã cập nhật: bắt đầu 19:00.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nXem lại lịch trình của bạn\n\nKiểm tra thông tin điểm dừng, lưu ý theo nguồn và xác nhận để tạo lộ trình.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n19h\n✦ MĂM MĂM\nĐã cập nhật: bắt đầu 19:00.\n✦ MĂM MĂM\nMình gợi ý 3 quán quanh Hồ Gươm (xấp xỉ) (khoảng cách ước tính, giá theo khoảng giá của quán).\n✦ MĂM MĂM\nMình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé.\nDữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nA[SYNTHETIC] Phở Thử 4\n📍 Số 14 Tạ Hiện, Hoàn Kiếm, Hà Nội · cách ~420 m (ước tính)\n🏷️ Khoảng giá: 35.000 – 75.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nB[SYNTHETIC] Chè Thử 11\n📍 Số 21 Lò Sũ, Hoàn Kiếm, Hà Nội · cách ~180 m (ước tính)\n🏷️ Khoảng giá: 15.000 – 45.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nC[SYNTHETIC] Chè Thử 12\n📍 Số 22 Tạ Hiện, Hoàn Kiếm, Hà Nội · cách ~240 m (ước tính)\n🏷️ Khoảng giá: 15.000 – 45.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nLập tour 3 quán, 120 phút, Hồ Gươm?\n2 người • từ 19:00 • mức bạn muốn chi: 500.000 đ (cả nhóm)\nQuán đề xuất: [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12\n⏱️ Thời gian mỗi quán: khoảng 34 phút\n🚶 Phương tiện: Đi bộ (mặc định)\n💡 Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.\n⚠️\nLưu ý & thông tin chưa xác minh (Gợi ý có điều kiện):\nDữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nGiờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở.\nĐúng, lập tour\nSửa\nChỉ lập tour sau khi bạn bấm xác nhận.\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": "confirm-yes-btn",
+      "live": "Đã cập nhật: bắt đầu 19:00.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "S0 390 tour",
+      "text": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình (3)\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHoàn Kiếm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS · HOÀN KIẾM\nĐi một vòng,\nngon một tối.\nHoàn Kiếm • 19:04 — 20:55\n03\nđiểm dừng\n0,8 km\nước tính đi bộ\n500.000 đ\ncả nhóm\nLộ trình ẩm thực\nGợi ý có điều kiện\n⚠️ Lịch trình có điều kiện: Chưa xác minh: thành phần để đánh giá dị ứng · giờ mở cửa · giá theo người · tuyến đường thực.\n01\n19:04 · ĐIỂM DỪNG 1\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 12\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:04\n≈15k–45k (theo nguồn)\n02\n19:41 · ĐIỂM DỪNG 2\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 11\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:41\n≈15k–45k (theo nguồn) · ~3 phút (ước tính)\n03\n20:21 · ĐIỂM DỪNG 3\n🔄 Đổi quán\n[SYNTHETIC] Phở Thử 4\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n20:21\n≈35k–75k (theo nguồn) · ~6 phút (ước tính)\nDị ứng đậu phộng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.\nSẵn sàng cho một buổi tối ngon?\n\nLịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.\n\nMở lộ trình trên Google Maps →\n\nℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.\n\n✏️ Đổi số lượng quán\n↻ Lên food tour mới",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người2SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúc19:00SửaNgân sách500.000 đ (cả nhóm)SửaThíchphở, bún chảSửaThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaPhương tiệnĐi bộ(mặc định)SửaDị ứngđậu phộngSửaDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": true,
+      "focus": "google-maps-cta",
+      "live": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "metrics 390",
+      "semanticActions": 5,
+      "actionLabels": [
+        "type and send",
+        "Cả nhóm",
+        "type and send",
+        "Đúng, lập tour",
+        "open Maps"
+      ],
+      "physicalActionsExcludingFocusAndTabs": 7,
+      "additionalConfirmStressActivations": 1,
+      "firstReplyIncludingTypingMs": 530,
+      "domFirstReplyMs": 123.5,
+      "keyboardOnly": true,
+      "mapsTargetOpened": true
+    },
+    {
+      "name": "mobile fixed bars",
+      "fixed": []
+    },
+    {
+      "name": "200% scale",
+      "text": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình (3)\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHoàn Kiếm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS · HOÀN KIẾM\nĐi một vòng,\nngon một tối.\nHoàn Kiếm • 19:04 — 20:55\n03\nđiểm dừng\n0,8 km\nước tính đi bộ\n500.000 đ\ncả nhóm\nLộ trình ẩm thực\nGợi ý có điều kiện\n⚠️ Lịch trình có điều kiện: Chưa xác minh: thành phần để đánh giá dị ứng · giờ mở cửa · giá theo người · tuyến đường thực.\n01\n19:04 · ĐIỂM DỪNG 1\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 12\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:04\n≈15k–45k (theo nguồn)\n02\n19:41 · ĐIỂM DỪNG 2\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 11\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:41\n≈15k–45k (theo nguồn) · ~3 phút (ước tính)\n03\n20:21 · ĐIỂM DỪNG 3\n🔄 Đổi quán\n[SYNTHETIC] Phở Thử 4\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n20:21\n≈35k–75k (theo nguồn) · ~6 phút (ước tính)\nDị ứng đậu phộng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.\nSẵn sàng cho một buổi tối ngon?\n\nLịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.\n\nMở lộ trình trên Google Maps →\n\nℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.\n\n✏️ Đổi số lượng quán\n↻ Lên food tour mới",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người2SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúc19:00SửaNgân sách500.000 đ (cả nhóm)SửaThíchphở, bún chảSửaThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaPhương tiệnĐi bộ(mặc định)SửaDị ứngđậu phộngSửaDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": true,
+      "focus": "google-maps-cta",
+      "live": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "200% reflow",
+      "text": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình (3)\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHoàn Kiếm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS · HOÀN KIẾM\nĐi một vòng,\nngon một tối.\nHoàn Kiếm • 19:04 — 20:55\n03\nđiểm dừng\n0,8 km\nước tính đi bộ\n500.000 đ\ncả nhóm\nLộ trình ẩm thực\nGợi ý có điều kiện\n⚠️ Lịch trình có điều kiện: Chưa xác minh: thành phần để đánh giá dị ứng · giờ mở cửa · giá theo người · tuyến đường thực.\n01\n19:04 · ĐIỂM DỪNG 1\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 12\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:04\n≈15k–45k (theo nguồn)\n02\n19:41 · ĐIỂM DỪNG 2\n🔄 Đổi quán\n[SYNTHETIC] Chè Thử 11\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n19:41\n≈15k–45k (theo nguồn) · ~3 phút (ước tính)\n03\n20:21 · ĐIỂM DỪNG 3\n🔄 Đổi quán\n[SYNTHETIC] Phở Thử 4\n\nMón Việt · giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\n\n20:21\n≈35k–75k (theo nguồn) · ~6 phút (ước tính)\nDị ứng đậu phộng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.\nSẵn sàng cho một buổi tối ngon?\n\nLịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.\n\nMở lộ trình trên Google Maps →\n\nℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.\n\n✏️ Đổi số lượng quán\n↻ Lên food tour mới",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người2SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúc19:00SửaNgân sách500.000 đ (cả nhóm)SửaThíchphở, bún chảSửaThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaPhương tiệnĐi bộ(mặc định)SửaDị ứngđậu phộngSửaDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": true,
+      "focus": "google-maps-cta",
+      "live": "Mình đã lập lịch trình từ đúng 3 quán bạn đã chọn: [SYNTHETIC] Chè Thử 12 → [SYNTHETIC] Chè Thử 11 → [SYNTHETIC] Phở Thử 4. Tổng đi bộ khoảng 13 phút (ước tính). Gợi ý có điều kiện: còn thông tin chưa được xác minh — xem cảnh báo, bằng chứng và các giả định đi kèm.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "per-person confirmation",
+      "text": "Đã cập nhật: bắt đầu 19:00.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nXem lại lịch trình của bạn\n\nKiểm tra thông tin điểm dừng, lưu ý theo nguồn và xác nhận để tạo lộ trình.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n19h\n✦ MĂM MĂM\nĐã cập nhật: bắt đầu 19:00.\n✦ MĂM MĂM\nMình gợi ý 3 quán quanh Hồ Gươm (xấp xỉ) (khoảng cách ước tính, giá theo khoảng giá của quán).\n✦ MĂM MĂM\nMình tóm tắt trước khi lập lịch trình. Bạn xem và xác nhận nhé.\nDữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nA[SYNTHETIC] Phở Thử 4\n📍 Số 14 Tạ Hiện, Hoàn Kiếm, Hà Nội · cách ~420 m (ước tính)\n🏷️ Khoảng giá: 35.000 – 75.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nB[SYNTHETIC] Chè Thử 11\n📍 Số 21 Lò Sũ, Hoàn Kiếm, Hà Nội · cách ~180 m (ước tính)\n🏷️ Khoảng giá: 15.000 – 45.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nC[SYNTHETIC] Chè Thử 12\n📍 Số 22 Tạ Hiện, Hoàn Kiếm, Hà Nội · cách ~240 m (ước tính)\n🏷️ Khoảng giá: 15.000 – 45.000 đ (theo nguồn)\n🕒 Giờ mở cửa theo nguồn: Nguồn ghi: 07:00 - 22:00 (chưa rõ áp dụng ngày nào)\nLập tour 3 quán, 120 phút, Hồ Gươm?\n2 người • từ 19:00 • mức bạn muốn chi: 500.000 đ (mỗi người)\nQuán đề xuất: [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12\n⏱️ Thời gian mỗi quán: khoảng 34 phút\n🚶 Phương tiện: Đi bộ (mặc định)\n💡 Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.\n⚠️\nLưu ý & thông tin chưa xác minh (Gợi ý có điều kiện):\nDữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nGiờ mở cửa theo nguồn chưa rõ áp dụng ngày nào nên mình không khẳng định quán đang mở.\nĐúng, lập tour\nSửa\nChỉ lập tour sau khi bạn bấm xác nhận.\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": "confirm-yes-btn",
+      "live": "Đã cập nhật: bắt đầu 19:00.",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "removal acknowledgement",
+      "text": "Đã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nBỏ quán đầu tiên khỏi danh sách\n✦ MĂM MĂM\nĐã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "shortlist edit result",
+      "text": "Đã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nBỏ quán đầu tiên khỏi danh sách\n✦ MĂM MĂM\nĐã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "shortlist edit after Sửa",
+      "text": "Đã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nBỏ quán đầu tiên khỏi danh sách\n✦ MĂM MĂM\nĐã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (mỗi người)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đã bỏ [SYNTHETIC] Phở Thử 4 khỏi danh sách (2/5).",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "unsupported area",
+      "text": "Bạn muốn tìm quanh khu vực nào ở Hà Nội? (ví dụ: Cầu Giấy, phố cổ, đường Xuân Thủy)\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTour 3 quán tại huyện đảo Trường Sa lúc 19h trong 120 phút\nMình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\n19:00\nSửa\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn muốn tìm quanh khu vực nào ở Hà Nội? (ví dụ: Cầu Giấy, phố cổ, đường Xuân Thủy)\nDùng vị trí của tôi\nBa Đình\nCầu Giấy\nHai Bà Trưng\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\n19:00\nSửa\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn muốn tìm quanh khu vực nào ở Hà Nội? (ví dụ: Cầu Giấy, phố cổ, đường Xuân Thủy)"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-geo",
+      "live": "Bạn muốn tìm quanh khu vực nào ở Hà Nội? (ví dụ: Cầu Giấy, phố cổ, đường Xuân Thủy)",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Dùng vị trí của tôi"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Ba Đình"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Cầu Giấy"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hai Bà Trưng"
+        }
+      ]
+    },
+    {
+      "name": "real concurrent safety change then stale confirm",
+      "text": "Đang lập lịch trình ẩm thực tối ưu dựa trên lựa chọn của bạn…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Đã đồng bộ phiên mới nhất. Hãy kiểm tra câu hỏi và tiêu chí hiện tại trước khi tiếp tục.\nThử lại\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\n19h\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn bị dị ứng với loại nguyên liệu nào?\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn bị dị ứng với loại nguyên liệu nào?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy:peanut",
+      "live": "Đang lập lịch trình ẩm thực tối ưu dựa trên lựa chọn của bạn…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "real concurrent safety conflict reload",
+      "text": "măm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn bị dị ứng với loại nguyên liệu nào?\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\n19:00\nSửa\nNgân sách\n500.000 đ (cả nhóm)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nPhương tiện\nĐi bộ(mặc định)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn bị dị ứng với loại nguyên liệu nào?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy cue",
+      "text": "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn\nMình đang đọc yêu cầu theo cách đơn giản nên có thể sót ý; bạn kiểm tra giúp phần \"Mình hiểu là…\" nhé.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy:peanut",
+      "live": "Bạn dị ứng với thực phẩm nào? Mình chưa ghi nhận dị ứng cụ thể nào; hãy nói tên (ví dụ: cua, tôm, sữa).",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy bypass lập tour đi",
+      "text": "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn\nlập tour đi\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy:peanut",
+      "live": "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy bypass ok",
+      "text": "Mình vẫn đang chờ bạn trả lời câu hỏi ở trên (bấm một nút hoặc gõ câu trả lời) rồi mình làm tiếp.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn\nlập tour đi\nok\n✦ MĂM MĂM\nMình vẫn đang chờ bạn trả lời câu hỏi ở trên (bấm một nút hoặc gõ câu trả lời) rồi mình làm tiếp.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Mình vẫn đang chờ bạn trả lời câu hỏi ở trên (bấm một nút hoặc gõ câu trả lời) rồi mình làm tiếp.",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy bypass xác nhận",
+      "text": "Bạn bấm một lựa chọn ở trên (Đậu phộng, Hải sản, Sữa, Trứng) hoặc gõ câu trả lời ngắn.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nTour 3 quán quanh Hồ Gươm tối nay, mình bị dị ứng nhẹ với mấy thứ rang giòn\nlập tour đi\nok\nxác nhận\n✦ MĂM MĂM\nBạn bấm một lựa chọn ở trên (Đậu phộng, Hải sản, Sữa, Trứng) hoặc gõ câu trả lời ngắn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Bạn bấm một lựa chọn ở trên (Đậu phộng, Hải sản, Sữa, Trứng) hoặc gõ câu trả lời ngắn.",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "409 then reload",
+      "text": "măm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn bị dị ứng với loại nguyên liệu nào?\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\nChưa chọn\nChọn\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn bị dị ứng với loại nguyên liệu nào?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy inline edit",
+      "text": "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy:peanut",
+      "live": "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy inline edit stops",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.\nThử lại\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy inline edit duration",
+      "text": "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy:peanut",
+      "live": "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy inline edit time",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.\nThử lại\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy inline edit budget",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.\nThử lại\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\n200k\n300k\n500k\n1 triệu\nSố tiền khác (VNĐ)\nChọn một mức hoặc nhập số tiền.\nLưu\nHuỷ\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\n200k\n300k\n500k\n1 triệu\nSố tiền khác (VNĐ)\nChọn một mức hoặc nhập số tiền.\nLưu\nHuỷ\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "inline-edit-save",
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy visible primary buttons",
+      "primary": [
+        "mobile-tab-chat",
+        "mobile-tab-tour",
+        "suggestion-chip-0",
+        "suggestion-chip-1",
+        "suggestion-chip-2",
+        "suggestion-chip-3",
+        "suggestion-chip-4",
+        "inline-edit-save",
+        "inline-edit-cancel",
+        "trust-disclosure-btn",
+        "view-mode-schematic-btn",
+        "pilot-map-toggle",
+        "start-suggesting-cta-btn"
+      ]
+    },
+    {
+      "name": "allergy primary mobile-tab-chat",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.\nThử lại\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\n200k\n300k\n500k\n1 triệu\nSố tiền khác (VNĐ)\nChọn một mức hoặc nhập số tiền.\nLưu\nHuỷ\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc).\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\n200k\n300k\n500k\n1 triệu\nSố tiền khác (VNĐ)\nChọn một mức hoặc nhập số tiền.\nLưu\nHuỷ\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "mobile-tab-chat",
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary mobile-tab-tour",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "mobile-tab-tour",
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary suggestion-chip-0",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary suggestion-chip-1",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary suggestion-chip-2",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary suggestion-chip-3",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary suggestion-chip-4",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary inline-edit-save",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary inline-edit-cancel",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary trust-disclosure-btn",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary view-mode-schematic-btn",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\n✦ HANOI AFTER HOURS\nĐi một vòng,\nngon một tối.\nHồ Gươm • Đang lên ý tưởng\n—\nđiểm dừng\n—\nkhoảng cách (ước tính đi bộ)\n—\nchưa rõ phạm vi\n01\nBƯỚC 1\nTrò chuyện & nêu ý\n\nCho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.\n\n02\nBƯỚC 2\nXem lại & xác nhận\n\nKiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.\n\n03\nBƯỚC 3\nNhận lịch trình & Maps\n\nXem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.\n\nSẵn sàng cho một buổi tối ngon?\n\nNhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.\n\nBắt đầu gợi ý →",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "view-mode-schematic-btn",
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy primary pilot-map-toggle",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\nChuyến đi của bạn\nSơ đồ\nBản đồ\nChưa thể hiển thị bản đồ tương tác\n\nQuá thời gian tải bản đồ hoặc kết nối mạng nội bộ bị gián đoạn. Bạn vẫn có thể xem sơ đồ các chặng hoặc mở chỉ đường Google Maps miễn phí.\n\nQuay lại sơ đồ tuyến",
+      "understood": "Mình hiểu là…Khu vựcHồ GươmSửaSố người3SửaSố quán3SửaTổng thời gian120 phútSửaBuổiBuổi tốiSửaBắt đầu lúcChưa chọnChọnNgân sáchChưa chọnChọn200k300k500k1 triệuSố tiền khác (VNĐ)Chọn một mức hoặc nhập số tiền.LưuHuỷThíchChưa chọnChọnThời gian mỗi quán (ước tính)khoảng 34 phút(suy luận)SửaDị ứngChưa cóChọnDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn dị ứng với thực phẩm nào? Chọn một nút hoặc gõ tên (ví dụ: cua, tôm, lạc)."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "pilot-map-toggle",
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "allergy reload",
+      "text": "măm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn bị dị ứng với loại nguyên liệu nào?\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn bị dị ứng với loại nguyên liệu nào?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": null,
+      "live": "",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "stale visible chip after second-tab turn",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Đã đồng bộ phiên mới nhất. Hãy kiểm tra câu hỏi và tiêu chí hiện tại trước khi tiếp tục.\nThử lại\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn bị dị ứng với loại nguyên liệu nào?\nĐậu phộng\nHải sản\nSữa\nTrứng\nGluten\nĐậu nành\nMè\nKhác\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn bị dị ứng với loại nguyên liệu nào?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy:peanut",
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đậu phộng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Hải sản"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Sữa"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Trứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gluten"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Đậu nành"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Mè"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Khác"
+        }
+      ]
+    },
+    {
+      "name": "unknown allergen wasabi",
+      "text": "Mình hiểu bạn dị ứng với: wasabi. Đúng không?\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nwasabi\nĐã ghi nhận dị ứng: wasabi. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nwasabi\ncần xác nhận\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nMình hiểu bạn dị ứng với: wasabi. Đúng không?\nĐúng, mình dị ứng\nKhông phải\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nwasabi\ncần xác nhận\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Mình hiểu bạn dị ứng với: wasabi. Đúng không?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-allergy_ok",
+      "live": "Mình hiểu bạn dị ứng với: wasabi. Đúng không?",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Đúng, mình dị ứng"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Không phải"
+        }
+      ]
+    },
+    {
+      "name": "stale detached chip",
+      "text": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHồ Gươm\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\nwasabi\nTôi dị ứng đậu phộng\n✦ MĂM MĂM\nĐã ghi nhận. Dữ liệu quán không có thông tin nguyên liệu nên mình chỉ loại các quán có tên/nhóm món liên quan; không quán nào được xác nhận an toàn — hãy hỏi quán trước khi ăn.\nMình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nwasabi, đậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.\n18:00\n19:00\n20:00\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n3\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nwasabi, đậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác."
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-time:18:00",
+      "live": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "18:00"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "19:00"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "20:00"
+        }
+      ]
+    },
+    {
+      "name": "hostile 5000",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.\nThử lại\nxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx\nMình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "hostile 73",
+      "text": "Bạn muốn mình làm gì trước?\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nMột chút điều chỉnh nữa nhé\n\nTrả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n<img src=x onerror=\"window.__u5eXSS=1\"><script>window.__u5eXSS=1</script>\n✦ MĂM MĂM\nMình chưa chắc hiểu đúng ý bạn trong câu này, nên mình hỏi lại thay vì đoán. Bạn bấm một lựa chọn hoặc chia nhỏ yêu cầu giúp mình nhé.\nMình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\nBạn muốn mình làm gì trước?\nTìm quán\nGợi ý món\nLập lịch trình\nGửi\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [
+        "Bạn muốn mình làm gì trước?"
+      ],
+      "questionCount": 1,
+      "tour": false,
+      "focus": "clarify-option-search",
+      "live": "Bạn muốn mình làm gì trước?",
+      "overflow": false,
+      "buttons": [
+        {
+          "tag": "BUTTON",
+          "name": "Tìm quán"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Gợi ý món"
+        },
+        {
+          "tag": "BUTTON",
+          "name": "Lập lịch trình"
+        }
+      ]
+    },
+    {
+      "name": "hostile 400",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Yêu cầu không hợp lệ hoặc vượt quá độ dài quy định. Bạn vui lòng nhập ngắn gọn hơn.\nThử lại\n‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​‮🍜​\nMình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "HTTP 500",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Máy chủ đang bận xử lý. Bạn vui lòng thử lại sau giây lát.\nThử lại\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\nMình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "HTTP 409",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Đã đồng bộ phiên mới nhất. Hãy kiểm tra câu hỏi và tiêu chí hiện tại trước khi tiếp tục.\nThử lại\n✦ MĂM MĂM\nChào bạn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ gợi ý món ngon và xếp một lộ trình chuẩn bài nhất.\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": []
+    },
+    {
+      "name": "offline",
+      "text": "Đang đọc yêu cầu và cập nhật dữ liệu…\nmăm măm.\nĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\n+\nChuyến đi mới\n✦\nTrò chuyện\n◇\nLịch trình\nKHÁM PHÁ / TRỢ LÝ FOOD TOUR\n⌖\nHà Nội\nTiếng Việt\n✦\nMĂM MĂM AI\nNgười bạn sành ăn của bạn\nHôm nay, mình\năn cả Hà Nội nhé?\n\nMột chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.\n\nẨm thực đường phố\nHẹn hò cuối tuần\nQuán local\nDưới 300K\n📍 Vị trí GPS\n⚠️ Không kết nối được tới máy chủ. Hãy kiểm tra mạng rồi bấm Thử lại; nội dung bạn nhập vẫn được giữ.\nThử lại\nTôi muốn ăn tour 3 quán quanh Hồ Gươm vào tối nay 120 phút, ngân sách 500 nghìn cho 2 người. Tôi thích phở và bún chả, dị ứng đậu phộng. Hãy hỏi tôi nếu còn thiếu thông tin.\nMình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.\n+ Thêm món chay\nÍt di chuyển hơn\nĐổi ngân sách\n\nYêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này. Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.\n\nDữ liệu quán địa phương • Giờ & giá theo nguồn ghi • Khoảng cách ước tính\nChi tiết\nTra web\nTAVILY",
+      "understood": "Mình hiểu là…\nKhu vực\nChưa chọn\nChọn\nSố người\nChưa chọn\nChọn\nSố quán\nChưa chọn\nChọn\nTổng thời gian\nChưa chọn\nChọn\nBuổi\nChưa chọn\nChọn\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\nChưa chọn\nChọn\nThích\nChưa chọn\nChọn\nDị ứng\nChưa có\nChọn\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "questions": [],
+      "questionCount": 0,
+      "tour": false,
+      "focus": null,
+      "live": "Đang đọc yêu cầu và cập nhật dữ liệu…",
+      "overflow": false,
+      "buttons": []
+    }
+  ],
+  "network": {
+    "requests": 476,
+    "chatRequests": 43,
+    "googleApiRequests": 0
+  },
+  "exceptions": [],
+  "consoleErrors": []
+}
