@@ -66,6 +66,10 @@ try{
     record('attached Vietnamese request preserves allergy and slots '+width,await ev(`(()=>{const t=document.querySelector('[data-testid="understood-card"]')?.innerText||'';return ['Hồ Gươm','120','500','đậu phộng','phở','bún chả'].every(x=>t.includes(x));})()`));
     record('no tour before confirmation '+width,!(await exists('guided-timeline')));
     await capture('clarify-'+width);
+    await click(sel('online-search-toggle'));await send('ph? quanh H? G??m');await until(()=>exists('online-search-results'));
+    record('read-only search keeps active clarification '+width,await exists('clarify-option-scope:group'));
+    record('read-only search keeps allergy '+width,await ev(`document.querySelector('[data-testid="understood-card"]')?.innerText.includes('??u ph?ng')`));
+    await capture('clarify-search-disabled-'+width);
     await click(sel('clarify-option-scope:group'));await idle();await send('19h');
     await until(()=>exists('confirm-yes-btn'));record('allergy warning before confirm '+width,await exists('confirm-summary-warnings'));
     await capture('confirm-'+width);await click(sel('confirm-yes-btn'));await idle();await until(()=>exists('guided-timeline'));
