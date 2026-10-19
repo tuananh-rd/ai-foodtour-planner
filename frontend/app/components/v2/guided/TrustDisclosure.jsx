@@ -226,7 +226,13 @@ export default function TrustDisclosure({ turn, health }) {
                 <b>Trạng thái xử lý:</b> {budgetStatus}
               </div>
               <div>
-                <b>Trí tuệ nhân tạo (AI):</b> Khi Gemini được cấu hình và còn lượt, văn bản bạn nhập cùng các tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu. Chế độ quy tắc tại máy không gửi yêu cầu đến AI bên ngoài.
+                <b>Trí tuệ nhân tạo (AI):</b> Khi Gemini được cấu hình và còn lượt, chỉ tối đa 4 lượt trao đổi gần nhất và tiêu chí liên quan được gửi để hiểu yêu cầu (đã giản lược ngữ cảnh, không gửi vị trí GPS hay định danh cá nhân). Chế độ quy tắc tại máy hoàn toàn không gửi dữ liệu ra ngoài.
+              </div>
+              <div>
+                <b>Tìm kiếm web (Tra web):</b> Khi bạn chủ động bật &quot;Tra web&quot;, chỉ câu hỏi ngắn của lượt đó được gửi đến công cụ tìm kiếm (Tavily) để tra cứu thông tin công khai; không gửi vị trí GPS hay lịch sử trò chuyện.
+              </div>
+              <div>
+                <b>Quyền riêng tư dịch vụ bên thứ ba:</b> Khi sử dụng AI hoặc tra cứu web ở các gói miễn phí/thử nghiệm, dữ liệu truy vấn có thể được xử lý theo điều khoản bảo mật của nhà cung cấp dịch vụ tương ứng. Vui lòng không nhập thông tin nhạy cảm hoặc bí mật cá nhân.
               </div>
               <div>
                 <b>Lưu trữ phiên:</b> Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên, không hiện lại từng tin nhắn; phiên mặc định hết hạn sau một giờ. &quot;Làm lại&quot; mở phiên mới, không phải cam kết xóa ngay phiên cũ trên máy chủ.
