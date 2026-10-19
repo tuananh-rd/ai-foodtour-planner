@@ -1,0 +1,418 @@
+{
+  "web": "http://127.0.0.1:3100",
+  "api": "http://127.0.0.1:8100",
+  "ui_commit": "9af612647b1d82127f904cde0eedffd71d512f9c",
+  "build_commit": "dcd0fbd95eda6faf43755153af4d747db24bed85",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "checks": [
+    {
+      "name": "real PMTiles HTTP Range206/header",
+      "pass": true
+    },
+    {
+      "name": "desktop/mobile no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "attached Vietnamese request preserves allergy and slots 1440",
+      "pass": true
+    },
+    {
+      "name": "no tour before confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "read-only search keeps active clarification 1440",
+      "pass": true
+    },
+    {
+      "name": "read-only search keeps allergy 1440",
+      "pass": true
+    },
+    {
+      "name": "allergy warning before confirm 1440",
+      "pass": true
+    },
+    {
+      "name": "actual three-stop tour 1440",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL actual navigation 1440",
+      "pass": true
+    },
+    {
+      "name": "MapLibre canvas created (tile rendering requires visual review) 1440",
+      "pass": true
+    },
+    {
+      "name": "attribution visible 1440",
+      "pass": true
+    },
+    {
+      "name": "markers match tour 1440",
+      "pass": true
+    },
+    {
+      "name": "marker toggle off 1440",
+      "pass": true
+    },
+    {
+      "name": "marker toggle on 1440",
+      "pass": true
+    },
+    {
+      "name": "map no mobile overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "native keyboard marker 1440",
+      "pass": true
+    },
+    {
+      "name": "keyboard marker opens popup 1440",
+      "pass": true
+    },
+    {
+      "name": "cancel replacement preserves tour 1440",
+      "pass": true
+    },
+    {
+      "name": "replace changes only requested stop 1440",
+      "pass": true
+    },
+    {
+      "name": "map markers synchronize replacement 1440",
+      "pass": true
+    },
+    {
+      "name": "tour reload retained 1440",
+      "pass": true
+    },
+    {
+      "name": "search disabled honestly in deterministic QA lane 1440",
+      "pass": true
+    },
+    {
+      "name": "web result remains in visible chat panel 1440",
+      "pass": true
+    },
+    {
+      "name": "lookup keeps tour 1440",
+      "pass": true
+    },
+    {
+      "name": "disabled result offers retry 1440",
+      "pass": true
+    },
+    {
+      "name": "retry keeps originating query and web flag 1440",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 1440",
+      "pass": true
+    },
+    {
+      "name": "map offline has bounded fallback 1440",
+      "pass": true
+    },
+    {
+      "name": "map offline preserves tour 1440",
+      "pass": true
+    },
+    {
+      "name": "desktop/mobile no horizontal overflow 390",
+      "pass": true
+    },
+    {
+      "name": "attached Vietnamese request preserves allergy and slots 390",
+      "pass": true
+    },
+    {
+      "name": "no tour before confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "read-only search keeps active clarification 390",
+      "pass": true
+    },
+    {
+      "name": "read-only search keeps allergy 390",
+      "pass": true
+    },
+    {
+      "name": "allergy warning before confirm 390",
+      "pass": true
+    },
+    {
+      "name": "actual three-stop tour 390",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL actual navigation 390",
+      "pass": true
+    },
+    {
+      "name": "MapLibre canvas created (tile rendering requires visual review) 390",
+      "pass": true
+    },
+    {
+      "name": "attribution visible 390",
+      "pass": true
+    },
+    {
+      "name": "markers match tour 390",
+      "pass": true
+    },
+    {
+      "name": "marker toggle off 390",
+      "pass": true
+    },
+    {
+      "name": "marker toggle on 390",
+      "pass": true
+    },
+    {
+      "name": "map no mobile overflow 390",
+      "pass": true
+    },
+    {
+      "name": "native keyboard marker 390",
+      "pass": true
+    },
+    {
+      "name": "keyboard marker opens popup 390",
+      "pass": true
+    },
+    {
+      "name": "cancel replacement preserves tour 390",
+      "pass": true
+    },
+    {
+      "name": "replace changes only requested stop 390",
+      "pass": true
+    },
+    {
+      "name": "map markers synchronize replacement 390",
+      "pass": true
+    },
+    {
+      "name": "tour reload retained 390",
+      "pass": true
+    },
+    {
+      "name": "search disabled honestly in deterministic QA lane 390",
+      "pass": true
+    },
+    {
+      "name": "web result remains in visible chat panel 390",
+      "pass": true
+    },
+    {
+      "name": "lookup keeps tour 390",
+      "pass": true
+    },
+    {
+      "name": "disabled result offers retry 390",
+      "pass": true
+    },
+    {
+      "name": "retry keeps originating query and web flag 390",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 390",
+      "pass": true
+    },
+    {
+      "name": "map offline has bounded fallback 390",
+      "pass": true
+    },
+    {
+      "name": "map offline preserves tour 390",
+      "pass": true
+    },
+    {
+      "name": "no external map/provider requests in deterministic UI lane",
+      "pass": true
+    },
+    {
+      "name": "map made real partial-content requests",
+      "pass": true
+    },
+    {
+      "name": "real chat requests completed HTTP200",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "empty-1440.png",
+    "clarify-1440.png",
+    "clarify-search-disabled-1440.png",
+    "confirm-1440.png",
+    "tour-schematic-1440.png",
+    "figma-comparison-1440-side.png",
+    "figma-comparison-1440-overlay.png",
+    "tour-map-1440.png",
+    "web-disabled-1440.png",
+    "map-offline-1440.png",
+    "empty-390.png",
+    "clarify-390.png",
+    "clarify-search-disabled-390.png",
+    "confirm-390.png",
+    "tour-schematic-390.png",
+    "tour-map-390.png",
+    "tour-map-region-390.png",
+    "web-disabled-390.png",
+    "map-offline-390.png"
+  ],
+  "consoleErrors": [],
+  "network": {
+    "remoteOrigins": [],
+    "pmtilesRanges": [
+      {
+        "status": 206,
+        "range": "bytes 0-16383/2138597"
+      },
+      {
+        "status": 206,
+        "range": "bytes 487845-605035/2138597"
+      },
+      {
+        "status": 206,
+        "range": "bytes 487845-605035/2138597"
+      },
+      {
+        "status": 206,
+        "range": "bytes 0-16383/2138597"
+      },
+      {
+        "status": 206,
+        "range": "bytes 487845-605035/2138597"
+      },
+      {
+        "status": 206,
+        "range": "bytes 487845-605035/2138597"
+      }
+    ],
+    "chatStatuses": [
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200,
+      200
+    ]
+  },
+  "limitations": [
+    "Canvas creation alone does not prove geographic tiles rendered; inspect screenshots and tile requests.",
+    "Tavily success/429 require separate explicitly mocked-provider checks; no live Tavily key.",
+    "This probe supplements the independent full regression suite."
+  ],
+  "visualMeasurements": {
+    ".nn-sidebar": {
+      "x": 0,
+      "y": 0,
+      "width": 232,
+      "height": 1024,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(255, 255, 255)",
+      "background": "rgb(112, 41, 20)"
+    },
+    ".nn-topbar": {
+      "x": 264,
+      "y": 24,
+      "width": 1129,
+      "height": 38,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".nn-main-grid": {
+      "x": 264,
+      "y": 98,
+      "width": 1144,
+      "height": 886,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".nn-chat-card": {
+      "x": 264,
+      "y": 98,
+      "width": 668,
+      "height": 886,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgb(255, 254, 250)"
+    },
+    ".nn-tour-col": {
+      "x": 956,
+      "y": 98,
+      "width": 452,
+      "height": 886,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".nn-hero-heading": {
+      "x": 292,
+      "y": 198,
+      "width": 612,
+      "height": 120,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "44px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgba(0, 0, 0, 0)"
+    },
+    ".nn-hero-card": {
+      "x": 956,
+      "y": -277,
+      "width": 435,
+      "height": 190,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgb(207, 84, 47)"
+    },
+    ".nn-metrics-card": {
+      "x": 956,
+      "y": -75,
+      "width": 435,
+      "height": 66,
+      "font": "\"Segoe UI\", -apple-system, BlinkMacSystemFont, Roboto, \"Helvetica Neue\", Arial, sans-serif",
+      "fontSize": "16px",
+      "color": "rgb(35, 24, 21)",
+      "background": "rgb(255, 254, 250)"
+    }
+  }
+}

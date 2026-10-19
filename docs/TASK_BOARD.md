@@ -1,6 +1,8 @@
-> **Active direction (2026-10-19):** Codex coordinates, owns architecture/contracts and reviews/integrates; Antigravity implements explicitly bounded tasks. The temporary Antigravity-full override is revoked. Claude remains inactive for this initiative. Preserve the accepted SVG UI and previous functional safeguards; historical PASS counts are not acceptance of new work.
+> **Active direction (2026-10-19):** Codex coordinates, owns architecture/contracts and reviews/integrates; Antigravity implements explicitly bounded tasks. The temporary Antigravity-full override is revoked. Claude remains inactive for this initiative. The approved Figma Warm editorial frame1:145 replaces the former SVG visual target; preserve functional safeguards and source-specific evidence.
 
 ## Active online assistant initiative
+
+FINAL FIGMA UI: integrated9af6126 accepted locally after50 targeted /190 independent browser /60 actual production UI /32 mocked-citation checks and147kB production build PASS. Current new UI URL http://127.0.0.1:3100, isolated synthetic/rules API8100/provider off; old servers preserved. Actual1440/390 comparison/screenshots, measured deviations and task outcomes: reports/FIGMA_WARM_EDITORIAL_ACCEPTANCE.md and FIGMA_WARM_EDITORIAL_BOARD.md. All Figma tasks settled, same Antigravity retained/no active editor. No live-provider probes or backend full-suite repeat. Older open/rejected states below are historical.
 
 Figma review update:905e6ea rejected before integration. Six concrete findings in reports/FIGMA_WARM_EDITORIAL_CODEX_REVIEW.md include fabricated unknown data/history, group budget mislabeled per-person and material visual mismatch. Same Antigravity correction task_53af11905ca6/ctx_0e9c06b07142 owns prior scoped frontend/QA files; Codex review/integration only. Final regression waits for corrected candidate; no new provider calls.
 

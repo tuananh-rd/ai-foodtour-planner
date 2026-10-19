@@ -89,6 +89,8 @@ try{
     if(buttonMarker){await ev(`document.querySelector('.maplibregl-marker').focus()`);await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await pause(200);record('keyboard marker opens popup '+width,await ev(`!!document.querySelector('.maplibregl-popup')`));}
     await capture('tour-map-'+width);
     if(width===390){await ev(`document.querySelector('[data-testid="pilot-map-container"]')?.scrollIntoView({block:'center'})`);await capture('tour-map-region-'+width,true);}
+    // Warm editorial uses separate map/list views; return through the actual control before replacing.
+    if(process.env.OA_REFERENCE)await click('[data-testid="view-mode-schematic-btn"]');
     const names=()=>ev(`Array.from(document.querySelectorAll('.nn-timeline-card-title')).map(e=>e.textContent.trim())`);
     const originalNames=await names();
     await click(sel('stop-replace-btn-0'));await until(()=>exists('replace-modal-cancel-btn'));
@@ -97,11 +99,13 @@ try{
     const replaced=await exists('replace-modal-done-btn');
     if(replaced){await click(sel('replace-modal-done-btn'));await pause(300);const changed=await names();record('replace changes only requested stop '+width,changed.length===3&&changed[0]!==originalNames[0]&&changed.slice(1).every((n,i)=>n===originalNames[i+1]));}
     else record('replace returns explicit failure preserving tour '+width,JSON.stringify(await names())===JSON.stringify(originalNames)&&await ev(`!!document.querySelector('[role="alert"]')`));
-    const currentNames=await names();record('map markers synchronize replacement '+width,await ev(`(()=>{const labels=Array.from(document.querySelectorAll('.maplibregl-marker')).map(e=>e.getAttribute('aria-label'));return ${JSON.stringify(currentNames)}.every(name=>labels.some(label=>label?.endsWith(name)));})()`));
+    const currentNames=await names();
+    if(process.env.OA_REFERENCE){await click(sel('pilot-map-toggle'));await until(async()=>(await markerCount())===3);}
+    record('map markers synchronize replacement '+width,await ev(`(()=>{const labels=Array.from(document.querySelectorAll('.maplibregl-marker')).map(e=>e.getAttribute('aria-label'));return ${JSON.stringify(currentNames)}.every(name=>labels.some(label=>label?.endsWith(name)));})()`));
     await cdp('Page.reload');await until(()=>exists('guided-timeline'));record('tour reload retained '+width,await ev(`document.querySelectorAll('[data-testid^="timeline-stop-card-"]').length===3`));
     await mobileChat();await until(()=>exists('guided-input'));await click(sel('online-search-toggle'));
     await send('giờ mở cửa phở quanh Hồ Gươm');await until(()=>exists('online-search-results'));
-    record('missing Tavily key honest disabled '+width,await exists('web-search-status-disabled'));
+    record('search disabled honestly in deterministic QA lane '+width,await exists('web-search-status-disabled'));
     record('web result remains in visible chat panel '+width,await ev(`document.querySelector('[data-testid="online-search-results"],[data-testid="web-search-card"]')?.getClientRects().length>0`));
     record('lookup keeps tour '+width,await exists('guided-timeline'));
     await capture('web-disabled-'+width);
@@ -117,8 +121,11 @@ try{
     if(width===390){await click(sel('mobile-tab-tour'));await pause(150);}
     await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-fallback'),14000);
     record('map offline has bounded fallback '+width,await exists('pilot-map-fallback'));
+    await capture('map-offline-'+width);
+    // The new map view intentionally unmounts the list; return through its visible control.
+    if(process.env.OA_REFERENCE){await click('[data-testid="view-mode-schematic-btn"]');await until(()=>exists('guided-timeline'));}
     record('map offline preserves tour '+width,await exists('guided-timeline'));
-    await capture('map-offline-'+width);await cdp('Fetch.disable');
+    await cdp('Fetch.disable');
   }
   evidence.network.remoteOrigins=[...origins];
   record('no external map/provider requests in deterministic UI lane',origins.size===0);

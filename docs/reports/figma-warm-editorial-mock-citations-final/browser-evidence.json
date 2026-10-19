@@ -1,0 +1,149 @@
+{
+  "web": "http://127.0.0.1:3100",
+  "api": "http://127.0.0.1:8180",
+  "build_commit": null,
+  "mode": "real UI and synthetic backend; mocked external search only",
+  "transport": "CDP retargets http://127.0.0.1:8100 to http://127.0.0.1:8180; no product URL override",
+  "checks": [
+    {
+      "name": "mocked success visible 1440",
+      "pass": true
+    },
+    {
+      "name": "citation URL and rel safe 1440",
+      "pass": true
+    },
+    {
+      "name": "escaped untrusted title cannot execute 1440",
+      "pass": true
+    },
+    {
+      "name": "retrieval date and time shown 1440",
+      "pass": true
+    },
+    {
+      "name": "unverified source disclaimer visible 1440",
+      "pass": true
+    },
+    {
+      "name": "successful cache badge 1440",
+      "pass": true
+    },
+    {
+      "name": "mocked provider quota visible 1440",
+      "pass": true
+    },
+    {
+      "name": "quota not labelled daily-only 1440",
+      "pass": true
+    },
+    {
+      "name": "quota retry remains explicit and visible 1440",
+      "pass": true
+    },
+    {
+      "name": "mocked provider unavailable visible 1440",
+      "pass": true
+    },
+    {
+      "name": "failure has no cache badge 1440",
+      "pass": true
+    },
+    {
+      "name": "backend rejects private source URL 1440",
+      "pass": true
+    },
+    {
+      "name": "injection rejected without planner action 1440",
+      "pass": true
+    },
+    {
+      "name": "private query rejected before adapter 1440",
+      "pass": true
+    },
+    {
+      "name": "all fixture lookups preserve planner state 1440",
+      "pass": true
+    },
+    {
+      "name": "mocked success visible 390",
+      "pass": true
+    },
+    {
+      "name": "citation URL and rel safe 390",
+      "pass": true
+    },
+    {
+      "name": "escaped untrusted title cannot execute 390",
+      "pass": true
+    },
+    {
+      "name": "retrieval date and time shown 390",
+      "pass": true
+    },
+    {
+      "name": "unverified source disclaimer visible 390",
+      "pass": true
+    },
+    {
+      "name": "successful cache badge 390",
+      "pass": true
+    },
+    {
+      "name": "mocked provider quota visible 390",
+      "pass": true
+    },
+    {
+      "name": "quota not labelled daily-only 390",
+      "pass": true
+    },
+    {
+      "name": "quota retry remains explicit and visible 390",
+      "pass": true
+    },
+    {
+      "name": "mocked provider unavailable visible 390",
+      "pass": true
+    },
+    {
+      "name": "failure has no cache badge 390",
+      "pass": true
+    },
+    {
+      "name": "backend rejects private source URL 390",
+      "pass": true
+    },
+    {
+      "name": "injection rejected without planner action 390",
+      "pass": true
+    },
+    {
+      "name": "private query rejected before adapter 390",
+      "pass": true
+    },
+    {
+      "name": "all fixture lookups preserve planner state 390",
+      "pass": true
+    },
+    {
+      "name": "no external browser requests in fixture lane",
+      "pass": true
+    },
+    {
+      "name": "fixture declares zero external provider calls",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "citations-1440.png",
+    "cached-1440.png",
+    "quota-1440.png",
+    "offline-1440.png",
+    "citations-390.png",
+    "cached-390.png",
+    "quota-390.png",
+    "offline-390.png"
+  ],
+  "externalOrigins": [],
+  "stage": "response"
+}

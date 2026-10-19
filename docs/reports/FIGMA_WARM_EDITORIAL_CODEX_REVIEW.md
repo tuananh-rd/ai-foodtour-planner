@@ -1,5 +1,9 @@
 # Codex review — candidate905e6ea not accepted
 
+## Final verdict — local integration9af6126 accepted with visual limits
+
+Later candidates were corrected through fef4d34 and integrated9af6126. Source/image review and final browser190/190 (including200% reflow), production UI60/60, mocked-citations32/32 and production build147kB pass. WE-01–12 corrected; unknowns/group scope/visible metadata/keyboard/focus and map/Maps flows retained. No new live-provider calls. Actual normalized initial comparison, tour scroll-state comparison, overlay and mobile geographic evidence reviewed; font/baseline, hero+12px/metrics+8px and dynamic card/scroll differences remain documented, not pixel-perfect acceptance. See FIGMA_WARM_EDITORIAL_ACCEPTANCE.md. Historical rejected candidate findings below remain as provenance, not current open tasks.
+
 ## Integrated25cd216 — final gate remains open
 
 Reviewed2a82b48 fixes chat/hero rhythm and mobile navigation; integrated25cd216 for verification. A single final broad browser run yields187/190, exit1 (figma-warm-editorial-regression-final.json). Two timeline checks depend on changed source wording; classify separately from product. Real WE-11:200% CSS text reflow390px clips map-toggle/right422px and replacement/right427px. WE-12: GuidedTimeline renders price/leg metadata only in nn-sr, hiding facts from sighted users. Same-owner task_f223894221b3 repairs these with targeted evidence; no acceptance yet. Build147kB passes. Actual font rendering, dynamic warning/scroll layout and omitted unsupported sidebar features remain visual differences; no pixel-identical or fullWCAG claim.

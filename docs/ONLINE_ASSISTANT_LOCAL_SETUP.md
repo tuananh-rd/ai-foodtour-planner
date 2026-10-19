@@ -1,5 +1,7 @@
 # Online assistant local operation
 
+Latest UI delivery: **http://127.0.0.1:3100**, Warm editorial production frontend9af6126 compiled for isolated API8100 (synthetic/rules, process-only Tavily disabled and LLM off). Read reports/FIGMA_WARM_EDITORIAL_ACCEPTANCE.md for final evidence and visual limits. This supersedes older3060 references as the current Figma UI test URL; old servers and local backend/.env/caps remain preserved. No provider calls occur in this isolated mode. Citation success/failure is separately tested using explicit mocked external transport, not live Tavily/Gemini.
+
 Implementation acceptance is tracked in [ONLINE_ASSISTANT_BOARD](reports/ONLINE_ASSISTANT_BOARD.md) and [CODEX_REVIEW](reports/online-assistant/CODEX_REVIEW.md). A running process, successful build or mock response is not live-provider acceptance.
 
 ## Configuration boundaries

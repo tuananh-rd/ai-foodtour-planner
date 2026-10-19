@@ -4,15 +4,16 @@ import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
 import {spawn,execFileSync} from 'node:child_process';
-const web='http://127.0.0.1:3060', builtApi='http://127.0.0.1:8060', api='http://127.0.0.1:8080';
-const port=19770,out='docs/reports/online-assistant/mock-web';
+const web=process.env.OA_WEB||'http://127.0.0.1:3060', builtApi=process.env.OA_API||'http://127.0.0.1:8060', api=process.env.OA_FIXTURE_API||'http://127.0.0.1:8080';
+for(const value of [web,builtApi,api]){const u=new URL(value);if(u.protocol!=='http:'||u.hostname!=='127.0.0.1'||u.username||u.password)throw Error('Only fixed loopback QA targets allowed');}
+const port=19770,out=process.env.OA_EVIDENCE||'docs/reports/online-assistant/mock-web';
 const metadata=await(await fetch(api+'/qa/search-fixture')).json();
 const health=await(await fetch(api+'/health')).json();
 if(metadata.mode!=='mocked-external-provider'||health.dataset_source!=='synthetic'||health.assistant_provider!=='rules')throw Error('Explicit synthetic external-fixture guard');
 const free=await new Promise(resolve=>{const s=net.createServer();s.once('error',()=>resolve(false));s.listen(port,'127.0.0.1',()=>s.close(()=>resolve(true)));});
 if(!free)throw Error('Dedicated browser port occupied; nothing stopped');
 fs.mkdirSync(out,{recursive:true});
-const evidence={web,api,build_commit:health.build_commit,mode:'real UI and synthetic backend; mocked external search only',transport:'CDP retargets fixed built API8060 to fixed local fixture8080; no product URL override',checks:[],screenshots:[],externalOrigins:[]};
+const evidence={web,api,build_commit:health.build_commit,mode:'real UI and synthetic backend; mocked external search only',transport:`CDP retargets ${builtApi} to ${api}; no product URL override`,checks:[],screenshots:[],externalOrigins:[]};
 const record=(name,pass)=>{evidence.checks.push({name,pass:!!pass});console.log(JSON.stringify(evidence.checks.at(-1)));};
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(fn){const start=Date.now();while(Date.now()-start<20000){try{if(await fn())return;}catch{}await pause(80);}throw Error('Observable fixture UI timed out');}
@@ -37,18 +38,41 @@ try{
   const ev=async expression=>{const r=await cdp('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error('Fixture UI evaluation failed');return r.result.value;};
   const sel=id=>`[data-testid="${id}"]`;
   const visible=id=>ev(`document.querySelector(${JSON.stringify(sel(id))})?.getClientRects().length>0`);
-  async function click(id){const selector=sel(id);await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center'})`);const point=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled||!e.getClientRects().length)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)throw Error('Fixture control missing/hidden: '+id);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
+  async function click(id){const selector=sel(id);await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center',behavior:'instant'})`);await pause(120);const point=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled||!e.getClientRects().length)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)throw Error('Fixture control missing/hidden: '+id);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
   async function idle(){await until(()=>ev(`!document.querySelector('[aria-busy="true"]')`));await pause(150);}
-  async function search(query){await click('web-search-optin-checkbox');await ev(`document.querySelector('[data-testid="guided-input"]').focus()`);await cdp('Input.insertText',{text:query});const before=responses;await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await until(()=>responses>before);await idle();}
+  async function search(query){
+    try {
+      evidence.stage='ready controls';
+      await until(()=>ev(`!document.querySelector('[data-testid="guided-input"]')?.disabled&&!document.querySelector('[data-testid="web-search-optin-checkbox"]')?.disabled`));
+      // Exercise native keyboard opt-in, avoiding stale pointer coordinates during mobile scrolling.
+      evidence.stage='opt in';await ev(`document.querySelector('[data-testid="web-search-optin-checkbox"]').focus({preventScroll:true})`);
+      await until(()=>ev(`document.activeElement===document.querySelector('[data-testid="web-search-optin-checkbox"]')`));
+      await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:' ',code:'Space',text:' ',windowsVirtualKeyCode:32});
+      await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:' ',code:'Space',windowsVirtualKeyCode:32});
+      await until(()=>ev(`document.querySelector('[data-testid="web-search-optin-checkbox"]').checked`));
+      evidence.stage='focus composer';await ev(`document.querySelector('[data-testid="guided-input"]').focus({preventScroll:true})`);
+      await until(()=>ev(`document.activeElement===document.querySelector('[data-testid="guided-input"]')`));
+      evidence.stage='insert and submit';await cdp('Input.insertText',{text:query});const before=responses;
+      await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});
+      await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});
+      evidence.stage='response';await until(()=>responses>before);await idle();
+    }catch(error){
+      evidence.failureDom=await ev(`({active:document.activeElement?.dataset?.testid,inputDisabled:document.querySelector('[data-testid="guided-input"]')?.disabled,input:document.querySelector('[data-testid="guided-input"]')?.value,checked:document.querySelector('[data-testid="web-search-optin-checkbox"]')?.checked,busy:!!document.querySelector('[aria-busy="true"]'),card:document.querySelector('[data-testid="web-search-card"]')?.innerText,inputRect:document.querySelector('[data-testid="guided-input"]')?.getBoundingClientRect().toJSON(),visual:{offsetTop:visualViewport.offsetTop,height:visualViewport.height,scale:visualViewport.scale}})`);
+      await capture('driver-timeout');throw error;
+    }
+  }
   async function snapshot(){return ev(`(async()=>{const id=sessionStorage.getItem('foodtour_chat_session_id'),token=sessionStorage.getItem('foodtour_chat_session_token');const r=await fetch(${JSON.stringify(builtApi)}+'/v1/sessions/'+id,{headers:{'X-Session-Token':token}});const s=await r.json();return JSON.stringify({profile:s.chat?.profile,allergies:s.chat?.allergies,pending:s.chat?.pending,tour:s.tour,preferences:s.preferences});})()`);}
   async function capture(name){await ev(`document.querySelector('[data-testid="web-search-card"]')?.scrollIntoView({block:'center'})`);const r=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(r.data,'base64'));evidence.screenshots.push(name+'.png');}
   for(const domain of ['Page','Runtime','Network'])await cdp(domain+'.enable');
   await cdp('Fetch.enable',{patterns:[{urlPattern:builtApi+'/*',requestStage:'Request'}]});
-  for(const [width,height] of [[1440,1024],[390,844]]){
+  for(const [width,height] of [[1440,1024],[390,844]].filter(([w])=>!process.env.OA_VIEWPORT||String(w)===process.env.OA_VIEWPORT)){
+    evidence.stage='navigate '+width;
     await cdp('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width===390});
-    await cdp('Page.navigate',{url:web});await until(()=>visible('guided-input'));await ev('sessionStorage.clear()');await cdp('Page.reload');await until(()=>visible('guided-input'));await idle();
+    await cdp('Page.navigate',{url:web});await until(()=>visible('guided-input'));evidence.stage='reset session '+width;await ev('sessionStorage.clear()');await cdp('Page.reload');await until(()=>visible('guided-input'));await idle();
+    evidence.stage='owned session '+width;
     await until(()=>ev(`!!sessionStorage.getItem('foodtour_chat_session_id')&&!!sessionStorage.getItem('foodtour_chat_session_token')`));
     const baseline=await snapshot();
+    evidence.stage='search cases '+width;
     await search('phở quanh Hồ Gươm');
     record('mocked success visible '+width,await visible('web-search-status-ok'));
     record('citation URL and rel safe '+width,await ev(`(()=>{const a=document.querySelector('[data-testid="web-search-link"]');return a?.href==='https://example.com/synthetic-food-quote'&&a.rel.includes('noopener')&&a.rel.includes('noreferrer');})()`));
