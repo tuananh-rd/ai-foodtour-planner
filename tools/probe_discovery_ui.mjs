@@ -41,15 +41,16 @@ try{
  const exists=id=>ev(`!!document.querySelector(${JSON.stringify(sel(id))})`);
  async function click(selector){await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center'})`);const p=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled||!e.getClientRects().length)return null;const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`);if(!p)throw Error('Unavailable control '+selector);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...p});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...p});}
  async function idle(){await until(()=>ev(`!!document.querySelector('[data-testid="discovery-input"]')&&!document.querySelector('[data-testid="discovery-input"]').disabled&&!document.querySelector('[aria-busy="true"]')`));await pause(130);}
- async function send(text){await idle();const before=posts;await click(sel('discovery-input'));await cdp('Input.insertText',{text});await click(sel('discovery-send-btn'));await until(()=>posts>before);await idle();}
+ async function send(text){await idle();const before=posts;await click(sel('discovery-input'));await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',modifiers:2,windowsVirtualKeyCode:65});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'a',code:'KeyA',modifiers:2});await cdp('Input.insertText',{text});await click(sel('discovery-send-btn'));await until(()=>posts>before);await idle();}
+ const tab=name=>click(`.nn-mobile-tabs button:nth-child(${name==='chat'?1:2})`);
  async function action(id){const before=posts;await click(sel(id));await until(()=>posts>before);await idle();}
  async function shot(name){await ev('window.scrollTo(0,0)');const x=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(x.data,'base64'));evidence.screenshots.push(name+'.png');return x.data;}
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
  for(const width of (process.env.DISCOVERY_WIDTHS||'1440,390').split(',').map(Number)){
    view=null;await cdp('Emulation.setDeviceMetricsOverride',{width,height:width===1440?1024:844,deviceScaleFactor:1,mobile:width===390});
    await cdp('Page.navigate',{url:web});await until(()=>exists('discovery-input'));await idle();
-   if(width===390){await click(sel('guided-reset-btn'));await idle();}
    await until(()=>view!==null);
+   if(width===390){const before=posts;await click(sel('guided-reset-btn'));await until(()=>posts>before);await idle();}
    record('initial nullable profile '+width,view.profile.party_size===null&&view.profile.duration_min===null&&view.profile.vehicle===null);
    await send('Chào bạn');record('greeting no checklist '+width,view.reply.question===null&&view.confirmation===null&&view.tour===null);
    await send('Tìm phở quanh Xuân Thủy dưới 70k');
@@ -59,6 +60,11 @@ try{
    await send('Thêm A rồi tìm chè ít ngọt');record('selection and taste survive next search '+width,view.selection.length===1&&view.profile.tastes.includes('ít ngọt'));
    await send('500k cho 2 người, 20 phút mỗi chặng');record('group budget not per person or duration '+width,view.profile.budget_scope==='group'&&view.profile.party_size===2&&view.profile.budget_vnd===500000&&view.profile.max_leg_min===20&&view.profile.duration_min===null);
    await send('Đổi ngân sách thành 600 nghìn cả nhóm');record('patch keeps other fields '+width,view.profile.party_size===2&&view.profile.max_leg_min===20&&view.profile.budget_vnd===600000);
+   const beforeConcurrent=posts;
+   const concurrentStatus=await ev(`(async()=>{const id=sessionStorage.getItem('foodtour_chat_session_id'),token=sessionStorage.getItem('foodtour_chat_session_token');const r=await fetch(${JSON.stringify(api)}+'/v1/sessions/'+encodeURIComponent(id)+'/assistant',{method:'POST',headers:{'Content-Type':'application/json','X-Session-Token':token},body:JSON.stringify({revision:${view.revision},text:'Chào bạn'})});await r.json();return r.status})()`);
+   await until(()=>posts>beforeConcurrent);
+   await send('Đổi ngân sách thành 700 nghìn cả nhóm');
+   record('real409 refetch without replay and preserves draft '+width,concurrentStatus===200&&evidence.statuses.includes(409)&&view.profile.budget_vnd===600000&&await ev(`document.querySelector('[data-testid="discovery-input"]').value.includes('700')`));
    const discoveryShot=await shot('discovery-'+width);
    if(width===1440){
      const ref=fs.readFileSync('docs/design/figma-warm-editorial-reference.png').toString('base64');
@@ -70,12 +76,31 @@ try{
    record('explicit server confirmation required '+width,!!view.confirmation&&view.tour===null&&view.confirmation.warnings.length>0);
    await send('ok');record('generic ok is not confirmation '+width,!!view.confirmation&&view.tour===null);
    await action('btn-confirm-itinerary');record('confirmed real planner tour '+width,!!view.tour?.stops?.length&&view.confirmation===null);
-   if(width===390)await click(sel('mobile-tab-tour'));
+   if(width===390)await tab('tour');
    await until(()=>exists('guided-timeline'));await shot('confirmed-'+width);
    record('free Maps URL exists '+width,await ev(`Array.from(document.querySelectorAll('a[href]')).some(a=>{const u=new URL(a.href);return ['google.com','www.google.com'].includes(u.hostname)&&u.pathname.startsWith('/maps/')&&!u.searchParams.has('key')})`));
-   await click(sel('pilot-map-toggle'));await pause(1800);record('PMTiles map accessible '+width,await exists('pilot-map-canvas')||await exists('map-canvas'));await shot('map-'+width);
+   record('Maps starts at actual chosen origin '+width,await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');return a&&new URL(a.href).searchParams.get('origin')===${JSON.stringify(view.profile.origin.lat+','+view.profile.origin.lon)}})()`));
+   await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(1800);record('PMTiles map accessible '+width,await exists('pilot-map-canvas'));await shot('map-'+width);
+   await click(sel('pilot-markers-toggle'));record('marker toggle hides points '+width,await ev(`document.querySelector('[data-testid="pilot-markers-toggle"]').getAttribute('aria-pressed')==='false'`));await click(sel('pilot-markers-toggle'));
    await cdp('Page.reload');await until(()=>exists('discovery-input'));await idle();record('reload preserves selection and tour '+width,view.selection.length===1&&!!view.tour?.stops?.length);
-   if(width===390)await click(sel('mobile-tab-chat'));
+   if(width===390)await tab('tour');
+   await actionlessReplace();
+   async function actionlessReplace(){
+     const oldId=view.selection[0].id;
+     await click(sel('stop-replace-btn-0'));record('replacement opens actual selection editor '+width,await exists('editing-selection-banner'));
+     await action('btn-lock-venue-'+oldId);await action('btn-remove-venue-'+oldId);
+     record('locked stop cannot be silently removed '+width,view.selection.some(x=>x.id===oldId&&x.locked));
+     await action('btn-lock-venue-'+oldId);await action('btn-remove-venue-'+oldId);
+     if(width===390)await tab('chat');
+     await send('Tìm phở quanh Hồ Gươm');const nextId=view.results[0].id;
+     await action('btn-select-venue-'+nextId);record('replacement selection invalidates tour '+width,view.selection.length===1&&view.selection[0].id===nextId&&nextId!==oldId&&view.tour===null&&view.confirmation===null);
+     await send('Tạo lịch trình');record('replacement needs new confirmation '+width,!!view.confirmation&&view.tour===null);
+     await action('btn-confirm-itinerary');record('replacement creates different real tour '+width,view.tour?.stops?.[0]?.venue_id===nextId);
+   }
+   if(width===390)await tab('chat');
+   await send('Tổng thời lượng 30 phút');await send('Tạo lịch trình');await action('btn-confirm-itinerary');
+   record('no solution preserves selected venues and explains changes '+width,view.status==='no_solution'&&view.selection.length===1&&view.tour===null&&!!view.reply.text);
+   await send('Tổng thời lượng 120 phút');await action('btn-confirm-itinerary');
    await send('Dị ứng đậu phộng');record('allergy edit invalidates tour '+width,view.profile.allergies.length>0&&view.tour===null&&view.confirmation===null);
    await send('Tạo lịch trình');record('unknown allergy never safe '+width,view.status==='unknown'&&view.confirmation===null&&view.tour===null);
    record('no horizontal overflow '+width,await ev('document.documentElement.scrollWidth<=innerWidth'));
@@ -84,6 +109,8 @@ try{
    await cdp('Network.enable');await cdp('Network.emulateNetworkConditions',{offline:true,latency:0,downloadThroughput:-1,uploadThroughput:-1});
    await send('Tìm chè').catch(()=>{});record('offline exposes readable error '+width,await exists('guided-error-banner'));
    await cdp('Network.emulateNetworkConditions',{offline:false,latency:0,downloadThroughput:-1,uploadThroughput:-1});
+   const previousSession=view.session_id,beforeReset=posts;await click(sel('guided-reset-btn'));await until(()=>posts>beforeReset);await idle();
+   record('new session clears old chat selection and allergy '+width,view.session_id!==previousSession&&view.messages.length===0&&view.selection.length===0&&view.profile.allergies.length===0);
  }
  record('no external provider/map origin',evidence.remoteOrigins.length===0);
  record('actual PMTiles Range206',evidence.ranges.includes(206));
