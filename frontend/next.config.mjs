@@ -11,6 +11,15 @@ export default {
             value: 'public, max-age=31536000, immutable'
           }
         ]
+      },
+      {
+        source: '/maps/maplibre-gl-worker-6.15.0.mjs',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable'
+          }
+        ]
       }
     ];
   }

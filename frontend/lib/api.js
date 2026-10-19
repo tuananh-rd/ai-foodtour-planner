@@ -202,7 +202,14 @@ export function setRuntimeMockMode(enable) {
 }
 
 export function getApiBaseUrl() {
-  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000';
+  if (typeof window !== 'undefined') {
+    if (window.__FOODTOUR_API_URL__) return window.__FOODTOUR_API_URL__;
+    try {
+      const sp = new URLSearchParams(window.location.search);
+      if (sp.has('api')) return sp.get('api');
+    } catch (_) {}
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8060';
 }
 
 // In-memory mock session store for realistic client testing
@@ -1454,6 +1461,48 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
     }
 
     session.chat.turn_count = (session.chat.turn_count || 0) + 1;
+
+    // For body.web_search, short-circuit immediately per review requirement (msg_9b93380962c7):
+    // Returns labelled unavailable web block with completely UNCHANGED preferences, pending,
+    // allergies, shortlist, and tour. Never feeds query into slot/profile/tour mutation.
+    if (body.text && body.web_search) {
+      return {
+        reply: {
+          blocks: [
+            {
+              type: 'text',
+              text: '[MOCK] Dịch vụ tra cứu web đang ở chế độ thử nghiệm cục bộ; chưa kết nối nhà cung cấp bên ngoài.'
+            },
+            {
+              type: 'web_search',
+              status: 'unavailable',
+              sources: [],
+              fetched_at: null,
+              credits: 0,
+              cached: false,
+              query: body.text
+            }
+          ]
+        },
+        chat: session.chat,
+        turn: {
+          intent: 'WEB_SEARCH',
+          tools: ['web_search'],
+          understanding: 'rules',
+          llm_budget: {
+            session_used: 0,
+            session_cap: 6,
+            daily_remaining_public: 'ok'
+          }
+        },
+        tour: session.tour || null,
+        revision: session.revision,
+        extraction_source: 'web_search',
+        llm_calls: 0,
+        llm_budget: { limit: 18, used: 0, remaining: 18, exhausted: false },
+        is_mock: true
+      };
+    }
 
     // Handle local deterministic actions
     if (body.action?.type === 'add' && body.action.venue_id) {
