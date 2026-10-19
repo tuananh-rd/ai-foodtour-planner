@@ -1,6 +1,7 @@
 """Plain professional display text; never mutate source records or identifiers."""
 import re
 
+_FORMATS = re.compile(r'[\ufe0e\ufe0f\u200d\U000e0020-\U000e007f]')
 
 # Pictographs, flags/modifiers, legacy emoji symbols and sequence components.
 # Match keycaps as a unit so their digit is not left as an invented fact.
@@ -17,5 +18,8 @@ _EMOJI = re.compile(
 
 def plain_text(text: str) -> str:
     """Remove emoji sequences while retaining Vietnamese, numbers and line breaks."""
+    # Remove invisible formatting without splitting words: safety verification
+    # must still recognize a claim with a joiner inserted inside a word.
+    text = _FORMATS.sub('', text)
     # Keep a separator: "20<pictograph>30" must not become the new number2030.
     return re.sub(r'[ \t]{2,}', ' ', _EMOJI.sub(' ', text)).strip()

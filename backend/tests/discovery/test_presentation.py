@@ -14,6 +14,7 @@ class PresentationTests(unittest.TestCase):
         self.assertEqual(plain_text(text), 'Phở 70.000 đ, 2 người\n Chưa rõ giờ')
         self.assertEqual(plain_text('18:00 → 19:00; 0–5 phút'), '18:00 → 19:00; 0–5 phút')
         self.assertEqual(plain_text('20\U0001f35c30 Phở\U0001f35cngon'), '20 30 Phở ngon')
+        self.assertEqual(plain_text('Ph\u200dở \ufe0f'), 'Phở')
 
     def test_generated_text_cleaned_before_validation(self):
         tools = Tools(State(), fixture(), StraightLineEstimator())
@@ -21,6 +22,7 @@ class PresentationTests(unittest.TestCase):
         self.assertIsNone(safe_answer('\U0001f35c', tools, []))
         self.assertIsNone(safe_answer('Đã thêm quán \U0001f35c', tools, []))
         self.assertIsNone(safe_answer('An toàn dị ứng \u2705', tools, []))
+        self.assertIsNone(safe_answer('An toà\u200dn dị ứng', tools, []))
 
     def test_assistant_replay_plain_user_input_preserved(self):
         state = State()
