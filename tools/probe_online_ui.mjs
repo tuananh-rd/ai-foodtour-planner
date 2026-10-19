@@ -43,6 +43,12 @@ try{
   async function idle(){await pause(120);await until(()=>ev(`!document.querySelector('[aria-busy="true"]')`));await pause(250);}
   async function send(text){const before=chatResponses;const input=await exists('clarify-free-text-input')?'clarify-free-text-input':'guided-input';await ev(`document.querySelector(${JSON.stringify(sel(input))}).focus()`);await cdp('Input.insertText',{text});await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await until(()=>chatResponses>before);await idle();}
   async function capture(name,keepScroll=false){if(!keepScroll)await ev('window.scrollTo(0,0)');const shot=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(shot.data,'base64'));evidence.screenshots.push(name+'.png');return shot.data;}
+  async function compareReference(actual,name){
+    const reference=fs.readFileSync('docs/design/ngonngon-tour-reference.png').toString('base64');
+    const pictures=await ev(`(async()=>{const load=async s=>{const i=new Image();i.src='data:image/png;base64,'+s;await i.decode();return i;};const ref=await load(${JSON.stringify(reference)}),actual=await load(${JSON.stringify(actual)});const side=document.createElement('canvas');side.width=2880;side.height=1024;const sc=side.getContext('2d');sc.drawImage(ref,0,0,1440,1024);sc.drawImage(actual,1440,0,1440,1024);const overlay=document.createElement('canvas');overlay.width=1440;overlay.height=1024;const oc=overlay.getContext('2d');oc.drawImage(ref,0,0,1440,1024);oc.globalAlpha=.5;oc.drawImage(actual,0,0,1440,1024);return {side:side.toDataURL().split(',')[1],overlay:overlay.toDataURL().split(',')[1]};})()`);
+    for(const [kind,data] of Object.entries(pictures)){const filename=name+'-'+kind+'.png';fs.writeFileSync(path.join(out,filename),Buffer.from(data,'base64'));evidence.screenshots.push(filename);}
+    evidence.visualMeasurements=await ev(`(()=>{const result={};for(const selector of ['.nn-header','.nn-main','.nn-chat','.nn-tour','.nn-title','.nn-route']){const e=document.querySelector(selector);if(e){const r=e.getBoundingClientRect(),s=getComputedStyle(e);result[selector]={x:r.x,y:r.y,width:r.width,height:r.height,font:s.fontFamily,fontSize:s.fontSize,color:s.color,background:s.backgroundColor};}}return result;})()`);
+  }
   async function mobileChat(){if(await exists('mobile-tab-chat'))await click(sel('mobile-tab-chat'));}
   for(const domain of ['Page','Runtime','Network'])await cdp(domain+'.enable');
   await cdp('Network.setCacheDisabled',{cacheDisabled:true});
@@ -65,7 +71,7 @@ try{
     await capture('confirm-'+width);await click(sel('confirm-yes-btn'));await idle();await until(()=>exists('guided-timeline'));
     record('actual three-stop tour '+width,await ev(`document.querySelectorAll('[data-testid^="timeline-stop-card-"]').length===3`));
     record('free Maps URL actual navigation '+width,await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');if(!a)return false;const u=new URL(a.href);return ['google.com','www.google.com'].includes(u.hostname)&&u.pathname==='/maps/dir/'&&u.searchParams.get('api')==='1'&&!u.searchParams.has('key');})()`));
-    await capture('tour-schematic-'+width);
+    const schematic=await capture('tour-schematic-'+width);if(width===1440)await compareReference(schematic,'svg-comparison-1440');
     await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(3500);
     record('MapLibre canvas created (tile rendering requires visual review) '+width,await ev(`!!document.querySelector('[data-testid="pilot-map-canvas"] canvas,[data-testid="map-canvas"] canvas')`));
     record('attribution visible '+width,await ev(`(()=>{const t=document.querySelector('.nn-route')?.innerText||'';return /OpenStreetMap/.test(t)&&/Protomaps/.test(t);})()`));
