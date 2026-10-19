@@ -11,4 +11,6 @@ Source/base: fc09d2c, approved Figma frame1:145 and original1440x1024 PNG. This 
 | Visual/code review and local integration | Codex | PENDING | Review real screenshots against original, functionality and scoped diff; route necessary corrections to same worker |
 | Final relevant regression/build | Codex | PENDING | One final run after review, source/mode/URL evidence; no backend full-suite repeat absent backend changes |
 
+Review event: candidate905e6ea is NOT ACCEPTED or integrated. Actual screenshots/source reveal fabricated unknown metrics/times/history, incorrect budget scope/distance unit, invented dessert stage, keyboard/no-op controls, material type/spacing/card mismatches and overstated QA. See FIGMA_WARM_EDITORIAL_CODEX_REVIEW.md. Fresh bounded correction task_53af11905ca6 reuses the same Antigravity terminal with the same file scope; no concurrent frontend editor. Previous task settled/retained,28 candidate checks historical only. Final regression remains gated.
+
 Do not infer acceptance from dispatch/input acceptance/worker_done. Require actual ownership ACK/output, commit and test evidence. Preserve original untracked reports, private configuration/ledgers and all user servers. Existing3060/API8060 has a real Tavily credential: do not automate search there. Current live metadata blocker remains null PAYGO/key limits; Gemini PARTIAL.
