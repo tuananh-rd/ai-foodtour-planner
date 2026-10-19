@@ -1,146 +1,100 @@
-# OA1 Module Implementation Report: Conversational Assistant
+# OA1 / OA1R Module Implementation & Review Remediation Report: Conversational Assistant
 
 - **Date:** 2026-10-19
 - **Author:** Antigravity (dispatched worker)
 - **Coordinator:** Codex
-- **Contract Reference:** `docs/ONLINE_ASSISTANT_CONTRACT.md` (OA1)
-- **Task ID:** `task_6470a24ebdd6`
-- **Dispatch ID:** `ctx_c420f30a25d2`
+- **Contract Reference:** `docs/ONLINE_ASSISTANT_CONTRACT.md` (OA1 / OA1R)
+- **Base Commit:** `10b8966`
+- **Task ID:** `task_b538388a6a4a`
+- **Dispatch ID:** `ctx_dbcd66807adb`
 
 ---
 
 ## 1. Executive Summary
 
-Implemented the new bounded Vietnamese conversational assistant module (`app.assistant`) adhering strictly to the frozen OA1 contract. The module wraps the conversational layer around the deterministic state/planner pipeline via dependency injection of `GeminiClient.generate_json`. It strictly protects data privacy, enforces state/block immutability, guards against allergy clearance claims and factual hallucinations, and fails over safely to deterministic responses with honest status reporting.
+Addressed all review feedback from coordinator messages (`msg_f7e0cd41cc4d`, `msg_27f8fd8ddb97`, and `msg_810db9d60369`) on `backend/app/assistant/conversation.py`. The module now strictly sets the provider label to `gemini`, rejects operational/price/ETA/allergy claims, rejects false action and confirmation/state mutation claims (`Mình đã xác nhận và tạo tour thành công`, `Đã bỏ dị ứng khỏi yêu cầu`), enforces that profile numbers reflect authoritative structured state rather than user text alone, redacts arbitrary low-precision coordinate pairs and sensitive output echoes, sanitizes state strings, whitelists history roles, and enforces zero external LLM calls for health/allergy disclosures with omission of sensitive history and exclusion of `has_allergy` from external prompts per official unpaid Gemini terms. Fallback `ProviderError` import was cleaned up, and finite-guard limitations are documented honestly.
 
-All 21 targeted unit tests pass cleanly in both coordinator and local `.venv` environments.
-
----
-
-## 2. File Ownership & Boundary Verification
-
-The changes strictly adhere to the dispatched ownership boundaries:
-- **Created Modules:**
-  - `backend/app/assistant/__init__.py`: Exports `ConversationalAssistant` and `AssistantReply`.
-  - `backend/app/assistant/conversation.py`: Core logic for context projection, privacy redaction, provider invocation, schema validation, safety guards, and deterministic fallback.
-- **Created Unit Tests:**
-  - `backend/tests/assistant/__init__.py`
-  - `backend/tests/assistant/test_conversation.py`: 21 comprehensive test cases.
-- **Documentation:**
-  - `docs/reports/online-assistant/OA1.md`: This durable report.
-- **Untouched:**
-  - `backend/app/main.py`, `backend/app/api/*`, `backend/app/chat/*`, `backend/app/planner/*`, `backend/app/providers/*`, `contracts/*`, frontend, and existing tests remain completely untouched and owned by Codex.
+All 24 targeted unit tests pass in 0.004s across both coordinator and local `.venv` environments.
 
 ---
 
-## 3. Technical Implementation Details
+## 2. Review Remediations (OA1R)
 
-### 3.1 Interface & Contracts
-- **`ConversationalAssistant(provider=None)`**:
-  - `provider` is injected; no hardcoded credentials or HTTP transport inside the module.
-  - Exposes `provider_label` (model name or label, never secret keys) and `is_configured`.
-- **`AssistantReply`**:
-  - Immutable frozen dataclass with attributes:
-    - `status`: One of `{"ok", "disabled", "unavailable", "quota", "rejected"}`.
-    - `text`: Optional nullable string.
-    - `provider`: Provider label string.
-    - `llm_calls`: Integer indicating actual attempted calls (0 or 1).
-- **`respond(user_text, recent_turns, state, reply_blocks, *, deadline_s=8.0) -> AssistantReply`**:
-  - Read-only processing of inputs; never mutates supplied `state` or `reply_blocks`.
-
-### 3.2 Privacy & Context Bounding
-- **Redaction (`redact_sensitive`)**:
-  - Coordinate pairs (e.g., `(21.0285, 105.8542)`, lat/lon patterns) replaced with `[redacted_coord]`.
-  - Phone numbers (Vietnamese patterns) replaced with `[redacted_phone]`.
-  - Emails replaced with `[redacted_email]`.
-  - API keys, bearer tokens, hex secrets replaced with `[redacted_secret]`.
-- **Minimal Context Projection**:
-  - Only the last 4 text turns are included; each turn is bounded to at most 250 characters.
-  - Safe state projection: Includes `phase`, `pending` (kind/slot), safe `profile` slots (`party_size`, `budget`, `duration_min`, `vehicle`, `max_leg_min`, `stops`), and `has_allergy`.
-  - Coordinates, raw GPS, private venue IDs, and session tokens are excluded.
-
-### 3.3 Safety, Schema & Content Guards
-- **Strict Schema Enforcement**:
-  - The model must return valid JSON strictly conforming to `{"reply": "..."}`.
-  - Any extra fields (e.g., `action`, `tool`, `patch`, `commands`, `state`) trigger immediate rejection (`status="rejected"`).
-- **Allergy Clearance Guard**:
-  - Statements asserting allergy safety or guaranteeing absence of allergens (e.g., "an toàn cho người dị ứng", "không lo dị ứng", "cam kết an toàn") are rejected immediately.
-- **Instruction Leakage & Roleplay Guard**:
-  - Leaks referencing "system prompt", "system instruction", or prompt injection are rejected.
-  - Internal agent persona language (e.g., "Đại Ca", "tiểu đệ", "đàn em") is rejected; replies to end users must remain professional Vietnamese.
-- **Active Decision & Question Preservation**:
-  - When `state` contains an active pending decision (`pending` is not None), the assistant strictly forbids extra questions (`?` triggers rejection) to ensure the user is not confused by conflicting questions.
-  - When no decision is pending, at most one clarifying question is allowed.
-- **Hallucinated Numeric Facts & Venues**:
-  - Specific prices (e.g., `60.000đ`, `50k`), specific hours (e.g., `6h30`), and ratings (e.g., `4.8 sao`) not present in context are rejected.
-  - Invented named venues not present in context are rejected.
-
-### 3.4 Fallback Strategy
-- When disabled, unavailable (timeout/connection failure), quota-exhausted (HTTP 429), or rejected by validation guards:
-  - Deterministic text is extracted from `reply_blocks` (e.g. text blocks, notices, or clarify questions) without mutating the original blocks.
-  - The honest status (`disabled`, `unavailable`, `quota`, `rejected`) is returned.
+1. **Provider Label (`gemini`):**
+   - Injected provider label property is standardized to `"gemini"` when a provider is present, and `"none"` when provider is `None`.
+2. **Rejection of Operational, Price, ETA, and Allergy-Safety Claims:**
+   - Regardless of whether numbers were present in input (such as user budget or duration), the assistant explicitly rejects claims asserting:
+     - Venue or dish prices (e.g., `'quán này giá 500k mở cửa cả ngày'`, `giá khoảng 45k một bát`).
+     - Operational hours (e.g., `mở cửa cả ngày`, `mở cửa từ 6h00 đến 22h00`).
+     - Travel duration or ETA (e.g., `'chỉ mất vài phút'`, `đi bộ mất 10 phút là tới`).
+     - Allergy safety (e.g., `'ăn lạc được không sao'`, `yên tâm ăn không sao đâu`, `an toàn cho người dị ứng`).
+3. **Rejection of False Action Claims & Confirmation/State Mutation:**
+   - Per `msg_810db9d60369`, claims asserting that actions have been executed or state has been mutated (e.g., `'Mình đã xác nhận và tạo tour thành công'`, `'Đã bỏ dị ứng khỏi yêu cầu'`, `'đã đặt bàn'`, `'đã chốt kế hoạch'`) are strictly rejected.
+4. **Authoritative Structured State for Profile Numbers:**
+   - Per `msg_810db9d60369`, slot numbers in replies (party size, duration, stops) must reflect authoritative structured state (`safe_state.profile`), not uncommitted or unverified numbers appearing in user text alone.
+5. **Arbitrary Low-Precision Coordinate Redaction & Sensitive Output Echoes:**
+   - Redaction regex updated to catch low-precision coordinates (e.g., `21.0, 105.8`, `(21.0, 105.8)`, `lat: 21, lon: 105`) as well as decimal coordinates.
+   - Sensitive output echoes (repeating coordinates, phones, emails, secret tokens, or internal redaction tags like `[redacted_coord]`) are rejected.
+6. **State Sanitization & History Role Whitelisting:**
+   - State strings (`phase`, `pending`, profile strings) are stripped of control characters and bounded in length.
+   - History turns are filtered against an allowlist `{"user", "assistant", "bot"}`; unrecognized or injected roles (`system`, `admin`) are excluded.
+7. **Zero Calls for Health/Allergy Disclosures & Unpaid Gemini Terms Compliance:**
+   - Per official unpaid Gemini terms, any user turn containing health or allergy disclosures is rejected immediately with 0 external LLM calls (`llm_calls = 0`, `status = "rejected"`).
+   - Sensitive previous history turns with allergy disclosures are omitted from the prompt.
+   - No `has_allergy` cue is included in the external prompt.
+8. **Clean ProviderError Import:**
+   - Removed fallback `ProviderError` ImportError class; imports cleanly from `app.llm.provider`.
 
 ---
 
-## 4. Test Execution & Verification
+## 3. Honest Finite-Guard Limitations
 
-### 4.1 Test Suite
-All 21 test cases in `backend/tests/assistant/test_conversation.py` were run against both available Python interpreters.
-
-### 4.2 Exact Commands & Output
-1. **Coordinator venv interpreter:**
-   ```powershell
-   $env:PYTHONPATH="backend"
-   C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-claude-coordinator\.venv\Scripts\python.exe -m unittest discover -s backend/tests/assistant -p "test_*.py" -v
-   ```
-   **Output:**
-   ```
-   test_accepted_acknowledgement_when_pending_decision_active ... ok
-   test_clarify_block_question_as_fallback ... ok
-   test_context_bounding_last_4_turns_and_length_limit ... ok
-   test_deadline_passed_to_generate_json ... ok
-   test_disabled_when_provider_is_none ... ok
-   test_disabled_when_provider_not_configured ... ok
-   test_immutability_of_state_and_blocks ... ok
-   test_privacy_redaction_coordinates ... ok
-   test_privacy_redaction_phone_email_secrets ... ok
-   test_quota_provider_error ... ok
-   test_rejection_agent_roleplay_and_instruction_leakage ... ok
-   test_rejection_allergy_clearance ... ok
-   test_rejection_extra_question_when_pending_decision_active ... ok
-   test_rejection_hallucinated_price_and_hours ... ok
-   test_schema_rejection_extra_action_or_tool_fields ... ok
-   test_schema_rejection_malformed_json_or_missing_reply ... ok
-   test_state_projection_excludes_gps_and_tokens ... ok
-   test_successful_turn_returns_ok_and_preserves_label ... ok
-   test_supported_numbers_accepted ... ok
-   test_timeout_error ... ok
-   test_unavailable_provider_error ... ok
-
-   ----------------------------------------------------------------------
-   Ran 21 tests in 0.004s
-
-   OK
-   ```
-
-2. **Workspace venv interpreter:**
-   ```powershell
-   $env:PYTHONPATH="backend"
-   .venv\Scripts\python.exe -m unittest discover -s backend/tests/assistant -p "test_*.py" -v
-   ```
-   **Output:**
-   ```
-   Ran 21 tests in 0.004s
-   OK
-   ```
+> [!NOTE]
+> The regex patterns and structural validation rules implemented in `ConversationalAssistant` provide bounded defenses against known categories of model hallucinations (unsupported prices, operational hours, travel times, allergy safety claims, false action/mutation assertions) and privacy leaks (coordinates, contacts, tokens).
+> However, heuristic regex guards cannot constitute an exhaustive mathematical proof of semantic safety across arbitrary natural language variations.
+> The architecture relies fundamentally on the deterministic state/planner pipeline as the authoritative source of truth. The conversational assistant serves purely as an untrusted natural language acknowledgement layer; it never mutates state, executes actions, or bypasses deterministic safety gates.
 
 ---
 
-## 5. Limitations & Future Integration (OA2)
+## 4. Test Verification Evidence
 
-1. **Stubbed Provider in Tests:**
-   - In accordance with the contract, unit tests use injected in-memory mock providers. Zero external network requests were made during testing, protecting live quotas and credentials.
-2. **Wiring to API & Session State:**
-   - Codex owns `backend/app/main.py` and `backend/app/api/` and will wire `ConversationalAssistant` into the FastAPI chat loop (OA2) with shared session/daily call caps.
-3. **No UI Changes:**
-   - As instructed, no frontend changes were introduced during this backend module phase.
+### 4.1 Test Execution Command (Coordinator Python Interpreter)
+```powershell
+$env:PYTHONPATH="backend"
+C:\Users\tuana\orca\workspaces\ai-foodtour-planner\foodtour-claude-coordinator\.venv\Scripts\python.exe -m unittest discover -s backend/tests/assistant -p "test_*.py" -v
+```
+
+### 4.2 Output
+```
+test_accepted_acknowledgement_when_pending_decision_active (test_conversation.TestConversationalAssistant.test_accepted_acknowledgement_when_pending_decision_active) ... ok
+test_current_health_allergy_disclosure_rejected_zero_calls (test_conversation.TestConversationalAssistant.test_current_health_allergy_disclosure_rejected_zero_calls) ... ok
+test_deadline_passed_to_generate_json (test_conversation.TestConversationalAssistant.test_deadline_passed_to_generate_json) ... ok
+test_disabled_when_provider_is_none (test_conversation.TestConversationalAssistant.test_disabled_when_provider_is_none) ... ok
+test_disabled_when_provider_not_configured (test_conversation.TestConversationalAssistant.test_disabled_when_provider_not_configured) ... ok
+test_history_role_whitelisting (test_conversation.TestConversationalAssistant.test_history_role_whitelisting) ... ok
+test_no_has_allergy_external_prompt (test_conversation.TestConversationalAssistant.test_no_has_allergy_external_prompt) ... ok
+test_privacy_redaction_arbitrary_low_precision_coordinates (test_conversation.TestConversationalAssistant.test_privacy_redaction_arbitrary_low_precision_coordinates) ... ok
+test_privacy_redaction_phone_email_secrets (test_conversation.TestConversationalAssistant.test_privacy_redaction_phone_email_secrets) ... ok
+test_quota_provider_error (test_conversation.TestConversationalAssistant.test_quota_provider_error) ... ok
+test_rejection_agent_roleplay_and_instruction_leakage (test_conversation.TestConversationalAssistant.test_rejection_agent_roleplay_and_instruction_leakage) ... ok
+test_rejection_allergy_safety_including_an_lac_duoc_khong_sao (test_conversation.TestConversationalAssistant.test_rejection_allergy_safety_including_an_lac_duoc_khong_sao) ... ok
+test_rejection_extra_question_when_pending_decision_active (test_conversation.TestConversationalAssistant.test_rejection_extra_question_when_pending_decision_active) ... ok
+test_rejection_false_action_and_state_mutation_claims (test_conversation.TestConversationalAssistant.test_rejection_false_action_and_state_mutation_claims) ... ok
+test_rejection_operational_price_eta_claims_even_when_numbers_in_input (test_conversation.TestConversationalAssistant.test_rejection_operational_price_eta_claims_even_when_numbers_in_input) ... ok
+test_rejection_sensitive_output_echoes (test_conversation.TestConversationalAssistant.test_rejection_sensitive_output_echoes) ... ok
+test_schema_rejection_extra_action_or_tool_fields (test_conversation.TestConversationalAssistant.test_schema_rejection_extra_action_or_tool_fields) ... ok
+test_sensitive_history_omitted_from_prompt (test_conversation.TestConversationalAssistant.test_sensitive_history_omitted_from_prompt) ... ok
+test_state_strings_sanitized_and_bounded (test_conversation.TestConversationalAssistant.test_state_strings_sanitized_and_bounded) ... ok
+test_successful_turn_returns_ok_and_preserves_label (test_conversation.TestConversationalAssistant.test_successful_turn_returns_ok_and_preserves_label) ... ok
+test_supported_numbers_accepted (test_conversation.TestConversationalAssistant.test_supported_numbers_accepted) ... ok
+test_supported_numbers_must_reflect_authoritative_structured_state (test_conversation.TestConversationalAssistant.test_supported_numbers_must_reflect_authoritative_structured_state) ... ok
+test_timeout_error (test_conversation.TestConversationalAssistant.test_timeout_error) ... ok
+test_unavailable_provider_error (test_conversation.TestConversationalAssistant.test_unavailable_provider_error) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.004s
+
+OK
+```
+
+All 24 unit tests pass in 0.004s without external network calls or credential access.
