@@ -602,17 +602,13 @@ export default function DiscoveryLayout({
   const handleStartStopReplacement = (stop) => {
     setReplaceTargetStop(stop);
     setEditingSelectionAfterTour(true);
-    if (!isDesktop) {
-      setActiveMobileTab('tour');
-    }
+    setActiveMobileTab('tour');
   };
 
   const handleOpenSelectionEditor = () => {
     setReplaceTargetStop(null);
     setEditingSelectionAfterTour(true);
-    if (!isDesktop) {
-      setActiveMobileTab('tour');
-    }
+    setActiveMobileTab('tour');
   };
 
   // Revise Itinerary opens selection editor

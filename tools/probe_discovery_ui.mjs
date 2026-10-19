@@ -82,6 +82,7 @@ try{
    record('Maps starts at actual chosen origin '+width,await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');return a&&new URL(a.href).searchParams.get('origin')===${JSON.stringify(view.profile.origin.lat+','+view.profile.origin.lon)}})()`));
    await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(1800);record('PMTiles map accessible '+width,await ev(`(()=>{const e=document.querySelector('[data-testid="pilot-map-canvas"]');return e&&e.getBoundingClientRect().height>=250&&e.getBoundingClientRect().width>=250})()`));await shot('map-'+width);
    await click(sel('pilot-markers-toggle'));record('marker toggle hides points '+width,await ev(`document.querySelector('[data-testid="pilot-markers-toggle"]').getAttribute('aria-pressed')==='false'`));await click(sel('pilot-markers-toggle'));
+   if(process.env.DISCOVERY_MAP_ONLY==='1')continue;
    await cdp('Page.reload');await until(()=>exists('discovery-input'));await idle();record('reload preserves selection and tour '+width,view.selection.length===1&&!!view.tour?.stops?.length);
    if(width===390)await tab('tour');
    await actionlessReplace();
