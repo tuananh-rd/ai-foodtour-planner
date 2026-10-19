@@ -39,7 +39,7 @@ try{
     'pilot-map-toggle':'view-mode-map-btn','pilot-map-canvas':'map-canvas','pilot-markers-toggle':'map-marker-toggle-btn'};
   const sel=id=>`[data-testid="${id}"]${aliases[id]?`,[data-testid="${aliases[id]}"]`:''}`;
   const exists=id=>ev(`!!document.querySelector(${JSON.stringify(sel(id))})`);
-  async function click(selector){await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center'})`);const point=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)throw Error('Missing or disabled control '+selector);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
+  async function click(selector){await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center'})`);const point=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled||!e.getClientRects().length)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)throw Error('Missing, hidden or disabled control '+selector);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
   async function idle(){await pause(120);await until(()=>ev(`!document.querySelector('[aria-busy="true"]')`));await pause(250);}
   async function send(text){const before=chatResponses;const input=await exists('clarify-free-text-input')?'clarify-free-text-input':'guided-input';await ev(`document.querySelector(${JSON.stringify(sel(input))}).focus()`);await cdp('Input.insertText',{text});await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await until(()=>chatResponses>before);await idle();}
   async function capture(name,keepScroll=false){if(!keepScroll)await ev('window.scrollTo(0,0)');const shot=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(shot.data,'base64'));evidence.screenshots.push(name+'.png');return shot.data;}
@@ -114,6 +114,7 @@ try{
     record('keyboard focus exists '+width,await ev('document.activeElement!==document.body'));
     await cdp('Fetch.enable',{patterns:[{urlPattern:'*.pmtiles*',requestStage:'Request'}]});
     await cdp('Page.reload');await until(()=>exists('guided-timeline'));
+    if(width===390){await click(sel('mobile-tab-tour'));await pause(150);}
     await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-fallback'),14000);
     record('map offline has bounded fallback '+width,await exists('pilot-map-fallback'));
     record('map offline preserves tour '+width,await exists('guided-timeline'));

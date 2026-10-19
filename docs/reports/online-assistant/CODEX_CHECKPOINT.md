@@ -44,3 +44,10 @@ UIR1 aea866d and UIR2 52120c9 are reviewed/integrated at3d996da; arbitrary API-o
 Corrected browser driver has UTF8-safe Vietnamese and proper Enter char; initial false allergy/retry/popup failures were harness errors. R2 actual checks pass these plus initial markers, real tiles, replacement synchronization and desktop retry; only mobile-hidden-result timeout blocks the journey. Session/fault suite19/19 passes with actual UI/real synthetic API and failure-only injection. Root task-owned API8060 was restarted to3d996da, rules/synthetic/search-disabled; UI3060 is development mode, not final delivery. Production build validation is running independently; it does not replace final UI3/OA3 acceptance.
 
 OA3 frozen contract now includes read-only /usage free-plan/no-PAYGO/headroom gate in addition to local durable credits. Live Tavily remains blocked by absent key. Explicit self-location privacy hardening and UTF8 driver corrections are Codex-owned; preserve them. No new agent, model change, paid activation, push/deploy or user-server shutdown.
+
+
+## UI gate PASS; next owner OA3
+
+UIR3 settled2a9c3e7 and integrated0de3632. Actual production3060/API8060 source0de3632 passes60/60 corrected desktop/mobile checks, zero console errors/remote origins; manual SVG overlay/side and mobile map/search review complete. R3 final timeout was driver navigation after reload, not product map failure. Current frontend production server uses .next; API remains synthetic/rules/search-disabled. Task-owned terminals unchanged; user servers untouched.
+
+New OA3 task_cafccd0b53b1 is ready with a self-contained /usage account gate and exact3newfile ownership. Old task709 was superseded BEFORE any dispatch, no worker existed. Antigravity same terminal is retained after UI3 pending coordinator reuse; no model change. Dispatch OA3 once against safe latest base; verify exact lifecycle ACK/output before counting work. Codex owns main wiring, security helpers and final regression. Live Tavily key absent; live Gemini previously PARTIAL, no new live quality claim.

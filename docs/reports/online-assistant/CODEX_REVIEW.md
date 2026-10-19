@@ -40,3 +40,12 @@ The first extended browser run also had corrupted newly inserted Vietnamese lite
 | OA-QA-002 | Harness, corrected | New accented assertion/query strings became question marks through PowerShell piping; native Enter lacked char text. Corrected without changing product allergy/marker logic | R2 passes corresponding assertions. Keep initial failed evidence distinct from product failures |
 
 The actual session/fault probe passes19/19 checks including startup/restore503, retained session, initialization concurrency, reload of per-leg limit, opted-in transport failure, restored draft+web mode and manual Enter retry. Durable aggregate evidence: session-faults/browser-evidence.json. All data is synthetic, LLM rules and search disabled; no external provider quality is established.
+
+
+## UI gate cleared at0de3632; provider gate remains open
+
+UIR3 commit2a9c3e7 changes exactly the mobile tour_ready transition, honest disabled/quota wording and report. Source review and actual production browser retest pass60/60 on1440x1024/390x844, zero console errors/remote origins. The R3 final offline-map timeout was a harness navigation issue: after reload, the driver must select the visible itinerary tab before clicking map; hidden controls now fail explicitly rather than receiving a click at0,0. R4 independently verifies the product paths with that correction. Evidence: integrated-r4/browser-evidence.json.
+
+Codex viewed the actual SVG side-by-side and overlay, the visible mobile map region and mobile web result. Header/main columns, chat-card bounds, stat-card geometry and palette remain close to the accepted reference; dynamic Hanoi/synthetic content, anonymous profile, extra GPS/search controls, source disclosures and safety warnings intentionally differ. Warning content shifts timeline cards downward and can increase page scroll; route-header controls can wrap the schematic label. No pixel-identical claim or complete WCAG/physical-device certification is made. Map roads/lake/attribution are visible; no routing line is represented as a real walking route.
+
+OA-UI-001/002/003/004/006/007/008/009 have reviewed fixes and the applicable runtime/unit evidence. Citation defense has scoped URL tests; live-source citation quality remains blocked by absent Tavily credentials. OA3 and final post-integration backend/contracts/browser regression remain required; no final upgrade acceptance yet.
