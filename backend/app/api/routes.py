@@ -576,7 +576,7 @@ def chat(session_id: str, body: ChatRequest, request: Request,
             assistant_status = decorate_reply(request.app.state.conversational_assistant, result,
                 body.text if body.action is None and not body.web_search else None, session.chat.turns,
                 budget=budget_snapshot(request), session_cap=request.app.state.llm_session_cap,
-                reserve=request.app.state.llm_reserve)
+                reserve=request.app.state.llm_reserve) if guided else None
             session.preferences, session.chat = prefs, result.state
             session.revision += 1
             view = session_view(session, session.tour, session.snapshot or data, request)
@@ -586,7 +586,8 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                 turn={'intent': result.intent, 'tools': result.tools, 'understanding': result.understanding},
                 llm_calls=result.llm_calls,
                 extraction_source=result.understanding if result.understanding in ('llm', 'cache') else 'rules')
-            values['assistant'] = assistant_status
+            if assistant_status is not None:
+                values['assistant'] = assistant_status
             budget = budget_snapshot(request)
             if guided:
                 values.pop('llm_budget', None)

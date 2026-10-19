@@ -147,11 +147,19 @@ _VAGUE = {"thu", "nao", "may", "vai", "nhieu", "kieu", "dang", "gion", "rang", "
 _AMBIGUOUS_UNACCENTED = {"ca", "so", "oc", "hen", "hau", "muc"}  # "cả nhóm", "số", "ốc"... when typed without accents
 
 
-def _before_terms(text: str) -> list:
+def _before_terms(text: str, cache=None) -> list:
     """Lexicon allergens that PRECEDE a cue in the same clause: "Lạc thì mình không ăn được", "Tôm làm mình dị ứng"."""
     words = _clean_words(text)[-8:]
+    # Repeated trigger prefixes often have identical final words. Cache only
+    # inside this parse invocation; private text never survives the user turn.
+    key = (tuple(words), 'mè' in text.casefold())
+    if cache is not None and key in cache:
+        return list(cache[key])
     found, _ = _scan(words)
-    return [t for t in found if not (fold_uncached(t) == "me" and "mè" not in text.casefold())]
+    result = [t for t in found if not (fold_uncached(t) == "me" and not key[1])]
+    if cache is not None and len(cache) < 256:
+        cache[key] = tuple(result)
+    return result
 
 
 def _triggers(clause: str) -> list:
@@ -187,6 +195,7 @@ def _continuation(clause: str) -> list:
 
 def parse(text: str) -> SafetyParse:
     out = SafetyParse()
+    before_cache = {}
     text = normalize(text)
     _ASCII_MSG.set(text.isascii())
     if _QUOTE.search(text) and _EXAMPLE.search(text) and _ALLERGY.search(text):
@@ -216,7 +225,7 @@ def parse(text: str) -> SafetyParse:
                 if kind == "allergy" and (_NEG.search(before) or _NEG_PREFIX.search(before)):
                     out.negated = True
                     named, _lex = _terms(seg, [])  # a named absence only retracts that term; "gì cả/nào" retracts nothing specific
-                    named = [t for t in named if allergens.recognised(t)] or _before_terms(before_full)
+                    named = [t for t in named if allergens.recognised(t)] or _before_terms(before_full, before_cache)
                     out.negated_terms += [t for t in named if t not in out.negated_terms]
                     mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
                     continue
@@ -231,7 +240,7 @@ def parse(text: str) -> SafetyParse:
                         out.avoid_vague = True
                     hard = bool(_HARD_CUE.search(fold_uncached(m.group(0))))
                     if hard:
-                        terms = [t for t in terms if allergens.recognised(t)] or _before_terms(before_full)  # "Lạc thì mình không ăn được đâu"
+                        terms = [t for t in terms if allergens.recognised(t)] or _before_terms(before_full, before_cache)  # "Lạc thì mình không ăn được đâu"
                     out.avoid += [t for t in terms if allergens.recognised(t) and t not in out.avoid]
                     if hard:
                         out.avoid_hard += [t for t in terms if allergens.recognised(t) and t not in out.avoid_hard]
@@ -241,7 +250,7 @@ def parse(text: str) -> SafetyParse:
                 local = []
                 if kind == "symptom":
                     found, _ = _scan(_clean_words(seg))
-                    terms = list(dict.fromkeys(_before_terms(before_full) + found))
+                    terms = list(dict.fromkeys(_before_terms(before_full, before_cache) + found))
                     if not terms:
                         local.append("empty")
                 else:
@@ -249,7 +258,7 @@ def parse(text: str) -> SafetyParse:
                     if not terms and not local:
                         local.append("empty")
                     if not terms:
-                        bt = _before_terms(before_full) or ([t for t in bare if True] if "empty" in local else [])
+                        bt = _before_terms(before_full, before_cache) or ([t for t in bare if True] if "empty" in local else [])
                         if bt:
                             terms, local = bt, []
                 if _UNNAMED.search(clause):

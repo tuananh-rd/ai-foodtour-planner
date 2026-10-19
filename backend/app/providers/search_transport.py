@@ -5,11 +5,15 @@ import json
 import socket
 import ssl
 import time
+import threading
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FutureTimeout
 
 from app.llm.provider import ProviderError
 
 HOST = 'api.tavily.com'
 MAX_BYTES = 64 * 1024
+_DNS_POOL = ThreadPoolExecutor(max_workers=2, thread_name_prefix='tavily-dns')
+_DNS_SLOTS = threading.BoundedSemaphore(2)
 
 
 def public_addresses(resolver=socket.getaddrinfo):
@@ -23,10 +27,27 @@ def public_addresses(resolver=socket.getaddrinfo):
         raise ProviderError('unavailable') from None
 
 
+def timed_public_addresses(timeout):
+    if not _DNS_SLOTS.acquire(blocking=False):
+        raise ProviderError('unavailable')
+    try:
+        future = _DNS_POOL.submit(public_addresses)
+    except RuntimeError:
+        _DNS_SLOTS.release()
+        raise ProviderError('unavailable') from None
+    future.add_done_callback(lambda _: _DNS_SLOTS.release())
+    try:
+        return future.result(timeout=max(.01, timeout))
+    except FutureTimeout:
+        future.cancel()
+        raise ProviderError('timeout') from None
+
+
 class PinnedTavilyConnection(http.client.HTTPSConnection):
-    def __init__(self, address, timeout):
+    def __init__(self, address, timeout, deadline=None):
         super().__init__(HOST, port=443, timeout=timeout, context=ssl.create_default_context())
         self.address = address
+        self.deadline = deadline
 
     def connect(self):
         # Resolve once before admission/transport. TLS SNI and certificate checks
@@ -36,6 +57,8 @@ class PinnedTavilyConnection(http.client.HTTPSConnection):
             peer = ipaddress.ip_address(sock.getpeername()[0])
             if not peer.is_global or peer != ipaddress.ip_address(self.address):
                 raise OSError('Invalid peer')
+            if self.deadline:
+                sock.settimeout(max(.01, self.deadline-time.monotonic()))
             self.sock = self._context.wrap_socket(sock, server_hostname=HOST)
         except Exception:
             sock.close()
@@ -47,8 +70,8 @@ def tavily_post(payload, api_key, *, deadline_s=6.0):
     connection = None
     deadline = time.monotonic() + min(max(float(deadline_s), .1), 8.0)
     try:
-        address = public_addresses()[0]
-        connection = PinnedTavilyConnection(address, timeout=max(.1, deadline-time.monotonic()))
+        address = timed_public_addresses(deadline-time.monotonic())[0]
+        connection = PinnedTavilyConnection(address, timeout=max(.1, deadline-time.monotonic()), deadline=deadline)
         connection.request('POST', '/search', body=json.dumps(payload, ensure_ascii=False).encode('utf-8'),
             headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
         if connection.sock:
