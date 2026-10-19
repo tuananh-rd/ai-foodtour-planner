@@ -263,6 +263,20 @@
       "hasSendBtn": true
     }
   },
+  "targetedSmokeFixes": {
+    "verifiedAt": "2026-10-19T21:27:42+07:00",
+    "suite": "targeted_fixes_smoke.mjs",
+    "total": 20,
+    "passed": 20,
+    "failed": 0,
+    "checks": [
+      { "id": "TIMEOUT_BOUNDS_BODY_READ", "pass": true, "note": "fetchWithTimeout throws 408 timeout on stalled body stream within 412ms" },
+      { "id": "STRICT_SESSION_GATING", "pass": true, "note": "Unauthenticated, initializing, 401, 404, 500 strictly disable mutations" },
+      { "id": "TOURVIEW_TOTALS_SCHEMA", "pass": true, "note": "Totals uses venue_range_upper_sum_vnd labeled 'khoảng giá quán', preserves unknowns" },
+      { "id": "POST_TOUR_STOP_REPLACEMENT", "pass": true, "note": "Interactive stop replacement with explicit confirmation gate" },
+      { "id": "CLEAN_BOUNDED_EXIT", "pass": true, "note": "Normal clean exit in 1.4s with 0 hanging listeners or orphaned processes" }
+    ]
+  },
   "summary": {
     "total": 26,
     "passed": 26,

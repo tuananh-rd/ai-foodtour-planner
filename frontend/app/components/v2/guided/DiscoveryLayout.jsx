@@ -78,6 +78,53 @@ const DEFAULT_ASSISTANT_VIEW = {
   diagnostics: { tool_calls: 0, elapsed_ms: 0, weather: 'unavailable' }
 };
 
+/**
+ * Truthfully derives tour duration:
+ * 1. From valid confirmed timeline start/last depart explicitly (if available), or
+ * 2. Displays user requested profile duration labeled "yêu cầu", or
+ * 3. Preserves unknown ("—").
+ */
+function deriveTourDuration(tour, profile) {
+  const stops = tour?.stops || [];
+  if (stops.length >= 2 && stops[0]?.arrive && stops[stops.length - 1]?.depart) {
+    const p1 = stops[0].arrive.split(':').map(Number);
+    const p2 = stops[stops.length - 1].depart.split(':').map(Number);
+    if (!isNaN(p1[0]) && !isNaN(p1[1]) && !isNaN(p2[0]) && !isNaN(p2[1])) {
+      let diff = (p2[0] * 60 + p2[1]) - (p1[0] * 60 + p1[1]);
+      if (diff < 0) diff += 24 * 60;
+      if (diff > 0) {
+        return { val: `${Math.round(diff / 60 * 10) / 10}h`, lbl: 'lịch trình' };
+      }
+    }
+  }
+  if (profile?.duration_min) {
+    return { val: `${profile.duration_min}p`, lbl: 'yêu cầu' };
+  }
+  return { val: '—', lbl: 'thời lượng' };
+}
+
+/**
+ * Truthfully derives tour price info:
+ * TourView.totals schema contains ONLY venue_range_upper_sum_vnd, walk_minutes, leg_source, route_provider.
+ * Never fabricates nonexistent totals fields or relabels venue range sum as per-person meal cost.
+ * Displays venue_range_upper_sum_vnd labeled "khoảng giá quán", or user budget labeled "ngân sách", or preserves unknown.
+ */
+function deriveTourPriceInfo(tour, profile) {
+  if (tour?.totals?.venue_range_upper_sum_vnd !== undefined && tour?.totals?.venue_range_upper_sum_vnd !== null) {
+    return {
+      val: `${Math.round(tour.totals.venue_range_upper_sum_vnd / 1000)}K`,
+      lbl: 'khoảng giá quán'
+    };
+  }
+  if (profile?.budget_vnd !== undefined && profile?.budget_vnd !== null) {
+    return {
+      val: `${Math.round(profile.budget_vnd / 1000)}K`,
+      lbl: `ngân sách ${profile?.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'}`
+    };
+  }
+  return { val: '—', lbl: 'khoảng giá' };
+}
+
 export default function DiscoveryLayout({
   sessionId,
   sessionToken,
@@ -96,6 +143,10 @@ export default function DiscoveryLayout({
   }));
 
   const [sessionError, setSessionError] = useState(null);
+  const [initialLoaded, setInitialLoaded] = useState(false);
+  const [editingSelectionAfterTour, setEditingSelectionAfterTour] = useState(false);
+  const [replaceTargetStop, setReplaceTargetStop] = useState(null);
+
   const [busy, setBusy] = useState(false);
   const [busyMessage, setBusyMessage] = useState('');
   const [inputText, setInputText] = useState('');
@@ -107,6 +158,15 @@ export default function DiscoveryLayout({
   const [detailVenue, setDetailVenue] = useState(null);
   const [errorBanner, setErrorBanner] = useState(null);
   const [geoNotice, setGeoNotice] = useState(null);
+
+  // Authenticated sessionId/token + parentInitializing false + successful initial GET required
+  const sessionReady = Boolean(
+    sessionId &&
+    sessionToken &&
+    !parentInitializing &&
+    initialLoaded &&
+    !sessionError
+  );
 
   const requestTokenRef = useRef(0);
   const abortControllerRef = useRef(null);
@@ -129,7 +189,10 @@ export default function DiscoveryLayout({
 
   // Initial load or session change with stale request guarding
   const fetchAssistantView = useCallback(async (sid, token, keepBanner = false) => {
-    if (!sid) return;
+    if (!sid || !token || parentInitializing) {
+      setInitialLoaded(false);
+      return;
+    }
 
     // Invalidate prior request
     requestTokenRef.current += 1;
@@ -154,14 +217,28 @@ export default function DiscoveryLayout({
       if (data) {
         setView(data);
         setSessionError(null);
+        setInitialLoaded(true);
       }
     } catch (err) {
       if (currentToken !== requestTokenRef.current || err.name === 'AbortError') return;
-      if (err instanceof DiscoveryApiError && err.status === 404) {
-        setSessionError('session_not_found');
-        setErrorBanner('Phiên làm việc không tồn tại hoặc đã hết hạn (404). Vui lòng nhấn "Chuyến đi mới" để tạo phiên mới.');
+      setInitialLoaded(false);
+      if (err instanceof DiscoveryApiError) {
+        if (err.status === 401) {
+          setSessionError('unauthorized');
+          setErrorBanner('Phiên chưa được xác thực (401). Vui lòng nhấn "Chuyến đi mới" để tạo phiên mới.');
+        } else if (err.status === 404) {
+          setSessionError('session_not_found');
+          setErrorBanner('Phiên làm việc không tồn tại hoặc đã hết hạn (404). Vui lòng nhấn "Chuyến đi mới" để tạo phiên mới.');
+        } else if (err.status >= 500) {
+          setSessionError('server_error');
+          setErrorBanner(`Lỗi máy chủ (${err.status}) khi tải dữ liệu phiên. Vui lòng thử lại sau giây lát.`);
+        } else {
+          setSessionError('fetch_error');
+          setErrorBanner(err.message || 'Không thể tải dữ liệu phiên. Vui lòng thử lại.');
+        }
       } else {
-        setErrorBanner(err.message || 'Không thể tải dữ liệu phiên. Vui lòng thử lại.');
+        setSessionError('network_error');
+        setErrorBanner(err.message || 'Không thể kết nối đến máy chủ.');
       }
     } finally {
       if (currentToken === requestTokenRef.current) {
@@ -169,17 +246,33 @@ export default function DiscoveryLayout({
         setBusyMessage('');
       }
     }
-  }, [parentRevision]);
+  }, [parentInitializing]);
 
   useEffect(() => {
-    // Reset state on session change
+    // Invalidate stale pending tokens immediately
+    requestTokenRef.current += 1;
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Reset old view/draft/modal on session change
+    setView({
+      ...DEFAULT_ASSISTANT_VIEW,
+      session_id: sessionId,
+      revision: parentRevision || 0
+    });
+    setInputText('');
     setSelectedForCompare([]);
     setDetailVenue(null);
     setProfileDrawerOpen(false);
-    if (sessionId) {
+    setEditingSelectionAfterTour(false);
+    setReplaceTargetStop(null);
+    setInitialLoaded(false);
+    setSessionError(null);
+    setErrorBanner(null);
+
+    if (sessionId && sessionToken && !parentInitializing) {
       fetchAssistantView(sessionId, sessionToken);
-    } else {
-      setView({ ...DEFAULT_ASSISTANT_VIEW });
     }
 
     return () => {
@@ -187,7 +280,7 @@ export default function DiscoveryLayout({
         abortControllerRef.current.abort();
       }
     };
-  }, [sessionId, sessionToken, fetchAssistantView]);
+  }, [sessionId, sessionToken, parentInitializing, fetchAssistantView]);
 
   // Auto-scroll chat to bottom
   useEffect(() => {
@@ -249,7 +342,7 @@ export default function DiscoveryLayout({
   // Send natural text message
   const handleSendMessage = async (customText = null) => {
     const textToSend = customText !== null ? customText : inputText;
-    if (!textToSend || !textToSend.trim() || busy || sessionError === 'session_not_found') return;
+    if (!sessionReady || !textToSend || !textToSend.trim() || busy) return;
 
     requestTokenRef.current += 1;
     const currentToken = requestTokenRef.current;
@@ -297,8 +390,8 @@ export default function DiscoveryLayout({
   };
 
   // Dispatch a discovery action
-  const handleDispatchAction = async (action, loadingMsg = 'Đang thực hiện…') => {
-    if (busy || sessionError === 'session_not_found') return;
+  const handleDispatchAction = async (action, loadingMsg = 'Đang thực hiện…', onSuccess = null) => {
+    if (!sessionReady || busy) return;
 
     requestTokenRef.current += 1;
     const currentToken = requestTokenRef.current;
@@ -316,6 +409,13 @@ export default function DiscoveryLayout({
       );
       if (currentToken !== requestTokenRef.current) return;
       setView(updatedView);
+      if (updatedView?.tour) {
+        setEditingSelectionAfterTour(false);
+        setReplaceTargetStop(null);
+      }
+      if (onSuccess) {
+        onSuccess(updatedView);
+      }
     } catch (err) {
       if (currentToken !== requestTokenRef.current) return;
       if (err.status === 409) {
@@ -333,16 +433,19 @@ export default function DiscoveryLayout({
 
   // Venue Selection Handlers
   const handleAddVenue = (venue) => {
+    if (!sessionReady || busy || !venue?.id) return;
     const action = addSelectionAction(view.selection_version, [venue.id]);
     handleDispatchAction(action, `Đang thêm quán ${venue.name}…`);
   };
 
   const handleRemoveVenue = (venueId) => {
+    if (!sessionReady || busy || !venueId) return;
     const action = removeSelectionAction(view.selection_version, [venueId]);
     handleDispatchAction(action, 'Đang xoá quán khỏi danh sách…');
   };
 
   const handleToggleLockVenue = (venue) => {
+    if (!sessionReady || busy || !venue?.id) return;
     const isLocked = Boolean(venue.locked);
     const action = isLocked
       ? unlockSelectionAction(view.selection_version, [venue.id])
@@ -352,6 +455,7 @@ export default function DiscoveryLayout({
 
   // Venue Comparison Handlers
   const handleToggleCompareSelect = (venueId) => {
+    if (!sessionReady || busy) return;
     setSelectedForCompare((prev) => {
       if (prev.includes(venueId)) {
         return prev.filter((id) => id !== venueId);
@@ -362,6 +466,7 @@ export default function DiscoveryLayout({
   };
 
   const handleExecuteComparison = (venueIds = null) => {
+    if (!sessionReady || busy) return;
     const ids = venueIds || selectedForCompare;
     if (!ids || ids.length < 2) return;
     const action = compareRestaurantsAction(ids);
@@ -377,6 +482,7 @@ export default function DiscoveryLayout({
   // Profile Drawer Form Save: patch ONLY modified fields, never convert null to 0
   const handleSaveProfile = (e) => {
     e.preventDefault();
+    if (!sessionReady || busy) return;
     const patch = {};
 
     if (profileForm.area !== undefined && profileForm.area !== view.profile?.area) {
@@ -471,21 +577,41 @@ export default function DiscoveryLayout({
 
   // Trigger Plan / Confirmation
   const handleTriggerPlan = () => {
+    if (!sessionReady || busy) return;
     const action = createItineraryAction();
     handleDispatchAction(action, 'Đang chuẩn bị xác nhận lịch trình…');
   };
 
   // Explicit Confirm Button (Strict gate)
   const handleExplicitConfirm = (confirmationId) => {
-    if (!confirmationId) return;
+    if (!sessionReady || busy || !confirmationId) return;
     const action = confirmAction(confirmationId);
-    handleDispatchAction(action, 'Đang tạo lịch trình chính thức…');
+    handleDispatchAction(action, 'Đang tạo lịch trình chính thức…', () => {
+      setEditingSelectionAfterTour(false);
+      setReplaceTargetStop(null);
+    });
   };
 
-  // Revise Itinerary
+  // Post-tour replacement / selection adjustment handlers
+  const handleStartStopReplacement = (stop) => {
+    setReplaceTargetStop(stop);
+    setEditingSelectionAfterTour(true);
+    if (!isDesktop) {
+      setActiveMobileTab('tour');
+    }
+  };
+
+  const handleOpenSelectionEditor = () => {
+    setReplaceTargetStop(null);
+    setEditingSelectionAfterTour(true);
+    if (!isDesktop) {
+      setActiveMobileTab('tour');
+    }
+  };
+
+  // Revise Itinerary opens selection editor
   const handleReviseItinerary = () => {
-    const action = reviseItineraryAction();
-    handleDispatchAction(action, 'Đang chuẩn bị điều chỉnh…');
+    handleOpenSelectionEditor();
   };
 
   // Map markers & stops derivation
@@ -591,7 +717,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-recent-item"
                 onClick={() => handleSendMessage('Tìm quán phở ngon Hoàn Kiếm dưới 70k')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Phở ngon Hoàn Kiếm dưới 70k
               </button>
@@ -599,7 +725,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-recent-item"
                 onClick={() => handleSendMessage('Gợi ý chè hoặc tráng miệng ít ngọt')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Chè & tráng miệng ít ngọt
               </button>
@@ -607,7 +733,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-recent-item"
                 onClick={() => handleSendMessage('Quán ăn vặt chuẩn vị phố cổ')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Quán ăn vặt chuẩn vị phố cổ
               </button>
@@ -709,7 +835,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-filter-chip"
                 onClick={() => handleSendMessage('Gợi ý ẩm thực đường phố phố cổ')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Ẩm thực đường phố
               </button>
@@ -717,7 +843,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-filter-chip"
                 onClick={() => handleSendMessage('Food tour hẹn hò nhẹ nhàng cho 2 người')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Hẹn hò cuối tuần
               </button>
@@ -725,7 +851,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-filter-chip"
                 onClick={() => handleSendMessage('Quán local chuẩn vị')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Quán local
               </button>
@@ -733,7 +859,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-filter-chip"
                 onClick={() => handleTriggerGPS()}
-                disabled={busy}
+                disabled={!sessionReady || busy}
               >
                 📍 Vị trí GPS
               </button>
@@ -742,13 +868,19 @@ export default function DiscoveryLayout({
             <div className="nn-chat-divider" role="separator" />
 
             {/* Error / Conflict Alert Banner */}
-            {(errorBanner || initError) && (
+            {(errorBanner || initError || parentInitializing) && (
               <div data-testid="guided-error-banner" role="alert" className="nn-alert" style={{ margin: '8px 0 12px 0' }}>
-                <span>⚠️ {errorBanner || initError?.message}</span>
-                {sessionError === 'session_not_found' ? (
-                  <button type="button" onClick={onResetSession}>Tạo phiên mới</button>
-                ) : (
-                  <button type="button" onClick={() => fetchAssistantView(sessionId, sessionToken)}>Thử lại</button>
+                <span>
+                  ⚠️ {parentInitializing
+                    ? 'Đang khởi tạo phiên làm việc…'
+                    : (errorBanner || initError?.message)}
+                </span>
+                {!parentInitializing && (
+                  sessionError === 'session_not_found' || sessionError === 'unauthorized' ? (
+                    <button type="button" onClick={onResetSession}>Tạo phiên mới</button>
+                  ) : (
+                    <button type="button" onClick={() => fetchAssistantView(sessionId, sessionToken)}>Thử lại</button>
+                  )
                 )}
               </div>
             )}
@@ -949,7 +1081,7 @@ export default function DiscoveryLayout({
                       type="submit"
                       data-testid="btn-save-profile"
                       className="nn-action-chip-btn primary"
-                      disabled={busy || sessionError === 'session_not_found'}
+                      disabled={!sessionReady || busy}
                     >
                       Lưu thay đổi
                     </button>
@@ -1086,7 +1218,7 @@ export default function DiscoveryLayout({
                               data-testid={`btn-select-venue-${r.id}`}
                               className={`nn-action-chip-btn${isSelected ? ' active' : ' primary'}`}
                               onClick={() => isSelected ? handleRemoveVenue(r.id) : handleAddVenue(r)}
-                              disabled={busy || sessionError === 'session_not_found'}
+                              disabled={!sessionReady || busy}
                             >
                               {isSelected ? '✓ Đã chọn' : '+ Chọn vào tour'}
                             </button>
@@ -1096,7 +1228,7 @@ export default function DiscoveryLayout({
                               data-testid={`btn-compare-venue-${r.id}`}
                               className={`nn-action-chip-btn${isCompareSelected ? ' active' : ''}`}
                               onClick={() => handleToggleCompareSelect(r.id)}
-                              disabled={sessionError === 'session_not_found'}
+                              disabled={!sessionReady || busy}
                             >
                               {isCompareSelected ? '✓ Đang so sánh' : 'So sánh'}
                             </button>
@@ -1138,7 +1270,7 @@ export default function DiscoveryLayout({
                         type="button"
                         className="nn-action-chip-btn primary"
                         onClick={() => handleExecuteComparison()}
-                        disabled={busy}
+                        disabled={!sessionReady || busy}
                       >
                         Bắt đầu so sánh →
                       </button>
@@ -1177,7 +1309,7 @@ export default function DiscoveryLayout({
                             className="nn-action-chip-btn primary"
                             style={{ width: '100%', justifyContent: 'center' }}
                             onClick={() => handleAddVenue(cv)}
-                            disabled={busy || selectedVenueIds.has(cv.id) || sessionError === 'session_not_found'}
+                            disabled={!sessionReady || busy || selectedVenueIds.has(cv.id)}
                           >
                             {selectedVenueIds.has(cv.id) ? '✓ Đã chọn' : '+ Chọn quán này'}
                           </button>
@@ -1257,7 +1389,7 @@ export default function DiscoveryLayout({
                       data-testid="btn-confirm-itinerary"
                       className="nn-confirm-btn-primary"
                       onClick={() => handleExplicitConfirm(view.confirmation.id)}
-                      disabled={busy}
+                      disabled={!sessionReady || busy}
                     >
                       ✓ Xác nhận tạo lịch trình ngay
                     </button>
@@ -1266,7 +1398,7 @@ export default function DiscoveryLayout({
                       data-testid="btn-edit-itinerary"
                       className="nn-confirm-btn-secondary"
                       onClick={() => setProfileDrawerOpen(true)}
-                      disabled={busy}
+                      disabled={!sessionReady || busy}
                     >
                       Chỉnh sửa thêm tiêu chí
                     </button>
@@ -1289,7 +1421,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-quick-btn"
                 onClick={() => handleSendMessage('Thêm món chay')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 + Thêm món chay
               </button>
@@ -1297,7 +1429,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-quick-btn"
                 onClick={() => handleSendMessage('Ít di chuyển hơn, đi bộ gần')}
-                disabled={busy || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy}
               >
                 Ít di chuyển hơn
               </button>
@@ -1305,7 +1437,7 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-quick-btn"
                 onClick={() => setProfileDrawerOpen(true)}
-                disabled={busy}
+                disabled={!sessionReady || busy}
               >
                 Đổi ngân sách
               </button>
@@ -1326,15 +1458,15 @@ export default function DiscoveryLayout({
                   data-testid="discovery-input"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  disabled={busy || sessionError === 'session_not_found'}
-                  placeholder="Bạn muốn điều chỉnh gì cho chuyến đi?"
+                  disabled={!sessionReady || busy}
+                  placeholder={sessionReady ? 'Bạn muốn điều chỉnh gì cho chuyến đi?' : (parentInitializing || busy ? 'Đang tải dữ liệu phiên làm việc…' : 'Phiên chưa sẵn sàng...')}
                   aria-label="Nhập yêu cầu khám phá ẩm thực"
                 />
                 <button
                   type="submit"
                   data-testid="discovery-send-btn"
                   className="nn-send"
-                  disabled={busy || !inputText.trim() || sessionError === 'session_not_found'}
+                  disabled={!sessionReady || busy || !inputText.trim()}
                   aria-label="Gửi yêu cầu"
                 >
                   <span className="nn-send-label">Gửi tin nhắn</span>
@@ -1408,49 +1540,79 @@ export default function DiscoveryLayout({
                 </div>
 
                 {/* 3-Column Metrics Card */}
-                <div className="nn-metrics-card">
-                  <div className="nn-metric-col">
-                    <div className="nn-metric-val">
-                      {stops.length > 0 ? (stops.length < 10 ? `0${stops.length}` : stops.length) : (view.selection?.length ? `0${view.selection.length}` : '—')}
+                {(() => {
+                  const durationInfo = deriveTourDuration(view.tour, view.profile);
+                  const priceInfo = deriveTourPriceInfo(view.tour, view.profile);
+                  return (
+                    <div className="nn-metrics-card">
+                      <div className="nn-metric-col">
+                        <div className="nn-metric-val">
+                          {stops.length > 0 ? (stops.length < 10 ? `0${stops.length}` : stops.length) : (view.selection?.length ? `0${view.selection.length}` : '—')}
+                        </div>
+                        <div className="nn-metric-lbl">điểm dừng</div>
+                      </div>
+                      <div className="nn-metric-divider" />
+                      <div className="nn-metric-col">
+                        <div className="nn-metric-val">
+                          {durationInfo.val}
+                        </div>
+                        <div className="nn-metric-lbl">{durationInfo.lbl}</div>
+                      </div>
+                      <div className="nn-metric-divider" />
+                      <div className="nn-metric-col">
+                        <div className="nn-metric-val">
+                          {priceInfo.val}
+                        </div>
+                        <div className="nn-metric-lbl">
+                          {priceInfo.lbl}
+                        </div>
+                      </div>
                     </div>
-                    <div className="nn-metric-lbl">điểm dừng</div>
-                  </div>
-                  <div className="nn-metric-divider" />
-                  <div className="nn-metric-col">
-                    <div className="nn-metric-val">
-                      {view.tour?.totals?.duration_min ? `${Math.round(view.tour.totals.duration_min / 60 * 10) / 10}h` : '—'}
-                    </div>
-                    <div className="nn-metric-lbl">thời lượng</div>
-                  </div>
-                  <div className="nn-metric-divider" />
-                  <div className="nn-metric-col">
-                    <div className="nn-metric-val">
-                      {view.tour?.totals?.estimated_cost_vnd
-                        ? `${Math.round(view.tour.totals.estimated_cost_vnd / 1000)}K`
-                        : (view.profile?.budget_vnd ? `${Math.round(view.profile.budget_vnd / 1000)}K` : '—')}
-                    </div>
-                    <div className="nn-metric-lbl">
-                      {view.profile?.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'}
-                    </div>
-                  </div>
-                </div>
+                  );
+                })()}
 
-                {/* When Tour has been created */}
-                {view.tour ? (
+                {/* When Tour has been created and user is not editing selection */}
+                {view.tour && !editingSelectionAfterTour ? (
                   <GuidedTimeline
                     tour={view.tour}
                     allergies={view.profile?.allergies || []}
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
-                    onReplaceStop={() => handleReviseItinerary()}
-                    onChangeStop={() => handleReviseItinerary()}
-                    onAdjustStops={() => setProfileDrawerOpen(true)}
+                    onReplaceStop={(stop) => handleStartStopReplacement(stop)}
+                    onChangeStop={(stop) => handleStartStopReplacement(stop)}
+                    onAdjustStops={() => handleOpenSelectionEditor()}
                     onRestart={onResetSession}
                   />
                 ) : (
-                  /* When Tour is not created yet, show Selection list */
+                  /* When Tour is not created yet OR when user is editing selection after tour */
                   <div className="nn-selection-container" data-testid="discovery-selection-container">
+                    {editingSelectionAfterTour && (
+                      <div className="nn-edit-selection-banner" data-testid="editing-selection-banner">
+                        <div className="nn-edit-selection-header">
+                          <span className="nn-edit-badge">✏️ ĐIỀU CHỈNH ĐIỂM DỪNG TOUR</span>
+                          <button
+                            type="button"
+                            className="nn-back-tour-btn"
+                            onClick={() => {
+                              setEditingSelectionAfterTour(false);
+                              setReplaceTargetStop(null);
+                            }}
+                            aria-label="Quay lại xem lịch trình hiện tại"
+                          >
+                            ✕ Xem tour hiện tại
+                          </button>
+                        </div>
+                        <p className="nn-edit-selection-text">
+                          {replaceTargetStop
+                            ? `Đang chọn thay thế cho quán: "${replaceTargetStop.name}". Chọn quán mới từ gợi ý bên trái, gỡ bỏ quán cũ hoặc khoá quán, sau đó bấm "Lập lại lịch trình" và xác nhận.`
+                            : 'Điều chỉnh danh sách quán. Thay đổi cần được lập lại lịch trình và xác nhận tường minh trước khi cập nhật tour.'}
+                        </p>
+                      </div>
+                    )}
+
                     <div className="nn-selection-header-row">
-                      <h3 className="nn-selection-title">Danh sách quán đã chọn</h3>
+                      <h3 className="nn-selection-title">
+                        {editingSelectionAfterTour ? 'Danh sách điểm dừng đang chọn' : 'Danh sách quán đã chọn'}
+                      </h3>
                       <span className="nn-selection-badge">
                         {view.selection?.length || 0}/5 quán
                       </span>
@@ -1462,14 +1624,19 @@ export default function DiscoveryLayout({
                           <div
                             key={item.id}
                             data-testid={`selected-venue-card-${item.id}`}
-                            className="nn-selected-card"
+                            className={`nn-selected-card${replaceTargetStop?.id === item.id ? ' nn-replace-target' : ''}`}
                           >
                             <div className="nn-selected-card-left">
                               <div className="nn-restaurant-badge" style={{ width: '26px', height: '26px', fontSize: '12px' }}>
                                 {idx + 1}
                               </div>
                               <div>
-                                <h4 className="nn-selected-name">{item.name}</h4>
+                                <h4 className="nn-selected-name">
+                                  {item.name}
+                                  {replaceTargetStop?.id === item.id && (
+                                    <span className="nn-replace-target-tag">Quán cần đổi</span>
+                                  )}
+                                </h4>
                                 <p className="nn-selected-sub">{item.address || item.district}</p>
                               </div>
                             </div>
@@ -1482,6 +1649,7 @@ export default function DiscoveryLayout({
                                 onClick={() => handleToggleLockVenue(item)}
                                 title={item.locked ? 'Mở khoá quán' : 'Khoá quán này'}
                                 aria-label={item.locked ? 'Mở khoá quán' : 'Khoá quán'}
+                                disabled={!sessionReady || busy}
                               >
                                 {item.locked ? '🔒' : '🔓'}
                               </button>
@@ -1492,6 +1660,7 @@ export default function DiscoveryLayout({
                                 onClick={() => handleRemoveVenue(item.id)}
                                 title="Xoá quán khỏi danh sách"
                                 aria-label="Xoá quán"
+                                disabled={!sessionReady || busy}
                               >
                                 ✕
                               </button>
@@ -1501,18 +1670,24 @@ export default function DiscoveryLayout({
 
                         {/* Plan Trigger Dark CTA Card */}
                         <div className="nn-plan-trigger-card">
-                          <h4 className="nn-plan-trigger-title">Sẵn sàng tạo lịch trình?</h4>
+                          <h4 className="nn-plan-trigger-title">
+                            {editingSelectionAfterTour ? 'Cập nhật lại lịch trình?' : 'Sẵn sàng tạo lịch trình?'}
+                          </h4>
                           <p className="nn-plan-trigger-desc">
-                            Hệ thống sẽ tối ưu tuyến đường, kiểm tra giờ mở cửa và tính toán chi phí theo ngân sách.
+                            {editingSelectionAfterTour
+                              ? 'Hệ thống sẽ tối ưu lại tuyến đường dựa trên danh sách quán mới. Bạn sẽ cần xác nhận trước khi tour cập nhật.'
+                              : 'Hệ thống sẽ tối ưu tuyến đường, kiểm tra giờ mở cửa và tính toán chi phí theo ngân sách.'}
                           </p>
                           <button
                             type="button"
                             data-testid="btn-trigger-plan"
                             className="nn-plan-trigger-btn"
                             onClick={handleTriggerPlan}
-                            disabled={busy}
+                            disabled={!sessionReady || busy}
                           >
-                            Tạo lịch trình từ {view.selection.length} quán đã chọn →
+                            {editingSelectionAfterTour
+                              ? `✦ Lập lại lịch trình từ ${view.selection.length} quán →`
+                              : `Tạo lịch trình từ ${view.selection.length} quán đã chọn →`}
                           </button>
                         </div>
                       </>
@@ -1686,7 +1861,7 @@ export default function DiscoveryLayout({
                   setDetailVenue(null);
                   triggerElRef.current?.focus();
                 }}
-                disabled={busy || selectedVenueIds.has(detailVenue.id) || sessionError === 'session_not_found'}
+                disabled={!sessionReady || busy || selectedVenueIds.has(detailVenue.id)}
               >
                 {selectedVenueIds.has(detailVenue.id) ? '✓ Đã trong tour' : '+ Thêm vào tour'}
               </button>

@@ -435,9 +435,8 @@ function createMockDiscoveryServer() {
                 area: state.profile.area || 'Hoàn Kiếm',
                 stops,
                 totals: {
-                  duration_min: 120,
-                  walking_distance_m: 1200,
-                  estimated_cost_vnd: 250000,
+                  venue_range_upper_sum_vnd: 250000,
+                  walk_minutes: 25,
                   leg_source: 'straight_line_estimate',
                   route_provider: 'estimate'
                 },

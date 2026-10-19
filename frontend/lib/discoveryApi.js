@@ -98,14 +98,67 @@ export async function fetchWithTimeout(url, init = {}, timeoutMs = 15000) {
     }
   }
 
-  const timer = setTimeout(() => {
+  let timer = setTimeout(() => {
     controller.abort(new Error(`Quá thời gian chờ phản hồi (${timeoutMs}ms)`));
   }, timeoutMs);
 
+  function cleanupTimer() {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    if (callerSignal && callerAbortHandler) {
+      callerSignal.removeEventListener('abort', callerAbortHandler);
+      callerAbortHandler = null;
+    }
+  }
+
   try {
     const res = await fetch(url, { ...init, signal: controller.signal });
+
+    // Wrap body consumption methods so the timeout bounds res.json/text reading as well
+    const origJson = res.json.bind(res);
+    const origText = res.text.bind(res);
+
+    res.json = async () => {
+      try {
+        return await origJson();
+      } catch (err) {
+        if (err.name === 'AbortError' || controller.signal.aborted) {
+          if (callerSignal?.aborted) {
+            const customErr = new Error('Yêu cầu đã bị hủy.');
+            customErr.name = 'AbortError';
+            throw customErr;
+          }
+          throw new DiscoveryApiError('timeout', `Quá thời gian đọc phản hồi từ máy chủ (${timeoutMs}ms). Vui lòng thử lại.`, null, 408);
+        }
+        throw err;
+      } finally {
+        cleanupTimer();
+      }
+    };
+
+    res.text = async () => {
+      try {
+        return await origText();
+      } catch (err) {
+        if (err.name === 'AbortError' || controller.signal.aborted) {
+          if (callerSignal?.aborted) {
+            const customErr = new Error('Yêu cầu đã bị hủy.');
+            customErr.name = 'AbortError';
+            throw customErr;
+          }
+          throw new DiscoveryApiError('timeout', `Quá thời gian đọc phản hồi từ máy chủ (${timeoutMs}ms). Vui lòng thử lại.`, null, 408);
+        }
+        throw err;
+      } finally {
+        cleanupTimer();
+      }
+    };
+
     return res;
   } catch (err) {
+    cleanupTimer();
     if (err.name === 'AbortError' || controller.signal.aborted) {
       if (callerSignal?.aborted) {
         const customErr = new Error('Yêu cầu đã bị hủy.');
@@ -115,11 +168,6 @@ export async function fetchWithTimeout(url, init = {}, timeoutMs = 15000) {
       throw new DiscoveryApiError('timeout', `Quá thời gian kết nối tới máy chủ (${timeoutMs}ms). Vui lòng thử lại.`, null, 408);
     }
     throw new DiscoveryApiError('network_error', `Không thể kết nối đến máy chủ: ${err.message}`, err);
-  } finally {
-    clearTimeout(timer);
-    if (callerSignal && callerAbortHandler) {
-      callerSignal.removeEventListener('abort', callerAbortHandler);
-    }
   }
 }
 
@@ -149,7 +197,10 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '', option
   let body = null;
   try {
     body = await res.json();
-  } catch (_) {
+  } catch (jsonErr) {
+    if (jsonErr instanceof DiscoveryApiError) {
+      throw jsonErr;
+    }
     body = null;
   }
 
@@ -209,7 +260,10 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
   let body = null;
   try {
     body = await res.json();
-  } catch (_) {
+  } catch (jsonErr) {
+    if (jsonErr instanceof DiscoveryApiError) {
+      throw jsonErr;
+    }
     body = null;
   }
 
@@ -273,7 +327,10 @@ export async function sendDiscoveryAction(sessionId, revision, rawAction, sessio
   let body = null;
   try {
     body = await res.json();
-  } catch (_) {
+  } catch (jsonErr) {
+    if (jsonErr instanceof DiscoveryApiError) {
+      throw jsonErr;
+    }
     body = null;
   }
 

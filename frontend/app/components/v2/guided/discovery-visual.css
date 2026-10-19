@@ -673,3 +673,64 @@
     display: none !important;
   }
 }
+
+/* Post-Tour Selection Editor Banner */
+.nn-edit-selection-banner {
+  background: #FFF7EC;
+  border: 1px solid #F5D3A6;
+  border-radius: 12px;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nn-edit-selection-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.nn-edit-badge {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8C4718;
+  letter-spacing: 0.5px;
+}
+
+.nn-back-tour-btn {
+  background: transparent;
+  border: 1px solid #D6B998;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #702914;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nn-back-tour-btn:hover {
+  background: #F9E1CF;
+  border-color: #702914;
+}
+
+.nn-edit-selection-text {
+  font-size: 12px;
+  color: #5A4238;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.nn-replace-target-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: #CF542F;
+  color: #FFFFFF;
+  margin-left: 6px;
+}
+

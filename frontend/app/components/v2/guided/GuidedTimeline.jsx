@@ -398,9 +398,9 @@ export default function GuidedTimeline({
           type="button"
           onClick={onAdjustStops}
           className="nn-ghost-pill"
-          aria-label="Điều chỉnh số lượng quán"
+          aria-label="Điều chỉnh danh sách điểm dừng"
         >
-          ✏️ Đổi số lượng quán
+          ✏️ Điều chỉnh điểm dừng
         </button>
         <button
           type="button"
