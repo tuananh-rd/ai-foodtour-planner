@@ -2,6 +2,8 @@
 
 ## Latest checkpoint (supersedes historical rows below)
 
+Final verification at1509005:661 backend tests PASS/one optional private-data skip,138.892s; OpenAPI matches;18 mock-client contracts PASS. New production3060/API8060 probe60/60 PASS, zero console errors/remote origins, final-source SVG side/overlay captured in integrated-final/. Broad browser regression190 checks has188 PASS and2 FAIL: initial clarify-chip focus at1280/390; acceptance remains open. Same retained Antigravity active read-only final QA task_773e0849bceb/ctx_bc7440d9491f with exact ownership ACK and actual output; it reviews composition and explores UI independently. No new agent or product-file editor.
+
 OA2/OA4 UI is integrated at0de3632: production desktop/mobile60/60 checks, real PMTiles Range/tiles/markers, SVG comparison and accessible keyboard interaction. OA3R task_7bd07278a470/ctx_e884a0d5d914 settledcdf47ba and is integratedda5ccad after26 module tests and9 independent fresh-process contract groups passed. Earlier3461353 was rejected; its18 tests did not establish acceptance. Antigravity remains retained on the same terminal, no active editor.
 
 Codex now wires the actual adapter factory into create_app, preserving explicit injection and doing no startup network calls. Three real-HTTP/actual-adapter/temp-SQLite tests pass with only external transports mocked; transport quota classification includes documented429/432/433 without retry or billing changes. Final full regression and affected-implementer review remain pending. Live Tavily is BLOCKED by absent local key; Gemini remains PARTIAL, never inferred from mocks. Existing production3060/API8060 must be refreshed/verified for final delivery; no user servers are stopped.

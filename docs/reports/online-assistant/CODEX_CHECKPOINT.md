@@ -1,5 +1,9 @@
 # Online assistant implementation checkpoint — 2026-10-19
 
+## Latest continuation (supersedes chronological checkpoints below)
+
+HEAD1509005 integrates accepted OA3R cdf47ba and Codex actual adapter factory/HTTP tests/429432433 quota mapping. Same Run/coordinator binding remains valid. Antigravity retained terminal37bc is now active read-only final QA task_773e0849bceb/ctx_bc7440d9491f, ACK+actual output verified. It owns FINAL_QA.md and qa/online-assistant/final-integration/ only; no product edits. Main composition661 full backend tests PASS/one optional private-data skip; OpenAPI and18 contracts PASS. Fresh60/60 productionUI checks and SVG captures pass at API1509005, frontend tree0de3632. Broad regression188/190 passes: two initial clarification focus failures need classification/fix; no final acceptance yet. Tavily live BLOCKED/key absent, Gemini PARTIAL. Own3060 production/8060 API synthetic/rules and8080 external-search fixture remain, user servers untouched. Preserve original untracked integrated/ and integrated-r3/ driver-failure evidence; do not label those final PASS.
+
 This is an implementation checkpoint, not final acceptance. Codex coordinates/reviews/integrates; the existing Antigravity agent implements bounded frontend and subsequent adapter tasks. No Claude invocation, model change, paid activation or remote publishing occurred.
 
 ## Current implementation and evidence
