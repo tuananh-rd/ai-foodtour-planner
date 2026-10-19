@@ -1,6 +1,7 @@
 """Auth/CAS before tools; never hold the session-store lock during model transport."""
 import copy
 import time
+from dataclasses import replace
 from fastapi import APIRouter, Header, Request
 from .schemas import Turn, AssistantView
 from .state import State
@@ -87,7 +88,9 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
             current.tour, current.snapshot = None, None
         if tools.planned_tour is not None:
             current.tour, current.snapshot = tools.planned_tour, data
-            current.tour_preferences = tools.preferences()
+            # Match plan_selected's validation context: explicitly chosen venues
+            # replace discovery taste ranking, never allergy/exclusion/budget gates.
+            current.tour_preferences = replace(tools.preferences(), interests=())
             current.tour_vehicle = state.profile.vehicle
             current.tour_selected_ids = tuple(x['id'] for x in state.selection)
         current.revision += 1

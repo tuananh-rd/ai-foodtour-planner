@@ -225,6 +225,24 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(restored['revision'], 1)
         self.assertEqual(len(restored['messages']), 2)
 
+    def test_http_confirm_renders_real_planner_with_discovery_tastes(self):
+        def post(payload):
+            current = self.client.get(self.url, headers=self.headers).json()
+            response = self.client.post(self.url, headers=self.headers, json={'revision': current['revision'], **payload})
+            self.assertEqual(response.status_code, 200, response.text)
+            return response.json()
+        found = post({'text': 'Tìm quán quanh Hồ Gươm'})
+        post({'action': {'type': 'tool', 'name': 'update_foodtour_selection', 'arguments': {
+            'operation': 'add', 'venue_ids': [found['results'][0]['id']], 'selection_version': 0}}})
+        post({'text': 'Tìm chè ít ngọt'})
+        post({'text': '600 nghìn cả nhóm cho 2 người, 20 phút mỗi chặng'})
+        post({'text': 'Xuất phát từ Hồ Gươm lúc 18h, tổng 120 phút, đi bộ'})
+        prepared = post({'action': {'type': 'tool', 'name': 'create_itinerary', 'arguments': {}}})
+        confirmed = post({'action': {'type': 'confirm', 'confirmation_id': prepared['confirmation']['id']}})
+        self.assertTrue(confirmed['tour']['stops'])
+        restored = self.client.get(self.url, headers=self.headers)
+        self.assertEqual(restored.status_code, 200, restored.text)
+
     def test_no_web_contract_and_no_auto_plan(self):
         r = self.client.post(self.url, headers=self.headers, json={'revision': 0, 'text': 'phở', 'web_search': True})
         self.assertEqual(r.status_code, 422)
