@@ -34,7 +34,7 @@ try{
      if(/\/assistant$/.test(r.url)){evidence.statuses.push(r.status);cdp('Network.getResponseBody',{requestId:m.params.requestId}).then(x=>{try{const b=JSON.parse(x.body);if(b.contract==='discovery-v1')view=b;posts++;}catch{posts++;}}).catch(()=>posts++);}
      if(r.url.includes('.pmtiles'))evidence.ranges.push(r.status);
    }
-   if(m.method==='Runtime.exceptionThrown')evidence.errors.push('Uncaught browser exception');
+   if(m.method==='Runtime.exceptionThrown')evidence.errors.push(String(m.params.exceptionDetails?.exception?.description||m.params.exceptionDetails?.text||'Uncaught browser exception').replace(/[a-f0-9]{32,64}/gi,'[redacted]').slice(0,900));
  };
  const ev=async expression=>{const r=await cdp('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error('Browser evaluation failed');return r.result.value;};
  const sel=id=>`[data-testid="${id}"]`;
@@ -80,7 +80,7 @@ try{
    await until(()=>exists('guided-timeline'));await shot('confirmed-'+width);
    record('free Maps URL exists '+width,await ev(`Array.from(document.querySelectorAll('a[href]')).some(a=>{const u=new URL(a.href);return ['google.com','www.google.com'].includes(u.hostname)&&u.pathname.startsWith('/maps/')&&!u.searchParams.has('key')})`));
    record('Maps starts at actual chosen origin '+width,await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');return a&&new URL(a.href).searchParams.get('origin')===${JSON.stringify(view.profile.origin.lat+','+view.profile.origin.lon)}})()`));
-   await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(1800);record('PMTiles map accessible '+width,await exists('pilot-map-canvas'));await shot('map-'+width);
+   await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(1800);record('PMTiles map accessible '+width,await ev(`(()=>{const e=document.querySelector('[data-testid="pilot-map-canvas"]');return e&&e.getBoundingClientRect().height>=250&&e.getBoundingClientRect().width>=250})()`));await shot('map-'+width);
    await click(sel('pilot-markers-toggle'));record('marker toggle hides points '+width,await ev(`document.querySelector('[data-testid="pilot-markers-toggle"]').getAttribute('aria-pressed')==='false'`));await click(sel('pilot-markers-toggle'));
    await cdp('Page.reload');await until(()=>exists('discovery-input'));await idle();record('reload preserves selection and tour '+width,view.selection.length===1&&!!view.tour?.stops?.length);
    if(width===390)await tab('tour');

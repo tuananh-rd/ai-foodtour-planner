@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
+import './pilot-map.css';
 
 export const PILOT_BOUNDS = {
   west: 105.835,
