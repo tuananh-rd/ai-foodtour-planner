@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-19T12:04:53.399Z",
+  "testedAt": "2026-10-19T12:16:59.532Z",
   "targetFigmaFrame": "frame 1:145 \"02 — Măm Măm / Warm editorial\" (1440x1024)",
   "referenceImagePath": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-antigravity-web\\qa\\figma-warm-editorial\\reference-1440x1024.png",
   "checks": [
@@ -357,6 +357,44 @@
       }
     },
     {
+      "id": "TIMELINE_PROVENANCE_LABELS",
+      "name": "Timeline explicitly contains \"theo nguồn\", \"ước tính\", \"nguồn ghi\" and allergy safety notice",
+      "pass": true,
+      "details": {
+        "hasTheoNguon": true,
+        "hasUocTinh": true,
+        "hasNguonGhi": true,
+        "hasAllergySafe": true
+      }
+    },
+    {
+      "id": "VISIBLE_PRICE_AND_LEG_PILLS",
+      "name": "Price range and estimated leg travel are visibly rendered in stop cards (not sr-only)",
+      "pass": true,
+      "details": [
+        {
+          "text": "🏷️ Khoảng giá ≈15k–45k (theo nguồn)",
+          "visible": true
+        },
+        {
+          "text": "🏷️ Khoảng giá ≈15k–45k (theo nguồn)",
+          "visible": true
+        },
+        {
+          "text": "🚶 ~3 phút (ước tính)",
+          "visible": true
+        },
+        {
+          "text": "🏷️ Khoảng giá ≈35k–75k (theo nguồn)",
+          "visible": true
+        },
+        {
+          "text": "🚶 ~6 phút (ước tính)",
+          "visible": true
+        }
+      ]
+    },
+    {
       "id": "DARK_CTA_TIMELINE_PRESENT",
       "name": "Dark CTA card rendered in timeline with min-height 150px (actual ~181px with disclosure) and ~44px button",
       "pass": true,
@@ -461,6 +499,15 @@
       "name": "Mobile tab Lịch trình displays tour column",
       "pass": true,
       "details": {}
+    },
+    {
+      "id": "MOBILE_ZOOM_200_NO_CLIPPING",
+      "name": "CSS zoom 200% at viewport 390px has ZERO clipped controls (right <= 391)",
+      "pass": true,
+      "details": {
+        "clippingCount": 0,
+        "clipping": []
+      }
     },
     {
       "id": "CONTRAST_CHAT_TEXT",
@@ -627,8 +674,8 @@
     }
   },
   "summary": {
-    "total": 47,
-    "passed": 47,
+    "total": 50,
+    "passed": 50,
     "failed": 0
   }
 }

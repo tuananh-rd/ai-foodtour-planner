@@ -241,8 +241,8 @@ export default function GuidedTimeline({
           const isLocked = lockedStops.includes(stop.venue_id) || stop.locked;
 
           const hoursNote = stop.hours?.display
-            ? ` · giờ mở cửa theo nguồn: ${stop.hours.display}`
-            : ' · giờ mở cửa: chưa rõ';
+            ? ` · nguồn ghi giờ mở cửa: ${stop.hours.display}`
+            : ' · giờ mở cửa theo nguồn: chưa rõ';
           const fullDesc = `${dishStr}${hoursNote}`;
 
           const stageLabel = stop.role || stop.category || `ĐIỂM DỪNG ${idx + 1}`;
@@ -292,10 +292,18 @@ export default function GuidedTimeline({
                   {fullDesc}
                 </p>
 
-                {/* Hidden semantic pills for test backwards-compatibility */}
-                <div className="nn-timeline-pills nn-sr">
-                  <span className="nn-time-pill">{arriveDisplay}</span>
-                  <span className="nn-meta-pill">{metaDisplay}</span>
+                {/* Visible compact source-labeled price and estimated leg info */}
+                <div className="nn-timeline-pills nn-stop-meta-line" data-testid={`stop-meta-line-${idx}`}>
+                  <span className="nn-meta-pill" data-testid={`stop-price-pill-${idx}`}>
+                    🏷️ {priceShortForm ? `Khoảng giá ≈${priceShortForm} (theo nguồn)` : (stop.price?.price_range ? `${stop.price.price_range} (theo nguồn)` : 'giá theo nguồn: chưa rõ')}
+                  </span>
+                  {idx > 0 && legMinText && (
+                    <span className="nn-meta-pill nn-leg-pill" data-testid={`stop-leg-pill-${idx}`}>
+                      🚶 {legMinText}
+                    </span>
+                  )}
+                  {/* Semantic time pill for test backwards-compatibility */}
+                  <span className="nn-time-pill nn-sr">{arriveDisplay}</span>
                 </div>
               </div>
             </div>

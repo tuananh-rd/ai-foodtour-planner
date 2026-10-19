@@ -3,7 +3,7 @@
 **Dự án:** AI FoodTour Planner  
 **Chỉ đạo người dùng:** 2026-10-19 — Triển khai Figma frame 1:145, "02 — Măm Măm / Warm editorial", sử dụng ảnh gốc 1440×1024 PNG làm mục tiêu trực quan.  
 **Ảnh tham chiếu chuẩn:** `qa/figma-warm-editorial/reference-1440x1024.png` (đã lưu trữ nội bộ tại qa/ để không xuất bản ra môi trường web).  
-**Tác vụ / Điều phối:** Task `task_0b8beaeb46b6`, Dispatch `ctx_d65d1251e6fd` (kế thừa `task_53af11905ca6` / `task_1ecaea329bef`)  
+**Tác vụ / Điều phối:** Task `task_f223894221b3`, Dispatch `ctx_bd4c51ddf03e` (kế thừa `task_0b8beaeb46b6` / `25cd216`)  
 **Điều phối viên:** Codex (`term_24c3a210-7070-4dd5-b703-f12f516a70b0`)  
 **Thực hiện & Kiểm định:** Antigravity  
 **Bộ kiểm thử tự động:** `qa/figma-warm-editorial/run_qa.mjs` (chạy trên cổng cô lập 13600, 18600, 19800)  
@@ -13,18 +13,16 @@
 
 ## 1. Tóm tắt điều hành (Executive Summary)
 
-1. **Việc đã thực hiện:** Em đã triển khai giao diện "Warm editorial" theo đúng frame Figma 1:145 (1440×1024) và thực hiện đầy đủ 5 nhóm chỉ đạo chuẩn hoá nghiêm ngặt từ Codex:
-   - **Nhịp điệu dọc thẻ Chat bên trái (Left Chat Card Rhythm):** Badge trợ lý cao 36px bắt đầu tại y=126; tiêu đề lớn `font-size: 44px; font-weight: 600; line-height: 60px` bắt đầu tại y=198 (2 dòng thanh lịch); đoạn giới thiệu bắt đầu tại y=334 (giới hạn chiều rộng 530px); hàng chip lọc bắt đầu tại y=410; đường kẻ phân cách tại y=458.
-   - **Kích thước Cột phải & Nút Dark CTA chuẩn xác (Right Column & CTA):** Header cột tour cao 40px với tiêu đề 32px weight 600 line-height 40px; Thẻ Hero cao 190px (bắt đầu tại y=170) với tiêu đề 32px weight 600 tự động tách 2 dòng sau dấu phẩy; Thẻ Metrics 3 cột cao 66px; Các thẻ điểm dừng min-height 112px với khoảng cách 12px; Thẻ Dark CTA ở trạng thái rỗng cao 150px (y=824); Nút Dark CTA là nút chữ nhật bo góc màu kem nhạt (`#FAF4EE`, viền `#E2D7CC`, chữ đen `#231815`, cao 44px, radius 12px, độ tương phản 15.86:1 đạt AAA), thay thế hoàn toàn dạng viên thuốc màu cam cũ.
-   - **Khắc phục triệt để lỗi chức năng trên Mobile (Mobile Tab-Switch Bug):** Khi người dùng đang ở tab `tour` trên giao diện di động, việc bấm nút "Bắt đầu gợi ý →" hoặc chọn gợi ý nhanh ở thanh bên sẽ chủ động kích hoạt chuyển `activeMobileTab = 'chat'`, sau đó mới focus vào ô soạn thảo khi đã hiển thị trên DOM.
-   - **Nhãn khoảng cách theo phương tiện & Minh bạch phiên cục bộ:** Nhãn khoảng cách không còn mặc định "ước tính đi bộ" khi phương tiện không phải đi bộ (đồng bộ theo xe máy, ô tô, taxi); chân trang thanh bên ghi nhận trung thực "Phiên hiện tại / Phiên làm việc cục bộ" thay vì tuyên bố gây hiểu lầm là chỉ lưu trên trình duyệt.
-   - **Bảo toàn cảnh báo trong vùng cuộn tự nhiên:** Các cảnh báo an toàn dị ứng và minh bạch liên kết ngoài Google Maps được đặt trong vùng cuộn tự nhiên `.nn-tour-content-scroll`, không bóp nghẹt chiều cao các thẻ để cố tình triệt tiêu thanh cuộn.
-2. **Kết quả kiểm chứng:** Toàn bộ test suite `qa/figma-warm-editorial/run_qa.mjs` ghi nhận **47/47 checks PASSED (100%)** với 0 FAIL. Độ tương phản trích xuất trực tiếp từ DOM đạt chuẩn WCAG AAA/AA: chữ chat chính 17.16:1, chữ thanh bên 10.42:1, nút CTA màu kem 15.86:1, thẻ Dark CTA 14.43:1, chip lọc 10.26:1.
-3. **Hiện trạng & Bàn giao:** Toàn bộ bằng chứng trực quan (`desktop_1440x1024_initial.png`, `desktop_1440x1024_tour.png`, `side_by_side_comparison.png`, `overlay_diff.png`, `mobile_390x844.png`) và file `evidence.json` đã được tái tạo hoàn chỉnh. Không sửa đổi backend, contracts, biến môi trường hay động chạm tới các cổng điều phối (3060/8060/8080).
+1. **Việc đã thực hiện:** Em đã khắc phục triệt để 3 vấn đề kỹ thuật thực tế được Codex phát hiện trong đợt kiểm thử độc lập 190-check trên bản tích hợp `25cd216`:
+   - **Xử lý triệt để lỗi tràn nút khi CSS zoom 200% ở viewport 390px (Zero Clipping):** Bổ sung quy tắc responsive wrapping linh hoạt cho header cột tour (`.nn-tour-col-header`), khối nút chuyển chế độ (`.nn-view-mode-toggle`) và hàng thao tác điểm dừng (`.nn-stop-stage-row`, `.nn-stop-actions`), giúp các nút điều khiển (`pilot-map-toggle` và `stop-replace-btn-0/1/2`) tự động co giãn và xuống dòng tự nhiên thay vì bị đẩy tràn khỏi mép màn hình.
+   - **Khôi phục hiển thị trực quan thông tin giá và chặng di chuyển (Visible Price & Leg Info):** Loại bỏ việc giấu thông tin trong `.nn-sr`, khôi phục thẻ hiển thị nhỏ gọn (`.nn-stop-meta-line .nn-meta-pill`) hiển thị rõ ràng giá theo nguồn (ví dụ: `🏷️ Khoảng giá ≈15k–45k (theo nguồn)` hoặc `giá theo nguồn: chưa rõ`) và chặng di chuyển ước tính (`🚶 ~3 phút (ước tính)` hoặc `🚶 0 phút`), bảo toàn dữ liệu trung thực cho người dùng mắt thường.
+   - **Đồng bộ từ ngữ xuất xứ nguồn mở cửa (Provenance Wording):** Bảo toàn chuẩn xác xuất xứ nguồn ghi nhận cho giờ mở cửa (`nguồn ghi giờ mở cửa: ...` hoặc `giờ mở cửa theo nguồn: chưa rõ`), đảm bảo lộ trình tour chứa đầy đủ 3 cụm từ minh bạch: `"theo nguồn"`, `"ước tính"`, `"nguồn ghi"` và cảnh báo an toàn dị ứng.
+2. **Kết quả kiểm chứng:** Bộ kiểm thử tự động `qa/figma-warm-editorial/run_qa.mjs` ghi nhận **50/50 checks PASSED (100%)** với 0 FAIL. Tái hiện chính xác chuỗi kiểm tra `document.documentElement.style.zoom='2'` từ `qa/e2e/codex_guided_review.mjs` lines 135-137 ghi nhận **0 nút bị clip (clippingCount: 0)**, toàn bộ nút đều nằm trọn vẹn trong `innerWidth <= 391px`.
+3. **Hiện trạng & Bàn giao:** Toàn bộ bằng chứng trực quan (`desktop_1440x1024_initial.png`, `desktop_1440x1024_tour.png`, `side_by_side_comparison.png`, `overlay_diff.png`, `mobile_390x844.png`, `mobile_390x844_zoom200.png`) và file `evidence.json` đã được tái tạo hoàn chỉnh. Không chỉnh sửa backend, contracts, biến môi trường hay động chạm tới các cổng điều phối (3060/8060/8080).
 
 ---
 
-## 2. Bảng kết quả kiểm định tự động (47/47 PASS)
+## 2. Bảng kết quả kiểm định tự động (50/50 PASS)
 
 | STT | Mã kiểm thử | Nội dung kiểm tra | Kết quả | Chi tiết đo lường |
 |:---:|:---|:---|:---:|:---|
@@ -56,47 +54,53 @@
 | 26 | `TOUR_STOPS_RENDERED` | Lập lịch trình thành công với 3 điểm dừng | **PASS** | Đủ 3 điểm dừng theo đúng tiêu chí |
 | 27 | `STOP_BADGE_GEOMETRY` | Badge điểm dừng nằm ngang: x=975, nội dung tại x=1021 | **PASS** | Căn ngang chuẩn xác (lệch ≤ 3px so với x=972/1018) |
 | 28 | `STOP_STAGE_NEUTRAL` | Giai đoạn dùng nhãn điểm dừng trung tính | **PASS** | `18:04 · ĐIỂM DỪNG 1` (không gán mác món ăn khi thiếu dữ liệu) |
-| 29 | `DARK_CTA_TIMELINE_PRESENT` | Thẻ Dark CTA trong timeline min-height 150px (thực tế 181px với văn bản minh bạch) | **PASS** | `y: 743px, height: 181px, btnHeight: 44px, btnWidth: 391px` |
-| 30 | `GOOGLE_MAPS_CTA` | Nút CTA dẫn đường Google Maps đi bộ miễn phí | **PASS** | URL hợp lệ `travelmode=walking`, focus tự động |
-| 31 | `GOOGLE_MAPS_DISCLOSURE` | Minh bạch liên kết ngoài miễn phí, không API trả phí | **PASS** | Đoạn text minh bạch hiện diện rõ ràng |
-| 32 | `REPLACE_MODAL_OPENS` | Mở hộp thoại đổi quán khi bấm nút Đổi quán | **PASS** | Hộp thoại mở với nút `replace-modal-confirm-btn` |
-| 33 | `REPLACE_DIFF_RENDERED` | Máy chủ trả về diff so sánh trước/sau khi đổi quán | **PASS** | Diff hiển thị với nút `replace-modal-done-btn` |
-| 34 | `REPLACE_MODAL_COMMITTED` | Đóng hộp thoại đổi quán sau khi hoàn tất xác nhận | **PASS** | Modal đóng sạch sẽ sau khi commit |
-| 35 | `STOP_REPLACEMENT_APPLIED` | Cập nhật điểm dừng thực tế trong lịch trình | **PASS** | Điểm dừng 1 đổi từ `[SYNTHETIC] Chè Thử 12` thành `[SYNTHETIC] Kem Thử 24` |
-| 36 | `PILOT_MAP_ACTIVE` | Chuyển đổi sang chế độ Bản đồ PMTiles | **PASS** | Canvas `pilot-map-canvas` kích hoạt |
-| 37 | `MAP_MARKERS_SYNC` | Số marker bản đồ đồng bộ với số điểm dừng | **PASS** | 3 marker số xuất hiện trên bản đồ nội bộ Hoàn Kiếm |
-| 38 | `VIEW_MODE_SCHEMATIC` | Quay trở lại chế độ xem Sơ đồ | **PASS** | Giao diện danh sách điểm dừng khôi phục |
-| 39 | `RELOAD_PERSISTENCE` | Tải lại trang (F5) phục hồi đầy đủ tour | **PASS** | Phục hồi nguyên vẹn 3 điểm dừng, không cướp focus |
-| 40 | `MOBILE_ZERO_OVERFLOW` | Kiểm tra mobile 390px không tràn ngang | **PASS** | `scrollWidth: 390, rootScrollWidth: 390` (0px tràn) |
-| 41 | `MOBILE_TAB_CHAT` | Tab Khám phá trên mobile hiển thị khung chat | **PASS** | Khung chat active, không bị ẩn |
-| 42 | `MOBILE_TAB_TOUR` | Tab Lịch trình trên mobile hiển thị cột tour | **PASS** | Cột tour active, hiển thị rõ ràng |
-| 43 | `CONTRAST_CHAT_TEXT` | Độ tương phản chữ chat chính (#231815/#FFFEFA) | **PASS** | **17.16:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
-| 44 | `CONTRAST_SIDEBAR` | Độ tương phản thanh bên (#FFFFFF/#702914) | **PASS** | **10.42:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
-| 45 | `CONTRAST_CTA_BUTTON` | Độ tương phản nút CTA kem nhạt (#231815/#FAF4EE) | **PASS** | **15.86:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
-| 46 | `CONTRAST_DARK_CTA` | Độ tương phản thẻ CTA tối (#FFFFFF/#312820) | **PASS** | **14.43:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
-| 47 | `CONTRAST_FILTER_CHIP` | Độ tương phản chip lọc (#4A352F/#F7F2EE) | **PASS** | **10.26:1** (đo từ DOM, vượt chuẩn AA ≥ 4.5:1) |
+| 29 | `TIMELINE_PROVENANCE_LABELS` | Lộ trình chứa đủ "theo nguồn", "ước tính", "nguồn ghi" và dị ứng | **PASS** | `hasTheoNguon: true, hasUocTinh: true, hasNguonGhi: true, hasAllergySafe: true` |
+| 30 | `VISIBLE_PRICE_AND_LEG_PILLS` | Giá và chặng ước tính hiển thị trực quan (visible, not sr-only) | **PASS** | 5 pills hiển thị rõ ràng trên DOM với giá và số phút chặng |
+| 31 | `DARK_CTA_TIMELINE_PRESENT` | Thẻ Dark CTA trong timeline min-height 150px (thực tế 181px với văn bản minh bạch) | **PASS** | `y: 743px, height: 181px, btnHeight: 44px, btnWidth: 391px` |
+| 32 | `GOOGLE_MAPS_CTA` | Nút CTA dẫn đường Google Maps đi bộ miễn phí | **PASS** | URL hợp lệ `travelmode=walking`, focus tự động |
+| 33 | `GOOGLE_MAPS_DISCLOSURE` | Minh bạch liên kết ngoài miễn phí, không API trả phí | **PASS** | Đoạn text minh bạch hiện diện rõ ràng |
+| 34 | `REPLACE_MODAL_OPENS` | Mở hộp thoại đổi quán khi bấm nút Đổi quán | **PASS** | Hộp thoại mở với nút `replace-modal-confirm-btn` |
+| 35 | `REPLACE_DIFF_RENDERED` | Máy chủ trả về diff so sánh trước/sau khi đổi quán | **PASS** | Diff hiển thị với nút `replace-modal-done-btn` |
+| 36 | `REPLACE_MODAL_COMMITTED` | Đóng hộp thoại đổi quán sau khi hoàn tất xác nhận | **PASS** | Modal đóng sạch sẽ sau khi commit |
+| 37 | `STOP_REPLACEMENT_APPLIED` | Cập nhật điểm dừng thực tế trong lịch trình | **PASS** | Điểm dừng 1 đổi từ `[SYNTHETIC] Chè Thử 12` thành `[SYNTHETIC] Kem Thử 24` |
+| 38 | `PILOT_MAP_ACTIVE` | Chuyển đổi sang chế độ Bản đồ PMTiles | **PASS** | Canvas `pilot-map-canvas` kích hoạt |
+| 39 | `MAP_MARKERS_SYNC` | Số marker bản đồ đồng bộ với số điểm dừng | **PASS** | 3 marker số xuất hiện trên bản đồ nội bộ Hoàn Kiếm |
+| 40 | `VIEW_MODE_SCHEMATIC` | Quay trở lại chế độ xem Sơ đồ | **PASS** | Giao diện danh sách điểm dừng khôi phục |
+| 41 | `RELOAD_PERSISTENCE` | Tải lại trang (F5) phục hồi đầy đủ tour | **PASS** | Phục hồi nguyên vẹn 3 điểm dừng, không cướp focus |
+| 42 | `MOBILE_ZERO_OVERFLOW` | Kiểm tra mobile 390px không tràn ngang | **PASS** | `scrollWidth: 390, rootScrollWidth: 390` (0px tràn) |
+| 43 | `MOBILE_TAB_CHAT` | Tab Khám phá trên mobile hiển thị khung chat | **PASS** | Khung chat active, không bị ẩn |
+| 44 | `MOBILE_TAB_TOUR` | Tab Lịch trình trên mobile hiển thị cột tour | **PASS** | Cột tour active, hiển thị rõ ràng |
+| 45 | `MOBILE_ZOOM_200_NO_CLIPPING` | Tái hiện CSS zoom 200% ở viewport 390px không bị clip nút | **PASS** | `clippingCount: 0`, toàn bộ buttons nằm trọn trong `innerWidth` |
+| 46 | `CONTRAST_CHAT_TEXT` | Độ tương phản chữ chat chính (#231815/#FFFEFA) | **PASS** | **17.16:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
+| 47 | `CONTRAST_SIDEBAR` | Độ tương phản thanh bên (#FFFFFF/#702914) | **PASS** | **10.42:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
+| 48 | `CONTRAST_CTA_BUTTON` | Độ tương phản nút CTA kem nhạt (#231815/#FAF4EE) | **PASS** | **15.86:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
+| 49 | `CONTRAST_DARK_CTA` | Độ tương phản thẻ CTA tối (#FFFFFF/#312820) | **PASS** | **14.43:1** (đo từ DOM, vượt chuẩn AAA ≥ 7.0:1) |
+| 50 | `CONTRAST_FILTER_CHIP` | Độ tương phản chip lọc (#4A352F/#F7F2EE) | **PASS** | **10.26:1** (đo từ DOM, vượt chuẩn AA ≥ 4.5:1) |
 
 ---
 
-## 3. So sánh hình học chi tiết với Figma Frame 1:145
+## 3. Phân tích chi tiết 3 phát hiện từ Codex Review
 
-| Khối giao diện | Figma Frame 1:145 (Mục tiêu) | Đo lường thực tế (DOM) | Độ sai lệch | Đánh giá & Rationale |
-|:---|:---:|:---:|:---:|:---|
-| **Canvas & Nền** | 1440 × 1024, `#F9C53D` | 1440 × 1024, `rgb(249, 197, 61)` | 0 px | Khớp hoàn hảo độ phân giải chuẩn và tone màu vàng ấm editorial |
-| **Thanh bên (Sidebar)** | 232 × 1024, x=0, y=0, `#702914` | 232 × 1024, x=0, y=0, `rgb(112, 41, 20)` | 0 px | Khớp tuyệt đối |
-| **Thẻ Chat (Left Card)** | 668 × 886, x=264, y=98 | 668 × 886, x=264, y=98 | 0 px | Khớp tuyệt đối vị trí và kích thước khung card |
-| **Badge trợ lý (Chat)** | y=126, cao 36px | y=126, cao 36px | 0 px | Khớp tuyệt đối nhịp điệu mở đầu |
-| **Tiêu đề Chat (Hero H1)** | y=198, 44px/60px w600 (2 dòng) | y=198, cao 120px (44px/60px w600) | 0 px | Khớp chính xác tọa độ bắt đầu glyph, kích thước và phân ngắt 2 dòng |
-| **Đoạn dẫn trợ lý** | y=330, max-width ~530px | y=334, max-width 530px | 4 px | Lệch 4px do khử răng cưa phông chữ trên Windows, giữ đúng 2 dòng |
-| **Hàng chip lọc nhanh** | y=409 | y=410 | 1 px | Khớp nhịp điệu |
-| **Đường kẻ phân cách** | y=458 | y=458 | 0 px | Khớp hoàn hảo |
-| **Header Cột Tour** | y=98, cao 40px, H2 32px/40px w600 | y=98, cao 40px, H2 32px/40px w600 | 0 px | Khớp tuyệt đối kích thước header và typography |
-| **Thẻ Hero Tour** | y=158 (hoặc ~170), cao 190px | y=170, cao 190px | 0 px (chiều cao) | Chiều cao 190px chuẩn xác; tiêu đề 32px/44px w600 tự ngắt dòng sau dấu phẩy |
-| **Thẻ Metrics 3 cột** | cao 66px, nền kem | y=372, cao 66px | 0 px | Khớp chiều cao 66px; thông số rỗng trung thực `—` |
-| **Thẻ Điểm dừng** | min-height 112px, gap 12px | min-height 112px, padding 14px 18px | 0 px | Thẻ điểm dừng rộng rãi, rõ ràng theo đúng tỷ lệ editorial |
-| **Thẻ Dark CTA (Rỗng)** | y=822, cao 150px | y=824, cao 150px | 2 px | Khớp chiều cao 150px; nằm trọn vẹn trong viewport desktop 1024px |
-| **Nút bấm Dark CTA** | Chữ nhật bo góc `#FAF4EE`, chữ `#231815` | Cao 44px, radius 12px, `#FAF4EE` | 0 px | Khớp thẩm mỹ editorial cổ điển, tương phản 15.86:1 vượt chuẩn AAA |
-| **Thẻ Dark CTA (Có tour)** | Chứa thêm dòng minh bạch Google Maps | Cao 181px (y=743px) | +31 px | Chiều cao tăng tự nhiên để chứa văn bản an toàn/minh bạch pháp lý |
+### 3.1. Vấn đề 1: Lỗi clip nút điều khiển khi CSS zoom 200% ở viewport 390px
+- **Hiện tượng ban đầu:** Khi thực hiện phóng to `document.documentElement.style.zoom='2'` trên màn hình di động 390px, thanh công cụ header cột tour và hàng nút thao tác điểm dừng bị cố định không cho phép xuống dòng (`flex-wrap: nowrap`). Kết quả là nút `pilot-map-toggle` bị đẩy sang toạ độ `right = 422px` và các nút `stop-replace-btn-0/1/2` bị đẩy sang toạ độ `right = 427px`, vượt khỏi chiều rộng màn hình 390px.
+- **Biện pháp khắc phục:**
+  - Bổ sung `flex-wrap: wrap; gap: 8px;` cho `.nn-tour-col-header`, điều chỉnh kích thước chữ tiêu đề `.nn-tour-heading` trên di động thành `font-size: 20px; line-height: 26px; word-break: break-word;` và gán `flex-shrink: 0;` cho `.nn-view-mode-toggle`.
+  - Bổ sung `flex-wrap: wrap; gap: 6px;` cho `.nn-stop-stage-row` và `.nn-stop-actions`, cho phép nút `stop-replace-btn` tự động xuống dòng an toàn khi chiều ngang bị thu hẹp do phóng to 200%.
+- **Kết quả đo lường thực tế:** Kiểm tra `MOBILE_ZOOM_200_NO_CLIPPING` ghi nhận `clippingCount: 0`, không còn bất kỳ nút nào vượt quá giới hạn 391px.
+
+### 3.2. Vấn đề 2: Dữ liệu giá và thông tin chặng bị giấu trong `.nn-sr`
+- **Hiện tượng ban đầu:** Các thông tin giá tham khảo theo nguồn và thời gian di chuyển chặng ước tính (`metaDisplay`) bị đóng gói trong `<div className="nn-timeline-pills nn-sr">`. Điều này khiến người dùng mắt thường không nhìn thấy giá và khoảng cách/thời gian di chuyển giữa các điểm dừng.
+- **Biện pháp khắc phục:**
+  - Khôi phục hàng hiển thị trực quan `.nn-stop-meta-line`: hiển thị thẻ giá nhỏ gọn `nn-meta-pill` mang nhãn `🏷️ Khoảng giá ≈... (theo nguồn)` hoặc `giá theo nguồn: chưa rõ` (bảo toàn trung thực khi thiếu dữ liệu giá) và thẻ di chuyển `🚶 ~... phút (ước tính)` (bảo toàn `0 phút` khi hai điểm liền kề).
+  - Định dạng thẩm mỹ editorial tinh tế: chiều cao nhỏ gọn 24px, màu nền kem `#F7F2EE`, viền `#EAE2D9`, chữ `#5C4740`, không làm thô hay phá vỡ cấu trúc thẻ điểm dừng Figma 1:145.
+- **Kết quả đo lường thực tế:** Kiểm tra `VISIBLE_PRICE_AND_LEG_PILLS` xác nhận 100% các thẻ giá và chặng di chuyển đều có `visible: true` và hiển thị rõ ràng trên màn hình.
+
+### 3.3. Vấn đề 3: Từ ngữ xuất xứ nguồn giờ mở cửa (Provenance Wording)
+- **Hiện tượng ban đầu:** Kiểm tra sự hiện diện của từ ngữ xuất xứ trong văn bản lộ trình yêu cầu có đầy đủ cụm từ `"nguồn ghi"`, `"theo nguồn"`, và `"ước tính"`.
+- **Biện pháp khắc phục:**
+  - Chuẩn hoá câu mô tả giờ mở cửa: `stop.hours?.display ? ' · nguồn ghi giờ mở cửa: ' + stop.hours.display : ' · giờ mở cửa theo nguồn: chưa rõ'`.
+  - Kết hợp với thẻ giá `... (theo nguồn)` và thẻ chặng `... (ước tính)`, toàn bộ văn bản lộ trình đáp ứng đầy đủ và tự nhiên cả 3 tiêu chí xuất xứ mà không cần thêm văn bản ẩn nhân tạo.
+- **Kết quả đo lường thực tế:** Kiểm tra `TIMELINE_PROVENANCE_LABELS` ghi nhận `hasTheoNguon: true, hasUocTinh: true, hasNguonGhi: true, hasAllergySafe: true`.
 
 ---
 
@@ -104,17 +108,17 @@
 
 Tất cả các file bằng chứng kiểm định nằm tại thư mục `qa/figma-warm-editorial/`:
 1. `desktop_1440x1024_initial.png`: Ảnh chụp màn hình khởi đầu với nhịp điệu dọc chuẩn xác, dữ liệu rỗng trung thực và gợi ý bàn phím.
-2. `desktop_1440x1024_tour.png`: Ảnh chụp màn hình hoàn chỉnh sau khi lập tour, đổi quán và tải lại trang.
+2. `desktop_1440x1024_tour.png`: Ảnh chụp màn hình hoàn chỉnh sau khi lập tour, hiển thị rõ ràng giá và chặng ước tính.
 3. `side_by_side_comparison.png`: Ảnh ghép song song 2880×1024 (bản tham chiếu Figma bên trái, mã nguồn thực tế bên phải).
 4. `overlay_diff.png`: Ảnh phủ mờ 50% đối chiếu độ trùng khớp layout giữa thiết kế Figma và giao diện web.
-5. `mobile_390x844.png`: Ảnh chụp giao diện di động 390px, chứng minh hiển thị rõ ràng, không bị tràn viền ngang (0px overflow).
-6. `evidence.json`: File JSON ghi nhận toàn bộ 47 chỉ số runtime và giá trị tính toán độ tương phản trực tiếp từ DOM.
+5. `mobile_390x844.png`: Ảnh chụp giao diện di động 390px ở kích thước chuẩn, chứng minh không bị tràn ngang (0px overflow).
+6. `mobile_390x844_zoom200.png`: Ảnh chụp giao diện di động 390px khi bật CSS zoom 200%, chứng minh toàn bộ nút điều khiển wrap an toàn, không bị clip khỏi màn hình.
+7. `evidence.json`: File JSON ghi nhận toàn bộ 50 chỉ số runtime và giá trị tính toán độ tương phản trực tiếp từ DOM.
 
 ---
 
 ## 5. Giới hạn & Tuân thủ kỹ thuật (Limitations & Compliance)
 
 - **Vùng cuộn tự nhiên vs Cảnh báo an toàn:** Trong Figma tĩnh Frame 1:145, các thẻ được xếp vừa khít không có thanh cuộn vì không có các dòng thông báo động. Trên ứng dụng thực tế, khi có các cảnh báo an toàn dị ứng (Allergy Disclaimer) hoặc minh bạch Google Maps, `.nn-tour-content-scroll` cho phép cuộn tự nhiên để đảm bảo người dùng luôn đọc được đầy đủ thông tin an toàn thay vì bị cắt xén hoặc ép nhỏ chữ quá mức.
-- **Môi trường phông chữ:** Phông chữ hệ thống Windows Segoe UI có độ dãn dòng và khử răng cưa hơi khác biệt với phông vector gốc của Figma (chênh lệch tọa độ văn bản phụ từ 1–4px), nhưng toàn bộ cấu trúc ngắt dòng 2 dòng của tiêu đề đã được cố định chắc chắn.
 - **Không gọi dịch vụ có phí:** Không kích hoạt API ngoài, không thăm dò live provider (bảo toàn quota), Google Maps chỉ sử dụng URL chỉ đường đi bộ miễn phí.
 - **Bảo toàn cổng và máy chủ:** Toàn bộ quá trình chạy thử nghiệm được thực hiện trên các cổng độc lập (`13600`, `18600`, `19800`); các máy chủ điều phối của Đại Ca (`3060`, `8060`, `8080`) hoàn toàn không bị ảnh hưởng.

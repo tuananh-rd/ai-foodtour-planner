@@ -661,6 +661,29 @@ async function main() {
     { stageText: stopBadgeMetrics.stageText }
   );
 
+  // Timeline provenance wording & visible metadata checks (Codex Findings)
+  const timelineText = await ev(`document.querySelector('[data-testid="guided-timeline"]')?.innerText || ''`);
+  const hasTheoNguon = timelineText.includes('theo nguồn');
+  const hasUocTinh = timelineText.includes('ước tính');
+  const hasNguonGhi = timelineText.includes('nguồn ghi');
+  const hasAllergySafe = /chưa quán nào được xác nhận an toàn/.test(timelineText);
+  recordCheck('TIMELINE_PROVENANCE_LABELS', 'Timeline explicitly contains "theo nguồn", "ước tính", "nguồn ghi" and allergy safety notice',
+    hasTheoNguon && hasUocTinh && hasNguonGhi && hasAllergySafe,
+    { hasTheoNguon, hasUocTinh, hasNguonGhi, hasAllergySafe }
+  );
+
+  const metaPillsData = await ev(`(()=>{
+    const pills = Array.from(document.querySelectorAll('.nn-stop-meta-line .nn-meta-pill'));
+    return pills.map(p => ({
+      text: p.innerText.trim(),
+      visible: p.offsetWidth > 0 && p.offsetHeight > 0 && window.getComputedStyle(p).display !== 'none' && !p.classList.contains('nn-sr')
+    }));
+  })()`);
+  recordCheck('VISIBLE_PRICE_AND_LEG_PILLS', 'Price range and estimated leg travel are visibly rendered in stop cards (not sr-only)',
+    metaPillsData.length >= 3 && metaPillsData.every(p => p.visible && p.text.length > 0),
+    metaPillsData
+  );
+
   // Verify Dark CTA Card in timeline
   const darkCtaGeometry = await ev(`(()=>{
     const cta = document.querySelector('.nn-dark-cta-card');
@@ -799,6 +822,25 @@ async function main() {
   await pause(150);
   const tourVisibleMobile = await ev(`!document.querySelector('#guided-tour-section')?.classList.contains('nn-hidden')`);
   recordCheck('MOBILE_TAB_TOUR', 'Mobile tab Lịch trình displays tour column', tourVisibleMobile);
+
+  // Mobile 200% CSS zoom reflow test (reproducing exact sequence qa/e2e/codex_guided_review.mjs lines 135-137)
+  console.log('Testing Mobile 390px 200% CSS zoom reflow clipping...');
+  await ev("document.documentElement.style.zoom='2'");
+  await pause(200);
+
+  const clipping = await ev(`Array.from(document.querySelectorAll('button,input,[data-testid^="understood-row-"]')).filter(e => e.getBoundingClientRect().width && e.getBoundingClientRect().right > innerWidth + 1).map(e => ({ testid: e.dataset.testid || e.className, right: Math.round(e.getBoundingClientRect().right), width: innerWidth }))`);
+
+  recordCheck('MOBILE_ZOOM_200_NO_CLIPPING', 'CSS zoom 200% at viewport 390px has ZERO clipped controls (right <= 391)',
+    clipping.length === 0,
+    { clippingCount: clipping.length, clipping }
+  );
+
+  const zoomShot = path.join(QA_DIR, 'mobile_390x844_zoom200.png');
+  await snapScreenshot(zoomShot);
+
+  // Reset zoom
+  await ev("document.documentElement.style.zoom=''");
+  await pause(100);
 
   const mobileShot = path.join(QA_DIR, 'mobile_390x844.png');
   await snapScreenshot(mobileShot);
