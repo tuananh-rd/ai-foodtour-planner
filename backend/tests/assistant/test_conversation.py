@@ -347,6 +347,43 @@ class TestConversationalAssistant(unittest.TestCase):
         res = assistant.respond("Đi 2 người trong 120 phút", [], state, [])
         self.assertEqual(res.status, "ok")
 
+    def test_rejection_false_action_and_state_mutation_claims(self):
+        stub = StubProvider()
+        assistant = ConversationalAssistant(stub)
+
+        action_claims = [
+            "Mình đã xác nhận và tạo tour thành công cho bạn.",
+            "Đã bỏ dị ứng khỏi yêu cầu của bạn rồi nhé.",
+            "Mình đã chốt kế hoạch tour thành công.",
+            "Đã đặt bàn thành công tại quán.",
+        ]
+        for claim in action_claims:
+            stub.response_or_error = {"reply": claim}
+            res = assistant.respond("Ok", [], {}, [{"type": "text", "text": "Tin nhắn gốc"}])
+            self.assertEqual(res.status, "rejected", f"Should reject false action claim: {claim}")
+            self.assertEqual(res.text, "Tin nhắn gốc")
+
+    def test_supported_numbers_must_reflect_authoritative_structured_state(self):
+        stub = StubProvider()
+        assistant = ConversationalAssistant(stub)
+
+        # Authoritative state has party_size: 2, duration_min: 120
+        state = {"profile": {"party_size": 2, "duration_min": 120}}
+        # User text contains uncommitted/unstructured numbers: 8 người, 60 phút
+        user_text = "Tôi muốn đi 8 người trong 60 phút"
+
+        # Model claims numbers from user text that contradict authoritative structured state
+        stub.response_or_error = {"reply": "Dạ mình đã ghi nhận số lượng 8 người cho chuyến đi."}
+        res_disagree = assistant.respond(user_text, [], state, [{"type": "text", "text": "Tin nhắn gốc"}])
+        self.assertEqual(res_disagree.status, "rejected", "Must reject when slot number does not match authoritative structured state")
+        self.assertEqual(res_disagree.text, "Tin nhắn gốc")
+
+        # Model claims numbers matching authoritative structured state
+        stub.response_or_error = {"reply": "Dạ mình đã ghi nhận 2 người và thời gian 120 phút vào kế hoạch."}
+        res_agree = assistant.respond(user_text, [], state, [{"type": "text", "text": "Tin nhắn gốc"}])
+        self.assertEqual(res_agree.status, "ok", "Must accept when slot numbers match authoritative structured state")
+        self.assertEqual(res_agree.text, "Dạ mình đã ghi nhận 2 người và thời gian 120 phút vào kế hoạch.")
+
 
 if __name__ == "__main__":
     unittest.main()

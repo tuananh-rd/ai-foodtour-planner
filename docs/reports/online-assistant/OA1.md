@@ -12,9 +12,9 @@
 
 ## 1. Executive Summary
 
-Addressed all review feedback from coordinator messages (`msg_f7e0cd41cc4d` and `msg_27f8fd8ddb97`) on `backend/app/assistant/conversation.py`. The module now strictly sets the provider label to `gemini`, rejects operational/price/ETA and allergy-safety claims even when numbers appear in input, redacts arbitrary low-precision coordinate pairs and sensitive output echoes, sanitizes state strings, whitelists history roles, and enforces zero external LLM calls for health/allergy disclosures with omission of sensitive history and exclusion of `has_allergy` from external prompts per official unpaid Gemini terms. Fallback `ProviderError` import was cleaned up, and finite-guard limitations are documented honestly.
+Addressed all review feedback from coordinator messages (`msg_f7e0cd41cc4d`, `msg_27f8fd8ddb97`, and `msg_810db9d60369`) on `backend/app/assistant/conversation.py`. The module now strictly sets the provider label to `gemini`, rejects operational/price/ETA/allergy claims, rejects false action and confirmation/state mutation claims (`Mình đã xác nhận và tạo tour thành công`, `Đã bỏ dị ứng khỏi yêu cầu`), enforces that profile numbers reflect authoritative structured state rather than user text alone, redacts arbitrary low-precision coordinate pairs and sensitive output echoes, sanitizes state strings, whitelists history roles, and enforces zero external LLM calls for health/allergy disclosures with omission of sensitive history and exclusion of `has_allergy` from external prompts per official unpaid Gemini terms. Fallback `ProviderError` import was cleaned up, and finite-guard limitations are documented honestly.
 
-All 22 targeted unit tests pass in 0.003s across both coordinator and local `.venv` environments.
+All 24 targeted unit tests pass in 0.004s across both coordinator and local `.venv` environments.
 
 ---
 
@@ -28,17 +28,21 @@ All 22 targeted unit tests pass in 0.003s across both coordinator and local `.ve
      - Operational hours (e.g., `mở cửa cả ngày`, `mở cửa từ 6h00 đến 22h00`).
      - Travel duration or ETA (e.g., `'chỉ mất vài phút'`, `đi bộ mất 10 phút là tới`).
      - Allergy safety (e.g., `'ăn lạc được không sao'`, `yên tâm ăn không sao đâu`, `an toàn cho người dị ứng`).
-3. **Arbitrary Low-Precision Coordinate Redaction & Sensitive Output Echoes:**
+3. **Rejection of False Action Claims & Confirmation/State Mutation:**
+   - Per `msg_810db9d60369`, claims asserting that actions have been executed or state has been mutated (e.g., `'Mình đã xác nhận và tạo tour thành công'`, `'Đã bỏ dị ứng khỏi yêu cầu'`, `'đã đặt bàn'`, `'đã chốt kế hoạch'`) are strictly rejected.
+4. **Authoritative Structured State for Profile Numbers:**
+   - Per `msg_810db9d60369`, slot numbers in replies (party size, duration, stops) must reflect authoritative structured state (`safe_state.profile`), not uncommitted or unverified numbers appearing in user text alone.
+5. **Arbitrary Low-Precision Coordinate Redaction & Sensitive Output Echoes:**
    - Redaction regex updated to catch low-precision coordinates (e.g., `21.0, 105.8`, `(21.0, 105.8)`, `lat: 21, lon: 105`) as well as decimal coordinates.
    - Sensitive output echoes (repeating coordinates, phones, emails, secret tokens, or internal redaction tags like `[redacted_coord]`) are rejected.
-4. **State Sanitization & History Role Whitelisting:**
+6. **State Sanitization & History Role Whitelisting:**
    - State strings (`phase`, `pending`, profile strings) are stripped of control characters and bounded in length.
    - History turns are filtered against an allowlist `{"user", "assistant", "bot"}`; unrecognized or injected roles (`system`, `admin`) are excluded.
-5. **Zero Calls for Health/Allergy Disclosures & Unpaid Gemini Terms Compliance:**
+7. **Zero Calls for Health/Allergy Disclosures & Unpaid Gemini Terms Compliance:**
    - Per official unpaid Gemini terms, any user turn containing health or allergy disclosures is rejected immediately with 0 external LLM calls (`llm_calls = 0`, `status = "rejected"`).
    - Sensitive previous history turns with allergy disclosures are omitted from the prompt.
    - No `has_allergy` cue is included in the external prompt.
-6. **Clean ProviderError Import:**
+8. **Clean ProviderError Import:**
    - Removed fallback `ProviderError` ImportError class; imports cleanly from `app.llm.provider`.
 
 ---
@@ -46,7 +50,7 @@ All 22 targeted unit tests pass in 0.003s across both coordinator and local `.ve
 ## 3. Honest Finite-Guard Limitations
 
 > [!NOTE]
-> The regex patterns and structural validation rules implemented in `ConversationalAssistant` provide bounded defenses against known categories of model hallucinations (unsupported prices, operational hours, travel times, allergy safety claims) and privacy leaks (coordinates, contacts, tokens).
+> The regex patterns and structural validation rules implemented in `ConversationalAssistant` provide bounded defenses against known categories of model hallucinations (unsupported prices, operational hours, travel times, allergy safety claims, false action/mutation assertions) and privacy leaks (coordinates, contacts, tokens).
 > However, heuristic regex guards cannot constitute an exhaustive mathematical proof of semantic safety across arbitrary natural language variations.
 > The architecture relies fundamentally on the deterministic state/planner pipeline as the authoritative source of truth. The conversational assistant serves purely as an untrusted natural language acknowledgement layer; it never mutates state, executes actions, or bypasses deterministic safety gates.
 
@@ -75,6 +79,7 @@ test_quota_provider_error (test_conversation.TestConversationalAssistant.test_qu
 test_rejection_agent_roleplay_and_instruction_leakage (test_conversation.TestConversationalAssistant.test_rejection_agent_roleplay_and_instruction_leakage) ... ok
 test_rejection_allergy_safety_including_an_lac_duoc_khong_sao (test_conversation.TestConversationalAssistant.test_rejection_allergy_safety_including_an_lac_duoc_khong_sao) ... ok
 test_rejection_extra_question_when_pending_decision_active (test_conversation.TestConversationalAssistant.test_rejection_extra_question_when_pending_decision_active) ... ok
+test_rejection_false_action_and_state_mutation_claims (test_conversation.TestConversationalAssistant.test_rejection_false_action_and_state_mutation_claims) ... ok
 test_rejection_operational_price_eta_claims_even_when_numbers_in_input (test_conversation.TestConversationalAssistant.test_rejection_operational_price_eta_claims_even_when_numbers_in_input) ... ok
 test_rejection_sensitive_output_echoes (test_conversation.TestConversationalAssistant.test_rejection_sensitive_output_echoes) ... ok
 test_schema_rejection_extra_action_or_tool_fields (test_conversation.TestConversationalAssistant.test_schema_rejection_extra_action_or_tool_fields) ... ok
@@ -82,13 +87,14 @@ test_sensitive_history_omitted_from_prompt (test_conversation.TestConversational
 test_state_strings_sanitized_and_bounded (test_conversation.TestConversationalAssistant.test_state_strings_sanitized_and_bounded) ... ok
 test_successful_turn_returns_ok_and_preserves_label (test_conversation.TestConversationalAssistant.test_successful_turn_returns_ok_and_preserves_label) ... ok
 test_supported_numbers_accepted (test_conversation.TestConversationalAssistant.test_supported_numbers_accepted) ... ok
+test_supported_numbers_must_reflect_authoritative_structured_state (test_conversation.TestConversationalAssistant.test_supported_numbers_must_reflect_authoritative_structured_state) ... ok
 test_timeout_error (test_conversation.TestConversationalAssistant.test_timeout_error) ... ok
 test_unavailable_provider_error (test_conversation.TestConversationalAssistant.test_unavailable_provider_error) ... ok
 
 ----------------------------------------------------------------------
-Ran 22 tests in 0.006s
+Ran 24 tests in 0.004s
 
 OK
 ```
 
-All 22 unit tests pass in 0.003s–0.006s without external network calls or credential access.
+All 24 unit tests pass in 0.004s without external network calls or credential access.

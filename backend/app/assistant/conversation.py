@@ -197,6 +197,20 @@ RE_PLANNER_COMMANDS = re.compile(
     re.IGNORECASE,
 )
 
+RE_FALSE_ACTION_OR_MUTATION_CLAIM = re.compile(
+    r"(?:"
+    r"\b(?:mình\s+)?đã\s+xác\s+nhận\b"
+    r"|\b(?:mình\s+)?đã\s+tạo\s+tour\b"
+    r"|\b(?:mình\s+)?đã\s+bỏ\s+dị\s+ứng\b"
+    r"|\b(?:mình\s+)?đã\s+chốt\s+(?:kế\s+hoạch|tour|lịch\s+trình)\b"
+    r"|\b(?:mình\s+)?đã\s+đặt\s+(?:bàn|chỗ)\b"
+    r"|\btạo\s+tour\s+thành\s+công\b"
+    r"|\bbỏ\s+dị\s+ứng\s+khỏi\s+yêu\s+cầu\b"
+    r"|\bxác\s+nhận\s+và\s+tạo\s+tour\b"
+    r")",
+    re.IGNORECASE,
+)
+
 RE_SPECIFIC_PRICE_DIGITS = re.compile(
     r"\b(\d{1,4}(?:\.\d{3})+|\d{1,4})\s*(?:k|đ|vnd|đồng|nghìn|triệu)\b",
     re.IGNORECASE,
@@ -459,6 +473,10 @@ class ConversationalAssistant:
         if RE_PLANNER_COMMANDS.search(reply):
             return False, None
 
+        # Guard: False action claims or confirmation / state mutation
+        if RE_FALSE_ACTION_OR_MUTATION_CLAIM.search(reply):
+            return False, None
+
         # Guard: Allergy clearance claim (including 'ăn lạc được không sao')
         if RE_ALLERGY_CLEARANCE.search(reply):
             return False, None
@@ -510,6 +528,31 @@ class ConversationalAssistant:
 
         for m in RE_SPECIFIC_RATING_DIGITS.finditer(reply):
             if m.group(1) not in context_numbers:
+                return False, None
+
+        # Guard: Profile slot numbers in reply must match authoritative structured state, not user text alone
+        profile = safe_state.get("profile", {})
+        party_m = re.search(r"\b(\d+)\s*(?:người|thành\s+viên|khách)\b", reply, re.IGNORECASE)
+        if party_m:
+            num = int(party_m.group(1))
+            auth_party = profile.get("party_size")
+            if auth_party is not None and num != int(auth_party):
+                return False, None
+
+        dur_m = re.search(r"\b(\d+)\s*phút\b", reply, re.IGNORECASE)
+        if dur_m:
+            num = int(dur_m.group(1))
+            auth_dur = profile.get("duration_min")
+            auth_leg = profile.get("max_leg_min")
+            valid_durs = {int(x) for x in (auth_dur, auth_leg) if x is not None}
+            if valid_durs and num not in valid_durs:
+                return False, None
+
+        stops_m = re.search(r"\b(\d+)\s*(?:quán|điểm\s+dừng|chặng)\b", reply, re.IGNORECASE)
+        if stops_m:
+            num = int(stops_m.group(1))
+            auth_stops = profile.get("stops")
+            if auth_stops is not None and num != int(auth_stops):
                 return False, None
 
         # Guard: Invented venue names when no venues are in context
