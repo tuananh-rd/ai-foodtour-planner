@@ -1,5 +1,7 @@
 # Discovery assistant independent review
 
+> Final local outcome: production http://127.0.0.1:3200, immutable frontend41b1d33 + API99d64ce (application source diff empty),63/63 actual browser checks1440/390 and0 uncaught exceptions. Affected-implementer final source approvalf13b0bc integratedc10ff0c. Read DISCOVERY_ASSISTANT_ACCEPTANCE.md for source-specific test matrix, final screenshots, retained failures, private-data smoke and Gemini live NOT TESTED. Earlier checkpoints below are historical, not pending work.
+
 2026-10-19. Codex owns contracts/backend/review/integration; Antigravity implements bounded frontend/QA. Claude inactive. Requirements: `docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md`; full reference archived separately. No new live provider probes.
 
 ## Backend checkpoint
@@ -55,3 +57,13 @@ Task_cbddafbb1462/ctx_f0fa5d06505b settled validly with3944aca; terminal retaine
 New bounded task_8022215ea9fe / ctx_5a722534e148 explicitly owns DiscoveryLayout/GuidedTimeline/discoveryApi/new optional discoveryMaps helper/QA/report. Three fixes only: actual chosen Maps origin/vehicle/order/per-leg links, exported-client timeout/malformed-body failure handling, readable Vietnamese unknown labels. Heartbeat received with empty body (liveness only), actual file inspection/analysis observed; no duplicate prompt. Codex does not concurrently edit frontend.
 
 Legacy frontend contract checks18/18 PASS on0924038 after retired web removal; no repeat needed unless related source changes. Independent browser probe7248e56 expanded/syntax-checked for real stale-revision409 with no replay/draft loss, post-tour replacement/locks/new confirmation, no-solution/recovery, marker toggle, reset and mobile navigation. These new checks are NOT RUN yet. Root production build remains deferred until frontend fix commit, prepared helper not run. Runtime3200/8200 remains DEV/synthetic/rules, APIae01bdd; final refresh required. No new live external calls or budget/model changes.
+
+## Final integrated outcome
+
+Source41b1d33 production build PASS; actual UI/API final run63/63 PASS at1440×1024 and390×844,0 JavaScript exceptions, actual PMTiles206 and geographic roads/lake/marker screenshot. Backend integrated discovery/session modules41/41 and real local-HTTP frontend smoke51/51 PASS. Existing legacy contract checks18/18 and OpenAPI drift PASS retained source-specifically; no unrelated repeat. Prior652-test broad backend run plus targeted isolated-guard test remains documented, not relabeled as a new run.
+
+Production testing exposed shared map CSS removal and undefined isDesktop in selection-editor handlers after initial smoke/source approvals. Fixeddf4b5df/41b1d33; failed62/63 traces and blank-map image preserved separately from final verified evidence. Mobile geographic image and final Figma side/overlay inspected. Visual font/baseline/hero/nav/composer deviations remain explicit; no pixel-perfect claim.
+
+An isolated actual-app smoke on configured private local dataset additionally passed greeting/search/compare/selection/taste/budget/per-leg assertions with0 model calls. Venue records/paths/credentials never exported; temporary session storage only. The public test URL deliberately remains synthetic/rules; live Gemini quality and broad private-data browser/tour coverage remain unverified. No Tavily calls, new live probes, cap/model changes or billing/account actions.
+
+All current Orca dispatches settled with correct lifecycle IDs. Same Antigravity retained idle; final source reviewsfe3b39b/dee9da6/f13b0bc integrated and approved with0 source blockers. Codex final integration approved for the documented local mode. Current delivery pointers: DISCOVERY_ASSISTANT_ACCEPTANCE.md, DISCOVERY_ASSISTANT_BOARD.md, ../DISCOVERY_ASSISTANT_LOCAL_USE.md. Existing user servers and unrelated untracked artifacts preserved.

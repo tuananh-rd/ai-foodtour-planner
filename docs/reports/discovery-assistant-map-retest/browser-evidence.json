@@ -1,0 +1,212 @@
+{
+  "web": "http://127.0.0.1:3200",
+  "api": "http://127.0.0.1:8200",
+  "source_commit": "702ce923c7cc057b58b758f2b502ec101c60ab05",
+  "backend_commit": "702ce923c7cc057b58b758f2b502ec101c60ab05",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "initial nullable profile 1440",
+      "pass": true
+    },
+    {
+      "name": "greeting no checklist 1440",
+      "pass": true
+    },
+    {
+      "name": "discovery does not demand trip fields 1440",
+      "pass": true
+    },
+    {
+      "name": "local search real results 1440",
+      "pass": true
+    },
+    {
+      "name": "compare actual IDs 1440",
+      "pass": true
+    },
+    {
+      "name": "selection and taste survive next search 1440",
+      "pass": true
+    },
+    {
+      "name": "group budget not per person or duration 1440",
+      "pass": true
+    },
+    {
+      "name": "patch keeps other fields 1440",
+      "pass": true
+    },
+    {
+      "name": "real409 refetch without replay and preserves draft 1440",
+      "pass": true
+    },
+    {
+      "name": "planning asks one contextual question 1440",
+      "pass": true
+    },
+    {
+      "name": "explicit server confirmation required 1440",
+      "pass": true
+    },
+    {
+      "name": "generic ok is not confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "confirmed real planner tour 1440",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL exists 1440",
+      "pass": true
+    },
+    {
+      "name": "Maps starts at actual chosen origin 1440",
+      "pass": true
+    },
+    {
+      "name": "PMTiles map accessible 1440",
+      "pass": true
+    },
+    {
+      "name": "marker toggle hides points 1440",
+      "pass": true
+    },
+    {
+      "name": "initial nullable profile 390",
+      "pass": true
+    },
+    {
+      "name": "greeting no checklist 390",
+      "pass": true
+    },
+    {
+      "name": "discovery does not demand trip fields 390",
+      "pass": true
+    },
+    {
+      "name": "local search real results 390",
+      "pass": true
+    },
+    {
+      "name": "compare actual IDs 390",
+      "pass": true
+    },
+    {
+      "name": "selection and taste survive next search 390",
+      "pass": true
+    },
+    {
+      "name": "group budget not per person or duration 390",
+      "pass": true
+    },
+    {
+      "name": "patch keeps other fields 390",
+      "pass": true
+    },
+    {
+      "name": "real409 refetch without replay and preserves draft 390",
+      "pass": true
+    },
+    {
+      "name": "planning asks one contextual question 390",
+      "pass": true
+    },
+    {
+      "name": "explicit server confirmation required 390",
+      "pass": true
+    },
+    {
+      "name": "generic ok is not confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "confirmed real planner tour 390",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL exists 390",
+      "pass": true
+    },
+    {
+      "name": "Maps starts at actual chosen origin 390",
+      "pass": true
+    },
+    {
+      "name": "PMTiles map accessible 390",
+      "pass": true
+    },
+    {
+      "name": "marker toggle hides points 390",
+      "pass": true
+    },
+    {
+      "name": "no external provider/map origin",
+      "pass": true
+    },
+    {
+      "name": "actual PMTiles Range206",
+      "pass": true
+    },
+    {
+      "name": "no uncaught JS exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "discovery-1440.png",
+    "reference-side.png",
+    "reference-overlay.png",
+    "confirmed-1440.png",
+    "map-1440.png",
+    "discovery-390.png",
+    "confirmed-390.png",
+    "map-390.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [
+    206,
+    206,
+    206,
+    206
+  ],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200,
+    200,
+    200
+  ]
+}

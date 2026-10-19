@@ -1,5 +1,7 @@
 # AI FoodTour Planner — conditional prototype
 
+Current local delivery: **http://127.0.0.1:3200** — discovery-first production UI with actual synthetic/rules backend. [Usage](docs/DISCOVERY_ASSISTANT_LOCAL_USE.md) · [verification and limits](docs/reports/DISCOVERY_ASSISTANT_ACCEPTANCE.md). Live Gemini quality remains unverified.
+
 > Current discovery-first upgrade: [requirements](docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md), [contract](docs/DISCOVERY_ASSISTANT_CONTRACT.md), [task board](docs/reports/DISCOVERY_ASSISTANT_BOARD.md). Tavily/web lookup is retired; existing credentials/ledgers are preserved but unused. Discovery chat no longer requires a complete tour profile. Live Gemini acceptance is tracked separately from synthetic/rules tests.
 
 Đọc [đánh giá dữ liệu](docs/ASSESSMENT.vi.md), [kế hoạch và phân công](docs/PLAN.vi.md), [audit đầy đủ](docs/audit.json).

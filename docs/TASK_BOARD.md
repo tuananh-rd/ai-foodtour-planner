@@ -1,3 +1,5 @@
+> Latest delivery2026-10-19: discovery-first local scope integrated/reviewed; production http://127.0.0.1:3200 (synthetic/rules),63/63 actual browser checks1440/390,0 uncaught exceptions. Tavily/checklist removed; live Gemini NOT TESTED. See reports/DISCOVERY_ASSISTANT_BOARD.md and DISCOVERY_ASSISTANT_ACCEPTANCE.md for final source/evidence and preserved failures. Prior UI3100 and historical pending rows below are not the current test build.
+
 > **Active direction (2026-10-19):** Codex coordinates, owns architecture/contracts and reviews/integrates; Antigravity implements explicitly bounded tasks. The temporary Antigravity-full override is revoked. Claude remains inactive for this initiative. The approved Figma Warm editorial frame1:145 replaces the former SVG visual target; preserve functional safeguards and source-specific evidence.
 
 ## Active online assistant initiative

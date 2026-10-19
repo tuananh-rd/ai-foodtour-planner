@@ -5,13 +5,15 @@ Direct user request2026-10-19. Baselinebe2bb8f; rules and requirements supersede
 | Phase | Owner | State | Gate |
 |---|---|---|---|
 | D0 requirements/contracts | Codex | DONE | Full attachment read/archived; direct instructions distinguished; discovery-v1 frozen |
-| D1 state/tools/selection | Codex | IMPLEMENTED, INTEGRATION PENDING | Commits2a0a1f7/249e267; validated tools, bounded local search/details/compare, versioned profile/selection and SQLite persistence, legacy explicit/allergy obligations preserved without copying assumed defaults |
-| D2 natural UI / remove web | Antigravity | REVIEW BOUNDARY FIXES RUNNING |3944aca integrated0924038 after valid task_cbddafbb1462 settlement; retained/reused same terminal. Current task_8022215ea9fe / ctx_5a722534e148 fixes Maps actual origin/mode/order, exported client malformed/timeout200 boundary, and readable unknown labels. Heartbeat ACK and actual source-inspection output observed. Prior20 smoke checks and26 mocked assertions are not integrated acceptance. |
+| D1 state/tools/selection | Codex | DONE | Validated tools, versioned state, actual local dataset smoke and integrated HTTP/SQLite/CAS regression; legacy safety obligations preserved |
+| D2 natural UI / remove web | Antigravity, Codex integration | DONE LOCAL | cdd4c46 integratedc7091c5, Codex map/input fixes2d54e49/df4b5df/41b1d33 reviewed by affected implementer; production browser63/63 desktop/mobile |
 | D3 Gemini + confirmation/planner | Codex | IMPLEMENTED, LIVE NOT TESTED | Single native function-calling loop with existing budgets, strict user confirmation/allergy gates; protocol/privacy/race tests mock only |
-| D4 runtime retirement/integration | Codex + affected implementer | PENDING D1–3 | No active Tavily route/provider dependency, source provenance retained; endpoint/default UI switch reviewed |
-| D5 acceptance | Antigravity QA, Codex independent review | PENDING | Required conversational scenarios, target tests then integrated E2E/build1440/390, honest synthetic/mock/live/data coverage |
+| D4 runtime retirement/integration | Codex + affected implementer | DONE | Tavily runtime/UI/probes removed, venue provenance and private keys/ledgers preserved; source reviews APPROVE |
+| D5 acceptance | Antigravity QA, Codex independent review | PASS LOCAL, LIVE NOT TESTED | Production41b1d33, actual synthetic/rules API99d64ce,63/63 browser,0 JS exceptions, PMTiles206 + geographic screenshots,41 module/51 client checks; live Gemini quality unverified |
 
 Reference architecture mentions PostGIS/weather, but neither is a required dependency or authorized migration/service. No weather data is reported honestly without blocking chat. Gemini live currently unverified for the new loop; synthetic/mock tests never establish live natural quality. Report blocker if configured model/quota/cap cannot support the bounded loop; do not increase budget or use credits.
+
+FINAL LOCAL DELIVERY: **http://127.0.0.1:3200**, production, explicitly synthetic/rules. Read DISCOVERY_ASSISTANT_ACCEPTANCE.md for exact commit/evidence matrix, retained failures and remaining visual/live limitations; DISCOVERY_ASSISTANT_LOCAL_USE.md for the user flow. Final affected reviewf13b0bc integratedc10ff0c, all current dispatches settled/terminal retained,0 reclaimable resources. Old checkpoints below are historical; do not reuse their pending states or old URLs.
 
 Backend checkpoint:16 initial discovery tests passed;8 additional native-protocol/privacy/SQLite/concurrency tests passed; area-only follow-up targeted test passed. These are hermetic tests, not live Gemini proof. Codex owns only backend/contracts/docs; Antigravity owns its dispatched frontend/QA files. Previous dispatch ctx_8c53644bd48e settled with corrected task ID after one rejected mismatched completion; terminal retained and reused. No Tavily calls have been made for this implementation.
 

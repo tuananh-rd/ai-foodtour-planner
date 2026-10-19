@@ -1,0 +1,362 @@
+{
+  "web": "http://127.0.0.1:3200",
+  "api": "http://127.0.0.1:8200",
+  "source_commit": "702ce923c7cc057b58b758f2b502ec101c60ab05",
+  "backend_commit": "702ce923c7cc057b58b758f2b502ec101c60ab05",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "initial nullable profile 1440",
+      "pass": true
+    },
+    {
+      "name": "greeting no checklist 1440",
+      "pass": true
+    },
+    {
+      "name": "discovery does not demand trip fields 1440",
+      "pass": true
+    },
+    {
+      "name": "local search real results 1440",
+      "pass": true
+    },
+    {
+      "name": "compare actual IDs 1440",
+      "pass": true
+    },
+    {
+      "name": "selection and taste survive next search 1440",
+      "pass": true
+    },
+    {
+      "name": "group budget not per person or duration 1440",
+      "pass": true
+    },
+    {
+      "name": "patch keeps other fields 1440",
+      "pass": true
+    },
+    {
+      "name": "real409 refetch without replay and preserves draft 1440",
+      "pass": true
+    },
+    {
+      "name": "planning asks one contextual question 1440",
+      "pass": true
+    },
+    {
+      "name": "explicit server confirmation required 1440",
+      "pass": true
+    },
+    {
+      "name": "generic ok is not confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "confirmed real planner tour 1440",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL exists 1440",
+      "pass": true
+    },
+    {
+      "name": "Maps starts at actual chosen origin 1440",
+      "pass": true
+    },
+    {
+      "name": "PMTiles map accessible 1440",
+      "pass": true
+    },
+    {
+      "name": "marker toggle hides points 1440",
+      "pass": true
+    },
+    {
+      "name": "reload preserves selection and tour 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement opens actual selection editor 1440",
+      "pass": true
+    },
+    {
+      "name": "locked stop cannot be silently removed 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement selection invalidates tour 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement needs new confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement creates different real tour 1440",
+      "pass": true
+    },
+    {
+      "name": "no solution preserves selected venues and explains changes 1440",
+      "pass": true
+    },
+    {
+      "name": "allergy edit invalidates tour 1440",
+      "pass": true
+    },
+    {
+      "name": "unknown allergy never safe 1440",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 1440",
+      "pass": true
+    },
+    {
+      "name": "offline exposes readable error 1440",
+      "pass": true
+    },
+    {
+      "name": "new session clears old chat selection and allergy 1440",
+      "pass": true
+    },
+    {
+      "name": "initial nullable profile 390",
+      "pass": true
+    },
+    {
+      "name": "greeting no checklist 390",
+      "pass": true
+    },
+    {
+      "name": "discovery does not demand trip fields 390",
+      "pass": true
+    },
+    {
+      "name": "local search real results 390",
+      "pass": true
+    },
+    {
+      "name": "compare actual IDs 390",
+      "pass": true
+    },
+    {
+      "name": "selection and taste survive next search 390",
+      "pass": true
+    },
+    {
+      "name": "group budget not per person or duration 390",
+      "pass": true
+    },
+    {
+      "name": "patch keeps other fields 390",
+      "pass": true
+    },
+    {
+      "name": "real409 refetch without replay and preserves draft 390",
+      "pass": true
+    },
+    {
+      "name": "planning asks one contextual question 390",
+      "pass": true
+    },
+    {
+      "name": "explicit server confirmation required 390",
+      "pass": true
+    },
+    {
+      "name": "generic ok is not confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "confirmed real planner tour 390",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL exists 390",
+      "pass": true
+    },
+    {
+      "name": "Maps starts at actual chosen origin 390",
+      "pass": true
+    },
+    {
+      "name": "PMTiles map accessible 390",
+      "pass": true
+    },
+    {
+      "name": "marker toggle hides points 390",
+      "pass": true
+    },
+    {
+      "name": "reload preserves selection and tour 390",
+      "pass": true
+    },
+    {
+      "name": "replacement opens actual selection editor 390",
+      "pass": true
+    },
+    {
+      "name": "locked stop cannot be silently removed 390",
+      "pass": true
+    },
+    {
+      "name": "replacement selection invalidates tour 390",
+      "pass": true
+    },
+    {
+      "name": "replacement needs new confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "replacement creates different real tour 390",
+      "pass": true
+    },
+    {
+      "name": "no solution preserves selected venues and explains changes 390",
+      "pass": true
+    },
+    {
+      "name": "allergy edit invalidates tour 390",
+      "pass": true
+    },
+    {
+      "name": "unknown allergy never safe 390",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 390",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 390",
+      "pass": true
+    },
+    {
+      "name": "offline exposes readable error 390",
+      "pass": true
+    },
+    {
+      "name": "new session clears old chat selection and allergy 390",
+      "pass": true
+    },
+    {
+      "name": "no external provider/map origin",
+      "pass": true
+    },
+    {
+      "name": "actual PMTiles Range206",
+      "pass": true
+    },
+    {
+      "name": "no uncaught JS exception",
+      "pass": false,
+      "diagnostic": {
+        "status": "ok",
+        "reply": {
+          "text": "",
+          "question": null
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "discovery-1440.png",
+    "reference-side.png",
+    "reference-overlay.png",
+    "confirmed-1440.png",
+    "map-1440.png",
+    "discovery-390.png",
+    "confirmed-390.png",
+    "map-390.png"
+  ],
+  "errors": [
+    "ReferenceError: isDesktop is not defined\n    at n4 (http://127.0.0.1:3200/_next/static/chunks/455.d19d0238210e147b.js:1:38070)\n    at onReplaceStop (http://127.0.0.1:3200/_next/static/chunks/455.d19d0238210e147b.js:1:68999)\n    at onClick (http://127.0.0.1:3200/_next/static/chunks/455.d19d0238210e147b.js:1:9716)\n    at i8 (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:135363)\n    at http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:141449\n    at nz (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:19197)\n    at sn (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:136596)\n    at cc (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:163598)\n    at ci (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:163420)",
+    "ReferenceError: isDesktop is not defined\n    at n4 (http://127.0.0.1:3200/_next/static/chunks/455.d19d0238210e147b.js:1:38070)\n    at onReplaceStop (http://127.0.0.1:3200/_next/static/chunks/455.d19d0238210e147b.js:1:68999)\n    at onClick (http://127.0.0.1:3200/_next/static/chunks/455.d19d0238210e147b.js:1:9716)\n    at i8 (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:135363)\n    at http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:141449\n    at nz (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:19197)\n    at sn (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:136596)\n    at cc (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:163598)\n    at ci (http://127.0.0.1:3200/_next/static/chunks/8efd6a95-3250903463a05070.js:1:163420)"
+  ],
+  "remoteOrigins": [],
+  "ranges": [
+    206,
+    206,
+    206,
+    206
+  ],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ]
+}
