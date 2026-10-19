@@ -14,7 +14,8 @@ const pause=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(fn){for(let n=0;n<200;n++){if(await fn())return;await pause(100);}throw Error('Timed out waiting for observable UI state');}
 const free=await new Promise(resolve=>{const p=net.createServer();p.once('error',()=>resolve(false));p.listen(port,'127.0.0.1',()=>p.close(()=>resolve(true)));});
 if(!free)throw Error('Dedicated browser port occupied; no process stopped');
-if((await(await fetch(api+'/health')).json()).dataset_source!=='synthetic')throw Error('Synthetic-only capture guard');
+const health=await(await fetch(api+'/health')).json();
+if(health.dataset_source!=='synthetic'||health.assistant_provider!=='rules'||health.web_search_configured)throw Error('Synthetic/rules/search-disabled fault capture guard');
 const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'fq-session-errors-'));
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking',`--remote-debugging-port=${port}`,`--user-data-dir=${scratch}`,'about:blank'],{stdio:'ignore',windowsHide:true});
 let ws, mode=null, id=0, failedWebRequests=0, lastWebRequest=null; const pending=new Map(), heldCreates=[]; const counts={startupFaults:0,restoreFaults:0,creates:0};
