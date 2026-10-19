@@ -2,13 +2,14 @@
 
 **Thời gian lập báo cáo ban đầu:** 2026-10-19T21:52:00+07:00  
 **Cập nhật Phụ lục (PilotMap CSS fix df4b5df):** 2026-10-19T21:55:00+07:00  
+**Cập nhật Phụ lục (DiscoveryLayout isDesktop fix 41b1d33):** 2026-10-19T22:00:00+07:00  
 **Người đánh giá:** Antigravity (Frontend & QA Implementer)  
 **Người điều phối / Tích hợp:** Codex (Coordinator & Backend/Contracts Owner)  
-**Nhiệm vụ:** `task_ec40383c169b` & `task_78f4c69218f8` | **Dispatch:** `ctx_bf18ef638e8d` & `ctx_a742b810392b`  
-**Nhánh / Commit gốc đánh giá:** `foodtour-claude-coordinator` tại `702ce92` (bao gồm fix `df4b5df`, `2d54e49`, `c7091c5`)  
+**Nhiệm vụ:** `task_ec40383c169b`, `task_78f4c69218f8`, `task_cea0c5632305` | **Dispatch:** `ctx_bf18ef638e8d`, `ctx_a742b810392b`, `ctx_8b340803589a`  
+**Nhánh / Commit gốc đánh giá:** `foodtour-claude-coordinator` tại `41b1d33` (bao gồm fix `41b1d33`, `df4b5df`, `2d54e49`, `c7091c5`)  
 **Hợp đồng mục tiêu:** `docs/DISCOVERY_ASSISTANT_CONTRACT.md` (`discovery-v1`)  
 **Yêu cầu cơ sở:** `docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md`  
-**Phạm vi:** Đánh giá đọc duy nhất (Read-only source review) đối với các thay đổi tích hợp frontend, định tuyến Maps, HTTP client, việt hoá và khôi phục CSS bản đồ PMTiles độc lập.  
+**Phạm vi:** Đánh giá đọc duy nhất (Read-only source review) đối với các thay đổi tích hợp frontend, định tuyến Maps, HTTP client, việt hoá, khôi phục CSS bản đồ PMTiles và sửa lỗi tham chiếu viewport trong DiscoveryLayout.  
 
 ---
 
@@ -137,4 +138,32 @@ Bộ kiểm thử `qa/discovery-assistant/targeted_fixes_smoke.mjs` chạy trự
   - Đánh giá này thuần tuý là **soi chiếu mã nguồn tĩnh (source inspection)** và xác nhận tính toàn vẹn kiến trúc.
   - Đánh giá này **KHÔNG PHẢI là nghiệm thu thời gian chạy (runtime acceptance) hay thay thế kiểm định trình duyệt thực tế**.
   - Toàn bộ quyền sở hữu mã nguồn kho gốc, biên dịch sản xuất và chạy kiểm định chẩn đoán browser/map E2E thực tế do Điều phối viên Codex độc lập thực thi.
+
+---
+
+## 6. Phụ lục Đánh giá Soi chiếu Bản vá Lỗi Tham chiếu Viewport trong DiscoveryLayout (`41b1d33`)
+
+**Nhiệm vụ bổ sung:** `task_cea0c5632305` | **Dispatch:** `ctx_8b340803589a`  
+**Mục tiêu soi chiếu:** Commit `41b1d33` trên kho gốc (`frontend/app/components/v2/guided/DiscoveryLayout.jsx`: hàm `handleStartStopReplacement` và `handleOpenSelectionEditor`).
+
+### 6.1 Bối cảnh thực tế từ kiểm định E2E
+- Trong kiểm thử tự động trình duyệt E2E thực tế của Codex, sau khi gọi hàm chuyển đổi trạng thái để thay thế điểm dừng hoặc chỉnh sửa lịch trình, ứng dụng gặp lỗi ngoại lệ trình duyệt:
+  `ReferenceError: isDesktop is not defined`
+  dù trước đó các hàm `setState` (`setReplaceTargetStop`, `setEditingSelectionAfterTour`) đã chạy thành công.
+- *Nguyên nhân cốt lõi:* Biến `isDesktop` không hề được khai báo hay nhập khẩu trong phạm vi của component `DiscoveryLayout.jsx`. Việc kiểm tra điều kiện `if (!isDesktop)` đã trực tiếp gây ra lỗi sập runtime.
+
+### 6.2 Soi chiếu chi tiết bản vá mã nguồn `41b1d33`
+- Trong `frontend/app/components/v2/guided/DiscoveryLayout.jsx`:
+  - Tại hàm `handleStartStopReplacement`: loại bỏ điều kiện `if (!isDesktop)`, luôn gọi trực tiếp `setActiveMobileTab('tour')`.
+  - Tại hàm `handleOpenSelectionEditor`: loại bỏ điều kiện `if (!isDesktop)`, luôn gọi trực tiếp `setActiveMobileTab('tour')`.
+- Đánh giá tính tương thích bố cục đáp ứng (Responsive Panels Evaluation):
+  - **Trên giao diện Mobile (`viewport <= 899px`):** Việc gọi `setActiveMobileTab('tour')` là hoàn toàn chính xác và cần thiết. Cột chứa lịch trình/chỉnh sửa lựa chọn `.nn-tour-col` có quy tắc `activeMobileTab === 'chat' ? ' nn-hidden-mobile' : ''`. Do đó, khi kích hoạt thay thế điểm dừng hoặc chỉnh sửa lựa chọn, tab chuyển sang `'tour'` sẽ hiển thị ngay lập tức bảng chỉnh sửa cho người dùng di động mà không cần thao tác bấm tab thủ công.
+  - **Trên giao diện Desktop (`viewport >= 900px`):** Bố cục Warm Editorial hiển thị song song hai cột (`.nn-chat-card` và `.nn-tour-col`) cùng lúc. Lớp CSS `.nn-hidden-mobile` hoàn toàn bị vô hiệu hóa trên desktop nhờ media query `@media (min-width: 900px)`. Vì vậy, việc gán giá trị `activeMobileTab('tour')` hoàn toàn vô hại trên màn hình lớn và không ảnh hưởng tới bất kỳ thành phần hiển thị nào.
+
+### 6.3 Đánh giá cản trở & Kết luận Phê duyệt Mã nguồn (Source Verdict)
+- **Không có cản trở kỹ thuật (0 Blockers):** Mã nguồn đã loại bỏ triệt để biến chưa định nghĩa `isDesktop`, xoá sạch nguy cơ `ReferenceError`.
+- **Bảo lưu đầy đủ phê duyệt:** Toàn bộ các phê duyệt trước đó đối với định tuyến bản đồ Google Maps miễn phí và kiểu dáng độc lập của bản đồ PMTiles (`pilot-map.css`) tiếp tục được bảo lưu trọn vẹn.
+- **Phê duyệt của Người thực hiện bị ảnh hưởng:** **CHẤP THUẬN MÃ NGUỒN (SOURCE APPROVAL GRANTED)** đối với bản vá `41b1d33`.
+- **Tuyên bố phạm vi:** Đánh giá này là xác nhận mã nguồn chuyên môn của người thực hiện frontend. Điều phối viên Codex độc lập chịu trách nhiệm thực thi chạy bộ kiểm thử E2E sản xuất hoàn chỉnh đã được khắc phục.
+
 
