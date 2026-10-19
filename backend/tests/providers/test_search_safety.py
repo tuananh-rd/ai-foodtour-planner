@@ -17,3 +17,18 @@ class SearchSafetyTests(unittest.TestCase):
                     'https://example.com:8443/', 'https://example.com/\nhello'):
             self.assertFalse(public_source_url(url), url)
         self.assertTrue(public_source_url('https://example.com/food?q=pho'))
+
+
+class FreeAccountGateTests(unittest.TestCase):
+    def test_provider_snapshot_must_prove_free_no_paygo_and_both_limits(self):
+        from copy import deepcopy
+        from app.providers.search_safety import free_account_remaining
+        valid={'account':{'current_plan':'Researcher','plan_usage':499,'plan_limit':1000,'paygo_usage':0,'paygo_limit':0},'key':{'usage':20,'limit':500}}
+        self.assertEqual(free_account_remaining(valid),480)
+        for section, field, value in [('account','current_plan','Bootstrap'),('account','current_plan','unknown'),('account','paygo_limit',1),('account','paygo_usage',1),('account','plan_limit',1001),('account','plan_usage',True),('key','limit',None),('key','usage',-1),('key','limit',1001)]:
+            bad=deepcopy(valid);bad[section][field]=value
+            self.assertIsNone(free_account_remaining(bad),(section,field))
+        exhausted=deepcopy(valid);exhausted['account']['plan_usage']=1000
+        self.assertEqual(free_account_remaining(exhausted),0)
+        for bad in (None,{},[],{'account':valid['account']}):
+            self.assertIsNone(free_account_remaining(bad))

@@ -46,3 +46,30 @@ def public_food_query(text):
         return None
     query = re.sub(r'^\s*(?:tra\s+web|tra\s+cứu|tìm\s+trên\s+mạng)\s*[:\-]?\s*', '', text, flags=re.I)
     return ' '.join(query.split())[:160] or None
+
+
+def free_account_remaining(payload):
+    """Conservative official /usage gate; unknown/paid/PAYGO settings fail closed.
+
+    Researcher is the documented free plan. Unknown names/schema are not inferred
+    free. Require a bounded provider-side key limit as well as local accounting.
+    This read-only snapshot cannot stop a human changing account settings later.
+    """
+    if not isinstance(payload, dict):
+        return None
+    account, key = payload.get('account'), payload.get('key')
+    if not isinstance(account, dict) or not isinstance(key, dict):
+        return None
+    if not isinstance(account.get('current_plan'), str) or account['current_plan'].casefold() != 'researcher':
+        return None
+    fields = [account.get(name) for name in ('plan_usage', 'plan_limit', 'paygo_usage', 'paygo_limit')]
+    key_fields = [key.get(name) for name in ('usage', 'limit')]
+    if any(type(value) is not int for value in fields + key_fields):
+        return None
+    used, limit, paygo_used, paygo_limit = fields
+    key_used, key_limit = key_fields
+    if (not 0 <= used <= limit <= 1000 or limit < 1
+            or paygo_used != 0 or paygo_limit != 0
+            or not 0 <= key_used <= key_limit <= 1000 or key_limit < 1):
+        return None
+    return min(limit-used, key_limit-key_used)

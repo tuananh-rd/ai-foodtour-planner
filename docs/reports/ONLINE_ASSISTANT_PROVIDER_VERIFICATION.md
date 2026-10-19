@@ -27,3 +27,10 @@ Sources: https://docs.protomaps.com/pmtiles/leaflet and https://docs.protomaps.c
 Extract a bounded public OSM pilot region from an official Protomaps build; never download the planet archive or send private venue datasets. Record the actual build, bounds, zooms, bytes, hash and license/attribution. Public basemap data is ODbL-derived and requires OpenStreetMap attribution. Verify actual HTTP Range, caching and same-origin/CORS behavior. Resource costs are real; no unlimited-free hosting claim is made. Missing assets show an honest fallback; no public tile fallback, invented route geometry or added OSRM infrastructure.
 
 Sources: https://docs.protomaps.com/basemaps/downloads, https://docs.protomaps.com/pmtiles/cloud-storage and https://docs.protomaps.com/guide/getting-started.
+
+
+## Read-only account verification addendum
+
+Official current [Usage API](https://docs.tavily.com/documentation/api-reference/endpoint/usage) documents GET /usage, including key usage/limit and account current_plan, plan_usage/plan_limit, paygo_usage/paygo_limit. [Pricing](https://docs.tavily.com/documentation/api-credits) names Researcher as the free plan; [key setup](https://help.tavily.com/articles/9170796666-how-can-i-create-an-api-key) documents provider-side monthly key limits. No authenticated request was made; Tavily key is absent.
+
+The adapter must fail closed before search unless a fresh bounded usage snapshot proves the supported free-plan/no-PAYGO configuration and positive headroom. Codex's pure helper also requires an explicit sane provider key limit. Unknown names/schema are deliberately unsupported rather than inferred free; live response compatibility remains unverified until a locally configured free-only account is available. This gate adds no billing/account-setting mutation and cannot stop a human concurrently changing settings; local atomic daily/monthly accounting remains mandatory.

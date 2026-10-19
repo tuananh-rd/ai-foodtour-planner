@@ -2,7 +2,7 @@ import unittest
 from unittest.mock import patch
 
 from app.llm.provider import ProviderError
-from app.providers.search_transport import public_addresses, tavily_post
+from app.providers.search_transport import public_addresses, tavily_post, tavily_usage
 
 
 class SearchTransportTests(unittest.TestCase):
@@ -24,3 +24,16 @@ class SearchTransportTests(unittest.TestCase):
                 self.assertEqual(connection.return_value.request.call_count, 1)
                 self.assertEqual(connection.return_value.request.call_args.args[:2], ('POST', '/search'))
                 connection.return_value.close.assert_called_once()
+
+
+class UsageTransportTests(unittest.TestCase):
+    def test_read_only_usage_has_fixed_endpoint_and_no_redirects(self):
+        with patch('app.providers.search_transport.timed_public_addresses', return_value=['8.8.8.8']), \
+             patch('app.providers.search_transport.PinnedTavilyConnection') as connection:
+            connection.return_value.getresponse.return_value.status = 302
+            with self.assertRaises(ProviderError):
+                tavily_usage('SYNTHETIC_TEST_ONLY')
+            self.assertEqual(connection.return_value.request.call_args.args[:2], ('GET', '/usage'))
+            self.assertIsNone(connection.return_value.request.call_args.kwargs['body'])
+            self.assertEqual(connection.return_value.request.call_count, 1)
+            connection.return_value.close.assert_called_once()

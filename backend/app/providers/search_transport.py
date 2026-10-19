@@ -1,4 +1,4 @@
-"""One fixed Tavily HTTPS POST, pinned public DNS address, no proxies or redirects."""
+"""Fixed Tavily HTTPS endpoints, pinned public DNS address, no proxies or redirects."""
 import http.client
 import ipaddress
 import json
@@ -65,14 +65,14 @@ class PinnedTavilyConnection(http.client.HTTPSConnection):
             raise
 
 
-def tavily_post(payload, api_key, *, deadline_s=6.0):
-    """Return validated transport JSON. Caller's durable budget admits first."""
+def _tavily_json(method, path, payload, api_key, *, deadline_s):
+    """Internal fixed-endpoint transport shared by the two public wrappers."""
     connection = None
     deadline = time.monotonic() + min(max(float(deadline_s), .1), 8.0)
     try:
         address = timed_public_addresses(deadline-time.monotonic())[0]
         connection = PinnedTavilyConnection(address, timeout=max(.1, deadline-time.monotonic()), deadline=deadline)
-        connection.request('POST', '/search', body=json.dumps(payload, ensure_ascii=False).encode('utf-8'),
+        connection.request(method, path, body=(json.dumps(payload, ensure_ascii=False).encode('utf-8') if payload is not None else None),
             headers={'Authorization': 'Bearer ' + api_key, 'Content-Type': 'application/json', 'Accept': 'application/json'})
         if connection.sock:
             connection.sock.settimeout(max(.1, deadline-time.monotonic()))
@@ -105,3 +105,13 @@ def tavily_post(payload, api_key, *, deadline_s=6.0):
     finally:
         if connection:
             connection.close()
+
+
+def tavily_post(payload, api_key, *, deadline_s=6.0):
+    """Search only. Caller reserves one durable BASIC credit before this call."""
+    return _tavily_json('POST', '/search', payload, api_key, deadline_s=deadline_s)
+
+
+def tavily_usage(api_key, *, deadline_s=3.0):
+    """Read-only account gate; never changes plan, billing or provider settings."""
+    return _tavily_json('GET', '/usage', None, api_key, deadline_s=deadline_s)
