@@ -34,4 +34,4 @@ Antigravity owns the exact frontend list in its dispatch, qa/online-assistant/, 
 
 ## Recovery continuation
 
-Commit1f823c6 preserves and reviews the personal-data/key protection WIP rather than discarding it. Targeted assistant and9 API integration tests pass, OpenAPI drift check matches,18 mock-client contract checks pass. Full backend discovery is running; no result claimed yet. UIR1 is the single active Antigravity task; OA3 remains undispatched. No new agent/model/service activation.
+Commit1f823c6 preserves and reviews the personal-data/key protection WIP rather than discarding it. Targeted assistant and9 API integration tests pass, OpenAPI drift check matches,18 mock-client contract checks pass. Fresh backend discovery at1f823c6 passed625 tests with1 optional private-data skip in202.849s, exit0; final post-adapter regression still required. UIR1 is the single active Antigravity task; OA3 remains undispatched. No new agent/model/service activation.

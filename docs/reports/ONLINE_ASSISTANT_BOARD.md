@@ -29,3 +29,5 @@ Codex owns rules/board/contracts/integration and does not concurrently edit work
 ## Coordinator recovery checkpoint 2026-10-19
 
 Old coordinator exited; ordinary run-use safely rebound the same Run to the replacement terminal above (consumer generation2). No new Run, agent or repeated task injection. Existing Antigravity terminal term_37bc1a97-029f-4e92-8ca7-da75d3689675 is active on UIR1; exact Task/Dispatch ownership ACK verified. Root conversation.py/conversation_reply.py/API-test WIP preserved and reviewed; targeted conversation/privacy regressions rerun successfully. UI corrections remain WIP in sibling checkout; OA3 is still ready and undispatched. Candidate remains rejected until actual renderer, marker, retry and error checks pass.
+
+- Recovery validation at1f823c6: backend/tests discovery625 PASS/1 optional private-data skip,202.849s,exit0; OpenAPI matches;18 frontend mock-client contract checks PASS. This is before UIR1/OA3 integration, not final acceptance. Local dataset configured and available (metadata only); Tavily key absent.
