@@ -144,7 +144,8 @@ RE_PRICE_CLAIM = re.compile(
 
 RE_OPERATIONAL_CLAIM = re.compile(
     r"(?:"
-    r"\bmở\s+cửa\s+(?:cả\s+ngày|suốt\s+ngày|24\/24|từ|lúc|vào|đến)\b"
+    r"\b(?:đang|hiện\s+đang)\s+(?:mở|đóng|hoạt\s+động)\b"
+    r"|\bmở\s+cửa\s+(?:cả\s+ngày|suốt\s+ngày|24\/24|từ|lúc|vào|đến)\b"
     r"|\bđóng\s+cửa\s+(?:lúc|vào|muộn|sớm)\b"
     r"|\b(?:phục\s+vụ|hoạt\s+động|bán)\s+(?:cả\s+ngày|suốt\s+ngày|24\/24|thông\s+trưa)\b"
     r"|\b(?:mở|bán)\s+(?:từ\s+\d+|đến\s+\d+)\b"
@@ -513,11 +514,19 @@ class ConversationalAssistant:
                 return False, None
 
         # Guard: Unsupported numeric facts (prices, hours, ratings)
-        context_numbers = extract_context_numbers(user_text, safe_state, recent_turns, reply_blocks)
+        # A repeated user/model number is not authoritative state evidence.
+        profile = safe_state.get('profile', {})
+        context_numbers = {str(value) for value in profile.values() if type(value) in (int, float)}
 
         for m in RE_SPECIFIC_PRICE_DIGITS.finditer(reply):
             num_clean = m.group(1).replace(".", "")
-            if num_clean not in context_numbers and m.group(1) not in context_numbers:
+            amount = int(num_clean)
+            unit = m.group(0)[len(m.group(1)):].strip().casefold()
+            if unit in ('k', 'nghìn'):
+                amount *= 1000
+            elif unit == 'triệu':
+                amount *= 1000000
+            if amount != profile.get('budget', profile.get('budget_vnd')):
                 return False, None
 
         for m in RE_SPECIFIC_HOURS_DIGITS.finditer(reply):
@@ -536,7 +545,7 @@ class ConversationalAssistant:
         if party_m:
             num = int(party_m.group(1))
             auth_party = profile.get("party_size")
-            if auth_party is not None and num != int(auth_party):
+            if auth_party is None or num != int(auth_party):
                 return False, None
 
         dur_m = re.search(r"\b(\d+)\s*phút\b", reply, re.IGNORECASE)
@@ -545,14 +554,14 @@ class ConversationalAssistant:
             auth_dur = profile.get("duration_min")
             auth_leg = profile.get("max_leg_min")
             valid_durs = {int(x) for x in (auth_dur, auth_leg) if x is not None}
-            if valid_durs and num not in valid_durs:
+            if num not in valid_durs:
                 return False, None
 
         stops_m = re.search(r"\b(\d+)\s*(?:quán|điểm\s+dừng|chặng)\b", reply, re.IGNORECASE)
         if stops_m:
             num = int(stops_m.group(1))
             auth_stops = profile.get("stops")
-            if auth_stops is not None and num != int(auth_stops):
+            if auth_stops is None or num != int(auth_stops):
                 return False, None
 
         # Guard: Invented venue names when no venues are in context

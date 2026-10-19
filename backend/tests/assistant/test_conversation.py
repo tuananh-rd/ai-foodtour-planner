@@ -385,5 +385,24 @@ class TestConversationalAssistant(unittest.TestCase):
         self.assertEqual(res_agree.text, "Dạ mình đã ghi nhận 2 người và thời gian 120 phút vào kế hoạch.")
 
 
+class IntegrationReviewGuards(unittest.TestCase):
+    def test_missing_state_is_not_grounded_by_repeated_user_numbers(self):
+        for answer in ('Mình ghi nhận 3 người.', 'Mình ghi nhận 120 phút.',
+                       'Mình ghi nhận 3 quán.', 'Ngân sách dự kiến 500k.'):
+            provider = StubProvider({'reply': answer})
+            result = ConversationalAssistant(provider).respond('3 người 120 phút 3 quán 500k', [], {}, [])
+            self.assertEqual(result.status, 'rejected', answer)
+
+    def test_operating_claims_without_clock_are_not_facts(self):
+        provider = StubProvider({'reply': 'Quán đang mở nên bạn cứ đến.'})
+        self.assertEqual(ConversationalAssistant(provider).respond('Quán đang mở?', [], {}, []).status, 'rejected')
+
+    def test_budget_acknowledgement_uses_structured_vnd_amount(self):
+        for amount, expected in ((500000, 'ok'), (300000, 'rejected')):
+            provider = StubProvider({'reply': 'Mình ghi nhận ngân sách 500k.'})
+            result = ConversationalAssistant(provider).respond('500k', [], {'profile': {'budget': amount}}, [])
+            self.assertEqual(result.status, expected)
+
+
 if __name__ == "__main__":
     unittest.main()
