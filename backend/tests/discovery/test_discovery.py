@@ -172,9 +172,24 @@ class DiscoveryTests(unittest.TestCase):
             def generate(self, *args, **kwargs):
                 raise TimeoutError()
         r, p = handle('Xin chào', self.tools, model=Failing())
-        self.assertEqual(r['status'], 'unavailable')
+        self.assertEqual(r['status'], 'ok')
         self.assertTrue(r['text'])
         self.assertEqual(p['calls'], 1)
+        self.assertEqual(p['mode'], 'rules')
+        self.assertEqual(p['reason'], 'timeout_rules_fallback')
+
+    def test_exhausted_model_session_still_allows_local_discovery_without_calls(self):
+        class Bomb:
+            configured = True
+            mode = 'mock'
+            def generate(self, *args, **kwargs):
+                raise AssertionError('Exhausted session must not call provider')
+        result, provider = handle('Tìm phở quanh Xuân Thủy', self.tools, model=Bomb(), llm_used=6, session_cap=6)
+        self.assertTrue(self.state.results)
+        self.assertEqual(result['status'], 'ok')
+        self.assertEqual(provider['calls'], 0)
+        self.assertEqual(provider['reason'], 'quota_rules_fallback')
+        self.assertIn('xử lý tại máy', result['text'])
 
     def test_model_cannot_add_or_confirm_without_user_authority(self):
         self.tools.run('search_restaurants', {'dish': 'phở'})

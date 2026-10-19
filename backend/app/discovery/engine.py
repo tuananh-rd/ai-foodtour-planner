@@ -293,8 +293,14 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
         provider['reason'] = 'turn_call_cap'
         return last or tools.result('unavailable', 'Lượt xử lý đã đạt giới hạn; các thay đổi đã kiểm chứng vẫn được giữ.'), provider
     except (ProviderError, TimeoutError, ValueError, TypeError, KeyError, AttributeError) as error:
-        provider['reason'] = getattr(error, 'kind', 'tool_error')
+        provider['reason'] = getattr(error, 'kind', 'timeout' if isinstance(error, TimeoutError) else 'tool_error')
         if last is not None:
             last['text'] += ' Model chưa hoàn tất phần giải thích; kết quả công cụ đã xác thực vẫn được giữ.'
             return last, provider
-        return tools.result('unavailable', 'Model tạm không phản hồi hoặc đã đạt giới hạn. Các thông tin đã lưu vẫn được giữ; bạn có thể dùng các nút chọn/sửa và thử lại sau.'), provider
+        # Budget exhaustion must not turn local discovery into a dead end. This
+        # is the same deterministic fallback, never a second model/extractor.
+        local = fallback(text, tools, patch, price_search)
+        local['text'] = 'Model chưa phản hồi hoặc đã đạt giới hạn; đang dùng xử lý tại máy. ' + local['text']
+        provider['reason'] += '_rules_fallback'
+        provider['mode'] = 'rules'
+        return local, provider
