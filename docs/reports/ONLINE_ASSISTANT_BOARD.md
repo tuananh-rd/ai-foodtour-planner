@@ -33,3 +33,5 @@ Old coordinator exited; ordinary run-use safely rebound the same Run to the repl
 - Recovery validation at1f823c6: backend/tests discovery625 PASS/1 optional private-data skip,202.849s,exit0; OpenAPI matches;18 frontend mock-client contract checks PASS. This is before UIR1/OA3 integration, not final acceptance. Local dataset configured and available (metadata only); Tavily key absent.
 
 - UIR1 coordination checkpoint: confirmed3070?8060 CORS preflight400/no allowed origin (test configuration error). After observing repeated incompatible builds and pending review mail, an Escape interrupt produced explicit Interrupted transcript; one same-task steering prompt dc15dcba-9de4-4bb6-8d4b-f55f0064e2fc was accepted. This is not a new/repeated dispatch; actual resumed output/ACK must be verified. Worker owns3070/8070 test pair; coordinator3060/8060 remains untouched.
+
+- Same-task steering actual turn confirmed: worker read coordination instructions and ACKed six pending gates plus isolated8070/3070 CORS in msg_d937dbd6ec4c. This positive output closes the input-accepted uncertainty; no resend was performed.
