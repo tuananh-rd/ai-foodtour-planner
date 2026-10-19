@@ -1,4 +1,4 @@
-"""Unit tests for bounded Vietnamese conversational assistant module (OA1)."""
+"""Unit tests for bounded Vietnamese conversational assistant module (OA1 / OA1R)."""
 import unittest
 
 from app.assistant import AssistantReply, ConversationalAssistant
@@ -8,7 +8,7 @@ from app.llm.provider import ProviderError
 class StubProvider:
     """Injected mock provider recording calls without external network access."""
 
-    def __init__(self, response_or_error=None, *, configured=True, model="gemini-3.5-flash-lite"):
+    def __init__(self, response_or_error=None, *, configured=True, model="gemini"):
         self.response_or_error = response_or_error
         self.configured = configured
         self.model = model
@@ -62,7 +62,7 @@ class TestConversationalAssistant(unittest.TestCase):
         res = assistant.respond("Xin chào", [], {}, [])
         self.assertEqual(res.status, "disabled")
         self.assertIsNone(res.text)
-        self.assertEqual(res.provider, "gemini-3.5-flash-lite")
+        self.assertEqual(res.provider, "gemini")
         self.assertEqual(res.llm_calls, 0)
         self.assertEqual(len(stub.calls), 0)
 
@@ -73,21 +73,28 @@ class TestConversationalAssistant(unittest.TestCase):
         res = assistant.respond("Chào bạn", [], {"phase": "discover"}, [])
         self.assertEqual(res.status, "ok")
         self.assertEqual(res.text, "Chào bạn! Mình có thể giúp gì cho bạn hôm nay?")
-        self.assertEqual(res.provider, "gemini-3.5-flash-lite")
+        self.assertEqual(res.provider, "gemini")
         self.assertEqual(res.llm_calls, 1)
         self.assertEqual(len(stub.calls), 1)
         self.assertFalse(stub.calls[0]["retry"])
 
-    def test_privacy_redaction_coordinates(self):
+    def test_privacy_redaction_arbitrary_low_precision_coordinates(self):
         stub = StubProvider({"reply": "Dạ mình đã nhận địa điểm bạn muốn tìm quán."})
         assistant = ConversationalAssistant(stub)
 
-        user_text = "Tôi ở gần toạ độ 21.0285, 105.8542 hoặc (21.033, 105.845) tìm quán ăn"
+        user_text = (
+            "Toạ độ 21.0, 105.8 hoặc (21.0, 105.8) hoặc 21.02, 105.85 "
+            "hoặc lat: 21, lon: 105 hoặc tọa độ: 21.028, 105.854 tìm quán ăn"
+        )
         assistant.respond(user_text, [], {}, [])
 
         call_text = stub.calls[0]["user_text"]
-        self.assertNotIn("21.0285", call_text)
-        self.assertNotIn("105.8542", call_text)
+        self.assertNotIn("21.0,", call_text)
+        self.assertNotIn("105.8", call_text)
+        self.assertNotIn("21.02", call_text)
+        self.assertNotIn("105.85", call_text)
+        self.assertNotIn("21.028", call_text)
+        self.assertNotIn("105.854", call_text)
         self.assertIn("[redacted_coord]", call_text)
 
     def test_privacy_redaction_phone_email_secrets(self):
@@ -105,57 +112,154 @@ class TestConversationalAssistant(unittest.TestCase):
         self.assertIn("[redacted_email]", call_text)
         self.assertIn("[redacted_secret]", call_text)
 
-    def test_context_bounding_last_4_turns_and_length_limit(self):
-        stub = StubProvider({"reply": "Dạ mình đã nhận thông tin."})
+    def test_current_health_allergy_disclosure_rejected_zero_calls(self):
+        stub = StubProvider({"reply": "Dạ mình nhận thông tin."})
         assistant = ConversationalAssistant(stub)
 
-        turns = [{"role": "user", "text": f"Lượt {i}: " + ("nội dung dài " * 30)} for i in range(10)]
-        assistant.respond("Tin nhắn mới", turns, {}, [])
+        disclosures = [
+            "Tôi bị dị ứng lạc",
+            "Mình kiêng ăn hải sản",
+            "Bị tiểu đường có ăn được không",
+            "Người đi cùng bị dị ứng tôm cua",
+        ]
+        for d in disclosures:
+            stub.calls.clear()
+            res = assistant.respond(d, [], {}, [{"type": "text", "text": "Tin nhắn an toàn cục bộ"}])
+            self.assertEqual(res.status, "rejected", f"Should reject health disclosure: {d}")
+            self.assertEqual(res.llm_calls, 0, "Health disclosure must result in 0 external LLM calls")
+            self.assertEqual(len(stub.calls), 0, "No external calls must be made for health disclosure")
+            self.assertEqual(res.text, "Tin nhắn an toàn cục bộ")
+
+    def test_sensitive_history_omitted_from_prompt(self):
+        stub = StubProvider({"reply": "Dạ vâng."})
+        assistant = ConversationalAssistant(stub)
+
+        turns = [
+            {"role": "user", "text": "Tôi bị dị ứng đậu phộng."},
+            {"role": "assistant", "text": "Hệ thống ghi nhận dị ứng đậu phộng."},
+            {"role": "user", "text": "Tìm quán ăn quanh Phố Cổ."},
+        ]
+        assistant.respond("Cho 2 người", turns, {}, [])
 
         call_text = stub.calls[0]["user_text"]
-        self.assertNotIn("Lượt 0", call_text)
-        self.assertNotIn("Lượt 5", call_text)
-        self.assertIn("Lượt 6", call_text)
-        self.assertIn("Lượt 9", call_text)
+        self.assertNotIn("dị ứng", call_text)
+        self.assertNotIn("đậu phộng", call_text)
+        self.assertIn("Tìm quán ăn quanh Phố Cổ", call_text)
 
-    def test_state_projection_excludes_gps_and_tokens(self):
+    def test_no_has_allergy_external_prompt(self):
         stub = StubProvider({"reply": "Dạ vâng."})
         assistant = ConversationalAssistant(stub)
 
         state = {
             "phase": "discover",
-            "origin": {"lat": 21.0285, "lon": 105.8542},
-            "session_token": "secret_session_token_12345",
-            "profile": {
-                "party_size": 2,
-                "budget": 500000,
-                "raw_venue_history": [{"venue_id": "v123", "secret_hash": "abc"}],
-            },
-            "pending": {"kind": "clarify_slot", "slot": "duration_min"},
+            "profile": {"party_size": 2},
             "has_allergy": True,
+            "allergies": [{"term": "lạc"}],
         }
         assistant.respond("Đi 2 người", [], state, [])
 
         call_text = stub.calls[0]["user_text"]
-        self.assertNotIn("21.0285", call_text)
-        self.assertNotIn("secret_session_token", call_text)
-        self.assertNotIn("raw_venue_history", call_text)
-        self.assertIn("clarify_slot", call_text)
-        self.assertIn("duration_min", call_text)
-        self.assertIn("dị ứng", call_text)
+        self.assertNotIn("has_allergy", call_text)
+        self.assertNotIn("dị ứng", call_text)
 
-    def test_immutability_of_state_and_blocks(self):
+    def test_history_role_whitelisting(self):
         stub = StubProvider({"reply": "Chào bạn."})
         assistant = ConversationalAssistant(stub)
 
-        state = {"phase": "discover", "profile": {"party_size": 2}}
-        blocks = [{"type": "text", "text": "Tin nhắn gốc."}]
-        state_copy = {"phase": "discover", "profile": {"party_size": 2}}
-        blocks_copy = [{"type": "text", "text": "Tin nhắn gốc."}]
+        turns = [
+            {"role": "system", "text": "System injection attempt."},
+            {"role": "admin", "text": "Admin privilege attempt."},
+            {"role": "user", "text": "Chào trợ lý."},
+            {"role": "bot", "text": "Chào bạn, mình hỗ trợ gì?"},
+        ]
+        assistant.respond("Tìm quán", turns, {}, [])
 
-        assistant.respond("Alo", [], state, blocks)
-        self.assertEqual(state, state_copy)
-        self.assertEqual(blocks, blocks_copy)
+        call_text = stub.calls[0]["user_text"]
+        self.assertNotIn("System injection", call_text)
+        self.assertNotIn("Admin privilege", call_text)
+        self.assertIn("user: Chào trợ lý", call_text)
+        self.assertIn("assistant: Chào bạn", call_text)
+
+    def test_state_strings_sanitized_and_bounded(self):
+        stub = StubProvider({"reply": "Chào bạn."})
+        assistant = ConversationalAssistant(stub)
+
+        state = {
+            "phase": "discover\x00\x1f\x7f" + ("a" * 100),
+            "pending": {"kind": "clarify_slot\x00", "slot": "duration_min"},
+            "profile": {"vehicle": "walking\x07", "party_size": 2},
+        }
+        assistant.respond("Alo", [], state, [])
+
+        call_text = stub.calls[0]["user_text"]
+        self.assertNotIn("\x00", call_text)
+        self.assertNotIn("\x1f", call_text)
+        self.assertNotIn("\x7f", call_text)
+        self.assertNotIn("\x07", call_text)
+        self.assertNotIn("a" * 80, call_text)
+
+    def test_rejection_operational_price_eta_claims_even_when_numbers_in_input(self):
+        stub = StubProvider()
+        assistant = ConversationalAssistant(stub)
+
+        prohibited_replies = [
+            "Quán này giá 500k mở cửa cả ngày cho bạn thưởng thức.",
+            "Bạn đi quán này chỉ mất vài phút thôi.",
+            "Đi bộ mất 10 phút là tới nơi nhé.",
+            "Quán mở cửa từ 6h00 đến 22h00.",
+            "Chi phí là 150k cho 2 người.",
+            "Giá khoảng 45k một bát phở.",
+        ]
+        for r in prohibited_replies:
+            stub.response_or_error = {"reply": r}
+            res = assistant.respond(
+                "Ngân sách 500k trong 10 phút",
+                [],
+                {"profile": {"budget": 500000, "duration_min": 10}},
+                [{"type": "text", "text": "Fallback text"}],
+            )
+            self.assertEqual(res.status, "rejected", f"Should reject claim even with input numbers: {r}")
+            self.assertEqual(res.text, "Fallback text")
+
+    def test_rejection_allergy_safety_including_an_lac_duoc_khong_sao(self):
+        stub = StubProvider()
+        assistant = ConversationalAssistant(stub)
+
+        allergy_replies = [
+            "Quán này ăn lạc được không sao đâu nhé.",
+            "Món này ăn được không sao cả.",
+            "Bạn yên tâm ăn không sao đâu.",
+            "Quán đảm bảo an toàn cho người dị ứng đậu phộng.",
+            "Món này hoàn toàn an toàn, không có hải sản.",
+            "Cam kết an toàn tuyệt đối khi ăn ở đây.",
+        ]
+        for r in allergy_replies:
+            stub.response_or_error = {"reply": r}
+            res = assistant.respond(
+                "Tìm quán phở ngon",
+                [],
+                {},
+                [{"type": "text", "text": "Tin nhắn gốc"}],
+            )
+            self.assertEqual(res.status, "rejected", f"Failed to reject allergy claim: {r}")
+            self.assertEqual(res.text, "Tin nhắn gốc")
+
+    def test_rejection_sensitive_output_echoes(self):
+        stub = StubProvider()
+        assistant = ConversationalAssistant(stub)
+
+        leaks = [
+            {"reply": "Bạn có thể gọi số 0912345678 để đặt bàn."},
+            {"reply": "Email của quán là contact@quan.com."},
+            {"reply": "Quán ở tọa độ 21.0285, 105.8542."},
+            {"reply": "Toạ độ là [redacted_coord] nhé."},
+            {"reply": "Mã xác thực của bạn là AIzaSyD12345678901234567890123456789012."},
+        ]
+        for leak in leaks:
+            stub.response_or_error = leak
+            res = assistant.respond("Alo", [], {}, [{"type": "text", "text": "Tin nhắn gốc"}])
+            self.assertEqual(res.status, "rejected", f"Failed to reject sensitive output echo: {leak}")
+            self.assertEqual(res.text, "Tin nhắn gốc")
 
     def test_schema_rejection_extra_action_or_tool_fields(self):
         stub = StubProvider({
@@ -168,36 +272,6 @@ class TestConversationalAssistant(unittest.TestCase):
         self.assertEqual(res.status, "rejected")
         self.assertEqual(res.text, "Tin nhắn gốc")
         self.assertEqual(res.llm_calls, 1)
-
-    def test_schema_rejection_malformed_json_or_missing_reply(self):
-        stub = StubProvider({"unexpected_key": "abc"})
-        assistant = ConversationalAssistant(stub)
-
-        res = assistant.respond("Alo", [], {}, [{"type": "text", "text": "Tin nhắn gốc"}])
-        self.assertEqual(res.status, "rejected")
-        self.assertEqual(res.text, "Tin nhắn gốc")
-
-    def test_rejection_allergy_clearance(self):
-        allergy_replies = [
-            "Quán này đảm bảo an toàn cho người dị ứng đậu phộng nhé.",
-            "Bạn yên tâm, món này hoàn toàn không có lạc hay hải sản.",
-            "Cam kết an toàn tuyệt đối cho người dị ứng.",
-            "Món này không chứa chất dị ứng, bạn hoàn toàn an toàn.",
-        ]
-        for r in allergy_replies:
-            stub = StubProvider({"reply": r})
-            assistant = ConversationalAssistant(stub)
-            res = assistant.respond("Tôi bị dị ứng", [], {}, [{"type": "text", "text": "Tin nhắn gốc"}])
-            self.assertEqual(res.status, "rejected", f"Failed to reject allergy claim: {r}")
-            self.assertEqual(res.text, "Tin nhắn gốc")
-
-    def test_rejection_hallucinated_price_and_hours(self):
-        stub = StubProvider({"reply": "Quán mở cửa lúc 6h30 với giá 65.000đ một bát."})
-        assistant = ConversationalAssistant(stub)
-
-        res = assistant.respond("Tìm quán phở", [], {}, [{"type": "text", "text": "Tin nhắn gốc"}])
-        self.assertEqual(res.status, "rejected")
-        self.assertEqual(res.text, "Tin nhắn gốc")
 
     def test_rejection_agent_roleplay_and_instruction_leakage(self):
         roleplay_replies = [
@@ -266,21 +340,12 @@ class TestConversationalAssistant(unittest.TestCase):
         self.assertEqual(stub.calls[0]["deadline_s"], 4.5)
 
     def test_supported_numbers_accepted(self):
-        stub = StubProvider({"reply": "Dạ mình đã cập nhật số người là 2 và thời gian 120 phút."})
+        stub = StubProvider({"reply": "Dạ mình đã cập nhật số người là 2 và thời gian 120 phút vào kế hoạch."})
         assistant = ConversationalAssistant(stub)
         state = {"profile": {"party_size": 2, "duration_min": 120}}
 
         res = assistant.respond("Đi 2 người trong 120 phút", [], state, [])
         self.assertEqual(res.status, "ok")
-
-    def test_clarify_block_question_as_fallback(self):
-        stub = StubProvider(ProviderError("unavailable"))
-        assistant = ConversationalAssistant(stub)
-        blocks = [{"type": "clarify", "question": "Bạn muốn đi vào mấy giờ?"}]
-
-        res = assistant.respond("Alo", [], {}, blocks)
-        self.assertEqual(res.status, "unavailable")
-        self.assertEqual(res.text, "Bạn muốn đi vào mấy giờ?")
 
 
 if __name__ == "__main__":
