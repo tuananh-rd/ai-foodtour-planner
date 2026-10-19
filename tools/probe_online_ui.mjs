@@ -42,7 +42,7 @@ try{
   async function click(selector){await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center'})`);const point=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)throw Error('Missing or disabled control '+selector);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
   async function idle(){await pause(120);await until(()=>ev(`!document.querySelector('[aria-busy="true"]')`));await pause(250);}
   async function send(text){const before=chatResponses;const input=await exists('clarify-free-text-input')?'clarify-free-text-input':'guided-input';await ev(`document.querySelector(${JSON.stringify(sel(input))}).focus()`);await cdp('Input.insertText',{text});await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await until(()=>chatResponses>before);await idle();}
-  async function capture(name){await ev('window.scrollTo(0,0)');const shot=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(shot.data,'base64'));evidence.screenshots.push(name+'.png');return shot.data;}
+  async function capture(name,keepScroll=false){if(!keepScroll)await ev('window.scrollTo(0,0)');const shot=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(shot.data,'base64'));evidence.screenshots.push(name+'.png');return shot.data;}
   async function mobileChat(){if(await exists('mobile-tab-chat'))await click(sel('mobile-tab-chat'));}
   for(const domain of ['Page','Runtime','Network'])await cdp(domain+'.enable');
   await cdp('Network.setCacheDisabled',{cacheDisabled:true});
@@ -78,6 +78,7 @@ try{
     record('native keyboard marker '+width,buttonMarker);
     if(buttonMarker){await ev(`document.querySelector('.maplibregl-marker').focus()`);await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await pause(200);record('keyboard marker opens popup '+width,await ev(`!!document.querySelector('.maplibregl-popup')`));}
     await capture('tour-map-'+width);
+    if(width===390){await ev(`document.querySelector('[data-testid="pilot-map-container"]')?.scrollIntoView({block:'center'})`);await capture('tour-map-region-'+width,true);}
     await cdp('Page.reload');await until(()=>exists('guided-timeline'));record('tour reload retained '+width,await ev(`document.querySelectorAll('[data-testid^="timeline-stop-card-"]').length===3`));
     const names=()=>ev(`Array.from(document.querySelectorAll('.nn-timeline-card-title')).map(e=>e.textContent.trim())`);
     const originalNames=await names();
