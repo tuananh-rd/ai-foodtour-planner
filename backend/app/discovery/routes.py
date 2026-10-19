@@ -13,7 +13,7 @@ router = APIRouter()
 def context(session, request):
     from app.api.routes import snapshot
     data = snapshot(request)
-    state = State.restore(session.chat.discovery)
+    state = State.from_session(session)
     tools = Tools(state, data, request.app.state.routing, quality_weight=request.app.state.quality_weight)
     return state, tools, data
 

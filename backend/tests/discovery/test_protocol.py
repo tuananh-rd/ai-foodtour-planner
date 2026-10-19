@@ -107,6 +107,22 @@ class ProtocolTests(unittest.TestCase):
     def test_invalid_allergy_term_rejected_before_storage(self):
         with self.assertRaises(ValueError): Profile(allergies=['x'*41])
 
+    def test_upgrade_preserves_legacy_allergies_but_not_assumed_defaults(self):
+        from app.repositories.sessions import Session
+        from app.chat.state import Allergy, ShortItem
+        session = Session(b'test', 9999999999)
+        session.chat.set_field('party_size', 2)
+        session.chat.set_field('vehicle', 'walk', 'default')
+        session.chat.allergies = [Allergy('đậu phộng')]
+        session.chat.shortlist = [ShortItem('1')]
+        migrated = State.from_session(session)
+        self.assertEqual(migrated.profile.allergies, ['đậu phộng'])
+        self.assertEqual(migrated.profile.party_size, 2)
+        self.assertIsNone(migrated.profile.vehicle)
+        self.assertTrue(migrated.tour_stale)
+        self.assertEqual(migrated.selection, [{'id': '1', 'locked': False}])
+        self.assertIsNone(migrated.confirmation)
+
 
 class PersistenceTests(unittest.TestCase):
     def test_sqlite_restart_keeps_versions_selection_messages_and_nonce(self):

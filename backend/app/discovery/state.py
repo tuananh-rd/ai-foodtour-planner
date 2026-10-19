@@ -22,6 +22,41 @@ class State:
     pending_slot: str | None = None
 
     @classmethod
+    def from_session(cls, session):
+        if session.chat.discovery:
+            return cls.restore(session.chat.discovery)
+        # Preserve explicit legacy preferences and safety obligations on UI upgrade.
+        obj, changes = cls(), {}
+        for name in ('party_size', 'start_time', 'end_time', 'duration_min', 'vehicle', 'tastes', 'max_leg_min'):
+            old = session.chat.profile.get(name)
+            if old and old.source in ('user_said', 'ui_form') and old.value is not None:
+                changes[name] = copy.deepcopy(old.value)
+        budget = session.chat.profile.get('budget')
+        if budget and budget.source in ('user_said', 'ui_form') and budget.value is not None:
+            changes.update(budget_vnd=budget.value, budget_scope=budget.scope)
+        area = session.chat.profile.get('area')
+        if area and area.source in ('user_said', 'ui_form') and isinstance(area.value, dict):
+            changes['area'] = area.value.get('label')
+            if area.value.get('lat') is not None and area.value.get('lon') is not None:
+                changes['origin'] = {'lat': area.value['lat'], 'lon': area.value['lon']}
+        changes['allergies'] = list(dict.fromkeys([a.term for a in session.chat.allergies] + list(session.preferences.allergies)))[:10]
+        if session.chat.allergy_unresolved and not changes['allergies']:
+            changes['allergies'] = ['chưa xác định tác nhân']
+        changes['exclusions'] = list(session.preferences.exclusions)[:10]
+        obj.patch(changes)
+        ids = list(session.tour_selected_ids) or [x.venue_id for x in session.chat.shortlist]
+        locks = set(getattr(session.tour, 'locks', ()))
+        obj.selection = [{'id': i, 'locked': i in locks} for i in dict.fromkeys(ids)][:5]
+        obj.selection_version = 1 if obj.selection else 0
+        obj.results = [x.get('venue_id') for x in session.chat.last_results if isinstance(x, dict) and isinstance(x.get('venue_id'), str)][:5]
+        for item in session.chat.turns[-8:]:
+            obj.remember(item.get('role', 'assistant'), item.get('text', ''))
+        # Old confirmations are never transferable to a new contract; old tours remain
+        # available only if no unresolved allergy or stale obligation exists.
+        obj.tour_stale = bool(session.chat.tour_stale or obj.profile.allergies)
+        return obj
+
+    @classmethod
     def restore(cls, raw):
         if not isinstance(raw, dict) or not raw:
             return cls()
