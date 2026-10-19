@@ -1,0 +1,175 @@
+[
+  {
+    "section": "HealthCheck",
+    "name": "API Health Status",
+    "status": "PASS",
+    "details": {
+      "build_commit": "1509005f591a9b474d63e8565aab724c12bdf230",
+      "web_search_configured": false,
+      "dataset_source": "synthetic",
+      "dataset_version": "bd561f274a3d654c59c1234a1d37687fe47be9c633495ddad8c3664b9d0983f9",
+      "routing": "straight_line_estimate",
+      "assistant_provider": "rules"
+    },
+    "timestamp": "2026-10-19T09:00:32.485Z"
+  },
+  {
+    "section": "ClarifyFocus",
+    "name": "Desktop 1280x1024 First Chip Focus",
+    "status": "FAIL",
+    "details": {
+      "reason": "Focus was not placed on first clarify chip",
+      "expected": "First question chip focused ([data-testid^=\"clarify-option-\"])",
+      "actualActiveElement": "BODY#",
+      "trace": {
+        "activeTagName": "BODY",
+        "activeTestId": null,
+        "activeClassName": "",
+        "firstChipExists": false,
+        "firstChipTag": null,
+        "firstChipText": null,
+        "isFirstChipFocused": false,
+        "freeInputExists": false,
+        "clarifyBlockRendered": false
+      },
+      "rootCauseLead": "GuidedLayout.jsx lines 778-780 sets lastFocusedKeyRef before checking isUserTyping, so unmounted active input leaves focus on BODY and permanently skips same key."
+    },
+    "timestamp": "2026-10-19T09:00:36.031Z"
+  },
+  {
+    "section": "ClarifyFocus",
+    "name": "Mobile 390x844 First Chip Focus",
+    "status": "FAIL",
+    "details": {
+      "reason": "Focus was not placed on first clarify chip",
+      "expected": "First question chip focused ([data-testid^=\"clarify-option-\"])",
+      "actualActiveElement": "BODY#",
+      "trace": {
+        "activeTagName": "BODY",
+        "activeTestId": null,
+        "activeClassName": "",
+        "firstChipExists": false,
+        "firstChipTag": null,
+        "firstChipText": null,
+        "isFirstChipFocused": false,
+        "freeInputExists": false,
+        "clarifyBlockRendered": false
+      },
+      "rootCauseLead": "GuidedLayout.jsx lines 778-780 sets lastFocusedKeyRef before checking isUserTyping, so unmounted active input leaves focus on BODY and permanently skips same key."
+    },
+    "timestamp": "2026-10-19T09:00:37.433Z"
+  },
+  {
+    "section": "SearchHonesty",
+    "name": "Live Search Absent Key Fails Closed Honestly",
+    "status": "PASS",
+    "details": {
+      "cardRendered": true,
+      "hasDisabledBadge": true,
+      "hasUnavailBadge": false,
+      "hasOkBadge": false,
+      "sourcesCount": 0,
+      "explanation": "Server web_search_configured is False; UI shows honest unconfigured/unavailable badge with 0 sources and zero fabricated claims."
+    },
+    "timestamp": "2026-10-19T09:00:44.303Z"
+  },
+  {
+    "section": "LayoutFidelity",
+    "name": "Desktop 1440x1024 Layout Structure",
+    "status": "PASS",
+    "details": {
+      "containerWidth": 1440,
+      "containerHeight": 1024,
+      "headerRendered": true,
+      "mapRendered": false
+    },
+    "timestamp": "2026-10-19T09:00:44.620Z"
+  },
+  {
+    "section": "LayoutFidelity",
+    "name": "Mobile 390x844 Layout Structure",
+    "status": "PASS",
+    "details": {
+      "hasMobileTabs": true,
+      "bodyWidth": 390,
+      "isOverflowing": false
+    },
+    "timestamp": "2026-10-19T09:00:44.939Z"
+  },
+  {
+    "section": "UserJourney",
+    "name": "Step 1: Understood Card & Safety Disclosure",
+    "status": "PASS",
+    "details": {
+      "hasUnderstood": true,
+      "understoodText": "Mình hiểu là…\nKhu vực\nHồ Gươm\nSửa\nSố người\n2\nSửa\nSố quán\n3\nSửa\nTổng thời gian\n120 phút\nSửa\nBuổi\nBuổi tối\nSửa\nBắt đầu lúc\nChưa chọn\nChọn\nNgân sách\n500.000 đ (chưa rõ phạm vi)\nSửa\nThích\nphở, bún chả\nSửa\nThời gian mỗi quán (ước tính)\nkhoảng 34 phút(suy luận)\nSửa\nDị ứng\nđậu phộng\nSửa\nDữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "hasSafetyNote": true,
+      "safetyText": "Dữ liệu quán không có thông tin nguyên liệu; bạn hãy kiểm tra trực tiếp với quán khi đến.",
+      "hasClarifyCard": true,
+      "hasScopeGroupOption": true
+    },
+    "timestamp": "2026-10-19T09:05:24.169Z"
+  },
+  {
+    "section": "UserJourney",
+    "name": "Step 2: Clarify Progression to Confirmation Summary",
+    "status": "PASS",
+    "details": {
+      "hasConfirmCard": true,
+      "hasConfirmYes": true,
+      "hasConfirmNo": true,
+      "venuesList": "Quán đề xuất: [SYNTHETIC] Phở Thử 4, [SYNTHETIC] Chè Thử 11, [SYNTHETIC] Chè Thử 12"
+    },
+    "timestamp": "2026-10-19T09:05:24.172Z"
+  },
+  {
+    "section": "UserJourney",
+    "name": "Step 3: Confirm Tour Generation (3-5 Stops in Timeline)",
+    "status": "PASS",
+    "details": {
+      "hasTimeline": true,
+      "stopCount": 3,
+      "stopNames": [
+        "[SYNTHETIC] Chè Thử 12",
+        "[SYNTHETIC] Chè Thử 11",
+        "[SYNTHETIC] Phở Thử 4"
+      ],
+      "mapsCtaHref": "https://www.google.com/maps/dir/?api=1&origin=21.0263%2C105.8522&destination=21.0296%2C105.8483&travelmode=walking&waypoints=21.0274%2C105.8509",
+      "hasChangeStopBtn": true,
+      "allergyNote": "Dị ứng đậu phộng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món."
+    },
+    "timestamp": "2026-10-19T09:05:24.172Z"
+  },
+  {
+    "section": "FreeMaps",
+    "name": "Public External Navigation URLs (Walking Mode, Zero Paid Keys)",
+    "status": "PASS",
+    "details": {
+      "url": "https://www.google.com/maps/dir/?api=1&origin=21.0263%2C105.8522&destination=21.0296%2C105.8483&travelmode=walking&waypoints=21.0274%2C105.8509",
+      "isValidPublicWalkingUrl": true,
+      "hasNoPaidApiKey": true
+    },
+    "timestamp": "2026-10-19T09:05:24.173Z"
+  },
+  {
+    "section": "ReplaceStop",
+    "name": "Single Stop Replaced and Timeline Updated",
+    "status": "PASS",
+    "details": {
+      "success": true,
+      "original": "[SYNTHETIC] Chè Thử 12",
+      "updated": "[SYNTHETIC] Kem Thử 24"
+    },
+    "timestamp": "2026-10-19T09:05:24.173Z"
+  },
+  {
+    "section": "Persistence",
+    "name": "Session and Tour Persisted across Reload with conv param",
+    "status": "PASS",
+    "details": {
+      "hasTimeline": true,
+      "stopCount": 3
+    },
+    "timestamp": "2026-10-19T09:05:24.173Z"
+  }
+]

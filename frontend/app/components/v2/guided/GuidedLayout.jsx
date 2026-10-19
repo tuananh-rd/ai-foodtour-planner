@@ -191,6 +191,7 @@ export default function GuidedLayout({
   const inputRef = useRef(null);
   const lastFocusedKeyRef = useRef('');
   const restoredRef = useRef(false);
+  const focusTimerRef = useRef(null);
   const chatSectionRef = useRef(null);
   const tourSectionRef = useRef(null);
 
@@ -248,7 +249,8 @@ export default function GuidedLayout({
           setSessionId(s.session_id || targetId);
           setSessionToken(s.token || targetToken);
           setRevision(s.revision || 0);
-          restoredRef.current = true;
+          const hasRestoredContent = Boolean(s.tour || s.chat?.pending);
+          restoredRef.current = hasRestoredContent;
           restoreOwnedSnapshot(s);
           setSnapshotFailed(false);
           setErrorMessage(null);
@@ -289,6 +291,7 @@ export default function GuidedLayout({
     }
     setBusy(true);
     setErrorMessage(null);
+    restoredRef.current = false;
 
     // Polite live announcement immediately when action begins (Q06)
     if (action?.name === 'confirm_yes') {
@@ -596,6 +599,8 @@ export default function GuidedLayout({
     setActiveMobileTab('chat');
     setWebSearch(false);
     setViewMode('schematic');
+    restoredRef.current = false;
+    lastFocusedKeyRef.current = '';
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.removeItem('foodtour_chat_session_id');
@@ -736,71 +741,110 @@ export default function GuidedLayout({
 
   // Focus and viewport management
   useEffect(() => {
-    if (busy) return;
+    if (focusTimerRef.current) {
+      clearTimeout(focusTimerRef.current);
+      focusTimerRef.current = null;
+    }
+    if (busy) return undefined;
     if (restoredRef.current && (showTour || confirmSummaryBlock || clarifyBlock)) {
       // Session restored on page load: show it where the user left it, do not steal focus or scroll.
       restoredRef.current = false;
       lastFocusedKeyRef.current = showTour ? 'tour' : confirmSummaryBlock ? 'confirm'
         : `${clarifyBlock.slot || ''}_${clarifyBlock.pending_id || clarifyBlock.question || ''}`;
-      return;
+      return undefined;
     }
+
     const active = typeof document !== 'undefined' ? document.activeElement : null;
-    const isUserTyping = active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA');
+    // Genuinely new typing: user has an active input/textarea and has typed non-empty text,
+    // or is focused on the clarify free-text composer.
+    const isComposerInput = active && (active === inputRef.current || active.getAttribute('data-testid') === 'guided-input');
+    const isClarifyFreeInput = active && active.getAttribute('data-testid') === 'clarify-free-text-input';
+    const isUserTypingNewDraft = Boolean(
+      (isComposerInput && inputText.trim().length > 0) ||
+      (isClarifyFreeInput && active.value && active.value.trim().length > 0) ||
+      (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA') && !isComposerInput && !isClarifyFreeInput && active.value && active.value.trim().length > 0)
+    );
 
     if (showTour) {
       if (lastFocusedKeyRef.current !== 'tour') {
-        lastFocusedKeyRef.current = 'tour';
         const mapsCta = document.querySelector('[data-testid="google-maps-cta"]');
         if (mapsCta) {
           mapsCta.focus();
           mapsCta.scrollIntoView({ block: 'nearest' });
+          if (document.activeElement === mapsCta) {
+            lastFocusedKeyRef.current = 'tour';
+          }
         }
       }
-      return;
+      return undefined;
     }
 
     if (confirmSummaryBlock) {
       if (lastFocusedKeyRef.current !== 'confirm') {
-        lastFocusedKeyRef.current = 'confirm';
         const confirmYesBtn = document.querySelector('[data-testid="confirm-yes-btn"]');
         if (confirmYesBtn) {
           confirmYesBtn.focus({ preventScroll: true });
           confirmYesBtn.closest('[data-testid="confirm-summary-card"]')?.scrollIntoView({ block: 'start' });
           const headerHeight = document.querySelector('header')?.getBoundingClientRect().height || 0;
           window.scrollBy(0, -headerHeight - 12);
+          if (document.activeElement === confirmYesBtn) {
+            lastFocusedKeyRef.current = 'confirm';
+          }
         }
       }
-      return;
+      return undefined;
     }
 
     if (clarifyBlock) {
       const clarifyKey = `${clarifyBlock.slot || ''}_${clarifyBlock.pending_id || clarifyBlock.question || ''}`;
-      if (lastFocusedKeyRef.current !== clarifyKey) {
-        lastFocusedKeyRef.current = clarifyKey;
-        if (!isUserTyping) {
-          const tryFocus = () => {
-            const firstChip = document.querySelector('[data-testid^="clarify-option-"]');
-            if (firstChip) {
-              firstChip.focus();
-              firstChip.scrollIntoView({ block: 'nearest' });
-              return true;
-            }
-            const freeInput = document.querySelector('[data-testid="clarify-free-text-input"]');
-            if (freeInput) {
-              freeInput.focus();
-              freeInput.scrollIntoView({ block: 'nearest' });
-              return true;
-            }
-            return false;
-          };
-          if (!tryFocus()) {
-            const timer = setTimeout(tryFocus, 20);
-            return () => clearTimeout(timer);
+      if (lastFocusedKeyRef.current !== clarifyKey && !isUserTypingNewDraft) {
+        const tryFocus = () => {
+          // If user started typing a new draft while waiting, do not steal focus
+          const currentActive = typeof document !== 'undefined' ? document.activeElement : null;
+          const currentComposer = currentActive && (currentActive === inputRef.current || currentActive.getAttribute('data-testid') === 'guided-input');
+          if (currentComposer && currentActive.value && currentActive.value.trim().length > 0) {
+            return true; // cease attempt, keep user focus
           }
-        }
+
+          const firstChip = document.querySelector('[data-testid^="clarify-option-"]');
+          if (firstChip && !firstChip.disabled) {
+            firstChip.focus();
+            firstChip.scrollIntoView({ block: 'nearest' });
+            if (document.activeElement === firstChip) {
+              lastFocusedKeyRef.current = clarifyKey;
+              return true;
+            }
+          }
+          const freeInput = document.querySelector('[data-testid="clarify-free-text-input"]');
+          if (freeInput && !freeInput.disabled) {
+            freeInput.focus();
+            freeInput.scrollIntoView({ block: 'nearest' });
+            if (document.activeElement === freeInput) {
+              lastFocusedKeyRef.current = clarifyKey;
+              return true;
+            }
+          }
+          return false;
+        };
+
+        const attempt = (retriesLeft = 12) => {
+          if (tryFocus()) return;
+          if (retriesLeft > 0) {
+            focusTimerRef.current = setTimeout(() => attempt(retriesLeft - 1), 25);
+          }
+        };
+
+        attempt(12);
       }
     }
-  }, [clarifyBlock, confirmSummaryBlock, showTour, busy]);
+
+    return () => {
+      if (focusTimerRef.current) {
+        clearTimeout(focusTimerRef.current);
+        focusTimerRef.current = null;
+      }
+    };
+  }, [clarifyBlock, confirmSummaryBlock, showTour, busy, inputText]);
 
   // Derived metrics for Right Panel (NFE-01: honest nulls/zeros, no sample 1.8km/450k)
   const stops = tour?.stops || [];

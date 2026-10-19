@@ -1,0 +1,74 @@
+{
+  "testedAt": "2026-10-19T09:36:05.920Z",
+  "cases": [
+    {
+      "id": "CASE-01",
+      "name": "Desktop 1280x800 first chip focused after Enter S0",
+      "pass": true,
+      "details": {
+        "tag": "BUTTON",
+        "testid": "clarify-option-scope:group"
+      }
+    },
+    {
+      "id": "CASE-02",
+      "name": "Mobile 390x844 first chip focused after Enter S0",
+      "pass": true,
+      "details": {
+        "tag": "BUTTON",
+        "testid": "clarify-option-scope:group",
+        "text": "Cả nhóm"
+      }
+    },
+    {
+      "id": "CASE-03",
+      "name": "Advances to next clarification and auto-focuses first option/input",
+      "pass": true,
+      "details": {
+        "questionText": "Bạn muốn bắt đầu lúc mấy giờ (buổi tối)? Chọn một giờ hoặc gõ giờ khác.",
+        "activeTag": "BUTTON",
+        "activeTestId": "clarify-option-time:18:00"
+      }
+    },
+    {
+      "id": "CASE-04",
+      "name": "Active composer draft is not stolen by clarify block",
+      "pass": true,
+      "details": {
+        "tag": "INPUT",
+        "testid": "guided-input",
+        "value": "Tôi muốn đổi địa điểm"
+      }
+    },
+    {
+      "id": "CASE-05",
+      "name": "Restored session preserves focus without stealing",
+      "pass": true,
+      "details": {
+        "tag": "BODY",
+        "testid": null
+      }
+    },
+    {
+      "id": "CASE-06",
+      "name": "Confirmation card transition focuses confirm-yes-btn",
+      "pass": true,
+      "details": {
+        "tag": "BUTTON",
+        "testid": "confirm-yes-btn",
+        "confirmYesExists": true
+      }
+    },
+    {
+      "id": "CASE-07",
+      "name": "Tour transition focuses google-maps-cta",
+      "pass": true,
+      "details": {
+        "tag": "A",
+        "testid": "google-maps-cta",
+        "isMapsCta": true,
+        "href": "https://www.google.com/maps/dir/?api=1&origin=21.0263%2C105.8522&destination=21.0296%2C105.8483&travelmode=walking&waypoints=21.0274%2C105.8509"
+      }
+    }
+  ]
+}
