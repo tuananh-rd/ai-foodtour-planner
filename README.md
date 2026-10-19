@@ -1,5 +1,7 @@
 # AI FoodTour Planner — conditional prototype
 
+> Current discovery-first upgrade: [requirements](docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md), [contract](docs/DISCOVERY_ASSISTANT_CONTRACT.md), [task board](docs/reports/DISCOVERY_ASSISTANT_BOARD.md). Tavily/web lookup is retired; existing credentials/ledgers are preserved but unused. Discovery chat no longer requires a complete tour profile. Live Gemini acceptance is tracked separately from synthetic/rules tests.
+
 Đọc [đánh giá dữ liệu](docs/ASSESSMENT.vi.md), [kế hoạch và phân công](docs/PLAN.vi.md), [audit đầy đủ](docs/audit.json).
 
 ## Chạy cục bộ

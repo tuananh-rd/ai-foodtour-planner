@@ -1,5 +1,7 @@
 # Approved online assistant implementation — 2026-10-19
 
+> HISTORICAL BOARD: superseded by DISCOVERY_ASSISTANT_BOARD.md and direct user requirements. Tavily runtime and setup/probe scripts are retired; do not execute prior web-search instructions. Counts and URLs below describe old builds, not current discovery acceptance.
+
 ## Latest checkpoint (supersedes historical rows below)
 
 Live setup follow-up at source d1d989f: local key metadata validated (exactly one nonempty gitignored entry), opt-in/free-only flags enabled locally, persistent ledger initialized/preserved with caps1/day and3/month without increasing old caps; Gemini untouched/0 calls. Real /usage HTTP200 recognizes supported free plan but account.paygo_limit=null and key.limit=null. Existing account gate rejects these unknown limits: live search BLOCKED,0 POST,0 local credit delta, no citations. One additional read-only schema diagnostic confirmed the null fields; no retries/guard changes/account edits. Evidence online-assistant/tavily-live-smoke.json; synthetic/rules URL3060 remains, API8060 reloads local configuration. No product source/UI change or full-suite rerun.

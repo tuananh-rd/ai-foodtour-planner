@@ -5,9 +5,9 @@ Direct user request2026-10-19. Baselinebe2bb8f; rules and requirements supersede
 | Phase | Owner | State | Gate |
 |---|---|---|---|
 | D0 requirements/contracts | Codex | DONE | Full attachment read/archived; direct instructions distinguished; discovery-v1 frozen |
-| D1 state/tools/selection | Codex | IMPLEMENTING | Validated tools, bounded local search/details/compare, versioned profile/selection persistence without DB migration |
+| D1 state/tools/selection | Codex | IMPLEMENTED, INTEGRATION PENDING | Commits2a0a1f7/249e267; validated tools, bounded local search/details/compare, versioned profile/selection and SQLite persistence, legacy explicit/allergy obligations preserved without copying assumed defaults |
 | D2 natural UI / remove web | Antigravity | REVIEW FIXES RUNNING | Initial8256a2d mocked20/20/build is not visual acceptance: independent screenshot review found unstyled shell and invented initial values. Current task task_6d373f53c224 / ctx_fd0058920726 fixes those issues plus timeout/draft/modal/drawer behavior; explicit ownership ACK received. |
-| D3 Gemini + confirmation/planner | Codex | PENDING D1 | Single native function-calling loop with existing budgets, strict user confirmation and allergy gates; no silent tool success |
+| D3 Gemini + confirmation/planner | Codex | IMPLEMENTED, LIVE NOT TESTED | Single native function-calling loop with existing budgets, strict user confirmation/allergy gates; protocol/privacy/race tests mock only |
 | D4 runtime retirement/integration | Codex + affected implementer | PENDING D1–3 | No active Tavily route/provider dependency, source provenance retained; endpoint/default UI switch reviewed |
 | D5 acceptance | Antigravity QA, Codex independent review | PENDING | Required conversational scenarios, target tests then integrated E2E/build1440/390, honest synthetic/mock/live/data coverage |
 
