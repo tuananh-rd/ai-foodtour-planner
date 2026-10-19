@@ -172,6 +172,26 @@ export async function fetchWithTimeout(url, init = {}, timeoutMs = 15000) {
 }
 
 /**
+ * Helper to validate minimal discovery-v1 view shape.
+ * Rejects non-contract or malformed 200 responses before they reach state.
+ */
+export function validateDiscoveryViewShape(view, statusCode = 200) {
+  if (!view || typeof view !== 'object' || Array.isArray(view)) {
+    throw new DiscoveryApiError('bad_response', 'Dữ liệu phản hồi rỗng hoặc không phải đối tượng JSON.', view, statusCode);
+  }
+  if (view.contract !== 'discovery-v1') {
+    throw new DiscoveryApiError('bad_response', `Hợp đồng phản hồi không hợp lệ: mong đợi 'discovery-v1', nhận '${view.contract}'.`, view, statusCode);
+  }
+  if (!view.session_id || typeof view.session_id !== 'string') {
+    throw new DiscoveryApiError('bad_response', 'Dữ liệu phản hồi thiếu trường session_id hợp lệ.', view, statusCode);
+  }
+  if (typeof view.revision !== 'number') {
+    throw new DiscoveryApiError('bad_response', 'Dữ liệu phản hồi thiếu trường revision hợp lệ.', view, statusCode);
+  }
+  return view;
+}
+
+/**
  * GET /v1/sessions/{id}/assistant
  * Returns current discovery assistant view.
  */
@@ -198,13 +218,25 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '', option
   try {
     body = await res.json();
   } catch (jsonErr) {
-    if (jsonErr instanceof DiscoveryApiError) {
+    if (jsonErr instanceof DiscoveryApiError || jsonErr?.name === 'AbortError') {
       throw jsonErr;
     }
-    body = null;
+    if (!res.ok) {
+      body = null;
+    } else {
+      throw new DiscoveryApiError(
+        'bad_response',
+        `Phản hồi từ máy chủ không hợp lệ (mã ${res.status}, dữ liệu không phải JSON). Vui lòng thử lại.`,
+        null,
+        res.status
+      );
+    }
   }
 
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new DiscoveryApiError('unauthorized', body?.message || 'Phiên làm việc chưa được xác thực (401).', body, 401);
+    }
     if (res.status === 404) {
       throw new DiscoveryApiError('session_not_found', 'Phiên làm việc không tồn tại hoặc đã hết hạn (404). Vui lòng tạo phiên mới.', body, 404);
     }
@@ -217,7 +249,7 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '', option
     throw new DiscoveryApiError(code, msg, body, res.status, body?.latest_revision);
   }
 
-  return body;
+  return validateDiscoveryViewShape(body, res.status);
 }
 
 /**
@@ -261,13 +293,25 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
   try {
     body = await res.json();
   } catch (jsonErr) {
-    if (jsonErr instanceof DiscoveryApiError) {
+    if (jsonErr instanceof DiscoveryApiError || jsonErr?.name === 'AbortError') {
       throw jsonErr;
     }
-    body = null;
+    if (!res.ok) {
+      body = null;
+    } else {
+      throw new DiscoveryApiError(
+        'bad_response',
+        `Phản hồi từ máy chủ không hợp lệ (mã ${res.status}, dữ liệu không phải JSON). Vui lòng thử lại.`,
+        null,
+        res.status
+      );
+    }
   }
 
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new DiscoveryApiError('unauthorized', body?.message || 'Phiên làm việc chưa được xác thực (401).', body, 401);
+    }
     if (res.status === 409) {
       const latestRev = body?.latest_revision || body?.revision || null;
       throw new DiscoveryApiError(
@@ -287,7 +331,7 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
     throw new DiscoveryApiError(code, msg, body, res.status, body?.latest_revision);
   }
 
-  return body;
+  return validateDiscoveryViewShape(body, res.status);
 }
 
 /**
@@ -328,13 +372,25 @@ export async function sendDiscoveryAction(sessionId, revision, rawAction, sessio
   try {
     body = await res.json();
   } catch (jsonErr) {
-    if (jsonErr instanceof DiscoveryApiError) {
+    if (jsonErr instanceof DiscoveryApiError || jsonErr?.name === 'AbortError') {
       throw jsonErr;
     }
-    body = null;
+    if (!res.ok) {
+      body = null;
+    } else {
+      throw new DiscoveryApiError(
+        'bad_response',
+        `Phản hồi từ máy chủ không hợp lệ (mã ${res.status}, dữ liệu không phải JSON). Vui lòng thử lại.`,
+        null,
+        res.status
+      );
+    }
   }
 
   if (!res.ok) {
+    if (res.status === 401) {
+      throw new DiscoveryApiError('unauthorized', body?.message || 'Phiên làm việc chưa được xác thực (401).', body, 401);
+    }
     if (res.status === 409) {
       const latestRev = body?.latest_revision || body?.revision || null;
       throw new DiscoveryApiError(
@@ -354,7 +410,7 @@ export async function sendDiscoveryAction(sessionId, revision, rawAction, sessio
     throw new DiscoveryApiError(code, msg, body, res.status, body?.latest_revision);
   }
 
-  return body;
+  return validateDiscoveryViewShape(body, res.status);
 }
 
 /**
@@ -469,4 +525,36 @@ export function confirmAction(confirmationId) {
     type: 'confirm',
     confirmation_id: String(confirmationId)
   };
+}
+
+/**
+ * Standard Vietnamese translations for discovery-v1 unknowns and evidence gaps.
+ * Preserves distinct unknowns without making safety claims.
+ */
+export const UNKNOWN_LABELS_VI = {
+  ingredient_allergy_safety: 'an toàn thành phần dị ứng',
+  allergy_ingredients: 'thành phần đánh giá dị ứng',
+  sweetness: 'độ ngọt món ăn',
+  dish_price: 'giá từng món ăn',
+  current_open_status: 'trạng thái mở cửa hiện tại',
+  hours: 'giờ mở cửa thực tế',
+  price_per_person: 'giá theo người',
+  route: 'tuyến đường thực tế',
+  route_time: 'thời gian di chuyển',
+  budget: 'chi phí theo ngân sách',
+  amenity: 'tiện ích quán',
+  parking: 'chỗ đỗ xe',
+  taste: 'khẩu vị'
+};
+
+export function formatUnknownLabel(key) {
+  if (!key || typeof key !== 'string') return '';
+  const trimmed = key.trim();
+  if (UNKNOWN_LABELS_VI[trimmed]) {
+    return UNKNOWN_LABELS_VI[trimmed];
+  }
+  if (/[àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđ]/i.test(trimmed)) {
+    return trimmed;
+  }
+  return trimmed.replace(/_/g, ' ');
 }

@@ -2,17 +2,25 @@
 
 import React from 'react';
 import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
+import { buildDiscoveryMapsUrl, buildDiscoveryLegUrls } from '../../../../lib/discoveryMaps';
 import { formatWarningMessage } from './ConfirmSummaryCard';
 import './guided-leaves.css';
 
 // One short sentence for the evidence gaps; every distinct unknown is kept, unrecognised ones keep their full readable text.
 const COMPACT_UNKNOWN = {
   allergy_ingredients: 'thành phần để đánh giá dị ứng',
+  ingredient_allergy_safety: 'an toàn thành phần dị ứng',
+  sweetness: 'độ ngọt món ăn',
+  dish_price: 'giá từng món ăn',
+  current_open_status: 'trạng thái mở cửa hiện tại',
   hours: 'giờ mở cửa',
   price_per_person: 'giá theo người',
   route: 'tuyến đường thực',
   route_time: 'thời gian di chuyển',
-  budget: 'chi phí theo ngân sách'
+  budget: 'chi phí theo ngân sách',
+  amenity: 'tiện ích quán',
+  parking: 'chỗ đỗ xe',
+  taste: 'khẩu vị'
 };
 
 function compactUnknowns(unknowns) {
@@ -36,13 +44,15 @@ function compactUnknowns(unknowns) {
  * - Stage eyebrow in terracotta (#CF542F): arrive time + stage label (MỞ ĐẦU, MÓN CHÍNH, TRÁNG MIỆNG)
  * - Venue name & rich details (price range, hours, address according to source)
  * - Lock badge & replace stop controls
- * - Dark CTA card with Free Google Maps Walking Directions URL
+ * - Dark CTA card with Free Google Maps Directions URL (honoring user origin & travel mode)
  * - Preserves ALL testids, handlers, allergy disclaimers, status badges, and Google Maps CTA
  */
 export default function GuidedTimeline({
   tour,
   allergies = [],
   lockedStops = [],
+  origin = null,
+  vehicle = null,
   onReplaceStop,
   onChangeStop,
   onAdjustStops,
@@ -55,53 +65,12 @@ export default function GuidedTimeline({
   const stops = tour.stops;
   const hasUnknowns = Array.isArray(tour.unknowns) && tour.unknowns.length > 0;
 
-  // Build Free Google Maps Directions URL (Full route up to 5 stops)
-  let mapsUrl = null;
-  if (stops.length > 0) {
-    const origin = `${stops[0].lat},${stops[0].lon}`;
-    const destination = `${stops[stops.length - 1].lat},${stops[stops.length - 1].lon}`;
-    const waypoints = stops.length > 2
-      ? stops.slice(1, -1).map((s) => `${s.lat},${s.lon}`).join('|')
-      : null;
+  // Build Free Google Maps Directions URL via discoveryMaps
+  const mapsUrlInfo = buildDiscoveryMapsUrl({ origin, stops, vehicle });
+  const mapsUrl = mapsUrlInfo?.url || null;
 
-    const query = new URLSearchParams({
-      api: '1',
-      origin,
-      destination,
-      travelmode: 'walking'
-    });
-    if (waypoints) {
-      query.set('waypoints', waypoints);
-    }
-    const candidateUrl = `https://www.google.com/maps/dir/?${query.toString()}`;
-    if (isValidGoogleMapsDirUrl(candidateUrl)) {
-      mapsUrl = candidateUrl;
-    }
-  }
-
-  // Build Per-Leg Walking URLs (NFE-07 mobile fallback)
-  const legUrls = [];
-  if (stops.length > 1) {
-    for (let i = 0; i < stops.length - 1; i++) {
-      const from = stops[i];
-      const to = stops[i + 1];
-      const q = new URLSearchParams({
-        api: '1',
-        origin: `${from.lat},${from.lon}`,
-        destination: `${to.lat},${to.lon}`,
-        travelmode: 'walking'
-      });
-      const u = `https://www.google.com/maps/dir/?${q.toString()}`;
-      if (isValidGoogleMapsDirUrl(u)) {
-        legUrls.push({
-          order: i + 1,
-          fromName: from.name,
-          toName: to.name,
-          url: u
-        });
-      }
-    }
-  }
+  // Build Per-Leg URLs (mobile fallback / detailed segments)
+  const legUrls = buildDiscoveryLegUrls({ origin, stops, vehicle });
 
   // Allergy label display
   const hasAllergies = Array.isArray(allergies) && allergies.length > 0;
@@ -342,13 +311,13 @@ export default function GuidedTimeline({
             data-testid="google-maps-disclosure"
             className="nn-maps-disclosure"
           >
-            ℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.
+            ℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.{mapsUrlInfo?.disclosureNote ? ` ${mapsUrlInfo.disclosureNote}` : ''}
           </p>
         </div>
       )}
 
       {/* Per-leg fallback links for mobile / multi-stop tours (NFE-07) */}
-      {legUrls.length > 0 && stops.length > 3 && (
+      {legUrls.length > 0 && (
         <details
           style={{
             background: 'var(--nn-card, #FFFEFA)',

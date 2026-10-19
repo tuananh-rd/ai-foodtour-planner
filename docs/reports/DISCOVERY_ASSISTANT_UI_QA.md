@@ -1,10 +1,11 @@
 # Báo cáo Kiểm thử Giao diện Trợ lý Khám phá (Discovery-First Assistant UI) — Warm Editorial Frame 1:145
 
 **Thời gian kiểm định ban đầu:** 2026-10-19T20:20:00+07:00  
-**Cập nhật khắc phục khiếm khuyết:** 2026-10-19T21:20:00+07:00  
+**Cập nhật đợt 1:** 2026-10-19T21:20:00+07:00  
+**Cập nhật đợt 2 (3 khiếm khuyết xác nhận):** 2026-10-19T21:45:00+07:00  
 **Người thực hiện:** Antigravity (Frontend & QA Implementer)  
 **Người điều phối / Tích hợp:** Codex (Coordinator & Backend/Contracts Owner)  
-**Nhiệm vụ:** `task_6d373f53c224` & `task_cbddafbb1462` | **Dispatch:** `ctx_fd0058920726` & `ctx_f0fa5d06505b`  
+**Nhiệm vụ:** `task_6d373f53c224`, `task_cbddafbb1462`, `task_8022215ea9fe` | **Dispatch:** `ctx_fd0058920726`, `ctx_f0fa5d06505b`, `ctx_5a722534e148`  
 **Hợp đồng mục tiêu:** `docs/DISCOVERY_ASSISTANT_CONTRACT.md` (`discovery-v1`)  
 **Yêu cầu cơ sở:** `docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md`  
 **Thiết kế chuẩn thẩm mỹ:** Khung Figma 1:145 "02 — Măm Măm / Warm editorial" (1440x1024, tệp gốc `docs/design/figma-warm-editorial-reference.png`)  
@@ -37,7 +38,7 @@
 5. **Kết quả kiểm thử tự động & Minh bạch giải phóng tiến trình:**
    - Bộ kiểm thử giao diện `qa/discovery-assistant/run_discovery_qa.mjs` chạy hoàn toàn trên các cổng cô lập (Web 13600, Mock API 18600, CDP 19800) xác nhận **26/26 bài kiểm tra đạt (100% PASS)** và kết xuất ảnh so sánh song song `side_by_side_comparison.png`.
    - **Minh bạch về sự cố tiến trình ban đầu:** Trong lần chạy đầu tiên, dù 26 assertions đã pass, tiến trình Node.js của test harness đã bị treo giữ event loop suốt 32 phút do các tiến trình con (`next start` và trình duyệt headless CDP) không tự giải phóng triệt để, buộc Điều phối viên Codex phải can thiệp cưỡng chế dừng tiến trình PID 25540. Sau đó, Antigravity đã bổ sung khối hàm `cleanup()` dọn dẹp toàn bộ process con và gọi `process.exit(0)`.
-   - **Bộ kiểm thử mục tiêu độc lập (`targeted_fixes_smoke.mjs`):** Để kiểm chứng 5 lỗi phát hiện trong phiên đánh giá mà không cần chạy lại toàn bộ harness tốn kém tài nguyên, Antigravity đã thiết kế bộ smoke test chuyên biệt kiểm tra: (1) timeout bao trùm việc đọc body, (2) logic chốt chặn phiên làm việc, (3) tính trung thực của schema số liệu `TourView.totals`, (4) luồng đổi điểm dừng sau tour qua các tool hợp lệ, và (5) khả năng thoát tiến trình sạch. Kết quả: **20/20 checks PASS trong 1.4s, 0 hanging listeners, clean exit 0**.
+   - **Lưu ý quan trọng về bản chất kiểm thử mục tiêu:** Bộ kiểm thử mục tiêu độc lập (`targeted_fixes_smoke.mjs`, hiện gồm **51/51 checks PASS**) là các bài kiểm tra **soi chiếu mã nguồn, kiểm thử logic client HTTP thực tế trên cổng local và cấu trúc Maps URL** (source inspection & HTTP client/URL logic smoke), **KHÔNG PHẢI** là kiểm thử thay thế trình duyệt thực tế (actual browser replacement / readiness verification). Kiểm định trình duyệt E2E tích hợp cuối cùng sẽ do Điều phối viên Codex thực hiện trong giai đoạn tích hợp toàn hệ thống.
    - Biên dịch sản xuất `next build` hoàn tất với **0 lỗi lint, 0 lỗi TypeScript/build**.
 
 ---
@@ -104,18 +105,19 @@ Dữ liệu chi tiết trích xuất từ `qa/discovery-assistant/evidence.json`
 
 ## 4. Danh sách tệp scoped đã cập nhật
 
-- `frontend/lib/discoveryApi.js`: Bổ sung timeout bao trùm cả quá trình đọc body (`res.json()`, `res.text()`), định dạng lỗi 422 chi tiết, ném `DiscoveryApiError('timeout')`.
-- `frontend/app/components/v2/guided/DiscoveryLayout.jsx`: Xây dựng lại hoàn chỉnh khung vỏ Warm editorial (Sidebar 232px, Canvas vàng `#F9C53D`, Card chat 668px), hợp đồng hồ sơ nullable, chốt chặn phiên làm việc nghiêm ngặt (chỉ cho phép nhập liệu khi có token và GET khởi tạo thành công), xử lý reset phiên lập tức, số liệu tour trung thực, và luồng thay thế điểm dừng sau tour.
+- `frontend/lib/discoveryApi.js`: Bổ sung timeout bao trùm cả quá trình đọc body (`res.json()`, `res.text()`), định dạng lỗi 422 chi tiết, ném `DiscoveryApiError('timeout')`, chuẩn hoá bắt lỗi JSON 200 malformed thành `bad_response`, bổ sung `validateDiscoveryViewShape`, và xuất khẩu từ điển dịch `UNKNOWN_LABELS_VI` / `formatUnknownLabel`.
+- `frontend/lib/discoveryMaps.js`: Mô-đun xây dựng liên kết Google Maps miễn phí và liên kết từng chặng (`buildDiscoveryMapsUrl`, `buildDiscoveryLegUrls`), hỗ trợ toạ độ xuất phát `origin`, chuyển đổi phương tiện (`walking`/`driving`), ghi chú xe máy trung thực, và bảo vệ điểm dừng đơn lẻ không bị trùng `origin=destination`.
+- `frontend/app/components/v2/guided/DiscoveryLayout.jsx`: Xây dựng lại hoàn chỉnh khung vỏ Warm editorial (Sidebar 232px, Canvas vàng `#F9C53D`, Card chat 668px), hợp đồng hồ sơ nullable, chốt chặn phiên làm việc nghiêm ngặt, bảo vệ `setView` không nhận null, truyền `origin`/`vehicle` xuống `GuidedTimeline`, và áp dụng `formatUnknownLabel` cho thẻ quán, ma trận so sánh, cửa sổ chi tiết.
 - `frontend/app/components/v2/guided/discovery-visual.css`: Thêm các luật responsive ẩn thanh tab mobile trên desktop, kiểu dáng cho banner chỉnh sửa điểm dừng sau tour (`.nn-edit-selection-banner`, `.nn-replace-target-tag`).
-- `frontend/app/components/v2/guided/GuidedTimeline.jsx`: Dán nhãn trung thực cho nút điều chỉnh điểm dừng (`✏️ Điều chỉnh điểm dừng`) thay vì nhãn sai lệch.
+- `frontend/app/components/v2/guided/GuidedTimeline.jsx`: Dán nhãn trung thực cho nút điều chỉnh điểm dừng (`✏️ Điều chỉnh điểm dừng`), nhận props `origin` và `vehicle`, tích hợp `discoveryMaps`, hiển thị ghi chú xe máy trung thực và các liên kết từng chặng.
 - `frontend/app/page.js`: Định tuyến dynamic import và truyền tham số session chuẩn xác.
 - `frontend/lib/api.js`: Loại bỏ toàn bộ nhánh tra cứu `body.web_search` cũ; từ chối mọi yêu cầu có `web_search !== undefined && web_search !== false` bằng mã HTTP 422 `validation_error`.
 - `frontend/app/components/v2/guided/GuidedLayout.jsx`: Gỡ bỏ hoàn toàn hộp kiểm/UI opt-in tra web Tavily (`.nn-web-optin-container`), tham số `webSearch` trong lượt gửi, và khối hiển thị kết quả `OnlineSearchResults`.
 - `frontend/app/components/v2/guided/OnlineSearchResults.jsx`: Đã xoá (`git rm`) tệp component kết quả tra web ngoài đã ngừng sử dụng.
 - `frontend/app/components/v2/guided/online-assistant.css`: Đã xoá (`git rm`) tệp kiểu CSS tra web ngoài đã ngừng sử dụng.
 - `qa/discovery-assistant/run_discovery_qa.mjs`: Bộ test cô lập 26 kịch bản kiểm thử kèm bộ tạo ảnh so sánh song song, dọn dẹp tiến trình con và chuẩn hoá fixture theo schema `TourView.totals`.
-- `qa/discovery-assistant/targeted_fixes_smoke.mjs`: Bộ test mục tiêu độc lập kiểm chứng 5 lỗi phát hiện trong phiên đánh giá, thực thi nhanh 1.4s và thoát tiến trình sạch (clean exit 0).
-- `qa/discovery-assistant/evidence.json`: Bằng chứng kết quả đo lường và trạng thái kiểm thử (26 UI tests + 20 targeted smoke checks PASS).
+- `qa/discovery-assistant/targeted_fixes_smoke.mjs`: Bộ test mục tiêu độc lập kiểm chứng logic client HTTP, Maps URLs và việt hoá yếu tố chưa xác minh (51/51 checks PASS), thực thi nhanh 1.9s và thoát tiến trình sạch (clean exit 0).
+- `qa/discovery-assistant/evidence.json`: Bằng chứng kết quả đo lường và trạng thái kiểm thử (26 UI browser tests + 51 targeted client/URL smoke checks PASS).
 - `docs/reports/DISCOVERY_ASSISTANT_UI_QA.md`: Báo cáo kiểm định hoàn thiện.
 
 ---
@@ -176,4 +178,50 @@ Thực hiện theo điều phối tại `task_cbddafbb1462` / `ctx_f0fa5d06505b`
      4. Kiểm tra luồng hành động thay thế điểm dừng và cổng xác nhận (6/6 trường hợp đạt).
      5. Kiểm tra giải phóng tài nguyên và thoát tiến trình tự động (`process.exit(0)`).
    - *Kết quả thực thi:* **20/20 PASS**, thời gian chạy 1.4s, 0 listener bị treo, thoát sạch với mã exit 0. Đã cập nhật kết quả vào `qa/discovery-assistant/evidence.json`.
+
+---
+
+## 7. Khắc phục triệt để 3 khiếm khuyết xác nhận bổ sung (`task_8022215ea9fe` / `ctx_5a722534e148`)
+
+1. **Khiếm khuyết 1 — Xây dựng liên kết Google Maps miễn phí & Liên kết từng chặng trung thực:**
+   - *Vấn đề:* `GuidedTimeline` trước đây gán cứng điểm xuất phát là quán đầu tiên và phương tiện là đi bộ, không sử dụng toạ độ xuất phát `origin` hay phương tiện `vehicle` trong hồ sơ. Khi chỉ có 1 điểm dừng mà không có origin, logic cũ có thể tạo ra liên kết có `origin=destination`.
+   - *Khắc phục:*
+     - Tạo mô-đun `frontend/lib/discoveryMaps.js` độc lập với hai hàm chính: `buildDiscoveryMapsUrl` và `buildDiscoveryLegUrls`.
+     - `DiscoveryLayout` truyền toạ độ xuất phát thực tế `view.profile?.origin` và phương tiện `view.profile?.vehicle` vào `GuidedTimeline`.
+     - Nếu có toạ độ người dùng `origin`: liên kết bắt đầu từ `origin`, bao gồm **toàn bộ các điểm dừng theo đúng thứ tự** thông qua tham số `waypoints` (các điểm từ 1 đến n-1) và `destination` (điểm cuối cùng). Với 1 điểm dừng: lộ trình đi từ `origin` tới quán 1 (đảm bảo `origin !== destination`).
+     - Nếu không có `origin` (lược đồ tương thích ngược): tuyệt đối không bịa toạ độ GPS; với 1 điểm dừng chỉ tạo liên kết dẫn thẳng tới điểm đến `destination` (không sinh `origin=destination`); với từ 2 điểm trở lên lộ trình đi từ quán 1 qua các waypoints tới quán cuối.
+     - Phương tiện di chuyển: `walking` cho đi bộ, `driving` cho ô tô, taxi và xe máy; bổ sung ghi chú minh bạch trong phần giải trình: *"Google Maps hiển thị lộ trình ô tô tương đương cho xe máy."*
+     - Liên kết từng chặng (`legUrls`): bao gồm chặng từ điểm xuất phát của người dùng đến quán đầu tiên (nếu có `origin`), nối tiếp là các chặng giữa các điểm dừng kế tiếp nhau.
+     - Tất cả các liên kết sinh ra đều tuân thủ và vượt qua hàm kiểm định `isValidGoogleMapsDirUrl`.
+
+2. **Khiếm khuyết 2 — Độ bền vững HTTP Client & Chống `setView(null)` trong `discoveryApi.js`:**
+   - *Vấn đề:* `getDiscoveryAssistant`, `sendDiscoveryMessage`, và `sendDiscoveryAction` trước đây bắt tất cả lỗi `res.json()` và gán `body = null`, dẫn đến khi máy chủ trả mã 200 kèm nội dung lỗi/HTML proxy hoặc hỏng cú pháp JSON thì hàm trả về `null` và làm `setView(null)`. Đồng thời `AbortError` của caller có nguy cơ bị nuốt thành `null`.
+   - *Khắc phục:*
+     - Bảo toàn lỗi `AbortError` (khi caller chủ động huỷ) và `DiscoveryApiError('timeout')` (khi quá hạn đọc body) để ném ra đúng ngữ cảnh.
+     - Nếu phản hồi có mã HTTP 200 nhưng nội dung không phải JSON: ném ngay lỗi dễ hiểu `DiscoveryApiError('bad_response', 'Phản hồi từ máy chủ không hợp lệ (mã 200, dữ liệu không phải JSON). Vui lòng thử lại.', null, 200)`.
+     - Thêm hàm `validateDiscoveryViewShape`: xác thực cấu trúc hợp đồng tối thiểu `discovery-v1` (bắt buộc có `contract === 'discovery-v1'`, `session_id` dạng chuỗi và `revision` dạng số) trước khi trả về.
+     - Xử lý mã 401 rõ ràng thành `DiscoveryApiError('unauthorized')`.
+     - Trong `DiscoveryLayout.jsx`, chốt chặn toàn bộ các lời gọi `setView(data)` bằng điều kiện `if (data && typeof data === 'object')`, tuyệt đối ngăn chặn việc `setView(null)`.
+     - Kiểm thử trực tiếp các hàm xuất xưởng (`getDiscoveryAssistant`, `sendDiscoveryMessage`, `sendDiscoveryAction`) bằng máy chủ HTTP Node.js cục bộ trên 7 kịch bản mạng thực tế: nghẽn stream body, HTML trên 200, sai schema trên 200, 200 hợp lệ, 401 unauthorized, 500 server error, và tín hiệu AbortController.
+
+3. **Khiếm khuyết 3 — Việt hoá toàn diện các mã yếu tố chưa xác minh (Raw Unknowns Translation):**
+   - *Vấn đề:* Các mã nội bộ tiếng Anh như `ingredient_allergy_safety`, `sweetness`, `dish_price`, `current_open_status` hiển thị nguyên dạng mã kỹ thuật trên thẻ quán ăn, bảng so sánh và cửa sổ chi tiết.
+   - *Khắc phục:*
+     - Định nghĩa từ điển chuyển đổi `UNKNOWN_LABELS_VI` và hàm `formatUnknownLabel` trong `discoveryApi.js`:
+       - `ingredient_allergy_safety` → `"an toàn thành phần dị ứng"` (giữ nguyên tính đơn nhất của yếu tố, tuyệt đối không đưa ra tuyên bố an toàn).
+       - `sweetness` → `"độ ngọt món ăn"`.
+       - `dish_price` → `"giá từng món ăn"`.
+       - `current_open_status` → `"trạng thái mở cửa hiện tại"`.
+       - `hours` → `"giờ mở cửa thực tế"`.
+       - `allergy_ingredients` → `"thành phần đánh giá dị ứng"`.
+     - Cập nhật hiển thị đồng bộ trên thẻ quán ăn (`⚠ Chưa rõ: ...`), ma trận so sánh (`view.comparison.unknowns.map(formatUnknownLabel)`), và cửa sổ chi tiết quán (`detailVenue.unknowns`).
+     - Giữ nguyên toàn vẹn khung vỏ thẩm mỹ Warm Editorial (Frame 1:145).
+
+4. **Kết quả kiểm thử mục tiêu độc lập (`targeted_fixes_smoke.mjs`):**
+   - Bộ kiểm thử độc lập đã chạy và vượt qua toàn bộ **51/51 bài kiểm tra (100% PASS)** trong 1.9 giây:
+     - 17/17 checks về Google Maps URLs và Per-leg URLs.
+     - 7/7 checks về Real Local HTTP Client (stalled body timeout, bad JSON 200, non-contract shape 200, valid shape 200, 401, 500, abort).
+     - 7/7 checks về việt hoá yếu tố chưa xác minh (unknowns translation).
+     - 5/5 checks về chốt chặn phiên làm việc và schema số liệu tổng hợp `TourView.totals`.
+     - 15/15 checks kiểm chứng giải phóng tài nguyên tiến trình và thoát sạch mã 0.
 

@@ -16,6 +16,8 @@ import {
   createItineraryAction,
   reviseItineraryAction,
   confirmAction,
+  UNKNOWN_LABELS_VI,
+  formatUnknownLabel,
   DiscoveryApiError
 } from '../../../../lib/discoveryApi';
 import './guided-visual.css';
@@ -214,7 +216,7 @@ export default function DiscoveryLayout({
     try {
       const data = await getDiscoveryAssistant(sid, token, { signal: ac.signal });
       if (currentToken !== requestTokenRef.current) return;
-      if (data) {
+      if (data && typeof data === 'object') {
         setView(data);
         setSessionError(null);
         setInitialLoaded(true);
@@ -364,7 +366,9 @@ export default function DiscoveryLayout({
         sessionToken
       );
       if (currentToken !== requestTokenRef.current) return;
-      setView(updatedView);
+      if (updatedView && typeof updatedView === 'object') {
+        setView(updatedView);
+      }
     } catch (err) {
       if (currentToken !== requestTokenRef.current) return;
       if (err.status === 409) {
@@ -408,7 +412,9 @@ export default function DiscoveryLayout({
         sessionToken
       );
       if (currentToken !== requestTokenRef.current) return;
-      setView(updatedView);
+      if (updatedView && typeof updatedView === 'object') {
+        setView(updatedView);
+      }
       if (updatedView?.tour) {
         setEditingSelectionAfterTour(false);
         setReplaceTargetStop(null);
@@ -1202,7 +1208,7 @@ export default function DiscoveryLayout({
                                       color: '#E65100'
                                     }}
                                   >
-                                    ⚠ {u === 'allergy_ingredients' ? 'Chưa rõ thành phần dị ứng' : u === 'hours' ? 'Chưa rõ giờ mở' : u}
+                                    ⚠ Chưa rõ: {formatUnknownLabel(u)}
                                   </span>
                                 ))}
                               </div>
@@ -1320,7 +1326,7 @@ export default function DiscoveryLayout({
 
                   {Array.isArray(view.comparison.unknowns) && view.comparison.unknowns.length > 0 && (
                     <div style={{ marginTop: '10px', fontSize: '11.5px', color: '#8A4B12' }}>
-                      ⚠ Các yếu tố chưa có bằng chứng xác minh: {view.comparison.unknowns.join(', ')}.
+                      ⚠ Các yếu tố chưa có bằng chứng xác minh: {view.comparison.unknowns.map(formatUnknownLabel).join(', ')}.
                     </div>
                   )}
                 </div>
@@ -1577,6 +1583,8 @@ export default function DiscoveryLayout({
                     tour={view.tour}
                     allergies={view.profile?.allergies || []}
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
+                    origin={view.profile?.origin}
+                    vehicle={view.profile?.vehicle}
                     onReplaceStop={(stop) => handleStartStopReplacement(stop)}
                     onChangeStop={(stop) => handleStartStopReplacement(stop)}
                     onAdjustStops={() => handleOpenSelectionEditor()}
@@ -1819,7 +1827,7 @@ export default function DiscoveryLayout({
                   <strong>Yếu tố chưa có bằng chứng:</strong>
                   <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
                     {detailVenue.unknowns.map((u, idx) => (
-                      <li key={idx}>{u}</li>
+                      <li key={idx}>Chưa rõ {formatUnknownLabel(u)}</li>
                     ))}
                   </ul>
                 </div>
