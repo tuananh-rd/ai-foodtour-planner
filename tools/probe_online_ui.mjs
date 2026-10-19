@@ -89,15 +89,16 @@ try{
     if(buttonMarker){await ev(`document.querySelector('.maplibregl-marker').focus()`);await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await pause(200);record('keyboard marker opens popup '+width,await ev(`!!document.querySelector('.maplibregl-popup')`));}
     await capture('tour-map-'+width);
     if(width===390){await ev(`document.querySelector('[data-testid="pilot-map-container"]')?.scrollIntoView({block:'center'})`);await capture('tour-map-region-'+width,true);}
-    await cdp('Page.reload');await until(()=>exists('guided-timeline'));record('tour reload retained '+width,await ev(`document.querySelectorAll('[data-testid^="timeline-stop-card-"]').length===3`));
     const names=()=>ev(`Array.from(document.querySelectorAll('.nn-timeline-card-title')).map(e=>e.textContent.trim())`);
     const originalNames=await names();
     await click(sel('stop-replace-btn-0'));await until(()=>exists('replace-modal-cancel-btn'));
     await click(sel('replace-modal-cancel-btn'));record('cancel replacement preserves tour '+width,JSON.stringify(await names())===JSON.stringify(originalNames));
     await click(sel('stop-replace-btn-0'));await click(sel('replace-modal-confirm-btn'));await idle();
     const replaced=await exists('replace-modal-done-btn');
-    if(replaced){await click(sel('replace-modal-done-btn'));const changed=await names();record('replace changes only requested stop '+width,changed.length===3&&changed[0]!==originalNames[0]&&changed.slice(1).every((n,i)=>n===originalNames[i+1]));}
+    if(replaced){await click(sel('replace-modal-done-btn'));await pause(300);const changed=await names();record('replace changes only requested stop '+width,changed.length===3&&changed[0]!==originalNames[0]&&changed.slice(1).every((n,i)=>n===originalNames[i+1]));}
     else record('replace returns explicit failure preserving tour '+width,JSON.stringify(await names())===JSON.stringify(originalNames)&&await ev(`!!document.querySelector('[role="alert"]')`));
+    const currentNames=await names();record('map markers synchronize replacement '+width,await ev(`(()=>{const labels=Array.from(document.querySelectorAll('.maplibregl-marker')).map(e=>e.getAttribute('aria-label'));return ${JSON.stringify(currentNames)}.every(name=>labels.some(label=>label?.endsWith(name)));})()`));
+    await cdp('Page.reload');await until(()=>exists('guided-timeline'));record('tour reload retained '+width,await ev(`document.querySelectorAll('[data-testid^="timeline-stop-card-"]').length===3`));
     await mobileChat();await until(()=>exists('guided-input'));await click(sel('online-search-toggle'));
     await send('giờ mở cửa phở quanh Hồ Gươm');await until(()=>exists('online-search-results'));
     record('missing Tavily key honest disabled '+width,await exists('web-search-status-disabled'));
