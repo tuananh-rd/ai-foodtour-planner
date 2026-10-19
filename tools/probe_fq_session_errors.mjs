@@ -17,7 +17,7 @@ if(!free)throw Error('Dedicated browser port occupied; no process stopped');
 if((await(await fetch(api+'/health')).json()).dataset_source!=='synthetic')throw Error('Synthetic-only capture guard');
 const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'fq-session-errors-'));
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking',`--remote-debugging-port=${port}`,`--user-data-dir=${scratch}`,'about:blank'],{stdio:'ignore',windowsHide:true});
-let ws, mode=null, id=0; const pending=new Map(), heldCreates=[]; const counts={startupFaults:0,restoreFaults:0,creates:0};
+let ws, mode=null, id=0, failedWebRequests=0, lastWebRequest=null; const pending=new Map(), heldCreates=[]; const counts={startupFaults:0,restoreFaults:0,creates:0};
 const record=(name,pass)=>{checks.push({name,pass:!!pass});console.log(JSON.stringify(checks.at(-1)));};
 try{
   let target;
@@ -28,7 +28,9 @@ try{
     if(m.method!=='Fetch.requestPaused')return;
     const p=m.params,u=new URL(p.request.url),method=p.request.method;
     if(method==='POST'&&u.pathname==='/v1/sessions')counts.creates++;
-    if(mode==='delay_startup'&&method==='POST'&&u.pathname==='/v1/sessions'){
+    if(method==='POST'&&/\/chat$/.test(u.pathname)){try{lastWebRequest=JSON.parse(p.request.postData||'{}');}catch{}}
+    if(mode==='web_failure'&&method==='POST'&&/\/chat$/.test(u.pathname)){failedWebRequests++;await cdp('Fetch.failRequest',{requestId:p.requestId,errorReason:'InternetDisconnected'});
+    }else if(mode==='delay_startup'&&method==='POST'&&u.pathname==='/v1/sessions'){
       heldCreates.push(p.requestId);
     }else if(mode==='startup'&&method==='POST'&&u.pathname==='/v1/sessions'){
       counts.startupFaults++;await cdp('Fetch.failRequest',{requestId:p.requestId,errorReason:'ConnectionFailed'});
@@ -92,6 +94,20 @@ try{
   record('numeric per-leg limit is visibly understood before reload',await hasLegRow());
   await cdp('Page.reload');await until(()=>ev(`!!document.querySelector('[data-testid="understood-card"]')`));
   record('reload visibly restores the stated per-leg limit',await hasLegRow());
+  // Fail one explicitly opted-in search transport, then retry via the actual composer Enter key.
+  await ev('sessionStorage.clear()');await cdp('Page.reload');
+  await until(()=>ev(`!!sessionStorage.getItem('foodtour_chat_session_id')&&!document.querySelector('[aria-busy="true"]')&&!!document.querySelector('[data-testid="guided-input"]')`));await pause(300);
+  const query='ph? quanh H? G??m';
+  const togglePoint=await ev(`(()=>{const e=document.querySelector('[data-testid="web-search-optin-checkbox"]');e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+  await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...togglePoint});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...togglePoint});
+  mode='web_failure';await ev(`document.querySelector('[data-testid="guided-input"]').focus()`);await cdp('Input.insertText',{text:query});
+  const pressEnter=async()=>{await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});};
+  await pressEnter();await until(()=>failedWebRequests>0);await pause(1000);
+  record('opted-in web transport failure actually injected',failedWebRequests===1&&lastWebRequest?.web_search===true);
+  record('failed web preserves draft and opt-in for manual retry',await ev(`document.querySelector('[data-testid="guided-input"]').value===${JSON.stringify(query)}&&document.querySelector('[data-testid="web-search-optin-checkbox"]').checked`));
+  record('web transport failure is visible',await ev(`!!document.querySelector('[role="alert"]')`));await capture('codex-web-transport-failure');
+  mode=null;lastWebRequest=null;await ev(`document.querySelector('[data-testid="guided-input"]').focus()`);await pressEnter();await until(()=>lastWebRequest!==null);await pause(500);
+  record('manual Enter retries original query in web mode',lastWebRequest?.text===query&&lastWebRequest?.web_search===true);
   const output={synthetic:true,web,api,method:'Actual Chrome UI; labelled failure-only CDP interception',checks};
   fs.writeFileSync(path.join(os.tmpdir(),'foodtour-fq-session-errors.json'),JSON.stringify(output,null,2));
   console.log(JSON.stringify({checks:checks.length,failed:checks.filter(x=>!x.pass).length}));
