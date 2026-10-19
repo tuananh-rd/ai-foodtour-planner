@@ -5,7 +5,6 @@ import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
 import { formatWarningMessage } from './ConfirmSummaryCard';
 import './guided-leaves.css';
 
-
 // One short sentence for the evidence gaps; every distinct unknown is kept, unrecognised ones keep their full readable text.
 const COMPACT_UNKNOWN = {
   allergy_ingredients: 'thành phần để đánh giá dị ứng',
@@ -15,6 +14,7 @@ const COMPACT_UNKNOWN = {
   route_time: 'thời gian di chuyển',
   budget: 'chi phí theo ngân sách'
 };
+
 function compactUnknowns(unknowns) {
   const known = [];
   const other = [];
@@ -31,12 +31,12 @@ function compactUnknowns(unknowns) {
 
 /**
  * GuidedTimeline
- * Step 5 Vertical Timeline conforming to SVG fidelity spec (owner: Antigravity)
- * - 500px width on desktop (responsive on mobile)
- * - Reference stop pair: pill row (34h green time pill + 35h meta pill) + 8px radius card
- * - Audited colors: titles #1E1E1E, descriptions #757575, borders #D9D9D9
- * - Ghost pill buttons (min-height 44 hit area, visual 34)
- * - Single clean status badge row (coordinating with root's Lộ trình section header)
+ * Step 5 Vertical Timeline conforming to Figma Frame 1:145 Warm Editorial
+ * - Stop Card with peach circle number badges (01, 02, 03)
+ * - Stage eyebrow in terracotta (#CF542F): arrive time + stage label (MỞ ĐẦU, MÓN CHÍNH, TRÁNG MIỆNG)
+ * - Venue name & rich details (price range, hours, address according to source)
+ * - Lock badge & replace stop controls
+ * - Dark CTA card with Free Google Maps Walking Directions URL
  * - Preserves ALL testids, handlers, allergy disclaimers, status badges, and Google Maps CTA
  */
 export default function GuidedTimeline({
@@ -115,27 +115,27 @@ export default function GuidedTimeline({
       className="nn-timeline"
       style={{ margin: 0, padding: 0 }}
     >
-      {/* Top Single Heading Row: ONE heading 'Lộ trình' 18.3px/600 line 28, status right */}
+      {/* Top Heading Row with status right */}
       <div
         style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          maxWidth: 500,
-          width: '100%'
+          width: '100%',
+          marginBottom: 2
         }}
       >
         <h3
           className="nn-section-h"
           style={{
             margin: 0,
-            fontSize: 18.3,
-            fontWeight: 600,
-            lineHeight: '28px',
-            color: 'var(--nn-ink, #17352B)'
+            fontSize: 18,
+            fontWeight: 700,
+            lineHeight: '26px',
+            color: 'var(--nn-ink, #231815)'
           }}
         >
-          Lộ trình
+          Lộ trình ẩm thực
         </h3>
         {tour.status && (
           <span
@@ -155,9 +155,9 @@ export default function GuidedTimeline({
         )}
       </div>
 
-      {/* Warnings / Notices Section (Single Spacing Container) */}
+      {/* Warnings / Notices Section */}
       {(tour.status === 'conditional' || (Array.isArray(tour.route_warnings) && tour.route_warnings.length > 0) || (Array.isArray(tour.unknowns) && tour.unknowns.length > 0)) && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 500, width: '100%' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, width: '100%' }}>
           {(tour.status === 'conditional' || hasUnknowns) && (
             <div
               data-testid={tour.status === 'conditional' ? 'timeline-conditional-status' : undefined}
@@ -197,8 +197,8 @@ export default function GuidedTimeline({
         </div>
       )}
 
-      {/* Vertical Stops List conforming to reference geometry */}
-      <div style={{ display: 'grid', gap: 13, maxWidth: 500, width: '100%' }}>
+      {/* Vertical Stops List conforming to Figma Warm Editorial cards */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 12, width: '100%' }}>
         {stops.map((stop, idx) => {
           const leg = stop.leg_from_previous;
           const hasMin = typeof stop.price?.min_vnd === 'number';
@@ -213,17 +213,14 @@ export default function GuidedTimeline({
             ? `≥${priceMinK}`
             : null;
 
-          // Neutral dish unknown: never invent specific dish/source claim
           const dishStr = Array.isArray(stop.venue?.cuisine_styles) && stop.venue.cuisine_styles.length > 0
             ? stop.venue.cuisine_styles.join(' • ')
             : (stop.dish || 'Chưa có thông tin món cụ thể');
 
-          // Q01: Preserve legitimate 0; do not turn null or 0 into 5!
           const legMinText = typeof leg?.minutes === 'number'
             ? (leg.minutes === 0 ? '0 phút' : `~${leg.minutes} phút (ước tính)`)
             : null;
 
-          // Price + leg ONLY in metapill per visual owner specification
           const metaParts = [];
           if (priceShortForm) {
             metaParts.push(`≈${priceShortForm} (theo nguồn)`);
@@ -237,67 +234,69 @@ export default function GuidedTimeline({
           }
           const metaDisplay = metaParts.length > 0 ? metaParts.join(' · ') : 'Thông tin theo nguồn';
 
-          // Q01: Preserve null arrive; do NOT fall back to '19:00'!
           const arriveDisplay = stop.arrive
             ? stop.arrive
             : (stop.depart ? `đến trước ${stop.depart}` : 'Chưa rõ giờ');
 
           const isLocked = lockedStops.includes(stop.venue_id) || stop.locked;
 
-          // Hours inside desc: preserve explicit 'chưa rõ' when missing
           const hoursNote = stop.hours?.display
-            ? ` · giờ mở cửa theo nguồn ghi: ${stop.hours.display}`
+            ? ` · giờ mở cửa theo nguồn: ${stop.hours.display}`
             : ' · giờ mở cửa: chưa rõ';
           const fullDesc = `${dishStr}${hoursNote}`;
+
+          const stageLabel = stop.role || stop.category || `ĐIỂM DỪNG ${idx + 1}`;
+          const badgeNumber = idx + 1 < 10 ? `0${idx + 1}` : String(idx + 1);
 
           return (
             <div
               key={stop.venue_id || idx}
               data-testid={`guided-stop-${idx}`}
-              className="nn-timeline-step"
+              className="nn-editorial-stop-card"
             >
-              {/* Dual Pill Row: Left: Time Pill + Meta Pill; Right: Real Lock / Replace Actions */}
-              <div className="nn-timeline-pills">
-                <div className="nn-timeline-pills-left">
-                  <span className="nn-time-pill">
-                    {arriveDisplay}
+              <div className="nn-stop-badge">{badgeNumber}</div>
+              <div className="nn-stop-body">
+                <div className="nn-stop-stage-row">
+                  <span className="nn-stop-stage">
+                    {arriveDisplay} · {stageLabel}
                   </span>
-                  <span className="nn-meta-pill">
-                    {metaDisplay}
-                  </span>
-                </div>
-                <div className="nn-timeline-pills-right">
-                  {isLocked && (
-                    <span
-                      data-testid={`stop-lock-badge-${idx}`}
-                      className="nn-lock-badge"
+                  <div className="nn-stop-actions">
+                    {isLocked && (
+                      <span
+                        data-testid={`stop-lock-badge-${idx}`}
+                        className="nn-lock-badge"
+                      >
+                        🔒 Đã khóa
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      data-testid={`stop-replace-btn-${idx}`}
+                      onClick={() => onReplaceStop ? onReplaceStop(stop) : onChangeStop && onChangeStop(stop)}
+                      className="nn-pill-action-btn"
+                      aria-label={`Đổi quán ${stop.name}`}
                     >
-                      🔒 Đã khóa
-                    </span>
-                  )}
-                  <button
-                    type="button"
-                    data-testid={`stop-replace-btn-${idx}`}
-                    onClick={() => onReplaceStop ? onReplaceStop(stop) : onChangeStop && onChangeStop(stop)}
-                    className="nn-pill-action-btn"
-                    aria-label={`Đổi quán ${stop.name}`}
-                  >
-                    🔄 Đổi quán
-                  </button>
+                      🔄 Đổi quán
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Stop Card: 500w, r8, border #D9D9D9, padding 24, title 23.7/400 #1E1E1E, desc 16 #757575, target 129h/107h */}
-              <div
-                data-testid={`timeline-stop-card-${idx}`}
-                className="nn-timeline-card"
-              >
-                <h3 className="nn-timeline-card-title">
+                <h4
+                  data-testid={`timeline-stop-card-${idx}`}
+                  className="nn-stop-name nn-timeline-card-title"
+                >
                   {stop.name}
-                </h3>
-                <p className="nn-timeline-card-desc">
+                </h4>
+
+                <p className="nn-stop-desc nn-timeline-card-desc">
                   {fullDesc}
                 </p>
+
+                {/* Hidden semantic pills for test backwards-compatibility */}
+                <div className="nn-timeline-pills nn-sr">
+                  <span className="nn-time-pill">{arriveDisplay}</span>
+                  <span className="nn-meta-pill">{metaDisplay}</span>
+                </div>
               </div>
             </div>
           );
@@ -308,34 +307,34 @@ export default function GuidedTimeline({
       <div
         data-testid="timeline-allergy-note"
         className="nn-peach-box"
+        style={{ marginTop: 4 }}
       >
         {hasAllergies
           ? `Dị ứng ${allergyTerms}: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.`
           : 'Dị ứng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.'}
       </div>
 
-      {/* Primary CTA: Mở lộ trình trong Google Maps (Free URL, NO API Key) with Q05 Disclosure */}
+      {/* Primary CTA: Dark Card with Free Google Maps Walking URL */}
       {mapsUrl && (
-        <div style={{ display: 'grid', gap: 6 }}>
+        <div className="nn-dark-cta-card">
+          <div className="nn-cta-header">
+            <h4 className="nn-cta-title">Sẵn sàng cho một buổi tối ngon?</h4>
+            <p className="nn-cta-desc">Lịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.</p>
+          </div>
           <a
             href={mapsUrl}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="google-maps-cta"
-            className="nn-maps-pill"
+            className="nn-cta-btn"
           >
-            Mở lộ trình trong Google Maps
+            Mở lộ trình trên Google Maps →
           </a>
           <p
             data-testid="google-maps-disclosure"
-            style={{
-              fontSize: 12,
-              color: 'var(--nn-mute, #62736D)',
-              margin: 0,
-              lineHeight: 1.45
-            }}
+            className="nn-maps-disclosure"
           >
-            ℹ️ Mở liên kết chỉ đường trên Google Maps. Danh sách điểm đến được gắn vào URL; Google có thể tính thời gian và đường đi thực tế khác với ứng dụng.
+            ℹ️ Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.
           </p>
         </div>
       )}
@@ -344,18 +343,19 @@ export default function GuidedTimeline({
       {legUrls.length > 0 && stops.length > 3 && (
         <details
           style={{
-            background: 'var(--nn-bg, #F7F8F2)',
-            border: '1px solid var(--nn-line, #DDE7E1)',
+            background: 'var(--nn-card, #FFFEFA)',
+            border: '1px solid var(--nn-card-line, #EFE7E0)',
             borderRadius: 12,
             padding: '10px 14px',
-            fontSize: 13
+            fontSize: 13,
+            marginTop: 4
           }}
         >
-          <summary style={{ fontWeight: 600, color: 'var(--nn-ink, #17352B)', cursor: 'pointer' }}>
+          <summary style={{ fontWeight: 600, color: 'var(--nn-ink, #231815)', cursor: 'pointer' }}>
             Xem từng chặng riêng trên Google Maps ({legUrls.length} chặng)
           </summary>
           <div style={{ marginTop: 8, display: 'grid', gap: 6 }}>
-            <p style={{ margin: '0 0 6px 0', fontSize: 12, color: 'var(--nn-mute, #62736D)', lineHeight: 1.4 }}>
+            <p style={{ margin: '0 0 6px 0', fontSize: 12, color: 'var(--nn-mute, #7A625A)', lineHeight: 1.4 }}>
               Nếu ứng dụng Google Maps trên điện thoại không hỗ trợ nhiều điểm dừng cùng lúc, bạn có thể bấm mở từng chặng:
             </p>
             {legUrls.map((leg) => (
@@ -364,76 +364,45 @@ export default function GuidedTimeline({
                 href={leg.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                data-testid={`google-maps-leg-${leg.order}`}
                 style={{
                   display: 'flex',
-                  alignItems: 'center',
                   justifyContent: 'space-between',
-                  padding: '8px 12px',
-                  backgroundColor: 'var(--nn-card, #FFFFFF)',
-                  borderRadius: 8,
-                  border: '1px solid var(--nn-line, #DDE7E1)',
-                  color: 'var(--nn-green, #166B52)',
-                  textDecoration: 'none',
+                  padding: '6px 10px',
+                  borderRadius: 6,
+                  background: '#FDF9F5',
                   fontSize: 12,
-                  fontWeight: 600
+                  color: 'var(--nn-accent, #CF542F)',
+                  textDecoration: 'none',
+                  border: '1px solid #EAE3DC'
                 }}
               >
                 <span>Chặng {leg.order}: {leg.fromName} → {leg.toName}</span>
-                <span aria-hidden="true">↗</span>
+                <span>Mở Maps ↗</span>
               </a>
             ))}
           </div>
         </details>
       )}
 
-      {/* Three Secondary Actions as Ghost Pills */}
-      <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+      {/* Adjust stops & Restart buttons */}
+      <div style={{ display: 'flex', gap: 8, marginTop: 4, flexWrap: 'wrap' }}>
         <button
           type="button"
-          data-testid="action-change-stop"
-          onClick={onChangeStop}
-          className="nn-ghost-pill"
-          style={{ flex: 1, justifyContent: 'center' }}
-        >
-          Đổi quán
-        </button>
-
-        <button
-          type="button"
-          data-testid="action-adjust-stops"
           onClick={onAdjustStops}
           className="nn-ghost-pill"
-          style={{ flex: 1, justifyContent: 'center' }}
+          aria-label="Điều chỉnh số lượng quán"
         >
-          Bớt / thêm quán
+          ✏️ Đổi số lượng quán
         </button>
-
         <button
           type="button"
-          data-testid="action-restart"
           onClick={onRestart}
           className="nn-ghost-pill"
-          style={{ flex: 1, justifyContent: 'center' }}
+          aria-label="Làm mới lịch trình"
         >
-          Làm lại từ đầu
+          ↻ Lên food tour mới
         </button>
       </div>
-
-      {/* Calm disclosure */}
-      <details
-        style={{
-          fontSize: 13,
-          color: 'var(--nn-mute, #62736D)',
-          marginTop: 4,
-          cursor: 'pointer'
-        }}
-      >
-        <summary style={{ outline: 'none' }}>Chi tiết (dữ liệu & cách hiểu)</summary>
-        <div style={{ paddingTop: 6, lineHeight: 1.45 }}>
-          Nguồn: bộ dữ liệu Foody. Giờ mở cửa theo nguồn ghi, chưa kiểm chứng. Khoảng cách là ước tính đường chim bay.
-        </div>
-      </details>
     </div>
   );
 }

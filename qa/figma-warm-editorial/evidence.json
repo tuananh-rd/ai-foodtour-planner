@@ -1,0 +1,634 @@
+{
+  "testedAt": "2026-10-19T12:04:53.399Z",
+  "targetFigmaFrame": "frame 1:145 \"02 — Măm Măm / Warm editorial\" (1440x1024)",
+  "referenceImagePath": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-antigravity-web\\qa\\figma-warm-editorial\\reference-1440x1024.png",
+  "checks": [
+    {
+      "id": "PREFLIGHT_PORTS",
+      "name": "Isolated test ports 13600, 18600, 19800 are completely free",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "BACKEND_HEALTH",
+      "name": "Backend healthy with synthetic fixtures",
+      "pass": true,
+      "details": {
+        "build_commit": null,
+        "assistant_provider": "rules",
+        "web_search_configured": false,
+        "ranking": {
+          "quality_weight": 1
+        },
+        "llm_budget": null,
+        "status": "ok",
+        "dataset_loaded": true,
+        "llm": "mock",
+        "routing": "straight_line_estimate",
+        "llm_configured": true,
+        "routing_configured": true,
+        "llm_provider": "rules",
+        "llm_model": null,
+        "explanation_provider": "template",
+        "routing_provider": "estimate",
+        "routing_last_error": null,
+        "dataset_source": "synthetic",
+        "dataset_version": "bd561f274a3d654c59c1234a1d37687fe47be9c633495ddad8c3664b9d0983f9",
+        "evidence_overlay": {
+          "entries_loaded": 0,
+          "entries_rejected": 0,
+          "hours_verified": 0,
+          "prices_verified": 0
+        },
+        "geocoding": {
+          "status": "unavailable",
+          "last_error": null
+        }
+      }
+    },
+    {
+      "id": "FRONTEND_BUILD",
+      "name": "Next.js build succeeded in scratch environment",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "FRONTEND_RUNNING",
+      "name": "Frontend responding on http://127.0.0.1:13600",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "SCROLL_NORMALIZED",
+      "name": "window.scrollY is 0 at initial capture",
+      "pass": true,
+      "details": {
+        "scrollY": 0
+      }
+    },
+    {
+      "id": "SIDEBAR_GEOMETRY",
+      "name": "Sidebar width is 232px at x=0",
+      "pass": true,
+      "details": {
+        "x": 0,
+        "y": 0,
+        "width": 232,
+        "height": 1024
+      }
+    },
+    {
+      "id": "CHAT_CARD_GEOMETRY",
+      "name": "Chat Card width is 668px at x=264, y=98",
+      "pass": true,
+      "details": {
+        "x": 264,
+        "y": 98,
+        "width": 668,
+        "height": 886
+      }
+    },
+    {
+      "id": "TOUR_COLUMN_GEOMETRY",
+      "name": "Tour Column width is 452px at x=956, y=98",
+      "pass": true,
+      "details": {
+        "x": 956,
+        "y": 98,
+        "width": 452,
+        "height": 886
+      }
+    },
+    {
+      "id": "CHAT_RHYTHM_BADGE",
+      "name": "Chat assistant badge height is ~36px and starts near y=126",
+      "pass": true,
+      "details": {
+        "y": 126,
+        "height": 36
+      }
+    },
+    {
+      "id": "CHAT_RHYTHM_HEADING",
+      "name": "Chat hero heading starts near y=198 with 44px font-size and weight 600",
+      "pass": true,
+      "details": {
+        "y": 198,
+        "height": 120,
+        "fontSize": "44px",
+        "fontWeight": "600",
+        "lineHeight": "60px"
+      }
+    },
+    {
+      "id": "CHAT_RHYTHM_SUB_AND_CHIPS",
+      "name": "Support text starts near y=330 and chips near y=409",
+      "pass": true,
+      "details": {
+        "sub": {
+          "y": 334,
+          "height": 48
+        },
+        "chips": {
+          "y": 410
+        }
+      }
+    },
+    {
+      "id": "RIGHT_COL_HEADER_METRICS",
+      "name": "Right col header height is 40px with 32px heading weight 600",
+      "pass": true,
+      "details": {
+        "header": {
+          "height": 40,
+          "y": 98
+        },
+        "heading": {
+          "fontSize": "32px",
+          "fontWeight": "600",
+          "lineHeight": "40px"
+        },
+        "heroCard": {
+          "y": 170,
+          "height": 190
+        },
+        "metricsCard": {
+          "y": 372,
+          "height": 66
+        },
+        "darkCta": {
+          "y": 824,
+          "height": 150
+        },
+        "ctaBtn": {
+          "height": "44px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgb(250, 244, 238)",
+          "color": "rgb(35, 24, 21)",
+          "border": "1px solid rgb(226, 215, 204)"
+        }
+      }
+    },
+    {
+      "id": "RIGHT_COL_HERO_AND_METRICS",
+      "name": "Hero card height is ~190px and Metrics card height is ~66px",
+      "pass": true,
+      "details": {
+        "heroCard": {
+          "y": 170,
+          "height": 190
+        },
+        "metricsCard": {
+          "y": 372,
+          "height": 66
+        }
+      }
+    },
+    {
+      "id": "DARK_CTA_CARD_AND_BUTTON",
+      "name": "Dark CTA card height is ~150px and button is pale cream (#FAF4EE) with dark text",
+      "pass": true,
+      "details": {
+        "darkCta": {
+          "y": 824,
+          "height": 150
+        },
+        "ctaBtn": {
+          "height": "44px",
+          "borderRadius": "12px",
+          "backgroundColor": "rgb(250, 244, 238)",
+          "color": "rgb(35, 24, 21)",
+          "border": "1px solid rgb(226, 215, 204)"
+        }
+      }
+    },
+    {
+      "id": "EMPTY_METRICS_HONEST",
+      "name": "Empty state shows honest em-dash (—) for stops & distance, with honest distance label",
+      "pass": true,
+      "details": {
+        "stopsVal": "—",
+        "distanceVal": "—",
+        "distanceLbl": "khoảng cách (ước tính đi bộ)",
+        "budgetScope": "chưa rõ phạm vi",
+        "emptyStepsBadges": [
+          "BƯỚC 1",
+          "BƯỚC 2",
+          "BƯỚC 3"
+        ],
+        "hasSaveTripBtn": false,
+        "recentHeader": "GỢI Ý NHANH",
+        "recentTagsCount": 3,
+        "allRecentButtons": true,
+        "profileFooter": "Phiên hiện tạiPhiên làm việc cục bộ"
+      }
+    },
+    {
+      "id": "EMPTY_STEPS_INSTRUCTIONAL",
+      "name": "Empty steps use neutral BƯỚC 1/2/3 without invented arrival times",
+      "pass": true,
+      "details": [
+        "BƯỚC 1",
+        "BƯỚC 2",
+        "BƯỚC 3"
+      ]
+    },
+    {
+      "id": "SIDEBAR_SUGGESTIONS_NATIVE",
+      "name": "Sidebar quick suggestions labeled GỢI Ý NHANH and rendered as native <button> elements",
+      "pass": true,
+      "details": {
+        "stopsVal": "—",
+        "distanceVal": "—",
+        "distanceLbl": "khoảng cách (ước tính đi bộ)",
+        "budgetScope": "chưa rõ phạm vi",
+        "emptyStepsBadges": [
+          "BƯỚC 1",
+          "BƯỚC 2",
+          "BƯỚC 3"
+        ],
+        "hasSaveTripBtn": false,
+        "recentHeader": "GỢI Ý NHANH",
+        "recentTagsCount": 3,
+        "allRecentButtons": true,
+        "profileFooter": "Phiên hiện tạiPhiên làm việc cục bộ"
+      }
+    },
+    {
+      "id": "PROFILE_FOOTER_LOCAL_SESSION",
+      "name": "Profile footer honestly labels local session without misleading browser-only storage claims",
+      "pass": true,
+      "details": {
+        "profileFooter": "Phiên hiện tạiPhiên làm việc cục bộ"
+      }
+    },
+    {
+      "id": "NO_FAKE_CONTROLS",
+      "name": "No dummy \"Lưu chuyến đi\" button or fake dropdown affordances in empty state",
+      "pass": true,
+      "details": {
+        "hasSaveTripBtn": false
+      }
+    },
+    {
+      "id": "KEYBOARD_SUGGESTION_POPULATES",
+      "name": "Native keyboard activation on quick suggestion button populates chat input",
+      "pass": true,
+      "details": {
+        "initialInputText": "",
+        "populatedInputText": "Một tối ẩm thực quanh Hồ Gươm"
+      }
+    },
+    {
+      "id": "MOBILE_EMPTY_CTA_SWITCHES_TAB",
+      "name": "Clicking \"Bắt đầu gợi ý →\" in mobile Tour tab switches to Chat tab and focuses input",
+      "pass": true,
+      "details": {
+        "chatIsHiddenOnTourTab": true,
+        "mobileTabAfterCta": {
+          "chatHidden": false,
+          "activeEl": "guided-input",
+          "tabChatActive": true
+        }
+      }
+    },
+    {
+      "id": "USER_BUBBLE_STYLE",
+      "name": "User bubble rendered with peach background",
+      "pass": true,
+      "details": {
+        "userBubbleColor": "rgb(249, 225, 207)"
+      }
+    },
+    {
+      "id": "FOCUS_CLARIFY_CARD",
+      "name": "Focus properly directed to clarify question card or options",
+      "pass": true,
+      "details": {
+        "activeDuringClarify": "clarify-option-time:18:00"
+      }
+    },
+    {
+      "id": "UNDERSTOOD_CARD_PRESENT",
+      "name": "Understood card rendered canonical criteria rows",
+      "pass": true,
+      "details": {
+        "count": 11
+      }
+    },
+    {
+      "id": "FOCUS_CONFIRM_BTN",
+      "name": "Focus lands on Confirm Yes button [data-testid=\"confirm-yes-btn\"]",
+      "pass": true,
+      "details": {
+        "activeDuringConfirm": "confirm-yes-btn"
+      }
+    },
+    {
+      "id": "TOUR_STOPS_RENDERED",
+      "name": "Tour stops rendered with 3 stops",
+      "pass": true,
+      "details": {
+        "stopCount": 3
+      }
+    },
+    {
+      "id": "STOP_BADGE_GEOMETRY",
+      "name": "Stop badge 01 horizontally aligned at x=972 and body at x=1018",
+      "pass": true,
+      "details": {
+        "badgeText": "01",
+        "badgeRect": {
+          "x": 975,
+          "width": 32
+        },
+        "bodyRect": {
+          "x": 1021
+        },
+        "stageText": "18:04 · ĐIỂM DỪNG 1"
+      }
+    },
+    {
+      "id": "STOP_STAGE_NEUTRAL",
+      "name": "Stop stage uses neutral stop numbering instead of hardcoded meal course",
+      "pass": true,
+      "details": {
+        "stageText": "18:04 · ĐIỂM DỪNG 1"
+      }
+    },
+    {
+      "id": "DARK_CTA_TIMELINE_PRESENT",
+      "name": "Dark CTA card rendered in timeline with min-height 150px (actual ~181px with disclosure) and ~44px button",
+      "pass": true,
+      "details": {
+        "y": 743,
+        "height": 181,
+        "btnHeight": 44,
+        "btnWidth": 391
+      }
+    },
+    {
+      "id": "GOOGLE_MAPS_CTA",
+      "name": "Google Maps CTA present with valid free walking URL and focus",
+      "pass": true,
+      "details": {
+        "href": "https://www.google.com/maps/dir/?api=1&origin=21.0263%2C105.8522&destination=21.0296%2C105.8483&travelmode=walking&waypoints=21.0274%2C105.8509",
+        "focused": true
+      }
+    },
+    {
+      "id": "GOOGLE_MAPS_DISCLOSURE",
+      "name": "Google Maps free URL external disclosure present",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "REPLACE_MODAL_OPENS",
+      "name": "Replace stop modal opens on click with confirm button ready",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "REPLACE_DIFF_RENDERED",
+      "name": "Server returned Before/After replacement diff with [replace-modal-done-btn]",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "REPLACE_MODAL_COMMITTED",
+      "name": "Replace modal closes after commit",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "STOP_REPLACEMENT_APPLIED",
+      "name": "Tour stop updated in itinerary after server replacement",
+      "pass": true,
+      "details": {
+        "before": "[SYNTHETIC] Chè Thử 12",
+        "after": "[SYNTHETIC] Kem Thử 24"
+      }
+    },
+    {
+      "id": "PILOT_MAP_ACTIVE",
+      "name": "Interactive PilotMap view mode activates on toggle",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MAP_MARKERS_SYNC",
+      "name": "Map markers count syncs with tour stops count (or controlled fallback in headless GPU-less environment)",
+      "pass": true,
+      "details": {
+        "markerCount": 3,
+        "hasFallback": false,
+        "currentStopsCount": 0
+      }
+    },
+    {
+      "id": "VIEW_MODE_SCHEMATIC",
+      "name": "Returned to schematic itinerary view mode",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "RELOAD_PERSISTENCE",
+      "name": "Session criteria and tour stops restored after reload without focus stealing",
+      "pass": true,
+      "details": {
+        "restoredStops": 3
+      }
+    },
+    {
+      "id": "MOBILE_ZERO_OVERFLOW",
+      "name": "Mobile 390px has ZERO horizontal overflow (scrollWidth <= 390)",
+      "pass": true,
+      "details": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "bodyScrollWidth": 390,
+        "rootScrollWidth": 390
+      }
+    },
+    {
+      "id": "MOBILE_TAB_CHAT",
+      "name": "Mobile tab Khám phá displays chat panel",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MOBILE_TAB_TOUR",
+      "name": "Mobile tab Lịch trình displays tour column",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONTRAST_CHAT_TEXT",
+      "name": "Primary chat text contrast from DOM: 17.16:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {
+        "fg": "rgb(35, 24, 21)",
+        "bg": "rgb(255, 254, 250)",
+        "ratio": 17.16
+      }
+    },
+    {
+      "id": "CONTRAST_SIDEBAR",
+      "name": "Sidebar brand/nav contrast from DOM: 10.42:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(112, 41, 20)",
+        "ratio": 10.42
+      }
+    },
+    {
+      "id": "CONTRAST_CTA_BUTTON",
+      "name": "Pale cream CTA button contrast from DOM: 15.86:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {
+        "fg": "rgb(35, 24, 21)",
+        "bg": "rgb(250, 244, 238)",
+        "ratio": 15.86
+      }
+    },
+    {
+      "id": "CONTRAST_DARK_CTA",
+      "name": "Dark CTA card contrast from DOM: 14.43:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {
+        "fg": "rgb(255, 255, 255)",
+        "bg": "rgb(49, 40, 32)",
+        "ratio": 14.43
+      }
+    },
+    {
+      "id": "CONTRAST_FILTER_CHIP",
+      "name": "Filter chip contrast from DOM: 10.26:1 (passes AA >= 4.5:1)",
+      "pass": true,
+      "details": {
+        "fg": "rgb(74, 53, 47)",
+        "bg": "rgb(247, 242, 238)",
+        "ratio": 10.26
+      }
+    }
+  ],
+  "measurements": {
+    "initial": {
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 232,
+        "height": 1024
+      },
+      "canvasWrap": {
+        "x": 232,
+        "y": 0,
+        "width": 1208,
+        "height": 1024
+      },
+      "chatCard": {
+        "x": 264,
+        "y": 98,
+        "width": 668,
+        "height": 886
+      },
+      "tourCol": {
+        "x": 956,
+        "y": 98,
+        "width": 452,
+        "height": 886
+      },
+      "colors": {
+        "bodyBg": "rgb(248, 246, 240)",
+        "rootBg": "rgb(249, 197, 61)",
+        "sidebarBg": "rgb(112, 41, 20)"
+      }
+    },
+    "chatCardRhythm": {
+      "badge": {
+        "y": 126,
+        "height": 36
+      },
+      "heading": {
+        "y": 198,
+        "height": 120,
+        "fontSize": "44px",
+        "fontWeight": "600",
+        "lineHeight": "60px"
+      },
+      "sub": {
+        "y": 334,
+        "height": 48
+      },
+      "chips": {
+        "y": 410
+      },
+      "divider": {
+        "y": 460
+      }
+    },
+    "rightColRhythm": {
+      "header": {
+        "height": 40,
+        "y": 98
+      },
+      "heading": {
+        "fontSize": "32px",
+        "fontWeight": "600",
+        "lineHeight": "40px"
+      },
+      "heroCard": {
+        "y": 170,
+        "height": 190
+      },
+      "metricsCard": {
+        "y": 372,
+        "height": 66
+      },
+      "darkCta": {
+        "y": 824,
+        "height": 150
+      },
+      "ctaBtn": {
+        "height": "44px",
+        "borderRadius": "12px",
+        "backgroundColor": "rgb(250, 244, 238)",
+        "color": "rgb(35, 24, 21)",
+        "border": "1px solid rgb(226, 215, 204)"
+      }
+    }
+  },
+  "contrast": {
+    "chatText": {
+      "fg": "rgb(35, 24, 21)",
+      "bg": "rgb(255, 254, 250)",
+      "ratio": 17.16
+    },
+    "sidebarText": {
+      "fg": "rgb(255, 255, 255)",
+      "bg": "rgb(112, 41, 20)",
+      "ratio": 10.42
+    },
+    "ctaButton": {
+      "fg": "rgb(35, 24, 21)",
+      "bg": "rgb(250, 244, 238)",
+      "ratio": 15.86
+    },
+    "darkCtaCard": {
+      "fg": "rgb(255, 255, 255)",
+      "bg": "rgb(49, 40, 32)",
+      "ratio": 14.43
+    },
+    "filterChip": {
+      "fg": "rgb(74, 53, 47)",
+      "bg": "rgb(247, 242, 238)",
+      "ratio": 10.26
+    }
+  },
+  "summary": {
+    "total": 47,
+    "passed": 47,
+    "failed": 0
+  }
+}
