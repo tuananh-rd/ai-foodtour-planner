@@ -1,4 +1,8 @@
-> **HUMAN OVERRIDE (2026-10-18):** Codex temporarily out of usage. Antigravity temporarily assumes full ownership: self-coordination, testing, frontend/backend implementation and local integration until the current functional QA round is complete. Codex and Claude terminals interrupted to stop concurrent edits. Antigravity operates without waiting for internal Codex review/approval for user-approved scope.
+> **Active direction (2026-10-19):** Codex coordinates, owns architecture/contracts and reviews/integrates; Antigravity implements explicitly bounded tasks. The temporary Antigravity-full override is revoked. Claude remains inactive for this initiative. Preserve the accepted SVG UI and previous functional safeguards; historical PASS counts are not acceptance of new work.
+
+## Active online assistant initiative
+
+Approved implementation and live task evidence: [ONLINE_ASSISTANT_BOARD.md](reports/ONLINE_ASSISTANT_BOARD.md). Run `run_928fb169d5d9`; OA1 task `task_6470a24ebdd6`, dispatch `ctx_c420f30a25d2`, actual worker output observed. Current contract: [ONLINE_ASSISTANT_CONTRACT.md](ONLINE_ASSISTANT_CONTRACT.md). Existing worktrees and communication-rule changes are preserved. Historical sections below describe earlier assignments only.
 
 > **Current human direction — 2026-10-18, SVG fidelity revision:** Codex coordinates, reviews and integrates; Claude returns as the primary UI/visual-fidelity owner and must inspect/render the original `D:/Downloads/UI ngonngon tour.svg`, implement its layout precisely, and perform the final visual review. Antigravity implements bounded components/assets/responsive/QA tasks under Claude's visual specification, with Codex routing all Orca dispatches. The earlier Claude-resting override and Codex-only frontend override are revoked. The prior functional acceptance is preserved but does not accept the new visual requirement.
 

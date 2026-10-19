@@ -134,7 +134,10 @@ def extras(text: str, f: str) -> dict:
     """{stops?: int 1..5, day_part?, interests?: [str], _stops_rejected?: int} — only what the text states."""
     text, f = numeric_prefix_spacing(text), numeric_prefix_spacing(f)
     out = {}
-    if _TOUR_CTX.search(f):
+    # A result count ("find three pho venues") is not a planned stop count.
+    search_only = bool(re.search(r'\b(?:tim|liet ke|goi y)\b', f)
+                       and not re.search(r'\b(?:tour|lich trinh|hanh trinh|diem dung|so quan)\b', f))
+    if _TOUR_CTX.search(f) and not search_only:
         m = _STOPS.search(f)
         if m:
             g = m.group(1) or m.group(2)
