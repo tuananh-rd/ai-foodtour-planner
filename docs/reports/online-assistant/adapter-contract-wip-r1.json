@@ -1,0 +1,52 @@
+{
+  "mode": "independent fresh-process synthetic transport tests; zero external network permitted",
+  "source_sha256": "527dc13074b787735704b33bf37b402887d58f287c638a7f9eeb3ef8d9c5853b",
+  "source_unchanged": true,
+  "checks": [
+    {
+      "case": "schema",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "source_instructions",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "failed_block_fuse",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "durable_block",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "distinct_concurrency",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "singleflight",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "wall_clock",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "deadline",
+      "passed": true,
+      "diagnostic": null
+    },
+    {
+      "case": "env_caps",
+      "passed": true,
+      "diagnostic": null
+    }
+  ]
+}

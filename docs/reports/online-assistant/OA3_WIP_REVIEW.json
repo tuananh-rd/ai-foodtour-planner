@@ -15,5 +15,7 @@
     "stale_cached_response_returned": true,
     "post_deadline_over6": true,
     "late_post_status": "ok"
-  }
+  },
+  "instruction_title_retained_as_source": true,
+  "instruction_title_original_source_count": 1
 }

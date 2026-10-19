@@ -13,14 +13,15 @@ class SearchTransportTests(unittest.TestCase):
                 public_addresses(resolver)
         self.assertEqual(public_addresses(lambda *a, **kw: [(None, None, None, None, ('8.8.8.8', 443))]), ['8.8.8.8'])
 
-    def test_redirect_and_429_are_not_followed(self):
-        for status in (302, 429):
+    def test_redirect_and_quota_statuses_are_not_followed(self):
+        for status in (302, 429, 432, 433):
             with patch('app.providers.search_transport.public_addresses', return_value=['8.8.8.8']), \
                  patch('app.providers.search_transport.PinnedTavilyConnection') as connection:
                 connection.return_value.getresponse.return_value.status = status
                 with self.assertRaises(ProviderError) as error:
                     tavily_post({}, 'synthetic-test-only')
-                self.assertEqual(error.exception.kind, 'quota' if status == 429 else 'unavailable')
+                self.assertEqual(error.exception.kind, 'quota' if status in (429, 432, 433) else 'unavailable')
+                self.assertEqual(error.exception.status, status)
                 self.assertEqual(connection.return_value.request.call_count, 1)
                 self.assertEqual(connection.return_value.request.call_args.args[:2], ('POST', '/search'))
                 connection.return_value.close.assert_called_once()

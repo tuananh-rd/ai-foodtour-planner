@@ -77,8 +77,10 @@ def _tavily_json(method, path, payload, api_key, *, deadline_s):
         if connection.sock:
             connection.sock.settimeout(max(.1, deadline-time.monotonic()))
         response = connection.getresponse()
-        if response.status == 429:
-            raise ProviderError('quota', status=429)
+        # Official search API: rate, plan and PAYGO limits. Never retry or
+        # suggest changing billing; all are a bounded quota failure to callers.
+        if response.status in (429, 432, 433):
+            raise ProviderError('quota', status=response.status)
         # Redirect locations and raw provider errors are never fetched or exposed.
         if response.status != 200:
             raise ProviderError('unavailable', status=response.status)

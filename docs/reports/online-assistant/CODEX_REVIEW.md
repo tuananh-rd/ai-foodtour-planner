@@ -65,3 +65,9 @@ The worker's18 hermetic tests pass, but independent synthetic-transport probes o
 | OA-SR-006 | P1 configuration contract | Explicit blank daily cap configures default20; injected budget daily20 survives explicit env cap1 | Invalid explicit values fail closed, never widen configured caps |
 
 OA3R task_7bd07278a470 / ctx_e884a0d5d914 was dispatched once to the same agent before acknowledging previous completion. Exact3file ownership remains module/test/OA3.md only. Codex does not edit those files. Current lifecycle ACK received; full ownership-body ACK requested because the first heartbeat body was empty. Candidate3461353 remains outside the coordinator checkout until these gates are reviewed and independently retested.
+# Accepted OA3R module and composition checkpoint
+
+Integratedcdf47ba atda5ccad after26 independent module tests and9 fresh-process contract groups passed (adapter-contract-cdf47ba.json). OA-SR candidate gaps are repaired: distinct concurrency cap2, strict schema, title/snippet injection filtering, memory/durable credit fuses, wall-clock cache validation, finite deadlines and fail-closed cap configuration. This is hermetic evidence, not live Tavily validation.
+
+Codex composition adds configuration-only TavilySearch.from_env unless an explicit service is injected. Three HTTP tests exercise actual adapter/cache/SQLite with external transports mocked, including stale409 before outbound, no state mutation, original citation timestamp and falsey injection preservation. Transport maps429/432/433 to quota per https://docs.tavily.com/documentation/api-reference/endpoint/search (checked2026-10-19); no retry or paid activation. Six composition/transport tests pass. Final full suite and affected-implementer review still required.
+

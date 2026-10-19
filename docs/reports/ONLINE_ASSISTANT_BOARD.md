@@ -1,5 +1,11 @@
 # Approved online assistant implementation — 2026-10-19
 
+## Latest checkpoint (supersedes historical rows below)
+
+OA2/OA4 UI is integrated at0de3632: production desktop/mobile60/60 checks, real PMTiles Range/tiles/markers, SVG comparison and accessible keyboard interaction. OA3R task_7bd07278a470/ctx_e884a0d5d914 settledcdf47ba and is integratedda5ccad after26 module tests and9 independent fresh-process contract groups passed. Earlier3461353 was rejected; its18 tests did not establish acceptance. Antigravity remains retained on the same terminal, no active editor.
+
+Codex now wires the actual adapter factory into create_app, preserving explicit injection and doing no startup network calls. Three real-HTTP/actual-adapter/temp-SQLite tests pass with only external transports mocked; transport quota classification includes documented429/432/433 without retry or billing changes. Final full regression and affected-implementer review remain pending. Live Tavily is BLOCKED by absent local key; Gemini remains PARTIAL, never inferred from mocks. Existing production3060/API8060 must be refreshed/verified for final delivery; no user servers are stopped.
+
 Run `run_928fb169d5d9`; current Codex terminal `term_24c3a210-7070-4dd5-b703-f12f516a70b0`. Runtime ff583610, Orca1.4.219. Existing Antigravity checkout retained; runtime inventory shows0 attached PTYs/agents there, so one replacement supervised worker is necessary, not a duplicate. Old QA task failed/exited; its counts are historical evidence only. Claude is not resumed.
 
 | ID | Owner | State | Files / acceptance |
