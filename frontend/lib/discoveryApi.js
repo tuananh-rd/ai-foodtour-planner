@@ -65,10 +65,69 @@ export function validateDiscoveryAction(action) {
 }
 
 /**
+ * Helper to format readable 422 validation errors from FastAPI/Pydantic or custom schema.
+ */
+function formatValidationError(body, statusText) {
+  if (!body) return `Lỗi xác thực dữ liệu (422): ${statusText}`;
+  if (typeof body.detail === 'string') return `Lỗi dữ liệu: ${body.detail}`;
+  if (Array.isArray(body.detail)) {
+    const messages = body.detail.map((d) => {
+      const loc = Array.isArray(d.loc) ? d.loc.filter((p) => p !== 'body').join('.') : '';
+      return `${loc ? `Trường '${loc}': ` : ''}${d.msg || 'giá trị không hợp lệ'}`;
+    });
+    return `Lỗi xác thực dữ liệu (422): ${messages.join('; ')}`;
+  }
+  if (body.message) return body.message;
+  return `Lỗi dữ liệu (422): Yêu cầu không đáp ứng cấu trúc hợp đồng discovery-v1.`;
+}
+
+/**
+ * Fetch wrapper with timeout and AbortController chaining.
+ */
+export async function fetchWithTimeout(url, init = {}, timeoutMs = 15000) {
+  const controller = new AbortController();
+  const callerSignal = init.signal;
+  let callerAbortHandler = null;
+
+  if (callerSignal) {
+    if (callerSignal.aborted) {
+      controller.abort();
+    } else {
+      callerAbortHandler = () => controller.abort();
+      callerSignal.addEventListener('abort', callerAbortHandler);
+    }
+  }
+
+  const timer = setTimeout(() => {
+    controller.abort(new Error(`Quá thời gian chờ phản hồi (${timeoutMs}ms)`));
+  }, timeoutMs);
+
+  try {
+    const res = await fetch(url, { ...init, signal: controller.signal });
+    return res;
+  } catch (err) {
+    if (err.name === 'AbortError' || controller.signal.aborted) {
+      if (callerSignal?.aborted) {
+        const customErr = new Error('Yêu cầu đã bị hủy.');
+        customErr.name = 'AbortError';
+        throw customErr;
+      }
+      throw new DiscoveryApiError('timeout', `Quá thời gian kết nối tới máy chủ (${timeoutMs}ms). Vui lòng thử lại.`, null, 408);
+    }
+    throw new DiscoveryApiError('network_error', `Không thể kết nối đến máy chủ: ${err.message}`, err);
+  } finally {
+    clearTimeout(timer);
+    if (callerSignal && callerAbortHandler) {
+      callerSignal.removeEventListener('abort', callerAbortHandler);
+    }
+  }
+}
+
+/**
  * GET /v1/sessions/{id}/assistant
  * Returns current discovery assistant view.
  */
-export async function getDiscoveryAssistant(sessionId, sessionToken = '') {
+export async function getDiscoveryAssistant(sessionId, sessionToken = '', options = {}) {
   if (!sessionId) {
     throw new DiscoveryApiError('missing_session_id', 'Thiếu sessionId khi tải dữ liệu trợ lý khám phá.');
   }
@@ -81,12 +140,11 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '') {
     headers['X-Session-Token'] = sessionToken;
   }
 
-  let res;
-  try {
-    res = await fetch(url, { method: 'GET', headers });
-  } catch (err) {
-    throw new DiscoveryApiError('network_error', `Không thể kết nối đến máy chủ: ${err.message}`, err);
-  }
+  const res = await fetchWithTimeout(url, {
+    method: 'GET',
+    headers,
+    signal: options.signal
+  }, options.timeoutMs || 15000);
 
   let body = null;
   try {
@@ -96,8 +154,15 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '') {
   }
 
   if (!res.ok) {
-    const code = body?.code || (res.status === 404 ? 'session_not_found' : 'request_failed');
-    const msg = body?.message || body?.detail || `Lỗi máy chủ (${res.status}): ${res.statusText}`;
+    if (res.status === 404) {
+      throw new DiscoveryApiError('session_not_found', 'Phiên làm việc không tồn tại hoặc đã hết hạn (404). Vui lòng tạo phiên mới.', body, 404);
+    }
+    if (res.status === 422) {
+      const readable = formatValidationError(body, res.statusText);
+      throw new DiscoveryApiError('validation_error', readable, body, 422, body?.latest_revision);
+    }
+    const code = body?.code || 'request_failed';
+    const msg = body?.message || (typeof body?.detail === 'string' ? body.detail : null) || `Lỗi máy chủ (${res.status}): ${res.statusText}`;
     throw new DiscoveryApiError(code, msg, body, res.status, body?.latest_revision);
   }
 
@@ -108,7 +173,7 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '') {
  * POST /v1/sessions/{id}/assistant (Text turn)
  * Sends a natural user message.
  */
-export async function sendDiscoveryMessage(sessionId, revision, text, sessionToken = '') {
+export async function sendDiscoveryMessage(sessionId, revision, text, sessionToken = '', options = {}) {
   if (!sessionId) {
     throw new DiscoveryApiError('missing_session_id', 'Thiếu sessionId khi gửi tin nhắn.');
   }
@@ -134,16 +199,12 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
     text: cleanText
   };
 
-  let res;
-  try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    throw new DiscoveryApiError('network_error', `Lỗi mạng khi gửi tin nhắn: ${err.message}`, err);
-  }
+  const res = await fetchWithTimeout(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+    signal: options.signal
+  }, options.timeoutMs || 25000);
 
   let body = null;
   try {
@@ -163,8 +224,12 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
         latestRev
       );
     }
+    if (res.status === 422) {
+      const readable = formatValidationError(body, res.statusText);
+      throw new DiscoveryApiError('validation_error', readable, body, 422, body?.latest_revision);
+    }
     const code = body?.code || 'message_failed';
-    const msg = body?.message || body?.detail || `Không thể gửi tin nhắn (${res.status}): ${res.statusText}`;
+    const msg = body?.message || (typeof body?.detail === 'string' ? body.detail : null) || `Không thể gửi tin nhắn (${res.status}): ${res.statusText}`;
     throw new DiscoveryApiError(code, msg, body, res.status, body?.latest_revision);
   }
 
@@ -175,7 +240,7 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
  * POST /v1/sessions/{id}/assistant (Action turn)
  * Sends a validated tool or confirm action.
  */
-export async function sendDiscoveryAction(sessionId, revision, rawAction, sessionToken = '') {
+export async function sendDiscoveryAction(sessionId, revision, rawAction, sessionToken = '', options = {}) {
   if (!sessionId) {
     throw new DiscoveryApiError('missing_session_id', 'Thiếu sessionId khi thực hiện thao tác.');
   }
@@ -198,16 +263,12 @@ export async function sendDiscoveryAction(sessionId, revision, rawAction, sessio
     action
   };
 
-  let res;
-  try {
-    res = await fetch(url, {
-      method: 'POST',
-      headers,
-      body: JSON.stringify(payload)
-    });
-  } catch (err) {
-    throw new DiscoveryApiError('network_error', `Lỗi mạng khi gửi thao tác: ${err.message}`, err);
-  }
+  const res = await fetchWithTimeout(url, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify(payload),
+    signal: options.signal
+  }, options.timeoutMs || 25000);
 
   let body = null;
   try {
@@ -227,8 +288,12 @@ export async function sendDiscoveryAction(sessionId, revision, rawAction, sessio
         latestRev
       );
     }
+    if (res.status === 422) {
+      const readable = formatValidationError(body, res.statusText);
+      throw new DiscoveryApiError('validation_error', readable, body, 422, body?.latest_revision);
+    }
     const code = body?.code || 'action_failed';
-    const msg = body?.message || body?.detail || `Không thể thực hiện thao tác (${res.status}): ${res.statusText}`;
+    const msg = body?.message || (typeof body?.detail === 'string' ? body.detail : null) || `Không thể thực hiện thao tác (${res.status}): ${res.statusText}`;
     throw new DiscoveryApiError(code, msg, body, res.status, body?.latest_revision);
   }
 

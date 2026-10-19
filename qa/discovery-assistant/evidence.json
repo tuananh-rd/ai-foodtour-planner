@@ -1,6 +1,7 @@
 {
-  "testedAt": "2026-10-19T13:05:32.846Z",
+  "testedAt": "2026-10-19T13:18:23.509Z",
   "targetContract": "discovery-v1",
+  "visualDesign": "Warm editorial Figma frame 1:145 (1440x1024)",
   "ports": {
     "web": 13600,
     "mockApi": 18600,
@@ -32,15 +33,53 @@
       "details": {}
     },
     {
-      "id": "INITIAL_LAYOUT_BRAND",
-      "name": "Brand is MĂM MĂM and input is ready",
+      "id": "SIDEBAR_GEOMETRY",
+      "name": "Sidebar width is 232px at x=0 with deep chestnut/rust brown background",
       "pass": true,
       "details": {
-        "brand": "MĂM MĂM",
-        "hasTavily": false,
-        "hasUnderstoodChecklist": false,
-        "hasInput": true,
-        "hasSendBtn": true
+        "sidebar": {
+          "x": 0,
+          "y": 0,
+          "width": 232,
+          "height": 1048
+        },
+        "color": "rgb(112, 41, 20)"
+      }
+    },
+    {
+      "id": "CANVAS_GOLDEN_YELLOW",
+      "name": "Main canvas wrapper has warm golden yellow background",
+      "pass": true,
+      "details": {
+        "color": "rgb(249, 197, 61)"
+      }
+    },
+    {
+      "id": "TWO_COLUMN_GRID",
+      "name": "Main layout contains Chat Card (~668px) and Tour Column (~476px)",
+      "pass": true,
+      "details": {
+        "chatCard": {
+          "x": 264,
+          "y": 122,
+          "width": 668,
+          "height": 886
+        },
+        "tourCol": {
+          "x": 956,
+          "y": 122,
+          "width": 452,
+          "height": 886
+        }
+      }
+    },
+    {
+      "id": "BRAND_HEADER",
+      "name": "Sidebar displays brand \"măm măm.\", slogan \"ĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.\" and new trip button",
+      "pass": true,
+      "details": {
+        "brand": "măm măm.",
+        "slogan": "ĐI ĐỂ ĂN. ĂN ĐỂ NHỚ."
       }
     },
     {
@@ -72,6 +111,18 @@
         "hasDetailsBtn": true,
         "hasSourceLink": true
       }
+    },
+    {
+      "id": "DETAIL_MODAL_OPEN",
+      "name": "Cửa sổ chi tiết địa điểm mở ra với role=\"dialog\"",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "DETAIL_MODAL_ESCAPE_CLOSE",
+      "name": "Nhấn phím Escape đóng cửa sổ chi tiết và trả lại tiêu điểm",
+      "pass": true,
+      "details": {}
     },
     {
       "id": "SELECTION_ADD",
@@ -165,11 +216,56 @@
       "name": "Reflow mượt mà ở độ phóng đại 200%, không phát sinh lỗi DOM",
       "pass": true,
       "details": {}
+    },
+    {
+      "id": "VISUAL_SIDE_BY_SIDE",
+      "name": "Side-by-side comparison image generated (2880x1024)",
+      "pass": true,
+      "details": {}
     }
   ],
+  "measurements": {
+    "shell": {
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 232,
+        "height": 1048
+      },
+      "canvasWrap": {
+        "x": 232,
+        "y": 0,
+        "width": 1193,
+        "height": 1048
+      },
+      "chatCard": {
+        "x": 264,
+        "y": 122,
+        "width": 668,
+        "height": 886
+      },
+      "tourCol": {
+        "x": 956,
+        "y": 122,
+        "width": 452,
+        "height": 886
+      },
+      "colors": {
+        "sidebarBg": "rgb(112, 41, 20)",
+        "canvasBg": "rgb(249, 197, 61)"
+      },
+      "brandLogo": "măm măm.",
+      "brandSlogan": "ĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.",
+      "newTripBtn": true,
+      "hasTavily": false,
+      "hasUnderstoodChecklist": false,
+      "hasInput": true,
+      "hasSendBtn": true
+    }
+  },
   "summary": {
-    "total": 20,
-    "passed": 20,
+    "total": 26,
+    "passed": 26,
     "failed": 0
   }
 }

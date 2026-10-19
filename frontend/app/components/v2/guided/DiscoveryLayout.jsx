@@ -38,6 +38,23 @@ function ArrowGlyph() {
   );
 }
 
+// Strict nullable profile contract according to docs/DISCOVERY_ASSISTANT_CONTRACT.md
+const INITIAL_NULLABLE_PROFILE = {
+  area: null,
+  origin: null,
+  party_size: null,
+  budget_vnd: null,
+  budget_scope: null,
+  start_time: null,
+  end_time: null,
+  duration_min: null,
+  vehicle: null,
+  tastes: [],
+  exclusions: [],
+  allergies: [],
+  max_leg_min: null
+};
+
 const DEFAULT_ASSISTANT_VIEW = {
   contract: 'discovery-v1',
   session_id: null,
@@ -49,29 +66,15 @@ const DEFAULT_ASSISTANT_VIEW = {
     text: 'Chào bạn! Em có thể giúp bạn khám phá các món ngon Hà Nội, tìm quán phù hợp hoặc gợi ý tour ẩm thực theo ý bạn.',
     question: null
   },
-  profile: {
-    area: 'Hoàn Kiếm',
-    origin: null,
-    party_size: 2,
-    budget_vnd: null,
-    budget_scope: null,
-    start_time: '18:30',
-    end_time: null,
-    duration_min: 120,
-    vehicle: 'walk',
-    tastes: [],
-    exclusions: [],
-    allergies: [],
-    max_leg_min: 20
-  },
+  profile: INITIAL_NULLABLE_PROFILE,
   results: [],
   selection: [],
   comparison: null,
   confirmation: null,
   messages: [],
   tour: null,
-  source: { dataset_source: 'synthetic', dataset_version: 'pilot-1' },
-  provider: { mode: 'rules', calls: 0 },
+  source: null,
+  provider: null,
   diagnostics: { tool_calls: 0, elapsed_ms: 0, weather: 'unavailable' }
 };
 
@@ -92,57 +95,98 @@ export default function DiscoveryLayout({
     revision: parentRevision || 0
   }));
 
+  const [sessionError, setSessionError] = useState(null);
   const [busy, setBusy] = useState(false);
   const [busyMessage, setBusyMessage] = useState('');
   const [inputText, setInputText] = useState('');
   const [activeMobileTab, setActiveMobileTab] = useState('chat'); // 'chat' | 'tour' | 'map'
   const [viewMode, setViewMode] = useState('schematic'); // 'schematic' | 'map'
   const [profileDrawerOpen, setProfileDrawerOpen] = useState(false);
-  const [profileForm, setProfileForm] = useState(view.profile || {});
+  const [profileForm, setProfileForm] = useState(INITIAL_NULLABLE_PROFILE);
   const [selectedForCompare, setSelectedForCompare] = useState([]);
   const [detailVenue, setDetailVenue] = useState(null);
   const [errorBanner, setErrorBanner] = useState(null);
+  const [geoNotice, setGeoNotice] = useState(null);
 
+  const requestTokenRef = useRef(0);
+  const abortControllerRef = useRef(null);
   const chatScrollRef = useRef(null);
   const inputRef = useRef(null);
+  const modalRef = useRef(null);
+  const triggerElRef = useRef(null);
+  const chatSectionRef = useRef(null);
+  const tourSectionRef = useRef(null);
 
   // Sync profile form when backend view profile updates
   useEffect(() => {
     if (view.profile) {
-      setProfileForm(view.profile);
+      setProfileForm({
+        ...INITIAL_NULLABLE_PROFILE,
+        ...view.profile
+      });
     }
   }, [view.profile]);
 
-  // Initial load or session change
+  // Initial load or session change with stale request guarding
   const fetchAssistantView = useCallback(async (sid, token, keepBanner = false) => {
     if (!sid) return;
+
+    // Invalidate prior request
+    requestTokenRef.current += 1;
+    const currentToken = requestTokenRef.current;
+
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const ac = new AbortController();
+    abortControllerRef.current = ac;
+
     setBusy(true);
     setBusyMessage('Đang tải dữ liệu trợ lý…');
     if (!keepBanner) {
       setErrorBanner(null);
     }
+    setSessionError(null);
+
     try {
-      const data = await getDiscoveryAssistant(sid, token);
+      const data = await getDiscoveryAssistant(sid, token, { signal: ac.signal });
+      if (currentToken !== requestTokenRef.current) return;
       if (data) {
         setView(data);
+        setSessionError(null);
       }
     } catch (err) {
+      if (currentToken !== requestTokenRef.current || err.name === 'AbortError') return;
       if (err instanceof DiscoveryApiError && err.status === 404) {
-        // Fresh session without saved state, retain default
-        setView((prev) => ({ ...prev, session_id: sid, revision: parentRevision || 0 }));
+        setSessionError('session_not_found');
+        setErrorBanner('Phiên làm việc không tồn tại hoặc đã hết hạn (404). Vui lòng nhấn "Chuyến đi mới" để tạo phiên mới.');
       } else {
         setErrorBanner(err.message || 'Không thể tải dữ liệu phiên. Vui lòng thử lại.');
       }
     } finally {
-      setBusy(false);
-      setBusyMessage('');
+      if (currentToken === requestTokenRef.current) {
+        setBusy(false);
+        setBusyMessage('');
+      }
     }
   }, [parentRevision]);
 
   useEffect(() => {
+    // Reset state on session change
+    setSelectedForCompare([]);
+    setDetailVenue(null);
+    setProfileDrawerOpen(false);
     if (sessionId) {
       fetchAssistantView(sessionId, sessionToken);
+    } else {
+      setView({ ...DEFAULT_ASSISTANT_VIEW });
     }
+
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
   }, [sessionId, sessionToken, fetchAssistantView]);
 
   // Auto-scroll chat to bottom
@@ -152,7 +196,51 @@ export default function DiscoveryLayout({
     }
   }, [view.messages, view.results, view.comparison, view.confirmation, busy]);
 
-  // Handle 409 conflict: refresh view WITHOUT auto-replaying mutation
+  // Accessible Modal Keyboard Trap & Escape Listener
+  useEffect(() => {
+    if (!detailVenue) return;
+
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setDetailVenue(null);
+        triggerElRef.current?.focus();
+        return;
+      }
+
+      if (e.key === 'Tab' && modalRef.current) {
+        const focusable = modalRef.current.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        if (focusable.length === 0) return;
+
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Initial focus on first element in modal
+    setTimeout(() => {
+      const firstBtn = modalRef.current?.querySelector('button');
+      firstBtn?.focus();
+    }, 50);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [detailVenue]);
+
+  // Handle 409 conflict: refresh view WITHOUT auto-replaying mutation, preserve draft
   const handle409Conflict = async (err) => {
     setErrorBanner('Phiên đã được cập nhật từ phía máy chủ (409 Conflict). Đã đồng bộ lại trạng thái mới nhất.');
     await fetchAssistantView(sessionId, sessionToken, true);
@@ -161,12 +249,19 @@ export default function DiscoveryLayout({
   // Send natural text message
   const handleSendMessage = async (customText = null) => {
     const textToSend = customText !== null ? customText : inputText;
-    if (!textToSend || !textToSend.trim() || busy) return;
+    if (!textToSend || !textToSend.trim() || busy || sessionError === 'session_not_found') return;
+
+    requestTokenRef.current += 1;
+    const currentToken = requestTokenRef.current;
 
     setBusy(true);
     setBusyMessage('Đang xử lý yêu cầu…');
     setErrorBanner(null);
-    setInputText('');
+
+    // Temporarily clear input only if successfully sending
+    if (customText === null) {
+      setInputText('');
+    }
 
     try {
       const updatedView = await sendDiscoveryMessage(
@@ -175,29 +270,39 @@ export default function DiscoveryLayout({
         textToSend,
         sessionToken
       );
+      if (currentToken !== requestTokenRef.current) return;
       setView(updatedView);
     } catch (err) {
+      if (currentToken !== requestTokenRef.current) return;
       if (err.status === 409) {
         await handle409Conflict(err);
+        // Preserve failed draft in input
+        if (customText === null) {
+          setInputText(textToSend);
+        }
       } else {
         setErrorBanner(err.message || 'Lỗi khi gửi tin nhắn.');
-        // Restore input if message failed
+        // Preserve draft on failure
         if (customText === null) {
           setInputText(textToSend);
         }
       }
     } finally {
-      setBusy(false);
-      setBusyMessage('');
-      if (inputRef.current) {
-        inputRef.current.focus();
+      if (currentToken === requestTokenRef.current) {
+        setBusy(false);
+        setBusyMessage('');
+        inputRef.current?.focus();
       }
     }
   };
 
   // Dispatch a discovery action
   const handleDispatchAction = async (action, loadingMsg = 'Đang thực hiện…') => {
-    if (busy) return;
+    if (busy || sessionError === 'session_not_found') return;
+
+    requestTokenRef.current += 1;
+    const currentToken = requestTokenRef.current;
+
     setBusy(true);
     setBusyMessage(loadingMsg);
     setErrorBanner(null);
@@ -209,16 +314,20 @@ export default function DiscoveryLayout({
         action,
         sessionToken
       );
+      if (currentToken !== requestTokenRef.current) return;
       setView(updatedView);
     } catch (err) {
+      if (currentToken !== requestTokenRef.current) return;
       if (err.status === 409) {
         await handle409Conflict(err);
       } else {
         setErrorBanner(err.message || 'Lỗi khi thực hiện thao tác.');
       }
     } finally {
-      setBusy(false);
-      setBusyMessage('');
+      if (currentToken === requestTokenRef.current) {
+        setBusy(false);
+        setBusyMessage('');
+      }
     }
   };
 
@@ -259,43 +368,105 @@ export default function DiscoveryLayout({
     handleDispatchAction(action, 'Đang so sánh các quán đã chọn…');
   };
 
-  // Profile Drawer Form Save
+  // Open Detail Modal with keyboard trigger tracking
+  const handleOpenDetailModal = (venue, e) => {
+    triggerElRef.current = e?.currentTarget || null;
+    setDetailVenue(venue);
+  };
+
+  // Profile Drawer Form Save: patch ONLY modified fields, never convert null to 0
   const handleSaveProfile = (e) => {
     e.preventDefault();
     const patch = {};
-    if (profileForm.area !== undefined) patch.area = profileForm.area || null;
-    if (profileForm.party_size !== undefined && profileForm.party_size !== '') {
-      patch.party_size = Number(profileForm.party_size);
-    }
-    if (profileForm.budget_vnd !== undefined && profileForm.budget_vnd !== '') {
-      patch.budget_vnd = Number(profileForm.budget_vnd);
-    }
-    if (profileForm.budget_scope !== undefined) patch.budget_scope = profileForm.budget_scope || null;
-    if (profileForm.start_time !== undefined) patch.start_time = profileForm.start_time || null;
-    if (profileForm.duration_min !== undefined && profileForm.duration_min !== '') {
-      patch.duration_min = Number(profileForm.duration_min);
-    }
-    if (profileForm.vehicle !== undefined) patch.vehicle = profileForm.vehicle || null;
-    if (profileForm.max_leg_min !== undefined && profileForm.max_leg_min !== '') {
-      patch.max_leg_min = Number(profileForm.max_leg_min);
+
+    if (profileForm.area !== undefined && profileForm.area !== view.profile?.area) {
+      patch.area = profileForm.area ? profileForm.area.trim() : null;
     }
 
-    // Tastes, exclusions, allergies parse from comma-separated strings if edited as strings
+    if (profileForm.party_size !== undefined && profileForm.party_size !== view.profile?.party_size) {
+      patch.party_size = profileForm.party_size === '' || profileForm.party_size === null
+        ? null
+        : Number(profileForm.party_size);
+    }
+
+    if (profileForm.budget_vnd !== undefined && profileForm.budget_vnd !== view.profile?.budget_vnd) {
+      patch.budget_vnd = profileForm.budget_vnd === '' || profileForm.budget_vnd === null
+        ? null
+        : Number(profileForm.budget_vnd);
+    }
+
+    if (profileForm.budget_scope !== undefined && profileForm.budget_scope !== view.profile?.budget_scope) {
+      patch.budget_scope = profileForm.budget_scope || null;
+    }
+
+    if (profileForm.start_time !== undefined && profileForm.start_time !== view.profile?.start_time) {
+      patch.start_time = profileForm.start_time || null;
+    }
+
+    if (profileForm.duration_min !== undefined && profileForm.duration_min !== view.profile?.duration_min) {
+      patch.duration_min = profileForm.duration_min === '' || profileForm.duration_min === null
+        ? null
+        : Number(profileForm.duration_min);
+    }
+
+    if (profileForm.vehicle !== undefined && profileForm.vehicle !== view.profile?.vehicle) {
+      patch.vehicle = profileForm.vehicle || null;
+    }
+
+    if (profileForm.max_leg_min !== undefined && profileForm.max_leg_min !== view.profile?.max_leg_min) {
+      patch.max_leg_min = profileForm.max_leg_min === '' || profileForm.max_leg_min === null
+        ? null
+        : Number(profileForm.max_leg_min);
+    }
+
+    if (profileForm.origin !== undefined && JSON.stringify(profileForm.origin) !== JSON.stringify(view.profile?.origin)) {
+      patch.origin = profileForm.origin;
+    }
+
+    // Tastes, exclusions, allergies
     if (typeof profileForm.tastes === 'string') {
-      patch.tastes = profileForm.tastes.split(',').map((s) => s.trim()).filter(Boolean);
-    } else if (Array.isArray(profileForm.tastes)) {
+      const arr = profileForm.tastes.split(',').map((s) => s.trim()).filter(Boolean);
+      patch.tastes = arr;
+    } else if (Array.isArray(profileForm.tastes) && profileForm.tastes !== view.profile?.tastes) {
       patch.tastes = profileForm.tastes;
     }
 
     if (typeof profileForm.allergies === 'string') {
-      patch.allergies = profileForm.allergies.split(',').map((s) => s.trim()).filter(Boolean);
-    } else if (Array.isArray(profileForm.allergies)) {
+      const arr = profileForm.allergies.split(',').map((s) => s.trim()).filter(Boolean);
+      patch.allergies = arr;
+    } else if (Array.isArray(profileForm.allergies) && profileForm.allergies !== view.profile?.allergies) {
       patch.allergies = profileForm.allergies;
     }
 
-    const action = updatePreferencesAction(patch);
-    handleDispatchAction(action, 'Đang lưu tuỳ chỉnh chuyến đi…');
+    if (Object.keys(patch).length > 0) {
+      const action = updatePreferencesAction(patch);
+      handleDispatchAction(action, 'Đang lưu tuỳ chỉnh chuyến đi…');
+    }
     setProfileDrawerOpen(false);
+  };
+
+  // Explicit Origin GPS Geolocation handler
+  const handleTriggerGPS = () => {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
+      setGeoNotice('Trình duyệt không hỗ trợ định vị GPS.');
+      return;
+    }
+    setGeoNotice('Đang xin quyền định vị GPS…');
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        const lat = Number(pos.coords.latitude.toFixed(6));
+        const lon = Number(pos.coords.longitude.toFixed(6));
+        setProfileForm((prev) => ({
+          ...prev,
+          origin: { lat, lon }
+        }));
+        setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon} (chỉ lưu cho điểm bắt đầu của bạn).`);
+      },
+      (err) => {
+        setGeoNotice(`Không thể lấy vị trí GPS: ${err.message}`);
+      },
+      { timeout: 10000, enableHighAccuracy: false }
+    );
   };
 
   // Trigger Plan / Confirmation
@@ -349,305 +520,480 @@ export default function DiscoveryLayout({
     return new Set((view.selection || []).map((s) => s.id));
   }, [view.selection]);
 
+  const stops = view.tour?.stops || [];
+  const areaDisplay = view.profile?.area || (stops[0]?.district ? stops[0].district : null);
+
   return (
-    <div className="nn-guided-root" data-testid="discovery-layout">
-      {/* Editorial Header */}
-      <header className="nn-header" role="banner">
-        <div className="nn-header-inner">
-          <div className="nn-header-brand-wrap">
-            <span className="nn-brand-star" aria-hidden="true">
-              <StarGlyph />
-            </span>
-            <div className="nn-brand-headings">
-              <h1 className="nn-brand-title">MĂM MĂM</h1>
-              <p className="nn-brand-sub">ẨM THỰC HÀ NỘI · KHÁM PHÁ THEO CÁCH CỦA BẠN</p>
-            </div>
+    <div data-testid="guided-container" aria-busy={busy} className="nn-root">
+      {/* Screen Reader Live Region */}
+      <div aria-live="polite" aria-atomic="true" className="nn-sr">
+        {busy ? busyMessage : ''}
+      </div>
+
+      {/* 1. LEFT RUST SIDEBAR (232px) */}
+      <aside className="nn-sidebar" aria-label="Thanh bên điều hướng">
+        <div className="nn-sidebar-top">
+          <div className="nn-brand-block">
+            <h1 className="nn-brand-logo">măm măm.</h1>
+            <div className="nn-brand-slogan">ĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.</div>
           </div>
 
-          <div className="nn-header-right">
+          <button
+            type="button"
+            data-testid="guided-reset-btn"
+            className="nn-new-trip-btn"
+            onClick={onResetSession}
+            disabled={busy}
+            aria-label="Tạo chuyến đi mới"
+          >
+            <span aria-hidden="true">+</span> Chuyến đi mới
+          </button>
+
+          <nav className="nn-sidebar-nav" aria-label="Chức năng chính">
+            <button
+              type="button"
+              data-testid="mobile-tab-chat"
+              className={`nn-sidebar-nav-item${activeMobileTab === 'chat' ? ' active' : ''}`}
+              aria-pressed={activeMobileTab === 'chat'}
+              onClick={() => {
+                setActiveMobileTab('chat');
+                chatSectionRef.current?.scrollIntoView({ block: 'start' });
+              }}
+            >
+              <span className="nn-nav-icon">✦</span> Trò chuyện
+            </button>
+            <button
+              type="button"
+              data-testid="mobile-tab-tour"
+              className={`nn-sidebar-nav-item${activeMobileTab === 'tour' ? ' active' : ''}`}
+              aria-pressed={activeMobileTab === 'tour'}
+              onClick={() => {
+                setActiveMobileTab('tour');
+                tourSectionRef.current?.scrollIntoView({ block: 'start' });
+              }}
+            >
+              <span className="nn-nav-icon">◇</span> Chuyến đi ({view.selection?.length || 0})
+            </button>
             <button
               type="button"
               data-testid="btn-toggle-profile-drawer"
-              className="nn-profile-panel-toggle"
+              className="nn-sidebar-nav-item"
               onClick={() => setProfileDrawerOpen((prev) => !prev)}
-              aria-expanded={profileDrawerOpen}
             >
-              <span>⚙ Tuỳ chỉnh chuyến đi</span>
-              <span>{profileDrawerOpen ? '▲' : '▼'}</span>
+              <span className="nn-nav-icon">⚙</span> Tuỳ chỉnh hồ sơ
             </button>
+          </nav>
 
-            <button
-              type="button"
-              data-testid="reset-session-btn"
-              className="nn-header-reset-btn"
-              onClick={onResetSession}
-              disabled={busy}
-            >
-              Bắt đầu lại
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* Collapsed Profile Drawer (Lives outside message stream) */}
-      {profileDrawerOpen && (
-        <div className="nn-profile-drawer" data-testid="discovery-profile-drawer">
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#231815' }}>
-              Tuỳ chỉnh tiêu chí chuyến đi
-            </h3>
-            <span style={{ fontSize: '11px', color: '#8C7872' }}>
-              Phiên bản hồ sơ: #{view.profile_version}
-            </span>
-          </div>
-
-          <form onSubmit={handleSaveProfile}>
-            <div className="nn-profile-drawer-grid">
-              <div className="nn-profile-field">
-                <label htmlFor="pref-area">Khu vực</label>
-                <input
-                  id="pref-area"
-                  type="text"
-                  value={profileForm.area || ''}
-                  onChange={(e) => setProfileForm({ ...profileForm, area: e.target.value })}
-                  placeholder="Hoàn Kiếm, Tây Hồ…"
-                />
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-party">Số người</label>
-                <input
-                  id="pref-party"
-                  type="number"
-                  min="1"
-                  max="20"
-                  value={profileForm.party_size ?? ''}
-                  onChange={(e) => setProfileForm({ ...profileForm, party_size: e.target.value })}
-                  placeholder="2"
-                />
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-budget">Ngân sách (VNĐ)</label>
-                <input
-                  id="pref-budget"
-                  type="number"
-                  step="10000"
-                  value={profileForm.budget_vnd ?? ''}
-                  onChange={(e) => setProfileForm({ ...profileForm, budget_vnd: e.target.value })}
-                  placeholder="300000"
-                />
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-scope">Phạm vi ngân sách</label>
-                <select
-                  id="pref-scope"
-                  value={profileForm.budget_scope || 'group'}
-                  onChange={(e) => setProfileForm({ ...profileForm, budget_scope: e.target.value })}
-                >
-                  <option value="group">Cả nhóm (group)</option>
-                  <option value="per_person">Mỗi người (per_person)</option>
-                </select>
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-time">Giờ bắt đầu</label>
-                <input
-                  id="pref-time"
-                  type="time"
-                  value={profileForm.start_time || ''}
-                  onChange={(e) => setProfileForm({ ...profileForm, start_time: e.target.value })}
-                />
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-duration">Tổng thời lượng (phút)</label>
-                <input
-                  id="pref-duration"
-                  type="number"
-                  step="15"
-                  min="30"
-                  max="720"
-                  value={profileForm.duration_min ?? ''}
-                  onChange={(e) => setProfileForm({ ...profileForm, duration_min: e.target.value })}
-                  placeholder="120"
-                />
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-vehicle">Phương tiện</label>
-                <select
-                  id="pref-vehicle"
-                  value={profileForm.vehicle || 'walk'}
-                  onChange={(e) => setProfileForm({ ...profileForm, vehicle: e.target.value })}
-                >
-                  <option value="walk">Đi bộ</option>
-                  <option value="motorbike">Xe máy</option>
-                  <option value="car">Ô tô</option>
-                  <option value="taxi">Taxi / Grab</option>
-                </select>
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-leg">Chặng tối đa (phút)</label>
-                <input
-                  id="pref-leg"
-                  type="number"
-                  min="3"
-                  max="60"
-                  value={profileForm.max_leg_min ?? ''}
-                  onChange={(e) => setProfileForm({ ...profileForm, max_leg_min: e.target.value })}
-                  placeholder="20"
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
-              <div className="nn-profile-field">
-                <label htmlFor="pref-tastes">Món thích (cách nhau dấu phẩy)</label>
-                <input
-                  id="pref-tastes"
-                  type="text"
-                  value={Array.isArray(profileForm.tastes) ? profileForm.tastes.join(', ') : (profileForm.tastes || '')}
-                  onChange={(e) => setProfileForm({ ...profileForm, tastes: e.target.value })}
-                  placeholder="phở, chè, ốc, cà phê trứng"
-                />
-              </div>
-
-              <div className="nn-profile-field">
-                <label htmlFor="pref-allergies">Dị ứng / Kiêng (cách nhau dấu phẩy)</label>
-                <input
-                  id="pref-allergies"
-                  type="text"
-                  value={Array.isArray(profileForm.allergies) ? profileForm.allergies.join(', ') : (profileForm.allergies || '')}
-                  onChange={(e) => setProfileForm({ ...profileForm, allergies: e.target.value })}
-                  placeholder="hải sản, đậu phộng, gluten"
-                />
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
+          <div className="nn-sidebar-recent">
+            <div className="nn-recent-header">GỢI Ý KHÁM PHÁ</div>
+            <div className="nn-recent-list">
               <button
                 type="button"
-                className="nn-action-chip-btn"
-                onClick={() => setProfileDrawerOpen(false)}
+                className="nn-recent-item"
+                onClick={() => handleSendMessage('Tìm quán phở ngon Hoàn Kiếm dưới 70k')}
+                disabled={busy || sessionError === 'session_not_found'}
               >
-                Huỷ
+                Phở ngon Hoàn Kiếm dưới 70k
               </button>
               <button
-                type="submit"
-                data-testid="btn-save-profile"
-                className="nn-action-chip-btn primary"
-                disabled={busy}
+                type="button"
+                className="nn-recent-item"
+                onClick={() => handleSendMessage('Gợi ý chè hoặc tráng miệng ít ngọt')}
+                disabled={busy || sessionError === 'session_not_found'}
               >
-                Lưu thay đổi
+                Chè & tráng miệng ít ngọt
+              </button>
+              <button
+                type="button"
+                className="nn-recent-item"
+                onClick={() => handleSendMessage('Quán ăn vặt chuẩn vị phố cổ')}
+                disabled={busy || sessionError === 'session_not_found'}
+              >
+                Quán ăn vặt chuẩn vị phố cổ
               </button>
             </div>
-          </form>
+          </div>
         </div>
-      )}
 
-      {/* Error / Conflict Banner */}
-      {errorBanner && (
-        <div
-          role="alert"
-          style={{
-            background: '#FDF2F0',
-            border: '1px solid #F5C6CB',
-            color: '#721C24',
-            padding: '10px 16px',
-            borderRadius: '10px',
-            margin: '0 24px 12px 24px',
-            fontSize: '13px',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '12px'
-          }}
-        >
-          <span>{errorBanner}</span>
+        <div className="nn-sidebar-bottom">
+          <div className="nn-promo-card">
+            <div className="nn-promo-title">Ăn như người bản địa</div>
+            <div className="nn-promo-desc">Những ngõ nhỏ luôn có câu chuyện ngon.</div>
+          </div>
+
+          <div className="nn-profile-footer">
+            <div className="nn-profile-avatar" aria-label="Khách ẩm thực">K</div>
+            <div className="nn-profile-info">
+              <div className="nn-profile-name">Phiên hiện tại</div>
+              <div className="nn-profile-sub">
+                {sessionId ? `#${sessionId.slice(0, 8)}…` : 'Chưa kết nối'}
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      {/* 2. MAIN CANVAS WRAPPER (Warm Golden Yellow Canvas) */}
+      <div className="nn-canvas-wrapper" data-testid="discovery-layout">
+        {/* Topbar: Breadcrumb + utility chips */}
+        <header className="nn-topbar">
+          <div className="nn-breadcrumb">
+            KHÁM PHÁ / TRỢ LÝ FOOD TOUR
+          </div>
+          <div className="nn-topbar-utilities">
+            <div className="nn-util-chip" title="Khu vực khảo sát">
+              <span className="nn-target-icon">⌖</span> {areaDisplay || 'Chưa chọn khu vực'}
+            </div>
+            <div className="nn-util-chip" title="Ngôn ngữ giao diện">
+              Tiếng Việt ⌄
+            </div>
+          </div>
+        </header>
+
+        {/* Mobile Tab Navigation for responsive 390px view */}
+        <nav className="nn-mobile-tabs" role="tablist" aria-label="Điều hướng trên điện thoại">
           <button
             type="button"
-            onClick={() => fetchAssistantView(sessionId, sessionToken)}
-            style={{
-              padding: '4px 10px',
-              borderRadius: '6px',
-              border: '1px solid #721C24',
-              background: '#FFF',
-              color: '#721C24',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer'
-            }}
+            role="tab"
+            aria-selected={activeMobileTab === 'chat'}
+            className={`nn-mobile-tab${activeMobileTab === 'chat' ? ' active' : ''}`}
+            onClick={() => setActiveMobileTab('chat')}
           >
-            Đồng bộ lại
+            Trò chuyện
           </button>
-        </div>
-      )}
-
-      {/* Mobile Tab Navigation (390px adaptation) */}
-      <nav className="nn-mobile-tabs" role="tablist" aria-label="Điều hướng trên điện thoại">
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeMobileTab === 'chat'}
-          className={`nn-mobile-tab${activeMobileTab === 'chat' ? ' active' : ''}`}
-          onClick={() => setActiveMobileTab('chat')}
-        >
-          Trò chuyện
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeMobileTab === 'tour'}
-          className={`nn-mobile-tab${activeMobileTab === 'tour' ? ' active' : ''}`}
-          onClick={() => setActiveMobileTab('tour')}
-        >
-          Chuyến đi ({view.selection?.length || 0})
-        </button>
-        <button
-          type="button"
-          role="tab"
-          aria-selected={activeMobileTab === 'map'}
-          className={`nn-mobile-tab${activeMobileTab === 'map' ? ' active' : ''}`}
-          onClick={() => setActiveMobileTab('map')}
-        >
-          Bản đồ
-        </button>
-      </nav>
-
-      {/* Main Two-Column Layout */}
-      <div className="nn-guided-body">
-        <main className="nn-guided-main">
-          {/* LEFT CHAT & DISCOVERY COLUMN */}
-          <section
-            data-testid="discovery-chat-section"
-            className={`nn-chat-col${activeMobileTab !== 'chat' ? ' nn-hidden-mobile' : ''}`}
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeMobileTab === 'tour'}
+            className={`nn-mobile-tab${activeMobileTab === 'tour' ? ' active' : ''}`}
+            onClick={() => setActiveMobileTab('tour')}
           >
-            <div className="nn-chat-scroll" ref={chatScrollRef} data-testid="discovery-messages-list">
+            Chuyến đi ({view.selection?.length || 0})
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={activeMobileTab === 'map'}
+            className={`nn-mobile-tab${activeMobileTab === 'map' ? ' active' : ''}`}
+            onClick={() => setActiveMobileTab('map')}
+          >
+            Bản đồ
+          </button>
+        </nav>
+
+        {/* Main Content Grid: Left Chat Card (668px) + Right Tour Column (476px) */}
+        <main className="nn-main-grid">
+          {/* LEFT CHAT CARD */}
+          <section
+            ref={chatSectionRef}
+            data-testid="discovery-chat-section"
+            className={`nn-chat-card${activeMobileTab !== 'chat' ? ' nn-hidden-mobile' : ''}`}
+          >
+            <div className="nn-chat-card-header">
+              <div className="nn-assistant-badge">
+                <span>✦</span> MĂM MĂM AI
+              </div>
+              <span className="nn-assistant-tagline">Người bạn sành ăn của bạn</span>
+            </div>
+
+            <h2 className="nn-hero-heading">
+              Hôm nay, mình<br className="nn-heading-break" />ăn cả Hà Nội nhé?
+            </h2>
+            <p className="nn-hero-sub">
+              Một chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.
+            </p>
+
+            {/* Suggestion Chips */}
+            <div data-testid="suggestion-chips-container" className="nn-chips-row">
+              <button
+                type="button"
+                className="nn-filter-chip"
+                onClick={() => handleSendMessage('Gợi ý ẩm thực đường phố phố cổ')}
+                disabled={busy || sessionError === 'session_not_found'}
+              >
+                Ẩm thực đường phố
+              </button>
+              <button
+                type="button"
+                className="nn-filter-chip"
+                onClick={() => handleSendMessage('Food tour hẹn hò nhẹ nhàng cho 2 người')}
+                disabled={busy || sessionError === 'session_not_found'}
+              >
+                Hẹn hò cuối tuần
+              </button>
+              <button
+                type="button"
+                className="nn-filter-chip"
+                onClick={() => handleSendMessage('Quán local chuẩn vị')}
+                disabled={busy || sessionError === 'session_not_found'}
+              >
+                Quán local
+              </button>
+              <button
+                type="button"
+                className="nn-filter-chip"
+                onClick={() => handleTriggerGPS()}
+                disabled={busy}
+              >
+                📍 Vị trí GPS
+              </button>
+            </div>
+
+            <div className="nn-chat-divider" role="separator" />
+
+            {/* Error / Conflict Alert Banner */}
+            {(errorBanner || initError) && (
+              <div data-testid="guided-error-banner" role="alert" className="nn-alert" style={{ margin: '8px 0 12px 0' }}>
+                <span>⚠️ {errorBanner || initError?.message}</span>
+                {sessionError === 'session_not_found' ? (
+                  <button type="button" onClick={onResetSession}>Tạo phiên mới</button>
+                ) : (
+                  <button type="button" onClick={() => fetchAssistantView(sessionId, sessionToken)}>Thử lại</button>
+                )}
+              </div>
+            )}
+
+            {/* Collapsed Profile Drawer (Lives outside message stream) */}
+            {profileDrawerOpen && (
+              <div className="nn-profile-drawer" data-testid="discovery-profile-drawer">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h3 style={{ margin: 0, fontSize: '14px', fontWeight: 700, color: '#231815' }}>
+                    Tuỳ chỉnh tiêu chí chuyến đi
+                  </h3>
+                  <span style={{ fontSize: '11px', color: '#8C7872' }}>
+                    Hồ sơ v#{view.profile_version}
+                  </span>
+                </div>
+
+                <form onSubmit={handleSaveProfile}>
+                  <div className="nn-profile-drawer-grid">
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-area">Khu vực</label>
+                      <input
+                        id="pref-area"
+                        type="text"
+                        value={profileForm.area || ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, area: e.target.value })}
+                        placeholder="Hoàn Kiếm, Tây Hồ…"
+                      />
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-party">Số người</label>
+                      <input
+                        id="pref-party"
+                        type="number"
+                        min="1"
+                        max="20"
+                        value={profileForm.party_size ?? ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, party_size: e.target.value })}
+                        placeholder="Chưa chọn"
+                      />
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-budget">Ngân sách (VNĐ)</label>
+                      <input
+                        id="pref-budget"
+                        type="number"
+                        step="10000"
+                        value={profileForm.budget_vnd ?? ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, budget_vnd: e.target.value })}
+                        placeholder="Chưa chọn"
+                      />
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-scope">Phạm vi ngân sách</label>
+                      <select
+                        id="pref-scope"
+                        value={profileForm.budget_scope || ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, budget_scope: e.target.value || null })}
+                      >
+                        <option value="">Chưa chọn</option>
+                        <option value="group">Cả nhóm (group)</option>
+                        <option value="per_person">Mỗi người (per_person)</option>
+                      </select>
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-time">Giờ bắt đầu</label>
+                      <input
+                        id="pref-time"
+                        type="time"
+                        value={profileForm.start_time || ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, start_time: e.target.value || null })}
+                      />
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-duration">Tổng thời lượng (phút)</label>
+                      <input
+                        id="pref-duration"
+                        type="number"
+                        step="15"
+                        min="30"
+                        max="720"
+                        value={profileForm.duration_min ?? ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, duration_min: e.target.value })}
+                        placeholder="Chưa chọn"
+                      />
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-vehicle">Phương tiện</label>
+                      <select
+                        id="pref-vehicle"
+                        value={profileForm.vehicle || ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, vehicle: e.target.value || null })}
+                      >
+                        <option value="">Chưa chọn</option>
+                        <option value="walk">Đi bộ</option>
+                        <option value="motorbike">Xe máy</option>
+                        <option value="car">Ô tô</option>
+                        <option value="taxi">Taxi / Grab</option>
+                      </select>
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-leg">Chặng tối đa (phút)</label>
+                      <input
+                        id="pref-leg"
+                        type="number"
+                        min="3"
+                        max="60"
+                        value={profileForm.max_leg_min ?? ''}
+                        onChange={(e) => setProfileForm({ ...profileForm, max_leg_min: e.target.value })}
+                        placeholder="Chưa chọn"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Origin coordinates & GPS */}
+                  <div style={{ marginTop: '8px', padding: '8px 12px', background: '#F8F2EB', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                      <label style={{ fontSize: '11px', fontWeight: 700, color: '#8C7872', textTransform: 'uppercase' }}>
+                        Điểm xuất phát (Tọa độ riêng tư)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleTriggerGPS}
+                        className="nn-action-chip-btn"
+                        style={{ height: '24px', fontSize: '11px' }}
+                      >
+                        📍 Lấy vị trí GPS hiện tại
+                      </button>
+                    </div>
+                    {geoNotice && (
+                      <div style={{ fontSize: '11px', color: '#6C554E' }}>{geoNotice}</div>
+                    )}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+                      <input
+                        type="number"
+                        step="0.0001"
+                        placeholder="Latitude (Vĩ độ)"
+                        value={profileForm.origin?.lat ?? ''}
+                        onChange={(e) => setProfileForm({
+                          ...profileForm,
+                          origin: e.target.value ? { ...(profileForm.origin || {}), lat: Number(e.target.value) } : null
+                        })}
+                        style={{ height: '30px', padding: '0 8px', borderRadius: '6px', border: '1px solid #E2D7CC', fontSize: '12px' }}
+                      />
+                      <input
+                        type="number"
+                        step="0.0001"
+                        placeholder="Longitude (Kinh độ)"
+                        value={profileForm.origin?.lon ?? ''}
+                        onChange={(e) => setProfileForm({
+                          ...profileForm,
+                          origin: e.target.value ? { ...(profileForm.origin || {}), lon: Number(e.target.value) } : null
+                        })}
+                        style={{ height: '30px', padding: '0 8px', borderRadius: '6px', border: '1px solid #E2D7CC', fontSize: '12px' }}
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-tastes">Món thích (cách nhau dấu phẩy)</label>
+                      <input
+                        id="pref-tastes"
+                        type="text"
+                        value={Array.isArray(profileForm.tastes) ? profileForm.tastes.join(', ') : (profileForm.tastes || '')}
+                        onChange={(e) => setProfileForm({ ...profileForm, tastes: e.target.value })}
+                        placeholder="phở, chè, ốc…"
+                      />
+                    </div>
+
+                    <div className="nn-profile-field">
+                      <label htmlFor="pref-allergies">Dị ứng / Kiêng (cách nhau dấu phẩy)</label>
+                      <input
+                        id="pref-allergies"
+                        type="text"
+                        value={Array.isArray(profileForm.allergies) ? profileForm.allergies.join(', ') : (profileForm.allergies || '')}
+                        onChange={(e) => setProfileForm({ ...profileForm, allergies: e.target.value })}
+                        placeholder="hải sản, đậu phộng…"
+                      />
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '12px' }}>
+                    <button
+                      type="button"
+                      className="nn-action-chip-btn"
+                      onClick={() => setProfileDrawerOpen(false)}
+                    >
+                      Huỷ
+                    </button>
+                    <button
+                      type="submit"
+                      data-testid="btn-save-profile"
+                      className="nn-action-chip-btn primary"
+                      disabled={busy || sessionError === 'session_not_found'}
+                    >
+                      Lưu thay đổi
+                    </button>
+                  </div>
+                </form>
+              </div>
+            )}
+
+            {/* Scrollable Message Stream */}
+            <div className="nn-stream" ref={chatScrollRef} data-testid="discovery-messages-list">
               {/* Initial Assistant Welcome */}
-              <div className="nn-msg-bubble assistant">
-                <p style={{ margin: 0 }}>{view.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}</p>
+              <div className="nn-editorial-welcome">
+                <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                <div className="nn-bubble editorial-body">
+                  {view.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}
+                </div>
                 {view.reply?.question && (
-                  <p style={{ margin: '6px 0 0 0', fontWeight: 600, color: '#CF542F' }}>
+                  <div style={{ marginTop: '6px', fontWeight: 600, color: 'var(--nn-accent, #C44A24)', fontSize: '13.5px' }}>
                     {view.reply.question}
-                  </p>
+                  </div>
                 )}
               </div>
 
               {/* Historical Messages */}
               {Array.isArray(view.messages) && view.messages.map((m, idx) => (
-                <div key={idx} className={`nn-msg-bubble ${m.role === 'user' ? 'user' : 'assistant'}`}>
-                  <p style={{ margin: 0 }}>{m.text}</p>
-                </div>
+                m.role === 'user' ? (
+                  <div key={idx} className="nn-bubble user">
+                    {m.text}
+                  </div>
+                ) : (
+                  <div key={idx} className="nn-editorial-assistant">
+                    <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                    <div className="nn-bubble editorial-body">
+                      {m.text}
+                    </div>
+                  </div>
+                )
               ))}
 
               {/* Restaurant Results Cards */}
               {Array.isArray(view.results) && view.results.length > 0 && (
                 <div className="nn-discovery-results">
                   <div className="nn-discovery-results-header">
-                    <span>Gợi ý quán phù hợp tại {view.profile?.area || 'Hà Nội'}</span>
+                    <span>Gợi ý quán phù hợp{view.profile?.area ? ` tại ${view.profile.area}` : ''}</span>
                     <span className="nn-results-count-badge">{view.results.length} địa điểm</span>
                   </div>
 
@@ -688,7 +1034,7 @@ export default function DiscoveryLayout({
 
                             {/* Price and Hours */}
                             <div className="nn-restaurant-meta-row">
-                              {r.price ? (
+                              {r.price && (r.price.min_vnd || r.price.max_vnd) ? (
                                 <span className="nn-restaurant-meta-item" title="Khoảng giá quán">
                                   💵 {Number(r.price.min_vnd || 0).toLocaleString('vi-VN')} – {Number(r.price.max_vnd || 0).toLocaleString('vi-VN')} đ
                                   <span style={{ fontSize: '10.5px', color: '#8C7872' }}> (khoảng giá quán)</span>
@@ -699,9 +1045,9 @@ export default function DiscoveryLayout({
                                 </span>
                               )}
 
-                              {r.hours ? (
+                              {r.hours?.display ? (
                                 <span className="nn-restaurant-meta-item">
-                                  🕒 {r.hours.display || 'Giờ mở cửa theo nguồn'}
+                                  🕒 {r.hours.display}
                                 </span>
                               ) : (
                                 <span className="nn-restaurant-meta-item" style={{ color: '#8C7872' }}>
@@ -740,7 +1086,7 @@ export default function DiscoveryLayout({
                               data-testid={`btn-select-venue-${r.id}`}
                               className={`nn-action-chip-btn${isSelected ? ' active' : ' primary'}`}
                               onClick={() => isSelected ? handleRemoveVenue(r.id) : handleAddVenue(r)}
-                              disabled={busy}
+                              disabled={busy || sessionError === 'session_not_found'}
                             >
                               {isSelected ? '✓ Đã chọn' : '+ Chọn vào tour'}
                             </button>
@@ -750,6 +1096,7 @@ export default function DiscoveryLayout({
                               data-testid={`btn-compare-venue-${r.id}`}
                               className={`nn-action-chip-btn${isCompareSelected ? ' active' : ''}`}
                               onClick={() => handleToggleCompareSelect(r.id)}
+                              disabled={sessionError === 'session_not_found'}
                             >
                               {isCompareSelected ? '✓ Đang so sánh' : 'So sánh'}
                             </button>
@@ -758,7 +1105,7 @@ export default function DiscoveryLayout({
                               type="button"
                               data-testid={`btn-details-venue-${r.id}`}
                               className="nn-action-chip-btn"
-                              onClick={() => setDetailVenue(r)}
+                              onClick={(e) => handleOpenDetailModal(r, e)}
                             >
                               Chi tiết
                             </button>
@@ -816,7 +1163,7 @@ export default function DiscoveryLayout({
                           <strong>Món:</strong> {(cv.dish_tags || []).join(', ') || 'Chưa rõ'}
                         </div>
                         <div className="nn-comparison-col-item">
-                          <strong>Giá:</strong> {cv.price ? `${Number(cv.price.min_vnd || 0).toLocaleString('vi-VN')} – ${Number(cv.price.max_vnd || 0).toLocaleString('vi-VN')} đ` : 'Chưa xác minh'}
+                          <strong>Giá:</strong> {cv.price && (cv.price.min_vnd || cv.price.max_vnd) ? `${Number(cv.price.min_vnd || 0).toLocaleString('vi-VN')} – ${Number(cv.price.max_vnd || 0).toLocaleString('vi-VN')} đ` : 'Chưa xác minh'}
                         </div>
                         <div className="nn-comparison-col-item">
                           <strong>Giờ:</strong> {cv.hours?.display || 'Chưa xác minh'}
@@ -830,7 +1177,7 @@ export default function DiscoveryLayout({
                             className="nn-action-chip-btn primary"
                             style={{ width: '100%', justifyContent: 'center' }}
                             onClick={() => handleAddVenue(cv)}
-                            disabled={busy || selectedVenueIds.has(cv.id)}
+                            disabled={busy || selectedVenueIds.has(cv.id) || sessionError === 'session_not_found'}
                           >
                             {selectedVenueIds.has(cv.id) ? '✓ Đã chọn' : '+ Chọn quán này'}
                           </button>
@@ -941,26 +1288,26 @@ export default function DiscoveryLayout({
               <button
                 type="button"
                 className="nn-quick-btn"
-                onClick={() => handleSendMessage('Tìm quán phở ngon gần đây')}
-                disabled={busy}
+                onClick={() => handleSendMessage('Thêm món chay')}
+                disabled={busy || sessionError === 'session_not_found'}
               >
-                + Tìm quán phở
+                + Thêm món chay
               </button>
               <button
                 type="button"
                 className="nn-quick-btn"
-                onClick={() => handleSendMessage('Gợi ý chè hoặc tráng miệng')}
-                disabled={busy}
+                onClick={() => handleSendMessage('Ít di chuyển hơn, đi bộ gần')}
+                disabled={busy || sessionError === 'session_not_found'}
               >
-                + Quán tráng miệng
+                Ít di chuyển hơn
               </button>
               <button
                 type="button"
                 className="nn-quick-btn"
-                onClick={() => handleSendMessage('Tìm quán ăn dưới 70k')}
+                onClick={() => setProfileDrawerOpen(true)}
                 disabled={busy}
               >
-                + Món dưới 70k
+                Đổi ngân sách
               </button>
             </div>
 
@@ -979,18 +1326,18 @@ export default function DiscoveryLayout({
                   data-testid="discovery-input"
                   value={inputText}
                   onChange={(e) => setInputText(e.target.value)}
-                  disabled={busy}
-                  placeholder="Hỏi về món ăn, tìm quán, hoặc yêu cầu điều chỉnh…"
+                  disabled={busy || sessionError === 'session_not_found'}
+                  placeholder="Bạn muốn điều chỉnh gì cho chuyến đi?"
                   aria-label="Nhập yêu cầu khám phá ẩm thực"
                 />
                 <button
                   type="submit"
                   data-testid="discovery-send-btn"
                   className="nn-send"
-                  disabled={busy || !inputText.trim()}
+                  disabled={busy || !inputText.trim() || sessionError === 'session_not_found'}
                   aria-label="Gửi yêu cầu"
                 >
-                  <span className="nn-send-label">Gửi</span>
+                  <span className="nn-send-label">Gửi tin nhắn</span>
                   <ArrowGlyph />
                 </button>
               </form>
@@ -1001,7 +1348,7 @@ export default function DiscoveryLayout({
                 <div className="nn-diagnostics-content">
                   <div>Hợp đồng: {view.contract || 'discovery-v1'} | Revision: #{view.revision}</div>
                   <div>Phiên bản hồ sơ: #{view.profile_version} | Phiên bản chọn quán: #{view.selection_version}</div>
-                  <div>Nguồn dữ liệu: {view.source?.dataset_source || 'synthetic'} ({view.source?.dataset_version || 'pilot'})</div>
+                  <div>Nguồn dữ liệu: {view.source?.dataset_source || 'chưa cấp'} ({view.source?.dataset_version || 'n/a'})</div>
                   <div>Chế độ AI: {view.provider?.mode || health?.llm || 'rules'} (Gọi: {view.provider?.calls || 0} lượt)</div>
                   <div>Thời gian xử lý: {view.diagnostics?.elapsed_ms || 0}ms | Thời tiết: {view.diagnostics?.weather || 'unavailable'}</div>
                 </div>
@@ -1011,12 +1358,11 @@ export default function DiscoveryLayout({
 
           {/* RIGHT TOUR / SELECTION / MAP COLUMN */}
           <section
+            ref={tourSectionRef}
             className={`nn-tour-col${activeMobileTab === 'chat' ? ' nn-hidden-mobile' : ''}`}
           >
             <div className="nn-tour-col-header">
-              <h2 className="nn-tour-heading">
-                {view.tour ? 'Lịch trình tour ẩm thực' : 'Quán đã chọn'}
-              </h2>
+              <h2 className="nn-tour-heading">Chuyến đi của bạn</h2>
               <div className="nn-view-mode-toggle" role="group" aria-label="Chế độ hiển thị">
                 <button
                   type="button"
@@ -1046,16 +1392,56 @@ export default function DiscoveryLayout({
               </div>
             ) : (
               <div className="nn-tour-content-scroll">
+                {/* Hero Card */}
+                <div className="nn-hero-card">
+                  <div className="nn-hero-tag">
+                    ✦ {stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS'}
+                  </div>
+                  <h3 className="nn-hero-title">
+                    {view.tour?.title || 'Đi một vòng, ngon một tối.'}
+                  </h3>
+                  <div className="nn-hero-meta">
+                    {stops.length > 0
+                      ? `${stops[0]?.district || 'Hà Nội'}${stops[0]?.arrive ? ` • ${stops[0].arrive}` : ''}${stops[stops.length - 1]?.depart ? ` — ${stops[stops.length - 1].depart}` : ''}`
+                      : (areaDisplay ? `${areaDisplay} • Đang lên ý tưởng` : 'Hà Nội • Chưa tạo lịch trình')}
+                  </div>
+                </div>
+
+                {/* 3-Column Metrics Card */}
+                <div className="nn-metrics-card">
+                  <div className="nn-metric-col">
+                    <div className="nn-metric-val">
+                      {stops.length > 0 ? (stops.length < 10 ? `0${stops.length}` : stops.length) : (view.selection?.length ? `0${view.selection.length}` : '—')}
+                    </div>
+                    <div className="nn-metric-lbl">điểm dừng</div>
+                  </div>
+                  <div className="nn-metric-divider" />
+                  <div className="nn-metric-col">
+                    <div className="nn-metric-val">
+                      {view.tour?.totals?.duration_min ? `${Math.round(view.tour.totals.duration_min / 60 * 10) / 10}h` : '—'}
+                    </div>
+                    <div className="nn-metric-lbl">thời lượng</div>
+                  </div>
+                  <div className="nn-metric-divider" />
+                  <div className="nn-metric-col">
+                    <div className="nn-metric-val">
+                      {view.tour?.totals?.estimated_cost_vnd
+                        ? `${Math.round(view.tour.totals.estimated_cost_vnd / 1000)}K`
+                        : (view.profile?.budget_vnd ? `${Math.round(view.profile.budget_vnd / 1000)}K` : '—')}
+                    </div>
+                    <div className="nn-metric-lbl">
+                      {view.profile?.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'}
+                    </div>
+                  </div>
+                </div>
+
                 {/* When Tour has been created */}
                 {view.tour ? (
                   <GuidedTimeline
                     tour={view.tour}
                     allergies={view.profile?.allergies || []}
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
-                    onReplaceStop={(stop) => {
-                      // Revision replans through reviseItinerary
-                      handleReviseItinerary();
-                    }}
+                    onReplaceStop={() => handleReviseItinerary()}
                     onChangeStop={() => handleReviseItinerary()}
                     onAdjustStops={() => setProfileDrawerOpen(true)}
                     onRestart={onResetSession}
@@ -1117,7 +1503,7 @@ export default function DiscoveryLayout({
                         <div className="nn-plan-trigger-card">
                           <h4 className="nn-plan-trigger-title">Sẵn sàng tạo lịch trình?</h4>
                           <p className="nn-plan-trigger-desc">
-                            Hệ thống sẽ tối ưu tuyến đường đi bộ, kiểm tra giờ mở cửa và tính toán chi phí theo ngân sách.
+                            Hệ thống sẽ tối ưu tuyến đường, kiểm tra giờ mở cửa và tính toán chi phí theo ngân sách.
                           </p>
                           <button
                             type="button"
@@ -1149,6 +1535,25 @@ export default function DiscoveryLayout({
                             </div>
                           </div>
                         ))}
+
+                        {/* Dark CTA Card in empty state */}
+                        <div className="nn-dark-cta-card">
+                          <div className="nn-cta-header">
+                            <h4 className="nn-cta-title">Sẵn sàng cho một buổi tối ngon?</h4>
+                            <p className="nn-cta-desc">Nhập yêu cầu ẩm thực ở khung chat để bắt đầu gợi ý lịch trình.</p>
+                          </div>
+                          <button
+                            type="button"
+                            data-testid="start-suggesting-cta-btn"
+                            className="nn-cta-btn"
+                            onClick={() => {
+                              inputRef.current?.focus();
+                              chatSectionRef.current?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+                            }}
+                          >
+                            Bắt đầu gợi ý →
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -1159,11 +1564,13 @@ export default function DiscoveryLayout({
         </main>
       </div>
 
-      {/* Detail Venue Modal */}
+      {/* Accessible Detail Venue Modal with Focus Trap & Escape Listener */}
       {detailVenue && (
         <div
           role="dialog"
           aria-modal="true"
+          aria-labelledby="detail-venue-modal-title"
+          ref={modalRef}
           style={{
             position: 'fixed',
             inset: 0,
@@ -1174,7 +1581,10 @@ export default function DiscoveryLayout({
             placeItems: 'center',
             padding: '16px'
           }}
-          onClick={() => setDetailVenue(null)}
+          onClick={() => {
+            setDetailVenue(null);
+            triggerElRef.current?.focus();
+          }}
         >
           <div
             style={{
@@ -1193,7 +1603,7 @@ export default function DiscoveryLayout({
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
-                <h3 style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#231815' }}>
+                <h3 id="detail-venue-modal-title" style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#231815' }}>
                   {detailVenue.name}
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#7A625A' }}>
@@ -1202,7 +1612,10 @@ export default function DiscoveryLayout({
               </div>
               <button
                 type="button"
-                onClick={() => setDetailVenue(null)}
+                onClick={() => {
+                  setDetailVenue(null);
+                  triggerElRef.current?.focus();
+                }}
                 style={{
                   border: 'none',
                   background: 'none',
@@ -1210,7 +1623,7 @@ export default function DiscoveryLayout({
                   cursor: 'pointer',
                   color: '#8C7872'
                 }}
-                aria-label="Đóng"
+                aria-label="Đóng cửa sổ chi tiết quán"
               >
                 ✕
               </button>
@@ -1221,7 +1634,7 @@ export default function DiscoveryLayout({
                 <strong>Món đặc trưng:</strong> {(detailVenue.dish_tags || []).join(', ') || 'Chưa rõ'}
               </div>
               <div>
-                <strong>Khoảng giá quán:</strong> {detailVenue.price ? `${Number(detailVenue.price.min_vnd || 0).toLocaleString('vi-VN')} – ${Number(detailVenue.price.max_vnd || 0).toLocaleString('vi-VN')} đ` : 'Chưa xác minh'}
+                <strong>Khoảng giá quán:</strong> {detailVenue.price && (detailVenue.price.min_vnd || detailVenue.price.max_vnd) ? `${Number(detailVenue.price.min_vnd || 0).toLocaleString('vi-VN')} – ${Number(detailVenue.price.max_vnd || 0).toLocaleString('vi-VN')} đ` : 'Chưa xác minh'}
               </div>
               <div>
                 <strong>Giờ hoạt động:</strong> {detailVenue.hours?.display || 'Chưa xác minh theo nguồn'}
@@ -1258,7 +1671,10 @@ export default function DiscoveryLayout({
               <button
                 type="button"
                 className="nn-action-chip-btn"
-                onClick={() => setDetailVenue(null)}
+                onClick={() => {
+                  setDetailVenue(null);
+                  triggerElRef.current?.focus();
+                }}
               >
                 Đóng
               </button>
@@ -1268,8 +1684,9 @@ export default function DiscoveryLayout({
                 onClick={() => {
                   handleAddVenue(detailVenue);
                   setDetailVenue(null);
+                  triggerElRef.current?.focus();
                 }}
-                disabled={busy || selectedVenueIds.has(detailVenue.id)}
+                disabled={busy || selectedVenueIds.has(detailVenue.id) || sessionError === 'session_not_found'}
               >
                 {selectedVenueIds.has(detailVenue.id) ? '✓ Đã trong tour' : '+ Thêm vào tour'}
               </button>

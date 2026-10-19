@@ -629,3 +629,47 @@
   font-family: monospace;
   font-size: 11px;
 }
+
+/* Mobile Tab Navigation: hidden on desktop (>=1024px), active on mobile */
+.nn-mobile-tabs {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .nn-mobile-tabs {
+    display: flex;
+    align-items: center;
+    background: #FFFEFA;
+    border-bottom: 1px solid #EFE7E0;
+    padding: 4px 16px;
+    gap: 8px;
+    height: 44px;
+    width: 100%;
+    position: sticky;
+    top: 0;
+    z-index: 40;
+  }
+
+  .nn-mobile-tab {
+    flex: 1;
+    height: 34px;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: #7A625A;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .nn-mobile-tab.active {
+    background: #F9E1CF;
+    color: #CF542F;
+    font-weight: 700;
+  }
+
+  .nn-hidden-mobile {
+    display: none !important;
+  }
+}
