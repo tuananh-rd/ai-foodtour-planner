@@ -11,7 +11,7 @@ const out=process.env.OA_EVIDENCE||'docs/reports/online-assistant/integrated';
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
 async function until(fn,ms=30000){const start=Date.now();while(Date.now()-start<ms){try{if(await fn())return;}catch{}await pause(80);}throw Error('Observable UI state timed out');}
 const health=await(await fetch(api+'/health')).json();
-if(health.dataset_source!=='synthetic'||health.assistant_provider!=='rules')throw Error('Explicit synthetic/rules-only browser QA required');
+if(health.dataset_source!=='synthetic'||health.assistant_provider!=='rules'||health.web_search_configured)throw Error('Explicit synthetic/rules/search-disabled browser QA required');
 const free=await new Promise(resolve=>{const server=net.createServer();server.once('error',()=>resolve(false));server.listen(port,'127.0.0.1',()=>server.close(()=>resolve(true)));});
 if(!free)throw Error('Browser port occupied; no process stopped');
 fs.mkdirSync(out,{recursive:true});
