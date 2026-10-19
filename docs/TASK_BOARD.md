@@ -2,6 +2,8 @@
 
 ## Active online assistant initiative
 
+Figma review update:905e6ea rejected before integration. Six concrete findings in reports/FIGMA_WARM_EDITORIAL_CODEX_REVIEW.md include fabricated unknown data/history, group budget mislabeled per-person and material visual mismatch. Same Antigravity correction task_53af11905ca6/ctx_0e9c06b07142 owns prior scoped frontend/QA files; Codex review/integration only. Final regression waits for corrected candidate; no new provider calls.
+
 NEW APPROVED UI REPLACEMENT: Figma frame1:145 Warm editorial replaces SVG visual target. Codex coordinates/reviews/integrates; Antigravity implements guided frontend/scoped styles/assets and bounded QA; Claude inactive. Original PNG visually opened by Codex, geometry and mappings in design/FIGMA_WARM_EDITORIAL_SPEC.md. Functional/safety/map/search/focus behavior remains required. Existing Antigravity terminal37bc is idle after settled focus task, with one stale background exploratory harness to inspect before new tests. Safe fast-forward current baseline before new dispatch; no overlapping frontend editor, provider probes, model change or quota increase. Implementation then targeted QA, Codex visual review and one final relevant regression/build gate; not accepted yet.
 
 Live Tavily setup follow-up: credential configured locally and ignored, cap1 credit/day and3/month with persistent ledger preserved. Read-only /usage200 gives null PAYGO/key limits, so unchanged adapter fails closed: BLOCKED,0 search POST/0 local credit delta/0 Gemini calls. See reports/online-assistant/tavily-live-smoke.json and ONLINE_ASSISTANT_LOCAL_SETUP.md. No frontend/code changes, agent dispatch or full-suite repeat.
