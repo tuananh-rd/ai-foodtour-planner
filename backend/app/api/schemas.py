@@ -323,6 +323,9 @@ class RankingHealth(Model):
 
 
 class Health(Model):
+    build_commit: str | None = Field(default=None, pattern=r'^[a-f0-9]{7,40}$')
+    assistant_provider: Literal['gemini', 'rules'] = 'rules'
+    web_search_configured: bool = False
     ranking: RankingHealth
     llm_budget: LLMBudget | None = None
     status: str
@@ -499,11 +502,14 @@ class ChatRequest(ChatInput):
     text: str | None = Field(default=None, min_length=1, max_length=1000)
     action: Action | None = None
     revision: int = Field(ge=0)
+    web_search: bool = Field(default=False, strict=True)
 
     @model_validator(mode='after')
     def exclusive(self):
         if (self.text is None) == (self.action is None):
             raise ValueError('exactly one text/action required')
+        if self.web_search and self.action is not None:
+            raise ValueError('web search requires an explicit text query')
         return self
 
 
@@ -665,7 +671,47 @@ class UnderstoodBlock(Model):
     style_note: str | None = None
 
 
-Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock | UnderstoodBlock, Field(discriminator='type')]
+class WebSource(Model):
+    title: str = Field(max_length=160)
+    url: str = Field(max_length=2048)
+    snippet: str = Field(max_length=500)
+
+    @field_validator('url')
+    @classmethod
+    def public_source_url(cls, value):
+        import ipaddress
+        from urllib.parse import urlsplit
+        if any(ord(char) <= 32 or ord(char) == 127 for char in value) or '\\' in value:
+            raise ValueError('invalid source URL')
+        try:
+            parts = urlsplit(value)
+            host = parts.hostname or ''
+            if (parts.scheme != 'https' or not host or parts.username or parts.password or parts.port not in (None, 443)
+                    or host == 'localhost' or host.endswith(('.localhost', '.local', '.internal', '.lan'))):
+                raise ValueError('invalid source URL')
+            try:
+                address = ipaddress.ip_address(host)
+            except ValueError:
+                if '.' not in host or any(not (char.isalnum() or char in '.-') for char in host):
+                    raise ValueError('invalid source host')
+            else:
+                if not address.is_global:
+                    raise ValueError('private source URL')
+        except (ValueError, TypeError):
+            raise ValueError('invalid source URL') from None
+        return value
+
+
+class WebSearchBlock(Model):
+    type: Literal['web_search']
+    status: Literal['ok', 'disabled', 'unavailable', 'quota', 'rejected']
+    sources: list[WebSource] = Field(max_length=3)
+    fetched_at: str | None
+    credits: Literal[0, 1]
+    cached: bool
+
+
+Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock | UnderstoodBlock | WebSearchBlock, Field(discriminator='type')]
 
 
 class ChatReply(Model):
@@ -698,7 +744,14 @@ class ChatTurnInfo(Model):
     llm_budget: TurnBudget | None = None
 
 
+class AssistantStatus(Model):
+    status: Literal['ok', 'disabled', 'unavailable', 'quota', 'rejected', 'skipped']
+    provider: str
+    llm_calls: Literal[0, 1] = 0
+
+
 class ChatTurn(SessionView):
     chat: dict
     reply: ChatReply
     turn: ChatTurnInfo
+    assistant: AssistantStatus | None = None

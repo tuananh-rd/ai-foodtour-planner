@@ -27,7 +27,7 @@ from app.repositories.sqlite_sessions import SQLiteSessionStore
 from app.repositories.venues import VenueRepository
 
 
-def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None, chat_understander=None):
+def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None, extractor=None, chat_understander=None, conversational_assistant=None, web_search=None):
     configure_access_logging()
     app = FastAPI(title="AI FoodTour Planner", version="1.0.0")
     try:
@@ -39,6 +39,7 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app.state.chat_understander_injected = chat_understander is not None
     app.state.chat_understanding_provider = None
     app.state.chat_engine_cache = None
+    app.state.web_search = web_search
     app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 6)
     app.state.llm_reserve = setting("FOODTOUR_LLM_RESERVE", 3)
     app.state.venues = VenueRepository(data_path)
@@ -74,6 +75,11 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app.state.llm_budget = gemini.budget if gemini is not None and gemini.configured else None
     if llm_mode == "gemini" and gemini is not None and gemini.configured:
         app.state.chat_understanding_provider = GeminiUnderstandingProvider(gemini)
+    # Conversation shares the explicitly configured client and its existing budget.
+    # Import lazily so injected tests and disabled deployments need no new provider.
+    from app.assistant.conversation import ConversationalAssistant
+    app.state.conversational_assistant = (conversational_assistant if conversational_assistant is not None
+        else ConversationalAssistant(gemini if llm_mode == 'gemini' and gemini is not None and gemini.configured else None))
     routing_mode = os.getenv("FOODTOUR_ROUTING", "estimate").strip().casefold()
     if routing_mode == "google":
         app.state.routing = GoogleRoutesProvider()

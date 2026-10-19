@@ -154,6 +154,42 @@
         "title": "Amenities",
         "type": "object"
       },
+      "AssistantStatus": {
+        "additionalProperties": false,
+        "properties": {
+          "llm_calls": {
+            "default": 0,
+            "enum": [
+              0,
+              1
+            ],
+            "title": "Llm Calls",
+            "type": "integer"
+          },
+          "provider": {
+            "title": "Provider",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "disabled",
+              "unavailable",
+              "quota",
+              "rejected",
+              "skipped"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "provider"
+        ],
+        "title": "AssistantStatus",
+        "type": "object"
+      },
       "ChatLocation": {
         "additionalProperties": false,
         "properties": {
@@ -377,7 +413,8 @@
                       "text": "#/components/schemas/TextBlock",
                       "tour_ready": "#/components/schemas/TourReadyBlock",
                       "understood": "#/components/schemas/UnderstoodBlock",
-                      "venue_cards": "#/components/schemas/VenueCardsBlock"
+                      "venue_cards": "#/components/schemas/VenueCardsBlock",
+                      "web_search": "#/components/schemas/WebSearchBlock"
                     },
                     "propertyName": "type"
                   },
@@ -408,6 +445,9 @@
                     },
                     {
                       "$ref": "#/components/schemas/UnderstoodBlock"
+                    },
+                    {
+                      "$ref": "#/components/schemas/WebSearchBlock"
                     }
                   ]
                 },
@@ -457,6 +497,11 @@
               }
             ],
             "title": "Text"
+          },
+          "web_search": {
+            "default": false,
+            "title": "Web Search",
+            "type": "boolean"
           }
         },
         "required": [
@@ -468,6 +513,16 @@
       "ChatTurn": {
         "additionalProperties": false,
         "properties": {
+          "assistant": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AssistantStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "chat": {
             "additionalProperties": true,
             "title": "Chat",
@@ -1367,6 +1422,27 @@
       "Health": {
         "additionalProperties": false,
         "properties": {
+          "assistant_provider": {
+            "default": "rules",
+            "enum": [
+              "gemini",
+              "rules"
+            ],
+            "title": "Assistant Provider",
+            "type": "string"
+          },
+          "build_commit": {
+            "anyOf": [
+              {
+                "pattern": "^[a-f0-9]{7,40}$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Build Commit"
+          },
           "dataset_loaded": {
             "title": "Dataset Loaded",
             "type": "boolean"
@@ -1486,6 +1562,11 @@
           "status": {
             "title": "Status",
             "type": "string"
+          },
+          "web_search_configured": {
+            "default": false,
+            "title": "Web Search Configured",
+            "type": "boolean"
           }
         },
         "required": [
@@ -4074,6 +4155,95 @@
           "dataset_version"
         ],
         "title": "VenueView",
+        "type": "object"
+      },
+      "WebSearchBlock": {
+        "additionalProperties": false,
+        "properties": {
+          "cached": {
+            "title": "Cached",
+            "type": "boolean"
+          },
+          "credits": {
+            "enum": [
+              0,
+              1
+            ],
+            "title": "Credits",
+            "type": "integer"
+          },
+          "fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fetched At"
+          },
+          "sources": {
+            "items": {
+              "$ref": "#/components/schemas/WebSource"
+            },
+            "maxItems": 3,
+            "title": "Sources",
+            "type": "array"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "disabled",
+              "unavailable",
+              "quota",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "type": {
+            "const": "web_search",
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "status",
+          "sources",
+          "fetched_at",
+          "credits",
+          "cached"
+        ],
+        "title": "WebSearchBlock",
+        "type": "object"
+      },
+      "WebSource": {
+        "additionalProperties": false,
+        "properties": {
+          "snippet": {
+            "maxLength": 500,
+            "title": "Snippet",
+            "type": "string"
+          },
+          "title": {
+            "maxLength": 160,
+            "title": "Title",
+            "type": "string"
+          },
+          "url": {
+            "maxLength": 2048,
+            "title": "Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "title",
+          "url",
+          "snippet"
+        ],
+        "title": "WebSource",
         "type": "object"
       },
       "WhyReason": {

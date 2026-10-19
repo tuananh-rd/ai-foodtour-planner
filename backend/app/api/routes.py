@@ -1,5 +1,6 @@
 """Contract-v1 endpoints. All session mutations are atomic and checked."""
 from dataclasses import asdict, replace as domain_replace
+import copy
 import os
 import time
 from typing import Literal
@@ -16,8 +17,9 @@ from app.api.schemas import (
     SessionView, StopView, Totals, TourView, VenueView, VenueList, VenueListItem, clock,
     GeocodeRequest, GeocodeResponse, MapVenues, MapVenue, ClientConfig, MapsLinksResponse,
 )
-from app.chat.engine import ChatEngine, open_obligation
+from app.chat.engine import ChatEngine, TurnResult, open_obligation
 from app.chat.llm_understand import LLMUnderstander
+from app.chat.conversation_reply import decorate_reply, private_turn
 from app.chat.planning import plan_selected, routing_for
 from app.chat.tools import clean_text
 from app.repositories.sessions import encode_chat
@@ -136,7 +138,10 @@ def health(request: Request):
     route_mode = ("provider_route" if routing.configured and routing.reachable else "unknown"
                   ) if isinstance(routing, (HttpRouteProvider, WalkingRouteProvider)) else "straight_line_estimate"
     info = request.app.state.provider_info
-    return Health(ranking={"quality_weight": request.app.state.quality_weight},
+    return Health(build_commit=getattr(request.app.state, 'build_commit', None),
+                  assistant_provider='gemini' if getattr(request.app.state.conversational_assistant, 'is_configured', False) else 'rules',
+                  web_search_configured=bool(getattr(request.app.state.web_search, 'configured', False)),
+                  ranking={"quality_weight": request.app.state.quality_weight},
                   llm_budget=health_budget(request),
                   status="ok", dataset_loaded=bool(data.venues),
                   llm=llm_mode, llm_configured=(llm_mode != "unavailable" and not (
@@ -501,10 +506,29 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         try:
             try:
                 extraction_started = time.perf_counter()
-                result = cached[1].handle(session.chat, session.preferences, text=body.text,
-                    action=body.action.model_dump(exclude_none=True) if body.action else None,
-                    llm=understander.understand if understander is not None else None,
-                    llm_status='exhausted' if exhausted else None)
+                if body.web_search:
+                    # Explicit retrieval is read-only: query text is never a planner patch.
+                    state = copy.deepcopy(session.chat)
+                    state.turn_count += 1
+                    state.remember('user', body.text, 'WEB_SEARCH')
+                    disabled = {'status': 'disabled', 'sources': [], 'fetched_at': None, 'credits': 0, 'cached': False}
+                    search = request.app.state.web_search
+                    try:
+                        found = search.search(body.text, deadline_s=6.0) if search is not None and not private_turn(body.text) else disabled
+                        if private_turn(body.text):
+                            found = dict(disabled, status='rejected')
+                        # Strictly validate before emitting any untrusted provider data.
+                        from app.api.schemas import WebSearchBlock
+                        block = WebSearchBlock.model_validate(dict(found, type='web_search')).model_dump()
+                    except Exception:
+                        block = dict(disabled, type='web_search', status='unavailable')
+                    result = TurnResult(state, session.preferences, [block], 'WEB_SEARCH', understanding='action')
+                    state.remember('assistant', 'Tra cứu web không thay đổi yêu cầu hoặc xác nhận lịch trình.', 'WEB_SEARCH')
+                else:
+                    result = cached[1].handle(session.chat, session.preferences, text=body.text,
+                        action=body.action.model_dump(exclude_none=True) if body.action else None,
+                        llm=understander.understand if understander is not None and not private_turn(body.text) else None,
+                        llm_status='exhausted' if exhausted else None)
                 request.scope['foodtour_pipeline'] = {
                     'understanding': result.understanding,
                     'provider_attempted': bounded_count(result.llm_calls, maximum=1),
@@ -549,6 +573,10 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                     result.blocks = outcome_blocks
             if result.replace_request and not obligation:
                 replace_chat_stop(session, result, data, request, cached[1])
+            assistant_status = decorate_reply(request.app.state.conversational_assistant, result,
+                body.text if body.action is None and not body.web_search else None, session.chat.turns,
+                budget=budget_snapshot(request), session_cap=request.app.state.llm_session_cap,
+                reserve=request.app.state.llm_reserve)
             session.preferences, session.chat = prefs, result.state
             session.revision += 1
             view = session_view(session, session.tour, session.snapshot or data, request)
@@ -558,6 +586,7 @@ def chat(session_id: str, body: ChatRequest, request: Request,
                 turn={'intent': result.intent, 'tools': result.tools, 'understanding': result.understanding},
                 llm_calls=result.llm_calls,
                 extraction_source=result.understanding if result.understanding in ('llm', 'cache') else 'rules')
+            values['assistant'] = assistant_status
             budget = budget_snapshot(request)
             if guided:
                 values.pop('llm_budget', None)
