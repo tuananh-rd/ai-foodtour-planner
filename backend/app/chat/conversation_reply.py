@@ -5,6 +5,7 @@ import copy
 import re
 
 from app.planner.relevance import fold_uncached
+from app.chat.coverage import _DISHES
 
 
 def private_turn(text):
@@ -33,6 +34,19 @@ def decorate_reply(assistant, result, user_text, recent_turns, *, budget, sessio
         'profile': {key: result.state.profile[key].to_json() for key in (
             'party_size', 'budget', 'duration_min', 'vehicle', 'max_leg_min', 'stops')},
     }
+    # Retain public food preferences even when the original multi-slot turn was
+    # withheld because it also contained an allergy disclosure. Unknown/private
+    # strings and location records are never recovered into provider context.
+    known_dishes = {fold_uncached(label) for label, _ in _DISHES}
+    tastes = result.state.profile['tastes'].value
+    if isinstance(tastes, (list, tuple)):
+        public_tastes = [value for value in tastes if isinstance(value, str)
+                         and fold_uncached(value) in known_dishes][:5]
+        if public_tastes:
+            state['profile']['tastes'] = {'value': public_tastes}
+    day_part = result.state.profile['day_part'].value
+    if day_part in ('morning', 'noon', 'afternoon', 'evening', 'late'):
+        state['profile']['day_part'] = {'value': day_part}
     try:
         # Deterministic assistant detail replies may contain private venue facts.
         # Keep user context and generic greeting replies only, never record-derived text.

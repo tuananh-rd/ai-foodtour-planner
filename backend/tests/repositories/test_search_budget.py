@@ -41,6 +41,16 @@ class SearchBudgetTests(unittest.TestCase):
         with ThreadPoolExecutor(max_workers=8) as pool:
             self.assertEqual(sum(pool.map(attempt, range(16))), 3)
 
+    def test_unexpected_usage_blocks_month_across_restart_and_day_rollover(self):
+        self.budget().admit()
+        self.budget().block_current_month()
+        self.now = self.now.replace(day=20)
+        with self.assertRaises(ProviderError) as error:
+            self.budget().admit()
+        self.assertEqual(error.exception.kind, 'quota')
+        self.now = self.now.replace(month=11, day=1)
+        self.budget().admit()
+
     def test_invalid_or_corrupt_storage_fails_closed(self):
         for path, daily, monthly in ((None, 2, 3), ('relative.sqlite', 2, 3), (self.path, 5, 3),
                                      (self.path, True, 3), (self.path, 1, 1001)):

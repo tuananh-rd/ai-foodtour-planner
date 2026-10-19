@@ -343,11 +343,15 @@ def project_safe_state(state: Any) -> dict:
     if isinstance(profile, dict):
         safe_profile = {}
         for k in (
-            "party_size", "budget", "budget_vnd", "duration_min",
+            "party_size", "budget", "budget_vnd", "budget_scope", "duration_min",
             "vehicle", "max_leg_min", "stops", "tastes", "day_part"
         ):
             if k in profile:
                 val = profile[k]
+                if k in ('budget', 'budget_vnd'):
+                    scope = val.get('scope') if isinstance(val, dict) else getattr(val, 'scope', None)
+                    if scope in ('group', 'per_person'):
+                        safe_profile['budget_scope'] = scope
                 if isinstance(val, dict) and "value" in val:
                     val = val["value"]
                 elif hasattr(val, "value"):
@@ -483,7 +487,9 @@ class ConversationalAssistant:
             return False, None
 
         # Guard: Price claim for venue/dishes (even if number was in input)
-        if RE_PRICE_CLAIM.search(reply):
+        budget_ack = ('ngân sách' in reply.casefold() and not re.search(
+            r'\b(?:giá|quán|bát|phần|suất|món|ly|cốc)\b', reply, re.I))
+        if RE_PRICE_CLAIM.search(reply) and not budget_ack:
             return False, None
 
         # Guard: Operational hours claim for venues (even if number was in input)
@@ -516,6 +522,12 @@ class ConversationalAssistant:
         # Guard: Unsupported numeric facts (prices, hours, ratings)
         # A repeated user/model number is not authoritative state evidence.
         profile = safe_state.get('profile', {})
+        if budget_ack and RE_SPECIFIC_PRICE_DIGITS.search(reply):
+            folded_reply = unicodedata.normalize('NFC', reply).casefold()
+            if re.search(r'\bmỗi\s+người\b', folded_reply) and profile.get('budget_scope') != 'per_person':
+                return False, None
+            if re.search(r'\bcả\s+(?:nhóm|hội)\b', folded_reply) and profile.get('budget_scope') != 'group':
+                return False, None
         context_numbers = {str(value) for value in profile.values() if type(value) in (int, float)}
 
         for m in RE_SPECIFIC_PRICE_DIGITS.finditer(reply):

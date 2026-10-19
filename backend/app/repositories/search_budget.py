@@ -1,5 +1,6 @@
 """Conservative persisted Tavily credits: UTC day AND month, atomic admission."""
 from datetime import datetime, timezone
+from contextlib import closing
 from pathlib import Path
 import sqlite3
 
@@ -27,6 +28,9 @@ class SearchCreditBudget:
             connection = sqlite3.connect(str(self.path), timeout=2, isolation_level=None)
             connection.execute('BEGIN IMMEDIATE')
             connection.execute('CREATE TABLE IF NOT EXISTS search_credits (window TEXT PRIMARY KEY, used INTEGER NOT NULL CHECK(used >= 0))')
+            connection.execute('CREATE TABLE IF NOT EXISTS search_blocks (window TEXT PRIMARY KEY)')
+            if connection.execute('SELECT 1 FROM search_blocks WHERE window=?', ('month:' + month,)).fetchone():
+                raise ProviderError('quota')
             windows = [('day:' + day, self.daily_limit), ('month:' + month, self.monthly_limit)]
             for window, limit in windows:
                 row = connection.execute('SELECT used FROM search_credits WHERE window=?', (window,)).fetchone()
@@ -49,3 +53,16 @@ class SearchCreditBudget:
         finally:
             if connection:
                 connection.close()
+
+    def block_current_month(self):
+        """Unexpected provider credit usage disables further requests durably."""
+        if not self.valid:
+            raise ProviderError('unavailable')
+        month = self.clock().astimezone(timezone.utc).strftime('%Y-%m')
+        try:
+            with closing(sqlite3.connect(str(self.path), timeout=2)) as connection:
+                with connection:
+                    connection.execute('CREATE TABLE IF NOT EXISTS search_blocks (window TEXT PRIMARY KEY)')
+                    connection.execute('INSERT OR IGNORE INTO search_blocks VALUES (?)', ('month:' + month,))
+        except (sqlite3.Error, OSError, ValueError):
+            raise ProviderError('unavailable') from None

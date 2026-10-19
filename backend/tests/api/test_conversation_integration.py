@@ -112,6 +112,15 @@ class ConversationIntegration(unittest.TestCase):
         decorate_reply(assistant, result, 'Tiếp tục nhé', history, budget=None, session_cap=6, reserve=3)
         self.assertEqual(assistant.calls[0][1], [history[1]])
 
+    def test_public_dishes_survive_sensitive_history_without_unknown_strings(self):
+        result, assistant = self.result(), AssistantStub('Mình đã ghi nhận.')
+        result.state.profile['tastes'].value = ['phở', 'bún chả', 'PRIVATE_SAMPLE']
+        result.state.profile['day_part'].value = 'evening'
+        self.decorate(assistant, result)
+        projection = assistant.calls[0][2]['profile']
+        self.assertEqual(projection['tastes']['value'], ['phở', 'bún chả'])
+        self.assertEqual(projection['day_part']['value'], 'evening')
+
     def test_retrieval_is_opt_in_read_only_and_invalid_sources_fail_closed(self):
         found = {'status': 'ok', 'sources': [{'title': 'Synthetic source', 'url': 'https://example.com/food',
             'snippet': 'Synthetic web quotation'}], 'fetched_at': '2026-10-19T00:00:00Z', 'credits': 1, 'cached': False}

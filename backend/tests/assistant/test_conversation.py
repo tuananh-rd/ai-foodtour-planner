@@ -386,6 +386,19 @@ class TestConversationalAssistant(unittest.TestCase):
 
 
 class IntegrationReviewGuards(unittest.TestCase):
+    def test_budget_scope_is_preserved_and_acknowledgements_cannot_change_it(self):
+        for scope, reply, expected in (
+            ('group', 'Mình ghi nhận ngân sách 500k cho cả nhóm.', 'ok'),
+            ('group', 'Mình ghi nhận ngân sách 500k mỗi người.', 'rejected'),
+            ('per_person', 'Mình ghi nhận ngân sách 500k mỗi người.', 'ok'),
+            (None, 'Mình ghi nhận ngân sách 500k cho cả nhóm.', 'rejected')):
+            provider = StubProvider({'reply': reply})
+            result = ConversationalAssistant(provider).respond('500k', [],
+                {'profile': {'budget': {'value': 500000, 'scope': scope}}}, [])
+            self.assertEqual(result.status, expected, (scope, reply))
+            if scope:
+                self.assertIn(scope, provider.calls[0]['user_text'])
+
     def test_missing_state_is_not_grounded_by_repeated_user_numbers(self):
         for answer in ('Mình ghi nhận 3 người.', 'Mình ghi nhận 120 phút.',
                        'Mình ghi nhận 3 quán.', 'Ngân sách dự kiến 500k.'):
