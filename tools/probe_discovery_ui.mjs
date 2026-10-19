@@ -72,7 +72,7 @@ try{
    await action('btn-confirm-itinerary');record('confirmed real planner tour '+width,!!view.tour?.stops?.length&&view.confirmation===null);
    if(width===390)await click(sel('mobile-tab-tour'));
    await until(()=>exists('guided-timeline'));await shot('confirmed-'+width);
-   record('free Maps URL exists '+width,await ev(`Array.from(document.querySelectorAll('a[href]')).some(a=>/^https:\/\/(?:www\.)?google\.com\/maps\//.test(a.href)&&!a.href.includes('key='))`));
+   record('free Maps URL exists '+width,await ev(`Array.from(document.querySelectorAll('a[href]')).some(a=>{const u=new URL(a.href);return ['google.com','www.google.com'].includes(u.hostname)&&u.pathname.startsWith('/maps/')&&!u.searchParams.has('key')})`));
    await click(sel('pilot-map-toggle'));await pause(1800);record('PMTiles map accessible '+width,await exists('pilot-map-canvas')||await exists('map-canvas'));await shot('map-'+width);
    await cdp('Page.reload');await until(()=>exists('discovery-input'));await idle();record('reload preserves selection and tour '+width,view.selection.length===1&&!!view.tour?.stops?.length);
    if(width===390)await click(sel('mobile-tab-chat'));

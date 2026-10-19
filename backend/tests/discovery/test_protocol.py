@@ -138,6 +138,36 @@ class ProtocolTests(unittest.TestCase):
 
 
 class PersistenceTests(unittest.TestCase):
+    def test_confirmed_tour_restart_preserves_selection_and_discovery_tastes(self):
+        with tempfile.TemporaryDirectory() as temp, patch.dict('os.environ', {
+            'FOODTOUR_SESSION_DB': str(Path(temp)/'confirmed.sqlite'), 'FOODTOUR_LLM': 'mock',
+            'GEMINI_API_KEY': '', 'FOODTOUR_EXPLAIN': 'template'}):
+            path = Path(__file__).resolve().parents[4]/'contracts/fixtures/venues.chat.synthetic.json'
+            with TestClient(create_app(data_path=path)) as client:
+                session = client.post('/v1/sessions', json={}).json()
+                url, headers = f"/v1/sessions/{session['session_id']}/assistant", {'X-Session-Token': session['token']}
+                def post(payload):
+                    rev = client.get(url, headers=headers).json()['revision']
+                    response = client.post(url, headers=headers, json={'revision': rev, **payload})
+                    self.assertEqual(response.status_code, 200, response.text)
+                    return response.json()
+                found = post({'text': 'Tìm quán quanh Hồ Gươm'})
+                selected_id = found['results'][0]['id']
+                post({'action': {'type': 'tool', 'name': 'update_foodtour_selection', 'arguments': {
+                    'operation': 'add', 'venue_ids': [selected_id], 'selection_version': 0}}})
+                post({'text': 'Tìm chè ít ngọt'})
+                post({'text': 'Xuất phát từ Hồ Gươm lúc 18h, tổng 120 phút, đi bộ, 2 người'})
+                ready = post({'action': {'type': 'tool', 'name': 'create_itinerary', 'arguments': {}}})
+                confirmed = post({'action': {'type': 'confirm', 'confirmation_id': ready['confirmation']['id']}})
+            with TestClient(create_app(data_path=path)) as restarted:
+                response = restarted.get(url, headers=headers)
+                self.assertEqual(response.status_code, 200, response.text)
+                restored = response.json()
+                self.assertEqual(restored['tour'], confirmed['tour'])
+                self.assertEqual(restored['selection'][0]['id'], selected_id)
+                self.assertIn('ít ngọt', restored['profile']['tastes'])
+                self.assertIsNone(restored['confirmation'])
+
     def test_sqlite_restart_keeps_versions_selection_messages_and_nonce(self):
         with tempfile.TemporaryDirectory() as temp, patch.dict('os.environ', {
             'FOODTOUR_SESSION_DB': str(Path(temp)/'sessions.sqlite'), 'FOODTOUR_LLM': 'mock',
