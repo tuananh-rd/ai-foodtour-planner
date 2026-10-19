@@ -179,7 +179,7 @@ export class ApiError extends Error {
     this.name = "ApiError";
     this.code = code;
     this.details = details;
-    this.status = status;
+    this.status = typeof code === 'number' && status === 400 ? code : status;
   }
 }
 
@@ -202,14 +202,7 @@ export function setRuntimeMockMode(enable) {
 }
 
 export function getApiBaseUrl() {
-  if (typeof window !== 'undefined') {
-    if (window.__FOODTOUR_API_URL__) return window.__FOODTOUR_API_URL__;
-    try {
-      const sp = new URLSearchParams(window.location.search);
-      if (sp.has('api')) return sp.get('api');
-    } catch (_) {}
-  }
-  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:8060';
+  return process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000';
 }
 
 // In-memory mock session store for realistic client testing
@@ -1415,7 +1408,10 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
   if (!sessionId) throw new ApiError(400, 'Thiếu sessionId.');
   if (!body) throw new ApiError(400, 'Thiếu body cho lượt chat.');
   if (body.text === undefined && body.action === undefined) {
-    throw new ApiError(422, 'Cần có text hoặc action.');
+    throw new ApiError('validation_error', 'Cần có text hoặc action.', null, 422);
+  }
+  if (Boolean(body.action) && Boolean(body.web_search)) {
+    throw new ApiError('validation_error', 'Không thể kết hợp action với web_search.', null, 422);
   }
 
   if (isMockMode()) {
@@ -1466,6 +1462,7 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
     // Returns labelled unavailable web block with completely UNCHANGED preferences, pending,
     // allergies, shortlist, and tour. Never feeds query into slot/profile/tour mutation.
     if (body.text && body.web_search) {
+      session.revision = (session.revision || 0) + 1;
       return {
         reply: {
           blocks: [

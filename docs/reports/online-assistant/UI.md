@@ -2,10 +2,10 @@
 
 - **Date:** 2026-10-19
 - **Implementer:** Antigravity (dispatched frontend worker)
-- **Coordinator / Integrator:** Codex (`term_ecb79c94-80cb-4298-9e27-6720faa54e6e`)
+- **Coordinator / Integrator:** Codex (`term_24c3a210-7070-4dd5-b703-f12f516a70b0`)
 - **Authority & Specification:** `docs/design/ONLINE_ASSISTANT_UI_SCOPE.md`, `contracts/v1/openapi.json`, `docs/design/SVG_FIDELITY_SPEC.md`
-- **Task ID:** `task_529bb1dff2e5`
-- **Dispatch ID:** `ctx_262125b4904a`
+- **Task ID:** `task_ff3a8db281f6`
+- **Dispatch ID:** `ctx_c59210e209bb`
 
 ---
 
@@ -186,7 +186,10 @@ Visual evidence screenshots captured under isolated test environment (Ports 3070
 | `04_desktop_interactive_map_view.png` | 1440×1024 | Interactive Hoàn Kiếm MapLibre/PMTiles basemap with rendered roads, water, earth, and markers |
 | `05_desktop_trust_disclosure_modal.png` | 1440×1024 | Trust disclosure modal showing updated AI, web search, and privacy copy |
 | `06_mobile_390_chat_and_optin.png` | 390×844 | Mobile responsive chat view with compact "Tra web" control |
-| `07_mobile_390_map_view.png` | 390×844 | Mobile responsive tour tab showing local map in "Bản đồ" mode |
+| `07_mobile_390_map_view.png` | 390×844 | Mobile responsive tour tab page-top itinerary view in "Bản đồ" mode (the interactive map canvas sits below the viewport fold and is not directly visible in this page-top capture) |
+
+> [!NOTE]
+> **Mobile Screenshot Evidence Limitation:** As confirmed by coordinator inspection, `07_mobile_390_map_view.png` captures the page-top itinerary header on the 390×844 mobile viewport where the interactive map canvas is positioned below the viewport fold. This screenshot documents tab/mode activation and layout continuity, but does not visually prove mobile canvas rendering.
 
 > [!NOTE]
 > **Candidate Image Remediation:** In early candidate testing (`d9c2971`), MapLibre 6 failed to resolve the bundled web worker under Next.js webpack mode, resulting in an unhandled worker load error and blank canvas. This has been fully resolved via upstream bundler worker URL configuration and versioned same-origin asset `/maps/maplibre-gl-worker-6.15.0.mjs` (518,806 bytes, 3-Clause BSD). Fresh evidence confirms real geographic vector tiles (`Range: 487845-605035/2138597`) and non-blank canvas rendering.
@@ -203,14 +206,14 @@ Visual evidence screenshots captured under isolated test environment (Ports 3070
 
 ---
 
-## 7. Coordinator Review Remediation & Inbox Gate Resolutions
+## 7. Coordinator Review Remediation & Review Gate Status
 
-All review items from the coordinator inbox across `task_6735006d7387` / `ctx_fc855380ac48` were systematically audited, implemented, verified, and acknowledged:
+The review items from coordinator reviews have been audited and implemented across targeted code and contract tests. However, review gates are not claimed as fully settled across all possible real-world operational scopes; specific boundaries between verified technical evidence and open operational items are detailed below:
 
 1. **Test Harness Deduplication (`msg_a8f9d964e263`):** Removed duplicate helper in `qa/online-assistant/test_pilot_map_contracts.mjs`.
 2. **Review Gate & Protocol Verification (`msg_bf32e15b19ef`):** Added explicit contract assertions verifying MapLibre 6 named exports and PMTiles 4 Protocol initialization without side-effects.
 3. **Map Lifecycle & Bounded Timeout (`msg_faf7d262813c`, `msg_edbb8aee33c9`):** Added bounded 8000ms load timeout in `PilotMap.jsx`, controlled fallback UI, and full `cleanupMap` destroying both MapLibre instance and active markers on error, unmount, and generation changes.
-4. **Mock Mode State Short-Circuit (`msg_9b93380962c7`):** In `frontend/lib/api.js`, queries with `body.text && body.web_search` immediately short-circuit after revision verification in mock mode, returning `{ status: 'unavailable', query: body.text, sources: [], credits: 0, cached: false }` with 100% UNCHANGED preferences, profile slots, shortlist, and tour.
+4. **Mock Mode State Short-Circuit & Contract Invariants (`msg_9b93380962c7`):** In `frontend/lib/api.js`, queries with `body.text && body.web_search` increment `session.revision` by 1 and return honest unavailable block with 100% UNCHANGED preferences, profile slots, shortlist, and tour. Subsequent requests with stale revision fail with HTTP 409 `revision_conflict`. Requests combining `action` with `web_search: true` reject immediately with HTTP 422 `validation_error` before modifying state.
 5. **Stable TestIDs (`msg_2080f40e03ee`):** Added stable selector attributes:
    - `data-testid="pilot-map-canvas"`
    - `data-testid="pilot-markers-toggle"`
@@ -224,10 +227,19 @@ All review items from the coordinator inbox across `task_6735006d7387` / `ctx_fc
 8. **Strict Search Safety & Citation Metadata (`msg_a5159ea4ba02`):** Aligned `isSafeHttpsUrl` in `OnlineSearchResults.jsx` with backend `search_safety.py` (rejecting user/password in URLs, non-443 ports, IPv6, private IPv4, carrier-grade NAT 100.64/10, ambiguous numeric/octal, localhost, and `.local`/`.internal` domains). Formatted timestamp with both date and time in `vi-VN` locale. Rendered cached badge strictly on `status === 'ok' && cached`.
 9. **HTTP 200 Search Error Retry (`msg_f85f4fb4e860`, `msg_92055f58d7bc`):** Stored originating `query` directly on `web_search` block and assistant message. Added inline retry button calling `onRetry(block.query)` to replay search with `webSearch: true` using immutable originating query without falling back to unrelated drafts or transport errors.
 10. **MapLibre 6 Web Worker Bundling & Provenance (`msg_bf938d69f59e`, `msg_e3dafa936cac`):** Configured upstream worker URL pattern with versioned local asset fallback `/maps/maplibre-gl-worker-6.15.0.mjs` (518,806 bytes, exact SHA256 `1c69066368331aae63967ed24a9affcf962cf55fcc6d8f532a8b040f736dbcfa`) with full 3-Clause BSD license text documented in `frontend/public/maps/README.md`.
+11. **API Origin Isolation (`getApiBaseUrl`):** Restored strict `process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000'` without runtime `window` or URL query parsing overrides, preventing origin injection regressions.
+
+> [!IMPORTANT]
+> **Review Gate Boundaries:**
+> While technical fixes for all 11 items have been committed and verified against unit/contract test suites, this report acknowledges that automated tests and browser probes represent smoke evidence. Extended manual accessibility verification across multiple assistive technologies, exhaustive offline tile caching scenarios, and extended real-world network partition recovery remain operational QA scopes rather than fully settled gates.
 
 ---
 
 ## 8. Independent Real Browser CDP QA Evidence (`tools/probe_online_ui.mjs`)
+
+> [!NOTE]
+> **Evidence Scope & Boundary:**
+> While the automated 33-check CDP probe provides positive evidence of real vector tile decoding (HTTP 206), non-blank canvas rendering, marker synchronization, and basic keyboard focus, it represents automated smoke evidence. It does not constitute full extended keyboard/offline/retry acceptance.
 
 Executed full candidate journey with `tools/probe_online_ui.mjs` connecting frontend on port 3070 to real synthetic backend on port 8070 (started with `WEB_ORIGIN` allowing port 3070):
 
@@ -239,10 +251,12 @@ Executed full candidate journey with `tools/probe_online_ui.mjs` connecting fron
   "dataset": "synthetic",
   "provider": "rules",
   "all_checks_passed": true,
-  "checks_count": 33,
+  "checks_count": 35,
   "network": {
     "remoteOrigins": [],
     "pmtilesRanges": [
+      { "status": 206, "range": "bytes 0-16383/2138597" },
+      { "status": 206, "range": "bytes 487845-605035/2138597" },
       { "status": 206, "range": "bytes 0-16383/2138597" },
       { "status": 206, "range": "bytes 487845-605035/2138597" }
     ]
@@ -250,7 +264,7 @@ Executed full candidate journey with `tools/probe_online_ui.mjs` connecting fron
 }
 ```
 
-- **33/33 checks PASSED:**
+- **35/35 checks PASSED (exact recorded count in `docs/reports/online-assistant/evidence/browser-evidence.json`):**
   - `real PMTiles HTTP Range206/header`: PASS
   - `desktop/mobile no horizontal overflow 1440 & 390`: PASS
   - `attached Vietnamese request preserves allergy and slots`: PASS
@@ -269,5 +283,6 @@ Executed full candidate journey with `tools/probe_online_ui.mjs` connecting fron
   - `map made real partial-content requests`: PASS
 - **Zero remote map origins:** Verified `origins.size === 0`.
 - **True HTTP Range 206 tile decoding:** Vector tile data byte range `487845-605035/2138597` decoded and rendered by the MapLibre web worker.
+- **Integration Boundary:** Codex's separate coordinator probe independently captures the scrolled mobile map region as well as extended keyboard, retry, and offline resilience checks for final integration.
 
 

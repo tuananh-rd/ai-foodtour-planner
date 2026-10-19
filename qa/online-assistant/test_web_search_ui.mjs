@@ -7,12 +7,33 @@
 import assert from 'node:assert';
 import fs from 'node:fs';
 import path from 'node:path';
-import { chatTurn, setRuntimeMockMode, isMockMode } from '../../frontend/lib/api.js';
+import { chatTurn, setRuntimeMockMode, isMockMode, getApiBaseUrl, ApiError } from '../../frontend/lib/api.js';
 
 console.log('=== QA: Web Search Assistant UI & Contract Tests ===');
 
 setRuntimeMockMode(true);
 assert.strictEqual(isMockMode(), true, 'Must be in mock mode');
+
+// Test 0: Security regression check - getApiBaseUrl is immune to runtime window / query manipulation
+console.log('Test 0: getApiBaseUrl origin security and query/window injection immunity');
+const expectedBaseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000';
+assert.strictEqual(getApiBaseUrl(), expectedBaseUrl, 'Must return default/configured base URL');
+
+// Attempt crafted window manipulation
+global.window = {
+  __FOODTOUR_API_URL__: 'http://attacker.example.com',
+  location: { search: '?api=http://evil.example.com' }
+};
+try {
+  assert.strictEqual(
+    getApiBaseUrl(),
+    expectedBaseUrl,
+    'Must ignore crafted window.__FOODTOUR_API_URL__ and ?api= query params'
+  );
+  console.log('  ✓ getApiBaseUrl correctly ignored crafted window/search params and maintained build-time origin');
+} finally {
+  delete global.window;
+}
 
 // Test 1: Mock mode web_search returns honest unavailable status, never fabricated search results
 console.log('Test 1: Mock mode web_search returns honest unavailable status and retains originating query');
@@ -32,39 +53,68 @@ assert.strictEqual(webSearchBlock.credits, 0, 'credits must be 0');
 assert.strictEqual(webSearchBlock.fetched_at, null, 'fetched_at must be null in mock mode');
 assert.deepStrictEqual(webSearchBlock.sources, [], 'sources must be empty in mock mode');
 assert.strictEqual(webSearchBlock.query, 'Quán cà phê trứng nào ngon ở Hoàn Kiếm?', 'Must retain originating query');
-console.log('  ✓ Mock mode returned honest unavailable block and preserved originating query');
+assert.strictEqual(mockTurnRes.revision, 1, 'Web search turn must increment revision');
+console.log('  ✓ Mock mode returned honest unavailable block, incremented revision, and preserved originating query');
 
-// Test 2: Action turns must NOT include web_search
-console.log('Test 2: Action turns omit web_search');
-const mockActionRes = await chatTurn('mock-session-test', {
-  revision: 0,
-  guided: true,
-  action: { name: 'confirm_yes' },
-  web_search: true
-});
-const actionWebBlock = mockActionRes.reply?.blocks?.find((b) => b.type === 'web_search');
-assert.strictEqual(actionWebBlock, undefined, 'Action turns must not contain web_search blocks');
-console.log('  ✓ Action turn properly omitted web_search block');
+// Test 2: Requests combining action with web_search: true must reject with HTTP 422 before modifying state
+console.log('Test 2: Action turns combined with web_search: true reject with HTTP 422');
+let actionErr = null;
+try {
+  await chatTurn('mock-session-test', {
+    revision: mockTurnRes.revision,
+    guided: true,
+    action: { name: 'confirm_yes' },
+    web_search: true
+  });
+} catch (err) {
+  actionErr = err;
+}
+assert.ok(actionErr, 'Must throw error when combining action with web_search');
+assert.strictEqual(actionErr.status, 422, 'Must reject with HTTP status 422');
+assert.strictEqual(actionErr.code, 'validation_error', 'Must have validation_error code');
+console.log('  ✓ Action combined with web_search correctly rejected with HTTP 422 before modifying state');
 
-// Test 3: Mock web_search short-circuits state mutation per review requirement (msg_9b93380962c7)
-console.log('Test 3: Mock web_search short-circuit state mutation check');
+// Test 3: Revision increment, 409 conflict, and state invariance
+console.log('Test 3: Web search revision increment, 409 conflict, and 100% state invariance');
 const sessionKey = 'mock-session-shortcircuit-' + Date.now();
 // Setup initial session with baseline text
 const initRes = await chatTurn(sessionKey, { revision: 0, text: 'Ăn sáng phở' });
+const baseRevision = initRes.revision;
 const profileSnapBefore = JSON.stringify(initRes.chat.profile);
 const tourSnapBefore = JSON.stringify(initRes.tour || null);
+const allergiesSnapBefore = JSON.stringify(initRes.chat.allergies || []);
+const shortlistSnapBefore = JSON.stringify(initRes.chat.shortlist || []);
+const pendingSnapBefore = JSON.stringify(initRes.chat.pending || null);
 
 // Send turn with web_search: true containing numbers/budget that would normally mutate slots
 const webTurnRes = await chatTurn(sessionKey, {
-  revision: initRes.revision,
+  revision: baseRevision,
   text: 'Quán ăn ngon giá 500k cho 4 người',
   web_search: true
 });
 
 assert.ok(webTurnRes.reply.blocks.some((b) => b.type === 'web_search'), 'Must return web_search block');
+assert.strictEqual(webTurnRes.revision, baseRevision + 1, 'Web search must increment session revision by 1');
 assert.strictEqual(JSON.stringify(webTurnRes.chat.profile), profileSnapBefore, 'Profile slots MUST NOT be mutated by web_search turn');
 assert.strictEqual(JSON.stringify(webTurnRes.tour || null), tourSnapBefore, 'Tour MUST NOT be mutated by web_search turn');
-console.log('  ✓ Mock web search cleanly short-circuited without mutating profile slots or tour');
+assert.strictEqual(JSON.stringify(webTurnRes.chat.allergies || []), allergiesSnapBefore, 'Allergies MUST NOT be mutated by web_search turn');
+assert.strictEqual(JSON.stringify(webTurnRes.chat.shortlist || []), shortlistSnapBefore, 'Shortlist MUST NOT be mutated by web_search turn');
+assert.strictEqual(JSON.stringify(webTurnRes.chat.pending || null), pendingSnapBefore, 'Pending state MUST NOT be mutated by web_search turn');
+
+// Subsequent call with stale revision (baseRevision instead of new revision) must fail with HTTP 409
+let staleErr = null;
+try {
+  await chatTurn(sessionKey, {
+    revision: baseRevision,
+    text: 'Tin nhắn với revision cũ'
+  });
+} catch (err) {
+  staleErr = err;
+}
+assert.ok(staleErr, 'Subsequent call with stale revision must throw');
+assert.strictEqual(staleErr.status, 409, 'Must return HTTP 409 conflict for stale revision');
+assert.strictEqual(staleErr.code, 'revision_conflict', 'Must have revision_conflict code');
+console.log('  ✓ Web search incremented revision by 1, subsequent stale turn returned 409 conflict, and state remained 100% invariant');
 
 // Test 4: OnlineSearchResults.jsx source code and contract invariant checks
 console.log('Test 4: OnlineSearchResults source code contract assertions');
