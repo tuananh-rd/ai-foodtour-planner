@@ -194,7 +194,7 @@ class SQLiteSessionStore:
                     **({'preferences': PreferencesSchema.from_domain(session.tour_preferences or session.preferences).model_dump(),
                         'visit_minutes': (session.tour_preferences or session.preferences).visit_minutes,
                         'vehicle': session.tour_vehicle, 'selected_ids': list(session.tour_selected_ids)}
-                        if session.chat.turn_count else {}),
+                        if session.chat.turn_count or session.chat.discovery else {}),
                     'locks': list(session.tour.locks),
                     'stops': [{'venue_id': s.venue_id, 'order': s.order} for s in session.tour.stops]})
             db.execute('UPDATE sessions SET preferences=?,revision=?,tour=?,chat=? WHERE id=? AND revision=?',
