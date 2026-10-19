@@ -104,6 +104,14 @@ class ConversationIntegration(unittest.TestCase):
         self.assertIsNone(response.json()['tour'])
         self.assertEqual(assistant.calls, [])
 
+    def test_private_record_derived_assistant_history_is_not_sent(self):
+        result, assistant = self.result(), AssistantStub('Mình đã ghi nhận.')
+        history = [{'role': 'assistant', 'intent': 'ASK_DETAIL', 'text': 'PRIVATE_VENUE_SAMPLE price details'},
+                   {'role': 'user', 'intent': 'UPDATE_PROFILE', 'text': 'Đi hai người'},
+                   {'role': 'user', 'intent': 'SET_ALLERGY', 'text': 'Tôi dị ứng lạc'}]
+        decorate_reply(assistant, result, 'Tiếp tục nhé', history, budget=None, session_cap=6, reserve=3)
+        self.assertEqual(assistant.calls[0][1], [history[1]])
+
     def test_retrieval_is_opt_in_read_only_and_invalid_sources_fail_closed(self):
         found = {'status': 'ok', 'sources': [{'title': 'Synthetic source', 'url': 'https://example.com/food',
             'snippet': 'Synthetic web quotation'}], 'fetched_at': '2026-10-19T00:00:00Z', 'credits': 1, 'cached': False}

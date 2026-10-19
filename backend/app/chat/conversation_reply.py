@@ -34,7 +34,12 @@ def decorate_reply(assistant, result, user_text, recent_turns, *, budget, sessio
             'party_size', 'budget', 'duration_min', 'vehicle', 'max_leg_min', 'stops')},
     }
     try:
-        history = [turn for turn in recent_turns if not private_turn(turn.get('text', ''))][-4:]
+        # Deterministic assistant detail replies may contain private venue facts.
+        # Keep user context and generic greeting replies only, never record-derived text.
+        history = [turn for turn in recent_turns
+                   if (turn.get('role') == 'user'
+                       or (turn.get('role') == 'assistant' and turn.get('intent') == 'GREET_OR_SMALLTALK'))
+                   and not private_turn(turn.get('text', ''))][-4:]
         reply = assistant.respond(user_text, copy.deepcopy(history), state, [], deadline_s=8.0)
         calls = reply.llm_calls
         if type(calls) is not int or calls not in (0, 1):
