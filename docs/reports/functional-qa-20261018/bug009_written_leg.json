@@ -1,0 +1,63 @@
+{
+  "timestamp": "2026-10-18T02:24:20.135Z",
+  "scenario": "BUG-009 Written Per-Leg Walking Limit (mười phút)",
+  "url": "http://127.0.0.1:3050",
+  "prompt": "Tour ba quán quanh Hồ Gươm cho hai người, một tiếng rưỡi, năm trăm nghìn cả hội, mỗi chặng đi bộ tối đa mười phút",
+  "ui_has_understood_card": true,
+  "ui_rows": [
+    "Khu vực\nHồ Gươm\nSửa",
+    "Số người\n2\nSửa",
+    "Số quán\n3\nSửa",
+    "Tổng thời gian\n90 phút\nSửa",
+    "Buổi\nChưa chọn\nChọn",
+    "Bắt đầu lúc\nChưa chọn\nChọn",
+    "Ngân sách\n500.000 đ (cả nhóm)\nSửa",
+    "Thích\nChưa chọn\nChọn",
+    "Đi mỗi chặng tối đa\n10 phút\nSửa",
+    "Thời gian mỗi quán (ước tính)\nkhoảng 24 phút(suy luận)\nSửa",
+    "Phương tiện\nĐi bộ\nSửa",
+    "Dị ứng\nChưa có\nChọn"
+  ],
+  "ui_mentions_leg_time": true,
+  "backend": {
+    "duration_min": {
+      "value": 90,
+      "source": "user_said",
+      "turn": 1,
+      "confirmed": true
+    },
+    "max_leg_min": {
+      "value": 10,
+      "source": "user_said",
+      "turn": 1,
+      "confirmed": true
+    },
+    "unparsed_slots": [],
+    "pending": {
+      "pending_id": "p1",
+      "kind": "clarify_slot",
+      "options": [
+        {
+          "option_id": "time:18:00",
+          "label": "18:00"
+        },
+        {
+          "option_id": "time:19:00",
+          "label": "19:00"
+        },
+        {
+          "option_id": "time:20:00",
+          "label": "20:00"
+        }
+      ],
+      "slot": "start_time"
+    }
+  },
+  "outcome": "PASS",
+  "bug_analysis": {
+    "bug_id": "BUG-009",
+    "severity": "P1",
+    "description": "Written Vietnamese walking per-leg limit (\"mỗi chặng đi bộ tối đa mười phút\") is silently omitted by the parser on current 3050/8050 build. max_leg_min is neither extracted into profile nor added to unparsed_slots.",
+    "reproduced": false
+  }
+}

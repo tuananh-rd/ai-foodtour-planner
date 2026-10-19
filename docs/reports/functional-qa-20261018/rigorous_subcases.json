@@ -1,0 +1,78 @@
+{
+  "timestamp": "2026-10-18T02:25:52.196Z",
+  "preview_synthetic_url": "http://127.0.0.1:3050",
+  "preview_private_url": "http://127.0.0.1:3051",
+  "subcases": [
+    {
+      "id": "CASE-1",
+      "title": "Compound no-allergy prompt flow",
+      "status": "PASS",
+      "details": "Compound no-allergy prompt correctly advanced flow",
+      "evidence": "bug006_no_allergy_initial.png"
+    },
+    {
+      "id": "CASE-2",
+      "title": "Retest BUG-001 (Attached numbers) on Fixed 3050",
+      "status": "PASS",
+      "details": "Positive checks: 3 stops (true), evening (true), 120m (true), party 2 (true), Hồ Gươm (true)",
+      "evidence": "retest_3050_attached_numbers.png"
+    },
+    {
+      "id": "CASE-3",
+      "title": "Retest BUG-004 (Greeting prefix) on Fixed 3050",
+      "status": "PASS",
+      "details": "Positive checks: Hồ Gươm (true), 3 stops (true), 120m (true), party 2 (true)",
+      "evidence": "retest_3050_greeting_request.png"
+    },
+    {
+      "id": "CASE-4",
+      "title": "Real Concurrent 409 Conflict and Auto-Resync",
+      "status": "PASS",
+      "details": "Observed 409 on stale UI confirm: true; GET resync executed: true; State restored: true",
+      "evidence": "m6_real_409_conflict_observed.png"
+    },
+    {
+      "id": "CASE-5",
+      "title": "Real Offline Network Disconnection Handling",
+      "status": "PASS",
+      "details": "Calm Vietnamese message: true; No raw JS error leaked: true; Retry button: true",
+      "evidence": "m8_offline_calm_error.png"
+    },
+    {
+      "id": "CASE-6",
+      "title": "Google Maps URL Stop Order and Mode Rigorous Alignment",
+      "status": "PASS",
+      "details": "Origin match: true (21.0263,105.8522); Dest match: true (21.0296,105.8483); Waypoints match: true; Walking: true; NoKey: true",
+      "evidence": "m9_strict_stop_order.png"
+    },
+    {
+      "id": "CASE-7",
+      "title": "Repeated Stop Replacement and Persistent Lock Integrity",
+      "status": "PASS",
+      "details": "3 present stops: true; Stop0 changed 1st: true; Stop0 changed 2nd: true; Stop1 locked: true; Stop2 locked: true",
+      "evidence": "m6_repeated_replace_verified.png"
+    },
+    {
+      "id": "CASE-8",
+      "title": "Keyboard Focus Traversal to Interactive Controls",
+      "status": "PASS",
+      "details": "Initial focus: guided-input; Tab focused target: BUTTON [data-testid=\"guided-send-btn\"]",
+      "evidence": "m10_keyboard_traversal.png"
+    },
+    {
+      "id": "CASE-9",
+      "title": "Browser Geolocation / GPS Capability Status",
+      "status": "NOT TESTED",
+      "details": "Application UI does not implement an HTML5 Geolocation invocation button (hasGpsInvoke: false). Manual location chips and text addresses are the supported input mode.",
+      "evidence": null
+    },
+    {
+      "id": "CASE-10",
+      "title": "Private Preview 3051 Full E2E Flow (Aggregate Booleans)",
+      "status": "PASS",
+      "details": "UnderstoodCard: true (10 rows); Confirm: true; Honest Tour/No-Solution Gate: true (Timeline: false, HonestRefusal: true). Zero private venue rows/coordinates exposed.",
+      "evidence": null
+    }
+  ],
+  "bugs": []
+}

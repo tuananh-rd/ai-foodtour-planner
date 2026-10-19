@@ -26,7 +26,7 @@ def numeric_prefix_spacing(text: str) -> str:
     # "Mai2", "Tam3" and "Trong5" must remain intact for lookup.
     return re.sub(r'\b(trong|cho|khoảng|khoang|tầm|tam)(?=\d)', r'\1 ', text)
 
-_TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|so quan|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai)\b")
+_TOUR_CTX = re.compile(r"\b(?:tour|lich trinh|hanh trinh|so quan|quan|hang an|diem dung|ghe|an|di|choi|chang|phut|tieng|ngan sach|nguoi|chuyen|vong|toi nay|sang mai|sang nay|chieu|trua|toi mai|doi|thanh|sang|chi|chon|thoi|giam|tang)\b")
 _STOPS = re.compile(r"(?<!giua )(?<!hon )(?<!moi )\b(\d{1,2}|mot|hai|ba|bon|nam)\s*(?:quan|hang an|hang|diem dung|diem|dia diem|chang)\b(?!\s*(?:cach nhau|ke nhau|gan nhau|lien tiep))"
                     r"|\bso (?:quan|diem)\s*(?:la|thanh|sang|:)?\s*(\d{1,2}|mot|hai|ba|bon|nam)\b")
 _LIKE = re.compile(r"(?:\byêu thích\b|\bưa chuộng\b|\bđam mê\b|\bthích\b|\bmuốn ăn\b|\bưa\b|\bmê\b|\bthèm\b|\bkhoái\b|\bghiền\b|\bnghiện\b|\byeu thich\b|\bthich\b|\bmuon an\b|\bkhoai\b)"

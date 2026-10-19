@@ -263,11 +263,13 @@ class ChatEngine:
             return Understanding("UPDATE_PROFILE", {"location": loc}, [], 1.0, "action")
         if t == "edit_profile":
             patch = {k: v for k, v in (a.get("patch") or {}).items() if k in
-                     ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min", "vehicle", "max_leg_min", "audience")}
-            ranges = {"party_size": (1, 20), "budget_vnd": (1, 100_000_000), "duration_min": (30, 720), "max_leg_min": (3, 60)}
+                     ("party_size", "budget_vnd", "budget_scope", "start_time", "end_time", "duration_min", "vehicle", "max_leg_min", "audience", "stops", "max_stops")}
+            ranges = {"party_size": (1, 20), "budget_vnd": (1, 100_000_000), "duration_min": (30, 720), "max_leg_min": (3, 60), "stops": (1, 10), "max_stops": (1, 10)}
             for k, (lo, hi) in ranges.items():
                 if k in patch and not (isinstance(patch[k], int) and not isinstance(patch[k], bool) and lo <= patch[k] <= hi):
                     return None  # same bounds as llm_understand.RANGES: a direct action cannot widen what text/LLM may set
+            if "max_stops" in patch and "stops" not in patch:
+                patch["stops"] = patch["max_stops"]
             return Understanding("UPDATE_PROFILE", patch, [], 1.0, "action") if patch else None
         if t == "request_plan":
             return Understanding("REQUEST_PLAN", {}, [], 1.0, "action")

@@ -11,3 +11,4 @@ data/venues.json
 docs/sample-response.json
 .env.*
 !.env.example
+scratch/

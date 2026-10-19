@@ -30,6 +30,10 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
       const parsed = parseInt(currentValue, 10);
       return !isNaN(parsed) && parsed > 0 ? parsed : 3;
     }
+    if (normalizedKey === 'leg_time' || normalizedKey === 'max_leg_min') {
+      const parsed = parseInt(currentValue, 10);
+      return !isNaN(parsed) && parsed > 0 ? parsed : 20;
+    }
     if (normalizedKey === 'budget') {
       const shown = String(currentValue ?? '').match(/^[\d.,\s]+/);
       const parsed = shown ? parseInt(shown[0].replace(/\D/g, ''), 10) : NaN;
@@ -72,7 +76,7 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
       onSave && onSave(normalizedKey, finalVal);
       return;
     }
-    if (normalizedKey === 'party_size' || normalizedKey === 'duration' || normalizedKey === 'stops') {
+    if (normalizedKey === 'party_size' || normalizedKey === 'duration' || normalizedKey === 'stops' || normalizedKey === 'leg_time' || normalizedKey === 'max_leg_min') {
       finalVal = Number(val);
     }
     onSave && onSave(normalizedKey, finalVal);
@@ -328,6 +332,38 @@ export default function InlineRowEditor({ itemKey, currentValue, onSave, onCance
                 }}
               >
                 {veh.label}
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Presets for leg_time / max_leg_min */}
+      {(normalizedKey === 'leg_time' || normalizedKey === 'max_leg_min') && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+          {[10, 15, 20, 30].map((m) => {
+            const isSel = Number(val) === m;
+            return (
+              <button
+                key={m}
+                type="button"
+                data-testid={`inline-leg-${m}`}
+                onClick={() => setVal(m)}
+                style={{
+                  minHeight: 36,
+                  padding: '0 14px',
+                  borderRadius: 999,
+                  border: `1px solid ${isSel ? 'var(--nn-green, #166B52)' : 'var(--nn-line, #DDE7E1)'}`,
+                  background: isSel ? 'var(--nn-green, #166B52)' : 'var(--nn-card, #FFFFFF)',
+                  color: isSel ? '#FFFFFF' : 'var(--nn-ink, #17352B)',
+                  fontWeight: isSel ? 600 : 500,
+                  fontSize: 13,
+                  cursor: 'pointer',
+                  display: 'inline-flex',
+                  alignItems: 'center'
+                }}
+              >
+                {m} phút
               </button>
             );
           })}

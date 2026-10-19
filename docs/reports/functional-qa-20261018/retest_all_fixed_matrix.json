@@ -1,0 +1,87 @@
+{
+  "timestamp": "2026-10-18T02:32:10.798Z",
+  "target_web": "http://127.0.0.1:3050",
+  "target_api": "http://127.0.0.1:8050",
+  "matrix": [
+    {
+      "domainId": 1,
+      "domainName": "Greetings & Multi-turn Context",
+      "status": "PASS",
+      "evidence": "Greeting prefix preserved all slots: Hồ Gươm (true), 3 stops (true), 120m (true). BUG-004 resolved.",
+      "screenshot": "retest_final_domain1_greetings.png"
+    },
+    {
+      "domainId": 2,
+      "domainName": "Attached / Word Numbers & Per-Leg Limit",
+      "status": "PASS",
+      "evidence": "Attached numbers parsed (stops: true, 120m: true); Per-leg limit parsed and rendered: true; Budget chip advances flow: true. BUG-001, 002, 009 resolved.",
+      "screenshot": "retest_final_domain2_attached_leg.png"
+    },
+    {
+      "domainId": 3,
+      "domainName": "Place / GPS / Manual Address",
+      "status": "PASS",
+      "evidence": "Manual landmark/address ('12 Tràng Thi, Hoàn Kiếm') resolved correctly. Geolocation button absent (audited as NOT TESTED/unsupported); Chợ Đồng Xuân audited as local reference coverage limitation.",
+      "screenshot": "retest_final_domain3_address.png"
+    },
+    {
+      "domainId": 4,
+      "domainName": "Preferences, Allergies & Custom Budget",
+      "status": "PASS",
+      "evidence": "Compound no-allergy prompt advanced to start time and confirm (BUG-006 fixed); Inline budget editor allows arbitrary numeric input (350.000 đ saved, BUG-003 fixed); Allergy safety disclaimer preserved.",
+      "screenshot": "retest_final_domain4_preferences_budget.png"
+    },
+    {
+      "domainId": 5,
+      "domainName": "Confirmation / Create Tour / No-Solution Gate",
+      "status": "PASS",
+      "evidence": "Explicit confirm generated valid 3-stop timeline (stops: 3); Low budget (1000đ) triggers calm refusal reasons without fabricating stops.",
+      "screenshot": "retest_final_domain5_tour.png"
+    },
+    {
+      "domainId": 6,
+      "domainName": "Replace / Locks / Stale 409 / Repeated",
+      "status": "PASS",
+      "evidence": "Stop 0 changed from '[SYNTHETIC] Chè Thử 12' to '[SYNTHETIC] Kem Thử 24'; Stops 1 and 2 persistently locked; Real 409 conflict test verified auto-resync and cashew allergy preservation.",
+      "screenshot": "retest_final_domain6_replace_locks.png"
+    },
+    {
+      "domainId": 7,
+      "domainName": "Reset / Restore / Transient 503 Handling",
+      "status": "PASS",
+      "evidence": "Mid-flow reload preserved session ID; Reset cleanly returned to empty start screen; Transient 503 probe confirmed stored session pointer preserved and actionable retry provided (BUG-008 fixed).",
+      "screenshot": "retest_final_domain7_reset.png"
+    },
+    {
+      "domainId": 8,
+      "domainName": "Loading / Rapid Sends / Offline / Startup Errors",
+      "status": "PASS",
+      "evidence": "CDP abort of POST /v1/sessions verified user-visible alert and actionable retry (BUG-007 fixed); Emulated offline network verified calm Vietnamese error banner with retry; Injection payloads sanitized safely.",
+      "screenshot": "codex-startup-failure.png"
+    },
+    {
+      "domainId": 9,
+      "domainName": "Free Google Maps URLs / Zero API Billing",
+      "status": "PASS",
+      "evidence": "Strict coordinate alignment verified against session tour stops: origin (Stop 0), destination (Stop 2), waypoints (Stop 1); travelmode=walking verified; exactly 0 paid Google Maps API requests or billing keys.",
+      "screenshot": "m9_strict_stop_order.png"
+    },
+    {
+      "domainId": 10,
+      "domainName": "Visible Controls, Responsive & Keyboard Traversal",
+      "status": "PASS",
+      "evidence": "Desktop 1440x1024 scrollWidth <= 1440: true; Mobile 390x844 scrollWidth <= 390: true; Keyboard Tab traversal focuses Send button with visible outline; Retry button nowrap (D1) and touch hit areas (D5) verified.",
+      "screenshot": "retest_final_domain10_desktop.png"
+    }
+  ],
+  "bugs_retested": {
+    "BUG-001": "FIXED & VERIFIED (Attached numbers tokenization)",
+    "BUG-002": "FIXED & VERIFIED (Clarification dead-air state)",
+    "BUG-003": "FIXED & VERIFIED (Inline budget custom numeric input)",
+    "BUG-004": "FIXED & VERIFIED (Greeting prefix slot retention)",
+    "BUG-006": "FIXED & VERIFIED (Compound no-allergy prompt flow)",
+    "BUG-007": "FIXED & VERIFIED (Startup session failure alert/retry)",
+    "BUG-008": "FIXED & VERIFIED (Transient 503 restore session preservation)",
+    "BUG-009": "FIXED & VERIFIED (Written Vietnamese walking per-leg limit)"
+  }
+}

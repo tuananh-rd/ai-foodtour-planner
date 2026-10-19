@@ -248,6 +248,7 @@ export default function ReplaceDiffModal({
             <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end' }}>
               <button
                 type="button"
+                data-testid="replace-modal-cancel-btn"
                 onClick={onCancel}
                 disabled={busy}
                 style={{
@@ -265,6 +266,7 @@ export default function ReplaceDiffModal({
               <button
                 ref={confirmBtnRef}
                 type="button"
+                data-testid="replace-modal-confirm-btn"
                 onClick={(e) => { dialogRef.current?.focus(); onConfirm(e); }}
                 disabled={busy}
                 style={{
@@ -350,6 +352,7 @@ export default function ReplaceDiffModal({
               <button
                 ref={confirmBtnRef}
                 type="button"
+                data-testid="replace-modal-done-btn"
                 onClick={onCancel}
                 style={{
                   padding: '10px 18px',
