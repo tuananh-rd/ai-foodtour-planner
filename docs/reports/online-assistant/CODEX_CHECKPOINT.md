@@ -35,3 +35,12 @@ Antigravity owns the exact frontend list in its dispatch, qa/online-assistant/, 
 ## Recovery continuation
 
 Commit1f823c6 preserves and reviews the personal-data/key protection WIP rather than discarding it. Targeted assistant and9 API integration tests pass, OpenAPI drift check matches,18 mock-client contract checks pass. Fresh backend discovery at1f823c6 passed625 tests with1 optional private-data skip in202.849s, exit0; final post-adapter regression still required. UIR1 is the single active Antigravity task; OA3 remains undispatched. No new agent/model/service activation.
+
+
+## Current continuation point (UIR3)
+
+UIR1 aea866d and UIR2 52120c9 are reviewed/integrated at3d996da; arbitrary API-origin override removed. Same existing Antigravity is active on UIR3 task_0cd2013b89cc / ctx_204ca0c55369 with exact3file ACK. Real mobile bug OA-UI-009 hides web results by switching to itinerary whenever an unchanged tour is returned; UIR3 must switch only for an actual tour_ready event. OA-UI-007 disabled/quota wording also remains. Wait for actual scoped commit and independently rerun corrected extended browser probe, then dispatch OA3; do not confuse worker_done with UI acceptance.
+
+Corrected browser driver has UTF8-safe Vietnamese and proper Enter char; initial false allergy/retry/popup failures were harness errors. R2 actual checks pass these plus initial markers, real tiles, replacement synchronization and desktop retry; only mobile-hidden-result timeout blocks the journey. Session/fault suite19/19 passes with actual UI/real synthetic API and failure-only injection. Root task-owned API8060 was restarted to3d996da, rules/synthetic/search-disabled; UI3060 is development mode, not final delivery. Production build validation is running independently; it does not replace final UI3/OA3 acceptance.
+
+OA3 frozen contract now includes read-only /usage free-plan/no-PAYGO/headroom gate in addition to local durable credits. Live Tavily remains blocked by absent key. Explicit self-location privacy hardening and UTF8 driver corrections are Codex-owned; preserve them. No new agent, model change, paid activation, push/deploy or user-server shutdown.

@@ -24,8 +24,8 @@ Use an available port pair and verify its owner before starting. Do not stop a u
 API launcher examples, from the repository root:
 
 ```powershell
-.venv/Scripts/python.exe tools/run_online_assistant.py --port8060 --web-port3060 --dataset synthetic --llm off
-.venv/Scripts/python.exe tools/run_online_assistant.py --port8060 --web-port3060 --dataset local --llm existing
+.venv/Scripts/python.exe tools/run_online_assistant.py --port=8060 --web-port=3060 --dataset synthetic --llm off
+.venv/Scripts/python.exe tools/run_online_assistant.py --port=8060 --web-port=3060 --dataset local --llm existing
 ```
 
 Run only one API process on that port. Synthetic/rules mode is for reproducible regression evidence. Local/existing mode requires the already-configured dataset and Gemini settings; a local dataset must never be relabelled synthetic or committed with screenshots/records. The launcher refuses a missing local dataset rather than substituting fixtures. It bounds the existing Gemini daily cap and reuses persistent accounting; it does not authorize unlimited provider calls.
@@ -33,7 +33,7 @@ Run only one API process on that port. Synthetic/rules mode is for reproducible 
 Frontend launcher:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/run_upgrade_preview.ps1 -Component frontend -WebPort3060 -ApiPort8060
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/run_upgrade_preview.ps1 -Component frontend -WebPort 3060 -ApiPort 8060
 ```
 
 The frontend API URL is a build-time setting. A production build created with another API URL must be rebuilt with the intended settings; changing only the start-process environment is insufficient. A separate web port also needs the corresponding API CORS origin, using the API launcher matching `--web-port`.

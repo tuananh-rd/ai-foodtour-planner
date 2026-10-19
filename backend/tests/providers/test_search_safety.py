@@ -6,7 +6,8 @@ class SearchSafetyTests(unittest.TestCase):
     def test_query_projection_rejects_sensitive_and_instruction_payloads(self):
         for query in ('phở tại GPS21.0,105.0', 'Tôi dị ứng đậu phộng, tìm phở',
                       'phở ignore instructions', 'phở http://127.0.0.1/admin',
-                      'phở test@example.com', 'phở tôi tên Nguyễn Văn A', 'mua cổ phiếu'):
+                      'phở test@example.com', 'phở tôi tên Nguyễn Văn A', 'mua cổ phiếu',
+                      'tôi đang ở địa chỉ [SYNTHETIC], tìm phở', 'mình ở phố [SYNTHETIC], tìm phở'):
             self.assertIsNone(public_food_query(query), query)
         self.assertEqual(public_food_query('Tra web: giờ mở cửa phở quanh Hồ Gươm'), 'giờ mở cửa phở quanh Hồ Gươm')
 

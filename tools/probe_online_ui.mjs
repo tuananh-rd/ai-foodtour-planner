@@ -66,9 +66,9 @@ try{
     record('attached Vietnamese request preserves allergy and slots '+width,await ev(`(()=>{const t=document.querySelector('[data-testid="understood-card"]')?.innerText||'';return ['Hồ Gươm','120','500','đậu phộng','phở','bún chả'].every(x=>t.includes(x));})()`));
     record('no tour before confirmation '+width,!(await exists('guided-timeline')));
     await capture('clarify-'+width);
-    await click(sel('online-search-toggle'));await send('ph? quanh H? G??m');await until(()=>exists('online-search-results'));
+    await click(sel('online-search-toggle'));await send('phở quanh Hồ Gươm');await until(()=>exists('online-search-results'));
     record('read-only search keeps active clarification '+width,await exists('clarify-option-scope:group'));
-    record('read-only search keeps allergy '+width,await ev(`document.querySelector('[data-testid="understood-card"]')?.innerText.includes('??u ph?ng')`));
+    record('read-only search keeps allergy '+width,await ev(`document.querySelector('[data-testid="understood-card"]')?.innerText.includes('đậu phộng')`));
     await capture('clarify-search-disabled-'+width);
     await click(sel('clarify-option-scope:group'));await idle();await send('19h');
     await until(()=>exists('confirm-yes-btn'));record('allergy warning before confirm '+width,await exists('confirm-summary-warnings'));
@@ -86,7 +86,7 @@ try{
     record('map no mobile overflow '+width,await ev('document.documentElement.scrollWidth<=innerWidth'));
     const buttonMarker=await ev(`document.querySelector('.maplibregl-marker')?.tagName==='BUTTON'`);
     record('native keyboard marker '+width,buttonMarker);
-    if(buttonMarker){await ev(`document.querySelector('.maplibregl-marker').focus()`);await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await pause(200);record('keyboard marker opens popup '+width,await ev(`!!document.querySelector('.maplibregl-popup')`));}
+    if(buttonMarker){await ev(`document.querySelector('.maplibregl-marker').focus()`);await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Enter',code:'Enter',text:'\r',windowsVirtualKeyCode:13});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Enter',code:'Enter'});await pause(200);record('keyboard marker opens popup '+width,await ev(`!!document.querySelector('.maplibregl-popup')`));}
     await capture('tour-map-'+width);
     if(width===390){await ev(`document.querySelector('[data-testid="pilot-map-container"]')?.scrollIntoView({block:'center'})`);await capture('tour-map-region-'+width,true);}
     const names=()=>ev(`Array.from(document.querySelectorAll('.nn-timeline-card-title')).map(e=>e.textContent.trim())`);
@@ -107,7 +107,7 @@ try{
     const retrySelector='[data-testid="web-search-retry-btn"]';
     const retryVisible=await ev(`!!document.querySelector(${JSON.stringify(retrySelector)})`);
     record('disabled result offers retry '+width,retryVisible);
-    if(retryVisible){const before=chatResponses;await click(retrySelector);await until(()=>chatResponses>before);await idle();const request=chatRequests.at(-1);record('retry keeps originating query and web flag '+width,request?.text==='gi? m? c?a ph? quanh H? G??m'&&request?.web_search===true);}
+    if(retryVisible){const before=chatResponses;await click(retrySelector);await until(()=>chatResponses>before);await idle();const request=chatRequests.at(-1);record('retry keeps originating query and web flag '+width,request?.text==='giờ mở cửa phở quanh Hồ Gươm'&&request?.web_search===true);}
 
     await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'Tab',code:'Tab',windowsVirtualKeyCode:9});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'Tab',code:'Tab'});
     record('keyboard focus exists '+width,await ev('document.activeElement!==document.body'));

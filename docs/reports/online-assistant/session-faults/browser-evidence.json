@@ -1,0 +1,84 @@
+{
+  "synthetic": true,
+  "web": "http://127.0.0.1:3060",
+  "api": "http://127.0.0.1:8060",
+  "method": "Actual Chrome UI; labelled failure-only CDP interception",
+  "checks": [
+    {
+      "name": "startup failure is actually injected",
+      "pass": true
+    },
+    {
+      "name": "startup failure displays recoverable alert",
+      "pass": true
+    },
+    {
+      "name": "startup failure provides actionable retry",
+      "pass": true
+    },
+    {
+      "name": "transient restore 503 actually injected",
+      "pass": true
+    },
+    {
+      "name": "transient restore preserves stored session identity",
+      "pass": true
+    },
+    {
+      "name": "transient restore does not create replacement session",
+      "pass": true
+    },
+    {
+      "name": "transient restore shows recoverable alert",
+      "pass": true
+    },
+    {
+      "name": "original server session retains parsed preferences",
+      "pass": true
+    },
+    {
+      "name": "transient restore provides actionable retry",
+      "pass": true
+    },
+    {
+      "name": "retry restores original identity and preferences",
+      "pass": true
+    },
+    {
+      "name": "submit during initialization does not start competing session",
+      "pass": true
+    },
+    {
+      "name": "pending initialization preserves typed draft or disables entry",
+      "pass": true
+    },
+    {
+      "name": "delayed initialization completes with owned session",
+      "pass": true
+    },
+    {
+      "name": "numeric per-leg limit is visibly understood before reload",
+      "pass": true
+    },
+    {
+      "name": "reload visibly restores the stated per-leg limit",
+      "pass": true
+    },
+    {
+      "name": "opted-in web transport failure actually injected",
+      "pass": true
+    },
+    {
+      "name": "failed web preserves draft and opt-in for manual retry",
+      "pass": true
+    },
+    {
+      "name": "web transport failure is visible",
+      "pass": true
+    },
+    {
+      "name": "manual Enter retries original query in web mode",
+      "pass": true
+    }
+  ]
+}

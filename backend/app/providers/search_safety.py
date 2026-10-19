@@ -40,7 +40,7 @@ def public_food_query(text):
             or re.search(r'https?\s*:|www\.|<|>|\{|\}|[\x00-\x1f\x7f]', text, re.I)):
         return None
     folded = fold_uncached(text)
-    if re.search(r'\b(?:ignore|instructions?|system|prompt|api key|token|secret|password|bo qua quy tac|ghi db|thuc thi|gps|toa do|dia chi nha|nha toi|minh ten|toi ten|cccd)\b', folded):
+    if re.search(r'\b(?:ignore|instructions?|system|prompt|api key|token|secret|password|bo qua quy tac|ghi db|thuc thi|gps|toa do|dia chi nha|dia chi cua toi|nha toi|nha minh|minh ten|toi ten|toi dang o|minh dang o|toi o|minh o|vi tri cua toi|vi tri hien tai|cccd)\b', folded):
         return None
     if not re.search(r'\b(?:pho|bun|banh|quan|mon|an|thuc don|am thuc|ca phe|che|kem|ho guom|hoan kiem|ha noi)\b', folded):
         return None

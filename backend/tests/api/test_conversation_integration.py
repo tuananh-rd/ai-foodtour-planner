@@ -25,7 +25,8 @@ class AssistantStub:
 class ConversationIntegration(unittest.TestCase):
     def test_explicit_personal_details_and_provider_keys_are_local_only(self):
         for text in ('Tôi tên Nguyễn Văn A', 'Nhà tôi ở ngõ thử nghiệm',
-                     'tvly-dev-SYNTHETIC_TEST_KEY_12345', '4111 1111 1111 1111'):
+                     'tvly-dev-SYNTHETIC_TEST_KEY_12345', '4111 1111 1111 1111',
+                     'Tôi đang ở địa chỉ thử nghiệm [SYNTHETIC]', 'Mình ở phố thử nghiệm [SYNTHETIC]'):
             self.assertTrue(private_turn(text), text)
 
     def setUp(self):

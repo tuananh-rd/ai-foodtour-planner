@@ -15,7 +15,7 @@ def private_turn(text):
         return False
     folded = fold_uncached(text)
     return bool(redact_sensitive(text) != text or re.search(
-        r'\b(?:di ung|benh|trieu chung|ho so|chan doan|so dien thoai|dia chi nha|nha toi|nha minh|toi ten|minh ten|cccd|so ho chieu|gps|toa do|password|api key|token|secret|mat khau)\b', folded)
+        r'\b(?:di ung|benh|trieu chung|ho so|chan doan|so dien thoai|dia chi nha|dia chi cua toi|nha toi|nha minh|toi ten|minh ten|toi dang o|minh dang o|toi o|minh o|vi tri cua toi|vi tri hien tai|cccd|so ho chieu|gps|toa do|password|api key|token|secret|mat khau)\b', folded)
         or re.search(r'\b(?:\d[ -]?){13,19}\b', text))
 
 

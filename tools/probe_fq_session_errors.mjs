@@ -98,7 +98,7 @@ try{
   // Fail one explicitly opted-in search transport, then retry via the actual composer Enter key.
   await ev('sessionStorage.clear()');await cdp('Page.reload');
   await until(()=>ev(`!!sessionStorage.getItem('foodtour_chat_session_id')&&!document.querySelector('[aria-busy="true"]')&&!!document.querySelector('[data-testid="guided-input"]')`));await pause(300);
-  const query='ph? quanh H? G??m';
+  const query='phở quanh Hồ Gươm';
   const togglePoint=await ev(`(()=>{const e=document.querySelector('[data-testid="web-search-optin-checkbox"]');e.scrollIntoView({block:'center'});const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
   await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...togglePoint});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...togglePoint});
   mode='web_failure';await ev(`document.querySelector('[data-testid="guided-input"]').focus()`);await cdp('Input.insertText',{text:query});
