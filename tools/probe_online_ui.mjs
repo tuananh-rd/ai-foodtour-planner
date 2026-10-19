@@ -30,7 +30,7 @@ try{
     if(m.method==='Runtime.exceptionThrown')evidence.consoleErrors.push(String(m.params.exceptionDetails?.exception?.description||m.params.exceptionDetails?.text||'Browser exception').slice(0,700));
     if(m.method==='Network.requestWillBeSent'){if(/\/chat$/.test(m.params.request.url)&&m.params.request.postData){try{chatRequests.push(JSON.parse(m.params.request.postData));}catch{}}const u=new URL(m.params.request.url);if(/^https?:$/.test(u.protocol)&&![new URL(web).origin,new URL(api).origin].includes(u.origin))origins.add(u.origin);}
     if(m.method==='Network.responseReceived'){
-      if(/\/chat$/.test(m.params.response.url))chatResponses++;
+      if(/\/chat$/.test(m.params.response.url)){chatResponses++;(evidence.network.chatStatuses??=[]).push(m.params.response.status);}
       if(m.params.response.url.endsWith('.pmtiles'))evidence.network.pmtilesRanges.push({status:m.params.response.status,range:Object.entries(m.params.response.headers).find(([k])=>k.toLowerCase()==='content-range')?.[1]||null});
     }
   };
@@ -102,6 +102,7 @@ try{
     await mobileChat();await until(()=>exists('guided-input'));await click(sel('online-search-toggle'));
     await send('giờ mở cửa phở quanh Hồ Gươm');await until(()=>exists('online-search-results'));
     record('missing Tavily key honest disabled '+width,await exists('web-search-status-disabled'));
+    record('web result remains in visible chat panel '+width,await ev(`document.querySelector('[data-testid="online-search-results"],[data-testid="web-search-card"]')?.getClientRects().length>0`));
     record('lookup keeps tour '+width,await exists('guided-timeline'));
     await capture('web-disabled-'+width);
     const retrySelector='[data-testid="web-search-retry-btn"]';
@@ -121,6 +122,7 @@ try{
   evidence.network.remoteOrigins=[...origins];
   record('no external map/provider requests in deterministic UI lane',origins.size===0);
   record('map made real partial-content requests',evidence.network.pmtilesRanges.some(x=>x.status===206));
+  record('real chat requests completed HTTP200',evidence.network.chatStatuses?.length>0&&evidence.network.chatStatuses.every(status=>status===200));
 }catch(error){record('probe completed without harness/product blocker',false,String(error.message).slice(0,180));}
 finally{
   fs.writeFileSync(path.join(out,'browser-evidence.json'),JSON.stringify(evidence,null,2));
