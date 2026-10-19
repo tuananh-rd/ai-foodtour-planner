@@ -7,7 +7,7 @@ from unittest.mock import patch
 
 from fastapi.testclient import TestClient
 from app.main import create_app
-from app.chat.conversation_reply import decorate_reply
+from app.chat.conversation_reply import decorate_reply, private_turn
 from app.chat.engine import TurnResult
 from app.chat.state import ChatState, Pending
 from app.planner.types import Preferences
@@ -23,6 +23,11 @@ class AssistantStub:
 
 
 class ConversationIntegration(unittest.TestCase):
+    def test_explicit_personal_details_and_provider_keys_are_local_only(self):
+        for text in ('Tôi tên Nguyễn Văn A', 'Nhà tôi ở ngõ thử nghiệm',
+                     'tvly-dev-SYNTHETIC_TEST_KEY_12345', '4111 1111 1111 1111'):
+            self.assertTrue(private_turn(text), text)
+
     def setUp(self):
         self.env = patch.dict(os.environ, {'FOODTOUR_CHAT_V2': '1', 'FOODTOUR_UI_GUIDED': '1',
             'FOODTOUR_LLM': 'off', 'FOODTOUR_EXPLAIN': 'template', 'FOODTOUR_GEOCODER': 'off',

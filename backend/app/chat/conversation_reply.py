@@ -15,7 +15,8 @@ def private_turn(text):
         return False
     folded = fold_uncached(text)
     return bool(redact_sensitive(text) != text or re.search(
-        r'\b(?:di ung|benh|trieu chung|ho so|chan doan|so dien thoai|dia chi nha|gps|toa do|password|api key|mat khau)\b', folded))
+        r'\b(?:di ung|benh|trieu chung|ho so|chan doan|so dien thoai|dia chi nha|nha toi|nha minh|toi ten|minh ten|cccd|so ho chieu|gps|toa do|password|api key|token|secret|mat khau)\b', folded)
+        or re.search(r'\b(?:\d[ -]?){13,19}\b', text))
 
 
 def decorate_reply(assistant, result, user_text, recent_turns, *, budget, session_cap, reserve):

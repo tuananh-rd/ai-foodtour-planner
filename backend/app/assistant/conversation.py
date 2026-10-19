@@ -71,6 +71,8 @@ RE_EMAIL = re.compile(
 RE_SECRET = re.compile(
     r"(?:"
     r"\bAIza[0-9A-Za-z-_]{35}\b"
+    r"|\btvly-(?:dev-|prod-)?[A-Za-z0-9_-]{8,}\b"
+    r"|\bsk-[A-Za-z0-9_-]{16,}\b"
     r"|\bghp_[a-zA-Z0-9]{36}\b"
     r"|\bbearer\s+[a-zA-Z0-9_\-\.]{16,}\b"
     r"|\b(?:api[_-]?key|token|secret|password)\s*[:=]\s*['\"]?[a-zA-Z0-9_\-]{8,}['\"]?\b"
