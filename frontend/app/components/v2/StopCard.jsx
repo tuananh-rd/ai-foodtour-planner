@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Button from '../../ui/Button';
+import { normalizeDisplayText } from '../../../lib/emojiSanitizer';
 
 /**
  * StopCard for UI_V2 (Scope 3).
@@ -241,16 +242,16 @@ export default function StopCard({
                 wordBreak: 'break-word',
               }}
             >
-              {stop.name}
+              {normalizeDisplayText(stop.name)}
             </h4>
             <div style={{ fontSize: '13px', color: 'var(--muted, #6B6259)', marginBottom: '4px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
-              {stop.district ? `${stop.district} · ` : ''}
+              {stop.district ? `${normalizeDisplayText(stop.district)} · ` : ''}
               {ratingDisplay}
             </div>
             {stop.address && (
               <div style={{ fontSize: '12px', color: 'var(--muted, #6B6259)', marginBottom: '8px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
                 <span style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
-                  <PinGlyph /> {stop.address}
+                  <PinGlyph /> {normalizeDisplayText(stop.address)}
                 </span>
               </div>
             )}

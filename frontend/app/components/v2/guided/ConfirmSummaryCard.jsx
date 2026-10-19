@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import './guided-leaves.css';
 
 export function formatWarningMessage(w) {
@@ -21,12 +22,12 @@ export function formatWarningMessage(w) {
     if (raw === 'insufficient_evidence') return 'Thiếu bằng chứng xác thực hoạt động của quán.';
     if (raw === 'unknown_opening_hours' || raw === 'unknown_hours') return 'Chưa rõ giờ mở cửa chính xác của một số quán theo nguồn ghi.';
     if (raw === 'unknown_price' || raw === 'price_unknown') return 'Chưa có khoảng giá cụ thể của một số quán.';
-    return /^[a-z_]+$/.test(raw) ? 'Còn thông tin cần kiểm chứng trước khi khởi hành.' : raw;
+    return /^[a-z_]+$/.test(raw) ? 'Còn thông tin cần kiểm chứng trước khi khởi hành.' : normalizeDisplayText(raw);
   }
   if (typeof w === 'object') {
-    if (w.message) return w.message;
-    if (w.reason) return w.reason;
-    if (w.text) return w.text;
+    if (w.message) return normalizeDisplayText(w.message);
+    if (w.reason) return normalizeDisplayText(w.reason);
+    if (w.text) return normalizeDisplayText(w.text);
     if (w.code) {
       const codeMap = {
         unknown_opening_hours: 'Chưa rõ giờ mở cửa chính xác của một số quán.',
@@ -39,10 +40,10 @@ export function formatWarningMessage(w) {
       };
       if (codeMap[w.code]) return codeMap[w.code];
     }
-    if (w.field) return `Chưa xác định thông tin: ${w.field}`;
+    if (w.field) return `Chưa xác định thông tin: ${normalizeDisplayText(w.field)}`;
     return 'Cần lưu ý kiểm tra lại thông tin quán trước khi khởi hành.';
   }
-  return String(w);
+  return normalizeDisplayText(String(w));
 }
 
 /**
@@ -150,7 +151,7 @@ export default function ConfirmSummaryCard({
           }}
         >
           {partyText} • từ {time} • mức bạn muốn chi: {cleanBudget} ({scopeText})
-          {summary?.notes ? ` • ${summary.notes}` : ''}
+          {summary?.notes ? ` • ${normalizeDisplayText(summary.notes)}` : ''}
         </div>
 
         {/* Proposed Venues List */}
@@ -163,7 +164,7 @@ export default function ConfirmSummaryCard({
               marginTop: 6
             }}
           >
-            <b>Quán đề xuất:</b> {summary.shortlist.map((s) => s.name || 'Quán chưa rõ tên').join(', ')}
+            <b>Quán đề xuất:</b> {summary.shortlist.map((s) => normalizeDisplayText(s.name) || 'Quán chưa rõ tên').join(', ')}
           </div>
         )}
 

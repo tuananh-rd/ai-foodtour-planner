@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { loadGoogleMaps, isAuthFailed } from '../../lib/googleMapsLoader';
 import { getVenuesMap } from '../../lib/api';
 import { clusterVenues } from '../../lib/clusterer';
+import { normalizeDisplayText } from '../../lib/emojiSanitizer';
 
 export default function MapView({
   origin,
@@ -277,7 +278,7 @@ export default function MapView({
           const stopMarker = new AdvancedMarkerElement({
             map,
             position: { lat: stop.lat, lng: stop.lon },
-            title: `${stop.order || idx + 1}. ${stop.name}`,
+            title: `${stop.order || idx + 1}. ${normalizeDisplayText(stop.name)}`,
             content: stopPin
           });
 
@@ -529,7 +530,7 @@ export default function MapView({
             venuePin.className = 'gmp-venue-marker';
             venuePin.setAttribute('role', 'button');
             venuePin.setAttribute('tabindex', '0');
-            venuePin.setAttribute('aria-label', `Quán ăn: ${venue.name}`);
+            venuePin.setAttribute('aria-label', `Quán ăn: ${normalizeDisplayText(venue.name)}`);
             venuePin.innerHTML = `
               <div style="background:#0284c7;color:#fff;border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 4px rgba(0,0,0,0.3);border:2px solid #fff;cursor:pointer;">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>
@@ -551,7 +552,7 @@ export default function MapView({
             const marker = new AdvancedMarkerElement({
               map,
               position: { lat: venue.lat, lng: venue.lon },
-              title: venue.name,
+              title: normalizeDisplayText(venue.name),
               content: venuePin
             });
             venueMarkersRef.current.push(marker);
@@ -742,7 +743,7 @@ export default function MapView({
       {selectedVenue && (
         <div
           role="dialog"
-          aria-label={`Thông tin quán ăn ${selectedVenue.name}`}
+          aria-label={`Thông tin quán ăn ${normalizeDisplayText(selectedVenue.name)}`}
           style={{
             marginTop: 14,
             padding: 14,
@@ -755,14 +756,14 @@ export default function MapView({
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
               <h4 style={{ fontSize: 15, fontWeight: 700, margin: '0 0 4px 0', color: 'var(--text-primary)' }}>
-                {selectedVenue.name}
+                {normalizeDisplayText(selectedVenue.name)}
               </h4>
               <div style={{ fontSize: 12, color: 'var(--text-secondary)', marginBottom: 4 }}>
-                Khu vực: {selectedVenue.district || 'Hà Nội'}
+                Khu vực: {normalizeDisplayText(selectedVenue.district || 'Hà Nội')}
               </div>
               {selectedVenue.dish_tags && selectedVenue.dish_tags.length > 0 && (
                 <div style={{ fontSize: 12, color: 'var(--accent-primary)', marginBottom: 6, fontWeight: 600 }}>
-                  Món ăn: {selectedVenue.dish_tags.join(', ')}
+                  Món ăn: {selectedVenue.dish_tags.map(normalizeDisplayText).join(', ')}
                 </div>
               )}
             </div>
@@ -823,7 +824,7 @@ export default function MapView({
           </div>
           <ul style={{ margin: 0, paddingLeft: 18 }}>
             {routeWarnings.map((warning, idx) => (
-              <li key={idx}>{warning}</li>
+              <li key={idx}>{normalizeDisplayText(warning)}</li>
             ))}
           </ul>
         </div>

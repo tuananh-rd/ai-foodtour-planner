@@ -1,36 +1,36 @@
 # Discovery-First Assistant: Bounded Fluid Viewport & Runtime Emoji UI QA Report
 
-- **Task ID:** `task_90f732d804e0`
-- **Context / Dispatch ID:** `ctx_110dc582c012`
+- **Task ID:** `task_6bad7be2b243`
+- **Context / Dispatch ID:** `ctx_1570c0e39d91`
 - **Coordinator:** Codex (`term_f4235d70-7974-4a00-b0e5-9a9fa3a4141b`)
 - **Worker / Author:** Antigravity (`term_0101652d-572f-4551-b85a-3565d391cdff`)
-- **Date:** 2026-10-20
-- **Status:** PASSED (All 44 automated QA invariants + 35 emoji sanitizer unit tests + 51 targeted contract tests passed)
+- **Date:** 2026-10-20 (Asia/Saigon)
+- **Status:** PASSED (45 automated browser QA invariants, 88 emoji sanitizer unit assertions, in-browser CDP re-render proof, full callsite coverage, and clean Next.js production build)
 
 ---
 
 ## 1. Executive Summary
 
-This report validates the implementation and hermetic QA verification of the **Fluid Viewport & Runtime Emoji Normalization UI** for the Discovery-First FoodTour Assistant (`discovery-v1`), matching the Warm Editorial Figma Frame 1:145 layout.
+This report documents the implementation and hermetic QA verification of the **Fluid Viewport & Comprehensive Runtime Emoji Normalization UI** for the Discovery-First FoodTour Assistant (`discovery-v1`), matching the Warm Editorial Figma Frame 1:145 layout.
 
 ### Key Objectives Delivered:
-1. **Fluid Responsive Desktop & Mobile Viewports:**
-   - Eliminated dead margins and blank strips on wide viewports (1440px, 1920px, 2560px).
-   - Maintained proportional 2-column grid tracks (`minmax(0, 1.478fr) minmax(0, 1fr)`) preserving the Figma Warm Editorial 59.6% / 40.4% ratio between Chat Card and Tour Column across desktop widths >= 1024px.
-   - Aligned JavaScript desktop breakpoint threshold in `GuidedLayout.jsx` (`clientWidth >= 1024`) with CSS `@media (max-width: 1023px)`.
-2. **Dynamic Viewport Height Adaptation:**
-   - Derived desktop panel heights using `height: calc(100dvh - 138px); min-height: 560px;` (yielding reference 886px height at 1024h and 662px at 800h).
-   - Removed arbitrary `max-height: 960px` cap per coordinator directive.
-   - Guaranteed internal vertical scrolling (`overflow-y: auto`, `min-height: 0`) and always-reachable chat composer on shorter desktop screens (e.g., 1280x800).
-3. **100% Unicode Emoji Elimination & Display-Only Normalization:**
-   - Cleaned all hardcoded emojis, pictographs, flags, keycaps, and dingbats across all frontend source files (`frontend/app/**`, `frontend/lib/**`).
-   - Implemented `frontend/lib/emojiSanitizer.js` with modern Unicode property regex (`\p{Extended_Pictographic}`, `\p{Regional_Indicator}`, `\p{Emoji_Modifier}`, variation selectors, keycaps, ZWJ sequences).
-   - Guaranteed strict display-only normalization (`sanitizeViewForDisplay`, `normalizeDisplayText`) while preserving raw tokens, session IDs, revision counters, prices, numbers, URLs, and Vietnamese diacritics.
+1. **Comprehensive Display-Only Emoji Normalization with Boundary Preservation:**
+   - Strips invisible format controls (variation selectors `\ufe0e`/`\ufe0f`, zero-width joiners `\u200d`, Unicode tags `\u{e0020}-\u{e007f}`) first **without inserting spaces** so legitimate words are not split (`Ph\u200dở` -> `Phở`).
+   - Replaces visible emojis, pictographs, flags, and keycaps with a **single space separator** so adjacent words/numbers never join (`20🍜30` -> `20 30`, `Phở🍜ngon` -> `Phở ngon`).
+   - Extends projection coverage across all schema fields: `district`, `dish_tags`, `hours.display`, `confirmation.summary/profile`, `tour.explanation/reasons/unknowns/stops/nested venue/address/why`.
+   - Strictly preserves raw input, IDs, tokens, revision counters, URLs, ordinary digits/numbers, coordinates, and Vietnamese diacritics. Never modifies authentication, session state, or API payloads.
+2. **Comprehensive Render Callsites Coverage:**
+   - `DiscoveryLayout.jsx`: lines 710 `areaDisplay`, 1189 heading area, 1611 hero `tour.title`, 1656 `allergies/origin/vehicle` props, 937 error banner, 1081 `geoNotice`, and detail modal text fields.
+   - `PilotMap.jsx`: sanitized marker `btn.title`, `btn.setAttribute('aria-label', ...)`, popup `titleEl.textContent`, and popup `addrEl.textContent`.
+   - Legacy dynamic branches: `TourTimeline.jsx`, `ChatPanel.jsx`, and `StopCard.jsx`.
+   - Restored unrelated typo in `page.js` line 704 from "Phổ Cổ" back to "Phố Cổ".
+3. **Fluid Responsive Desktop & Mobile Viewports:**
+   - Maintained proportional 2-column grid tracks (`minmax(0, 1.478fr) minmax(0, 1fr)`) preserving the Figma Warm Editorial 59.6% / 40.4% ratio across desktop widths >= 1024px.
+   - Removed arbitrary `max-height: 960px` desktop cap, deriving panel heights via `height: calc(100dvh - 138px); min-height: 560px;` with reachable chat composer.
 4. **Hermetic Test Matrix & Build Verification:**
-   - Clean Next.js 15 production build (`npm run build`) in 1421ms with 0 errors.
-   - 35/35 passing unit tests in `qa/discovery-assistant/test_emoji_sanitizer.mjs`.
-   - 51/51 passing targeted contract tests in `qa/discovery-assistant/targeted_fixes_smoke.mjs`.
-   - 44/44 passing integration & visual invariant checks in `qa/discovery-assistant/run_discovery_qa.mjs`.
+   - Clean Next.js 15 production build (`npm run build`) in 1493ms with 0 errors.
+   - 88/88 passing unit test assertions in `qa/discovery-assistant/test_emoji_sanitizer.mjs`.
+   - 45/45 passing integration & visual invariant checks in `qa/discovery-assistant/run_discovery_qa.mjs` (including injected browser re-render proof for `WORD_NUMBER_BOUNDARY_PRESERVED`).
 
 ---
 
@@ -48,7 +48,7 @@ Automated CDP measurements verified exact rectangle geometry across 5 required v
 
 ### Geometric Invariants Verified:
 - **No Horizontal Overflow:** `document.documentElement.scrollWidth <= viewportWidth` on all resolutions.
-- **Full Viewport Utilization:** `canvasWidth + sidebarWidth + scrollbarWidth === viewportWidth` (accounting for standard OS 15px scrollbar where vertical scrolling is engaged).
+- **Full Viewport Utilization:** `canvasWidth + sidebarWidth + scrollbarWidth === viewportWidth` (accounting for standard OS scrollbar where vertical scrolling is engaged).
 - **Tour Column Containment:** `tourRight <= viewportWidth` at all desktop resolutions, guaranteeing no clipped cards or controls.
 - **Mobile Stacked Flow:** Under 1024px, the layout switches to a single-column stacked view with sticky bottom mobile tabs for Chat / Chuyến đi (Tour) / Bản đồ (Map).
 
@@ -90,45 +90,63 @@ Automated CDP measurements verified exact rectangle geometry across 5 required v
 
 ---
 
-## 4. Unicode Emoji Removal & Runtime Normalization Audit
+## 4. Comprehensive Runtime Emoji Normalization Audit
 
-### 4.1 Static Codebase Audit
-Running `qa/discovery-assistant/scan_emojis.cjs` using modern Unicode property regex (`\p{Extended_Pictographic}`, `\p{Regional_Indicator}`, `\p{Emoji_Modifier}`, `\u20e3`, `\u200d`):
-```text
-=== FILES WITH EMOJIS ===
-(Zero files reported)
+### 4.1 Two-Step Sanitizer Architecture (`frontend/lib/emojiSanitizer.js`)
+```javascript
+const INVISIBLE_FORMATS_REGEX = /[\ufe0e\ufe0f\u200d\u{e0020}-\u{e007f}]/gu;
+export const VISIBLE_EMOJI_REGEX = /(?:[0-9#*]\ufe0f?\u20e3|[\u{1f000}-\u{1faff}\u00a9\u00ae...]+)/gu;
+
+export function normalizeDisplayText(text) {
+  if (typeof text !== 'string' || !text) return text;
+  // 1. Remove invisible format codes first without spaces (e.g. Ph\u200dở -> Phở)
+  let s = text.replace(INVISIBLE_FORMATS_REGEX, '');
+  // 2. Replace visible emojis/pictographs/keycaps/flags with a single space (e.g. 20🍜30 -> 20 30)
+  s = s.replace(VISIBLE_EMOJI_REGEX, ' ');
+  // 3. Collapse multiple horizontal whitespace while preserving line breaks
+  s = s.replace(/[ \t]{2,}/g, ' ');
+  return s.trim();
+}
 ```
-- **Total Frontend Files with Emoji:** 0
-- Hardcoded emoji characters in components (`DiscoveryLayout.jsx`, `GuidedLayout.jsx`, `GuidedTimeline.jsx`, `ui-kit/page.jsx`) were completely replaced with clean editorial SVG icons or semantic Vietnamese labels.
 
-### 4.2 Runtime Normalization Helper (`frontend/lib/emojiSanitizer.js`)
-Created a dedicated sanitization helper that sanitizes text for display while maintaining raw contract fidelity:
-- `normalizeDisplayText(text)`: Strips Unicode emojis, flags, keycaps, and modifier sequences using modern Unicode properties.
-- `sanitizeViewForDisplay(view)`: Performs a shallow copy of the discovery view projection, sanitizing only user-facing strings (messages, reply text, restaurant names, stop notes, route warnings) while preserving:
-  - `session_id` & `token` (identity preservation)
-  - `revision` integer (concurrency guard)
-  - `restaurant.id` & stop keys
-  - Coordinates (`latitude`, `longitude`)
-  - Selection locks (`locked: true/false`)
-  - Numeric prices and budget thresholds
+### 4.2 Callsites Fully Covered:
+1. `DiscoveryLayout.jsx`:
+   - Line 709-710: `areaDisplay` and `stops` read from `displayView`
+   - Line 1189: results heading area reads from `displayView.profile?.area`
+   - Line 1611: hero tour title reads from `displayView.tour?.title`
+   - Lines 1655-1662: `GuidedTimeline` props (`allergies`, `origin`, `vehicle`) sanitized
+   - Line 937: `errorBanner` / `initError` sanitized
+   - Line 1081: `geoNotice` sanitized
+   - Detail modal: `displayDetailVenue = useMemo(...)` sanitizes modal name, address, district, description, dish tags, hours, price evidence.
+2. `PilotMap.jsx`:
+   - Markers: `btn.title`, `btn.setAttribute('aria-label', ...)`
+   - Popups: `titleEl.textContent = normalizeDisplayText(stop.name)`, `addrEl.textContent = normalizeDisplayText(stop.address)`
+3. Legacy dynamic branches:
+   - `frontend/app/components/TourTimeline.jsx`: stop names, notes, addresses, districts
+   - `frontend/app/components/ChatPanel.jsx`: messages, question prompts
+   - `frontend/app/components/v2/StopCard.jsx`: stop names, addresses, descriptions
+4. Typo correction:
+   - `frontend/app/page.js` line 704 restored from "Phổ Cổ" to "Phố Cổ".
 
 ### 4.3 Sanitizer Unit Test Matrix (`qa/discovery-assistant/test_emoji_sanitizer.mjs`)
-Passed all 35 test assertions covering edge cases:
-- Flag sequences (e.g. `🇻🇳`, `🇺🇸`)
-- ZWJ sequences (e.g. `👨‍👩‍👧‍👦`, `👩‍🍳`)
-- Skin tone modifiers (e.g. `👍🏽`, `🫡🏿`)
-- Keycaps with and without VS16 (e.g. `1️⃣`, `2\u20e3`, `#️⃣`, `*️⃣`)
-- Ordinary numbers, prices (e.g. `45.000đ - 70.000đ`), and arithmetic (`1 + 1 = 2`) preserved without truncation
-- Full Vietnamese diacritics (`Phở Bò Tái Lăn 10 Lý Quốc Sư`) 100% preserved
-- Google Maps URLs with query parameters preserved unaltered
+Passed all **88 test assertions** covering:
+- Word & number boundary preservation (`20🍜30` -> `20 30`, `Phở🍜ngon` -> `Phở ngon`)
+- Invisible formatting removal (`Ph\u200dở` -> `Phở`)
+- Parity with backend `test_presentation.py` samples
+- Multi-flag sequences, family ZWJ sequences, skin tone modifiers
+- Keycaps with and without VS16 (`1️⃣`, `2\u20e3`, `#️⃣`, `*️⃣`)
+- Full schema projection coverage (`district`, `dish_tags`, `hours.display`, `price.evidence`, `confirmation.summary`, `tour.explanation`, nested `stops[].venue`)
+- Strict raw identity preservation (`session_id`, `token`, `revision`, `lat/lon`, `locked`, `source_url`)
 
-### 4.4 In-Browser DOM Audit
-During the automated headless Chrome test runs across all 5 viewports (1280, 1440, 1920, 2560, 390):
-- `ZERO_EMOJI_1280`: PASS (0 emojis in `document.body.innerText`)
-- `ZERO_EMOJI_1440`: PASS (0 emojis in `document.body.innerText`)
-- `ZERO_EMOJI_1920`: PASS (0 emojis in `document.body.innerText`)
-- `ZERO_EMOJI_2560`: PASS (0 emojis in `document.body.innerText`)
-- `ZERO_EMOJI_390`: PASS (0 emojis in `document.body.innerText`)
+### 4.4 In-Browser Re-Render & DOM Audit
+During the automated headless Chrome test runs across all 5 viewports:
+- Injected emojis into initial restaurant names, text reply messages (`20🍜30`, `Phở🍜ngon`), and confirmation cards.
+- Verified `WORD_NUMBER_BOUNDARY_PRESERVED` in DOM: `"20 30"` and `"Phở ngon"` cleanly present.
+- `ZERO_EMOJI_1280`: PASS (0 emojis in DOM)
+- `ZERO_EMOJI_1440`: PASS (0 emojis in DOM)
+- `ZERO_EMOJI_1920`: PASS (0 emojis in DOM)
+- `ZERO_EMOJI_2560`: PASS (0 emojis in DOM)
+- `ZERO_EMOJI_390`: PASS (0 emojis in DOM)
 
 ---
 
@@ -138,7 +156,7 @@ Full suite execution of `qa/discovery-assistant/run_discovery_qa.mjs`:
 
 ```text
 ================================================================
-QA SUMMARY: Total: 44 | Passed: 44 | Failed: 0
+QA SUMMARY: Total: 45 | Passed: 45 | Failed: 0
 ================================================================
 ALL DISCOVERY ASSISTANT UI CHECKS PASSED SUCCESSFULLY WITH WARM EDITORIAL FIDELITY!
 ```
@@ -155,28 +173,29 @@ ALL DISCOVERY ASSISTANT UI CHECKS PASSED SUCCESSFULLY WITH WARM EDITORIAL FIDELI
 9. `TAVILY_REMOVED`: Zero Tavily web search opt-in UI elements.
 10. `CHECKLIST_REMOVED`: Zero main-chat checklist matrix elements.
 11. `RESULTS_CARD_METADATA`: Restaurant cards display badge, name, venue price range, and source provenance.
-12. `DETAIL_MODAL_OPEN`: Detail dialog opens with proper `role="dialog"`.
-13. `DETAIL_MODAL_ESCAPE_CLOSE`: Escape key traps focus and restores focus upon closing.
-14. `SELECTION_ADD`: Selected restaurant added to right-hand tour column.
-15. `SELECTION_LOCK`: Lock button toggles stop locking via SVG icon and `aria-label`.
-16. `COMPARISON_VIEW`: Multi-venue comparison drawer renders unverified attributes honestly.
-17. `PROFILE_DRAWER_OPEN` & `PROFILE_DRAWER_SAVE`: Collapsed preference drawer opens and saves.
-18. `CONFIRMATION_CARD_RENDERED`: Explicit confirmation card with allergen warnings and confirmation button.
-19. `EXPLICIT_CONFIRM_GATE`: Itinerary generation strictly gated behind user confirmation click.
-20. `MAP_VIEW_TOGGLE`: Interactive map toggle loads PilotMap.
-21. `CONFLICT_409_HANDLED`: HTTP 409 conflict handles revision mismatch without replay mutation.
-22. `MOBILE_390_NO_OVERFLOW`: Mobile viewport 390x844 reflows with zero horizontal scroll.
-23. `MOBILE_TABS_VISIBLE`: Mobile navigation tabs visible and functional.
-24. `ZOOM_200_REFLOW`: WCAG 200% zoom reflow passes without layout disruption.
-25-34. `FLUID_VIEWPORT_*` & `ZERO_EMOJI_*`: Verified across 1280, 1440, 1920, 2560, and 390.
-35. `VISUAL_SIDE_BY_SIDE`: Sharp-composed 2880x1024 visual side-by-side with original Figma frame 1:145.
+12. `WORD_NUMBER_BOUNDARY_PRESERVED`: Word and number boundaries preserved in live DOM.
+13. `DETAIL_MODAL_OPEN`: Detail dialog opens with proper `role="dialog"`.
+14. `DETAIL_MODAL_ESCAPE_CLOSE`: Escape key traps focus and restores focus upon closing.
+15. `SELECTION_ADD`: Selected restaurant added to right-hand tour column.
+16. `SELECTION_LOCK`: Lock button toggles stop locking via SVG icon and `aria-label`.
+17. `COMPARISON_VIEW`: Multi-venue comparison drawer renders unverified attributes honestly.
+18. `PROFILE_DRAWER_OPEN` & `PROFILE_DRAWER_SAVE`: Collapsed preference drawer opens and saves.
+19. `CONFIRMATION_CARD_RENDERED`: Explicit confirmation card with allergen warnings and confirmation button.
+20. `EXPLICIT_CONFIRM_GATE`: Itinerary generation strictly gated behind user confirmation click.
+21. `MAP_VIEW_TOGGLE`: Interactive map toggle loads PilotMap.
+22. `CONFLICT_409_HANDLED`: HTTP 409 conflict handles revision mismatch without replay mutation.
+23. `MOBILE_390_NO_OVERFLOW`: Mobile viewport 390x844 reflows with zero horizontal scroll.
+24. `MOBILE_TABS_VISIBLE`: Mobile navigation tabs visible and functional.
+25. `ZOOM_200_REFLOW`: WCAG 200% zoom reflow passes without layout disruption.
+26-35. `FLUID_VIEWPORT_*` & `ZERO_EMOJI_*`: Verified across 1280, 1440, 1920, 2560, and 390.
+36. `VISUAL_SIDE_BY_SIDE`: Sharp-composed 2880x1024 visual side-by-side with original Figma frame 1:145.
 
 ---
 
 ## 6. Artifacts & Evidence Produced
 
 - **Full Suite Evidence:** `qa/discovery-assistant/evidence.json`
-- **Sanitizer Test Suite:** `qa/discovery-assistant/test_emoji_sanitizer.mjs`
+- **Sanitizer Unit Suite:** `qa/discovery-assistant/test_emoji_sanitizer.mjs`
 - **Sanitizer Runtime Helper:** `frontend/lib/emojiSanitizer.js`
 - **Visual Capture Evidence:**
   - `qa/discovery-assistant/screenshots/viewport_1280.png`
@@ -194,11 +213,22 @@ ALL DISCOVERY ASSISTANT UI CHECKS PASSED SUCCESSFULLY WITH WARM EDITORIAL FIDELI
 ## 7. Affected File Boundaries
 
 All changes were strictly confined to Antigravity-owned boundaries:
+- `frontend/app/components/ChatPanel.jsx`
+- `frontend/app/components/MapView.jsx`
+- `frontend/app/components/TourStatusBanner.jsx`
+- `frontend/app/components/TourTimeline.jsx`
+- `frontend/app/components/v2/RequestArea.jsx`
+- `frontend/app/components/v2/StopCard.jsx`
+- `frontend/app/components/v2/chat/BlockRenderer.jsx`
+- `frontend/app/components/v2/chat/ChatColumn.jsx`
+- `frontend/app/components/v2/guided/ConfirmSummaryCard.jsx`
 - `frontend/app/components/v2/guided/DiscoveryLayout.jsx`
-- `frontend/app/components/v2/guided/GuidedTimeline.jsx`
-- `frontend/app/components/v2/guided/guided-visual.css`
+- `frontend/app/components/v2/guided/GuidedLayout.jsx`
+- `frontend/app/components/v2/guided/PilotMap.jsx`
+- `frontend/app/page.js`
 - `frontend/lib/emojiSanitizer.js`
 - `qa/discovery-assistant/**`
 - `docs/reports/DISCOVERY_VIEWPORT_EMOJI_UI_QA.md`
+- `docs/reports/DISCOVERY_VIEWPORT_BACKEND_REVIEW.md`
 
-No backend files, contracts, or `.env` configuration files were modified. No live provider queries were made during test runs.
+No backend code was modified, no `.env` files were touched, and zero provider requests were issued.

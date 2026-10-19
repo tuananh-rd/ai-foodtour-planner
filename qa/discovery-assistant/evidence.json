@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-19T18:16:23.560Z",
+  "testedAt": "2026-10-19T19:12:59.726Z",
   "targetContract": "discovery-v1",
   "visualDesign": "Warm editorial Figma frame 1:145 (1440x1024)",
   "ports": {
@@ -110,6 +110,15 @@
         "hasCompareBtn": true,
         "hasDetailsBtn": true,
         "hasSourceLink": true
+      }
+    },
+    {
+      "id": "WORD_NUMBER_BOUNDARY_PRESERVED",
+      "name": "Boundary từ và số được bảo toàn sau khi lọc emoji (20 30, Phở ngon)",
+      "pass": true,
+      "details": {
+        "hasSeparatedNumber": true,
+        "hasSeparatedWord": true
       }
     },
     {
@@ -425,8 +434,8 @@
     }
   },
   "summary": {
-    "total": 44,
-    "passed": 44,
+    "total": 45,
+    "passed": 45,
     "failed": 0
   }
 }

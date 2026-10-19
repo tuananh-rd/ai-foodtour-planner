@@ -39,6 +39,7 @@ import {
   replaceTourStop,
   ApiError
 } from '../lib/api';
+import { normalizeDisplayText } from '../lib/emojiSanitizer';
 
 const DEFAULT_PREFERENCES = {
   city: 'Hà Nội',
@@ -701,7 +702,7 @@ export default function Home() {
             )}
           </div>
           <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 4 }}>
-            Trợ lý lập lịch trình ẩm thực Phổ Cổ minh bạch bằng chứng · Đi bộ tối ưu
+            Trợ lý lập lịch trình ẩm thực Phố Cổ minh bạch bằng chứng · Đi bộ tối ưu
           </p>
         </div>
 
@@ -777,7 +778,7 @@ export default function Home() {
           <div>
             <strong style={{ color: '#d46b08' }}>Không còn quán thay thế phù hợp (409 No Candidates):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
-              {noCandidatesError.message || 'Không tìm được quán thay thế nào thỏa mãn ràng buộc trong khu vực. Lịch trình hiện tại vẫn được giữ nguyên.'}
+              {normalizeDisplayText(noCandidatesError.message || 'Không tìm được quán thay thế nào thỏa mãn ràng buộc trong khu vực. Lịch trình hiện tại vẫn được giữ nguyên.')}
             </p>
           </div>
           <button
@@ -811,7 +812,7 @@ export default function Home() {
           <div>
             <strong style={{ color: '#cf1322' }}>Lỗi xác thực hoặc phiên hết hạn (401/403/410):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#434343' }}>
-              {authError.message || 'Phiên làm việc không hợp lệ hoặc đã hết hạn. Vui lòng tạo phiên làm việc mới.'}
+              {normalizeDisplayText(authError.message || 'Phiên làm việc không hợp lệ hoặc đã hết hạn. Vui lòng tạo phiên làm việc mới.')}
             </p>
           </div>
           <button
@@ -845,7 +846,7 @@ export default function Home() {
           <div>
             <strong style={{ color: '#d46b08' }}>Đã đạt giới hạn yêu cầu (429 Rate Limited):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#595959' }}>
-              {rateLimitError.message || 'Hệ thống đang tiếp nhận nhiều yêu cầu. Vui lòng đợi trong giây lát rồi thử lại.'}
+              {normalizeDisplayText(rateLimitError.message || 'Hệ thống đang tiếp nhận nhiều yêu cầu. Vui lòng đợi trong giây lát rồi thử lại.')}
             </p>
           </div>
           <button
@@ -879,7 +880,7 @@ export default function Home() {
           <div>
             <strong style={{ color: '#237804' }}>Dịch vụ tạm thời không khả dụng (503 Provider Unavailable):</strong>
             <p style={{ margin: '4px 0 0', fontSize: 13, color: '#389e0d' }}>
-              {providerUnavailableError.message || 'Dịch vụ xử lý ngôn ngữ tự nhiên đang tạm gián đoạn. Bạn có thể sử dụng trực tiếp tab "Tùy chọn" để chọn địa điểm và lập lịch.'}
+              {normalizeDisplayText(providerUnavailableError.message || 'Dịch vụ xử lý ngôn ngữ tự nhiên đang tạm gián đoạn. Bạn có thể sử dụng trực tiếp tab "Tùy chọn" để chọn địa điểm và lập lịch.')}
             </p>
           </div>
           <button
@@ -910,7 +911,7 @@ export default function Home() {
           }}
         >
           <div>
-            <strong>Lỗi:</strong> {error.message || 'Không thể xử lý yêu cầu.'}
+            <strong>Lỗi:</strong> {normalizeDisplayText(error.message || 'Không thể xử lý yêu cầu.')}
           </div>
           <button
             type="button"
@@ -950,7 +951,7 @@ export default function Home() {
           <strong>Lưu ý từ hệ thống trích xuất yêu cầu:</strong>
           <ul style={{ margin: '4px 0 0', paddingLeft: 20 }}>
             {notes.map((note, idx) => (
-              <li key={idx}>{note}</li>
+              <li key={idx}>{normalizeDisplayText(note)}</li>
             ))}
           </ul>
         </div>

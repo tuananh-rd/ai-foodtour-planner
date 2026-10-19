@@ -2,6 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react';
 import BlockRenderer from './BlockRenderer';
+import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 
 /**
  * ChatColumn (Workspace Left Column, TASK C3-1)
@@ -146,7 +147,7 @@ export default function ChatColumn({
                 }}
               >
                 {isUser ? (
-                  <span>{msg.text}</span>
+                  <span>{normalizeDisplayText(msg.text)}</span>
                 ) : (
                   <div>
                     {/* Render blocks inside assistant message */}

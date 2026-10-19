@@ -9,6 +9,7 @@ import TrustDisclosure from './TrustDisclosure';
 import ReplaceDiffModal from '../../ReplaceDiffModal';
 import { chatTurn, getSession, replaceTourStop } from '../../../../lib/api';
 import PilotMap from './PilotMap';
+import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import './guided-visual.css';
 
 /* Reference glyphs (outlined paths of the design file: 4-point star, send arrow). Decorative only. */
@@ -1060,7 +1061,7 @@ export default function GuidedLayout({
 
             {(errorMessage || initError) && (
               <div data-testid="guided-error-banner" role="alert" className="nn-alert">
-                <span>{errorMessage || initError.message}</span>
+                <span>{normalizeDisplayText(errorMessage || initError.message)}</span>
                 <button type="button" data-testid="guided-error-retry-btn" onClick={handleRetryFailed}>Thử lại</button>
               </div>
             )}
@@ -1079,7 +1080,7 @@ export default function GuidedLayout({
               {messages.map((msg, idx) => (
                 msg.role === 'user' ? (
                   <div key={idx} data-testid="user-msg-bubble" className="nn-bubble user">
-                    {msg.text}
+                    {normalizeDisplayText(msg.text)}
                   </div>
                 ) : null
               ))}
@@ -1090,7 +1091,7 @@ export default function GuidedLayout({
                     <div key={idx} className="nn-editorial-assistant">
                       <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
                       <div data-testid="assistant-text-bubble" className="nn-bubble editorial-body">
-                        {b.text}
+                        {normalizeDisplayText(b.text)}
                       </div>
                     </div>
                   ))}
@@ -1101,7 +1102,7 @@ export default function GuidedLayout({
                       data-testid={`notice-block-${b.code || idx}`}
                       className={`nn-bubble notice${b.level === 'safety' ? ' safety' : ''}`}
                     >
-                      {b.text}
+                      {normalizeDisplayText(b.text)}
                     </div>
                   ))}
 

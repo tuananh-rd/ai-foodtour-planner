@@ -1,5 +1,7 @@
 'use client';
 
+import { normalizeDisplayText } from '../../lib/emojiSanitizer';
+
 function CheckIcon() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -126,7 +128,7 @@ export default function TourStatusBanner({ tour, onSwitchToExplore, onAdjustPref
       {/* Explanation text from server */}
       {tour.explanation && (
         <p style={{ fontSize: 14, color: cfg.textColor, lineHeight: 1.5, marginBottom: 10 }}>
-          {tour.explanation}
+          {normalizeDisplayText(tour.explanation)}
           {tour.explanation_source === 'llm' && (
             <span data-explanation-source="llm" style={{ display: 'block', fontSize: 11, opacity: 0.8, marginTop: 4 }}>
               Lời giải thích do Gemini diễn đạt lại từ dữ kiện đã được hệ thống kiểm tra.
@@ -141,7 +143,7 @@ export default function TourStatusBanner({ tour, onSwitchToExplore, onAdjustPref
           <strong style={{ fontSize: 13, color: cfg.textColor }}>Lý do & dữ kiện chưa kiểm chứng:</strong>
           <ul style={{ paddingLeft: 20, marginTop: 4, marginBottom: 8, fontSize: 13, color: cfg.textColor }}>
             {reasons.map((r, i) => (
-              <li key={i}>{r}</li>
+              <li key={i}>{normalizeDisplayText(r)}</li>
             ))}
           </ul>
         </div>
@@ -176,7 +178,7 @@ export default function TourStatusBanner({ tour, onSwitchToExplore, onAdjustPref
           <strong style={{ fontSize: 13, color: cfg.textColor }}>Đề xuất điều chỉnh (Gợi ý, không tự ý áp đặt):</strong>
           <ul style={{ paddingLeft: 20, marginTop: 4, marginBottom: 10, fontSize: 13, color: cfg.textColor }}>
             {proposedChanges.map((c, i) => (
-              <li key={i}>{c}</li>
+              <li key={i}>{normalizeDisplayText(c)}</li>
             ))}
           </ul>
         </div>

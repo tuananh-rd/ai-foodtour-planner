@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react';
+import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './pilot-map.css';
 
@@ -64,9 +65,9 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
       return {
         index: idx + 1,
         id: s.venue_id || s.id || `stop-${idx}`,
-        name: s.name || s.venue?.name || `Điểm ${idx + 1}`,
-        address: s.address || s.venue?.address || '',
-        district: s.district || s.venue?.district || '',
+        name: normalizeDisplayText(s.name || s.venue?.name || `Điểm ${idx + 1}`),
+        address: normalizeDisplayText(s.address || s.venue?.address || ''),
+        district: normalizeDisplayText(s.district || s.venue?.district || ''),
         lat: typeof lat === 'number' && !isNaN(lat) ? lat : null,
         lon: typeof lon === 'number' && !isNaN(lon) ? lon : null,
         inBounds: isInsidePilotBounds(lat, lon)
@@ -107,10 +108,13 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = `nn-map-marker${stop.index === stopsToRender.length && stopsToRender.length > 1 ? ' last' : ''}`;
+      const stopNameClean = normalizeDisplayText(stop.name);
+      const stopAddrClean = normalizeDisplayText(stop.address || stop.district);
+
       btn.textContent = String(stop.index);
-      btn.title = stop.name;
+      btn.title = stopNameClean;
       btn.setAttribute('tabindex', '0');
-      btn.setAttribute('aria-label', `Điểm dừng ${stop.index}: ${stop.name}`);
+      btn.setAttribute('aria-label', `Điểm dừng ${stop.index}: ${stopNameClean}`);
 
       // Safe DOM popup with textContent only (no innerHTML)
       const popupContent = document.createElement('div');
@@ -119,13 +123,13 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
 
       const titleEl = document.createElement('div');
       titleEl.className = 'nn-map-popup-title';
-      titleEl.textContent = `${stop.index}. ${stop.name}`;
+      titleEl.textContent = `${stop.index}. ${stopNameClean}`;
       popupContent.appendChild(titleEl);
 
-      if (stop.address || stop.district) {
+      if (stopAddrClean) {
         const addrEl = document.createElement('div');
         addrEl.className = 'nn-map-popup-addr';
-        addrEl.textContent = stop.address || stop.district;
+        addrEl.textContent = stopAddrClean;
         popupContent.appendChild(addrEl);
       }
 

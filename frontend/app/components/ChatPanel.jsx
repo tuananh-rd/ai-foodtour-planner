@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { normalizeDisplayText } from '../../lib/emojiSanitizer';
 
 const QUICK_PROMPTS = [
   'Ăn sáng phở và cà phê quanh Hồ Gươm 2 tiếng, 150k mỗi người',
@@ -116,7 +117,7 @@ export default function ChatPanel({
               <div style={{ fontSize: 11, fontWeight: 700, opacity: 0.75, marginBottom: 4 }}>
                 {isUser ? 'Bạn' : 'Trợ lý AI FoodTour'}
               </div>
-              <div style={{ whiteSpace: 'pre-line' }}>{m.text}</div>
+              <div style={{ whiteSpace: 'pre-line' }}>{normalizeDisplayText(m.text)}</div>
 
               {/* Display extracted preferences tags if assistant message */}
               {m.extracted && (
@@ -137,7 +138,7 @@ export default function ChatPanel({
                       </li>
                     )}
                     {m.extracted.interests && m.extracted.interests.length > 0 && (
-                      <li>Món quan tâm: {m.extracted.interests.join(', ')}</li>
+                      <li>Món quan tâm: {m.extracted.interests.map(normalizeDisplayText).join(', ')}</li>
                     )}
                     {m.extracted.mode && <li>Chế độ: {m.extracted.mode === 'strict' ? 'Nghiêm ngặt' : 'Khám phá'}</li>}
                   </ul>
@@ -164,7 +165,7 @@ export default function ChatPanel({
             </strong>
             <ul style={{ paddingLeft: 18, margin: 0, display: 'grid', gap: 4 }}>
               {questions.map((q, idx) => (
-                <li key={idx}>{q}</li>
+                <li key={idx}>{normalizeDisplayText(q)}</li>
               ))}
             </ul>
 

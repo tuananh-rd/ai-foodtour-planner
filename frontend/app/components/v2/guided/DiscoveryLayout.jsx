@@ -20,7 +20,7 @@ import {
   formatUnknownLabel,
   DiscoveryApiError
 } from '../../../../lib/discoveryApi';
-import { normalizeDisplayText, sanitizeViewForDisplay } from '../../../../lib/emojiSanitizer';
+import { normalizeDisplayText, sanitizeViewForDisplay, sanitizeRestaurantForDisplay } from '../../../../lib/emojiSanitizer';
 import './guided-visual.css';
 import './discovery-visual.css';
 
@@ -216,6 +216,7 @@ export default function DiscoveryLayout({
   const [profileForm, setProfileForm] = useState(INITIAL_NULLABLE_PROFILE);
   const [selectedForCompare, setSelectedForCompare] = useState([]);
   const [detailVenue, setDetailVenue] = useState(null);
+  const displayDetailVenue = useMemo(() => detailVenue ? sanitizeRestaurantForDisplay(detailVenue) : null, [detailVenue]);
   const [errorBanner, setErrorBanner] = useState(null);
   const [geoNotice, setGeoNotice] = useState(null);
 
@@ -540,7 +541,7 @@ export default function DiscoveryLayout({
   // Open Detail Modal with keyboard trigger tracking
   const handleOpenDetailModal = (venue, e) => {
     triggerElRef.current = e?.currentTarget || null;
-    setDetailVenue(venue);
+    setDetailVenue(venue ? sanitizeRestaurantForDisplay(venue) : null);
   };
 
   // Profile Drawer Form Save: patch ONLY modified fields, never convert null to 0
@@ -706,8 +707,8 @@ export default function DiscoveryLayout({
     return new Set((view.selection || []).map((s) => s.id));
   }, [view.selection]);
 
-  const stops = view.tour?.stops || [];
-  const areaDisplay = view.profile?.area || (stops[0]?.district ? stops[0].district : null);
+  const stops = displayView.tour?.stops || [];
+  const areaDisplay = displayView.profile?.area || (stops[0]?.district ? stops[0].district : null);
 
   return (
     <div data-testid="guided-container" aria-busy={busy} className="nn-root">
@@ -934,7 +935,7 @@ export default function DiscoveryLayout({
                   <AlertGlyph size={14} color="#C44A24" />
                   {parentInitializing
                     ? 'Đang khởi tạo phiên làm việc…'
-                    : (errorBanner || initError?.message)}
+                    : normalizeDisplayText(errorBanner || initError?.message)}
                 </span>
                 {!parentInitializing && (
                   sessionError === 'session_not_found' || sessionError === 'unauthorized' ? (
@@ -1078,7 +1079,7 @@ export default function DiscoveryLayout({
                       </button>
                     </div>
                     {geoNotice && (
-                      <div style={{ fontSize: '11px', color: '#6C554E' }}>{geoNotice}</div>
+                      <div style={{ fontSize: '11px', color: '#6C554E' }}>{normalizeDisplayText(geoNotice)}</div>
                     )}
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                       <input
@@ -1186,7 +1187,7 @@ export default function DiscoveryLayout({
               {Array.isArray(displayView.results) && displayView.results.length > 0 && (
                 <div className="nn-discovery-results">
                   <div className="nn-discovery-results-header">
-                    <span>Gợi ý quán phù hợp{view.profile?.area ? ` tại ${view.profile.area}` : ''}</span>
+                    <span>Gợi ý quán phù hợp{displayView.profile?.area ? ` tại ${displayView.profile.area}` : ''}</span>
                     <span className="nn-results-count-badge">{displayView.results.length} địa điểm</span>
                   </div>
 
@@ -1391,9 +1392,9 @@ export default function DiscoveryLayout({
                     ))}
                   </div>
 
-                  {Array.isArray(view.comparison.unknowns) && view.comparison.unknowns.length > 0 && (
+                  {Array.isArray(displayView.comparison?.unknowns) && displayView.comparison.unknowns.length > 0 && (
                     <div style={{ marginTop: '10px', fontSize: '11.5px', color: '#8A4B12' }}>
-                      Lưu ý: Các yếu tố chưa có bằng chứng xác minh: {view.comparison.unknowns.map(formatUnknownLabel).join(', ')}.
+                      Lưu ý: Các yếu tố chưa có bằng chứng xác minh: {displayView.comparison.unknowns.map(formatUnknownLabel).join(', ')}.
                     </div>
                   )}
                 </div>
@@ -1404,40 +1405,42 @@ export default function DiscoveryLayout({
                 <div className="nn-discovery-confirmation" data-testid="discovery-confirmation-card">
                   <div className="nn-confirm-header">
                     <div>
-                      <h4 className="nn-confirm-title">Xác nhận trước khi tạo lịch trình</h4>
+                      <h4 className="nn-confirm-title">
+                        {displayView.confirmation?.summary?.title || 'Xác nhận trước khi tạo lịch trình'}
+                      </h4>
                       <p style={{ fontSize: '12.5px', color: '#6C554E', margin: 0 }}>
-                        Vui lòng kiểm tra lại các tiêu chí chuyến đi và danh sách quán đã chọn.
+                        {displayView.confirmation?.summary?.description || displayView.confirmation?.summary?.notes || 'Vui lòng kiểm tra lại các tiêu chí chuyến đi và danh sách quán đã chọn.'}
                       </p>
                     </div>
                   </div>
 
                   {/* Summary chips */}
                   <div className="nn-confirm-summary-list">
-                    {view.profile?.area && (
-                      <span className="nn-confirm-summary-chip">Khu vực: {view.profile.area}</span>
+                    {displayView.profile?.area && (
+                      <span className="nn-confirm-summary-chip">Khu vực: {displayView.profile.area}</span>
                     )}
-                    {view.profile?.party_size && (
-                      <span className="nn-confirm-summary-chip">Số người: {view.profile.party_size}</span>
+                    {displayView.profile?.party_size && (
+                      <span className="nn-confirm-summary-chip">Số người: {displayView.profile.party_size}</span>
                     )}
-                    {view.profile?.budget_vnd && (
+                    {displayView.profile?.budget_vnd && (
                       <span className="nn-confirm-summary-chip">
-                        Ngân sách: {Number(view.profile.budget_vnd).toLocaleString('vi-VN')} đ ({view.profile.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'})
+                        Ngân sách: {Number(displayView.profile.budget_vnd).toLocaleString('vi-VN')} đ ({displayView.profile.budget_scope === 'per_person' ? 'mỗi người' : 'cả nhóm'})
                       </span>
                     )}
-                    {view.profile?.start_time && (
-                      <span className="nn-confirm-summary-chip">Bắt đầu: {view.profile.start_time}</span>
+                    {displayView.profile?.start_time && (
+                      <span className="nn-confirm-summary-chip">Bắt đầu: {displayView.profile.start_time}</span>
                     )}
-                    {view.profile?.duration_min && (
-                      <span className="nn-confirm-summary-chip">Thời lượng: {view.profile.duration_min} phút</span>
+                    {displayView.profile?.duration_min && (
+                      <span className="nn-confirm-summary-chip">Thời lượng: {displayView.profile.duration_min} phút</span>
                     )}
-                    {view.profile?.vehicle && (
+                    {displayView.profile?.vehicle && (
                       <span className="nn-confirm-summary-chip">
-                        Phương tiện: {view.profile.vehicle === 'walk' ? 'Đi bộ' : view.profile.vehicle}
+                        Phương tiện: {displayView.profile.vehicle === 'walk' ? 'Đi bộ' : displayView.profile.vehicle}
                       </span>
                     )}
-                    {view.selection?.length > 0 && (
+                    {displayView.selection?.length > 0 && (
                       <span className="nn-confirm-summary-chip">
-                        Quán đã chọn: {view.selection.length}
+                        Quán đã chọn: {displayView.selection.length}
                       </span>
                     )}
                   </div>
@@ -1606,7 +1609,7 @@ export default function DiscoveryLayout({
                     <StarGlyph size={10} color="#E8B85C" /> {stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS'}
                   </div>
                   <h3 className="nn-hero-title">
-                    {view.tour?.title || 'Đi một vòng, ngon một tối.'}
+                    {displayView.tour?.title || 'Đi một vòng, ngon một tối.'}
                   </h3>
                   <div className="nn-hero-meta">
                     {stops.length > 0
@@ -1651,10 +1654,10 @@ export default function DiscoveryLayout({
                 {view.tour && !editingSelectionAfterTour ? (
                   <GuidedTimeline
                     tour={displayView.tour || view.tour}
-                    allergies={view.profile?.allergies || []}
+                    allergies={displayView.profile?.allergies || []}
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
-                    origin={view.profile?.origin}
-                    vehicle={view.profile?.vehicle}
+                    origin={displayView.profile?.origin || view.profile?.origin}
+                    vehicle={displayView.profile?.vehicle || view.profile?.vehicle}
                     onReplaceStop={(stop) => handleStartStopReplacement(stop)}
                     onChangeStop={(stop) => handleStartStopReplacement(stop)}
                     onAdjustStops={() => handleOpenSelectionEditor()}
@@ -1861,10 +1864,10 @@ export default function DiscoveryLayout({
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
               <div>
                 <h3 id="detail-venue-modal-title" style={{ margin: 0, fontSize: '18px', fontWeight: 700, color: '#231815' }}>
-                  {detailVenue.name}
+                  {displayDetailVenue.name}
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#7A625A' }}>
-                  {detailVenue.address} · {detailVenue.district}
+                  {displayDetailVenue.address} · {displayDetailVenue.district}
                 </p>
               </div>
               <button
@@ -1883,7 +1886,7 @@ export default function DiscoveryLayout({
                   justifyContent: 'center',
                   padding: '4px'
                 }}
-                aria-label="Đóng cửa sổ chi tiết quán"
+                aria-label={`Đóng cửa sổ chi tiết ${displayDetailVenue.name}`}
               >
                 <CloseGlyph size={14} color="#8C7872" />
               </button>
@@ -1891,25 +1894,25 @@ export default function DiscoveryLayout({
 
             <div style={{ fontSize: '13px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
               <div>
-                <strong>Món đặc trưng:</strong> {(detailVenue.dish_tags || []).join(', ') || 'Chưa rõ'}
+                <strong>Món đặc trưng:</strong> {(displayDetailVenue.dish_tags || []).join(', ') || 'Chưa rõ'}
               </div>
               <div>
-                <strong>Khoảng giá quán:</strong> {detailVenue.price && (detailVenue.price.min_vnd || detailVenue.price.max_vnd) ? `${Number(detailVenue.price.min_vnd || 0).toLocaleString('vi-VN')} – ${Number(detailVenue.price.max_vnd || 0).toLocaleString('vi-VN')} đ` : 'Chưa xác minh'}
+                <strong>Khoảng giá quán:</strong> {displayDetailVenue.price && (displayDetailVenue.price.min_vnd || displayDetailVenue.price.max_vnd) ? `${Number(displayDetailVenue.price.min_vnd || 0).toLocaleString('vi-VN')} – ${Number(displayDetailVenue.price.max_vnd || 0).toLocaleString('vi-VN')} đ` : 'Chưa xác minh'}
               </div>
               <div>
-                <strong>Giờ hoạt động:</strong> {detailVenue.hours?.display || 'Chưa xác minh theo nguồn'}
+                <strong>Giờ hoạt động:</strong> {displayDetailVenue.hours?.display || 'Chưa xác minh theo nguồn'}
               </div>
-              {Array.isArray(detailVenue.unknowns) && detailVenue.unknowns.length > 0 && (
+              {Array.isArray(displayDetailVenue.unknowns) && displayDetailVenue.unknowns.length > 0 && (
                 <div style={{ background: '#FFF7ED', padding: '8px 12px', borderRadius: '8px', color: '#9A3412' }}>
                   <strong>Yếu tố chưa có bằng chứng:</strong>
                   <ul style={{ margin: '4px 0 0 16px', padding: 0 }}>
-                    {detailVenue.unknowns.map((u, idx) => (
+                    {displayDetailVenue.unknowns.map((u, idx) => (
                       <li key={idx}>Chưa rõ {formatUnknownLabel(u)}</li>
                     ))}
                   </ul>
                 </div>
               )}
-              {detailVenue.source_url && (
+              {displayDetailVenue.source_url && (
                 <div>
                   <strong>Nguồn dữ liệu:</strong>{' '}
                   <a

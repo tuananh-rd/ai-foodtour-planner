@@ -158,14 +158,14 @@ function createMockDiscoveryServer() {
   const sampleVenues = [
     {
       id: 'venue-pho-10',
-      name: 'Phở 10 Lý Quốc Sư',
-      address: '10 Lý Quốc Sư, Hàng Trống',
-      district: 'Hoàn Kiếm',
+      name: 'Phở 10 Lý Quốc Sư 🍜',
+      address: '10 Lý Quốc Sư, Hàng Trống 🍜',
+      district: 'Hoàn Kiếm 🏛️',
       lat: 21.0305,
       lon: 105.8492,
-      dish_tags: ['phở bò', 'quẩy giòn'],
-      price: { min_vnd: 50000, max_vnd: 90000, semantics: 'venue_range', evidence: 'Thực đơn niêm yết' },
-      hours: { display: '06:00 - 22:00', status: 'open' },
+      dish_tags: ['phở bò 🥩', 'quẩy giòn 🥖'],
+      price: { min_vnd: 50000, max_vnd: 90000, semantics: 'venue_range', evidence: 'Thực đơn niêm yết 📋' },
+      hours: { display: '06:00⏰22:00', status: 'open' },
       source_url: 'https://example.com/venues/pho-10-ly-quoc-su',
       source_fetched_at: '2026-10-18T10:00:00Z',
       unknowns: ['allergy_ingredients'],
@@ -174,14 +174,14 @@ function createMockDiscoveryServer() {
     },
     {
       id: 'venue-pho-thin',
-      name: 'Phở Thìn Bờ Hồ',
+      name: 'Phở Thìn Bờ Hồ 🍜',
       address: '61 Đinh Tiên Hoàng, Lý Thái Tổ',
-      district: 'Hoàn Kiếm',
+      district: 'Hoàn Kiếm 🏛️',
       lat: 21.0315,
       lon: 105.8532,
-      dish_tags: ['phở tái lăn', 'phở chín'],
-      price: { min_vnd: 55000, max_vnd: 70000, semantics: 'venue_range', evidence: 'Thực đơn niêm yết' },
-      hours: { display: '05:30 - 13:00, 17:00 - 22:30', status: 'open' },
+      dish_tags: ['phở tái lăn 🥩', 'phở chín 🍖'],
+      price: { min_vnd: 55000, max_vnd: 70000, semantics: 'venue_range', evidence: 'Thực đơn niêm yết 📋' },
+      hours: { display: '05:30⏰13:00, 17:00⏰22:30', status: 'open' },
       source_url: 'https://example.com/venues/pho-thin-bo-ho',
       source_fetched_at: '2026-10-18T10:00:00Z',
       unknowns: [],
@@ -190,14 +190,14 @@ function createMockDiscoveryServer() {
     },
     {
       id: 'venue-che-4-mua',
-      name: 'Chè Bốn Mùa Hàng Cân',
+      name: 'Chè Bốn Mùa Hàng Cân 🍧',
       address: '4 Hàng Cân, Hàng Bồ',
-      district: 'Hoàn Kiếm',
+      district: 'Hoàn Kiếm 🏛️',
       lat: 21.0345,
       lon: 105.8498,
-      dish_tags: ['chè sen', 'chè đỗ xanh ít ngọt'],
-      price: { min_vnd: 20000, max_vnd: 35000, semantics: 'venue_range', evidence: 'Thực đơn niêm yết' },
-      hours: { display: '09:00 - 23:00', status: 'open' },
+      dish_tags: ['chè sen 🍨', 'chè đỗ xanh ít ngọt 🍵'],
+      price: { min_vnd: 20000, max_vnd: 35000, semantics: 'venue_range', evidence: 'Thực đơn niêm yết 📋' },
+      hours: { display: '09:00⏰23:00', status: 'open' },
       source_url: 'https://example.com/venues/che-bon-mua',
       source_fetched_at: '2026-10-18T10:00:00Z',
       unknowns: ['allergy_ingredients'],
@@ -305,11 +305,11 @@ function createMockDiscoveryServer() {
             state.messages.push({ role: 'user', text: body.text });
 
             // If user searches for phở or general query
-            state.profile.area = 'Hoàn Kiếm';
+            state.profile.area = 'Hoàn Kiếm 🏛️';
             state.results = [...sampleVenues];
             state.reply = {
-              text: `Em gợi ý cho bạn 3 quán nổi bật tại Hoàn Kiếm: Phở 10 Lý Quốc Sư, Phở Thìn Bờ Hồ và Chè Bốn Mùa. Bạn có thể chọn quán vào tour hoặc so sánh nhé!`,
-              question: 'Bạn muốn ghé ăn phở trước rồi tráng miệng chè, hay ngược lại?'
+              text: `Em gợi ý 20🍜30 quán Phở\u{1f35c}ngon tại Hoàn Kiếm 🇻🇳: Phở 10 Lý Quốc Sư, Phở Thìn Bờ Hồ và Chè Bốn Mùa. Bạn có thể chọn quán vào tour hoặc so sánh nhé!`,
+              question: 'Bạn muốn ghé ăn phở trước rồi tráng miệng chè 🍨, hay ngược lại?'
             };
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(state));
@@ -388,14 +388,16 @@ function createMockDiscoveryServer() {
                   profile_version: state.profile_version,
                   selection_version: state.selection_version,
                   summary: {
-                    area: state.profile.area || 'Hoàn Kiếm',
+                    title: 'Lịch trình ẩm thực 🍲',
+                    notes: 'Đi bộ gần 🚶',
+                    area: state.profile.area || 'Hoàn Kiếm 🏛️',
                     party_size: state.profile.party_size || 2,
                     budget_vnd: state.profile.budget_vnd || 300000,
                     stops_count: state.selection.length
                   },
                   warnings: [
-                    'Chưa có dữ liệu thành phần chi tiết để cam kết tuyệt đối về dị ứng.',
-                    'Khoảng giá niêm yết theo nguồn tham khảo (venue_range), thực tế có thể thay đổi theo mùa.'
+                    'Chưa có dữ liệu thành phần chi tiết để cam kết tuyệt đối về dị ứng đậu phộng 🥜.',
+                    'Khoảng giá niêm yết theo nguồn tham khảo (venue_range), thực tế có thể thay đổi theo mùa 📋.'
                   ]
                 };
                 res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -415,7 +417,7 @@ function createMockDiscoveryServer() {
             if (act.type === 'confirm') {
               state.revision += 1;
               state.confirmation = null;
-              // Generate realistic Tour
+              // Generate realistic Tour with emojis in raw state to test display-only normalization
               const stops = state.selection.map((s, idx) => ({
                 venue_id: s.id,
                 name: s.name,
@@ -424,16 +426,27 @@ function createMockDiscoveryServer() {
                 lat: s.lat || 21.03,
                 lon: s.lon || 105.85,
                 order: idx + 1,
-                stage: idx === 0 ? 'Mở đầu' : (idx === state.selection.length - 1 ? 'Tráng miệng' : 'Món chính'),
+                stage: idx === 0 ? 'Mở đầu 🍲' : (idx === state.selection.length - 1 ? 'Tráng miệng 🍧' : 'Món chính 🍜'),
                 arrive: idx === 0 ? '18:30' : (idx === 1 ? '19:15' : '20:00'),
                 depart: idx === 0 ? '19:05' : (idx === 1 ? '19:50' : '20:30'),
                 walk_min_to_next: idx < state.selection.length - 1 ? 8 : 0,
-                price_range: s.price ? `${s.price.min_vnd} - ${s.price.max_vnd} đ` : 'Chưa xác minh'
+                price_range: s.price ? `${s.price.min_vnd} - ${s.price.max_vnd} đ` : 'Chưa xác minh',
+                venue: {
+                  id: s.id,
+                  name: s.name,
+                  address: s.address,
+                  district: s.district,
+                  dish_tags: s.dish_tags,
+                  hours: s.hours
+                }
               }));
 
               state.tour = {
-                title: 'Tour ẩm thực phố cổ Hoàn Kiếm',
-                area: state.profile.area || 'Hoàn Kiếm',
+                title: 'Tour ẩm thực phố cổ Hoàn Kiếm 🚀',
+                area: state.profile.area || 'Hoàn Kiếm 🏛️',
+                explanation: 'Lộ trình đi bộ tối ưu quanh phố cổ 🚶',
+                reasons: ['Gần điểm xuất phát 📍', 'Thời gian di chuyển ngắn 🚶'],
+                unknowns: ['Chưa rõ tình trạng đông khách lúc 19h 👥'],
                 stops,
                 totals: {
                   venue_range_upper_sum_vnd: 250000,
@@ -442,7 +455,7 @@ function createMockDiscoveryServer() {
                   route_provider: 'estimate'
                 },
                 route_warnings: [
-                  'Tuyến đi bộ ước lượng theo đường thẳng giữa các điểm trong phố cổ.'
+                  'Tuyến đi bộ ước lượng theo đường thẳng giữa các điểm trong phố cổ 🚶.'
                 ]
               };
 
@@ -734,6 +747,16 @@ async function main() {
     cardDetails
   );
 
+  const chatBubbleText = await ev(`(()=>{
+    const bubbles = Array.from(document.querySelectorAll('.nn-bubble'));
+    return bubbles.map(b => b.textContent).join(' ');
+  })()`);
+
+  recordCheck('WORD_NUMBER_BOUNDARY_PRESERVED', 'Boundary từ và số được bảo toàn sau khi lọc emoji (20 30, Phở ngon)',
+    chatBubbleText.includes('20 30') && chatBubbleText.includes('Phở ngon') && !chatBubbleText.includes('2030'),
+    { hasSeparatedNumber: chatBubbleText.includes('20 30'), hasSeparatedWord: chatBubbleText.includes('Phở ngon') }
+  );
+
   // Test 3: Detail Modal Accessibility & Focus Trap
   console.log('\nTesting Detail Modal Accessibility & Focus Trap...');
   await click('[data-testid="btn-details-venue-venue-pho-10"]');
@@ -951,7 +974,7 @@ async function main() {
     { name: 'mobile_390', width: 390, height: 844, isMobile: true }
   ];
 
-  const strictEmojiRegex = /(?:[0-9#*]\ufe0f?\u20e3|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Modifier}|[\u2600-\u26ff]|[\u2700-\u27bf]|[\u231a\u231b\u23e9-\u23ec\u23f0\u23f3]|[\u2b50\u2b55]|[\ufe0e\ufe0f]|\u200d)+/u;
+  const strictEmojiRegex = /(?:[0-9#*]\ufe0f?\u20e3|[\u{1f000}-\u{1faff}\u00a9\u00ae\u203c\u2049\u2122\u2139\u2194-\u2199\u21a9-\u21aa\u231a-\u231b\u2328\u2388\u23cf\u23e9-\u23f3\u23f8-\u23fa\u24c2\u25aa-\u25ab\u25b6\u25c0\u25fb-\u27bf\u2934-\u2935\u2b05-\u2b07\u2b1b-\u2b1c\u2b50\u2b55\u3030\u303d\u3297\u3299\u20e3]|\p{Extended_Pictographic}|\p{Regional_Indicator}|\p{Emoji_Modifier}|[\ufe0e\ufe0f\u200d\u{e0020}-\u{e007f}])/u;
 
   for (const vp of viewportsToTest) {
     await setViewport(vp.width, vp.height, vp.isMobile);

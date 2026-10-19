@@ -4,6 +4,7 @@ import React from 'react';
 import ItineraryView from '../ItineraryView';
 import MapsLinksBlock from '../MapsLinksBlock';
 import EvidenceStrip from '../EvidenceStrip';
+import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 
 /**
  * Formats a number to Vietnamese Dong string (e.g. 35.000 ₫)
@@ -15,6 +16,7 @@ function formatVnd(val) {
 
 /**
  * Escapes / ensures safe string rendering (no raw HTML injection)
+ * and normalizes display text (no emojis/pictographs/invisible formatting).
  */
 function SafeText({ text, className = '', style = {} }) {
   if (text === null || text === undefined || text === '') return null;
@@ -31,7 +33,7 @@ function SafeText({ text, className = '', style = {} }) {
         ...style,
       }}
     >
-      {String(text)}
+      {normalizeDisplayText(String(text))}
     </span>
   );
 }

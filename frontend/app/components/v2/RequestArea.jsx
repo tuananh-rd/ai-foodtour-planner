@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Button from '../../ui/Button';
 import Chip from '../../ui/Chip';
+import { normalizeDisplayText } from '../../../lib/emojiSanitizer';
 
 // 4 One-tap suggestion chips per UPGRADE_PLAN §3.2
 export const SUGGESTION_CHIPS = [
@@ -239,7 +240,7 @@ export default function RequestArea({
           <ul style={{ margin: 0, paddingLeft: '20px' }}>
             {questions.map((q, idx) => (
               <li key={idx} style={{ marginBottom: '4px' }}>
-                {q}
+                {normalizeDisplayText(q)}
               </li>
             ))}
           </ul>

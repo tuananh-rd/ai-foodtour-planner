@@ -1,6 +1,7 @@
 'use client';
 
 import { PriceBadge, HoursBadge, LegSourceBadge, LockBadge } from './EvidenceBadge';
+import { normalizeDisplayText } from '../../lib/emojiSanitizer';
 
 export default function TourTimeline({
   tour,
@@ -127,10 +128,10 @@ export default function TourTimeline({
                   </span>
                   <div>
                     <h3 style={{ fontSize: 16, fontWeight: 700, color: 'var(--text-primary)', margin: 0 }}>
-                      {s.name}
+                      {normalizeDisplayText(s.name)}
                     </h3>
                     <p style={{ fontSize: 13, color: 'var(--text-secondary)', marginTop: 2 }}>
-                      {s.address} · {s.district}
+                      {normalizeDisplayText(s.address)} · {normalizeDisplayText(s.district)}
                     </p>
                   </div>
                 </div>
