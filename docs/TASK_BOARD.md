@@ -2,6 +2,8 @@
 
 ## Active online assistant initiative
 
+NEW APPROVED UI REPLACEMENT: Figma frame1:145 Warm editorial replaces SVG visual target. Codex coordinates/reviews/integrates; Antigravity implements guided frontend/scoped styles/assets and bounded QA; Claude inactive. Original PNG visually opened by Codex, geometry and mappings in design/FIGMA_WARM_EDITORIAL_SPEC.md. Functional/safety/map/search/focus behavior remains required. Existing Antigravity terminal37bc is idle after settled focus task, with one stale background exploratory harness to inspect before new tests. Safe fast-forward current baseline before new dispatch; no overlapping frontend editor, provider probes, model change or quota increase. Implementation then targeted QA, Codex visual review and one final relevant regression/build gate; not accepted yet.
+
 Live Tavily setup follow-up: credential configured locally and ignored, cap1 credit/day and3/month with persistent ledger preserved. Read-only /usage200 gives null PAYGO/key limits, so unchanged adapter fails closed: BLOCKED,0 search POST/0 local credit delta/0 Gemini calls. See reports/online-assistant/tavily-live-smoke.json and ONLINE_ASSISTANT_LOCAL_SETUP.md. No frontend/code changes, agent dispatch or full-suite repeat.
 
 Final local gate accepted at3696001: focus task6816b23 reviewed/integrated,7 targeted tests pass; one final broad browser run190/190 and refreshed production UI60/60 pass; build PASS148kB. Backend unchanged1509005 retains661 tests/OpenAPI/18 contracts. Production URL3060 is synthetic/rules, not live. Tavily live BLOCKED/no key, Gemini PARTIAL. Screenshots and limits: reports/ONLINE_ASSISTANT_ACCEPTANCE.md. Antigravity retained, no active editor. The earlier open-focus/task statements below are historical.
