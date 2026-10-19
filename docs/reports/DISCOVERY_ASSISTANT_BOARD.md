@@ -6,9 +6,11 @@ Direct user request2026-10-19. Baselinebe2bb8f; rules and requirements supersede
 |---|---|---|---|
 | D0 requirements/contracts | Codex | DONE | Full attachment read/archived; direct instructions distinguished; discovery-v1 frozen |
 | D1 state/tools/selection | Codex | IMPLEMENTING | Validated tools, bounded local search/details/compare, versioned profile/selection persistence without DB migration |
-| D2 natural UI / remove web | Antigravity | READY FOR DISPATCH | New discovery layout/API adapter on frozen contract; collapsed optional profile, real result/selection cards, no checklist/Tavily UI; Warm editorial retained |
+| D2 natural UI / remove web | Antigravity | REVIEW FIXES RUNNING | Initial8256a2d mocked20/20/build is not visual acceptance: independent screenshot review found unstyled shell and invented initial values. Current task task_6d373f53c224 / ctx_fd0058920726 fixes those issues plus timeout/draft/modal/drawer behavior; explicit ownership ACK received. |
 | D3 Gemini + confirmation/planner | Codex | PENDING D1 | Single native function-calling loop with existing budgets, strict user confirmation and allergy gates; no silent tool success |
 | D4 runtime retirement/integration | Codex + affected implementer | PENDING D1–3 | No active Tavily route/provider dependency, source provenance retained; endpoint/default UI switch reviewed |
 | D5 acceptance | Antigravity QA, Codex independent review | PENDING | Required conversational scenarios, target tests then integrated E2E/build1440/390, honest synthetic/mock/live/data coverage |
 
 Reference architecture mentions PostGIS/weather, but neither is a required dependency or authorized migration/service. No weather data is reported honestly without blocking chat. Gemini live currently unverified for the new loop; synthetic/mock tests never establish live natural quality. Report blocker if configured model/quota/cap cannot support the bounded loop; do not increase budget or use credits.
+
+Backend checkpoint:16 initial discovery tests passed;8 additional native-protocol/privacy/SQLite/concurrency tests passed; area-only follow-up targeted test passed. These are hermetic tests, not live Gemini proof. Codex owns only backend/contracts/docs; Antigravity owns its dispatched frontend/QA files. Previous dispatch ctx_8c53644bd48e settled with corrected task ID after one rejected mismatched completion; terminal retained and reused. No Tavily calls have been made for this implementation.

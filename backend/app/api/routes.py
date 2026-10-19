@@ -506,29 +506,10 @@ def chat(session_id: str, body: ChatRequest, request: Request,
         try:
             try:
                 extraction_started = time.perf_counter()
-                if body.web_search:
-                    # Explicit retrieval is read-only: query text is never a planner patch.
-                    state = copy.deepcopy(session.chat)
-                    state.turn_count += 1
-                    state.remember('user', body.text, 'WEB_SEARCH')
-                    disabled = {'status': 'disabled', 'sources': [], 'fetched_at': None, 'credits': 0, 'cached': False}
-                    search = request.app.state.web_search
-                    try:
-                        found = search.search(body.text, deadline_s=6.0) if search is not None and not private_turn(body.text) else disabled
-                        if private_turn(body.text):
-                            found = dict(disabled, status='rejected')
-                        # Strictly validate before emitting any untrusted provider data.
-                        from app.api.schemas import WebSearchBlock
-                        block = WebSearchBlock.model_validate(dict(found, type='web_search')).model_dump()
-                    except Exception:
-                        block = dict(disabled, type='web_search', status='unavailable')
-                    result = TurnResult(state, session.preferences, [block], 'WEB_SEARCH', understanding='action')
-                    state.remember('assistant', 'Tra cứu web không thay đổi yêu cầu hoặc xác nhận lịch trình.', 'WEB_SEARCH')
-                else:
-                    result = cached[1].handle(session.chat, session.preferences, text=body.text,
-                        action=body.action.model_dump(exclude_none=True) if body.action else None,
-                        llm=understander.understand if understander is not None and not private_turn(body.text) else None,
-                        llm_status='exhausted' if exhausted else None)
+                result = cached[1].handle(session.chat, session.preferences, text=body.text,
+                    action=body.action.model_dump(exclude_none=True) if body.action else None,
+                    llm=understander.understand if understander is not None and not private_turn(body.text) else None,
+                    llm_status='exhausted' if exhausted else None)
                 request.scope['foodtour_pipeline'] = {
                     'understanding': result.understanding,
                     'provider_attempted': bounded_count(result.llm_calls, maximum=1),
@@ -574,7 +555,7 @@ def chat(session_id: str, body: ChatRequest, request: Request,
             if result.replace_request and not obligation:
                 replace_chat_stop(session, result, data, request, cached[1])
             assistant_status = decorate_reply(request.app.state.conversational_assistant, result,
-                body.text if body.action is None and not body.web_search else None, session.chat.turns,
+                body.text if body.action is None else None, session.chat.turns,
                 budget=budget_snapshot(request), session_cap=request.app.state.llm_session_cap,
                 reserve=request.app.state.llm_reserve) if guided else None
             session.preferences, session.chat = prefs, result.state

@@ -502,14 +502,11 @@ class ChatRequest(ChatInput):
     text: str | None = Field(default=None, min_length=1, max_length=1000)
     action: Action | None = None
     revision: int = Field(ge=0)
-    web_search: bool = Field(default=False, strict=True)
 
     @model_validator(mode='after')
     def exclusive(self):
         if (self.text is None) == (self.action is None):
             raise ValueError('exactly one text/action required')
-        if self.web_search and self.action is not None:
-            raise ValueError('web search requires an explicit text query')
         return self
 
 
@@ -671,30 +668,7 @@ class UnderstoodBlock(Model):
     style_note: str | None = None
 
 
-class WebSource(Model):
-    title: str = Field(max_length=160)
-    url: str = Field(max_length=2048)
-    snippet: str = Field(max_length=500)
-
-    @field_validator('url')
-    @classmethod
-    def public_source_url(cls, value):
-        from app.providers.search_safety import public_source_url
-        if not public_source_url(value):
-            raise ValueError('invalid source URL')
-        return value
-
-
-class WebSearchBlock(Model):
-    type: Literal['web_search']
-    status: Literal['ok', 'disabled', 'unavailable', 'quota', 'rejected']
-    sources: list[WebSource] = Field(max_length=3)
-    fetched_at: str | None
-    credits: Literal[0, 1]
-    cached: bool
-
-
-Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock | UnderstoodBlock | WebSearchBlock, Field(discriminator='type')]
+Block = Annotated[TextBlock | NoticeBlock | DishSuggestionsBlock | VenueCardsBlock | CompareTableBlock | ClarifyBlock | ConfirmSummaryBlock | TourReadyBlock | UnderstoodBlock, Field(discriminator='type')]
 
 
 class ChatReply(Model):

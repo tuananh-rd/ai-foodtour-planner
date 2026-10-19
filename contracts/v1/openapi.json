@@ -1,138 +1,6 @@
 {
   "components": {
     "schemas": {
-      "Action": {
-        "additionalProperties": false,
-        "properties": {
-          "criteria": {
-            "anyOf": [
-              {
-                "items": {
-                  "enum": [
-                    "distance",
-                    "price",
-                    "rating",
-                    "audience",
-                    "meal",
-                    "parking_car",
-                    "outdoor",
-                    "capacity",
-                    "prep_time",
-                    "hours",
-                    "quiet",
-                    "crowd",
-                    "elderly"
-                  ],
-                  "type": "string"
-                },
-                "maxItems": 3,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Criteria"
-          },
-          "location": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ChatLocation"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "option_id": {
-            "anyOf": [
-              {
-                "maxLength": 64,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Option Id"
-          },
-          "patch": {
-            "anyOf": [
-              {
-                "$ref": "#/components/schemas/ChatPatch"
-              },
-              {
-                "type": "null"
-              }
-            ]
-          },
-          "query": {
-            "anyOf": [
-              {
-                "maxLength": 200,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Query"
-          },
-          "type": {
-            "enum": [
-              "add",
-              "remove",
-              "keep",
-              "compare",
-              "pick_option",
-              "confirm_yes",
-              "confirm_no",
-              "edit_profile",
-              "set_location",
-              "request_plan",
-              "search"
-            ],
-            "title": "Type",
-            "type": "string"
-          },
-          "venue_id": {
-            "anyOf": [
-              {
-                "maxLength": 64,
-                "minLength": 1,
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Venue Id"
-          },
-          "venue_ids": {
-            "anyOf": [
-              {
-                "items": {
-                  "maxLength": 64,
-                  "minLength": 1,
-                  "type": "string"
-                },
-                "maxItems": 4,
-                "type": "array"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Venue Ids"
-          }
-        },
-        "required": [
-          "type"
-        ],
-        "title": "Action",
-        "type": "object"
-      },
       "Amenities": {
         "additionalProperties": false,
         "properties": {
@@ -188,6 +56,131 @@
           "provider"
         ],
         "title": "AssistantStatus",
+        "type": "object"
+      },
+      "AssistantView": {
+        "additionalProperties": false,
+        "properties": {
+          "comparison": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Comparison"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "confirmation": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Confirmation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "contract": {
+            "const": "discovery-v1",
+            "title": "Contract",
+            "type": "string"
+          },
+          "diagnostics": {
+            "$ref": "#/components/schemas/Diagnostics"
+          },
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/Message"
+            },
+            "title": "Messages",
+            "type": "array"
+          },
+          "profile": {
+            "$ref": "#/components/schemas/Profile"
+          },
+          "profile_version": {
+            "title": "Profile Version",
+            "type": "integer"
+          },
+          "provider": {
+            "$ref": "#/components/schemas/Provider"
+          },
+          "reply": {
+            "$ref": "#/components/schemas/Reply"
+          },
+          "results": {
+            "items": {
+              "$ref": "#/components/schemas/Restaurant"
+            },
+            "title": "Results",
+            "type": "array"
+          },
+          "revision": {
+            "title": "Revision",
+            "type": "integer"
+          },
+          "selection": {
+            "items": {
+              "$ref": "#/components/schemas/Restaurant"
+            },
+            "title": "Selection",
+            "type": "array"
+          },
+          "selection_version": {
+            "title": "Selection Version",
+            "type": "integer"
+          },
+          "session_id": {
+            "title": "Session Id",
+            "type": "string"
+          },
+          "source": {
+            "$ref": "#/components/schemas/Source"
+          },
+          "status": {
+            "enum": [
+              "ok",
+              "unknown",
+              "no_results",
+              "tool_error",
+              "unavailable",
+              "no_solution"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "tour": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TourView"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "contract",
+          "session_id",
+          "revision",
+          "profile_version",
+          "selection_version",
+          "status",
+          "reply",
+          "profile",
+          "results",
+          "selection",
+          "comparison",
+          "confirmation",
+          "messages",
+          "tour",
+          "source",
+          "provider",
+          "diagnostics"
+        ],
+        "title": "AssistantView",
         "type": "object"
       },
       "ChatLocation": {
@@ -413,8 +406,7 @@
                       "text": "#/components/schemas/TextBlock",
                       "tour_ready": "#/components/schemas/TourReadyBlock",
                       "understood": "#/components/schemas/UnderstoodBlock",
-                      "venue_cards": "#/components/schemas/VenueCardsBlock",
-                      "web_search": "#/components/schemas/WebSearchBlock"
+                      "venue_cards": "#/components/schemas/VenueCardsBlock"
                     },
                     "propertyName": "type"
                   },
@@ -445,9 +437,6 @@
                     },
                     {
                       "$ref": "#/components/schemas/UnderstoodBlock"
-                    },
-                    {
-                      "$ref": "#/components/schemas/WebSearchBlock"
                     }
                   ]
                 },
@@ -473,7 +462,7 @@
           "action": {
             "anyOf": [
               {
-                "$ref": "#/components/schemas/Action"
+                "$ref": "#/components/schemas/app__api__schemas__Action"
               },
               {
                 "type": "null"
@@ -497,11 +486,6 @@
               }
             ],
             "title": "Text"
-          },
-          "web_search": {
-            "default": false,
-            "title": "Web Search",
-            "type": "boolean"
           }
         },
         "required": [
@@ -1048,6 +1032,39 @@
         "title": "CompareTableBlock",
         "type": "object"
       },
+      "Comparison": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Criteria",
+            "type": "array"
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unknowns",
+            "type": "array"
+          },
+          "venues": {
+            "items": {
+              "$ref": "#/components/schemas/Restaurant"
+            },
+            "title": "Venues",
+            "type": "array"
+          }
+        },
+        "required": [
+          "venues",
+          "criteria",
+          "unknowns"
+        ],
+        "title": "Comparison",
+        "type": "object"
+      },
       "ConfirmSummaryBlock": {
         "additionalProperties": false,
         "properties": {
@@ -1095,6 +1112,44 @@
         "title": "ConfirmSummaryBlock",
         "type": "object"
       },
+      "Confirmation": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "profile_version": {
+            "title": "Profile Version",
+            "type": "integer"
+          },
+          "selection_version": {
+            "title": "Selection Version",
+            "type": "integer"
+          },
+          "summary": {
+            "additionalProperties": true,
+            "title": "Summary",
+            "type": "object"
+          },
+          "warnings": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Warnings",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "profile_version",
+          "selection_version",
+          "summary",
+          "warnings"
+        ],
+        "title": "Confirmation",
+        "type": "object"
+      },
       "CoverageSignal": {
         "additionalProperties": false,
         "properties": {
@@ -1131,6 +1186,32 @@
           "status"
         ],
         "title": "CoverageSignal",
+        "type": "object"
+      },
+      "Diagnostics": {
+        "additionalProperties": false,
+        "properties": {
+          "elapsed_ms": {
+            "title": "Elapsed Ms",
+            "type": "number"
+          },
+          "tool_calls": {
+            "minimum": 0.0,
+            "title": "Tool Calls",
+            "type": "integer"
+          },
+          "weather": {
+            "const": "unavailable",
+            "title": "Weather",
+            "type": "string"
+          }
+        },
+        "required": [
+          "tool_calls",
+          "elapsed_ms",
+          "weather"
+        ],
+        "title": "Diagnostics",
         "type": "object"
       },
       "DishSuggestion": {
@@ -1417,6 +1498,19 @@
           "status"
         ],
         "title": "GeocodingHealth",
+        "type": "object"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "title": "Detail",
+            "type": "array"
+          }
+        },
+        "title": "HTTPValidationError",
         "type": "object"
       },
       "Health": {
@@ -2084,6 +2178,29 @@
         "title": "MapsSkippedStop",
         "type": "object"
       },
+      "Message": {
+        "additionalProperties": false,
+        "properties": {
+          "role": {
+            "enum": [
+              "user",
+              "assistant"
+            ],
+            "title": "Role",
+            "type": "string"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "role",
+          "text"
+        ],
+        "title": "Message",
+        "type": "object"
+      },
       "MessageBudget": {
         "additionalProperties": false,
         "properties": {
@@ -2563,6 +2680,204 @@
         "title": "PrivacyConfig",
         "type": "object"
       },
+      "Profile": {
+        "additionalProperties": false,
+        "properties": {
+          "allergies": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Allergies",
+            "type": "array"
+          },
+          "area": {
+            "anyOf": [
+              {
+                "maxLength": 120,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Area"
+          },
+          "budget_scope": {
+            "anyOf": [
+              {
+                "enum": [
+                  "group",
+                  "per_person"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Scope"
+          },
+          "budget_vnd": {
+            "anyOf": [
+              {
+                "exclusiveMinimum": 0.0,
+                "maximum": 100000000.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Budget Vnd"
+          },
+          "duration_min": {
+            "anyOf": [
+              {
+                "maximum": 720.0,
+                "minimum": 30.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration Min"
+          },
+          "end_time": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Time"
+          },
+          "exclusions": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Exclusions",
+            "type": "array"
+          },
+          "max_leg_min": {
+            "anyOf": [
+              {
+                "maximum": 60.0,
+                "minimum": 3.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Leg Min"
+          },
+          "origin": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Origin"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "party_size": {
+            "anyOf": [
+              {
+                "maximum": 20.0,
+                "minimum": 1.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Party Size"
+          },
+          "start_time": {
+            "anyOf": [
+              {
+                "pattern": "^(?:[01]\\d|2[0-3]):[0-5]\\d$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Time"
+          },
+          "tastes": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Tastes",
+            "type": "array"
+          },
+          "vehicle": {
+            "anyOf": [
+              {
+                "enum": [
+                  "walk",
+                  "motorbike",
+                  "car",
+                  "taxi"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle"
+          }
+        },
+        "title": "Profile",
+        "type": "object"
+      },
+      "Provider": {
+        "additionalProperties": false,
+        "properties": {
+          "calls": {
+            "maximum": 2.0,
+            "minimum": 0.0,
+            "title": "Calls",
+            "type": "integer"
+          },
+          "mode": {
+            "enum": [
+              "rules",
+              "gemini",
+              "mock"
+            ],
+            "title": "Mode",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          }
+        },
+        "required": [
+          "mode",
+          "calls"
+        ],
+        "title": "Provider",
+        "type": "object"
+      },
       "RankingHealth": {
         "additionalProperties": false,
         "properties": {
@@ -2643,6 +2958,252 @@
           "venue_id"
         ],
         "title": "ReplaceRequest",
+        "type": "object"
+      },
+      "Reply": {
+        "additionalProperties": false,
+        "properties": {
+          "question": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Question"
+          },
+          "text": {
+            "title": "Text",
+            "type": "string"
+          }
+        },
+        "required": [
+          "text",
+          "question"
+        ],
+        "title": "Reply",
+        "type": "object"
+      },
+      "Restaurant": {
+        "additionalProperties": false,
+        "properties": {
+          "address": {
+            "title": "Address",
+            "type": "string"
+          },
+          "dish_tags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Dish Tags",
+            "type": "array"
+          },
+          "district": {
+            "title": "District",
+            "type": "string"
+          },
+          "hours": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RestaurantHours"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "locked": {
+            "title": "Locked",
+            "type": "boolean"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "price": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RestaurantPrice"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "rating": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RestaurantRating"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source_fetched_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Fetched At"
+          },
+          "source_url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Source Url"
+          },
+          "unknowns": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Unknowns",
+            "type": "array"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "address",
+          "district",
+          "lat",
+          "lon",
+          "dish_tags",
+          "price",
+          "hours",
+          "source_url",
+          "source_fetched_at",
+          "unknowns",
+          "locked"
+        ],
+        "title": "Restaurant",
+        "type": "object"
+      },
+      "RestaurantHours": {
+        "additionalProperties": false,
+        "properties": {
+          "display": {
+            "title": "Display",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "verified",
+              "unknown"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "display"
+        ],
+        "title": "RestaurantHours",
+        "type": "object"
+      },
+      "RestaurantPrice": {
+        "additionalProperties": false,
+        "properties": {
+          "evidence": {
+            "title": "Evidence",
+            "type": "string"
+          },
+          "max_vnd": {
+            "title": "Max Vnd",
+            "type": "integer"
+          },
+          "min_vnd": {
+            "title": "Min Vnd",
+            "type": "integer"
+          },
+          "semantics": {
+            "const": "venue_range",
+            "title": "Semantics",
+            "type": "string"
+          }
+        },
+        "required": [
+          "min_vnd",
+          "max_vnd",
+          "semantics",
+          "evidence"
+        ],
+        "title": "RestaurantPrice",
+        "type": "object"
+      },
+      "RestaurantRating": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Count"
+          },
+          "value": {
+            "title": "Value",
+            "type": "number"
+          }
+        },
+        "required": [
+          "value",
+          "count"
+        ],
+        "title": "RestaurantRating",
         "type": "object"
       },
       "RevisionRequest": {
@@ -2842,6 +3403,29 @@
           "dataset_version"
         ],
         "title": "SessionView",
+        "type": "object"
+      },
+      "Source": {
+        "additionalProperties": false,
+        "properties": {
+          "dataset_source": {
+            "enum": [
+              "synthetic",
+              "private"
+            ],
+            "title": "Dataset Source",
+            "type": "string"
+          },
+          "dataset_version": {
+            "title": "Dataset Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "dataset_source",
+          "dataset_version"
+        ],
+        "title": "Source",
         "type": "object"
       },
       "StopView": {
@@ -3220,6 +3804,44 @@
         "title": "TourView",
         "type": "object"
       },
+      "Turn": {
+        "additionalProperties": false,
+        "properties": {
+          "action": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/app__discovery__schemas__Action"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "revision": {
+            "minimum": 0.0,
+            "title": "Revision",
+            "type": "integer"
+          },
+          "text": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Text"
+          }
+        },
+        "required": [
+          "revision"
+        ],
+        "title": "Turn",
+        "type": "object"
+      },
       "TurnBudget": {
         "additionalProperties": false,
         "properties": {
@@ -3431,6 +4053,46 @@
           "text"
         ],
         "title": "UnsupportedCriterion",
+        "type": "object"
+      },
+      "ValidationError": {
+        "properties": {
+          "ctx": {
+            "title": "Context",
+            "type": "object"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "title": "Location",
+            "type": "array"
+          },
+          "msg": {
+            "title": "Message",
+            "type": "string"
+          },
+          "type": {
+            "title": "Error Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError",
         "type": "object"
       },
       "VenueCard": {
@@ -4157,95 +4819,6 @@
         "title": "VenueView",
         "type": "object"
       },
-      "WebSearchBlock": {
-        "additionalProperties": false,
-        "properties": {
-          "cached": {
-            "title": "Cached",
-            "type": "boolean"
-          },
-          "credits": {
-            "enum": [
-              0,
-              1
-            ],
-            "title": "Credits",
-            "type": "integer"
-          },
-          "fetched_at": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "title": "Fetched At"
-          },
-          "sources": {
-            "items": {
-              "$ref": "#/components/schemas/WebSource"
-            },
-            "maxItems": 3,
-            "title": "Sources",
-            "type": "array"
-          },
-          "status": {
-            "enum": [
-              "ok",
-              "disabled",
-              "unavailable",
-              "quota",
-              "rejected"
-            ],
-            "title": "Status",
-            "type": "string"
-          },
-          "type": {
-            "const": "web_search",
-            "title": "Type",
-            "type": "string"
-          }
-        },
-        "required": [
-          "type",
-          "status",
-          "sources",
-          "fetched_at",
-          "credits",
-          "cached"
-        ],
-        "title": "WebSearchBlock",
-        "type": "object"
-      },
-      "WebSource": {
-        "additionalProperties": false,
-        "properties": {
-          "snippet": {
-            "maxLength": 500,
-            "title": "Snippet",
-            "type": "string"
-          },
-          "title": {
-            "maxLength": 160,
-            "title": "Title",
-            "type": "string"
-          },
-          "url": {
-            "maxLength": 2048,
-            "title": "Url",
-            "type": "string"
-          }
-        },
-        "required": [
-          "title",
-          "url",
-          "snippet"
-        ],
-        "title": "WebSource",
-        "type": "object"
-      },
       "WhyReason": {
         "additionalProperties": false,
         "properties": {
@@ -4271,6 +4844,184 @@
           "text"
         ],
         "title": "WhyReason",
+        "type": "object"
+      },
+      "app__api__schemas__Action": {
+        "additionalProperties": false,
+        "properties": {
+          "criteria": {
+            "anyOf": [
+              {
+                "items": {
+                  "enum": [
+                    "distance",
+                    "price",
+                    "rating",
+                    "audience",
+                    "meal",
+                    "parking_car",
+                    "outdoor",
+                    "capacity",
+                    "prep_time",
+                    "hours",
+                    "quiet",
+                    "crowd",
+                    "elderly"
+                  ],
+                  "type": "string"
+                },
+                "maxItems": 3,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Criteria"
+          },
+          "location": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatLocation"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "option_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Option Id"
+          },
+          "patch": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ChatPatch"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "query": {
+            "anyOf": [
+              {
+                "maxLength": 200,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query"
+          },
+          "type": {
+            "enum": [
+              "add",
+              "remove",
+              "keep",
+              "compare",
+              "pick_option",
+              "confirm_yes",
+              "confirm_no",
+              "edit_profile",
+              "set_location",
+              "request_plan",
+              "search"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "venue_id": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue Id"
+          },
+          "venue_ids": {
+            "anyOf": [
+              {
+                "items": {
+                  "maxLength": 64,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                "maxItems": 4,
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Venue Ids"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "Action",
+        "type": "object"
+      },
+      "app__discovery__schemas__Action": {
+        "additionalProperties": false,
+        "properties": {
+          "arguments": {
+            "additionalProperties": true,
+            "title": "Arguments",
+            "type": "object"
+          },
+          "confirmation_id": {
+            "anyOf": [
+              {
+                "maxLength": 100,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confirmation Id"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "type": {
+            "enum": [
+              "tool",
+              "confirm"
+            ],
+            "title": "Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type"
+        ],
+        "title": "Action",
         "type": "object"
       }
     }
@@ -5110,6 +5861,124 @@
           }
         },
         "summary": "Read Session"
+      }
+    },
+    "/v1/sessions/{session_id}/assistant": {
+      "get": {
+        "operationId": "read_v1_sessions__session_id__assistant_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-session-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Token"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Read"
+      },
+      "post": {
+        "operationId": "turn_v1_sessions__session_id__assistant_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-session-token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Session-Token"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Turn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AssistantView"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Turn"
       }
     },
     "/v1/sessions/{session_id}/chat": {

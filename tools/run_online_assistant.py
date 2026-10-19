@@ -13,8 +13,6 @@ def local_configuration():
     # Explicit allowlist: never import paid Maps keys or arbitrary executable .env content.
     allowed = {'GEMINI_API_KEY', 'FOODTOUR_LLM', 'FOODTOUR_GEMINI_MODEL', 'FOODTOUR_LLM_DAILY_BUDGET',
         'FOODTOUR_BUDGET_DB', 'FOODTOUR_LLM_SESSION_CAP', 'FOODTOUR_LLM_RESERVE',
-        'TAVILY_API_KEY', 'FOODTOUR_TAVILY_ENABLED', 'FOODTOUR_TAVILY_FREE_ONLY',
-        'FOODTOUR_TAVILY_BUDGET_DB', 'FOODTOUR_TAVILY_DAILY_CREDITS', 'FOODTOUR_TAVILY_MONTHLY_CREDITS',
         'FOODTOUR_DATA_PATH', 'FOODTOUR_EVIDENCE_PATH'}
     path = ROOT / 'backend/.env'
     if not path.exists():

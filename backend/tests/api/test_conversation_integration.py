@@ -127,25 +127,19 @@ class ConversationIntegration(unittest.TestCase):
         self.assertEqual(projection['tastes']['value'], ['phở', 'bún chả'])
         self.assertEqual(projection['day_part']['value'], 'evening')
 
-    def test_retrieval_is_opt_in_read_only_and_invalid_sources_fail_closed(self):
-        found = {'status': 'ok', 'sources': [{'title': 'Synthetic source', 'url': 'https://example.com/food',
-            'snippet': 'Synthetic web quotation'}], 'fetched_at': '2026-10-19T00:00:00Z', 'credits': 1, 'cached': False}
-        search = SimpleNamespace(search=lambda *args, **kwargs: found)
+    def test_retired_retrieval_cannot_run_even_with_legacy_injection(self):
+        def forbidden(*args, **kwargs):
+            raise AssertionError('Retired web provider invoked')
         assistant = AssistantStub()
         fixture = Path(__file__).resolve().parents[3] / 'contracts/fixtures/venues.chat.synthetic.json'
-        client = TestClient(create_app(data_path=fixture, conversational_assistant=assistant, web_search=search))
+        client = TestClient(create_app(data_path=fixture, conversational_assistant=assistant,
+                                      web_search=SimpleNamespace(search=forbidden)))
         session = client.post('/v1/sessions').json()
         url, headers = '/v1/sessions/' + session['session_id'], {'X-Session-Token': session['token']}
         before = client.get(url, headers=headers).json()
         response = client.post(url + '/chat', headers=headers,
-            json={'revision': 0, 'text': 'phở Hà Nội 500k 4 người', 'web_search': True})
-        self.assertEqual(response.status_code, 200, response.text)
-        body = response.json()
-        self.assertEqual(body['reply']['blocks'][0]['status'], 'ok')
-        self.assertEqual(body['preferences'], before['preferences'])
+            json={'revision': 0, 'text': 'public food query', 'web_search': True})
+        self.assertEqual(response.status_code, 422, response.text)
+        self.assertEqual(client.get(url, headers=headers).json()['preferences'], before['preferences'])
         self.assertEqual(assistant.calls, [])
-        found['sources'][0]['url'] = 'https://127.0.0.1/admin'
-        response = client.post(url + '/chat', headers=headers,
-            json={'revision': 1, 'text': 'phở Hà Nội', 'web_search': True})
-        self.assertEqual(response.json()['reply']['blocks'][0]['status'], 'unavailable')
-        self.assertEqual(response.json()['reply']['blocks'][0]['sources'], [])
+        self.assertIsNone(client.app.state.web_search)

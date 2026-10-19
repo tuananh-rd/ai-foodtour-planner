@@ -19,7 +19,6 @@ from app.llm.provider import LLMExtractor, RulesFirstExtractor
 from app.providers.extraction import HttpExtractionProvider
 from app.providers.routing import HttpRouteProvider
 from app.providers.gemini import GeminiClient, GeminiExplanationProvider, GeminiExtractionProvider
-from app.providers.tavily import TavilySearch
 from app.providers.walking import ORSWalkingProvider, OSRMWalkingProvider
 from app.providers.google_maps import GoogleRoutesProvider, GoogleGeocoder
 from app.planner.interfaces import StraightLineEstimator
@@ -40,8 +39,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app.state.chat_understander_injected = chat_understander is not None
     app.state.chat_understanding_provider = None
     app.state.chat_engine_cache = None
-    # Factory is configuration-only; external search requires an explicit chat opt-in.
-    app.state.web_search = web_search if web_search is not None else TavilySearch.from_env()
+    # Retired: no Tavily factory/key discovery/transport, including legacy injection.
+    app.state.web_search = None
     app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 6)
     app.state.llm_reserve = setting("FOODTOUR_LLM_RESERVE", 3)
     app.state.venues = VenueRepository(data_path)
@@ -75,6 +74,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     else:
         app.state.explainer = CheckedExplainer(None)
     app.state.llm_budget = gemini.budget if gemini is not None and gemini.configured else None
+    from app.discovery.gemini import GeminiTools
+    app.state.discovery_model = GeminiTools(gemini if llm_mode == 'gemini' else None)
     if llm_mode == "gemini" and gemini is not None and gemini.configured:
         app.state.chat_understanding_provider = GeminiUnderstandingProvider(gemini)
     # Conversation shares the explicitly configured client and its existing budget.
@@ -160,6 +161,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
         ).body())
 
     app.include_router(router)
+    from app.discovery.routes import router as discovery_router
+    app.include_router(discovery_router)
     return app
 
 
