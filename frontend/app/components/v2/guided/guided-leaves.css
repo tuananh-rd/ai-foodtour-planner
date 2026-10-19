@@ -1,19 +1,14 @@
 /* NgonNgon Tour Leaf Component Styles (owner: Antigravity)
-   Derived from docs/design/SVG_FIDELITY_SPEC.md section 4.
+   Updated for Figma frame 1:145 Warm editorial
    Consumes --nn-* tokens from .nn-root / .nn-dialog without redefining them. */
 
 /* Timeline Container */
 .nn-timeline {
-  display: grid;
-  gap: 13px;
-  width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
   max-width: 100%;
-}
-
-@media (max-width: 1199px) {
-  .nn-timeline {
-    width: 100%;
-  }
 }
 
 /* Timeline Stop Item */
@@ -21,21 +16,8 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-}
-
-.nn-timeline-pills {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.nn-timeline-step {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  max-width: 500px;
   width: 100%;
+  box-sizing: border-box;
 }
 
 .nn-timeline-pills {
@@ -44,7 +26,6 @@
   justify-content: space-between;
   gap: 8px;
   width: 100%;
-  max-width: 500px;
   box-sizing: border-box;
   flex-wrap: wrap;
 }
@@ -64,14 +45,14 @@
 }
 
 .nn-time-pill {
-  height: 34px;
-  min-height: 34px;
-  padding: 0 14px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
   border-radius: 999px;
-  background: var(--nn-green, #166B52);
+  background: var(--nn-accent, #CF542F);
   color: #FFFFFF;
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12.5px;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -80,14 +61,14 @@
 }
 
 .nn-meta-pill {
-  height: 35px;
-  min-height: 35px;
-  padding: 0 14px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
   border-radius: 999px;
-  background: var(--nn-card, #FFFFFF);
-  border: 1px solid var(--nn-line, #DDE7E1);
-  color: var(--nn-mute, #62736D);
-  font-size: 13px;
+  background: var(--nn-card, #FFFEFA);
+  border: 1px solid var(--nn-card-line, #EFE7E0);
+  color: var(--nn-mute, #7A625A);
+  font-size: 12.5px;
   font-weight: 500;
   display: inline-flex;
   align-items: center;
@@ -97,15 +78,15 @@
 }
 
 .nn-pill-action-btn {
-  height: 34px;
-  min-height: 34px;
+  height: 32px;
+  min-height: 32px;
   padding: 0 12px;
   border-radius: 999px;
-  border: 1px solid var(--nn-card-line, #D9D9D9);
-  background: var(--nn-card, #FFFFFF);
-  color: var(--nn-ink, #17352B);
-  font-size: 12.5px;
-  font-weight: 500;
+  border: 1px solid var(--nn-card-line, #EFE7E0);
+  background: var(--nn-card, #FFFEFA);
+  color: var(--nn-ink, #231815);
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -120,21 +101,21 @@
 .nn-pill-action-btn::after {
   content: '';
   position: absolute;
-  top: -5px;
-  bottom: -5px;
+  top: -6px;
+  bottom: -6px;
   left: 0;
   right: 0;
   min-height: 44px;
 }
 
 .nn-pill-action-btn:hover:not([disabled]) {
-  border-color: var(--nn-green, #166B52);
-  color: var(--nn-green, #166B52);
-  background: var(--nn-mint, #EFF7F1);
+  border-color: var(--nn-accent, #CF542F);
+  color: var(--nn-accent, #CF542F);
+  background: #FFF5EE;
 }
 
 .nn-pill-action-btn:focus-visible {
-  outline: 2px solid var(--nn-green, #166B52);
+  outline: 2px solid var(--nn-accent, #CF542F);
   outline-offset: 2px;
 }
 
@@ -142,56 +123,43 @@
   height: 28px;
   padding: 0 8px;
   border-radius: 6px;
-  background: #E0F2FE;
-  color: #0369A1;
+  background: #FFF0E6;
+  color: #C0431F;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   white-space: nowrap;
 }
 
-/* Timeline Stop Card conforming to reference density */
+/* Timeline Stop Card */
 .nn-timeline-card {
   width: 100%;
-  max-width: 500px;
   box-sizing: border-box;
-  background: var(--nn-card, #FFFFFF);
-  border: 1px solid var(--nn-card-line, #D9D9D9);
-  border-radius: var(--nn-r-card, 8px);
-  padding: 24px;
+  background: var(--nn-card, #FFFEFA);
+  border: 1px solid var(--nn-card-line, #EFE7E0);
+  border-radius: var(--nn-r-card, 18px);
+  padding: 16px 18px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-}
-
-@media (max-width: 1199px) {
-  .nn-timeline-card {
-    padding: 16px;
-  }
+  gap: 6px;
+  box-shadow: 0 4px 16px rgba(112, 41, 20, 0.04);
 }
 
 .nn-timeline-card-title {
   margin: 0;
-  font-size: 23.7px;
-  line-height: 28px;
-  font-weight: 400;
-  color: var(--nn-card-title, #1E1E1E);
-}
-
-@media (max-width: 1199px) {
-  .nn-timeline-card-title {
-    font-size: 20px;
-    line-height: 1.3;
-  }
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 700;
+  color: var(--nn-card-title, #231815);
 }
 
 .nn-timeline-card-desc {
   margin: 0;
-  font-size: 16px;
-  line-height: 22px;
+  font-size: 12.5px;
+  line-height: 1.45;
   font-weight: 400;
-  color: var(--nn-card-desc, #757575);
+  color: var(--nn-card-desc, #7A625A);
   word-break: break-word;
 }
 
@@ -201,9 +169,9 @@
   height: 34px;
   padding: 0 14px;
   border-radius: 999px;
-  border: 1px solid var(--nn-line, #DDE7E1);
-  background: var(--nn-card, #FFFFFF);
-  color: var(--nn-ink, #17352B);
+  border: 1px solid var(--nn-card-line, #EFE7E0);
+  background: var(--nn-card, #FFFEFA);
+  color: var(--nn-ink, #231815);
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
@@ -215,13 +183,13 @@
 }
 
 .nn-ghost-pill:hover:not([disabled]) {
-  border-color: var(--nn-green, #166B52);
-  color: var(--nn-green, #166B52);
-  background: var(--nn-mint, #EFF7F1);
+  border-color: var(--nn-accent, #CF542F);
+  color: var(--nn-accent, #CF542F);
+  background: #FFF5EE;
 }
 
 .nn-ghost-pill:focus-visible {
-  outline: 2px solid var(--nn-green, #166B52);
+  outline: 2px solid var(--nn-accent, #CF542F);
   outline-offset: 2px;
 }
 
@@ -236,54 +204,54 @@
   height: 44px;
   padding: 0 24px;
   border-radius: 999px;
-  background: var(--nn-green, #166B52);
+  background: var(--nn-accent, #CF542F);
   color: #FFFFFF !important;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   text-decoration: none;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(22, 107, 82, 0.2);
+  box-shadow: 0 4px 14px rgba(207, 84, 47, 0.3);
   cursor: pointer;
   transition: background 0.15s ease;
   width: 100%;
 }
 
 .nn-maps-pill:hover {
-  background: var(--nn-green-dark, #125640);
+  background: var(--nn-accent-hover, #B33D1E);
 }
 
 .nn-maps-pill:focus-visible {
-  outline: 2px solid var(--nn-green, #166B52);
+  outline: 2px solid #FFFFFF;
   outline-offset: 2px;
 }
 
-/* Primary Green Pill (Confirmation Yes) */
+/* Primary Accent Pill (Confirmation Yes) */
 .nn-confirm-primary {
   min-height: 44px;
   height: 44px;
   padding: 0 20px;
   border-radius: 999px;
-  background: var(--nn-green, #166B52);
+  background: var(--nn-accent, #CF542F);
   color: #FFFFFF;
   border: none;
   font-size: 14px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 6px rgba(22, 107, 82, 0.2);
+  box-shadow: 0 4px 14px rgba(207, 84, 47, 0.3);
   transition: background 0.15s ease;
 }
 
 .nn-confirm-primary:hover:not([disabled]) {
-  background: var(--nn-green-dark, #125640);
+  background: var(--nn-accent-hover, #B33D1E);
 }
 
 .nn-confirm-primary:focus-visible {
-  outline: 2px solid var(--nn-green, #166B52);
+  outline: 2px solid var(--nn-accent, #CF542F);
   outline-offset: 2px;
 }
 
@@ -298,9 +266,9 @@
   height: 44px;
   padding: 0 18px;
   border-radius: 999px;
-  background: var(--nn-card, #FFFFFF);
-  border: 1px solid var(--nn-line, #DDE7E1);
-  color: var(--nn-ink, #17352B);
+  background: var(--nn-card, #FFFEFA);
+  border: 1px solid #D8C6BA;
+  color: #702914;
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
@@ -311,35 +279,31 @@
 }
 
 .nn-confirm-secondary:hover:not([disabled]) {
-  border-color: var(--nn-green, #166B52);
-  color: var(--nn-green, #166B52);
+  border-color: var(--nn-accent, #CF542F);
+  color: var(--nn-accent, #CF542F);
+  background: #FFF5EE;
 }
 
 .nn-confirm-secondary:focus-visible {
-  outline: 2px solid var(--nn-green, #166B52);
+  outline: 2px solid var(--nn-accent, #CF542F);
   outline-offset: 2px;
 }
 
-/* Assistant Mint Bubble Card Style */
+/* Assistant Bubble Card Style */
 .nn-assistant-bubble {
-  background: var(--nn-mint, #EFF7F1);
+  background: #FAF4EE;
+  border: 1px solid #EFE4DA;
   border-radius: var(--nn-r-tile, 16px);
   padding: 16px;
-  max-width: 410px;
+  max-width: 100%;
   width: 100%;
-  color: var(--nn-ink, #17352B);
-  font-size: 16px;
+  color: var(--nn-ink, #231815);
+  font-size: 15px;
   line-height: 1.45;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-@media (max-width: 1199px) {
-  .nn-assistant-bubble {
-    max-width: 100%;
-  }
 }
 
 /* Understood Rows */
@@ -348,20 +312,20 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 0;
-  border-bottom: 1px solid var(--nn-line, #DDE7E1);
+  border-bottom: 1px solid var(--nn-line, #F0E8E2);
   gap: 8px;
 }
 
 .nn-row-label {
   font-size: 13px;
-  color: var(--nn-mute, #62736D);
+  color: var(--nn-mute, #7A625A);
   flex: 1;
 }
 
 .nn-row-val {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--nn-ink, #17352B);
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--nn-ink, #231815);
   text-align: right;
 }
 
@@ -370,9 +334,9 @@
   min-width: 44px;
   background: none;
   border: none;
-  color: var(--nn-green, #166B52);
+  color: var(--nn-accent, #CF542F);
   font-size: 13px;
-  font-weight: 600;
+  font-weight: 700;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -381,16 +345,16 @@
 }
 
 .nn-row-action:focus-visible {
-  outline: 2px solid var(--nn-green, #166B52);
+  outline: 2px solid var(--nn-accent, #CF542F);
   outline-offset: 2px;
 }
 
 /* Inline Popover Editor */
 .nn-inline-popover {
   border-radius: var(--nn-r-tile, 16px);
-  background: var(--nn-card, #FFFFFF);
-  border: 1px solid var(--nn-line, #DDE7E1);
-  box-shadow: var(--nn-shadow, 0 8px 24px rgba(10, 46, 31, 0.10));
+  background: var(--nn-card, #FFFEFA);
+  border: 1px solid var(--nn-line, #F0E8E2);
+  box-shadow: var(--nn-shadow, 0 12px 36px rgba(112, 41, 20, 0.08));
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -402,18 +366,18 @@
 .nn-inline-popover select {
   height: 40px;
   border-radius: var(--nn-r-card, 8px);
-  border: 1px solid var(--nn-line, #DDE7E1);
+  border: 1px solid var(--nn-line, #F0E8E2);
   padding: 0 10px;
   font-size: 14px;
   font-family: inherit;
-  color: var(--nn-ink, #17352B);
-  background: var(--nn-bg, #F7F8F2);
+  color: var(--nn-ink, #231815);
+  background: #FAF4EE;
 }
 
 .nn-inline-popover input:focus,
 .nn-inline-popover select:focus {
-  outline: 2px solid var(--nn-green, #166B52);
-  border-color: var(--nn-green, #166B52);
+  outline: 2px solid var(--nn-accent, #CF542F);
+  border-color: var(--nn-accent, #CF542F);
 }
 
 /* Calm Warnings in Peach */
@@ -427,7 +391,7 @@
   line-height: 1.45;
 }
 
-/* single merged evidence warning above the first stop: compact, still fully readable */
+/* single merged evidence warning above the first stop */
 .nn-peach-box.nn-warn-one {
   padding: 8px 12px;
   font-size: 13px;
@@ -435,8 +399,32 @@
   border-radius: 8px;
 }
 
-/* D5: larger invisible hit areas without changing the visual geometry */
-.nn-trust-btn { position: relative; min-height: 24px; display: inline-flex; align-items: center; }
-.nn-trust-btn::after { content: ''; position: absolute; left: -6px; right: -6px; top: -12px; bottom: -12px; }
-.nn-pill-action-btn { position: relative; }
-.nn-pill-action-btn::after { content: ''; position: absolute; left: 0; right: 0; top: -5px; bottom: -5px; }
+/* Accessible hit areas */
+.nn-trust-btn {
+  position: relative;
+  min-height: 24px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nn-trust-btn::after {
+  content: '';
+  position: absolute;
+  left: -6px;
+  right: -6px;
+  top: -12px;
+  bottom: -12px;
+}
+
+.nn-pill-action-btn {
+  position: relative;
+}
+
+.nn-pill-action-btn::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  bottom: -6px;
+}

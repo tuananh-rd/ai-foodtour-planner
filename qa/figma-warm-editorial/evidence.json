@@ -1,0 +1,312 @@
+{
+  "testedAt": "2026-10-19T11:20:38.344Z",
+  "targetFigmaFrame": "frame 1:145 \"02 — Măm Măm / Warm editorial\" (1440x1024)",
+  "referenceImagePath": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-antigravity-web\\frontend\\public\\warm-editorial\\reference-1440x1024.png",
+  "checks": [
+    {
+      "id": "PREFLIGHT_PORTS",
+      "name": "Isolated test ports 13600, 18600, 19800 are completely free",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "BACKEND_HEALTH",
+      "name": "Backend healthy with synthetic fixtures",
+      "pass": true,
+      "details": {
+        "build_commit": null,
+        "assistant_provider": "rules",
+        "web_search_configured": false,
+        "ranking": {
+          "quality_weight": 1
+        },
+        "llm_budget": null,
+        "status": "ok",
+        "dataset_loaded": true,
+        "llm": "mock",
+        "routing": "straight_line_estimate",
+        "llm_configured": true,
+        "routing_configured": true,
+        "llm_provider": "rules",
+        "llm_model": null,
+        "explanation_provider": "template",
+        "routing_provider": "estimate",
+        "routing_last_error": null,
+        "dataset_source": "synthetic",
+        "dataset_version": "bd561f274a3d654c59c1234a1d37687fe47be9c633495ddad8c3664b9d0983f9",
+        "evidence_overlay": {
+          "entries_loaded": 0,
+          "entries_rejected": 0,
+          "hours_verified": 0,
+          "prices_verified": 0
+        },
+        "geocoding": {
+          "status": "unavailable",
+          "last_error": null
+        }
+      }
+    },
+    {
+      "id": "FRONTEND_BUILD",
+      "name": "Next.js build succeeded in scratch environment",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "FRONTEND_RUNNING",
+      "name": "Frontend responding on http://127.0.0.1:13600",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "SCROLL_NORMALIZED",
+      "name": "window.scrollY is 0 at initial capture",
+      "pass": true,
+      "details": {
+        "scrollY": 0
+      }
+    },
+    {
+      "id": "SIDEBAR_GEOMETRY",
+      "name": "Sidebar width is 232px at x=0",
+      "pass": true,
+      "details": {
+        "x": 0,
+        "y": 0,
+        "width": 232,
+        "height": 1024
+      }
+    },
+    {
+      "id": "CHAT_CARD_GEOMETRY",
+      "name": "Chat Card width is 668px at x=264",
+      "pass": true,
+      "details": {
+        "x": 264,
+        "y": 90,
+        "width": 668,
+        "height": 886
+      }
+    },
+    {
+      "id": "TOUR_COLUMN_GEOMETRY",
+      "name": "Tour Column width is 452px at x=956",
+      "pass": true,
+      "details": {
+        "x": 956,
+        "y": 90,
+        "width": 452,
+        "height": 886
+      }
+    },
+    {
+      "id": "USER_BUBBLE_STYLE",
+      "name": "User bubble rendered with peach background",
+      "pass": true,
+      "details": {
+        "userBubbleColor": "rgb(249, 225, 207)"
+      }
+    },
+    {
+      "id": "FOCUS_CLARIFY_CARD",
+      "name": "Focus properly directed to clarify question card or options",
+      "pass": true,
+      "details": {
+        "activeDuringClarify": "clarify-option-time:18:00"
+      }
+    },
+    {
+      "id": "UNDERSTOOD_CARD_PRESENT",
+      "name": "Understood card rendered canonical criteria rows",
+      "pass": true,
+      "details": {
+        "count": 11
+      }
+    },
+    {
+      "id": "FOCUS_CONFIRM_BTN",
+      "name": "Focus lands on Confirm Yes button [data-testid=\"confirm-yes-btn\"]",
+      "pass": true,
+      "details": {
+        "activeDuringConfirm": "confirm-yes-btn"
+      }
+    },
+    {
+      "id": "TOUR_STOPS_RENDERED",
+      "name": "Tour stops rendered with 3 stops",
+      "pass": true,
+      "details": {
+        "stopCount": 3
+      }
+    },
+    {
+      "id": "STOP_NUMBER_BADGES",
+      "name": "Stop cards have peach number badges (01, 02, 03)",
+      "pass": true,
+      "details": {
+        "badges": [
+          "01",
+          "02",
+          "03"
+        ]
+      }
+    },
+    {
+      "id": "GOOGLE_MAPS_CTA",
+      "name": "Google Maps CTA present with valid free walking URL and focus",
+      "pass": true,
+      "details": {
+        "href": "https://www.google.com/maps/dir/?api=1&origin=21.0263%2C105.8522&destination=21.0296%2C105.8483&travelmode=walking&waypoints=21.0274%2C105.8509",
+        "focused": true
+      }
+    },
+    {
+      "id": "GOOGLE_MAPS_DISCLOSURE",
+      "name": "Google Maps free URL external disclosure present",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "REPLACE_MODAL_OPENS",
+      "name": "Replace stop modal opens on click",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "REPLACE_MODAL_CLOSES",
+      "name": "Replace stop modal closes cleanly",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "PILOT_MAP_ACTIVE",
+      "name": "Interactive PilotMap view mode activates on toggle",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "VIEW_MODE_SCHEMATIC",
+      "name": "Returned to schematic itinerary view mode",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "RELOAD_PERSISTENCE",
+      "name": "Session criteria and tour stops restored after reload without focus stealing",
+      "pass": true,
+      "details": {
+        "restoredStops": 3
+      }
+    },
+    {
+      "id": "MOBILE_ZERO_OVERFLOW",
+      "name": "Mobile 390px has ZERO horizontal overflow (scrollWidth <= 390)",
+      "pass": true,
+      "details": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "bodyScrollWidth": 390,
+        "rootScrollWidth": 390
+      }
+    },
+    {
+      "id": "MOBILE_TAB_CHAT",
+      "name": "Mobile tab Khám phá displays chat panel",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MOBILE_TAB_TOUR",
+      "name": "Mobile tab Lịch trình displays tour column",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONTRAST_CHAT_TEXT",
+      "name": "Primary chat text contrast: 17.16:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONTRAST_SIDEBAR",
+      "name": "Sidebar brand/nav contrast: 10.42:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONTRAST_CTA_BUTTON",
+      "name": "Terracotta CTA button contrast: 4.83:1 (passes AA >= 4.5:1)",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONTRAST_DARK_CTA",
+      "name": "Dark CTA card contrast: 14.43:1 (passes AAA >= 7.0:1)",
+      "pass": true,
+      "details": {}
+    }
+  ],
+  "measurements": {
+    "initial": {
+      "sidebar": {
+        "x": 0,
+        "y": 0,
+        "width": 232,
+        "height": 1024
+      },
+      "canvasWrap": {
+        "x": 232,
+        "y": 0,
+        "width": 1208,
+        "height": 1024
+      },
+      "chatCard": {
+        "x": 264,
+        "y": 90,
+        "width": 668,
+        "height": 886
+      },
+      "tourCol": {
+        "x": 956,
+        "y": 90,
+        "width": 452,
+        "height": 886
+      },
+      "colors": {
+        "bodyBg": "rgb(248, 246, 240)",
+        "rootBg": "rgb(249, 197, 61)",
+        "sidebarBg": "rgb(112, 41, 20)"
+      }
+    }
+  },
+  "contrast": {
+    "chatText": {
+      "ratio": 17.16,
+      "required": 4.5,
+      "passesAA": true,
+      "passesAAA": true
+    },
+    "sidebarText": {
+      "ratio": 10.42,
+      "required": 4.5,
+      "passesAA": true,
+      "passesAAA": true
+    },
+    "ctaButton": {
+      "ratio": 4.83,
+      "required": 4.5,
+      "passesAA": true
+    },
+    "darkCtaCard": {
+      "ratio": 14.43,
+      "required": 4.5,
+      "passesAA": true,
+      "passesAAA": true
+    }
+  },
+  "summary": {
+    "total": 28,
+    "passed": 28,
+    "failed": 0
+  }
+}

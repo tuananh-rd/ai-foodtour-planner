@@ -868,21 +868,14 @@ export default function GuidedLayout({
     cheap: Number(profileNow.budget?.value) > 0 && Number(profileNow.budget?.value) <= 300000
   };
   const suggestionChips = [
-    { label: 'Hoàn Kiếm', on: chipOn.area, text: 'Tôi muốn ăn tour 3 quán quanh Hoàn Kiếm tối nay' },
-    { label: 'Tối nay', on: chipOn.tonight, text: 'Đi tour vào tối nay khoảng 120 phút' },
-    { label: 'Món Việt', on: false, text: 'Thích các món Việt truyền thống như phở và chè' },
+    { label: 'Ẩm thực đường phố', on: false, text: 'Gợi ý ẩm thực đường phố quanh phố cổ' },
+    { label: 'Hẹn hò cuối tuần', on: false, text: 'Lịch trình nhẹ nhàng cho 2 người đi ăn tối cuối tuần' },
+    { label: 'Quán local', on: false, text: 'Quán local chuẩn vị Hà Nội' },
     { label: 'Dưới 300K', on: chipOn.cheap, text: 'Ngân sách dưới 300 nghìn cho cả chuyến' },
     { label: '📍 Vị trí GPS', on: false, isGeo: true }
   ];
   const chatVisible = isDesktop || activeMobileTab === 'chat';
   const tourVisible = isDesktop || activeMobileTab === 'tour';
-  const resetButton = (
-    <button type="button" data-testid="guided-reset-btn" className="nn-btn" onClick={handleRestart} disabled={busy}>
-      <span aria-hidden="true">↻</span>
-      <span>Làm lại</span>
-    </button>
-  );
-  const nodeTop = (idx, n) => (n <= 1 ? 45.8 : 12.6 + idx * (66.4 / (n - 1)));
 
   return (
     <div data-testid="guided-container" aria-busy={busy} className="nn-root">
@@ -891,413 +884,537 @@ export default function GuidedLayout({
         {liveAnnouncement}
       </div>
 
-      {/* 80px header: brand · nav pills · anonymous local context (reference y0-80) */}
-      <header className="nn-header">
-        <div className="nn-brand">
-          <div className="nn-brand-tile" aria-hidden="true"><StarGlyph color="#DFF46A" /></div>
-          <div>
-            <div className="nn-brand-name">NgonNgon Tour</div>
-            <div className="nn-brand-sub">Ăn ngon • Đi đúng gu</div>
+      {/* 1. LEFT RUST SIDEBAR (232px) */}
+      <aside className="nn-sidebar" aria-label="Thanh bên điều hướng">
+        <div className="nn-sidebar-top">
+          <div className="nn-brand-block">
+            <h1 className="nn-brand-logo">măm măm.</h1>
+            <div className="nn-brand-slogan">ĐI ĐỂ ĂN. ĂN ĐỂ NHỚ.</div>
           </div>
-        </div>
 
-        <nav className="nn-nav" aria-label="Điều hướng chính">
           <button
             type="button"
-            data-testid="mobile-tab-chat"
-            className="nn-pill"
-            aria-pressed={activeMobileTab === 'chat'}
-            aria-controls="guided-chat-section"
-            onClick={() => {
-              setActiveMobileTab('chat');
-              if (isDesktop) {
-                chatSectionRef.current?.scrollIntoView({ block: 'start' });
-                chatSectionRef.current?.focus({ preventScroll: true });
-              }
-            }}
+            data-testid="guided-reset-btn"
+            className="nn-new-trip-btn"
+            onClick={handleRestart}
+            disabled={busy}
+            aria-label="Tạo chuyến đi mới"
           >
-            Khám phá
+            <span aria-hidden="true">+</span> Chuyến đi mới
           </button>
-          <button
-            type="button"
-            data-testid="mobile-tab-tour"
-            className="nn-pill"
-            aria-pressed={activeMobileTab === 'tour'}
-            aria-controls="guided-tour-section"
-            onClick={() => {
-              setActiveMobileTab('tour');
-              if (isDesktop) {
-                tourSectionRef.current?.scrollIntoView({ block: 'start' });
-                tourSectionRef.current?.focus({ preventScroll: true });
-              }
-            }}
-          >
-            Lịch trình {stops.length > 0 ? `(${stops.length})` : ''}
-          </button>
-        </nav>
 
-        <div className="nn-header-spacer" />
-        {!isDesktop && resetButton}
-        <div className="nn-profile">
-          <div className="nn-avatar" aria-label="Phiên ẩn danh tại Hà Nội">K</div>
-          <div className="nn-profile-text">
-            <div className="nn-profile-name">Khách</div>
-            <div className="nn-profile-sub">Hà Nội</div>
-          </div>
-        </div>
-      </header>
+          <nav className="nn-sidebar-nav" aria-label="Chức năng chính">
+            <button
+              type="button"
+              data-testid="mobile-tab-chat"
+              className={`nn-sidebar-nav-item${activeMobileTab === 'chat' ? ' active' : ''}`}
+              aria-pressed={activeMobileTab === 'chat'}
+              onClick={() => {
+                setActiveMobileTab('chat');
+                if (isDesktop) {
+                  chatSectionRef.current?.scrollIntoView({ block: 'start' });
+                  chatSectionRef.current?.focus({ preventScroll: true });
+                }
+              }}
+            >
+              <span className="nn-nav-icon">✦</span> Trò chuyện
+            </button>
+            <button
+              type="button"
+              data-testid="mobile-tab-tour"
+              className={`nn-sidebar-nav-item${activeMobileTab === 'tour' ? ' active' : ''}`}
+              aria-pressed={activeMobileTab === 'tour'}
+              onClick={() => {
+                setActiveMobileTab('tour');
+                if (isDesktop) {
+                  tourSectionRef.current?.scrollIntoView({ block: 'start' });
+                  tourSectionRef.current?.focus({ preventScroll: true });
+                }
+              }}
+            >
+              <span className="nn-nav-icon">◇</span> Khám phá {stops.length > 0 ? `(${stops.length})` : ''}
+            </button>
+            <button
+              type="button"
+              className="nn-sidebar-nav-item inactive"
+              disabled
+              aria-disabled="true"
+              title="Tính năng đang được phát triển"
+            >
+              <span className="nn-nav-icon">♡</span> Đã lưu
+            </button>
+            <button
+              type="button"
+              className="nn-sidebar-nav-item inactive"
+              onClick={() => {
+                if (chatState?.history?.length > 0) {
+                  setActiveMobileTab('chat');
+                  chatSectionRef.current?.scrollIntoView({ block: 'start' });
+                }
+              }}
+            >
+              <span className="nn-nav-icon">🕒</span> Lịch sử
+            </button>
+          </nav>
 
-      <main className="nn-main">
-        {/* LEFT: chat panel (reference x32-512, y108-996) */}
-        <section ref={chatSectionRef} id="guided-chat-section" tabIndex={-1} className={`nn-chat${chatVisible ? '' : ' nn-hidden'}${confirmSummaryBlock && !isStartScreen ? ' confirming' : (clarifyBlock && !isStartScreen ? ' deciding' : '')}`}>
-          <div className="nn-chat-head">
-            <div className="nn-assistant-tile" aria-hidden="true"><StarGlyph color="#166B52" /></div>
-            <div className="nn-chat-title-wrap">
-              <div className="nn-chat-title">Lên food tour cùng Măm Măm</div>
-              <div className="nn-chat-sub">Trợ lý ẩm thực địa phương</div>
-            </div>
-            <span className="nn-status">Hà Nội</span>
-          </div>
-
-          <h2 className="nn-h2">Bạn muốn ăn gì hôm nay?</h2>
-          <p className="nn-lead">Cho mình biết khu vực, thời gian và khẩu vị — mình sẽ xếp một hành trình vừa ngon vừa tiện đường.</p>
-
-          <div data-testid="suggestion-chips-container" className="nn-chips">
-            {suggestionChips.map((chip, idx) => (
-              <button
-                key={idx}
-                type="button"
-                className="nn-chip"
-                aria-pressed={chip.on}
-                data-testid={`suggestion-chip-${idx}`}
-                onClick={() => chip.isGeo ? triggerGeolocation() : handleSendMessage(chip.text)}
-                disabled={busy}
+          <div className="nn-sidebar-recent">
+            <div className="nn-recent-header">CHUYẾN ĐI GẦN ĐÂY</div>
+            <div className="nn-recent-list">
+              <div
+                className="nn-recent-item"
+                onClick={() => handleSendMessage('Một tối ở Hà Nội')}
+                role="button"
+                tabIndex={0}
               >
-                {chip.label}
-              </button>
-            ))}
+                {tour?.title || 'Một tối ở Hà Nội'}
+              </div>
+              <div
+                className="nn-recent-item"
+                onClick={() => handleSendMessage('Cuối tuần cùng hội bạn')}
+                role="button"
+                tabIndex={0}
+              >
+                Cuối tuần cùng hội bạn
+              </div>
+              <div
+                className="nn-recent-item"
+                onClick={() => handleSendMessage('Cà phê & chuyện trò')}
+                role="button"
+                tabIndex={0}
+              >
+                Cà phê & chuyện trò
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="nn-sidebar-bottom">
+          <div className="nn-promo-card">
+            <div className="nn-promo-title">Ăn như người bản địa</div>
+            <div className="nn-promo-desc">Những ngõ nhỏ luôn có câu chuyện ngon.</div>
           </div>
 
-          <div className="nn-rule" role="separator" />
-
-          {(errorMessage || initError) && (
-            <div data-testid="guided-error-banner" role="alert" className="nn-alert">
-              <span>⚠️ {errorMessage || initError.message}</span>
-              <button type="button" data-testid="guided-error-retry-btn" onClick={handleRetryFailed}>Thử lại</button>
+          <div className="nn-profile-footer">
+            <div className="nn-profile-avatar" aria-label="Khách ẩn danh">K</div>
+            <div className="nn-profile-info">
+              <div className="nn-profile-name">Khách ẩn danh</div>
+              <div className="nn-profile-sub">Hà Nội · Phiên cục bộ ˅</div>
             </div>
-          )}
-
-          <div data-testid={isStartScreen ? 'guided-start-screen' : 'guided-stream'} className="nn-stream">
-            {isStartScreen && (
-              <div data-testid="guided-welcome-msg" className="nn-bubble">
-                Chào bạn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ hỏi thêm nếu thiếu thông tin để xếp lịch trình chuẩn nhất.
-              </div>
-            )}
-
-            {messages.map((msg, idx) => (
-              msg.role === 'user' ? (
-                <div key={idx} data-testid="user-msg-bubble" className="nn-bubble user">{msg.text}</div>
-              ) : null
-            ))}
-
-            {!isStartScreen && (
-              <div className="nn-blocks">
-                {filteredTextBlocks.map((b, idx) => (
-                  <div key={idx} data-testid="assistant-text-bubble" className="nn-bubble">{b.text}</div>
-                ))}
-
-                {noticeBlocks.map((b, idx) => (
-                  <div
-                    key={idx}
-                    data-testid={`notice-block-${b.code || idx}`}
-                    className={`nn-bubble notice${b.level === 'safety' ? ' safety' : ''}`}
-                  >
-                    {b.text}
-                  </div>
-                ))}
-
-                {latestBlocks.filter((b) => b.type === 'web_search').map((b, idx) => (
-                  <OnlineSearchResults
-                    key={b.block_id || idx}
-                    block={b}
-                    onRetry={(retryQuery) => {
-                      const queryToReplay = retryQuery || b.query || latestAssistantMsg?.originating_query;
-                      if (queryToReplay) {
-                        executeTurn({ text: queryToReplay, webSearch: true });
-                      }
-                    }}
-                  />
-                ))}
-
-                {understoodBlock && (
-                  <UnderstoodCard
-                    items={understoodBlock.items}
-                    allergies={understoodBlock.allergies}
-                    onInlineSave={handleInlineSave}
-                    onFreeFormEdit={handleFreeFormEdit}
-                  />
-                )}
-
-                {venueCardsBlock && (
-                  <div data-testid="venue-cards-block" className="nn-venues">
-                    {(venueCardsBlock.cards || []).map((card, idx) => {
-                      const v = card.venue || {};
-                      const priceText = v.price?.min_vnd && v.price?.max_vnd
-                        ? `Khoảng giá: ${Number(v.price.min_vnd).toLocaleString('vi-VN')} – ${Number(v.price.max_vnd).toLocaleString('vi-VN')} đ (theo nguồn)`
-                        : 'Khoảng giá: chưa rõ (theo nguồn)';
-                      const hoursText = v.hours?.display
-                        ? `Giờ mở cửa theo nguồn: ${v.hours.display}`
-                        : 'Giờ mở cửa theo nguồn: chưa rõ';
-                      const distText = card.distance_m !== null && card.distance_m !== undefined
-                        ? `cách ~${card.distance_m} m (ước tính)`
-                        : null;
-                      return (
-                        <div key={v.id || idx} data-testid="venue-card" className="nn-venue">
-                          <div>
-                            <span className="tag">{card.label || String.fromCharCode(65 + idx)}</span>
-                            <strong>{v.name}</strong>
-                          </div>
-                          <div className="meta">📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}</div>
-                          <div className="meta">🏷️ {priceText}</div>
-                          <div className="meta">🕒 {hoursText}</div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                )}
-
-              </div>
-            )}
-            {clarifyBlock && !confirmSummaryBlock && !isStartScreen && (
-              <div className="nn-pin">
-                <ClarifyQuestionCard
-                  clarify={clarifyBlock}
-                  onPickOption={handlePickOption}
-                  onSubmitText={(txt) => handleSendMessage(txt)}
-                  busy={busy}
-                />
-              </div>
-            )}
-            {confirmSummaryBlock && !isStartScreen && (
-              <div className="nn-pin">
-                <ConfirmSummaryCard
-                  summary={confirmSummaryBlock}
-                  profile={chatState?.profile}
-                  onConfirmYes={handleConfirmYes}
-                  onConfirmNo={handleConfirmNo}
-                  busy={busy}
-                />
-              </div>
-            )}
           </div>
+        </div>
+      </aside>
 
-          {busy && (
-            <div data-testid="guided-loading-indicator" role="status" className="nn-busy">
-              <i />
-              <span>{busyMessage}</span>
+      {/* 2. MAIN CANVAS WRAPPER */}
+      <div className="nn-canvas-wrapper">
+        {/* Topbar: Breadcrumb + utility chips */}
+        <header className="nn-topbar">
+          <div className="nn-breadcrumb">
+            KHÁM PHÁ / TRỢ LÝ FOOD TOUR
+          </div>
+          <div className="nn-topbar-utilities">
+            <div className="nn-util-chip" title="Khu vực hoạt động">
+              <span className="nn-target-icon">⌖</span> {stops[0]?.district || 'Hai Bà Trưng, Hà Nội'}
             </div>
-          )}
+            <div className="nn-util-chip" title="Ngôn ngữ giao diện">
+              Tiếng Việt ˅
+            </div>
+          </div>
+        </header>
 
-          <div className="nn-foot">
-            <p className="nn-legal">
-              {health?.llm === 'gemini'
-                ? 'Khi cần và còn lượt, nội dung bạn nhập cùng tiêu chí cần thiết có thể được gửi đến Google Gemini để hiểu yêu cầu.'
-                : 'Yêu cầu đang được đọc theo quy tắc tại máy, không gửi đến AI bên ngoài trong chế độ này.'}
-              {' '}Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên, không hiện lại từng tin nhắn.
+        {/* Main Content Grid: Left Chat Card (668px) + Right Tour Column (452px) */}
+        <main className="nn-main-grid">
+          {/* LEFT CHAT CARD */}
+          <section
+            ref={chatSectionRef}
+            id="guided-chat-section"
+            tabIndex={-1}
+            className={`nn-chat-card${chatVisible ? '' : ' nn-hidden'}${confirmSummaryBlock && !isStartScreen ? ' confirming' : (clarifyBlock && !isStartScreen ? ' deciding' : '')}`}
+          >
+            <div className="nn-chat-card-header">
+              <div className="nn-assistant-badge">
+                <span>✦</span> MĂM MĂM AI
+              </div>
+              <span className="nn-assistant-tagline">Người bạn sành ăn của bạn</span>
+            </div>
+
+            <h2 className="nn-hero-heading">
+              {confirmSummaryBlock
+                ? 'Xem lại lịch trình của bạn'
+                : (clarifyBlock ? 'Một chút điều chỉnh nữa nhé' : 'Hôm nay, mình ăn cả Hà Nội nhé?')}
+            </h2>
+            <p className="nn-hero-sub">
+              {confirmSummaryBlock
+                ? 'Kiểm tra thông tin điểm dừng, lưu ý theo nguồn và xác nhận để tạo lộ trình.'
+                : (clarifyBlock
+                  ? 'Trả lời câu hỏi bên dưới để mình xếp điểm dừng đúng ý bạn nhất.'
+                  : 'Một chút ngẫu hứng, một hành trình đúng gu. Kể mình nghe bạn đang thèm gì nào.')}
             </p>
-            <TrustDisclosure turn={latestTurnMeta} health={health} />
-            {!confirmSummaryBlock && (
-              <>
-                <div className="nn-web-optin-container" style={{ marginTop: 8 }}>
-                  <label className="nn-web-optin-row" data-testid="online-search-toggle">
-                    <input
-                      type="checkbox"
-                      data-testid="web-search-optin-checkbox"
-                      className="nn-web-optin-checkbox"
-                      checked={webSearch}
-                      onChange={(e) => setWebSearch(e.target.checked)}
-                      disabled={busy}
+
+            {/* Suggestion Chips */}
+            <div data-testid="suggestion-chips-container" className="nn-chips-row">
+              {suggestionChips.map((chip, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="nn-filter-chip"
+                  aria-pressed={chip.on}
+                  data-testid={`suggestion-chip-${idx}`}
+                  onClick={() => chip.isGeo ? triggerGeolocation() : handleSendMessage(chip.text)}
+                  disabled={busy}
+                >
+                  {chip.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="nn-chat-divider" role="separator" />
+
+            {(errorMessage || initError) && (
+              <div data-testid="guided-error-banner" role="alert" className="nn-alert">
+                <span>⚠️ {errorMessage || initError.message}</span>
+                <button type="button" data-testid="guided-error-retry-btn" onClick={handleRetryFailed}>Thử lại</button>
+              </div>
+            )}
+
+            {/* Scrollable Message Stream */}
+            <div data-testid={isStartScreen ? 'guided-start-screen' : 'guided-stream'} className="nn-stream">
+              {isStartScreen && (
+                <div data-testid="guided-welcome-msg" className="nn-editorial-welcome">
+                  <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                  <div className="nn-bubble editorial-body">
+                    Chào bạn! Bạn muốn ăn gì, ở đâu, đi mấy người? Cứ nói tự nhiên, mình sẽ gợi ý món ngon và xếp một lộ trình chuẩn bài nhất.
+                  </div>
+                </div>
+              )}
+
+              {messages.map((msg, idx) => (
+                msg.role === 'user' ? (
+                  <div key={idx} data-testid="user-msg-bubble" className="nn-bubble user">
+                    {msg.text}
+                  </div>
+                ) : null
+              ))}
+
+              {!isStartScreen && (
+                <div className="nn-blocks">
+                  {filteredTextBlocks.map((b, idx) => (
+                    <div key={idx} className="nn-editorial-assistant">
+                      <div className="nn-editorial-badge">✦ MĂM MĂM</div>
+                      <div data-testid="assistant-text-bubble" className="nn-bubble editorial-body">
+                        {b.text}
+                      </div>
+                    </div>
+                  ))}
+
+                  {noticeBlocks.map((b, idx) => (
+                    <div
+                      key={idx}
+                      data-testid={`notice-block-${b.code || idx}`}
+                      className={`nn-bubble notice${b.level === 'safety' ? ' safety' : ''}`}
+                    >
+                      {b.text}
+                    </div>
+                  ))}
+
+                  {latestBlocks.filter((b) => b.type === 'web_search').map((b, idx) => (
+                    <OnlineSearchResults
+                      key={b.block_id || idx}
+                      block={b}
+                      onRetry={(retryQuery) => {
+                        const queryToReplay = retryQuery || b.query || latestAssistantMsg?.originating_query;
+                        if (queryToReplay) {
+                          executeTurn({ text: queryToReplay, webSearch: true });
+                        }
+                      }}
                     />
-                    <span>Tra web</span>
-                    <span className="nn-web-optin-badge">Tavily</span>
-                  </label>
-                  {webSearch && (
-                    <div className="nn-web-optin-explanation" data-testid="web-search-optin-explanation">
-                      Chỉ câu hỏi ngắn của lượt này được gửi đến công cụ tìm kiếm Tavily; không gửi vị trí GPS hay lịch sử trò chuyện. Không nhập thông tin cá nhân.
+                  ))}
+
+                  {understoodBlock && (
+                    <UnderstoodCard
+                      items={understoodBlock.items}
+                      allergies={understoodBlock.allergies}
+                      onInlineSave={handleInlineSave}
+                      onFreeFormEdit={handleFreeFormEdit}
+                    />
+                  )}
+
+                  {venueCardsBlock && (
+                    <div data-testid="venue-cards-block" className="nn-venues">
+                      {(venueCardsBlock.cards || []).map((card, idx) => {
+                        const v = card.venue || {};
+                        const priceText = v.price?.min_vnd && v.price?.max_vnd
+                          ? `Khoảng giá: ${Number(v.price.min_vnd).toLocaleString('vi-VN')} – ${Number(v.price.max_vnd).toLocaleString('vi-VN')} đ (theo nguồn)`
+                          : 'Khoảng giá: chưa rõ (theo nguồn)';
+                        const hoursText = v.hours?.display
+                          ? `Giờ mở cửa theo nguồn: ${v.hours.display}`
+                          : 'Giờ mở cửa theo nguồn: chưa rõ';
+                        const distText = card.distance_m !== null && card.distance_m !== undefined
+                          ? `cách ~${card.distance_m} m (ước tính)`
+                          : null;
+                        return (
+                          <div key={v.id || idx} data-testid="venue-card" className="nn-venue">
+                            <div>
+                              <span className="tag">{card.label || String.fromCharCode(65 + idx)}</span>
+                              <strong>{v.name}</strong>
+                            </div>
+                            <div className="meta">📍 {v.address || v.district || 'Hà Nội'}{distText ? ` · ${distText}` : ''}</div>
+                            <div className="meta">🏷️ {priceText}</div>
+                            <div className="meta">🕒 {hoursText}</div>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
-                <form
-                  className="nn-composer"
-                  style={{ marginTop: 6 }}
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSendMessage();
-                  }}
-                >
-                <input
-                  ref={inputRef}
-                  type="text"
-                  data-testid="guided-input"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  disabled={busy}
-                  placeholder="Thêm yêu cầu cho chuyến đi…"
-                  aria-label="Thêm yêu cầu cho chuyến đi"
-                />
-                <button type="submit" data-testid="guided-send-btn" className="nn-send" disabled={busy || !inputText.trim()} aria-label="Gửi yêu cầu">
-                  <ArrowGlyph />
-                </button>
-              </form>
-            </>
-          )}
-          </div>
-        </section>
+              )}
 
-        {/* RIGHT: tour column (reference x560-1384) */}
-        <section ref={tourSectionRef} id="guided-tour-section" data-focus-fallback tabIndex={-1} className={`nn-tour${tourVisible ? '' : ' nn-hidden'}`}>
-          <div className="nn-tour-head">
-            <div>
-              <div className="nn-eyebrow">FOOD TOUR ĐỀ XUẤT</div>
-              <h1 className="nn-title">
-                {showTour ? (tour.title || (stops[0]?.district ? `Lịch trình ẩm thực ${stops[0].district}` : 'Lịch trình ẩm thực')) : 'Hành trình ẩm thực Hà Nội'}
-              </h1>
-              <div className="nn-subtitle">
-                {showTour
-                  ? `${stops[0]?.arrive ? `${stops[0].arrive}${stops[stops.length - 1]?.depart ? `–${stops[stops.length - 1].depart}` : ''}` : 'Chưa rõ giờ đến'}${stops[0]?.district ? ` • ${stops[0].district}` : ''}`
-                  : 'Chưa có lịch trình được tạo • Vui lòng chọn hoặc nhập yêu cầu ở cột bên trái'}
-              </div>
-            </div>
-            {isDesktop && resetButton}
-          </div>
-
-          <div className="nn-metrics">
-            <div className="nn-tile mint">
-              <div className="nn-tile-value">{showTour ? `${stops.length} điểm` : '0 điểm'}</div>
-              <div className="nn-tile-label">Quán được chọn</div>
-            </div>
-            <div className="nn-tile peach">
-              <div className="nn-tile-value">{showTour ? (distanceKm !== null ? `${distanceKm} km` : 'Chưa rõ') : '—'}</div>
-              <div className="nn-tile-label">{tour?.totals?.leg_source === 'provider_route' ? 'Quãng đường theo nguồn' : 'Khoảng cách ước tính'}</div>
-            </div>
-            <div className="nn-tile">
-              <div className="nn-tile-value">{showTour ? (budgetDisplay || 'Chưa đặt') : 'Theo ngân sách'}</div>
-              <div className="nn-tile-label">
-                {budgetVal !== null && budgetVal !== undefined ? `Mức muốn chi (${budgetScopeLabel})` : 'Ngân sách chưa đặt'}
-              </div>
-            </div>
-          </div>
-
-          <div className="nn-row">
-            <div className="nn-left">
-              {!showTour ? (
-                <div data-testid="tour-empty-panel">
-                  <h3 className="nn-section-h">Lộ trình sẽ hiện ở đây</h3>
-                  {[
-                    ['Bước 1', 'Trò chuyện & nêu ý', 'Cho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.'],
-                    ['Bước 2', 'Xem lại & xác nhận', 'Kiểm tra điều mình hiểu, lưu ý về giờ/giá theo nguồn, dị ứng, rồi bấm xác nhận.'],
-                    ['Bước 3', 'Nhận lịch trình & Maps', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps miễn phí.']
-                  ].map(([pill, title, desc]) => (
-                    <div className="nn-step" key={pill}>
-                      <div className="nn-step-pills"><span className="nn-time">{pill}</span></div>
-                      <div className="nn-card"><h3>{title}</h3><p>{desc}</p></div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <>
-                  <GuidedTimeline
-                    tour={tour}
-                    allergies={currentAllergies}
-                    lockedStops={lockedVenueIds}
-                    onReplaceStop={handleInitiateReplace}
-                    onChangeStop={() => {
-                      if (stops.length > 0) handleInitiateReplace(stops[0]);
-                    }}
-                    onAdjustStops={() => handleFreeFormEdit({ id: 'adjust_stops', label: 'số lượng quán' })}
-                    onRestart={handleRestart}
+              {clarifyBlock && !confirmSummaryBlock && !isStartScreen && (
+                <div className="nn-pin">
+                  <ClarifyQuestionCard
+                    clarify={clarifyBlock}
+                    onPickOption={handlePickOption}
+                    onSubmitText={(txt) => handleSendMessage(txt)}
+                    busy={busy}
                   />
-                </>
+                </div>
+              )}
+
+              {confirmSummaryBlock && !isStartScreen && (
+                <div className="nn-pin">
+                  <ConfirmSummaryCard
+                    summary={confirmSummaryBlock}
+                    profile={chatState?.profile}
+                    onConfirmYes={handleConfirmYes}
+                    onConfirmNo={handleConfirmNo}
+                    busy={busy}
+                  />
+                </div>
               )}
             </div>
 
-            <aside className="nn-route" aria-label={viewMode === 'map' ? 'Bản đồ tương tác Hoàn Kiếm' : 'Sơ đồ tuyến'}>
-              <div className="nn-route-head">
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <h3 className="nn-route-title">{viewMode === 'map' ? 'Bản đồ' : 'Sơ đồ tuyến'}</h3>
-                  <div className="nn-view-mode-toggle" role="group" aria-label="Chế độ hiển thị tuyến">
-                    <button
-                      type="button"
-                      data-testid="view-mode-schematic-btn"
-                      className={`nn-view-mode-btn${viewMode === 'schematic' ? ' active' : ''}`}
-                      aria-pressed={viewMode === 'schematic'}
-                      onClick={() => setViewMode('schematic')}
-                    >
-                      Sơ đồ
-                    </button>
-                    <button
-                      type="button"
-                      data-testid="pilot-map-toggle"
-                      data-legacy-testid="view-mode-map-btn"
-                      className={`nn-view-mode-btn${viewMode === 'map' ? ' active' : ''}`}
-                      aria-pressed={viewMode === 'map'}
-                      onClick={() => setViewMode('map')}
-                    >
-                      Bản đồ
-                    </button>
-                  </div>
-                </div>
-                {vehicleLabel && <span className="nn-meta" style={{ height: 35 }}>{vehicleLabel}</span>}
+            {busy && (
+              <div data-testid="guided-loading-indicator" role="status" className="nn-busy">
+                <i />
+                <span>{busyMessage}</span>
               </div>
-              {viewMode === 'map' ? (
+            )}
+
+            {/* Quick followups row */}
+            {!isStartScreen && !confirmSummaryBlock && !clarifyBlock && (
+              <div className="nn-quick-followups">
+                <button type="button" className="nn-quick-btn" onClick={() => handleSendMessage('Thêm món chay')}>
+                  + Thêm món chay
+                </button>
+                <button type="button" className="nn-quick-btn" onClick={() => handleSendMessage('Ít di chuyển hơn, đi bộ gần')}>
+                  Ít di chuyển hơn
+                </button>
+                <button type="button" className="nn-quick-btn" onClick={() => handleSendMessage('Đổi ngân sách')}>
+                  Đổi ngân sách
+                </button>
+              </div>
+            )}
+
+            {/* Footer Composer & Trust */}
+            <div className="nn-chat-foot">
+              <p className="nn-legal">
+                {health?.llm === 'gemini'
+                  ? 'Khi cần và còn lượt, nội dung bạn nhập có thể được gửi đến Google Gemini để hiểu yêu cầu.'
+                  : 'Yêu cầu đang được đọc theo quy tắc tại máy, không gửi AI bên ngoài trong chế độ này.'}
+                {' '}Khi tải lại trang, ứng dụng khôi phục tiêu chí và lịch trình của phiên.
+              </p>
+              <TrustDisclosure turn={latestTurnMeta} health={health} />
+
+              {!confirmSummaryBlock && (
+                <>
+                  <div className="nn-web-optin-container">
+                    <label className="nn-web-optin-row" data-testid="online-search-toggle">
+                      <input
+                        type="checkbox"
+                        data-testid="web-search-optin-checkbox"
+                        className="nn-web-optin-checkbox"
+                        checked={webSearch}
+                        onChange={(e) => setWebSearch(e.target.checked)}
+                        disabled={busy}
+                      />
+                      <span>Tra web</span>
+                      <span className="nn-web-optin-badge">Tavily</span>
+                    </label>
+                    {webSearch && (
+                      <div className="nn-web-optin-explanation" data-testid="web-search-optin-explanation">
+                        Chỉ câu hỏi ngắn của lượt này được gửi đến công cụ tìm kiếm Tavily; không gửi vị trí GPS hay lịch sử trò chuyện. Không nhập thông tin cá nhân.
+                      </div>
+                    )}
+                  </div>
+
+                  <form
+                    className="nn-composer"
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }}
+                  >
+                    <input
+                      ref={inputRef}
+                      type="text"
+                      data-testid="guided-input"
+                      value={inputText}
+                      onChange={(e) => setInputText(e.target.value)}
+                      disabled={busy}
+                      placeholder="Bạn muốn điều chỉnh gì cho chuyến đi?"
+                      aria-label="Thêm yêu cầu cho chuyến đi"
+                    />
+                    <button
+                      type="submit"
+                      data-testid="guided-send-btn"
+                      className="nn-send"
+                      disabled={busy || !inputText.trim()}
+                      aria-label="Gửi yêu cầu"
+                    >
+                      <span className="nn-send-label">Gửi tin nhắn</span>
+                      <ArrowGlyph />
+                    </button>
+                  </form>
+                </>
+              )}
+            </div>
+          </section>
+
+          {/* RIGHT TOUR COLUMN */}
+          <section
+            ref={tourSectionRef}
+            id="guided-tour-section"
+            data-focus-fallback
+            tabIndex={-1}
+            className={`nn-tour-col${tourVisible ? '' : ' nn-hidden'}`}
+          >
+            <div className="nn-tour-col-header">
+              <h2 className="nn-tour-heading">Chuyến đi của bạn</h2>
+              <div className="nn-view-mode-toggle" role="group" aria-label="Chế độ hiển thị tuyến">
+                <button
+                  type="button"
+                  data-testid="view-mode-schematic-btn"
+                  className={`nn-view-mode-btn${viewMode === 'schematic' ? ' active' : ''}`}
+                  aria-pressed={viewMode === 'schematic'}
+                  onClick={() => setViewMode('schematic')}
+                >
+                  Sơ đồ
+                </button>
+                <button
+                  type="button"
+                  data-testid="pilot-map-toggle"
+                  data-legacy-testid="view-mode-map-btn"
+                  className={`nn-view-mode-btn${viewMode === 'map' ? ' active' : ''}`}
+                  aria-pressed={viewMode === 'map'}
+                  onClick={() => setViewMode('map')}
+                >
+                  Bản đồ
+                </button>
+              </div>
+            </div>
+
+            {viewMode === 'map' ? (
+              <div className="nn-map-container-wrap">
                 <PilotMap
                   stops={stops}
                   onFallbackToSchematic={() => setViewMode('schematic')}
                 />
-              ) : (
-                <div className="nn-canvas">
-                  {[40, 118, 196, 274, 352].map((top, i) => (
-                    <div key={top} className={`nn-road${i % 2 ? ' short' : ''}`} style={{ top }} />
-                  ))}
-                  {showTour && stops.length > 0 ? (
-                    <>
-                      <div className="nn-line" style={{ left: '45.2%', top: `calc(${nodeTop(0, stops.length)}% + 20px)`, height: stops.length > 1 ? `${nodeTop(stops.length - 1, stops.length) - nodeTop(0, stops.length)}%` : 0 }} />
-                      {stops.map((stop, idx) => {
-                        const top = nodeTop(idx, stops.length);
-                        const left = idx % 2 === 0;
-                        return (
-                          <React.Fragment key={stop.venue_id || idx}>
-                            <div className={`nn-node${idx === stops.length - 1 && stops.length > 1 ? ' last' : ''}`} style={{ left: '45.2%', top: `${top}%` }}>{idx + 1}</div>
-                            <div
-                              className="nn-tag"
-                              title={stop.name}
-                              style={{ top: `calc(${top}% + 6px)`, ...(left ? { right: 'calc(54.8% + 26px)' } : { left: 'calc(45.2% + 26px)' }) }}
-                            >
-                              {stop.name}
-                            </div>
-                          </React.Fragment>
-                        );
-                      })}
-                      <ol className="nn-sr">
-                        {stops.map((stop, idx) => (
-                          <li key={stop.venue_id || idx}>{idx + 1}. {stop.name}{stop.arrive ? `, ${stop.arrive}` : ''}</li>
-                        ))}
-                      </ol>
-                    </>
-                  ) : (
-                    <div className="nn-canvas-note">Sơ đồ thứ tự điểm dừng sẽ hiện sau khi bạn xác nhận lịch trình.</div>
-                  )}
-                  <p className="nn-caption">Sơ đồ thứ tự điểm dừng, không phải bản đồ thật.</p>
-                </div>
-              )}
-              <div className="nn-tip">
-                <b>Lưu ý</b>
-                <span>Giá, giờ mở cửa lấy theo nguồn, chưa kiểm chứng; hãy kiểm tra lại.</span>
               </div>
-            </aside>
-          </div>
-        </section>
-      </main>
+            ) : (
+              <div className="nn-tour-content-scroll">
+                {/* Hero Card */}
+                <div className="nn-hero-card">
+                  <div className="nn-hero-tag">
+                    ✦ {showTour ? (stops[0]?.district ? `HANOI AFTER HOURS · ${stops[0].district.toUpperCase()}` : 'HANOI AFTER HOURS') : 'HANOI AFTER HOURS'}
+                  </div>
+                  <h3 className="nn-hero-title">
+                    {showTour ? (tour.title || 'Đi một vòng, ngon một tối.') : 'Đi một vòng, ngon một tối.'}
+                  </h3>
+                  <div className="nn-hero-meta">
+                    {showTour
+                      ? `${stops[0]?.district || 'Hà Nội'} • ${stops[0]?.arrive || '18:00'} — ${stops[stops.length - 1]?.depart || stops[stops.length - 1]?.arrive || '20:30'}`
+                      : `${stops[0]?.district || 'Hai Bà Trưng'} • 18:00 — 20:30`}
+                  </div>
+                </div>
+
+                {/* 3-Column Metrics Card */}
+                <div className="nn-metrics-card">
+                  <div className="nn-metric-col">
+                    <div className="nn-metric-val">{showTour ? `${stops.length < 10 ? '0' : ''}${stops.length}` : '03'}</div>
+                    <div className="nn-metric-lbl">điểm dừng</div>
+                  </div>
+                  <div className="nn-metric-divider" />
+                  <div className="nn-metric-col">
+                    <div className="nn-metric-val">
+                      {showTour ? (distanceKm !== null ? `${distanceKm} km` : '2,5h') : '2,5h'}
+                    </div>
+                    <div className="nn-metric-lbl">
+                      {showTour && tour?.totals?.leg_source === 'provider_route' ? 'theo nguồn' : 'trải nghiệm'}
+                    </div>
+                  </div>
+                  <div className="nn-metric-divider" />
+                  <div className="nn-metric-col">
+                    <div className="nn-metric-val">
+                      {showTour ? (budgetDisplay || '≈ 450K') : '≈ 450K'}
+                    </div>
+                    <div className="nn-metric-lbl">
+                      {showTour ? (budgetVal !== null ? `mỗi người` : 'theo ngân sách') : 'mỗi người'}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Stop Cards List or Empty State */}
+                {!showTour ? (
+                  <div data-testid="tour-empty-panel" className="nn-empty-steps-list">
+                    {[
+                      ['01', '18:00 · MỞ ĐẦU', 'Trò chuyện & nêu ý', 'Cho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.'],
+                      ['02', '18:55 · MÓN CHÍNH', 'Xem lại & xác nhận', 'Kiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.'],
+                      ['03', '20:05 · TRÁNG MIỆNG', 'Nhận lịch trình & Maps', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.']
+                    ].map(([badge, stage, title, desc]) => (
+                      <div className="nn-editorial-stop-card" key={badge}>
+                        <div className="nn-stop-badge">{badge}</div>
+                        <div className="nn-stop-body">
+                          <div className="nn-stop-stage">{stage}</div>
+                          <h4 className="nn-stop-name">{title}</h4>
+                          <p className="nn-stop-desc">{desc}</p>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Dark CTA Card in empty state */}
+                    <div className="nn-dark-cta-card">
+                      <div className="nn-cta-header">
+                        <h4 className="nn-cta-title">Sẵn sàng cho một buổi tối ngon?</h4>
+                        <p className="nn-cta-desc">Lưu lại để cả nhóm cùng lên đường.</p>
+                      </div>
+                      <button
+                        type="button"
+                        className="nn-cta-btn disabled"
+                        disabled
+                      >
+                        Lưu chuyến đi →
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <GuidedTimeline
+                      tour={tour}
+                      allergies={currentAllergies}
+                      lockedStops={lockedVenueIds}
+                      onReplaceStop={handleInitiateReplace}
+                      onChangeStop={() => {
+                        if (stops.length > 0) handleInitiateReplace(stops[0]);
+                      }}
+                      onAdjustStops={() => handleFreeFormEdit({ id: 'adjust_stops', label: 'số lượng quán' })}
+                      onRestart={handleRestart}
+                    />
+                  </>
+                )}
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
 
       {/* Stop Replacement Modal (Server Diff & Lock support) */}
       <ReplaceDiffModal
