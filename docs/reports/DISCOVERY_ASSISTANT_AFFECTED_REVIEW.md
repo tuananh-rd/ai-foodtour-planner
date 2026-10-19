@@ -1,13 +1,14 @@
 # Báo cáo Đánh giá của Người thực hiện Bị ảnh hưởng (Affected-Implementer Review) — Trợ lý Khám phá (Discovery-First Assistant)
 
-**Thời gian lập báo cáo:** 2026-10-19T21:52:00+07:00  
+**Thời gian lập báo cáo ban đầu:** 2026-10-19T21:52:00+07:00  
+**Cập nhật Phụ lục (PilotMap CSS fix df4b5df):** 2026-10-19T21:55:00+07:00  
 **Người đánh giá:** Antigravity (Frontend & QA Implementer)  
 **Người điều phối / Tích hợp:** Codex (Coordinator & Backend/Contracts Owner)  
-**Nhiệm vụ:** `task_ec40383c169b` | **Dispatch:** `ctx_bf18ef638e8d`  
-**Nhánh / Commit gốc đánh giá:** `foodtour-claude-coordinator` tại `2d54e49` (kế thừa tích hợp `c7091c5` / `cdd4c46`)  
+**Nhiệm vụ:** `task_ec40383c169b` & `task_78f4c69218f8` | **Dispatch:** `ctx_bf18ef638e8d` & `ctx_a742b810392b`  
+**Nhánh / Commit gốc đánh giá:** `foodtour-claude-coordinator` tại `702ce92` (bao gồm fix `df4b5df`, `2d54e49`, `c7091c5`)  
 **Hợp đồng mục tiêu:** `docs/DISCOVERY_ASSISTANT_CONTRACT.md` (`discovery-v1`)  
 **Yêu cầu cơ sở:** `docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md`  
-**Phạm vi:** Đánh giá đọc duy nhất (Read-only review) đối với các thay đổi tích hợp frontend, định tuyến Maps, HTTP client, và việt hoá yếu tố chưa xác minh.  
+**Phạm vi:** Đánh giá đọc duy nhất (Read-only source review) đối với các thay đổi tích hợp frontend, định tuyến Maps, HTTP client, việt hoá và khôi phục CSS bản đồ PMTiles độc lập.  
 
 ---
 
@@ -90,6 +91,50 @@ Bộ kiểm thử `qa/discovery-assistant/targeted_fixes_smoke.mjs` chạy trự
 
 ---
 
-## 4. Kết luận
+## 4. Kết luận Đợt 1
 
-- Người thực hiện bị ảnh hưởng (Antigravity) xác nhận mã nguồn tại commit `2d54e49` của nhánh chính là hoàn toàn ổn định, chặt chẽ và sẵn sàng để Điều phối viên Codex tiến hành các bước kiểm tra biên dịch sản xuất và chạy bộ kiểm thử tích hợp E2E toàn diện.
+- Người thực hiện bị ảnh hưởng (Antigravity) xác nhận mã nguồn tại commit `2d54e49` của nhánh chính là hoàn toàn ổn định, chặt chẽ về mặt logic, Maps URLs, HTTP client và việt hoá.
+
+---
+
+## 5. Phụ lục Đánh giá Soi chiếu Mã nguồn đối với Bản vá Khôi phục CSS Bản đồ PMTiles (`df4b5df` / `702ce92`)
+
+**Nhiệm vụ bổ sung:** `task_78f4c69218f8` | **Dispatch:** `ctx_a742b810392b`  
+**Mục tiêu soi chiếu:** Commit `df4b5df` trên kho gốc `702ce92` (`frontend/app/components/v2/guided/PilotMap.jsx`, `frontend/app/components/v2/guided/pilot-map.css`, `tools/probe_discovery_ui.mjs`).
+
+### 5.1 Bối cảnh thực tế từ kiểm định trình duyệt (Browser Runtime Diagnostic Context)
+- Trong đợt chạy kiểm thử tự động thực tế trên trình duyệt môi trường sản xuất (`tools/probe_discovery_ui.mjs`) tại commit `2d54e49`:
+  - 62/63 assertions đã đạt (PASS).
+  - Tuy nhiên, 1 trường hợp thất bại do lỗi uncaught-JS và ảnh chụp màn hình ghi nhận bản đồ PMTiles bị chiều cao bằng 0 (zero height / unstyled) mặc dù mạng phản hồi HTTP 206 tải tệp `.pmtiles` thành công, dẫn tới nghiệm thu địa lý (geographic acceptance) bị đánh giá là FAIL.
+  - *Nguyên nhân cốt lõi:* Khi xoá tệp mồ côi `online-assistant.css` trong đợt dọn dẹp Tavily trước đó, các luật CSS định kiểu khung bản đồ PMTiles bị loại bỏ theo, khiến thẻ chứa canvas `[data-testid="pilot-map-canvas"]` bị sụp chiều cao về 0px.
+
+### 5.2 Soi chiếu chi tiết bản vá mã nguồn `df4b5df`
+1. **Tạo mới tệp kiểu dáng độc lập `frontend/app/components/v2/guided/pilot-map.css`:**
+   - Khôi phục nguyên vẹn và độc lập các bộ chọn CSS của bản đồ từ tệp cũ `online-assistant.css` (từ dòng 212 trở đi).
+   - **Tuyệt đối không chứa bất kỳ luật nào của Tavily hay tính năng tra web đã ngừng sử dụng.**
+   - Khung chứa chính `.nn-pilot-map-container`: thiết lập `width: 100%`, `flex: 1`, `min-height: 360px`, `background: #EBF2ED`, `border-radius: 16px`, `display: flex; flex-direction: column`.
+   - Khung canvas `.nn-map-canvas-wrapper`: thiết lập `width: 100%`, `flex: 1`, **`min-height: 340px`**, `position: relative`. Kích thước `min-height: 340px` này giải quyết dứt điểm lỗi sụp chiều cao và hoàn toàn thoả mãn điều kiện kiểm thử mới `height >= 250 && width >= 250`.
+   - Thanh điều khiển `.nn-map-controls-bar`: căn chỉnh flex, nền mờ kính `rgba(255, 255, 255, 0.85)` với `backdrop-filter: blur(4px)`.
+   - Nút bật/tắt điểm dừng `.nn-map-marker-toggle-btn` và cảnh báo ngoài khu vực `.nn-map-coverage-warning`.
+   - Điểm đánh dấu `.nn-map-marker`: kích thước 26x26px tròn, màu xanh lục `#166B52`, viền trắng, đổ bóng `box-shadow: 0 2px 6px rgba(0,0,0,0.25)`, hiệu ứng hover phóng to 1.15x; lớp `.nn-map-marker.last` đổi màu san hô `#E65100` cho điểm đến cuối.
+   - Cửa sổ thông tin nổi `.maplibregl-popup-content` và các phần tử con `.nn-map-popup-title`, `.nn-map-popup-addr`, `.nn-map-popup-link`.
+   - Dòng ghi nhận bản quyền `.nn-map-attribution`: hiển thị bản quyền OpenStreetMap và Protomaps minh bạch, ngày cập nhật dữ liệu `2026-10-18`.
+   - Khung trạng thái dự phòng khi lỗi `.nn-map-fallback-banner`.
+   - Lớp trợ năng đọc màn hình `.sr-only` hỗ trợ danh sách `ol` ẩn hiển thị nhưng đầy đủ cho bộ đọc màn hình.
+
+2. **Tích hợp trong `PilotMap.jsx`:**
+   - Dòng 5: bổ sung `import './pilot-map.css';` trực tiếp bên dưới import của thư viện MapLibre.
+   - Nhập khẩu kiểu dáng cục bộ trực tiếp bảo đảm component luôn tự chứa đầy đủ CSS cần thiết mà không phụ thuộc vào bất kỳ tệp CSS bên ngoài nào.
+
+3. **Cập nhật công cụ kiểm định `tools/probe_discovery_ui.mjs`:**
+   - Khử trùng lặp chuỗi nhạy cảm (token/hash) trong thông điệp lỗi ngoại lệ trình duyệt bằng `replace(/[a-f0-9]{32,64}/gi, '[redacted]')`.
+   - Đo lường kích thước hộp thực tế `getBoundingClientRect().height >= 250 && getBoundingClientRect().width >= 250` để đảm bảo bản đồ thực sự hiển thị có kích thước trên màn hình trước khi xác nhận bài kiểm tra.
+
+### 5.3 Đánh giá cản trở & Kết luận Phê duyệt Mã nguồn (Source Verdict)
+- **Không có cản trở kỹ thuật (0 Blockers):** Các bộ chọn CSS khớp 100% với tên lớp trong cấu trúc DOM của `PilotMap.jsx`. Cú pháp CSS sạch, đóng gói tốt, không gây xung đột với hệ thống Warm Editorial chung.
+- **Phê duyệt của Người thực hiện bị ảnh hưởng:** **CHẤP THUẬN MÃ NGUỒN (SOURCE APPROVAL GRANTED)** đối với bản vá `df4b5df`.
+- **Tuyên bố rõ ràng về phạm vi giới hạn (Explicit Source Review Non-Claim):**
+  - Đánh giá này thuần tuý là **soi chiếu mã nguồn tĩnh (source inspection)** và xác nhận tính toàn vẹn kiến trúc.
+  - Đánh giá này **KHÔNG PHẢI là nghiệm thu thời gian chạy (runtime acceptance) hay thay thế kiểm định trình duyệt thực tế**.
+  - Toàn bộ quyền sở hữu mã nguồn kho gốc, biên dịch sản xuất và chạy kiểm định chẩn đoán browser/map E2E thực tế do Điều phối viên Codex độc lập thực thi.
+
