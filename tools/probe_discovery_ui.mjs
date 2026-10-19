@@ -17,14 +17,14 @@ if(!free)throw Error('CDP port occupied; no process stopped');
 fs.mkdirSync(out,{recursive:true});
 const evidence={web,api,source_commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),backend_commit:health.build_commit,
   dataset:'synthetic',provider:'rules',liveGemini:'NOT TESTED',checks:[],screenshots:[],errors:[],remoteOrigins:[],ranges:[],statuses:[]};
-const record=(name,pass)=>{evidence.checks.push({name,pass:!!pass});console.log(JSON.stringify({name,pass:!!pass}));};
+const record=(name,pass)=>{evidence.checks.push({name,pass:!!pass,...(!pass?{diagnostic:{status:view?.status,reply:view?.reply,tour_status:view?.tour?.status}}:{})});console.log(JSON.stringify({name,pass:!!pass}));};
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking',
   '--enable-unsafe-swiftshader',`--remote-debugging-port=${port}`,`--user-data-dir=${fs.mkdtempSync(path.join(os.tmpdir(),'discovery-qa-'))}`,'about:blank'],{stdio:'ignore',windowsHide:true});
 let ws,seq=0,view=null,posts=0;const pending=new Map();
 try{
  let target;await until(async()=>{target=(await(await fetch(`http://127.0.0.1:${port}/json`)).json()).find(x=>x.type==='page');return target;});
  ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
- const cdp=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
+ const cdp=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;const timer=setTimeout(()=>{pending.delete(id);reject(Error('CDP deadline '+method));},8000);pending.set(id,{resolve:x=>{clearTimeout(timer);resolve(x)},reject:x=>{clearTimeout(timer);reject(x)}});ws.send(JSON.stringify({id,method,params}));});
  ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p?.reject(Error(m.error.message)):p?.resolve(m.result);return;}
    if(m.method==='Network.requestWillBeSent'){
      const u=new URL(m.params.request.url);if(/^https?:$/.test(u.protocol)&&![new URL(web).origin,new URL(api).origin].includes(u.origin)&&!evidence.remoteOrigins.includes(u.origin))evidence.remoteOrigins.push(u.origin);
@@ -45,7 +45,7 @@ try{
  async function action(id){const before=posts;await click(sel(id));await until(()=>posts>before);await idle();}
  async function shot(name){await ev('window.scrollTo(0,0)');const x=await cdp('Page.captureScreenshot',{format:'png'});fs.writeFileSync(path.join(out,name+'.png'),Buffer.from(x.data,'base64'));evidence.screenshots.push(name+'.png');return x.data;}
  await cdp('Page.enable');await cdp('Runtime.enable');await cdp('Network.enable');
- for(const width of [1440,390]){
+ for(const width of (process.env.DISCOVERY_WIDTHS||'1440,390').split(',').map(Number)){
    view=null;await cdp('Emulation.setDeviceMetricsOverride',{width,height:width===1440?1024:844,deviceScaleFactor:1,mobile:width===390});
    await cdp('Page.navigate',{url:web});await until(()=>exists('discovery-input'));await idle();
    if(width===390){await click(sel('guided-reset-btn'));await idle();}
