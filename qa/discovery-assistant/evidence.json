@@ -1,0 +1,175 @@
+{
+  "testedAt": "2026-10-19T13:05:32.846Z",
+  "targetContract": "discovery-v1",
+  "ports": {
+    "web": 13600,
+    "mockApi": 18600,
+    "cdp": 19800
+  },
+  "checks": [
+    {
+      "id": "PREFLIGHT_PORTS",
+      "name": "Isolated test ports 13600, 18600, 19800 are free",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MOCK_API_RUNNING",
+      "name": "Mock API listening on http://127.0.0.1:18600",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "FRONTEND_BUILD",
+      "name": "Next.js build succeeded in scratch environment",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "FRONTEND_RUNNING",
+      "name": "Frontend responding on http://127.0.0.1:13600",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "INITIAL_LAYOUT_BRAND",
+      "name": "Brand is MĂM MĂM and input is ready",
+      "pass": true,
+      "details": {
+        "brand": "MĂM MĂM",
+        "hasTavily": false,
+        "hasUnderstoodChecklist": false,
+        "hasInput": true,
+        "hasSendBtn": true
+      }
+    },
+    {
+      "id": "TAVILY_REMOVED",
+      "name": "Tavily web search opt-in UI is completely removed",
+      "pass": true,
+      "details": {
+        "hasTavily": false
+      }
+    },
+    {
+      "id": "CHECKLIST_REMOVED",
+      "name": "Main-chat \"Mình hiểu là\" checklist matrix is completely removed",
+      "pass": true,
+      "details": {
+        "hasUnderstoodChecklist": false
+      }
+    },
+    {
+      "id": "RESULTS_CARD_METADATA",
+      "name": "Restaurant card displays badge, name, venue_range price semantics and source provenance link",
+      "pass": true,
+      "details": {
+        "name": "Phở 10 Lý Quốc Sư",
+        "badge": "A",
+        "priceText": true,
+        "hasSelectBtn": true,
+        "hasCompareBtn": true,
+        "hasDetailsBtn": true,
+        "hasSourceLink": true
+      }
+    },
+    {
+      "id": "SELECTION_ADD",
+      "name": "Quán Phở 10 được thêm thành công vào danh sách tour cột phải",
+      "pass": true,
+      "details": {
+        "cardPresent": true,
+        "btnLockText": "🔓"
+      }
+    },
+    {
+      "id": "SELECTION_LOCK",
+      "name": "Nút khoá quán toggle thành trạng thái khoá (🔒)",
+      "pass": true,
+      "details": {
+        "lockState": "🔒"
+      }
+    },
+    {
+      "id": "COMPARISON_VIEW",
+      "name": "Bảng so sánh 2 quán hiển thị đầy đủ tiêu chí và lưu ý chưa xác minh",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "PROFILE_DRAWER_OPEN",
+      "name": "Ngăn kéo tuỳ chỉnh hồ sơ mở ra khi click ⚙ Tuỳ chỉnh chuyến đi",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "PROFILE_DRAWER_SAVE",
+      "name": "Hồ sơ lưu thành công và ngăn kéo đóng lại",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONFIRMATION_CARD_RENDERED",
+      "name": "Thẻ xác nhận hiển thị tóm tắt, lưu ý dị ứng/nguồn và nút xác nhận tường minh",
+      "pass": true,
+      "details": {
+        "hasWarnings": true,
+        "hasConfirmBtn": true,
+        "tourPresentBeforeConfirm": false
+      }
+    },
+    {
+      "id": "EXPLICIT_CONFIRM_GATE",
+      "name": "Sau khi nhấn nút xác nhận tường minh, lịch trình GuidedTimeline được tạo",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MAP_VIEW_TOGGLE",
+      "name": "Chuyển đổi sang chế độ Bản đồ (PilotMap) thành công",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONFLICT_409_HANDLED",
+      "name": "Lỗi xung đột 409 được thông báo và re-fetch trạng thái mới mà không tự động replay",
+      "pass": true,
+      "details": {
+        "errorHandled": true
+      }
+    },
+    {
+      "id": "MOBILE_390_NO_OVERFLOW",
+      "name": "Màn hình di động 390px không bị tràn ngang (scrollWidth <= 390)",
+      "pass": true,
+      "details": {
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasOverflow": false,
+        "tabsVisible": true
+      }
+    },
+    {
+      "id": "MOBILE_TABS_VISIBLE",
+      "name": "Thanh tab chuyển đổi trên di động hiển thị đầy đủ",
+      "pass": true,
+      "details": {
+        "bodyWidth": 390,
+        "scrollWidth": 390,
+        "hasOverflow": false,
+        "tabsVisible": true
+      }
+    },
+    {
+      "id": "ZOOM_200_REFLOW",
+      "name": "Reflow mượt mà ở độ phóng đại 200%, không phát sinh lỗi DOM",
+      "pass": true,
+      "details": {}
+    }
+  ],
+  "summary": {
+    "total": 20,
+    "passed": 20,
+    "failed": 0
+  }
+}

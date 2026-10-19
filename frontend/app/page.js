@@ -22,7 +22,7 @@ const ChatV2Layout = dynamic(() => import('./components/v2/chat/ChatV2Layout'), 
   loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FBF8F3' }} />,
 });
 
-const GuidedLayout = dynamic(() => import('./components/v2/guided/GuidedLayout'), {
+const DiscoveryLayout = dynamic(() => import('./components/v2/guided/DiscoveryLayout'), {
   ssr: false,
   loading: () => <div style={{ minHeight: '100vh', backgroundColor: '#FAF7F2' }} />,
 });
@@ -582,7 +582,7 @@ export default function Home() {
 
   if (isGuidedUi) {
     return (
-      <GuidedLayout
+      <DiscoveryLayout
         sessionId={sessionId}
         sessionToken={sessionToken}
         revision={revision}

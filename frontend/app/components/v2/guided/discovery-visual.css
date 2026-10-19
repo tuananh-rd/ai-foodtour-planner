@@ -1,0 +1,631 @@
+/* =========================================================================
+   DISCOVERY-FIRST ASSISTANT SCOPED VISUAL CSS (Warm Editorial Figma 1:145)
+   Adheres to docs/DISCOVERY_ASSISTANT_CONTRACT.md and warm editorial design.
+   ========================================================================= */
+
+/* Discovery Results Container */
+.nn-discovery-results {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 10px 0;
+  width: 100%;
+}
+
+.nn-discovery-results-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--nn-ink, #231815);
+  margin-bottom: 2px;
+}
+
+.nn-results-count-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #F9E1CF;
+  color: var(--nn-accent, #CF542F);
+}
+
+/* Restaurant Card */
+.nn-restaurant-card {
+  background: var(--nn-card, #FFFEFA);
+  border: 1px solid var(--nn-card-line, #EFE7E0);
+  border-radius: 16px;
+  padding: 14px 16px;
+  box-shadow: 0 4px 16px rgba(112, 41, 20, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.nn-restaurant-card:hover {
+  border-color: #E2D4C8;
+  box-shadow: 0 6px 20px rgba(112, 41, 20, 0.08);
+}
+
+.nn-restaurant-card.selected {
+  border-color: var(--nn-accent, #CF542F);
+  background: #FFFAF6;
+}
+
+.nn-restaurant-card-top {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.nn-restaurant-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F9E1CF;
+  color: var(--nn-accent, #CF542F);
+  font-size: 13.5px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  flex: none;
+}
+
+.nn-restaurant-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.nn-restaurant-name-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nn-restaurant-name {
+  font-size: 15.5px;
+  font-weight: 700;
+  color: var(--nn-ink, #231815);
+  margin: 0;
+  line-height: 1.25;
+  word-break: break-word;
+}
+
+.nn-restaurant-address {
+  font-size: 12.5px;
+  color: var(--nn-mute, #7A625A);
+  margin: 0;
+  line-height: 1.35;
+  word-break: break-word;
+}
+
+.nn-dish-tags-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-top: 2px;
+}
+
+.nn-dish-tag {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: #F4ECE6;
+  color: #4A352F;
+  font-weight: 500;
+}
+
+.nn-restaurant-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding-top: 6px;
+  border-top: 1px solid #F5ECE4;
+  font-size: 12px;
+  color: #6C554E;
+}
+
+.nn-restaurant-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.nn-restaurant-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 2px;
+}
+
+.nn-restaurant-btns {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nn-action-chip-btn {
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 999px;
+  border: 1px solid #E2D7CC;
+  background: #FFFDFB;
+  color: #231815;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.nn-action-chip-btn:hover:not([disabled]) {
+  background: #F7EFE9;
+  border-color: #CF542F;
+  color: #CF542F;
+}
+
+.nn-action-chip-btn.primary {
+  background: #CF542F;
+  border-color: #CF542F;
+  color: #FFFFFF;
+}
+
+.nn-action-chip-btn.primary:hover:not([disabled]) {
+  background: #B33D1E;
+}
+
+.nn-action-chip-btn.active {
+  background: #E8F5E9;
+  border-color: #A5D6A7;
+  color: #2E7D32;
+}
+
+.nn-action-chip-btn[disabled] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.nn-source-link {
+  font-size: 11px;
+  color: #8C7872;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.nn-source-link:hover {
+  text-decoration: underline;
+  color: #CF542F;
+}
+
+/* Comparison View Card */
+.nn-comparison-card {
+  background: var(--nn-card, #FFFEFA);
+  border: 1px solid #EFE7E0;
+  border-radius: 16px;
+  padding: 16px;
+  margin: 10px 0;
+  box-shadow: 0 4px 16px rgba(112, 41, 20, 0.04);
+}
+
+.nn-comparison-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--nn-ink, #231815);
+  margin: 0 0 10px 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nn-comparison-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+}
+
+.nn-comparison-col {
+  background: #FAF5F0;
+  border: 1px solid #EFE4DC;
+  border-radius: 12px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nn-comparison-col-header {
+  font-size: 14px;
+  font-weight: 700;
+  color: #231815;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nn-comparison-col-item {
+  font-size: 12px;
+  color: #6C554E;
+  line-height: 1.35;
+}
+
+/* Selection List in Tour Column */
+.nn-selection-container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 100%;
+}
+
+.nn-selection-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2px;
+}
+
+.nn-selection-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #231815;
+  margin: 0;
+}
+
+.nn-selection-badge {
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #F9E1CF;
+  color: #CF542F;
+}
+
+.nn-selected-card {
+  background: #FFFEFA;
+  border: 1px solid #EFE7E0;
+  border-radius: 14px;
+  padding: 12px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  box-shadow: 0 2px 8px rgba(112, 41, 20, 0.03);
+}
+
+.nn-selected-card-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.nn-selected-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #231815;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nn-selected-sub {
+  font-size: 11.5px;
+  color: #7A625A;
+  margin: 0;
+}
+
+.nn-selected-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: none;
+}
+
+.nn-icon-action-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid #EAE2D9;
+  background: #FFF;
+  color: #6C554E;
+  display: grid;
+  place-items: center;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nn-icon-action-btn:hover:not([disabled]) {
+  border-color: #CF542F;
+  color: #CF542F;
+  background: #FFF5EE;
+}
+
+.nn-icon-action-btn.locked {
+  background: #FFF0E6;
+  border-color: #CF542F;
+  color: #CF542F;
+}
+
+/* Plan Trigger Button in Selection Column */
+.nn-plan-trigger-card {
+  background: #312820;
+  border-radius: 16px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: 0 6px 20px rgba(49, 40, 32, 0.25);
+  margin-top: 4px;
+}
+
+.nn-plan-trigger-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin: 0;
+}
+
+.nn-plan-trigger-desc {
+  font-size: 12px;
+  color: #A89F9C;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.nn-plan-trigger-btn {
+  height: 42px;
+  border-radius: 12px;
+  background: #FAF4EE;
+  color: #231815 !important;
+  border: 1px solid #E2D7CC;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+  width: 100%;
+}
+
+.nn-plan-trigger-btn:hover:not([disabled]) {
+  background: #EDE2D5;
+}
+
+.nn-plan-trigger-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Confirmation Card in Chat Stream */
+.nn-discovery-confirmation {
+  background: #FFFDF9;
+  border: 1.5px solid #F0B89C;
+  border-radius: 18px;
+  padding: 16px 18px;
+  margin: 8px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  box-shadow: 0 6px 20px rgba(207, 84, 47, 0.08);
+}
+
+.nn-confirm-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.nn-confirm-icon {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.nn-confirm-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: #231815;
+  margin: 0 0 4px 0;
+}
+
+.nn-confirm-summary-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 4px 0;
+}
+
+.nn-confirm-summary-chip {
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: #F9EFE7;
+  color: #4A352F;
+  font-weight: 600;
+}
+
+.nn-confirm-warnings {
+  background: #FFF6EC;
+  border: 1px solid #F1D9B8;
+  border-radius: 10px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nn-confirm-warning-title {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: #8A4B12;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nn-confirm-warning-text {
+  font-size: 12px;
+  color: #6B3B0E;
+  margin: 0;
+  line-height: 1.35;
+}
+
+.nn-confirm-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.nn-confirm-btn-primary {
+  height: 40px;
+  padding: 0 20px;
+  border-radius: 10px;
+  border: none;
+  background: #CF542F;
+  color: #FFFFFF;
+  font-size: 13.5px;
+  font-weight: 700;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: background 0.15s ease;
+}
+
+.nn-confirm-btn-primary:hover:not([disabled]) {
+  background: #B33D1E;
+}
+
+.nn-confirm-btn-secondary {
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 10px;
+  border: 1px solid #E2D7CC;
+  background: transparent;
+  color: #4A352F;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nn-confirm-btn-secondary:hover:not([disabled]) {
+  background: #F7EFE9;
+}
+
+/* Collapsed Profile Drawer / Section */
+.nn-profile-panel-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #FFFDF9;
+  border: 1px solid #EAE2D9;
+  font-size: 12px;
+  font-weight: 600;
+  color: #4A352F;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nn-profile-panel-toggle:hover {
+  background: #F9EFE7;
+  color: #CF542F;
+}
+
+.nn-profile-drawer {
+  background: #FFFEFA;
+  border: 1px solid #EAE2D9;
+  border-radius: 16px;
+  padding: 14px 16px;
+  margin: 8px 0 12px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.nn-profile-drawer-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 8px;
+}
+
+.nn-profile-field {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nn-profile-field label {
+  font-size: 11px;
+  font-weight: 700;
+  color: #8C7872;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nn-profile-field input,
+.nn-profile-field select {
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid #E2D7CC;
+  background: #FFF;
+  font-size: 12.5px;
+  color: #231815;
+}
+
+.nn-profile-field input:focus,
+.nn-profile-field select:focus {
+  outline: 2px solid #CF542F;
+  border-color: #CF542F;
+}
+
+/* Secondary Diagnostics */
+.nn-diagnostics-details {
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.02);
+  border: 1px solid #F0E8E2;
+  font-size: 11.5px;
+  color: #7A625A;
+}
+
+.nn-diagnostics-details summary {
+  cursor: pointer;
+  font-weight: 600;
+  user-select: none;
+}
+
+.nn-diagnostics-content {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  font-family: monospace;
+  font-size: 11px;
+}
