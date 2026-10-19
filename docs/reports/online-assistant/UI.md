@@ -4,8 +4,8 @@
 - **Implementer:** Antigravity (dispatched frontend worker)
 - **Coordinator / Integrator:** Codex (`term_24c3a210-7070-4dd5-b703-f12f516a70b0`)
 - **Authority & Specification:** `docs/design/ONLINE_ASSISTANT_UI_SCOPE.md`, `contracts/v1/openapi.json`, `docs/design/SVG_FIDELITY_SPEC.md`
-- **Task ID:** `task_ff3a8db281f6`
-- **Dispatch ID:** `ctx_c59210e209bb`
+- **Task ID:** `task_0cd2013b89cc`
+- **Dispatch ID:** `ctx_204ca0c55369`
 
 ---
 
@@ -89,6 +89,10 @@ Per the current implementation authority (2026-10-19) and dispatch instructions,
   - Escaped text rendering: never uses `dangerouslySetInnerHTML`.
   - Non-HTTPS or localhost links are sanitized out of clickable anchor elements.
 - **Mock Mode Honesty:** In mock/preview mode, `chatTurn` returns honest `{ status: 'unavailable', sources: [], fetched_at: null, credits: 0, cached: false }` without fabricating fake citations.
+- **Mobile Chat Tab Retention (PRODUCT P1):** In `GuidedLayout.jsx`, `executeTurn` requires `hasTourReadyBlock` (`res.reply?.blocks?.some(b => b.type === 'tour_ready')`) before switching the mobile view to the tour tab. On read-only web search turns and ordinary chat turns after a tour has been planned, `res.tour` remains unchanged and the view stays on the chat tab, ensuring web search results and retry buttons are never abruptly hidden from mobile users.
+- **Truthful Status Copy (OA-UI-007):** In `OnlineSearchResults.jsx`:
+  - `disabled`: Truthfully informs the user that web search is currently not enabled or not configured, without incorrectly claiming the dataset is synthetic.
+  - `quota`: Accurately states that limits may be daily, monthly, or provider safety guard limits rather than daily-only.
 
 ### 3.4. Local Interactive Pilot Map (`PilotMap.jsx`)
 - **Route Panel Integration:** Placed inside `<aside className="nn-route">` replacing `.nn-canvas` when the `"Bản đồ"` view mode is selected. Preserves panel height (615px desktop), token styles, and the tip box below.
@@ -228,10 +232,12 @@ The review items from coordinator reviews have been audited and implemented acro
 9. **HTTP 200 Search Error Retry (`msg_f85f4fb4e860`, `msg_92055f58d7bc`):** Stored originating `query` directly on `web_search` block and assistant message. Added inline retry button calling `onRetry(block.query)` to replay search with `webSearch: true` using immutable originating query without falling back to unrelated drafts or transport errors.
 10. **MapLibre 6 Web Worker Bundling & Provenance (`msg_bf938d69f59e`, `msg_e3dafa936cac`):** Configured upstream worker URL pattern with versioned local asset fallback `/maps/maplibre-gl-worker-6.15.0.mjs` (518,806 bytes, exact SHA256 `1c69066368331aae63967ed24a9affcf962cf55fcc6d8f532a8b040f736dbcfa`) with full 3-Clause BSD license text documented in `frontend/public/maps/README.md`.
 11. **API Origin Isolation (`getApiBaseUrl`):** Restored strict `process.env.NEXT_PUBLIC_API_URL || 'http://127.0.0.1:18000'` without runtime `window` or URL query parsing overrides, preventing origin injection regressions.
+12. **Mobile Chat Tab Retention (PRODUCT P1):** Gated mobile auto-switching to the tour tab in `GuidedLayout.jsx` strictly on `tour_ready` block presence in `res.reply`, preventing read-only web search turns and ordinary post-tour conversation from abruptly switching away from the active mobile chat view.
+13. **Truthful Generic Unavailable/Quota Copy (OA-UI-007):** Replaced daily-only and synthetic dataset assertions in `OnlineSearchResults.jsx` with truthful generic wording covering unconfigured accounts/flags and daily, monthly, or provider safety guard limits.
 
 > [!IMPORTANT]
 > **Review Gate Boundaries:**
-> While technical fixes for all 11 items have been committed and verified against unit/contract test suites, this report acknowledges that automated tests and browser probes represent smoke evidence. Extended manual accessibility verification across multiple assistive technologies, exhaustive offline tile caching scenarios, and extended real-world network partition recovery remain operational QA scopes rather than fully settled gates.
+> While technical fixes for all 13 items have been committed and verified against unit/contract test suites, this report acknowledges that automated tests and browser probes represent smoke evidence. Extended manual accessibility verification across multiple assistive technologies, exhaustive offline tile caching scenarios, and extended real-world network partition recovery remain operational QA scopes rather than fully settled gates.
 
 ---
 
