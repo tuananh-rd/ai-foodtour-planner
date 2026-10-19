@@ -19,3 +19,10 @@ Environment: Windows, Chrome155.0.8059.80 (headless with software WebGL test fla
 Public asset control: Node PMTiles reader returned a166,951-byte tile for13/6504/3606 with the expected pilot bounds. Actual same-origin127-byte Range request returned206. Thus asset availability/header decoding alone does not establish renderer readiness. Official worker setup guidance: https://maplibre.org/maplibre-gl-js/docs/ (ESM/Next.js section) and https://github.com/maplibre/maplibre-gl-js/blob/main/docs/guides/v5-to-v6-migration-guide.md.
 
 UIR1 task task_6735006d7387 / ctx_fc855380ac48 was injected once into the existing Antigravity terminal. It owns the same bounded frontend files and report/QA corrections. The previous worker_done settled its lifecycle but did not pass Codex review. Current-lifecycle ownership ACK was verified in msg_244048038228 after coordinator recovery; final review remains required. Tavily adapter task task_7091438b0cd8 is still queued; do not claim retrieval implementation complete.
+
+
+## UIR1 work-in-progress observation (not integrated acceptance)
+
+The worker's correctly configured3070/8070 synthetic/rules probe produced35 passing checks and PMTiles tile-range487845-605035, not just the header. Codex opened the actual1440 screenshot in the sibling integrated evidence folder: roads, Hoan Kiem lake and3 markers are visibly rendered. Thus the original renderer/initial-marker defects have a positive WIP retest. This run uses the older35-check probe and does not prove the newly added popup keyboard, HTTP200 retry, replacement or offline checks. Final commit/build and independent integration retest remain required.
+
+The sibling WIP still contained OA-UI-008 when reviewed; no security acceptance is granted by a visually working map. msg_de8938bd9c1b requires removing arbitrary API origin selection and restoring original configuration semantics. msg_5c7db434254e also requires mock revision advance and action+web flag422 parity. These are source-review findings, distinct from the earlier CORS test-configuration error. The current coordinator checkout has not integrated this WIP.
