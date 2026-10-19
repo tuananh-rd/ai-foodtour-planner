@@ -213,7 +213,7 @@ export default function OnlineSearchResults({ block, onRetry }) {
         {status === 'disabled' && (
           <div style={{ display: 'grid', gap: 6 }}>
             <p className="nn-web-search-message" data-testid="web-search-disabled-msg">
-              Dịch vụ tra cứu web chưa được cấu hình khóa API (Tavily). Hệ thống đang hoạt động theo dữ liệu thử nghiệm cục bộ.
+              Dịch vụ tra cứu web hiện chưa được bật hoặc chưa được cấu hình. Bạn vẫn có thể tiếp tục trò chuyện và lập lịch trình bình thường.
             </p>
             {renderRetryButton()}
           </div>
@@ -222,7 +222,7 @@ export default function OnlineSearchResults({ block, onRetry }) {
         {status === 'quota' && (
           <div style={{ display: 'grid', gap: 6 }}>
             <p className="nn-web-search-message" data-testid="web-search-quota-msg">
-              Dịch vụ tra cứu web đã hết hạn mức trong ngày. Bạn vẫn có thể tiếp tục trò chuyện và lập lịch trình bình thường.
+              Dịch vụ tra cứu web tạm thời đạt giới hạn hạn mức (theo ngày, tháng hoặc giới hạn bảo vệ của dịch vụ). Bạn vẫn có thể tiếp tục trò chuyện và lập lịch trình bình thường.
             </p>
             {renderRetryButton()}
           </div>

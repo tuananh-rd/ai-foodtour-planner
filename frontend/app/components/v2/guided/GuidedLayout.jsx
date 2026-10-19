@@ -336,8 +336,11 @@ export default function GuidedLayout({
         if (res.chat) setChatState(res.chat);
         if (res.tour) {
           setTour(res.tour);
-          // Auto switch to tour tab on mobile
-          if (!isDesktop) setActiveMobileTab('tour');
+          // Auto switch to tour tab on mobile ONLY when actual generation/replacement returns tour_ready block
+          const hasTourReadyBlock = Boolean(res.reply?.blocks?.some((b) => b.type === 'tour_ready'));
+          if (!isDesktop && hasTourReadyBlock) {
+            setActiveMobileTab('tour');
+          }
         }
         if (res.turn) setLatestTurnMeta(res.turn);
 
