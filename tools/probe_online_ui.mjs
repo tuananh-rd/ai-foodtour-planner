@@ -15,7 +15,7 @@ if(health.dataset_source!=='synthetic'||health.assistant_provider!=='rules')thro
 const free=await new Promise(resolve=>{const server=net.createServer();server.once('error',()=>resolve(false));server.listen(port,'127.0.0.1',()=>server.close(()=>resolve(true)));});
 if(!free)throw Error('Browser port occupied; no process stopped');
 fs.mkdirSync(out,{recursive:true});
-const evidence={web,api,build_commit:health.build_commit,dataset:'synthetic',provider:'rules',checks:[],screenshots:[],network:{remoteOrigins:[],pmtilesRanges:[]},limitations:['Tavily success/429 require separate explicitly mocked-provider checks; no live Tavily key.','This probe supplements the independent full regression suite.']};
+const evidence={web,api,ui_commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),build_commit:health.build_commit,dataset:'synthetic',provider:'rules',checks:[],screenshots:[],consoleErrors:[],network:{remoteOrigins:[],pmtilesRanges:[]},limitations:['Canvas creation alone does not prove geographic tiles rendered; inspect screenshots and tile requests.','Tavily success/429 require separate explicitly mocked-provider checks; no live Tavily key.','This probe supplements the independent full regression suite.']};
 const record=(name,pass,details)=>{const entry={name,pass:!!pass,...(details===undefined?{}:{details})};evidence.checks.push(entry);console.log(JSON.stringify(entry));};
 const scratch=fs.mkdtempSync(path.join(os.tmpdir(),'foodtour-online-ui-'));
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking','--enable-unsafe-swiftshader',`--remote-debugging-port=${port}`,`--user-data-dir=${scratch}`,'about:blank'],{stdio:'ignore',windowsHide:true});
@@ -25,6 +25,8 @@ try{
   ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
   const cdp=(method,params={})=>new Promise((resolve,reject)=>{const id=++seq;pending.set(id,{resolve,reject});ws.send(JSON.stringify({id,method,params}));});
   ws.onmessage=e=>{const m=JSON.parse(e.data);if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p?.reject(Error(m.error.message)):p?.resolve(m.result);return;}
+    if(m.method==='Runtime.consoleAPICalled'&&m.params.type==='error')evidence.consoleErrors.push((m.params.args||[]).map(a=>typeof a.value==='string'?a.value:a.description||'').join(' ').replace(/[a-f0-9]{32,64}/gi,'[redacted]').slice(0,700));
+    if(m.method==='Runtime.exceptionThrown')evidence.consoleErrors.push(String(m.params.exceptionDetails?.exception?.description||m.params.exceptionDetails?.text||'Browser exception').slice(0,700));
     if(m.method==='Network.requestWillBeSent'){const u=new URL(m.params.request.url);if(/^https?:$/.test(u.protocol)&&![new URL(web).origin,new URL(api).origin].includes(u.origin))origins.add(u.origin);}
     if(m.method==='Network.responseReceived'){
       if(/\/chat$/.test(m.params.response.url))chatResponses++;
@@ -32,7 +34,9 @@ try{
     }
   };
   const ev=async expression=>{const r=await cdp('Runtime.evaluate',{expression,returnByValue:true,awaitPromise:true});if(r.exceptionDetails)throw Error('UI evaluation failed');return r.result.value;};
-  const sel=id=>`[data-testid="${id}"]`;
+  const aliases={'online-search-toggle':'web-search-optin-checkbox','online-search-results':'web-search-card',
+    'pilot-map-toggle':'view-mode-map-btn','pilot-map-canvas':'map-canvas','pilot-markers-toggle':'map-marker-toggle-btn'};
+  const sel=id=>`[data-testid="${id}"]${aliases[id]?`,[data-testid="${aliases[id]}"]`:''}`;
   const exists=id=>ev(`!!document.querySelector(${JSON.stringify(sel(id))})`);
   async function click(selector){await ev(`document.querySelector(${JSON.stringify(selector)})?.scrollIntoView({block:'center'})`);const point=await ev(`(()=>{const e=document.querySelector(${JSON.stringify(selector)});if(!e||e.disabled)return null;const r=e.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);if(!point)throw Error('Missing or disabled control '+selector);await cdp('Input.dispatchMouseEvent',{type:'mousePressed',button:'left',clickCount:1,...point});await cdp('Input.dispatchMouseEvent',{type:'mouseReleased',button:'left',clickCount:1,...point});}
   async function idle(){await pause(120);await until(()=>ev(`!document.querySelector('[aria-busy="true"]')`));await pause(250);}
@@ -44,12 +48,13 @@ try{
   const range=await fetch(web+'/maps/hoankiem-20261018.pmtiles',{headers:{Range:'bytes=0-126'}});
   record('real PMTiles HTTP Range206/header',range.status===206&&(await range.arrayBuffer()).byteLength===127&&range.headers.get('content-range')==='bytes 0-126/2138597');
   const initial='tour3 quán quanh Hồ Gươm tối nay120 phút,500nghìn cho2người,thích phở và bún chả,dị ứng đậu phộng';
-  for(const [width,height] of [[1440,1024],[390,844]]){
+  for(const [width,height] of (process.env.OA_MAP_ONLY?[[1440,1024]]:[[1440,1024],[390,844]])){
     await cdp('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width===390});
     await cdp('Page.navigate',{url:web});await until(()=>exists('guided-input'));
     await ev('sessionStorage.clear()');await cdp('Page.reload');await until(()=>exists('guided-input'));await idle();
     await capture('empty-'+width);
     record('desktop/mobile no horizontal overflow '+width,await ev('document.documentElement.scrollWidth<=innerWidth'));
+    if(process.env.OA_MAP_ONLY){await click(sel('pilot-map-toggle'));await pause(5000);await capture('map-runtime-diagnostic');break;}
     await send(initial);await until(()=>exists('clarify-question-card'));
     record('attached Vietnamese request preserves allergy and slots '+width,await ev(`(()=>{const t=document.querySelector('[data-testid="understood-card"]')?.innerText||'';return ['Hồ Gươm','120','500','đậu phộng','phở','bún chả'].every(x=>t.includes(x));})()`));
     record('no tour before confirmation '+width,!(await exists('guided-timeline')));
@@ -61,7 +66,7 @@ try{
     record('free Maps URL actual navigation '+width,await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');if(!a)return false;const u=new URL(a.href);return ['google.com','www.google.com'].includes(u.hostname)&&u.pathname==='/maps/dir/'&&u.searchParams.get('api')==='1'&&!u.searchParams.has('key');})()`));
     await capture('tour-schematic-'+width);
     await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(3500);
-    record('actual geographic map canvas '+width,await ev(`!!document.querySelector('[data-testid="pilot-map-canvas"] canvas')`));
+    record('MapLibre canvas created (tile rendering requires visual review) '+width,await ev(`!!document.querySelector('[data-testid="pilot-map-canvas"] canvas,[data-testid="map-canvas"] canvas')`));
     record('attribution visible '+width,await ev(`(()=>{const t=document.querySelector('.nn-route')?.innerText||'';return /OpenStreetMap/.test(t)&&/Protomaps/.test(t);})()`));
     const markerCount=()=>ev(`document.querySelectorAll('.maplibregl-marker').length`);
     record('markers match tour '+width,(await markerCount())===3);

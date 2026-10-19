@@ -1,0 +1,180 @@
+{
+  "web": "http://127.0.0.1:3060",
+  "api": "http://127.0.0.1:8060",
+  "build_commit": "2389908e6f485f1c463d9cadb4b8e45a262d90f0",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "checks": [
+    {
+      "name": "real PMTiles HTTP Range206/header",
+      "pass": true
+    },
+    {
+      "name": "desktop/mobile no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "attached Vietnamese request preserves allergy and slots 1440",
+      "pass": true
+    },
+    {
+      "name": "no tour before confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "allergy warning before confirm 1440",
+      "pass": true
+    },
+    {
+      "name": "actual three-stop tour 1440",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL actual navigation 1440",
+      "pass": true
+    },
+    {
+      "name": "actual geographic map canvas 1440",
+      "pass": true
+    },
+    {
+      "name": "attribution visible 1440",
+      "pass": true
+    },
+    {
+      "name": "markers match tour 1440",
+      "pass": false
+    },
+    {
+      "name": "marker toggle off 1440",
+      "pass": true
+    },
+    {
+      "name": "marker toggle on 1440",
+      "pass": true
+    },
+    {
+      "name": "map no mobile overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "tour reload retained 1440",
+      "pass": true
+    },
+    {
+      "name": "missing Tavily key honest disabled 1440",
+      "pass": true
+    },
+    {
+      "name": "lookup keeps tour 1440",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 1440",
+      "pass": true
+    },
+    {
+      "name": "desktop/mobile no horizontal overflow 390",
+      "pass": true
+    },
+    {
+      "name": "attached Vietnamese request preserves allergy and slots 390",
+      "pass": true
+    },
+    {
+      "name": "no tour before confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "allergy warning before confirm 390",
+      "pass": true
+    },
+    {
+      "name": "actual three-stop tour 390",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL actual navigation 390",
+      "pass": true
+    },
+    {
+      "name": "actual geographic map canvas 390",
+      "pass": true
+    },
+    {
+      "name": "attribution visible 390",
+      "pass": true
+    },
+    {
+      "name": "markers match tour 390",
+      "pass": false
+    },
+    {
+      "name": "marker toggle off 390",
+      "pass": true
+    },
+    {
+      "name": "marker toggle on 390",
+      "pass": true
+    },
+    {
+      "name": "map no mobile overflow 390",
+      "pass": true
+    },
+    {
+      "name": "tour reload retained 390",
+      "pass": true
+    },
+    {
+      "name": "missing Tavily key honest disabled 390",
+      "pass": true
+    },
+    {
+      "name": "lookup keeps tour 390",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 390",
+      "pass": true
+    },
+    {
+      "name": "no external map/provider requests in deterministic UI lane",
+      "pass": true
+    },
+    {
+      "name": "map made real partial-content requests",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "empty-1440.png",
+    "clarify-1440.png",
+    "confirm-1440.png",
+    "tour-schematic-1440.png",
+    "tour-map-1440.png",
+    "web-disabled-1440.png",
+    "empty-390.png",
+    "clarify-390.png",
+    "confirm-390.png",
+    "tour-schematic-390.png",
+    "tour-map-390.png",
+    "web-disabled-390.png"
+  ],
+  "network": {
+    "remoteOrigins": [],
+    "pmtilesRanges": [
+      {
+        "status": 206,
+        "range": "bytes 0-16383/2138597"
+      },
+      {
+        "status": 206,
+        "range": "bytes 0-16383/2138597"
+      }
+    ]
+  },
+  "limitations": [
+    "Tavily success/429 require separate explicitly mocked-provider checks; no live Tavily key.",
+    "This probe supplements the independent full regression suite."
+  ]
+}

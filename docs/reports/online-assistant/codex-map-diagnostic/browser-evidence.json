@@ -1,0 +1,47 @@
+{
+  "web": "http://127.0.0.1:3060",
+  "api": "http://127.0.0.1:8060",
+  "ui_commit": "2602cd61d14f35ce762541f336c4b54c782cc80d",
+  "build_commit": "2389908e6f485f1c463d9cadb4b8e45a262d90f0",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "checks": [
+    {
+      "name": "real PMTiles HTTP Range206/header",
+      "pass": true
+    },
+    {
+      "name": "desktop/mobile no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "no external map/provider requests in deterministic UI lane",
+      "pass": true
+    },
+    {
+      "name": "map made real partial-content requests",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "empty-1440.png",
+    "map-runtime-diagnostic.png"
+  ],
+  "consoleErrors": [
+    "Error: Worker failed to load. Check that the worker URL is correct.\n    at Worker.eval (webpack-internal:///(app-pages-browser)/./node_modules/maplibre-gl/dist/maplibre-gl.mjs:95:444824)"
+  ],
+  "network": {
+    "remoteOrigins": [],
+    "pmtilesRanges": [
+      {
+        "status": 206,
+        "range": "bytes 0-16383/2138597"
+      }
+    ]
+  },
+  "limitations": [
+    "Canvas creation alone does not prove geographic tiles rendered; inspect screenshots and tile requests.",
+    "Tavily success/429 require separate explicitly mocked-provider checks; no live Tavily key.",
+    "This probe supplements the independent full regression suite."
+  ]
+}
