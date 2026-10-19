@@ -227,6 +227,22 @@ class HTTPTests(unittest.TestCase):
         self.client.close()
         self.env.stop()
 
+    def test_restored_assistant_display_is_plain_without_rewriting_input_or_identity(self):
+        state = State()
+        state.messages = [{'role': 'user', 'text': 'Phở \U0001f35c'},
+                          {'role': 'assistant', 'text': '20\U0001f35c30 phút, chưa xác minh.'}]
+        with self.app.state.sessions.owned(self.session['session_id'], self.session['token']) as saved:
+            saved.chat.discovery = state.dump()
+        response = self.client.get(self.url, headers=self.headers)
+        self.assertEqual(response.status_code, 200)
+        body = response.json()
+        self.assertEqual(body['session_id'], self.session['session_id'])
+        self.assertEqual(body['messages'][0]['text'], 'Phở \U0001f35c')
+        self.assertEqual(body['messages'][1]['text'], '20 30 phút, chưa xác minh.')
+        self.assertEqual(body['provider']['calls'], 0)
+        with self.app.state.sessions.owned(self.session['session_id'], self.session['token']) as saved:
+            self.assertEqual(saved.chat.discovery['messages'], state.messages)
+
     def test_auth_revision_shape_and_greeting(self):
         self.assertEqual(self.client.get(self.url).status_code, 401)
         r = self.client.post(self.url, headers=self.headers, json={'revision': 0, 'text': 'Chào bạn'})
