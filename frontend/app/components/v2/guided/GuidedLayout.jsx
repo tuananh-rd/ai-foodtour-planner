@@ -8,7 +8,10 @@ import GuidedTimeline from './GuidedTimeline';
 import TrustDisclosure from './TrustDisclosure';
 import ReplaceDiffModal from '../../ReplaceDiffModal';
 import { chatTurn, getSession, replaceTourStop } from '../../../../lib/api';
+import OnlineSearchResults from './OnlineSearchResults';
+import PilotMap from './PilotMap';
 import './guided-visual.css';
+import './online-assistant.css';
 
 /* Reference glyphs (outlined paths of the design file: 4-point star, send arrow). Decorative only. */
 function StarGlyph({ color = '#DFF46A', size = 13.824 }) {
@@ -181,6 +184,10 @@ export default function GuidedLayout({
   const [isDesktop, setIsDesktop] = useState(false);
   const [activeMobileTab, setActiveMobileTab] = useState('chat'); // 'chat' | 'tour'
 
+  // Online Assistant extensions: web search opt-in and route panel view mode
+  const [webSearch, setWebSearch] = useState(false);
+  const [viewMode, setViewMode] = useState('schematic'); // 'schematic' | 'map'
+
   const inputRef = useRef(null);
   const lastFocusedKeyRef = useRef('');
   const restoredRef = useRef(false);
@@ -263,7 +270,7 @@ export default function GuidedLayout({
   const [snapshotFailed, setSnapshotFailed] = useState(false);
 
   // Execute turn action or text with Q06 polite live region & draft preservation
-  const executeTurn = async ({ text = null, action = null, onFail = null }) => {
+  const executeTurn = async ({ text = null, action = null, onFail = null, webSearch = false }) => {
     if (busy || (!text && !action)) return;
     if (initializing || !sessionId) {
       // The parent (page.js) is the single owner of session creation: never create a second session here.
@@ -315,6 +322,9 @@ export default function GuidedLayout({
       };
       if (text) {
         body.text = text;
+        if (webSearch) {
+          body.web_search = true;
+        }
       } else if (action) {
         body.action = action;
       }
@@ -359,7 +369,7 @@ export default function GuidedLayout({
         ]);
       }
     } catch (err) {
-      setLastFailedTurn({ text, action });
+      setLastFailedTurn({ text, action, webSearch });
       if (onFail) onFail();
 
       if (err?.status === 409) {
@@ -437,11 +447,15 @@ export default function GuidedLayout({
       return;
     }
     const currentDraft = inputText;
+    const sendWithWebSearch = Boolean(webSearch);
     if (!textToSend) setInputText('');
+    setWebSearch(false); // Reset one-turn opt-in immediately upon sending
     executeTurn({
       text,
+      webSearch: sendWithWebSearch,
       onFail: () => {
         if (!textToSend) setInputText(currentDraft);
+        if (sendWithWebSearch) setWebSearch(true); // Preserve draft and opt-in on failure
       }
     });
   };
@@ -568,6 +582,8 @@ export default function GuidedLayout({
     setLockedVenueIds([]);
     setIsReplaceModalOpen(false);
     setActiveMobileTab('chat');
+    setWebSearch(false);
+    setViewMode('schematic');
     if (typeof window !== 'undefined') {
       try {
         sessionStorage.removeItem('foodtour_chat_session_id');
@@ -944,6 +960,18 @@ export default function GuidedLayout({
                   </div>
                 ))}
 
+                {latestBlocks.filter((b) => b.type === 'web_search').map((b, idx) => (
+                  <OnlineSearchResults
+                    key={b.block_id || idx}
+                    block={b}
+                    onRetry={() => {
+                      if (lastFailedTurn?.text) {
+                        executeTurn({ text: lastFailedTurn.text, webSearch: true });
+                      }
+                    }}
+                  />
+                ))}
+
                 {understoodBlock && (
                   <UnderstoodCard
                     items={understoodBlock.items}
@@ -1022,14 +1050,34 @@ export default function GuidedLayout({
             </p>
             <TrustDisclosure turn={latestTurnMeta} health={health} />
             {!confirmSummaryBlock && (
-              <form
-                className="nn-composer"
-                style={{ marginTop: 8 }}
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleSendMessage();
-                }}
-              >
+              <>
+                <div className="nn-web-optin-container" style={{ marginTop: 8 }}>
+                  <label className="nn-web-optin-row">
+                    <input
+                      type="checkbox"
+                      data-testid="web-search-optin-checkbox"
+                      className="nn-web-optin-checkbox"
+                      checked={webSearch}
+                      onChange={(e) => setWebSearch(e.target.checked)}
+                      disabled={busy}
+                    />
+                    <span>Tra web</span>
+                    <span className="nn-web-optin-badge">Tavily</span>
+                  </label>
+                  {webSearch && (
+                    <div className="nn-web-optin-explanation" data-testid="web-search-optin-explanation">
+                      Chỉ câu hỏi ngắn của lượt này được gửi đến công cụ tìm kiếm Tavily; không gửi vị trí GPS hay lịch sử trò chuyện. Không nhập thông tin cá nhân.
+                    </div>
+                  )}
+                </div>
+                <form
+                  className="nn-composer"
+                  style={{ marginTop: 6 }}
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }}
+                >
                 <input
                   ref={inputRef}
                   type="text"
@@ -1044,7 +1092,8 @@ export default function GuidedLayout({
                   <ArrowGlyph />
                 </button>
               </form>
-            )}
+            </>
+          )}
           </div>
         </section>
 
@@ -1115,45 +1164,74 @@ export default function GuidedLayout({
               )}
             </div>
 
-            <aside className="nn-route" aria-label="Sơ đồ tuyến">
+            <aside className="nn-route" aria-label={viewMode === 'map' ? 'Bản đồ tương tác Hoàn Kiếm' : 'Sơ đồ tuyến'}>
               <div className="nn-route-head">
-                <h3 className="nn-route-title">Sơ đồ tuyến</h3>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <h3 className="nn-route-title">{viewMode === 'map' ? 'Bản đồ' : 'Sơ đồ tuyến'}</h3>
+                  <div className="nn-view-mode-toggle" role="group" aria-label="Chế độ hiển thị tuyến">
+                    <button
+                      type="button"
+                      data-testid="view-mode-schematic-btn"
+                      className={`nn-view-mode-btn${viewMode === 'schematic' ? ' active' : ''}`}
+                      aria-pressed={viewMode === 'schematic'}
+                      onClick={() => setViewMode('schematic')}
+                    >
+                      Sơ đồ
+                    </button>
+                    <button
+                      type="button"
+                      data-testid="view-mode-map-btn"
+                      className={`nn-view-mode-btn${viewMode === 'map' ? ' active' : ''}`}
+                      aria-pressed={viewMode === 'map'}
+                      onClick={() => setViewMode('map')}
+                    >
+                      Bản đồ
+                    </button>
+                  </div>
+                </div>
                 {vehicleLabel && <span className="nn-meta" style={{ height: 35 }}>{vehicleLabel}</span>}
               </div>
-              <div className="nn-canvas">
-                {[40, 118, 196, 274, 352].map((top, i) => (
-                  <div key={top} className={`nn-road${i % 2 ? ' short' : ''}`} style={{ top }} />
-                ))}
-                {showTour && stops.length > 0 ? (
-                  <>
-                    <div className="nn-line" style={{ left: '45.2%', top: `calc(${nodeTop(0, stops.length)}% + 20px)`, height: stops.length > 1 ? `${nodeTop(stops.length - 1, stops.length) - nodeTop(0, stops.length)}%` : 0 }} />
-                    {stops.map((stop, idx) => {
-                      const top = nodeTop(idx, stops.length);
-                      const left = idx % 2 === 0;
-                      return (
-                        <React.Fragment key={stop.venue_id || idx}>
-                          <div className={`nn-node${idx === stops.length - 1 && stops.length > 1 ? ' last' : ''}`} style={{ left: '45.2%', top: `${top}%` }}>{idx + 1}</div>
-                          <div
-                            className="nn-tag"
-                            title={stop.name}
-                            style={{ top: `calc(${top}% + 6px)`, ...(left ? { right: 'calc(54.8% + 26px)' } : { left: 'calc(45.2% + 26px)' }) }}
-                          >
-                            {stop.name}
-                          </div>
-                        </React.Fragment>
-                      );
-                    })}
-                    <ol className="nn-sr">
-                      {stops.map((stop, idx) => (
-                        <li key={stop.venue_id || idx}>{idx + 1}. {stop.name}{stop.arrive ? `, ${stop.arrive}` : ''}</li>
-                      ))}
-                    </ol>
-                  </>
-                ) : (
-                  <div className="nn-canvas-note">Sơ đồ thứ tự điểm dừng sẽ hiện sau khi bạn xác nhận lịch trình.</div>
-                )}
-                <p className="nn-caption">Sơ đồ thứ tự điểm dừng, không phải bản đồ thật.</p>
-              </div>
+              {viewMode === 'map' ? (
+                <PilotMap
+                  stops={stops}
+                  onFallbackToSchematic={() => setViewMode('schematic')}
+                />
+              ) : (
+                <div className="nn-canvas">
+                  {[40, 118, 196, 274, 352].map((top, i) => (
+                    <div key={top} className={`nn-road${i % 2 ? ' short' : ''}`} style={{ top }} />
+                  ))}
+                  {showTour && stops.length > 0 ? (
+                    <>
+                      <div className="nn-line" style={{ left: '45.2%', top: `calc(${nodeTop(0, stops.length)}% + 20px)`, height: stops.length > 1 ? `${nodeTop(stops.length - 1, stops.length) - nodeTop(0, stops.length)}%` : 0 }} />
+                      {stops.map((stop, idx) => {
+                        const top = nodeTop(idx, stops.length);
+                        const left = idx % 2 === 0;
+                        return (
+                          <React.Fragment key={stop.venue_id || idx}>
+                            <div className={`nn-node${idx === stops.length - 1 && stops.length > 1 ? ' last' : ''}`} style={{ left: '45.2%', top: `${top}%` }}>{idx + 1}</div>
+                            <div
+                              className="nn-tag"
+                              title={stop.name}
+                              style={{ top: `calc(${top}% + 6px)`, ...(left ? { right: 'calc(54.8% + 26px)' } : { left: 'calc(45.2% + 26px)' }) }}
+                            >
+                              {stop.name}
+                            </div>
+                          </React.Fragment>
+                        );
+                      })}
+                      <ol className="nn-sr">
+                        {stops.map((stop, idx) => (
+                          <li key={stop.venue_id || idx}>{idx + 1}. {stop.name}{stop.arrive ? `, ${stop.arrive}` : ''}</li>
+                        ))}
+                      </ol>
+                    </>
+                  ) : (
+                    <div className="nn-canvas-note">Sơ đồ thứ tự điểm dừng sẽ hiện sau khi bạn xác nhận lịch trình.</div>
+                  )}
+                  <p className="nn-caption">Sơ đồ thứ tự điểm dừng, không phải bản đồ thật.</p>
+                </div>
+              )}
               <div className="nn-tip">
                 <b>Lưu ý</b>
                 <span>Giá, giờ mở cửa lấy theo nguồn, chưa kiểm chứng; hãy kiểm tra lại.</span>

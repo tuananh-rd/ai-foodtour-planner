@@ -1623,6 +1623,17 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
           };
         }
 
+        if (body.text && body.web_search && !blocks.some((b) => b.type === 'web_search')) {
+          blocks.push({
+            type: 'web_search',
+            status: 'unavailable',
+            sources: [],
+            fetched_at: null,
+            credits: 0,
+            cached: false
+          });
+        }
+
         return {
           reply: { blocks },
           chat: session.chat,
@@ -1733,8 +1744,20 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
         session.tour = createMockTour(session.preferences, session.revision);
       }
 
+      const replyObj = JSON.parse(JSON.stringify(matchedTurn.response.reply));
+      if (body.text && body.web_search && replyObj.blocks && !replyObj.blocks.some((b) => b.type === 'web_search')) {
+        replyObj.blocks.push({
+          type: 'web_search',
+          status: 'unavailable',
+          sources: [],
+          fetched_at: null,
+          credits: 0,
+          cached: false
+        });
+      }
+
       return {
-        reply: JSON.parse(JSON.stringify(matchedTurn.response.reply)),
+        reply: replyObj,
         chat: session.chat,
         turn: matchedTurn.response.turn || { intent: 'MOCK_INTENT', tools: [], understanding: 'rules' },
         tour: session.tour,
@@ -1788,14 +1811,26 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
     }
 
     // Generic fallback mock response
+    const fallbackBlocks = [
+      {
+        type: 'text',
+        text: `[MOCK] Phản hồi giả lập cho: "${body.text || body.action?.type || 'lượt trò chuyện'}"`
+      }
+    ];
+    if (body.text && body.web_search) {
+      fallbackBlocks.push({
+        type: 'web_search',
+        status: 'unavailable',
+        sources: [],
+        fetched_at: null,
+        credits: 0,
+        cached: false
+      });
+    }
+
     return {
       reply: {
-        blocks: [
-          {
-            type: 'text',
-            text: `[MOCK] Phản hồi giả lập cho: "${body.text || body.action?.type || 'lượt trò chuyện'}"`
-          }
-        ]
+        blocks: fallbackBlocks
       },
       chat: session.chat,
       turn: {
@@ -1837,6 +1872,9 @@ export async function chatTurn(sessionId, body, token = '', options = {}) {
   if (body.text !== undefined && body.text !== null) {
     reqBody.text = body.text;
     reqBody.action = cleanAction || null;
+    if (body.web_search) {
+      reqBody.web_search = true;
+    }
   } else if (cleanAction) {
     reqBody.action = cleanAction;
     reqBody.text = body.text ?? null;
