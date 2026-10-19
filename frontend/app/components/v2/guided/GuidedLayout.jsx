@@ -347,23 +347,32 @@ export default function GuidedLayout({
         }
 
         // Live announcement for screen readers
-        const replyBlocks = res.reply?.blocks || [];
-        const clarify = replyBlocks.find((b) => b.type === 'clarify');
-        const textBlock = replyBlocks.find((b) => b.type === 'text');
+        const rawReplyBlocks = res.reply?.blocks || [];
+        const clarify = rawReplyBlocks.find((b) => b.type === 'clarify');
+        const textBlock = rawReplyBlocks.find((b) => b.type === 'text');
         if (clarify?.question) {
           setLiveAnnouncement(clarify.question);
         } else if (textBlock?.text) {
           setLiveAnnouncement(textBlock.text);
         }
 
+        // Ensure web_search blocks retain originating query for per-message retry
+        const replyBlocks = rawReplyBlocks.map((b) => {
+          if (b.type === 'web_search') {
+            return { ...b, query: b.query || (webSearch ? text : null) };
+          }
+          return b;
+        });
+
         // Append assistant response to stream
         setMessages((prev) => [
           ...prev,
           {
             role: 'assistant',
-            reply: res.reply || { blocks: [] },
+            reply: { ...(res.reply || {}), blocks: replyBlocks },
             chat: res.chat,
             tour: res.tour,
+            originating_query: webSearch ? text : null,
             timestamp: Date.now()
           }
         ]);
@@ -964,9 +973,10 @@ export default function GuidedLayout({
                   <OnlineSearchResults
                     key={b.block_id || idx}
                     block={b}
-                    onRetry={() => {
-                      if (lastFailedTurn?.text) {
-                        executeTurn({ text: lastFailedTurn.text, webSearch: true });
+                    onRetry={(retryQuery) => {
+                      const queryToReplay = retryQuery || b.query || latestAssistantMsg?.originating_query;
+                      if (queryToReplay) {
+                        executeTurn({ text: queryToReplay, webSearch: true });
                       }
                     }}
                   />
@@ -1052,7 +1062,7 @@ export default function GuidedLayout({
             {!confirmSummaryBlock && (
               <>
                 <div className="nn-web-optin-container" style={{ marginTop: 8 }}>
-                  <label className="nn-web-optin-row">
+                  <label className="nn-web-optin-row" data-testid="online-search-toggle">
                     <input
                       type="checkbox"
                       data-testid="web-search-optin-checkbox"
@@ -1180,7 +1190,8 @@ export default function GuidedLayout({
                     </button>
                     <button
                       type="button"
-                      data-testid="view-mode-map-btn"
+                      data-testid="pilot-map-toggle"
+                      data-legacy-testid="view-mode-map-btn"
                       className={`nn-view-mode-btn${viewMode === 'map' ? ' active' : ''}`}
                       aria-pressed={viewMode === 'map'}
                       onClick={() => setViewMode('map')}
