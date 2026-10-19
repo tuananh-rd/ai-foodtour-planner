@@ -34,9 +34,9 @@ export function resolveTravelMode(vehicle) {
 
 export function isValidCoordinate(point) {
   if (!point || typeof point !== 'object') return false;
-  const lat = typeof point.lat === 'number' ? point.lat : Number(point.lat);
+  const lat = point.lat;
   const rawLon = point.lon !== undefined ? point.lon : point.lng;
-  const lon = typeof rawLon === 'number' ? rawLon : Number(rawLon);
+  const lon = rawLon;
   return Number.isFinite(lat) && Number.isFinite(lon) && lat >= -90 && lat <= 90 && lon >= -180 && lon <= 180;
 }
 
@@ -53,7 +53,7 @@ export function getCoordString(point) {
 export function buildDiscoveryMapsUrl({ origin, stops, vehicle }) {
   if (!Array.isArray(stops) || stops.length === 0) return null;
   const validStops = stops.filter(isValidCoordinate);
-  if (validStops.length === 0) return null;
+  if (validStops.length === 0 || validStops.length !== stops.length) return null;
 
   const modeInfo = resolveTravelMode(vehicle);
   const travelmode = modeInfo.mode;
@@ -128,7 +128,7 @@ export function buildDiscoveryMapsUrl({ origin, stops, vehicle }) {
 export function buildDiscoveryLegUrls({ origin, stops, vehicle }) {
   if (!Array.isArray(stops) || stops.length === 0) return [];
   const validStops = stops.filter(isValidCoordinate);
-  if (validStops.length === 0) return [];
+  if (validStops.length === 0 || validStops.length !== stops.length) return [];
 
   const { mode: travelmode } = resolveTravelMode(vehicle);
   const hasUserOrigin = isValidCoordinate(origin);
