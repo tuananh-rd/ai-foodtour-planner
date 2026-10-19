@@ -6,7 +6,7 @@ Source/base: fc09d2c, approved Figma frame1:145 and original1440x1024 PNG. This 
 |---|---|---|---|
 | Design/reference and authority | Codex | DONE | Original image opened, hash/spec recorded; AGENTS/PROJECT_RULES updated |
 | Safe base and worker reuse | Codex | DONE | Clean sibling6816b23 fast-forwarded tofc09d2c; settled/retained terminal37bc reused; no new agent/model |
-| UI implementation | Antigravity | DISPATCHED | task_9aa61f3769fc; guided components/scoped CSS, page/layout if needed, new public/warm-editorial assets, qa/figma-warm-editorial and FIGMA_WARM_EDITORIAL_QA.md only |
+| UI implementation | Antigravity | RUNNING / ACK PENDING | task_9aa61f3769fc; guided components/scoped CSS, page/layout if needed, new public/warm-editorial assets, qa/figma-warm-editorial and FIGMA_WARM_EDITORIAL_QA.md only. Injection initially remained in visible TUI draft; one bare Enter submitted that same draft. Actual new turn/commands observed (git status/log, orchestration task-list), no resend. Explicit ownership ACK still pending |
 | Targeted QA / candidate commit | Antigravity | PENDING | Original PNG viewed;1440/390 actual screenshots and comparison; measured deviations; journey/focus/contrast/build; isolate providers and inspect old background QA before new runner |
 | Visual/code review and local integration | Codex | PENDING | Review real screenshots against original, functionality and scoped diff; route necessary corrections to same worker |
 | Final relevant regression/build | Codex | PENDING | One final run after review, source/mode/URL evidence; no backend full-suite repeat absent backend changes |

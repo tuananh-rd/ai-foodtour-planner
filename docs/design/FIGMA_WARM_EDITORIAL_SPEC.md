@@ -4,6 +4,8 @@ Source: https://www.figma.com/design/ZOYmPXzafoIv9dKWye1AbQ/Untitled?node-id=1-1
 
 ## Observed geometry and hierarchy
 
+Internal reference copy: [figma-warm-editorial-reference.png](figma-warm-editorial-reference.png), SHA256 matches the original export above. This is for comparison evidence only, never rendered as the product UI.
+
 - Full-height rust/brown sidebar,232px wide. White lowercase `măm măm.` brand near24,32; small gold slogan. Orange new-trip button; white selected chat navigation; secondary links with thin icons; recent-trip area; gold editorial card near bottom; anonymous/local identity footer rather than fabricated account.
 - Yellow main canvas (`#F9C53D` requested by the user), desktop content begins x264, top breadcrumb around y54. Right top utility chips align to the right. Do not invent a selected location or locale functionality.
 - White/off-white chat panel x264,y98,width668,height886, radius about26. Internal horizontal padding28. Peach assistant label and muted subtitle; prominent two-line heading around44px with generous line height; supporting copy and three compact preference controls. Divider around y458; peach user message, editorial assistant text rather than all bubbles boxed. Bottom quick actions and soft neutral composer, orange send button. Preserve real structured cards, confirmations and warnings with this hierarchy; make the message region scroll rather than clipping necessary state.
