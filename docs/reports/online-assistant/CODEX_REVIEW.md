@@ -1,4 +1,8 @@
-# Codex review of UI candidate d9c2971 — NOT ACCEPTED
+# Codex integration review
+
+Latest checkpoint4897418, resumed by the user after a usage pause: backend661 tests PASS/one optional skip, contracts18 PASS, final-source narrow UI60/60 PASS. Broad regression188/190 passes; initial clarify-chip focus fails at1280/390 and remains under independent read-only QA task_773e0849bceb/ctx_bc7440d9491f. Do not infer final acceptance from historical candidate fixes below. Tavily live BLOCKED; Gemini PARTIAL. No duplicate resume prompt, worker or paid-credit fallback is authorized.
+
+## Historical UI candidate d9c2971 — NOT ACCEPTED
 
 Environment: Windows, Chrome155.0.8059.80 (headless with software WebGL test flag), Node24.19.0. UI source d9c2971 integrated at2602cd6; actual development URL http://127.0.0.1:3060, backend http://127.0.0.1:8060 reports2389908, synthetic/rules. This mixed checkpoint is explicitly not the final tested build. No private dataset or external LLM/search calls were used by the browser probe.
 
