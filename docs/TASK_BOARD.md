@@ -2,6 +2,8 @@
 
 ## Active online assistant initiative
 
+NEW ACTIVE SCOPE: discovery-first assistant replaces Tavily and forced checklist, per direct user approval. Read DISCOVERY_ASSISTANT_REQUIREMENTS.md, frozen DISCOVERY_ASSISTANT_CONTRACT.md and reports/DISCOVERY_ASSISTANT_BOARD.md. Codex backend/tools/Gemini/versioned gates; Antigravity bounded new conversational UI/API adapter/QA; Claude inactive. Warm editorial retained. No Tavily calls/new live probes/cap increases/migrations. Historical web-search and “Mình hiểu là” acceptance below is not the new behavior.
+
 FINAL FIGMA UI: integrated9af6126 accepted locally after50 targeted /190 independent browser /60 actual production UI /32 mocked-citation checks and147kB production build PASS. Current new UI URL http://127.0.0.1:3100, isolated synthetic/rules API8100/provider off; old servers preserved. Actual1440/390 comparison/screenshots, measured deviations and task outcomes: reports/FIGMA_WARM_EDITORIAL_ACCEPTANCE.md and FIGMA_WARM_EDITORIAL_BOARD.md. All Figma tasks settled, same Antigravity retained/no active editor. No live-provider probes or backend full-suite repeat. Older open/rejected states below are historical.
 
 Figma review update:905e6ea rejected before integration. Six concrete findings in reports/FIGMA_WARM_EDITORIAL_CODEX_REVIEW.md include fabricated unknown data/history, group budget mislabeled per-person and material visual mismatch. Same Antigravity correction task_53af11905ca6/ctx_0e9c06b07142 owns prior scoped frontend/QA files; Codex review/integration only. Final regression waits for corrected candidate; no new provider calls.
