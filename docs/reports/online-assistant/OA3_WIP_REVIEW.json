@@ -1,0 +1,19 @@
+{
+  "mode": "read-only sibling WIP review; synthetic transports; no external calls",
+  "source_sha256": "3a0bc67f2beadff00014351eb755459cbfdab805383755dab3c6a58756fbd000",
+  "source_unchanged": true,
+  "malformed_results_status": "ok",
+  "instruction_title_status": "ok",
+  "post_calls_after_failed_persistent_block": 2,
+  "peak_distinct_mock_posts": 8,
+  "edge_cases": {
+    "source_sha256": "3a0bc67f2beadff00014351eb755459cbfdab805383755dab3c6a58756fbd000",
+    "source_unchanged": true,
+    "explicit_blank_cap_configured": true,
+    "injected_budget_daily_with_env_cap1": 20,
+    "future_cached_response_returned": true,
+    "stale_cached_response_returned": true,
+    "post_deadline_over6": true,
+    "late_post_status": "ok"
+  }
+}

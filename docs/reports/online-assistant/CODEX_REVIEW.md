@@ -49,3 +49,19 @@ UIR3 commit2a9c3e7 changes exactly the mobile tour_ready transition, honest disa
 Codex viewed the actual SVG side-by-side and overlay, the visible mobile map region and mobile web result. Header/main columns, chat-card bounds, stat-card geometry and palette remain close to the accepted reference; dynamic Hanoi/synthetic content, anonymous profile, extra GPS/search controls, source disclosures and safety warnings intentionally differ. Warning content shifts timeline cards downward and can increase page scroll; route-header controls can wrap the schematic label. No pixel-identical claim or complete WCAG/physical-device certification is made. Map roads/lake/attribution are visible; no routing line is represented as a real walking route.
 
 OA-UI-001/002/003/004/006/007/008/009 have reviewed fixes and the applicable runtime/unit evidence. Citation defense has scoped URL tests; live-source citation quality remains blocked by absent Tavily credentials. OA3 and final post-integration backend/contracts/browser regression remain required; no final upgrade acceptance yet.
+
+
+## OA3 candidate3461353 rejected before integration
+
+The worker's18 hermetic tests pass, but independent synthetic-transport probes on unchanged sourceSHA2563a0bc67f2beadff00014351eb755459cbfdab805383755dab3c6a58756fbd000 reproduce the following. No actual external request, account charge or deployed exploit is asserted. Evidence: OA3_WIP_REVIEW.json.
+
+| ID | Release priority / kind | Reproduction and actual result | Required acceptance |
+|---|---|---|---|
+| OA-SR-001 | P1 resource bound | Eight distinct eligible queries with held mock POSTs reach peak8; same-query singleflight does not bound distinct queries | Explicit concurrency/inflight cap and independent distinct-query test |
+| OA-SR-002 | P1 trust/schema | results={} and an instruction-bearing title each return ok | Strict schema; titles and snippets checked before successful cache |
+| OA-SR-003 | P1 budget fail-closed | Inject failure in block_current_month, then submit2 distinct searches with unexpected credits2; both POST | In-process fuse set before persistent blocking attempt; normal restart durability tests retained |
+| OA-SR-004 | P2 timestamp integrity | Move injected wall clock back/forward one day within monotonic TTL; future/stale cached result still returned | Wall-time validation in addition to bounded monotonic TTL |
+| OA-SR-005 | P1 deadline contract | deadline100 passes >6 to POST; a delayed POST beyond requested deadline returns ok | Finite positive clamp and expired-result rejection |
+| OA-SR-006 | P1 configuration contract | Explicit blank daily cap configures default20; injected budget daily20 survives explicit env cap1 | Invalid explicit values fail closed, never widen configured caps |
+
+OA3R task_7bd07278a470 / ctx_e884a0d5d914 was dispatched once to the same agent before acknowledging previous completion. Exact3file ownership remains module/test/OA3.md only. Codex does not edit those files. Current lifecycle ACK received; full ownership-body ACK requested because the first heartbeat body was empty. Candidate3461353 remains outside the coordinator checkout until these gates are reviewed and independently retested.

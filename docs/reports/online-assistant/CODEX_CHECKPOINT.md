@@ -56,3 +56,8 @@ New OA3 task_cafccd0b53b1 is ready with a self-contained /usage account gate and
 ## OA3 active
 
 Same Antigravity terminal now owns task_cafccd0b53b1 / ctx_7cfcf1f8c1a9, exact3newfile/env ACK verified in msg_d0551736e422. No adapter commit yet. Codex must inspect actual module/tests/report, integrate only scoped work, wire main.from_env and add API wiring tests, then final full backend/drift/browser regression. Mock external-status browser suite32/32 passes via actual UI and actual synthetic API8080, with only external search stubbed; not live Tavily or adapter security acceptance. Narrow fixture server is task-owned terminal term_43781b99-e6c2-4dfd-861a-78a2d6c28715; real delivery candidate remains3060/API8060, source0de3632, production frontend and synthetic/rules backend. Root currentc66c0d0 is later tooling/docs/evidence only, frontend source unchanged.
+
+
+## Current OA3R checkpoint
+
+Candidate3461353 is in the sibling only;18 tests pass but six independently reproduced contract groups block integration. See CODEX_REVIEW OA-SR-001..006 and OA3_WIP_REVIEW.json (source hash unchanged during probes). Active same-agent OA3R task_7bd07278a470 / ctx_e884a0d5d914 owns exactly tavily.py/test_tavily.py/OA3.md. It must repair concurrency, schema/title filtering, broken-credit fuse, wall-clock cache, deadline and cap widening, then report real tests. Current lifecycle ACK arrived with empty body; explicit full3file ACK requested by msg_8f94f0a50f45. Do not resend old dispatch or merge candidate before review. Codex main wiring still pending after safe module. UI gate60/60 and mocked external-status32/32 remain valid for their clearly labelled source/mode; final integrated backend/provider regression remains required.
