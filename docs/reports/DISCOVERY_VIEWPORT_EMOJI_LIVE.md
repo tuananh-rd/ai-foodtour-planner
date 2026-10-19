@@ -13,7 +13,9 @@ Existing untracked evidence, private datasets, configuration and persistent ledg
 
 Backend commit `1d3bad8` adds a shared plain-text display policy and applies it to discovery generated replies/replay, legacy conversation verification and checked explanations. Raw user input and private records/IDs are preserved. The native function schema now keeps Pydantic `$defs` at the parameter document root; previously `#/$defs/Origin` was nested under `patch` and did not resolve.
 
-The hermetic targeted suite passed **77 tests**, exit0: discovery presentation/protocol/journey, legacy conversation and extraction/explanation modules. These mocks establish regression behavior, not provider success. A separate root-reference test verifies every native declaration's local `$ref` resolves.
+The final hermetic targeted suite passed **78 tests**, exit0: discovery presentation/protocol/journey, legacy conversation and extraction/explanation modules. It includes an actual HTTP restore check proving assistant display is plain while raw replay and session identity remain unchanged (`361b63a`); the follow-up separator fix `dab8195` prevents adjacent words/numbers from merging during emoji removal. These mocks establish regression behavior, not provider success. The protocol reference test verifies every native declaration's local `$ref` resolves; OpenAPI drift check also passes.
+
+Backend final source is `1e6cb17`: invisible joiners/variation/tag formatting are removed before safety verification without splitting words, so an obfuscated allergy-safety assertion cannot evade the existing safety check. Visible pictographs become separators. Raw user replay is retained. Both task-owned API lanes were refreshed to this source after their exact process command lines were verified; no user-owned server was stopped.
 
 Actual provider evidence:
 
@@ -31,7 +33,15 @@ The smoke exercised actual application HTTP routes through FastAPI TestClient wi
 
 ## Frontend and integrated acceptance
 
-Pending the active Antigravity implementation, production build, viewport evidence and Codex independent review. Do not treat historical63/63 checks, previous screenshots or configured health as acceptance of this continuation.
+Antigravity checkpoint `4d46739` removes static emoji across frontend branches and uses proportional columns, coordinated1024px breakpoints and viewport-derived heights. Codex reviewed the immutable diff and inspected its actual1440px screenshot. Final acceptance remains pending; historical63/63 checks and previous screenshots do not accept this continuation.
+
+The first new mock-browser run timed out waiting for a restaurant card. Its screenshot showed the composer correctly disabled because the mock `/v1/sessions` returned `session_token`, while the real contract and application require `token`. This is a harness contract defect; the product authentication gate must not be weakened to pass it. The checkpoint corrects that field and waits for authenticated enabled input; a successful rerun is still required.
+
+Checkpoint source review also requested a display-only runtime emoji guard (including restored/provider/venue/user-echo data, while retaining raw inputs/IDs/URLs), complete sequence tests and removal of the arbitrary960px desktop height cap. Static source audit alone does not establish that dynamic UI text is emoji-free. Actual rectangle/reachability checks are required because `overflow-x:hidden` can hide clipped content without a document scrollbar.
+
+Antigravity delivered `e99d83b` with a passing five-width mock-browser matrix (44 assertions), production build, 35 sanitizer assertions and 51 targeted contract checks. Codex inspected actual2560 and390 screenshots and accepted the proportional width direction, but **rejected runtime text acceptance**: pictograph deletion joined adjacent numbers, and the field projection omitted actual district/dish/hours/confirmation/tour fields. These passing tests did not cover those defects. Follow-up `task_6bad7be2b243` / `ctx_1570c0e39d91` owns the correction and independent affected-backend source review; no new worker or provider request was authorized.
+
+Codex independently built immutable frontend `e99d83b` in an isolated directory and ran the actual backend/planner/SQLite journey on `1e6cb17` at3310/8210: **63/63 checks PASS**, normal exit0, zero uncaught JS exceptions and zero external HTTP origins, actual local PMTiles206. Evidence: `discovery-viewport-checkpoint-20261020/browser-evidence.json`; frontend and runner/backend revisions are separately recorded. Actual map1440 and confirmed390 images were inspected, showing geographic roads/lake/marker/attribution and usable mobile tour controls. This accepts checkpoint application behavior, not the pending runtime emoji correction or final deployed source.
 
 ## Runtime
 

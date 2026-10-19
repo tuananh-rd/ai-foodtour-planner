@@ -1,0 +1,354 @@
+{
+  "web": "http://127.0.0.1:3310",
+  "api": "http://127.0.0.1:8210",
+  "backend_commit": "1e6cb1763b714111afe506119cefb61fc3d43257",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "initial nullable profile 1440",
+      "pass": true
+    },
+    {
+      "name": "greeting no checklist 1440",
+      "pass": true
+    },
+    {
+      "name": "discovery does not demand trip fields 1440",
+      "pass": true
+    },
+    {
+      "name": "local search real results 1440",
+      "pass": true
+    },
+    {
+      "name": "compare actual IDs 1440",
+      "pass": true
+    },
+    {
+      "name": "selection and taste survive next search 1440",
+      "pass": true
+    },
+    {
+      "name": "group budget not per person or duration 1440",
+      "pass": true
+    },
+    {
+      "name": "patch keeps other fields 1440",
+      "pass": true
+    },
+    {
+      "name": "real409 refetch without replay and preserves draft 1440",
+      "pass": true
+    },
+    {
+      "name": "planning asks one contextual question 1440",
+      "pass": true
+    },
+    {
+      "name": "explicit server confirmation required 1440",
+      "pass": true
+    },
+    {
+      "name": "generic ok is not confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "confirmed real planner tour 1440",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL exists 1440",
+      "pass": true
+    },
+    {
+      "name": "Maps starts at actual chosen origin 1440",
+      "pass": true
+    },
+    {
+      "name": "PMTiles map accessible 1440",
+      "pass": true
+    },
+    {
+      "name": "marker toggle hides points 1440",
+      "pass": true
+    },
+    {
+      "name": "reload preserves selection and tour 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement opens actual selection editor 1440",
+      "pass": true
+    },
+    {
+      "name": "locked stop cannot be silently removed 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement selection invalidates tour 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement needs new confirmation 1440",
+      "pass": true
+    },
+    {
+      "name": "replacement creates different real tour 1440",
+      "pass": true
+    },
+    {
+      "name": "no solution preserves selected venues and explains changes 1440",
+      "pass": true
+    },
+    {
+      "name": "allergy edit invalidates tour 1440",
+      "pass": true
+    },
+    {
+      "name": "unknown allergy never safe 1440",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 1440",
+      "pass": true
+    },
+    {
+      "name": "offline exposes readable error 1440",
+      "pass": true
+    },
+    {
+      "name": "new session clears old chat selection and allergy 1440",
+      "pass": true
+    },
+    {
+      "name": "initial nullable profile 390",
+      "pass": true
+    },
+    {
+      "name": "greeting no checklist 390",
+      "pass": true
+    },
+    {
+      "name": "discovery does not demand trip fields 390",
+      "pass": true
+    },
+    {
+      "name": "local search real results 390",
+      "pass": true
+    },
+    {
+      "name": "compare actual IDs 390",
+      "pass": true
+    },
+    {
+      "name": "selection and taste survive next search 390",
+      "pass": true
+    },
+    {
+      "name": "group budget not per person or duration 390",
+      "pass": true
+    },
+    {
+      "name": "patch keeps other fields 390",
+      "pass": true
+    },
+    {
+      "name": "real409 refetch without replay and preserves draft 390",
+      "pass": true
+    },
+    {
+      "name": "planning asks one contextual question 390",
+      "pass": true
+    },
+    {
+      "name": "explicit server confirmation required 390",
+      "pass": true
+    },
+    {
+      "name": "generic ok is not confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "confirmed real planner tour 390",
+      "pass": true
+    },
+    {
+      "name": "free Maps URL exists 390",
+      "pass": true
+    },
+    {
+      "name": "Maps starts at actual chosen origin 390",
+      "pass": true
+    },
+    {
+      "name": "PMTiles map accessible 390",
+      "pass": true
+    },
+    {
+      "name": "marker toggle hides points 390",
+      "pass": true
+    },
+    {
+      "name": "reload preserves selection and tour 390",
+      "pass": true
+    },
+    {
+      "name": "replacement opens actual selection editor 390",
+      "pass": true
+    },
+    {
+      "name": "locked stop cannot be silently removed 390",
+      "pass": true
+    },
+    {
+      "name": "replacement selection invalidates tour 390",
+      "pass": true
+    },
+    {
+      "name": "replacement needs new confirmation 390",
+      "pass": true
+    },
+    {
+      "name": "replacement creates different real tour 390",
+      "pass": true
+    },
+    {
+      "name": "no solution preserves selected venues and explains changes 390",
+      "pass": true
+    },
+    {
+      "name": "allergy edit invalidates tour 390",
+      "pass": true
+    },
+    {
+      "name": "unknown allergy never safe 390",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 390",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists 390",
+      "pass": true
+    },
+    {
+      "name": "offline exposes readable error 390",
+      "pass": true
+    },
+    {
+      "name": "new session clears old chat selection and allergy 390",
+      "pass": true
+    },
+    {
+      "name": "no external provider/map origin",
+      "pass": true
+    },
+    {
+      "name": "actual PMTiles Range206",
+      "pass": true
+    },
+    {
+      "name": "no uncaught JS exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "discovery-1440.png",
+    "reference-side.png",
+    "reference-overlay.png",
+    "confirmed-1440.png",
+    "map-1440.png",
+    "discovery-390.png",
+    "confirmed-390.png",
+    "map-390.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [
+    206,
+    206,
+    206,
+    206
+  ],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "runner_commit": "1e6cb1763b714111afe506119cefb61fc3d43257",
+  "frontend_commit": "e99d83b",
+  "acceptance_scope": "Checkpoint actual-backend journey; runtime emoji correction pending"
+}
