@@ -679,26 +679,9 @@ class WebSource(Model):
     @field_validator('url')
     @classmethod
     def public_source_url(cls, value):
-        import ipaddress
-        from urllib.parse import urlsplit
-        if any(ord(char) <= 32 or ord(char) == 127 for char in value) or '\\' in value:
+        from app.providers.search_safety import public_source_url
+        if not public_source_url(value):
             raise ValueError('invalid source URL')
-        try:
-            parts = urlsplit(value)
-            host = parts.hostname or ''
-            if (parts.scheme != 'https' or not host or parts.username or parts.password or parts.port not in (None, 443)
-                    or host == 'localhost' or host.endswith(('.localhost', '.local', '.internal', '.lan'))):
-                raise ValueError('invalid source URL')
-            try:
-                address = ipaddress.ip_address(host)
-            except ValueError:
-                if '.' not in host or any(not (char.isalnum() or char in '.-') for char in host):
-                    raise ValueError('invalid source host')
-            else:
-                if not address.is_global:
-                    raise ValueError('private source URL')
-        except (ValueError, TypeError):
-            raise ValueError('invalid source URL') from None
         return value
 
 

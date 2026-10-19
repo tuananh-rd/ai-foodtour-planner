@@ -209,6 +209,10 @@ def parse(text: str) -> SafetyParse:
         clause = clause.strip()
         if not clause:
             continue
+        # These predicates concern the entire unchanged clause, not each cue.
+        # Evaluate once even when an adversarial message repeats allergy words.
+        unsure_clause = bool(_UNSURE.search(clause))
+        unnamed_clause = bool(_UNNAMED.search(clause))
         trig = _triggers(clause)
         if trig:
             for i, (kind, m) in enumerate(trig):
@@ -229,7 +233,7 @@ def parse(text: str) -> SafetyParse:
                     out.negated_terms += [t for t in named if t not in out.negated_terms]
                     mode = None  # "không (hề) bị dị ứng …": states absence; nothing to record
                     continue
-                if kind in ("allergy", "symptom") and _UNSURE.search(clause) and not _UNNAMED.search(clause):
+                if kind in ("allergy", "symptom") and unsure_clause and not unnamed_clause:
                     out.issues.append("empty")  # "chưa biết có phải dị ứng không": a doubt, not a statement; keep the question open
                     mode = None
                     continue
@@ -261,7 +265,7 @@ def parse(text: str) -> SafetyParse:
                         bt = _before_terms(before_full, before_cache) or ([t for t in bare if True] if "empty" in local else [])
                         if bt:
                             terms, local = bt, []
-                if _UNNAMED.search(clause):
+                if unnamed_clause:
                     local.append("empty")  # "…và một nguyên liệu chưa rõ tên": another substance exists but is unnamed
                 out.issues += local
                 bucket = out.allergies
@@ -286,7 +290,7 @@ def parse(text: str) -> SafetyParse:
                 if mode == "avoid" and hard_mode:
                     out.avoid_hard += [t for t in found if t not in out.avoid_hard]
                 continue
-            if mode == "allergy" and (_UNNAMED.search(clause) or re.search(r"\b(?:chat|thu|mon|loai|thuc pham|cai)\s+(?:khac|nua)\b", fold_uncached(clause))):
+            if mode == "allergy" and (unnamed_clause or re.search(r"\b(?:chat|thu|mon|loai|thuc pham|cai)\s+(?:khac|nua)\b", fold_uncached(clause))):
                 out.issues.append("empty")  # "…tôm và một chất khác": another allergy was mentioned but not named
                 continue
         words = _clean_words(clause)

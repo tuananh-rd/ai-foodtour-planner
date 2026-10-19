@@ -16,6 +16,8 @@ The existing Gemini client defaults to gemini-3.5-flash-lite, with environment o
 
 Sources: https://ai.google.dev/gemini-api/docs/models/gemini-3.5-flash-lite and https://ai.google.dev/gemini-api/docs/pricing.
 
+The official unpaid-service terms state that submitted content can be used to improve services and processed by human reviewers, and prohibit submitting sensitive/confidential/personal information. The new conversation path therefore omits health disclosures from context and refuses sensitive current turns before external classification/conversation; deterministic allergy handling remains local. Product disclosure must explain minimized context and discourage private information. Source: https://ai.google.dev/gemini-api/terms.
+
 ## Self-hosted pilot map
 
 Choose MapLibre GL JS with the PMTiles protocol rather than the maintenance-mode Leaflet vector plugin. This is within the approved compatible-renderer option. Pin new package versions only after checking published upstream releases. Do not upgrade unrelated dependencies.
