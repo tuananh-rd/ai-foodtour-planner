@@ -1,6 +1,7 @@
 """Versioned discovery state stored inside existing bounded session JSON (no DB migration)."""
 from dataclasses import dataclass, field
 import copy
+import json
 from app.assistant.conversation import redact_sensitive
 from .schemas import Profile
 
@@ -91,11 +92,16 @@ class State:
         return obj
 
     def dump(self):
-        return {**self.__dict__, 'profile': self.profile.model_dump()}
+        result = {**self.__dict__, 'profile': self.profile.model_dump(), 'messages': list(self.messages)}
+        # UTF-8 storage budget matters more than character count for Vietnamese.
+        # Retain authoritative preferences/selection; trim oldest replay only.
+        while result['messages'] and len(json.dumps(result, ensure_ascii=False).encode('utf-8')) > 20000:
+            result['messages'].pop(0)
+        return result
 
     def remember(self, role, text):
         # Keep a bounded local replay; credentials and exact coordinates are redacted.
-        safe = redact_sensitive(str(text))[:700]
+        safe = redact_sensitive(str(text))[:700].encode('utf-8')[:900].decode('utf-8', errors='ignore')
         self.messages.append({'role': role, 'text': safe})
         self.messages = self.messages[-16:]
 

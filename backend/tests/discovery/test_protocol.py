@@ -107,6 +107,19 @@ class ProtocolTests(unittest.TestCase):
     def test_invalid_allergy_term_rejected_before_storage(self):
         with self.assertRaises(ValueError): Profile(allergies=['x'*41])
 
+    def test_long_unicode_conversation_fits_existing_session_storage(self):
+        from app.chat.state import ChatState
+        from app.repositories.sessions import encode_chat
+        state = State()
+        for _ in range(40):
+            state.remember('user', 'Ẩm thực Hà Nội 🍜 '*100)
+            state.remember('assistant', 'Thông tin chưa xác minh 🍲 '*100)
+        chat = ChatState()
+        chat.discovery = state.dump()
+        encoded = encode_chat(chat)
+        self.assertLess(len(encoded.encode('utf-8')), 32768)
+        self.assertEqual(len(State.restore(chat.discovery).messages), 16)
+
     def test_upgrade_preserves_legacy_allergies_but_not_assumed_defaults(self):
         from app.repositories.sessions import Session
         from app.chat.state import Allergy, ShortItem
