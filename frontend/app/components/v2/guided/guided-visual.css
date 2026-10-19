@@ -1014,6 +1014,39 @@
   word-break: break-word;
 }
 
+/* Stop Card Meta Line (Visible Price & Estimated Leg info) */
+.nn-stop-meta-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.nn-stop-meta-line .nn-meta-pill {
+  min-height: 24px;
+  height: auto;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: #F7F2EE;
+  border: 1px solid #EAE2D9;
+  color: #5C4740;
+  font-size: 11.5px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  box-sizing: border-box;
+  word-break: break-word;
+}
+
+.nn-stop-meta-line .nn-leg-pill {
+  background: #FFF8F2;
+  border-color: #F0DFC8;
+  color: #8C472A;
+}
+
 /* Empty steps container */
 .nn-empty-steps-list {
   display: flex;
@@ -1251,6 +1284,28 @@
     overflow-x: hidden;
   }
 
+  .nn-tour-col-header {
+    height: auto;
+    min-height: 40px;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 12px;
+    max-width: 100%;
+  }
+
+  .nn-tour-heading {
+    font-size: 20px;
+    line-height: 26px;
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .nn-view-mode-toggle {
+    flex-shrink: 0;
+    max-width: 100%;
+  }
+
   .nn-hero-card {
     border-radius: 20px;
     padding: 18px;
@@ -1273,6 +1328,44 @@
   }
 
   .nn-editorial-stop-card {
-    padding: 12px 14px;
+    padding: 12px;
+    gap: 10px;
+    box-sizing: border-box;
+    max-width: 100%;
+  }
+
+  .nn-stop-body {
+    min-width: 0;
+    flex: 1;
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  .nn-stop-stage-row {
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nn-stop-stage {
+    min-width: 0;
+    word-break: break-word;
+  }
+
+  .nn-stop-actions {
+    flex-wrap: wrap;
+    gap: 4px;
+    max-width: 100%;
+  }
+
+  .nn-pill-action-btn {
+    max-width: 100%;
+    white-space: nowrap;
+  }
+
+  .nn-row-item {
+    flex-wrap: wrap;
+    gap: 6px;
+    max-width: 100%;
+    box-sizing: border-box;
   }
 }
