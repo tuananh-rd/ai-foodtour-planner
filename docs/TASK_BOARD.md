@@ -2,6 +2,8 @@
 
 ## Active online assistant initiative
 
+Live Tavily setup follow-up: credential configured locally and ignored, cap1 credit/day and3/month with persistent ledger preserved. Read-only /usage200 gives null PAYGO/key limits, so unchanged adapter fails closed: BLOCKED,0 search POST/0 local credit delta/0 Gemini calls. See reports/online-assistant/tavily-live-smoke.json and ONLINE_ASSISTANT_LOCAL_SETUP.md. No frontend/code changes, agent dispatch or full-suite repeat.
+
 Final local gate accepted at3696001: focus task6816b23 reviewed/integrated,7 targeted tests pass; one final broad browser run190/190 and refreshed production UI60/60 pass; build PASS148kB. Backend unchanged1509005 retains661 tests/OpenAPI/18 contracts. Production URL3060 is synthetic/rules, not live. Tavily live BLOCKED/no key, Gemini PARTIAL. Screenshots and limits: reports/ONLINE_ASSISTANT_ACCEPTANCE.md. Antigravity retained, no active editor. The earlier open-focus/task statements below are historical.
 
 Latest event: final read-only QA settled e1c86af; Codex requires correction of unsupported focus root-cause/visual claims and mismatched test names before acceptance. Fresh same-terminal task_1ecaea329bef owns only GuidedLayout.jsx, final-integration QA evidence/harness and FINAL_QA.md to verify/fix the two focus failures. No overlapping editor; targeted checks only until final regression gate. Earlier active-QA statements below are historical.

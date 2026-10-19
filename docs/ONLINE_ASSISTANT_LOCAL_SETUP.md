@@ -46,4 +46,10 @@ Markers represent supplied stop coordinates. The basemap does not provide a comp
 
 ## Acceptance limits
 
-Live Tavily is blocked until the local credential/configuration exists. Earlier bounded Gemini probing produced one accepted greeting and one rejected reply; multi-turn live quality remains partial. Final integrated browser/visual/regression evidence must be recorded separately from these setup instructions.
+Local credential is now present (one nonempty entry, ignored backend/.env; never printed). Current local smoke caps are1 credit/day and3/month, preserving any lower configured limits and the persistent ledger. Gemini settings/limits are unchanged; no Gemini calls occurred in this step.
+
+Live Tavily remains BLOCKED despite successful read-only /usage HTTP200: supported free plan is recognized, but account.paygo_limit and key.limit are null. The existing adapter requires an integer zero PAYGO limit and a positive bounded provider-side key limit. Null is not evidence of zero or a safe limit; no search POST was sent, no citations were fabricated, local reserved-credit delta is0. Sanitized evidence: reports/online-assistant/tavily-live-smoke.json. No account/billing setting or guard was modified.
+
+Current test URL remains http://127.0.0.1:3060 (production frontend3696001), synthetic venue data/deterministic rules, real Tavily credential configured but account gate blocked. Configured in health means the credential/local settings exist, not that the account gate has passed. Gemini live quality remains PARTIAL. Source code/UI did not change, so the already-green full suites were not repeated.
+
+To use after resolving the provider-side metadata blocker, open the chat tab, explicitly select Tra web, and send only a public food/area query. The backend freshly checks /usage before every uncached search. Do not include GPS, personal history or private venue records. Do not repeatedly retry the blocked search. Inspect the existing Tavily dashboard/key settings manually if needed; keep the account free, require PAYGO disabled/zero and a finite positive key limit. No setting change is performed by the app, and no new live attempt is authorized by these instructions alone. A UI failure must remain honest until a later bounded probe establishes success.

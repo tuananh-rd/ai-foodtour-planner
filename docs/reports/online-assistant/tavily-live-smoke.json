@@ -1,0 +1,112 @@
+{
+  "time_utc": "2026-10-19T10:22:03.513425+00:00",
+  "source_commit": "d1d989f0a1fd331fe245624b5f8686c7eaac83ef",
+  "provider": "Tavily live",
+  "gemini_calls": 0,
+  "search_posts": 0,
+  "http": [
+    {
+      "method": "GET",
+      "endpoint": "/usage",
+      "status": 200
+    },
+    {
+      "method": "GET",
+      "endpoint": "/usage",
+      "phase": "schema_diagnostic",
+      "status": 200
+    }
+  ],
+  "citations": [],
+  "status": "BLOCKED",
+  "automatic_retries": 0,
+  "key_metadata": {
+    "env_exists": true,
+    "gitignored": true,
+    "line_count": 1,
+    "nonempty": true
+  },
+  "local_config": {
+    "enabled": true,
+    "free_only": true,
+    "daily_credit_cap": 1,
+    "monthly_credit_cap": 3,
+    "persistent_ledger_gitignored": true,
+    "existing_ledger_preserved": true,
+    "gemini_settings_unchanged": true,
+    "persistent_ledger_initialized": true
+  },
+  "ledger_before": {
+    "day": 0,
+    "month": 0
+  },
+  "adapter_configured": true,
+  "public_query": "Phở truyền thống ở Hà Nội",
+  "account_gate": {
+    "supported_free_plan": true,
+    "valid_integer_fields": false,
+    "paygo_zero": false,
+    "provider_key_limit_bounded": false,
+    "free_gate_pass": false
+  },
+  "adapter_result": {
+    "status": "unavailable",
+    "fetched_at": null,
+    "credits": 0,
+    "cached": false
+  },
+  "ledger_after": {
+    "day": 0,
+    "month": 0
+  },
+  "local_credit_delta": {
+    "day": 0,
+    "month": 0
+  },
+  "blocker": "Live /usage HTTP200 identifies supported free plan, but account.paygo_limit=null and key.limit=null. Existing adapter requires integer PAYGO limit 0 and a positive bounded provider-side key limit; free-only cannot be proven. No search POST was sent.",
+  "limitations": [
+    "One public query only; not broad search-quality acceptance.",
+    "Account snapshots cannot prevent concurrent human billing changes.",
+    "No GPS, chat history, private venue data or source-page fetching.",
+    "No Gemini calls or quota changes."
+  ],
+  "usage_schema_diagnostic": {
+    "account.plan_usage": {
+      "present": true,
+      "type": "int"
+    },
+    "account.plan_limit": {
+      "present": true,
+      "type": "int"
+    },
+    "account.paygo_usage": {
+      "present": true,
+      "type": "int"
+    },
+    "account.paygo_limit": {
+      "present": true,
+      "type": "NoneType"
+    },
+    "key.usage": {
+      "present": true,
+      "type": "int"
+    },
+    "key.limit": {
+      "present": true,
+      "type": "NoneType"
+    }
+  },
+  "provider_credit_delta": null,
+  "provider_credit_delta_note": "No search POST; provider counter delta not independently measured. Local reserved-credit delta is zero.",
+  "runtime": {
+    "web_url": "http://127.0.0.1:3060",
+    "web_http": 200,
+    "frontend_source": "3696001",
+    "api_url": "http://127.0.0.1:8060",
+    "api_build": "d1d989f0a1fd331fe245624b5f8686c7eaac83ef",
+    "dataset": "synthetic",
+    "assistant_provider": "rules",
+    "web_search_configured": true,
+    "live_account_gate": "BLOCKED"
+  }
+}
