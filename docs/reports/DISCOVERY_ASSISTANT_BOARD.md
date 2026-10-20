@@ -1,5 +1,21 @@
 # Discovery-first assistant task board
 
+## Active upgrade - 2026-10-20: location, verified chat models and optional web
+
+Baseline200405a/frontend4fdfe92. Direct user authority supersedes Tavily retirement: web is optional/default off, separate from verified Gemini chat models; existing free-only/null-limit guard and Tavily ledger remain. No paid activation, default model/cap increase, provider switch, user-server shutdown or private records/keys in evidence. New Gemini allowance: at most3 user turns/6 model requests including loop, no auto retry; prior smoke is not replayed.
+
+Contract: `docs/DISCOVERY_LOCATION_MODEL_WEB_CONTRACT.md`. Codex owns contracts/backend/AI/runtime/integration and screenshot authorization/root-cause tests. Antigravity owns explicitly dispatched frontend/QA and affected review; Claude inactive. Current Run remains`run_a4b75f502189` after runtime/terminal verification, without a duplicate coordinator/agent.
+
+| Work | Owner | State |
+|---|---|---|
+| Exact screenshot transcript/authorization and stale preferences | Codex | Investigating: parse area/food intent and per-call permission mismatch; no safety relaxation |
+| Selected origin, local manual resolution and backend distances | Codex | Contract frozen; implementation pending |
+| Verified model catalog/session settings and optional Tavily guards | Codex | Contract frozen; existing provider/ledger restored under fail-closed policy |
+| Location/model/web UI, distance cards, Maps CTA and independent QA | Antigravity | Dispatch pending to the existing verified terminal; frontend/QA only |
+| Mock/application E2E, source review and new bounded native smoke | Codex + affected review | Pending; zero new live requests so far |
+
+Previous completed continuation and its live limit/evidence follow below.
+
 ## Current continuation — 2026-10-20
 
 Direct user authority: fluid Warm editorial at 1280/1440/1920/2560 desktop and 390 mobile; no Unicode emoji anywhere in the product UI; actual configured Gemini and local dataset. This explicit request authorizes at most three smoke chat turns and six total model requests including tool continuations, without automatic retries, model/cap increases, Tavily or paid Maps. Historical no-live-probe statements below describe the prior delivery only.
