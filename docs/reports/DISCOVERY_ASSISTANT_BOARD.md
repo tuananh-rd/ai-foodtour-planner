@@ -16,6 +16,12 @@ Contract: `docs/DISCOVERY_LOCATION_MODEL_WEB_CONTRACT.md`. Codex owns contracts/
 
 New live evidence: `discovery-upgrade-model-metadata.json` is one key-scoped metadata GET, no generate/debit. `discovery-upgrade-live.json` records candidate3.1 native HTTP200 with two validated local searches, followed by tool-result continuation timeout; natural chat quality NOT PASSED. Private records remain local. Ledger13→15/18, remaining3 equals reserve3, reset2026-10-20T07:00:00Z. No further provider calls, caps/billing unchanged. Candidate3.1 is not in the production registry because full continuation compatibility did not complete. The requested multiple available live model choices remain blocked; no fabricated second option.
 
+### Antigravity permission and resume checkpoint
+
+The user authorized automatic file edits within the existing frontend/QA task scope. The current worker screen explicitly confirms `Accept-edits mode: file edits auto-approved` and the `accept-edits` status; this is a session setting, not a global permission change. Existing task `task_cdf843155428`, dispatch `ctx_0a01e12b4bfe`, Run `run_a4b75f502189` and conversation `0d2a85b1-d51a-4f2a-beb0-c0476ffcf828` remain unchanged.
+
+If the existing worker must be resumed after a verified stop, use its existing worktree `foodtour-antigravity-web` and the same conversation with `agy --conversation 0d2a85b1-d51a-4f2a-beb0-c0476ffcf828 --mode accept-edits`. Verify current Orca task/terminal authority before resuming; do not launch a duplicate worker or change its model. Do not use `--dangerously-skip-permissions`. Billing, account, deletion, private-data and security boundaries remain unchanged. Current mode confirmation is not evidence of a completed implementation, build or test.
+
 Previous completed continuation and its live limit/evidence follow below.
 
 ## Current continuation — 2026-10-20
