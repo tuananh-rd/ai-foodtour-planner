@@ -1,0 +1,31 @@
+{
+  "scope": "engine-level RED/GREEN; current synthetic State/Tools used for both; no HTTP or provider transport",
+  "input": "tôi muốn ăn phở với tráng miệng ở hai bà trưng",
+  "cases": [
+    {
+      "engine": "baseline_engine_200405a",
+      "status": "tool_error",
+      "reply": "Yêu cầu công cụ chưa được người dùng cho phép; chưa thay đổi dữ liệu.",
+      "area": "Phố cổ",
+      "foods": [],
+      "selected_count": 1,
+      "selection_lock_preserved": true,
+      "automatic_tour": false,
+      "provider_transport": "stub only"
+    },
+    {
+      "engine": "current_engine",
+      "status": "no_results",
+      "reply": "Chưa có kết quả phù hợp trong dữ liệu cho khu vực bạn chọn.",
+      "area": "Hai Bà Trưng",
+      "foods": [
+        "phở",
+        "tráng miệng"
+      ],
+      "selected_count": 1,
+      "selection_lock_preserved": true,
+      "automatic_tour": false,
+      "provider_transport": "stub only"
+    }
+  ]
+}
