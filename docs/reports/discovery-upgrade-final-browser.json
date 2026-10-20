@@ -1,0 +1,78 @@
+{
+  "source": "3e7d1f0c4743e3ef15ea3fa18490ddce00554115",
+  "mode": "synthetic/rules",
+  "providerCalls": 0,
+  "checks": [
+    {
+      "name": "API source is synthetic/rules",
+      "pass": true
+    },
+    {
+      "name": "exact request asks origin without authorization denial",
+      "pass": true
+    },
+    {
+      "name": "actual local synthetic search distances",
+      "pass": true
+    },
+    {
+      "name": "explicit confirmation precedes plan",
+      "pass": true
+    },
+    {
+      "name": "five stop actual planner tour",
+      "pass": true
+    },
+    {
+      "name": "backend split links exist",
+      "pass": true
+    },
+    {
+      "name": "browser CTA uses every authoritative server link in order",
+      "pass": true
+    },
+    {
+      "name": "viewport 1280 fits without horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "viewport 1280 has no emoji",
+      "pass": true
+    },
+    {
+      "name": "viewport 1440 fits without horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "viewport 1440 has no emoji",
+      "pass": true
+    },
+    {
+      "name": "viewport 1920 fits without horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "viewport 1920 has no emoji",
+      "pass": true
+    },
+    {
+      "name": "viewport 2560 fits without horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "viewport 2560 has no emoji",
+      "pass": true
+    },
+    {
+      "name": "viewport 390 fits without horizontal overflow",
+      "pass": true
+    },
+    {
+      "name": "viewport 390 has no emoji",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "success": false,
+  "failure": "Timeout GPS click"
+}

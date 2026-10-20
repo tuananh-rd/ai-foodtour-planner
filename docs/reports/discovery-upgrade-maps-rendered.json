@@ -1,0 +1,47 @@
+{
+  "source": "sibling working tree; mock endpoint; rendered real browser",
+  "checks": [
+    {
+      "name": "loading visible without client coordinate fallback",
+      "pass": true
+    },
+    {
+      "name": "partial address link rendered",
+      "pass": true
+    },
+    {
+      "name": "partial skipped notes and no client legs",
+      "pass": true
+    },
+    {
+      "name": "session identity hides stale address URL",
+      "pass": true
+    },
+    {
+      "name": "empty success visible unavailable with no route",
+      "pass": true
+    },
+    {
+      "name": "transport error visible without CTA",
+      "pass": true
+    },
+    {
+      "name": "vehicle driving link",
+      "pass": true
+    },
+    {
+      "name": "late old response cannot restore stale CTA",
+      "pass": true
+    },
+    {
+      "name": "no selected origin means no CTA",
+      "pass": true
+    },
+    {
+      "name": "null-tour transition causes no hook-order exception",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "success": true
+}

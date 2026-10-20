@@ -1,0 +1,32 @@
+{
+  "source": "sibling working tree; mock endpoint; rendered real browser",
+  "checks": [
+    {
+      "name": "loading visible without client coordinate fallback",
+      "pass": true
+    },
+    {
+      "name": "partial address link rendered",
+      "pass": true
+    },
+    {
+      "name": "partial skipped notes and no client legs",
+      "pass": true
+    },
+    {
+      "name": "session identity hides stale address URL",
+      "pass": true
+    },
+    {
+      "name": "empty success visible unavailable with no route",
+      "pass": true
+    },
+    {
+      "name": "transport error visible without CTA",
+      "pass": false
+    }
+  ],
+  "errors": [],
+  "success": false,
+  "failure": "transport error visible without CTA"
+}

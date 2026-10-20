@@ -1,0 +1,49 @@
+{
+  "source": "3e7d1f0",
+  "mode": "synthetic/rules",
+  "gps": "simulated browser geolocation callbacks; no physical GPS",
+  "checks": [
+    {
+      "name": "GPS never requested on initialization",
+      "pass": true
+    },
+    {
+      "name": "GPS pending locks chat 1",
+      "pass": true
+    },
+    {
+      "name": "GPS outcome visible and recovered 1",
+      "pass": true
+    },
+    {
+      "name": "GPS pending locks chat 2",
+      "pass": true
+    },
+    {
+      "name": "GPS outcome visible and recovered 2",
+      "pass": true
+    },
+    {
+      "name": "GPS pending locks chat 3",
+      "pass": true
+    },
+    {
+      "name": "GPS outcome visible and recovered 3",
+      "pass": true
+    },
+    {
+      "name": "synchronous GPS failure releases busy state",
+      "pass": true
+    },
+    {
+      "name": "GPS success persists chosen origin with backend reply",
+      "pass": true
+    },
+    {
+      "name": "no runtime JS exceptions",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "success": true
+}

@@ -4,6 +4,8 @@ Date: 2026-10-20. Baseline200405a/frontend4fdfe92. Codex owns backend/contracts/
 
 ## Acceptance status
 
+Latest local completion: production source `3e7d1f0` at **http://127.0.0.1:3320**, API8230, synthetic/rules. Maps/GPS findings are integrated after independent source and rendered-browser checks; final build exit0. See `DISCOVERY_LOCATION_MODEL_WEB_FINAL.md` for evidence and retained harness failures. This supersedes the in-progress UI status below; live limitations remain unchanged.
+
 Backend implemented and hermetic/actual synthetic HTTP checks passed. UI correction review and actual browser integration are in progress. Full live natural-chat acceptance and a second available verified model are **BLOCKED**, not passed.
 
 ## Screenshot root cause and fix

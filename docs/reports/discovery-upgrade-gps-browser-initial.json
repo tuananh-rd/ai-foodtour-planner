@@ -1,0 +1,18 @@
+{
+  "source": "3e7d1f0",
+  "mode": "synthetic/rules",
+  "gps": "simulated browser geolocation callbacks; no physical GPS",
+  "checks": [
+    {
+      "name": "GPS never requested on initialization",
+      "pass": true
+    },
+    {
+      "name": "GPS pending locks chat 1",
+      "pass": false
+    }
+  ],
+  "errors": [],
+  "success": false,
+  "failure": "GPS pending locks chat 1"
+}
