@@ -15,6 +15,58 @@
 
 import { isValidGoogleMapsDirUrl } from './mapsUrlValidation.js';
 
+export function validateDiscoveryMapsLink(link, expectedMode) {
+  if (!link || typeof link !== 'object' || typeof link.url !== 'string' || link.url.length > 2048) return false;
+  if (!isValidGoogleMapsDirUrl(link.url)) return false;
+  try {
+    const url = new URL(link.url);
+    if (url.searchParams.get('api') !== '1') return false;
+    if (expectedMode && url.searchParams.get('travelmode') !== expectedMode) return false;
+    const waypoints = url.searchParams.get('waypoints');
+    return !waypoints || waypoints.split('|').length <= 3;
+  } catch {
+    return false;
+  }
+}
+
+export function normalizeDiscoveryMapsResponse(response, expectedMode) {
+  if (!response || typeof response !== 'object') return null;
+  const links = (Array.isArray(response.links) ? response.links : [])
+    .filter((link) => validateDiscoveryMapsLink(link, expectedMode))
+    .sort((a, b) => Number(a.index || 0) - Number(b.index || 0));
+  const skipped = Array.isArray(response.skipped) ? response.skipped : [];
+  const notes = Array.isArray(response.notes) ? response.notes : [];
+  let status = ['ok', 'partial', 'unavailable'].includes(response.status)
+    ? response.status
+    : (links.length ? 'ok' : 'unavailable');
+  if (status === 'ok' && skipped.length) status = 'partial';
+  if (!links.length && status !== 'partial') status = 'unavailable';
+  return { status, links, skipped, notes };
+}
+
+export function getDiscoveryMapsRequestIdentity({ sessionId, sessionToken, revision, origin, travelMode, stops }) {
+  return JSON.stringify([
+    sessionId,
+    sessionToken,
+    revision,
+    origin?.id ?? origin?.candidate_id ?? null,
+    origin?.source ?? null,
+    origin?.status ?? null,
+    origin?.lat ?? null,
+    origin?.lon ?? origin?.lng ?? null,
+    origin?.address ?? null,
+    origin?.label ?? null,
+    travelMode,
+    (Array.isArray(stops) ? stops : []).map((stop) => stop?.venue_id ?? stop?.id ?? null)
+  ]);
+}
+
+export function resolveEffectiveDiscoveryMapsLinks({ serverMaps, origin, stops, vehicle }) {
+  if (serverMaps) return Array.isArray(serverMaps.links) ? serverMaps.links : [];
+  if (!isValidCoordinate(origin)) return [];
+  return buildDiscoveryMapsSplitUrls({ origin, stops, vehicle });
+}
+
 export function resolveTravelMode(vehicle) {
   if (!vehicle) {
     return { mode: 'walking', isMotorbike: false, label: 'Đi bộ' };

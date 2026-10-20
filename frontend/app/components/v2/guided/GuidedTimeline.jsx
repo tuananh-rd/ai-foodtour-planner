@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
-import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
-import { buildDiscoveryMapsUrl, buildDiscoveryMapsSplitUrls, buildDiscoveryLegUrls, resolveTravelMode } from '../../../../lib/discoveryMaps';
+import React, { useState, useEffect, useRef } from 'react';
+import { buildDiscoveryMapsUrl, buildDiscoveryLegUrls, getDiscoveryMapsRequestIdentity, isValidCoordinate, normalizeDiscoveryMapsResponse, resolveEffectiveDiscoveryMapsLinks, resolveTravelMode, validateDiscoveryMapsLink } from '../../../../lib/discoveryMaps';
 import { getDiscoveryMapsLinks } from '../../../../lib/discoveryApi';
 import { formatWarningMessage } from './ConfirmSummaryCard';
 import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
@@ -40,6 +39,19 @@ function compactUnknowns(unknowns) {
   return parts.join(' ');
 }
 
+const SKIPPED_REASONS_VI = {
+  no_usable_point: 'quán thiếu toạ độ hoặc địa chỉ hợp lệ',
+  url_too_long: 'độ dài liên kết vượt quá giới hạn 2048 ký tự'
+};
+
+export function formatSkippedReason(reason) {
+  return SKIPPED_REASONS_VI[reason] || reason || 'không thể xác định toạ độ';
+}
+
+export function validateServerLink(link, expectedMode) {
+  return validateDiscoveryMapsLink(link, expectedMode);
+}
+
 /**
  * GuidedTimeline
  * Step 5 Vertical Timeline conforming to Figma Frame 1:145 Warm Editorial
@@ -64,72 +76,95 @@ export default function GuidedTimeline({
   onAdjustStops,
   onRestart
 }) {
-  if (!tour || !Array.isArray(tour.stops) || tour.stops.length === 0) {
-    return null;
-  }
-
-  const stops = tour.stops;
-  const hasUnknowns = Array.isArray(tour.unknowns) && tour.unknowns.length > 0;
-
-  // Server-generated Google Maps links
+  // HOOKS FIRST: Unconditional hook calls conforming to React Rules of Hooks
   const [serverMaps, setServerMaps] = useState(null);
   const [mapsLoading, setMapsLoading] = useState(false);
   const [mapsError, setMapsError] = useState(null);
+  const mapsIdentityRef = useRef(null);
+
+  const hasValidOrigin = isValidCoordinate(origin);
+  const stops = Array.isArray(tour?.stops) ? tour.stops : [];
+  const modeInfo = resolveTravelMode(vehicle);
+  const travelMode = modeInfo.mode;
+  const mapsIdentity = getDiscoveryMapsRequestIdentity({ sessionId, sessionToken, revision, origin, travelMode, stops });
+  mapsIdentityRef.current = mapsIdentity;
 
   useEffect(() => {
-    if (!sessionId || !sessionToken || !tour || !Array.isArray(tour.stops) || tour.stops.length === 0) {
-      setServerMaps(null);
+    // Clear previous state immediately so stale links never survive across sessions/revisions/mode/origin changes
+    setServerMaps(null);
+    setMapsError(null);
+
+    // Explicit valid origin gate: if no origin, no auth or no stops, do not fetch and do not render CTA
+    if (!sessionId || !sessionToken || !hasValidOrigin || stops.length === 0) {
       setMapsLoading(false);
-      setMapsError(null);
       return;
     }
+
     let active = true;
     const ac = new AbortController();
-    const travelMode = resolveTravelMode(vehicle).mode;
+    const requestedIdentity = mapsIdentity;
     setMapsLoading(true);
-    setMapsError(null);
 
     getDiscoveryMapsLinks(sessionId, sessionToken, travelMode, { signal: ac.signal })
       .then((res) => {
-        if (active && res && Array.isArray(res.links) && res.links.length > 0) {
-          setServerMaps(res);
+        if (!active || mapsIdentityRef.current !== requestedIdentity) return;
+        if (!res || typeof res !== 'object') {
+          setServerMaps({ identity: requestedIdentity, status: 'unavailable', links: [], skipped: [], notes: [] });
+          return;
         }
+
+        setServerMaps({ ...normalizeDiscoveryMapsResponse(res, travelMode), identity: requestedIdentity });
       })
       .catch((err) => {
-        if (active && err?.name !== 'AbortError') {
+        if (active && mapsIdentityRef.current === requestedIdentity && err?.name !== 'AbortError') {
+          setServerMaps(null);
           setMapsError(err?.message || 'Không thể lấy liên kết từ máy chủ');
         }
       })
       .finally(() => {
-        if (active) setMapsLoading(false);
+        if (active && mapsIdentityRef.current === requestedIdentity) setMapsLoading(false);
       });
 
     return () => {
       active = false;
       ac.abort();
     };
-  }, [sessionId, sessionToken, tour, vehicle, revision]);
+  }, [sessionId, sessionToken, revision, travelMode, mapsIdentity, stops.length, hasValidOrigin]);
 
-  // Build Free Google Maps Directions URL via discoveryMaps (client fallback)
-  const mapsUrlInfo = buildDiscoveryMapsUrl({ origin, stops, vehicle });
-  const clientSplitLinks = mapsUrlInfo?.splitLinks || [];
+  // Early return ONLY after all hooks are evaluated
+  if (!tour || stops.length === 0) {
+    return null;
+  }
 
-  // Effective links: prioritize server split links if available, else clientSplitLinks
-  const serverLinks = serverMaps?.links || null;
-  const effectiveLinks = (Array.isArray(serverLinks) && serverLinks.length > 0)
-    ? serverLinks.map((sl) => ({
-        index: sl.index,
-        of: sl.of,
-        url: sl.url,
-        label: sl.of > 1 ? `Chặng ${sl.index}/${sl.of}` : 'Toàn bộ lộ trình'
-      }))
-    : clientSplitLinks;
+  const hasUnknowns = Array.isArray(tour.unknowns) && tour.unknowns.length > 0;
 
-  const primaryUrl = effectiveLinks[0]?.url || mapsUrlInfo?.url || null;
+  // Build Free Google Maps Directions URL via discoveryMaps (client fallback, gated by valid origin)
+  const mapsUrlInfo = hasValidOrigin ? buildDiscoveryMapsUrl({ origin, stops, vehicle }) : null;
+
+  const currentServerMaps = serverMaps && serverMaps.identity === mapsIdentity ? serverMaps : null;
+  const staleServerResponse = Boolean(serverMaps && !currentServerMaps);
+  const serverStatus = currentServerMaps?.status || null;
+  const isServerUnavailable = serverStatus === 'unavailable';
+  const isServerPartial = serverStatus === 'partial';
+  // Effective links: prioritize server split links if available and valid
+  const rawEffectiveLinks = resolveEffectiveDiscoveryMapsLinks({
+    serverMaps: staleServerResponse ? { status: 'unavailable', links: [] } : currentServerMaps,
+    origin: hasValidOrigin ? origin : null,
+    stops,
+    vehicle
+  });
+  const effectiveLinks = rawEffectiveLinks.map((sl) => ({
+      index: sl.index,
+      of: sl.of,
+      url: sl.url,
+      label: sl.of > 1 ? `Chặng ${sl.index}/${sl.of}` : 'Toàn bộ lộ trình'
+  }));
+
+  const primaryUrl = effectiveLinks[0]?.url || null;
   const isMultiLeg = effectiveLinks.length > 1;
 
   // Build Per-Leg URLs (mobile fallback / detailed segments)
-  const legUrls = buildDiscoveryLegUrls({ origin, stops, vehicle });
+  const legUrls = hasValidOrigin ? buildDiscoveryLegUrls({ origin, stops, vehicle }) : [];
 
   // Allergy label display
   const hasAllergies = Array.isArray(allergies) && allergies.length > 0;
@@ -351,14 +386,36 @@ export default function GuidedTimeline({
       </div>
 
       {/* Primary CTA: Dark Card with Free Google Maps Walking URL (Requires valid origin) */}
+      {currentServerMaps && (isServerPartial || isServerUnavailable) && (
+        <div data-testid="google-maps-coverage" className="nn-peach-box" role="status">
+          <b>{isServerPartial ? 'Chỉ dẫn chưa đầy đủ:' : 'Máy chủ chưa tạo được chỉ dẫn:'}</b>{' '}
+          {isServerPartial
+            ? 'Các chặng dưới đây giữ đúng thứ tự; điểm bị bỏ qua không được nối tắt.'
+            : 'Không có liên kết điều hướng đầy đủ cho lịch trình này.'}
+          {currentServerMaps.skipped?.length > 0 && (
+            <ul data-testid="google-maps-skipped" style={{ margin: '4px 0 0', paddingLeft: 18 }}>
+              {currentServerMaps.skipped.map((item, index) => (
+                <li key={`${item?.stop_order ?? 'stop'}-${index}`}>
+                  Điểm {item?.stop_order ?? '?'}: {formatSkippedReason(item?.reason)}
+                </li>
+              ))}
+            </ul>
+          )}
+          {currentServerMaps.notes?.filter((note) => typeof note === 'string' && note.trim()).map((note, index) => (
+            <p key={`maps-note-${index}`} style={{ margin: '4px 0 0' }}>{note}</p>
+          ))}
+        </div>
+      )}
       {primaryUrl && (
         <div className="nn-dark-cta-card">
           <div className="nn-cta-header">
             <h4 className="nn-cta-title">Sẵn sàng cho một buổi tối ngon?</h4>
             <p className="nn-cta-desc">
-              {isMultiLeg
-                ? `Lịch trình có ${stops.length} điểm dừng (được chia thành ${effectiveLinks.length} chặng trên Google Maps để đảm bảo điều hướng đầy đủ, không rơi chặng).`
-                : 'Lịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.'}
+              {isServerPartial
+                ? `Máy chủ chỉ tạo được ${effectiveLinks.length} chặng khả dụng; các điểm bị bỏ qua không được nối tắt.`
+                : isMultiLeg
+                  ? `Lịch trình có ${stops.length} điểm dừng, được chia thành ${effectiveLinks.length} chặng Google Maps theo đúng thứ tự.`
+                  : 'Lịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.'}
               {mapsLoading && <span style={{ fontSize: 11, color: '#C4B5A5', marginLeft: 6 }}> (Đang đồng bộ máy chủ…)</span>}
             </p>
           </div>

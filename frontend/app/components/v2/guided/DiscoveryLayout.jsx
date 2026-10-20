@@ -296,6 +296,7 @@ export default function DiscoveryLayout({
   }, []);
 
   const requestTokenRef = useRef(0);
+  const gpsRequestRef = useRef(0);
   const abortControllerRef = useRef(null);
   const chatScrollRef = useRef(null);
   const inputRef = useRef(null);
@@ -378,6 +379,11 @@ export default function DiscoveryLayout({
   useEffect(() => {
     // Invalidate stale pending tokens immediately
     requestTokenRef.current += 1;
+    gpsRequestRef.current += 1;
+    operationLockRef.current = false;
+    setGpsPending(false);
+    setBusy(false);
+    setBusyMessage('');
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
     }
@@ -709,14 +715,12 @@ export default function DiscoveryLayout({
 
   // Location Handlers (GPS, resolve query, choose candidate, clear, coordinates)
   const handleTriggerGPS = useCallback(() => {
-    if (typeof window === 'undefined' || !navigator.geolocation) {
-      setGeoNotice('Trình duyệt không hỗ trợ định vị GPS.');
-      return;
-    }
     const currentSession = latestSessionRef.current;
     if (!currentSession.sessionReady || busy || gpsPending || operationLockRef.current) return;
 
+    if (typeof window === 'undefined') return;
     operationLockRef.current = true;
+    const gpsRequestId = ++gpsRequestRef.current;
     setGpsPending(true);
     setBusy(true);
     setBusyMessage('Đang xin quyền định vị GPS…');
@@ -725,10 +729,16 @@ export default function DiscoveryLayout({
     // Capture the target session parameters at invocation time
     const invokedSessionId = currentSession.sessionId;
     const invokedToken = currentSession.sessionToken;
+    const invokedRevision = currentSession.revision;
 
     try {
+      if (!navigator.geolocation?.getCurrentPosition) {
+        throw new Error('Trình duyệt không hỗ trợ định vị GPS.');
+      }
       navigator.geolocation.getCurrentPosition(
         (pos) => {
+          if (gpsRequestRef.current !== gpsRequestId) return;
+          gpsRequestRef.current += 1;
           operationLockRef.current = false;
           if (!isMountedRef.current) return;
           setGpsPending(false);
@@ -737,7 +747,7 @@ export default function DiscoveryLayout({
 
           // Compare against LIVE ref, NOT the stale closed lexical scope
           const liveSession = latestSessionRef.current;
-          if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
+          if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken || invokedRevision !== liveSession.revision || !liveSession.sessionReady) {
             // Stale callback after session reset or change; discard!
             return;
           }
@@ -754,6 +764,8 @@ export default function DiscoveryLayout({
           }
         },
         (err) => {
+          if (gpsRequestRef.current !== gpsRequestId) return;
+          gpsRequestRef.current += 1;
           operationLockRef.current = false;
           if (!isMountedRef.current) return;
           setGpsPending(false);
@@ -761,7 +773,7 @@ export default function DiscoveryLayout({
           setBusyMessage('');
 
           const liveSession = latestSessionRef.current;
-          if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
+          if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken || invokedRevision !== liveSession.revision || !liveSession.sessionReady) {
             return;
           }
 
@@ -778,11 +790,14 @@ export default function DiscoveryLayout({
         { timeout: 10000, enableHighAccuracy: true, maximumAge: 60000 }
       );
     } catch (syncErr) {
-      operationLockRef.current = false;
-      setGpsPending(false);
-      setBusy(false);
-      setBusyMessage('');
-      setGeoNotice(`Lỗi khởi tạo GPS: ${syncErr.message || 'Không thể lấy vị trí'}`);
+      if (gpsRequestRef.current === gpsRequestId) {
+        gpsRequestRef.current += 1;
+        operationLockRef.current = false;
+        setGpsPending(false);
+        setBusy(false);
+        setBusyMessage('');
+        setGeoNotice(`Lỗi khởi tạo GPS: ${syncErr.message || 'Không thể lấy vị trí'}`);
+      }
     }
   }, [busy, gpsPending]);
 
