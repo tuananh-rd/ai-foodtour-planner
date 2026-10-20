@@ -1,5 +1,18 @@
 # Discovery-first assistant delivery evidence
 
+## Current continuation accepted - 2026-10-20
+
+**Final URL http://127.0.0.1:3300**: production frontend`4fdfe92`, actual API8300 with private local dataset and existing configured Gemini. API source`1e6cb17` has no backend diff against the final integration. Antigravity frontend source`a2958a1` equals the integrated frontend tree; affected backend review APPROVE and Codex frontend review complete.
+
+Fluid viewport/emoji display changes passed both production builds,78 targeted backend tests/OpenAPI drift,88 sanitizer assertions,18 contract and51 targeted client/Maps checks,45 mock-browser rerender/layout checks,63 final actual synthetic-backend journey checks and28 actual private-URL bootstrap/resize checks. Required widths1280/1440/1920/2560/390 pass actual rectangle containment; mobile uses scrolling. Final synthetic images were independently inspected. Two source-comment emoji samples and parser input regex alternatives are not UI output; raw user input is preserved.
+
+**Live native proof:** exactly3 smoke chat turns/5 model transports, including initialHTTP400 plus four actualHTTP200 responses from`gemini-3.5-flash-lite`, native search/comparison and tool-result continuations. No additional provider request/retry, budget/model increase or billing action. Runtime ledger remains used5, cap18/session6/reserve3. Health/bootstrap is not substituted for live proof. No observed usage blocker. Broader private-data browser tour quality and full accessibility certification remain untested; the63-check tour journey is explicitly synthetic/rules at3310/8210.
+
+Evidence and source mapping: [DISCOVERY_VIEWPORT_EMOJI_LIVE.md](DISCOVERY_VIEWPORT_EMOJI_LIVE.md), [final browser evidence](discovery-viewport-final-20261020/browser-evidence.json), [private bootstrap/resize](discovery-viewport-final-20261020/runtime-bootstrap.json), [affected review](DISCOVERY_VIEWPORT_BACKEND_REVIEW.md). Existing user servers/WIP/private data/keys/ledgers preserved; no push/deploy/Tavily/paid Maps.
+
+## Historical previous delivery - 2026-10-19
+
+
 2026-10-19. Requirements: `docs/DISCOVERY_ASSISTANT_REQUIREMENTS.md`; archived reference is input, not authority to add services. Codex coordinates/contracts/backend/reviews/integrates, Antigravity implements bounded frontend and QA, Claude inactive.
 
 ## Running version

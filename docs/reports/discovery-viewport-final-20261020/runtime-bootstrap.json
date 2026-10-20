@@ -1,0 +1,344 @@
+{
+  "frontend": "http://127.0.0.1:3300",
+  "api": "http://127.0.0.1:8300",
+  "frontend_commit": "4fdfe922ac193f3f2f9e01aea088001929c7afca",
+  "backend_commit": "1e6cb1763b714111afe506119cefb61fc3d43257",
+  "dataset": "private",
+  "configured_provider": "gemini",
+  "configured_model": "gemini-3.5-flash-lite",
+  "live_proof": "Separate retained native transport artifacts; bootstrap is not provider proof",
+  "budget_before": {
+    "limit": 18,
+    "remaining": 13,
+    "exhausted": false,
+    "session_cap": 6,
+    "reserve": 3,
+    "used": 5,
+    "resets_at": "2026-10-20T07:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "assistant_post_attempts": 0,
+  "external_requests": 0,
+  "js_exceptions": 0,
+  "checks": [
+    {
+      "name": "authenticated initial view private discovery-v1",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 1280",
+      "pass": true
+    },
+    {
+      "name": "canvas fills right edge 1280",
+      "pass": true
+    },
+    {
+      "name": "plain initial UI 1280",
+      "pass": true
+    },
+    {
+      "name": "tour and composer contained 1280",
+      "pass": true
+    },
+    {
+      "name": "fluid panel height 1280",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "canvas fills right edge 1440",
+      "pass": true
+    },
+    {
+      "name": "plain initial UI 1440",
+      "pass": true
+    },
+    {
+      "name": "tour and composer contained 1440",
+      "pass": true
+    },
+    {
+      "name": "fluid panel height 1440",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 1920",
+      "pass": true
+    },
+    {
+      "name": "canvas fills right edge 1920",
+      "pass": true
+    },
+    {
+      "name": "plain initial UI 1920",
+      "pass": true
+    },
+    {
+      "name": "tour and composer contained 1920",
+      "pass": true
+    },
+    {
+      "name": "fluid panel height 1920",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 2560",
+      "pass": true
+    },
+    {
+      "name": "canvas fills right edge 2560",
+      "pass": true
+    },
+    {
+      "name": "plain initial UI 2560",
+      "pass": true
+    },
+    {
+      "name": "tour and composer contained 2560",
+      "pass": true
+    },
+    {
+      "name": "fluid panel height 2560",
+      "pass": true
+    },
+    {
+      "name": "no horizontal overflow 390",
+      "pass": true
+    },
+    {
+      "name": "canvas fills right edge 390",
+      "pass": true
+    },
+    {
+      "name": "plain initial UI 390",
+      "pass": true
+    },
+    {
+      "name": "no assistant POST attempted",
+      "pass": true
+    },
+    {
+      "name": "no external request",
+      "pass": true
+    },
+    {
+      "name": "no JavaScript exception",
+      "pass": true
+    },
+    {
+      "name": "no model budget consumed by bootstrap",
+      "pass": true
+    }
+  ],
+  "viewports": [
+    {
+      "width": 1280,
+      "height": 800,
+      "scrollWidth": 1280,
+      "canvas": {
+        "x": 232,
+        "y": 0,
+        "width": 1048,
+        "height": 800,
+        "right": 1280,
+        "bottom": 800
+      },
+      "chat": {
+        "x": 264,
+        "y": 98,
+        "width": 572.578125,
+        "height": 662,
+        "right": 836.578125,
+        "bottom": 760
+      },
+      "tour": {
+        "x": 860.578125,
+        "y": 98,
+        "width": 387.40625,
+        "height": 662,
+        "right": 1247.984375,
+        "bottom": 760
+      },
+      "composer": {
+        "x": 292,
+        "y": 644.75,
+        "width": 516.578125,
+        "height": 54,
+        "right": 808.578125,
+        "bottom": 698.75
+      },
+      "emoji": false
+    },
+    {
+      "width": 1440,
+      "height": 1024,
+      "scrollWidth": 1440,
+      "canvas": {
+        "x": 232,
+        "y": 0,
+        "width": 1208,
+        "height": 1024,
+        "right": 1440,
+        "bottom": 1024
+      },
+      "chat": {
+        "x": 264,
+        "y": 98,
+        "width": 668.015625,
+        "height": 886,
+        "right": 932.015625,
+        "bottom": 984
+      },
+      "tour": {
+        "x": 956.015625,
+        "y": 98,
+        "width": 451.96875,
+        "height": 886,
+        "right": 1407.984375,
+        "bottom": 984
+      },
+      "composer": {
+        "x": 292,
+        "y": 868.75,
+        "width": 612.015625,
+        "height": 54,
+        "right": 904.015625,
+        "bottom": 922.75
+      },
+      "emoji": false
+    },
+    {
+      "width": 1920,
+      "height": 1080,
+      "scrollWidth": 1920,
+      "canvas": {
+        "x": 232,
+        "y": 0,
+        "width": 1688,
+        "height": 1080,
+        "right": 1920,
+        "bottom": 1080
+      },
+      "chat": {
+        "x": 264,
+        "y": 98,
+        "width": 954.3125,
+        "height": 942,
+        "right": 1218.3125,
+        "bottom": 1040
+      },
+      "tour": {
+        "x": 1242.3125,
+        "y": 98,
+        "width": 645.671875,
+        "height": 942,
+        "right": 1887.984375,
+        "bottom": 1040
+      },
+      "composer": {
+        "x": 292,
+        "y": 924.75,
+        "width": 898.3125,
+        "height": 54,
+        "right": 1190.3125,
+        "bottom": 978.75
+      },
+      "emoji": false
+    },
+    {
+      "width": 2560,
+      "height": 1440,
+      "scrollWidth": 2560,
+      "canvas": {
+        "x": 232,
+        "y": 0,
+        "width": 2328,
+        "height": 1440,
+        "right": 2560,
+        "bottom": 1440
+      },
+      "chat": {
+        "x": 264,
+        "y": 98,
+        "width": 1336.03125,
+        "height": 1302,
+        "right": 1600.03125,
+        "bottom": 1400
+      },
+      "tour": {
+        "x": 1624.03125,
+        "y": 98,
+        "width": 903.953125,
+        "height": 1302,
+        "right": 2527.984375,
+        "bottom": 1400
+      },
+      "composer": {
+        "x": 292,
+        "y": 1284.75,
+        "width": 1280.03125,
+        "height": 54,
+        "right": 1572.03125,
+        "bottom": 1338.75
+      },
+      "emoji": false
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "scrollWidth": 390,
+      "canvas": {
+        "x": 0,
+        "y": 209.796875,
+        "width": 390,
+        "height": 795.875,
+        "right": 390,
+        "bottom": 1005.671875
+      },
+      "chat": {
+        "x": 14,
+        "y": 328.796875,
+        "width": 362,
+        "height": 652.875,
+        "right": 376,
+        "bottom": 981.671875
+      },
+      "tour": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0
+      },
+      "composer": {
+        "x": 28,
+        "y": 868.421875,
+        "width": 334,
+        "height": 54,
+        "right": 362,
+        "bottom": 922.421875
+      },
+      "emoji": false
+    }
+  ],
+  "bootstrap": {
+    "contract": "discovery-v1",
+    "dataset": "private",
+    "status": "ok"
+  },
+  "budget_after": {
+    "limit": 18,
+    "remaining": 13,
+    "exhausted": false,
+    "session_cap": 6,
+    "reserve": 3,
+    "used": 5,
+    "resets_at": "2026-10-20T07:00:00Z",
+    "window": "pacific_midnight"
+  }
+}

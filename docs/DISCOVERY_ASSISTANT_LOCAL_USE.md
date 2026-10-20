@@ -1,6 +1,8 @@
 # Local discovery assistant
 
-Open **http://127.0.0.1:3200**. Current validated mode is production UI, actual backend/planner/SQLite and explicitly synthetic Hanoi venue fixtures with deterministic rules. `[SYNTHETIC]` venues are fictional test data. This URL does not demonstrate live Gemini quality or private-dataset browser coverage. Existing local dataset separately passed backend search/compare/selection smoke without exporting venue records.
+Open **http://127.0.0.1:3300**. Current mode is immutable production UI from`4fdfe92`, actual API8300, private local venue dataset and configured Gemini`gemini-3.5-flash-lite`. Existing caps/keys/ledger are preserved. The authorized native smoke already used3 chat turns/5 model requests total; no additional automated live probe should repeat it. Actual response/tool/call-count evidence is in`reports/DISCOVERY_VIEWPORT_EMOJI_LIVE.md`.
+
+For the fixture journey below, use **http://127.0.0.1:3310** (actual API8210, explicitly synthetic/rules, no provider calls). `[SYNTHETIC]` venues are fictional. Historical3200 is no longer the current delivery URL.
 
 Start with “Chào bạn” or ask about a dish. To exercise the populated fixture area, send “Tìm quán quanh Hồ Gươm”, then “So sánh A với B”. Choose a result with its button or “Thêm A rồi tìm chè ít ngọt”. The app retains selection/preferences and reports unknown sweetness/ingredients instead of inventing matches.
 
@@ -14,4 +16,4 @@ The map is a local Hoàn Kiếm PMTiles/OSM pilot with attribution and marker to
 
 Tavily lookup, opt-in and web citations are retired. Venue source links describe provenance, not live web search. Weather is unavailable and does not block discovery chat.
 
-Gemini native tool calling is implemented using existing server configuration/caps in `backend/.env`, with a bounded loop and local fallback. Current acceptance intentionally makes0 live provider calls. No key should be pasted into chat, frontend or Git. Existing keys and durable ledgers are preserved; no account/billing setting is changed. Live native-tool conversational quality, service quota and free-account eligibility are not proven by configuration or mocked tests. See `reports/DISCOVERY_ASSISTANT_ACCEPTANCE.md` for precise limits and screenshots.
+Gemini native tool calling uses existing server configuration/caps in `backend/.env`, with a bounded loop and explicit fallback. The authorized smoke recorded an initial schema HTTP400, then four actual native HTTP200 responses after repair, all naming `gemini-3.5-flash-lite`; total3 turns/5 requests, zero automatic retries. Search and comparison used bounded local projections without exporting records. Final bootstrap/resize made no assistant POST and consumed no model allowance. Broad private-data browser tour quality remains untested; synthetic/rules E2E passed63 checks. No key should be pasted into chat, frontend or Git. Existing keys/ledgers/accounts and billing settings are preserved. See `reports/DISCOVERY_VIEWPORT_EMOJI_LIVE.md` and `reports/DISCOVERY_ASSISTANT_ACCEPTANCE.md` for source-specific evidence and limits.

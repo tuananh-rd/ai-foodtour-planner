@@ -8,13 +8,15 @@ Baseline `4b57fe6`, UI `41b1d33`. New runtime `a71c4070-c37a-46f3-a54c-103d39af3
 
 | Work | Owner | Current evidence |
 |---|---|---|
-| Fluid layout, frontend emoji removal, resize/QA/build | Antigravity, Codex review/integration | Active bounded frontend/QA task; preserve all existing WIP/server/privacy/confirmation controls |
-| Generated text emoji policy | Codex, affected review pending | Shared plain-text presentation policy, discovery and legacy conversation/explanation guards; 77 targeted backend tests PASS |
-| Native tool-schema correction | Codex, affected review pending | Nested Profile `$defs` moved to parameter-document root so `#/$defs/Origin` resolves; offline reference-resolution regression PASS |
+| Fluid layout, frontend emoji removal, resize/QA/build | Antigravity, Codex review/integration | COMPLETE: author`a2958a1`, integrated frontend`4fdfe92`; Codex review complete, two production builds PASS,88 sanitizer/45 mock-browser/18 contract/51 client checks PASS |
+| Generated text emoji policy | Codex, Antigravity APPROVE | Shared plain-text presentation policy, discovery and legacy conversation/explanation guards; 78 targeted backend tests PASS |
+| Native tool-schema correction | Codex, Antigravity APPROVE | Nested Profile `$defs` moved to parameter-document root so `#/$defs/Origin` resolves; offline reference-resolution regression PASS |
 | Actual Gemini smoke | Codex | COMPLETE: three total chat turns / five model transports, zero automatic retries. Initial HTTP400 retained; after schema fix four HTTP200 responses name configured `gemini-3.5-flash-lite`, native search/compare + result continuation. Local private dataset, no exported records. Comparison honestly reports unknown fields. No further smoke model traffic authorized under this run's three-turn limit |
-| Current runtime | Codex | New task-owned API8300, private data + existing Gemini configuration, persistent budget ledger; final frontend URL/build and integration checks pending |
+| Current runtime | Codex | New task-owned API8300, private data + existing Gemini configuration, persistent budget ledger; final production URL3300/source4fdfe92; actual private bootstrap/resize28/28 PASS, budget unchanged5; synthetic actual-backend journey63/63 PASS |
 
 Sanitized provider evidence: `discovery-live-20261020.json` (initial failure) and `discovery-live-20261020-schema-fixed.json` (two remaining turns). Combined ledger used0→5 with configured daily20/session6/reserve3 during smoke. Existing local launcher further restricts daily allowance to18 without resetting used calls or changing `.env`. No user process stopped; Claude remains inactive.
+
+Current acceptance: [DISCOVERY_VIEWPORT_EMOJI_LIVE.md](DISCOVERY_VIEWPORT_EMOJI_LIVE.md). Antigravity sequential follow-up tasks`task_6bad7be2b243`/`ctx_1570c0e39d91` and final three-string correction`task_b2956348110d`/`ctx_e1450ef0e100` completed and were independently reviewed. No duplicate active worker. Current real URL3300/API8300 is private/Gemini; regression3310/API8210 is synthetic/rules. Historical no-live/3200 statements below remain historical only.
 
 ## Previous completed delivery
 

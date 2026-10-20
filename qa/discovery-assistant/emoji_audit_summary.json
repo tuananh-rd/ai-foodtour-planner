@@ -1,1 +1,18 @@
-{}
+{
+  "frontend/lib/emojiSanitizer.js": [
+    {
+      "line": 7,
+      "matches": [
+        "🍜"
+      ],
+      "text": "* - Replaces visible pictographs/emojis/flags/keycaps with space separator so words/numbers do not join (e.g. 20🍜30 -> 20 30)."
+    },
+    {
+      "line": 56,
+      "matches": [
+        "🍜"
+      ],
+      "text": "// 2. Replace visible emojis/pictographs/keycaps/flags with a single space (e.g. 20🍜30 -> 20 30)"
+    }
+  ]
+}
