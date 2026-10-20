@@ -31,6 +31,23 @@ class ScreenshotModel:
 
 
 class ScreenshotRegression(unittest.TestCase):
+    def test_general_dish_knowledge_before_origin_does_not_become_preferences(self):
+        state = State()
+        state.patch({'area': 'Hai Bà Trưng', 'foods': ['chè']})
+        state.results = ['1', '2']
+        before = state.profile.model_copy(deep=True)
+        result, provider = handle('Phở Hà Nội có nguồn gốc như thế nào?', Tools(state, fixture(), StraightLineEstimator()))
+        self.assertIn('Kiến thức món nói chung', result['text'])
+        self.assertIsNone(result['question'])
+        self.assertEqual(state.profile, before)
+        self.assertEqual(state.results, ['1', '2'])
+        self.assertEqual(provider['calls'], 0)
+        fresh = State()
+        answer, _ = handle('Phở là gì?', Tools(fresh, fixture(), StraightLineEstimator()))
+        self.assertIn('Kiến thức món nói chung', answer['text'])
+        self.assertIsNone(answer['question'])
+        self.assertIsNone(fresh.profile.origin)
+
     def test_natural_details_and_conjoined_lowercase_selection(self):
         state = State()
         state.results = ['1', '2']

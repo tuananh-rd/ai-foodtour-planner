@@ -16,6 +16,12 @@ from app.planner.relevance import fold_uncached
 from .tools import DISTRICT_LABELS
 
 
+def knowledge_question(text):
+    f = fold_uncached(text)
+    return bool(re.search(r'la gi|nguon goc|lich su|cach nau|khac (?:gi|nhau)', f)) and not re.search(
+        r'\b(?:tim|quan|dia chi)\b|muon an|goi y|o dau', f)
+
+
 def parse_patch(text, tools):
     f = fold_uncached(text)
     raw = parse_slots(text, f, tools.preferences())
@@ -81,6 +87,11 @@ def parse_patch(text, tools):
         patch['exclusions'] = list(dict.fromkeys(tools.state.profile.exclusions + safety.avoid))[:10]
     if safety.removed:
         patch['allergies'] = [a for a in tools.state.profile.allergies if a not in safety.removed]
+    if knowledge_question(text):
+        # Mentioning a dish/place while asking what it is does not change food
+        # search intent or erase visible cards. Explicit safety/trip edits remain local.
+        for key in ('area', 'foods', 'tastes'):
+            patch.pop(key, None)
     return patch, price_search
 
 
@@ -219,6 +230,8 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
         return results[-1]
     if 'thoi tiet' in f or 'troi mua' in f:
         return tools.result('unknown', 'Hiện chưa có dữ liệu thời tiết; mình vẫn có thể giúp khám phá món và dữ liệu quán.')
+    if dish and knowledge_question(text):
+        return tools.result('ok', 'Kiến thức món nói chung: ' + dish[2] + ' Đây không phải xác nhận món hay nguyên liệu tại một quán cụ thể.')
     if patch:
         return tools.result('ok', 'Đã ghi nhận phần bạn vừa sửa, các yêu cầu khác và lựa chọn vẫn được giữ.')
     if dish:
