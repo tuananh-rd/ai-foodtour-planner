@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-20T01:45:50.450Z",
+  "testedAt": "2026-10-20T01:55:21.880Z",
   "targetContract": "discovery-v1 (Additive Location, Model, Web)",
   "ports": {
     "web": 13600,
@@ -182,9 +182,20 @@
       "name": "Viewport 1440x1024 rendered without horizontal overflow",
       "pass": true,
       "details": {
-        "scrollWidth": 1425,
-        "clientWidth": 1425,
+        "scrollWidth": 1440,
+        "clientWidth": 1440,
         "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "COMPOSER_VISIBLE_desktop_1440x1024",
+      "name": "Composer bottom inside viewport on 1440x1024",
+      "pass": true,
+      "details": {
+        "found": true,
+        "bottom": 899,
+        "windowHeight": 1024,
+        "insideViewport": true
       }
     },
     {
@@ -192,9 +203,20 @@
       "name": "Viewport 1280x800 rendered without horizontal overflow",
       "pass": true,
       "details": {
-        "scrollWidth": 1265,
-        "clientWidth": 1265,
+        "scrollWidth": 1280,
+        "clientWidth": 1280,
         "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "COMPOSER_VISIBLE_desktop_1280x800",
+      "name": "Composer bottom inside viewport on 1280x800",
+      "pass": true,
+      "details": {
+        "found": true,
+        "bottom": 706,
+        "windowHeight": 800,
+        "insideViewport": true
       }
     },
     {
@@ -202,9 +224,20 @@
       "name": "Viewport 1920x1080 rendered without horizontal overflow",
       "pass": true,
       "details": {
-        "scrollWidth": 1905,
-        "clientWidth": 1905,
+        "scrollWidth": 1920,
+        "clientWidth": 1920,
         "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "COMPOSER_VISIBLE_desktop_1920x1080",
+      "name": "Composer bottom inside viewport on 1920x1080",
+      "pass": true,
+      "details": {
+        "found": true,
+        "bottom": 955,
+        "windowHeight": 1080,
+        "insideViewport": true
       }
     },
     {
@@ -212,9 +245,20 @@
       "name": "Viewport 2560x1440 rendered without horizontal overflow",
       "pass": true,
       "details": {
-        "scrollWidth": 2545,
-        "clientWidth": 2545,
+        "scrollWidth": 2560,
+        "clientWidth": 2560,
         "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "COMPOSER_VISIBLE_desktop_2560x1440",
+      "name": "Composer bottom inside viewport on 2560x1440",
+      "pass": true,
+      "details": {
+        "found": true,
+        "bottom": 1315,
+        "windowHeight": 1440,
+        "insideViewport": true
       }
     },
     {
@@ -238,8 +282,8 @@
     }
   ],
   "summary": {
-    "total": 26,
-    "passed": 26,
+    "total": 30,
+    "passed": 30,
     "failed": 0
   }
 }

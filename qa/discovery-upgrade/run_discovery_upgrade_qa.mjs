@@ -926,6 +926,27 @@ async function main() {
       overflowCheck
     );
 
+    // Verify composer bottom reachable and within viewport on desktop
+    if (!vp.name.startsWith('mobile')) {
+      const composerCheck = await evalJs(`
+        (() => {
+          const comp = document.querySelector('.nn-composer') || document.querySelector('.nn-chat-composer');
+          if (!comp) return { found: false, insideViewport: true };
+          const rect = comp.getBoundingClientRect();
+          return {
+            found: true,
+            bottom: Math.round(rect.bottom),
+            windowHeight: window.innerHeight,
+            insideViewport: rect.bottom <= window.innerHeight + 10
+          };
+        })()
+      `);
+      recordCheck(`COMPOSER_VISIBLE_${vp.name}`, `Composer bottom inside viewport on ${vp.width}x${vp.height}`,
+        composerCheck.insideViewport,
+        composerCheck
+      );
+    }
+
     // Capture screenshot
     const shot = await cdp('Page.captureScreenshot', { format: 'png' });
     const shotPath = path.join(SCREENSHOTS_DIR, `${vp.name}.png`);

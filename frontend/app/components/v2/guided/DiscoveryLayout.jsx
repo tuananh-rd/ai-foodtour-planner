@@ -270,6 +270,30 @@ export default function DiscoveryLayout({
     !sessionError
   );
 
+  const isMountedRef = useRef(true);
+  const latestSessionRef = useRef({
+    sessionId,
+    sessionToken,
+    revision: view.revision,
+    sessionReady
+  });
+
+  useEffect(() => {
+    latestSessionRef.current = {
+      sessionId,
+      sessionToken,
+      revision: view.revision,
+      sessionReady
+    };
+  });
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
+
   const requestTokenRef = useRef(0);
   const abortControllerRef = useRef(null);
   const chatScrollRef = useRef(null);
@@ -459,18 +483,19 @@ export default function DiscoveryLayout({
     }
 
     try {
+      const currentSession = latestSessionRef.current;
       const updatedView = await sendDiscoveryMessage(
-        sessionId,
-        view.revision,
+        currentSession.sessionId,
+        currentSession.revision,
         textToSend,
-        sessionToken
+        currentSession.sessionToken
       );
-      if (currentToken !== requestTokenRef.current) return;
+      if (!isMountedRef.current || currentToken !== requestTokenRef.current) return;
       if (updatedView && typeof updatedView === 'object') {
         setView(updatedView);
       }
     } catch (err) {
-      if (currentToken !== requestTokenRef.current) return;
+      if (!isMountedRef.current || currentToken !== requestTokenRef.current) return;
       if (err.status === 409) {
         await handle409Conflict(err);
         // Preserve failed draft in input
@@ -485,7 +510,7 @@ export default function DiscoveryLayout({
         }
       }
     } finally {
-      if (currentToken === requestTokenRef.current) {
+      if (isMountedRef.current && currentToken === requestTokenRef.current) {
         setBusy(false);
         setBusyMessage('');
         inputRef.current?.focus();
@@ -495,7 +520,8 @@ export default function DiscoveryLayout({
 
   // Dispatch a discovery action
   const handleDispatchAction = async (action, loadingMsg = 'Đang thực hiện…', onSuccess = null) => {
-    if (!sessionReady || busy) return;
+    const currentSession = latestSessionRef.current;
+    if (!currentSession.sessionReady || busy) return;
 
     requestTokenRef.current += 1;
     const currentToken = requestTokenRef.current;
@@ -506,12 +532,12 @@ export default function DiscoveryLayout({
 
     try {
       const updatedView = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
+        currentSession.sessionId,
+        currentSession.revision,
         action,
-        sessionToken
+        currentSession.sessionToken
       );
-      if (currentToken !== requestTokenRef.current) return;
+      if (!isMountedRef.current || currentToken !== requestTokenRef.current) return;
       if (updatedView && typeof updatedView === 'object') {
         setView(updatedView);
       }
@@ -523,14 +549,14 @@ export default function DiscoveryLayout({
         onSuccess(updatedView);
       }
     } catch (err) {
-      if (currentToken !== requestTokenRef.current) return;
+      if (!isMountedRef.current || currentToken !== requestTokenRef.current) return;
       if (err.status === 409) {
         await handle409Conflict(err);
       } else {
         setErrorBanner(err.message || 'Lỗi khi thực hiện thao tác.');
       }
     } finally {
-      if (currentToken === requestTokenRef.current) {
+      if (isMountedRef.current && currentToken === requestTokenRef.current) {
         setBusy(false);
         setBusyMessage('');
       }
@@ -682,19 +708,27 @@ export default function DiscoveryLayout({
       setGeoNotice('Trình duyệt không hỗ trợ định vị GPS.');
       return;
     }
-    if (!sessionReady || busy || gpsPending) return;
+    const currentSession = latestSessionRef.current;
+    if (!currentSession.sessionReady || busy || gpsPending) return;
 
     setGpsPending(true);
     setGeoNotice('Đang xin quyền định vị GPS…');
 
-    const capturedSessionId = sessionId;
-    const capturedToken = sessionToken;
+    // Capture the target session parameters at invocation time
+    const invokedSessionId = currentSession.sessionId;
+    const invokedToken = currentSession.sessionToken;
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
+        if (!isMountedRef.current) return;
         setGpsPending(false);
-        // Verify session hasn't changed while awaiting GPS
-        if (capturedSessionId !== sessionId || capturedToken !== sessionToken) return;
+
+        // Compare against LIVE ref, NOT the stale closed lexical scope
+        const liveSession = latestSessionRef.current;
+        if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
+          // Stale callback after session reset or change; discard!
+          return;
+        }
 
         const lat = Number(pos.coords.latitude.toFixed(6));
         const lon = Number(pos.coords.longitude.toFixed(6));
@@ -708,7 +742,14 @@ export default function DiscoveryLayout({
         }
       },
       (err) => {
+        if (!isMountedRef.current) return;
         setGpsPending(false);
+
+        const liveSession = latestSessionRef.current;
+        if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
+          return;
+        }
+
         if (err.code === 1) { // PERMISSION_DENIED
           setGeoNotice('Bạn đã từ chối quyền truy cập vị trí GPS.');
         } else if (err.code === 2) { // POSITION_UNAVAILABLE
@@ -721,7 +762,7 @@ export default function DiscoveryLayout({
       },
       { timeout: 10000, enableHighAccuracy: true, maximumAge: 60000 }
     );
-  }, [sessionId, sessionToken, sessionReady, busy, gpsPending]);
+  }, [busy, gpsPending]);
 
   const handleResolveOrigin = (e) => {
     if (e && e.preventDefault) e.preventDefault();

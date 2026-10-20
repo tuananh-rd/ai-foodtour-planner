@@ -1090,3 +1090,21 @@
   color: #6C554E;
 }
 
+/* --- VIEWPORT ACCOMMODATION WITH SETTINGS BAR --- */
+/* Compensates for settings bar height (~52px) so composer bottom stays inside viewport */
+@media (min-width: 901px) {
+  .nn-canvas-wrapper .nn-topbar {
+    margin-bottom: 12px;
+  }
+
+  .nn-chat-card {
+    height: calc(100dvh - 192px);
+    min-height: 500px;
+  }
+
+  .nn-tour-col {
+    height: calc(100dvh - 192px);
+    min-height: 500px;
+  }
+}
+

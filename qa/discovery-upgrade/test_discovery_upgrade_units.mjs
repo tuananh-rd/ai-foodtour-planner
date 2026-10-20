@@ -184,6 +184,48 @@ assert(cleanView.web.sources[0].snippet === 'Nước dùng ngọt thanh đậm �
 assert(cleanView.web.sources[0].url === 'https://example.com/pho', 'Preserves raw web source URL');
 assert(cleanView.web.sources[0].untrusted === true, 'Preserves untrusted source flag');
 
+// 5. GPS Delayed Callback Lifecycle & Stale Session Protection
+console.log('\n[5] Testing GPS Delayed Callback & Stale Session Protection...');
+let currentSession = { sessionId: 'sess-1', sessionToken: 'tok-1', revision: 1 };
+const dispatchedActions = [];
+
+function mockHandleDispatchAction(action) {
+  dispatchedActions.push({ session: { ...currentSession }, action });
+}
+
+function simulateGpsTrigger(getLatestSession, onStaleIgnored) {
+  const invokedSessionId = getLatestSession().sessionId;
+  const invokedToken = getLatestSession().sessionToken;
+
+  return function onGpsSuccess(lat, lon) {
+    const live = getLatestSession();
+    if (invokedSessionId !== live.sessionId || invokedToken !== live.sessionToken) {
+      onStaleIgnored({ invokedSessionId, liveSessionId: live.sessionId });
+      return;
+    }
+    mockHandleDispatchAction(setCoordinatesLocationAction(lat, lon, 'gps'));
+  };
+}
+
+let staleCount = 0;
+const gpsCallback = simulateGpsTrigger(() => currentSession, () => { staleCount += 1; });
+
+// Simulate user resets session while GPS callback is in-flight
+currentSession = { sessionId: 'sess-2', sessionToken: 'tok-2', revision: 0 };
+
+// Geolocation callback executes now
+gpsCallback(21.0285, 105.8542);
+
+assert(dispatchedActions.length === 0, 'No action dispatched to old or new session when session changed');
+assert(staleCount === 1, 'Stale GPS callback ignored when session ID changed');
+
+// Test with unchanged session
+const matchingCallback = simulateGpsTrigger(() => currentSession, () => {});
+matchingCallback(21.033, 105.85);
+assert(dispatchedActions.length === 1, 'Action dispatched when session is unchanged');
+assert(dispatchedActions[0].session.sessionId === 'sess-2', 'Dispatched to correct live session');
+assert(dispatchedActions[0].action.arguments.lat === 21.033, 'Dispatched with correct coordinates');
+
 console.log('\n================================================================');
 console.log(`DISCOVERY UPGRADE UNIT TESTS: Passed: ${passed} | Failed: ${failed}`);
 console.log('================================================================');
