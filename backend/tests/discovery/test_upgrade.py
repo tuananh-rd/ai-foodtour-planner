@@ -37,7 +37,7 @@ class ScreenshotRegression(unittest.TestCase):
         state.results = ['1', '2']
         before = state.profile.model_copy(deep=True)
         result, provider = handle('Phở Hà Nội có nguồn gốc như thế nào?', Tools(state, fixture(), StraightLineEstimator()))
-        self.assertIn('Kiến thức món nói chung', result['text'])
+        self.assertIn('chưa có dữ liệu kiểm chứng về nguồn gốc', result['text'])
         self.assertIsNone(result['question'])
         self.assertEqual(state.profile, before)
         self.assertEqual(state.results, ['1', '2'])

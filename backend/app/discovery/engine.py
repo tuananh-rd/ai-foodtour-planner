@@ -231,6 +231,8 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
     if 'thoi tiet' in f or 'troi mua' in f:
         return tools.result('unknown', 'Hiện chưa có dữ liệu thời tiết; mình vẫn có thể giúp khám phá món và dữ liệu quán.')
     if dish and knowledge_question(text):
+        if re.search(r'nguon goc|lich su', f):
+            return tools.result('unknown', 'Mình chưa có dữ liệu kiểm chứng về nguồn gốc hoặc lịch sử của ' + dish[1] + '. Mình chỉ có thể mô tả món nói chung: ' + dish[2])
         return tools.result('ok', 'Kiến thức món nói chung: ' + dish[2] + ' Đây không phải xác nhận món hay nguyên liệu tại một quán cụ thể.')
     if patch:
         return tools.result('ok', 'Đã ghi nhận phần bạn vừa sửa, các yêu cầu khác và lựa chọn vẫn được giữ.')
