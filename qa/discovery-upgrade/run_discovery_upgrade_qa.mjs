@@ -1,9 +1,10 @@
 // qa/discovery-upgrade/run_discovery_upgrade_qa.mjs
 // Isolated End-to-End QA Suite for Discovery Assistant Upgrade (discovery-v1)
+// [MOCK ONLY - Isolated Contract Conformance Suite, NOT Live API Verification]
 // Covers:
 // 1. Capabilities & Settings: GET /v1/assistant/capabilities, model selector, Tavily search toggle
 // 2. Origin Chooser: click-only GPS, catalog resolve & candidate choose, manual coords, clear origin
-// 3. Server Distance Display: "đường chim bay" (~X m / ~X.X km) or "Chưa có khoảng cách"
+// 3. Server Distance Display: "đường chim bay" (~X m / ~X.X km) or translated reason ("Chưa có khoảng cách")
 // 4. Completed Tour CTA: "Xem lịch trình trên Google Maps →" with verified free URL
 // 5. Multi-viewport validation across 1280x800, 1440x1024, 1920x1080, 2560x1440, 390x844
 // 6. Zero Unicode Emojis across all text and viewports
@@ -149,7 +150,7 @@ function createMockDiscoveryServer() {
       hours: { display: '06:00 - 22:00', status: 'verified' },
       distance_m: null,
       distance_source: null,
-      distance_reason: 'Chưa chọn điểm xuất phát',
+      distance_reason: 'origin_missing',
       unknowns: []
     },
     {
@@ -164,7 +165,7 @@ function createMockDiscoveryServer() {
       hours: { display: '09:00 - 23:00', status: 'verified' },
       distance_m: null,
       distance_source: null,
-      distance_reason: 'Chưa chọn điểm xuất phát',
+      distance_reason: 'origin_missing',
       unknowns: []
     },
     {
@@ -179,7 +180,7 @@ function createMockDiscoveryServer() {
       hours: { display: '08:30 - 21:00', status: 'verified' },
       distance_m: null,
       distance_source: null,
-      distance_reason: 'Chưa chọn điểm xuất phát',
+      distance_reason: 'origin_missing',
       unknowns: []
     }
   ];
@@ -244,12 +245,12 @@ function createMockDiscoveryServer() {
       state.results.forEach((r) => {
         r.distance_m = null;
         r.distance_source = null;
-        r.distance_reason = 'Chưa chọn điểm xuất phát';
+        r.distance_reason = 'origin_missing';
       });
       state.selection.forEach((s) => {
         s.distance_m = null;
         s.distance_source = null;
-        s.distance_reason = 'Chưa chọn điểm xuất phát';
+        s.distance_reason = 'origin_missing';
       });
       return;
     }
@@ -264,7 +265,7 @@ function createMockDiscoveryServer() {
       } else {
         r.distance_m = null;
         r.distance_source = null;
-        r.distance_reason = 'Thiếu tọa độ quán';
+        r.distance_reason = 'venue_coordinates_missing';
       }
     });
 
@@ -276,7 +277,7 @@ function createMockDiscoveryServer() {
       } else {
         s.distance_m = null;
         s.distance_source = null;
-        s.distance_reason = 'Thiếu tọa độ quán';
+        s.distance_reason = 'venue_coordinates_missing';
       }
     });
   }
@@ -794,8 +795,8 @@ async function main() {
   const initialDistText = await evalJs(`
     document.querySelector('[data-testid="restaurant-distance-venue-v1"]')?.textContent.trim()
   `);
-  recordCheck('DISTANCE_INITIAL_UNSET', 'Server distance displays "Chưa có khoảng cách" when origin is unset',
-    initialDistText && initialDistText.includes('Chưa có khoảng cách'),
+  recordCheck('DISTANCE_INITIAL_UNSET', 'Server distance displays translated "Chưa có khoảng cách (chưa có điểm xuất phát)" when origin is unset',
+    initialDistText && initialDistText.includes('Chưa có khoảng cách') && initialDistText.includes('chưa có điểm xuất phát'),
     { initialDistText }
   );
 
@@ -855,6 +856,12 @@ async function main() {
   await pause(200);
   await click('[data-testid="btn-select-venue-venue-v2"]');
   await pause(200);
+
+  // Verify selected venue card distance unconditionally rendered
+  const selectedDistPresent = await evalJs(`
+    Boolean(document.querySelector('[data-testid="selected-distance-venue-v1"]')?.textContent.trim())
+  `);
+  recordCheck('SELECTED_CARD_DISTANCE_RENDERED', 'Selected venue card renders distance label unconditionally', selectedDistPresent);
 
   // Trigger Plan
   await until(async () => {

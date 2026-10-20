@@ -70,8 +70,9 @@ assert(validateDiscoveryAction(s1) === s1, 'validateDiscoveryAction accepts full
 const s2 = updateSettingsAction({ web_search_enabled: false });
 assert(validateDiscoveryAction(s2).arguments.web_search_enabled === false, 'validateDiscoveryAction accepts web_search_enabled alone');
 
-const s3 = updateSettingsAction({ chat_model: null });
-assert(validateDiscoveryAction(s3).arguments.chat_model === null, 'validateDiscoveryAction accepts chat_model: null');
+assertThrows(() => updateSettingsAction({ chat_model: null }), 'invalid_action', 'updateSettingsAction rejects null chat_model');
+assertThrows(() => validateDiscoveryAction({ type: 'settings', arguments: { chat_model: null } }), 'invalid_action', 'validateDiscoveryAction rejects chat_model: null');
+assertThrows(() => validateDiscoveryAction({ type: 'settings', arguments: { web_search_enabled: null } }), 'invalid_action', 'validateDiscoveryAction rejects web_search_enabled: null');
 
 assertThrows(() => validateDiscoveryAction({ type: 'settings', arguments: {} }), 'invalid_action', 'Rejects empty settings arguments');
 assertThrows(() => validateDiscoveryAction({ type: 'settings', arguments: { chat_model: 123 } }), 'invalid_action', 'Rejects numeric chat_model');
@@ -99,6 +100,8 @@ assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { oper
 assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'resolve', query: '' } }), 'invalid_action', 'Rejects empty resolve query');
 assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'choose' } }), 'invalid_action', 'Rejects choose without candidate_id');
 assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'coordinates', lat: 999, lon: 105.8 } }), 'invalid_action', 'Rejects out-of-range latitude');
+assertThrows(() => setCoordinatesLocationAction('', 105.8), 'invalid_action', 'setCoordinatesLocationAction rejects empty string latitude');
+assertThrows(() => setCoordinatesLocationAction(21.0, ''), 'invalid_action', 'setCoordinatesLocationAction rejects empty string longitude');
 
 // 3. Format Server-Computed Distance Display
 console.log('\n[3] Testing Server Distance Display Formatting...');
@@ -106,7 +109,9 @@ assert(formatDistanceDisplay({ distance_m: 450 }) === '~450 m (đường chim ba
 assert(formatDistanceDisplay({ distance_m: 1250 }) === '~1.3 km (đường chim bay)', 'Formats distance >= 1000m in kilometers rounded to 1 decimal');
 assert(formatDistanceDisplay({ distance_m: 0 }) === '~0 m (đường chim bay)', 'Formats 0 meters correctly without null-fallthrough');
 assert(formatDistanceDisplay({ distance_m: null }) === 'Chưa có khoảng cách', 'Formats null distance_m as "Chưa có khoảng cách"');
-assert(formatDistanceDisplay({ distance_m: null, distance_reason: 'Chưa chọn điểm xuất phát' }) === 'Chưa có khoảng cách (Chưa chọn điểm xuất phát)', 'Appends distance_reason when distance_m is null');
+assert(formatDistanceDisplay({ distance_m: null, distance_reason: 'origin_missing' }) === 'Chưa có khoảng cách (chưa có điểm xuất phát)', 'Translates origin_missing reason');
+assert(formatDistanceDisplay({ distance_m: null, distance_reason: 'venue_coordinates_missing' }) === 'Chưa có khoảng cách (quán thiếu toạ độ)', 'Translates venue_coordinates_missing reason');
+assert(formatDistanceDisplay({ distance_m: null, distance_reason: 'custom_reason' }) === 'Chưa có khoảng cách (custom_reason)', 'Passes through custom distance_reason when distance_m is null');
 assert(formatDistanceDisplay(null) === null, 'Returns null on null input');
 
 // 4. Emoji Sanitization on New Contract Fields

@@ -23,6 +23,7 @@ import {
   setCoordinatesLocationAction,
   clearLocationAction,
   formatDistanceDisplay,
+  safeExternalUrl,
   UNKNOWN_LABELS_VI,
   formatUnknownLabel,
   DiscoveryApiError
@@ -229,6 +230,7 @@ export default function DiscoveryLayout({
   const displayDetailVenue = useMemo(() => detailVenue ? sanitizeRestaurantForDisplay(detailVenue) : null, [detailVenue]);
   const [errorBanner, setErrorBanner] = useState(null);
   const [geoNotice, setGeoNotice] = useState(null);
+  const [gpsPending, setGpsPending] = useState(false);
 
   // Discovery-v1 assistant capabilities & settings state
   const [capabilities, setCapabilities] = useState(null);
@@ -629,10 +631,6 @@ export default function DiscoveryLayout({
         : Number(profileForm.max_leg_min);
     }
 
-    if (profileForm.origin !== undefined && JSON.stringify(profileForm.origin) !== JSON.stringify(view.profile?.origin)) {
-      patch.origin = profileForm.origin;
-    }
-
     // Tastes, exclusions, allergies
     if (typeof profileForm.tastes === 'string') {
       const arr = profileForm.tastes.split(',').map((s) => s.trim()).filter(Boolean);
@@ -656,47 +654,25 @@ export default function DiscoveryLayout({
   };
 
   // Settings Handlers (chat_model & web_search_enabled)
-  const handleModelChange = async (e) => {
+  const handleModelChange = (e) => {
     const selectedModel = e.target.value;
-    if (!sessionId) return;
+    if (!sessionReady || busy || !selectedModel) return;
     try {
-      setBusy(true);
-      setBusyMessage('Đang cập nhật mô hình AI…');
-      const res = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
-        updateSettingsAction({ chat_model: selectedModel || null }),
-        sessionToken
-      );
-      setView(res);
-      setErrorBanner(null);
+      const action = updateSettingsAction({ chat_model: selectedModel });
+      handleDispatchAction(action, 'Đang cập nhật mô hình AI…');
     } catch (err) {
       setErrorBanner(err.message);
-    } finally {
-      setBusy(false);
-      setBusyMessage('');
     }
   };
 
-  const handleToggleWebSearch = async (e) => {
+  const handleToggleWebSearch = (e) => {
     const isEnabled = e.target.checked;
-    if (!sessionId) return;
+    if (!sessionReady || busy) return;
     try {
-      setBusy(true);
-      setBusyMessage('Đang cập nhật tùy chọn tìm web…');
-      const res = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
-        updateSettingsAction({ web_search_enabled: isEnabled }),
-        sessionToken
-      );
-      setView(res);
-      setErrorBanner(null);
+      const action = updateSettingsAction({ web_search_enabled: isEnabled });
+      handleDispatchAction(action, 'Đang cập nhật tùy chọn tìm web…');
     } catch (err) {
       setErrorBanner(err.message);
-    } finally {
-      setBusy(false);
-      setBusyMessage('');
     }
   };
 
@@ -706,32 +682,33 @@ export default function DiscoveryLayout({
       setGeoNotice('Trình duyệt không hỗ trợ định vị GPS.');
       return;
     }
+    if (!sessionReady || busy || gpsPending) return;
+
+    setGpsPending(true);
     setGeoNotice('Đang xin quyền định vị GPS…');
+
+    const capturedSessionId = sessionId;
+    const capturedToken = sessionToken;
+
     navigator.geolocation.getCurrentPosition(
-      async (pos) => {
+      (pos) => {
+        setGpsPending(false);
+        // Verify session hasn't changed while awaiting GPS
+        if (capturedSessionId !== sessionId || capturedToken !== sessionToken) return;
+
         const lat = Number(pos.coords.latitude.toFixed(6));
         const lon = Number(pos.coords.longitude.toFixed(6));
         setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon}`);
-        if (!sessionId) return;
+
         try {
-          setBusy(true);
-          setBusyMessage('Đang cập nhật điểm xuất phát GPS…');
-          const res = await sendDiscoveryAction(
-            sessionId,
-            view.revision,
-            setCoordinatesLocationAction(lat, lon, 'gps'),
-            sessionToken
-          );
-          setView(res);
-          setErrorBanner(null);
+          const action = setCoordinatesLocationAction(lat, lon, 'gps');
+          handleDispatchAction(action, 'Đang cập nhật điểm xuất phát GPS…');
         } catch (err) {
           setErrorBanner(err.message);
-        } finally {
-          setBusy(false);
-          setBusyMessage('');
         }
       },
       (err) => {
+        setGpsPending(false);
         if (err.code === 1) { // PERMISSION_DENIED
           setGeoNotice('Bạn đã từ chối quyền truy cập vị trí GPS.');
         } else if (err.code === 2) { // POSITION_UNAVAILABLE
@@ -744,96 +721,71 @@ export default function DiscoveryLayout({
       },
       { timeout: 10000, enableHighAccuracy: true, maximumAge: 60000 }
     );
-  }, [sessionId, view.revision, sessionToken]);
+  }, [sessionId, sessionToken, sessionReady, busy, gpsPending]);
 
-  const handleResolveOrigin = async (e) => {
+  const handleResolveOrigin = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     const q = originQuery.trim();
-    if (!q || !sessionId) return;
+    if (!q || !sessionReady || busy) return;
     try {
-      setBusy(true);
-      setBusyMessage('Đang tìm địa điểm trong danh mục…');
-      const res = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
-        resolveLocationAction(q),
-        sessionToken
-      );
-      setView(res);
-      setErrorBanner(null);
+      const action = resolveLocationAction(q);
+      handleDispatchAction(action, 'Đang tìm địa điểm trong danh mục…');
     } catch (err) {
       setErrorBanner(err.message);
-    } finally {
-      setBusy(false);
-      setBusyMessage('');
     }
   };
 
-  const handleChooseCandidate = async (candidateId) => {
-    if (!candidateId || !sessionId) return;
+  const handleChooseCandidate = (candidateId) => {
+    if (!candidateId || !sessionReady || busy) return;
     try {
-      setBusy(true);
-      setBusyMessage('Đang chọn điểm xuất phát…');
-      const res = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
-        chooseLocationCandidateAction(candidateId),
-        sessionToken
-      );
-      setView(res);
-      setErrorBanner(null);
+      const action = chooseLocationCandidateAction(candidateId);
+      handleDispatchAction(action, 'Đang chọn điểm xuất phát…');
     } catch (err) {
       setErrorBanner(err.message);
-    } finally {
-      setBusy(false);
-      setBusyMessage('');
     }
   };
 
-  const handleClearOrigin = async () => {
-    if (!sessionId) return;
+  const handleClearOrigin = () => {
+    if (!sessionReady || busy) return;
     try {
-      setBusy(true);
-      setBusyMessage('Đang xóa điểm xuất phát…');
-      const res = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
-        clearLocationAction(),
-        sessionToken
-      );
-      setView(res);
-      setGeoNotice(null);
-      setErrorBanner(null);
+      const action = clearLocationAction();
+      handleDispatchAction(action, 'Đang xóa điểm xuất phát…', () => {
+        setGeoNotice(null);
+      });
     } catch (err) {
       setErrorBanner(err.message);
-    } finally {
-      setBusy(false);
-      setBusyMessage('');
     }
   };
 
-  const handleManualCoordsSubmit = async (e) => {
+  const handleManualCoordsSubmit = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    const lat = Number(manualCoords.lat);
-    const lon = Number(manualCoords.lon);
-    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !sessionId) return;
+    if (!sessionReady || busy) return;
+
+    const rawLat = String(manualCoords.lat ?? '').trim();
+    const rawLon = String(manualCoords.lon ?? '').trim();
+
+    if (!rawLat || !rawLon) {
+      setErrorBanner('Tọa độ không được để trống.');
+      return;
+    }
+    const lat = Number(rawLat);
+    const lon = Number(rawLon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || isNaN(rawLat) || isNaN(rawLon)) {
+      setErrorBanner('Tọa độ phải là chữ số hợp lệ.');
+      return;
+    }
+    if (lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+      setErrorBanner('Vĩ độ phải từ -90 đến 90, kinh độ từ -180 đến 180.');
+      return;
+    }
+
     try {
-      setBusy(true);
-      setBusyMessage('Đang thiết lập tọa độ…');
-      const res = await sendDiscoveryAction(
-        sessionId,
-        view.revision,
-        setCoordinatesLocationAction(lat, lon, 'coordinates'),
-        sessionToken
-      );
-      setView(res);
-      setErrorBanner(null);
-      setShowManualCoords(false);
+      const action = setCoordinatesLocationAction(lat, lon, 'coordinates');
+      handleDispatchAction(action, 'Đang thiết lập tọa độ…', () => {
+        setShowManualCoords(false);
+      });
     } catch (err) {
       setErrorBanner(err.message);
-    } finally {
-      setBusy(false);
-      setBusyMessage('');
     }
   };
 
@@ -1167,9 +1119,9 @@ export default function DiscoveryLayout({
                 type="button"
                 className="nn-filter-chip"
                 onClick={() => handleTriggerGPS()}
-                disabled={!sessionReady || busy}
+                disabled={!sessionReady || busy || gpsPending}
               >
-                Vị trí GPS
+                {gpsPending ? 'Đang định vị…' : 'Vị trí GPS'}
               </button>
             </div>
 
@@ -1310,50 +1262,6 @@ export default function DiscoveryLayout({
                     </div>
                   </div>
 
-                  {/* Origin coordinates & GPS */}
-                  <div style={{ marginTop: '8px', padding: '8px 12px', background: '#F8F2EB', borderRadius: '8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <label style={{ fontSize: '11px', fontWeight: 700, color: '#8C7872', textTransform: 'uppercase' }}>
-                        Điểm xuất phát (Tọa độ riêng tư)
-                      </label>
-                      <button
-                        type="button"
-                        onClick={handleTriggerGPS}
-                        className="nn-action-chip-btn"
-                        style={{ height: '24px', fontSize: '11px' }}
-                      >
-                        Lấy vị trí GPS hiện tại
-                      </button>
-                    </div>
-                    {geoNotice && (
-                      <div style={{ fontSize: '11px', color: '#6C554E' }}>{normalizeDisplayText(geoNotice)}</div>
-                    )}
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                      <input
-                        type="number"
-                        step="0.0001"
-                        placeholder="Latitude (Vĩ độ)"
-                        value={profileForm.origin?.lat ?? ''}
-                        onChange={(e) => setProfileForm({
-                          ...profileForm,
-                          origin: e.target.value ? { ...(profileForm.origin || {}), lat: Number(e.target.value) } : null
-                        })}
-                        style={{ height: '30px', padding: '0 8px', borderRadius: '6px', border: '1px solid #E2D7CC', fontSize: '12px' }}
-                      />
-                      <input
-                        type="number"
-                        step="0.0001"
-                        placeholder="Longitude (Kinh độ)"
-                        value={profileForm.origin?.lon ?? ''}
-                        onChange={(e) => setProfileForm({
-                          ...profileForm,
-                          origin: e.target.value ? { ...(profileForm.origin || {}), lon: Number(e.target.value) } : null
-                        })}
-                        style={{ height: '30px', padding: '0 8px', borderRadius: '6px', border: '1px solid #E2D7CC', fontSize: '12px' }}
-                      />
-                    </div>
-                  </div>
-
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '8px' }}>
                     <div className="nn-profile-field">
                       <label htmlFor="pref-tastes">Món thích (cách nhau dấu phẩy)</label>
@@ -1462,9 +1370,9 @@ export default function DiscoveryLayout({
                       data-testid="origin-gps-button"
                       className="nn-origin-gps-btn"
                       onClick={handleTriggerGPS}
-                      disabled={!sessionReady || busy}
+                      disabled={!sessionReady || busy || gpsPending}
                     >
-                      Vị trí GPS hiện tại
+                      {gpsPending ? 'Đang định vị GPS…' : 'Vị trí GPS hiện tại'}
                     </button>
                     <button
                       type="button"
@@ -1584,25 +1492,40 @@ export default function DiscoveryLayout({
               {Array.isArray(displayView.web?.sources) && displayView.web.sources.length > 0 && (
                 <div className="nn-web-sources-box" data-testid="web-sources-box">
                   <div className="nn-web-sources-title">
-                    Nguồn tham khảo từ web:
+                    Nguồn tham khảo từ web (chưa kiểm chứng thực tế):
                   </div>
                   <div className="nn-web-sources-disclaimer">
-                    Thông tin web mang tính tham khảo mở rộng, chưa được kiểm chứng thực tế tại quán; không bảo đảm an toàn dị ứng hoặc giờ mở cửa thực tế.
+                    Thông tin web mang tính tham khảo mở rộng từ công cụ tìm kiếm, chưa được kiểm chứng thực tế tại quán; không bảo đảm an toàn dị ứng, giá hoặc giờ mở cửa.
                   </div>
                   <ul className="nn-web-sources-list">
-                    {displayView.web.sources.map((src, sIdx) => (
-                      <li key={sIdx} className="nn-web-source-item">
-                        <a
-                          href={src.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="nn-web-source-link"
-                        >
-                          {src.title || src.url}
-                        </a>
-                        {src.snippet && <p className="nn-web-source-snippet">{src.snippet}</p>}
-                      </li>
-                    ))}
+                    {displayView.web.sources.map((src, sIdx) => {
+                      const safeHref = safeExternalUrl(src.url);
+                      return (
+                        <li key={sIdx} className="nn-web-source-item" data-testid={`web-source-item-${sIdx}`}>
+                          {safeHref ? (
+                            <a
+                              href={safeHref}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="nn-web-source-link"
+                            >
+                              {src.title || src.url}
+                            </a>
+                          ) : (
+                            <span className="nn-web-source-link">{src.title || src.url || 'Nguồn web'}</span>
+                          )}
+                          <div className="nn-web-source-meta" style={{ fontSize: '11px', color: '#8C7872', marginTop: '2px' }}>
+                            <span className="nn-web-source-url" style={{ wordBreak: 'break-all' }}>{src.url}</span>
+                            {src.retrieved_at && (
+                              <span className="nn-web-source-time" style={{ marginLeft: '6px' }}>
+                                • Thu thập lúc: {new Date(src.retrieved_at).toLocaleString('vi-VN')}
+                              </span>
+                            )}
+                          </div>
+                          {src.snippet && <p className="nn-web-source-snippet">{src.snippet}</p>}
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}
@@ -1615,7 +1538,11 @@ export default function DiscoveryLayout({
                   </div>
                 ) : (
                   <div key={idx} className="nn-editorial-assistant">
-                    <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
+                    <div className="nn-editorial-badge">
+                      <StarGlyph size={10} color="#CF542F" /> MĂM MĂM
+                      {displayView.provider?.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
+                      {displayView.provider?.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
+                    </div>
                     <div className="nn-bubble editorial-body">
                       {m.text}
                     </div>
@@ -2014,7 +1941,17 @@ export default function DiscoveryLayout({
                   <div>Hợp đồng: {view.contract || 'discovery-v1'} | Revision: #{view.revision}</div>
                   <div>Phiên bản hồ sơ: #{view.profile_version} | Phiên bản chọn quán: #{view.selection_version}</div>
                   <div>Nguồn dữ liệu: {view.source?.dataset_source || 'chưa cấp'} ({view.source?.dataset_version || 'n/a'})</div>
-                  <div>Chế độ AI: {view.provider?.mode || health?.llm || 'rules'} (Gọi: {view.provider?.calls || 0} lượt)</div>
+                  <div>
+                    Chế độ AI: {view.provider?.mode || health?.llm || 'rules'}
+                    {view.provider?.model ? ` (${view.provider.model})` : ''}
+                    {view.provider?.reply_source ? ` | Nguồn phản hồi: ${
+                      view.provider.reply_source === 'model' ? 'Mô hình AI' :
+                      view.provider.reply_source === 'tools' ? 'Công cụ nội bộ (Tools)' :
+                      'Quy tắc hệ thống (Rules)'
+                    }` : ''}
+                    {view.provider?.reason ? ` [Lý do: ${view.provider.reason}]` : ''}
+                    {` (Gọi: ${view.provider?.calls || 0} lượt)`}
+                  </div>
                   <div>Thời gian xử lý: {view.diagnostics?.elapsed_ms || 0}ms | Thời tiết: {view.diagnostics?.weather || 'unavailable'}</div>
                 </div>
               </details>
@@ -2173,11 +2110,17 @@ export default function DiscoveryLayout({
                                   )}
                                 </h4>
                                 <p className="nn-selected-sub">{item.address || item.district}</p>
-                                {item.distance_m != null && (
-                                  <p className="nn-selected-sub" data-testid={`selected-distance-${item.id}`} style={{ color: '#702914', fontWeight: 600 }}>
-                                    {formatDistanceDisplay(item)}
-                                  </p>
-                                )}
+                                <p
+                                  className="nn-selected-sub"
+                                  data-testid={`selected-distance-${item.id}`}
+                                  style={{
+                                    color: item.distance_m != null ? '#702914' : '#8C7872',
+                                    fontWeight: item.distance_m != null ? 600 : 400,
+                                    marginTop: '2px'
+                                  }}
+                                >
+                                  Khoảng cách: {formatDistanceDisplay(item)}
+                                </p>
                               </div>
                             </div>
 

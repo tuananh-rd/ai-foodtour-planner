@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-20T01:28:35.399Z",
+  "testedAt": "2026-10-20T01:45:50.450Z",
   "targetContract": "discovery-v1 (Additive Location, Model, Web)",
   "ports": {
     "web": 13600,
@@ -117,10 +117,10 @@
     },
     {
       "id": "DISTANCE_INITIAL_UNSET",
-      "name": "Server distance displays \"Chưa có khoảng cách\" when origin is unset",
+      "name": "Server distance displays translated \"Chưa có khoảng cách (chưa có điểm xuất phát)\" when origin is unset",
       "pass": true,
       "details": {
-        "initialDistText": "Khoảng cách: Chưa có khoảng cách (Chưa chọn điểm xuất phát)"
+        "initialDistText": "Khoảng cách: Chưa có khoảng cách (chưa có điểm xuất phát)"
       }
     },
     {
@@ -146,6 +146,12 @@
     {
       "id": "ORIGIN_COORDINATES_SET",
       "name": "Origin set via validated coordinates and distance updated",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "SELECTED_CARD_DISTANCE_RENDERED",
+      "name": "Selected venue card renders distance label unconditionally",
       "pass": true,
       "details": {}
     },
@@ -232,8 +238,8 @@
     }
   ],
   "summary": {
-    "total": 25,
-    "passed": 25,
+    "total": 26,
+    "passed": 26,
     "failed": 0
   }
 }
