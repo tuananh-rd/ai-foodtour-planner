@@ -5,6 +5,7 @@ import GuidedTimeline from './GuidedTimeline';
 import PilotMap from './PilotMap';
 import {
   getDiscoveryAssistant,
+  getAssistantCapabilities,
   sendDiscoveryMessage,
   sendDiscoveryAction,
   addSelectionAction,
@@ -16,6 +17,12 @@ import {
   createItineraryAction,
   reviseItineraryAction,
   confirmAction,
+  updateSettingsAction,
+  resolveLocationAction,
+  chooseLocationCandidateAction,
+  setCoordinatesLocationAction,
+  clearLocationAction,
+  formatDistanceDisplay,
   UNKNOWN_LABELS_VI,
   formatUnknownLabel,
   DiscoveryApiError
@@ -129,6 +136,9 @@ const DEFAULT_ASSISTANT_VIEW = {
   confirmation: null,
   messages: [],
   tour: null,
+  settings: { chat_model: null, web_search_enabled: false },
+  location: { status: 'unset', label: null, source: null, approximate: false, candidates: [] },
+  web: { enabled: false, status: 'off', reason: null, sources: [] },
   source: null,
   provider: null,
   diagnostics: { tool_calls: 0, elapsed_ms: 0, weather: 'unavailable' }
@@ -219,6 +229,35 @@ export default function DiscoveryLayout({
   const displayDetailVenue = useMemo(() => detailVenue ? sanitizeRestaurantForDisplay(detailVenue) : null, [detailVenue]);
   const [errorBanner, setErrorBanner] = useState(null);
   const [geoNotice, setGeoNotice] = useState(null);
+
+  // Discovery-v1 assistant capabilities & settings state
+  const [capabilities, setCapabilities] = useState(null);
+  const [capabilitiesLoading, setCapabilitiesLoading] = useState(false);
+  const [originQuery, setOriginQuery] = useState('');
+  const [manualCoords, setManualCoords] = useState({ lat: '', lon: '' });
+  const [showManualCoords, setShowManualCoords] = useState(false);
+
+  // Load assistant capabilities (chat models, web search status) on mount
+  useEffect(() => {
+    let active = true;
+    async function loadCaps() {
+      setCapabilitiesLoading(true);
+      try {
+        const caps = await getAssistantCapabilities();
+        if (active && caps) {
+          setCapabilities(caps);
+        }
+      } catch (_) {
+        // Non-blocking fallback; assistant remains functional
+      } finally {
+        if (active) setCapabilitiesLoading(false);
+      }
+    }
+    loadCaps();
+    return () => {
+      active = false;
+    };
+  }, []);
 
   // Authenticated sessionId/token + parentInitializing false + successful initial GET required
   const sessionReady = Boolean(
@@ -616,28 +655,186 @@ export default function DiscoveryLayout({
     setProfileDrawerOpen(false);
   };
 
-  // Explicit Origin GPS Geolocation handler
-  const handleTriggerGPS = () => {
+  // Settings Handlers (chat_model & web_search_enabled)
+  const handleModelChange = async (e) => {
+    const selectedModel = e.target.value;
+    if (!sessionId) return;
+    try {
+      setBusy(true);
+      setBusyMessage('Đang cập nhật mô hình AI…');
+      const res = await sendDiscoveryAction(
+        sessionId,
+        view.revision,
+        updateSettingsAction({ chat_model: selectedModel || null }),
+        sessionToken
+      );
+      setView(res);
+      setErrorBanner(null);
+    } catch (err) {
+      setErrorBanner(err.message);
+    } finally {
+      setBusy(false);
+      setBusyMessage('');
+    }
+  };
+
+  const handleToggleWebSearch = async (e) => {
+    const isEnabled = e.target.checked;
+    if (!sessionId) return;
+    try {
+      setBusy(true);
+      setBusyMessage('Đang cập nhật tùy chọn tìm web…');
+      const res = await sendDiscoveryAction(
+        sessionId,
+        view.revision,
+        updateSettingsAction({ web_search_enabled: isEnabled }),
+        sessionToken
+      );
+      setView(res);
+      setErrorBanner(null);
+    } catch (err) {
+      setErrorBanner(err.message);
+    } finally {
+      setBusy(false);
+      setBusyMessage('');
+    }
+  };
+
+  // Location Handlers (GPS, resolve query, choose candidate, clear, coordinates)
+  const handleTriggerGPS = useCallback(() => {
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setGeoNotice('Trình duyệt không hỗ trợ định vị GPS.');
       return;
     }
     setGeoNotice('Đang xin quyền định vị GPS…');
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
+      async (pos) => {
         const lat = Number(pos.coords.latitude.toFixed(6));
         const lon = Number(pos.coords.longitude.toFixed(6));
-        setProfileForm((prev) => ({
-          ...prev,
-          origin: { lat, lon }
-        }));
-        setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon} (chỉ lưu cho điểm bắt đầu của bạn).`);
+        setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon}`);
+        if (!sessionId) return;
+        try {
+          setBusy(true);
+          setBusyMessage('Đang cập nhật điểm xuất phát GPS…');
+          const res = await sendDiscoveryAction(
+            sessionId,
+            view.revision,
+            setCoordinatesLocationAction(lat, lon, 'gps'),
+            sessionToken
+          );
+          setView(res);
+          setErrorBanner(null);
+        } catch (err) {
+          setErrorBanner(err.message);
+        } finally {
+          setBusy(false);
+          setBusyMessage('');
+        }
       },
       (err) => {
-        setGeoNotice(`Không thể lấy vị trí GPS: ${err.message}`);
+        if (err.code === 1) { // PERMISSION_DENIED
+          setGeoNotice('Bạn đã từ chối quyền truy cập vị trí GPS.');
+        } else if (err.code === 2) { // POSITION_UNAVAILABLE
+          setGeoNotice('Không thể xác định vị trí từ thiết bị.');
+        } else if (err.code === 3) { // TIMEOUT
+          setGeoNotice('Quá thời gian xác định vị trí GPS.');
+        } else {
+          setGeoNotice(`Lỗi GPS: ${err.message || 'Không thể lấy vị trí'}`);
+        }
       },
-      { timeout: 10000, enableHighAccuracy: false }
+      { timeout: 10000, enableHighAccuracy: true, maximumAge: 60000 }
     );
+  }, [sessionId, view.revision, sessionToken]);
+
+  const handleResolveOrigin = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const q = originQuery.trim();
+    if (!q || !sessionId) return;
+    try {
+      setBusy(true);
+      setBusyMessage('Đang tìm địa điểm trong danh mục…');
+      const res = await sendDiscoveryAction(
+        sessionId,
+        view.revision,
+        resolveLocationAction(q),
+        sessionToken
+      );
+      setView(res);
+      setErrorBanner(null);
+    } catch (err) {
+      setErrorBanner(err.message);
+    } finally {
+      setBusy(false);
+      setBusyMessage('');
+    }
+  };
+
+  const handleChooseCandidate = async (candidateId) => {
+    if (!candidateId || !sessionId) return;
+    try {
+      setBusy(true);
+      setBusyMessage('Đang chọn điểm xuất phát…');
+      const res = await sendDiscoveryAction(
+        sessionId,
+        view.revision,
+        chooseLocationCandidateAction(candidateId),
+        sessionToken
+      );
+      setView(res);
+      setErrorBanner(null);
+    } catch (err) {
+      setErrorBanner(err.message);
+    } finally {
+      setBusy(false);
+      setBusyMessage('');
+    }
+  };
+
+  const handleClearOrigin = async () => {
+    if (!sessionId) return;
+    try {
+      setBusy(true);
+      setBusyMessage('Đang xóa điểm xuất phát…');
+      const res = await sendDiscoveryAction(
+        sessionId,
+        view.revision,
+        clearLocationAction(),
+        sessionToken
+      );
+      setView(res);
+      setGeoNotice(null);
+      setErrorBanner(null);
+    } catch (err) {
+      setErrorBanner(err.message);
+    } finally {
+      setBusy(false);
+      setBusyMessage('');
+    }
+  };
+
+  const handleManualCoordsSubmit = async (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const lat = Number(manualCoords.lat);
+    const lon = Number(manualCoords.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon) || !sessionId) return;
+    try {
+      setBusy(true);
+      setBusyMessage('Đang thiết lập tọa độ…');
+      const res = await sendDiscoveryAction(
+        sessionId,
+        view.revision,
+        setCoordinatesLocationAction(lat, lon, 'coordinates'),
+        sessionToken
+      );
+      setView(res);
+      setErrorBanner(null);
+      setShowManualCoords(false);
+    } catch (err) {
+      setErrorBanner(err.message);
+    } finally {
+      setBusy(false);
+      setBusyMessage('');
+    }
   };
 
   // Trigger Plan / Confirmation
@@ -836,6 +1033,56 @@ export default function DiscoveryLayout({
             </div>
           </div>
         </header>
+
+        {/* Assistant Capabilities & Settings Bar (Model Selector & Web Search Toggle) */}
+        <div className="nn-settings-bar" data-testid="discovery-settings-bar">
+          <div className="nn-settings-group">
+            <label htmlFor="chat-model-select" className="nn-settings-label">
+              Mô hình AI:
+            </label>
+            <select
+              id="chat-model-select"
+              data-testid="chat-model-select"
+              className="nn-settings-select"
+              value={displayView.settings?.chat_model || capabilities?.default_chat_model || ''}
+              onChange={handleModelChange}
+              disabled={!sessionReady || busy}
+            >
+              {Array.isArray(capabilities?.chat_models) && capabilities.chat_models.length > 0 ? (
+                capabilities.chat_models.map((m) => (
+                  <option key={m.id} value={m.id} disabled={!m.available}>
+                    {m.label || m.id}{!m.available ? ` (${m.reason || 'không khả dụng'})` : ''}
+                  </option>
+                ))
+              ) : (
+                <option value="">{capabilitiesLoading ? 'Đang tải mô hình…' : 'Mặc định hệ thống'}</option>
+              )}
+            </select>
+          </div>
+
+          <div className="nn-settings-group">
+            <label
+              className="nn-web-toggle-label"
+              title={
+                capabilities?.web_search?.available === false
+                  ? `Tìm kiếm web chưa khả dụng (${capabilities.web_search.reason || 'chưa kích hoạt'})`
+                  : 'Tìm kiếm bổ sung trên web (Tavily)'
+              }
+            >
+              <input
+                type="checkbox"
+                data-testid="web-search-toggle"
+                checked={Boolean(displayView.settings?.web_search_enabled)}
+                onChange={handleToggleWebSearch}
+                disabled={!sessionReady || busy || (!capabilities?.web_search?.available && !displayView.settings?.web_search_enabled)}
+              />
+              <span>Tìm kiếm web</span>
+            </label>
+            {capabilities?.web_search && !capabilities.web_search.available && (
+              <span className="nn-web-status-badge">Chưa hỗ trợ</span>
+            )}
+          </div>
+        </div>
 
         {/* Mobile Tab Navigation for responsive 390px view */}
         <nav className="nn-mobile-tabs" role="tablist" aria-label="Điều hướng trên điện thoại">
@@ -1152,6 +1399,172 @@ export default function DiscoveryLayout({
               </div>
             )}
 
+            {/* Origin Chooser Bar (Click-only GPS, resolve place catalog, manual coordinates, clear) */}
+            <div className="nn-origin-chooser" data-testid="discovery-origin-chooser">
+              <div className="nn-origin-header">
+                <span className="nn-origin-title">
+                  <span className="nn-target-icon">⌖</span> Điểm xuất phát của bạn
+                </span>
+                {(displayView.location?.status === 'chosen' || displayView.profile?.origin) && (
+                  <button
+                    type="button"
+                    data-testid="origin-clear-button"
+                    className="nn-origin-clear-btn"
+                    onClick={handleClearOrigin}
+                    disabled={!sessionReady || busy}
+                  >
+                    Xoá điểm xuất phát
+                  </button>
+                )}
+              </div>
+
+              {/* Status Row */}
+              <div className="nn-origin-status-row">
+                {displayView.location?.status === 'chosen' || displayView.profile?.origin ? (
+                  <div className="nn-origin-chosen-wrap">
+                    <span className="nn-origin-current-tag">
+                      {displayView.location?.label || (displayView.profile?.origin ? `${displayView.profile.origin.lat.toFixed(4)}, ${displayView.profile.origin.lon.toFixed(4)}` : 'Đã chọn điểm xuất phát')}
+                    </span>
+                    {(displayView.location?.approximate || displayView.profile?.origin?.approximate) && (
+                      <span className="nn-origin-approx-badge">Gần đúng</span>
+                    )}
+                    <button
+                      type="button"
+                      className="nn-origin-text-btn"
+                      onClick={() => setShowManualCoords(!showManualCoords)}
+                      disabled={!sessionReady || busy}
+                    >
+                      {showManualCoords ? 'Đóng chỉnh sửa' : 'Đổi vị trí khác'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="nn-origin-unset-wrap">
+                    <span className="nn-origin-unset-text">
+                      Chưa thiết lập điểm xuất phát (Bạn vẫn có thể trò chuyện tự do).
+                    </span>
+                  </div>
+                )}
+              </div>
+
+              {/* Geolocation Notice */}
+              {geoNotice && (
+                <div className="nn-geo-notice" data-testid="origin-geo-notice">
+                  {normalizeDisplayText(geoNotice)}
+                </div>
+              )}
+
+              {/* Origin Action Controls: Click-only GPS + Place Resolve Query */}
+              {(displayView.location?.status !== 'chosen' && !displayView.profile?.origin || showManualCoords) && (
+                <div className="nn-origin-controls">
+                  <div className="nn-origin-action-buttons">
+                    <button
+                      type="button"
+                      data-testid="origin-gps-button"
+                      className="nn-origin-gps-btn"
+                      onClick={handleTriggerGPS}
+                      disabled={!sessionReady || busy}
+                    >
+                      Vị trí GPS hiện tại
+                    </button>
+                    <button
+                      type="button"
+                      className="nn-origin-manual-toggle"
+                      onClick={() => setShowManualCoords(!showManualCoords)}
+                      disabled={!sessionReady || busy}
+                    >
+                      {showManualCoords ? 'Ẩn nhập toạ độ' : 'Nhập toạ độ thủ công'}
+                    </button>
+                  </div>
+
+                  {/* Place query search form */}
+                  <form onSubmit={handleResolveOrigin} className="nn-origin-search-form">
+                    <input
+                      type="text"
+                      data-testid="origin-query-input"
+                      className="nn-origin-input"
+                      value={originQuery}
+                      onChange={(e) => setOriginQuery(e.target.value)}
+                      placeholder="Tìm phố hoặc địa danh (vd: Chợ Hôm, Hàng Bạc)…"
+                      disabled={!sessionReady || busy}
+                    />
+                    <button
+                      type="submit"
+                      data-testid="origin-resolve-button"
+                      className="nn-origin-resolve-btn"
+                      disabled={!sessionReady || busy || !originQuery.trim()}
+                    >
+                      Tìm
+                    </button>
+                  </form>
+
+                  {/* Manual Coordinates Form */}
+                  {showManualCoords && (
+                    <form onSubmit={handleManualCoordsSubmit} className="nn-origin-coords-form">
+                      <input
+                        type="number"
+                        step="0.0001"
+                        data-testid="origin-lat-input"
+                        className="nn-origin-coord-input"
+                        placeholder="Vĩ độ (Lat, vd: 21.0285)"
+                        value={manualCoords.lat}
+                        onChange={(e) => setManualCoords({ ...manualCoords, lat: e.target.value })}
+                      />
+                      <input
+                        type="number"
+                        step="0.0001"
+                        data-testid="origin-lon-input"
+                        className="nn-origin-coord-input"
+                        placeholder="Kinh độ (Lon, vd: 105.8542)"
+                        value={manualCoords.lon}
+                        onChange={(e) => setManualCoords({ ...manualCoords, lon: e.target.value })}
+                      />
+                      <button
+                        type="submit"
+                        data-testid="origin-coords-submit"
+                        className="nn-origin-resolve-btn"
+                        disabled={!manualCoords.lat || !manualCoords.lon || !sessionReady || busy}
+                      >
+                        Lưu toạ độ
+                      </button>
+                    </form>
+                  )}
+
+                  {/* Candidate list if status === 'candidates' */}
+                  {displayView.location?.status === 'candidates' && Array.isArray(displayView.location?.candidates) && displayView.location.candidates.length > 0 && (
+                    <div className="nn-origin-candidates" data-testid="origin-candidates-list">
+                      <div className="nn-origin-candidates-title">Chọn địa điểm phù hợp trong danh mục:</div>
+                      {displayView.location.candidates.map((cand) => (
+                        <div key={cand.id} className="nn-origin-candidate-item">
+                          <div>
+                            <span className="nn-origin-candidate-label">{cand.label}</span>
+                            {cand.approximate && (
+                              <span className="nn-origin-approx-badge">Gần đúng</span>
+                            )}
+                          </div>
+                          <button
+                            type="button"
+                            data-testid={`origin-candidate-${cand.id}`}
+                            className="nn-origin-candidate-choose-btn"
+                            onClick={() => handleChooseCandidate(cand.id)}
+                            disabled={!sessionReady || busy}
+                          >
+                            Chọn điểm này
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Not found alert */}
+                  {displayView.location?.status === 'not_found' && (
+                    <div className="nn-origin-not-found" data-testid="origin-not-found-msg">
+                      Không tìm thấy địa điểm trong danh mục nội bộ. Vui lòng nhập tên phố / địa danh khác hoặc sử dụng toạ độ GPS.
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
             {/* Scrollable Message Stream */}
             <div className="nn-stream" ref={chatScrollRef} data-testid="discovery-messages-list">
               {/* Initial Assistant Welcome */}
@@ -1166,6 +1579,33 @@ export default function DiscoveryLayout({
                   </div>
                 )}
               </div>
+
+              {/* Untrusted Web Sources Reference Box */}
+              {Array.isArray(displayView.web?.sources) && displayView.web.sources.length > 0 && (
+                <div className="nn-web-sources-box" data-testid="web-sources-box">
+                  <div className="nn-web-sources-title">
+                    Nguồn tham khảo từ web:
+                  </div>
+                  <div className="nn-web-sources-disclaimer">
+                    Thông tin web mang tính tham khảo mở rộng, chưa được kiểm chứng thực tế tại quán; không bảo đảm an toàn dị ứng hoặc giờ mở cửa thực tế.
+                  </div>
+                  <ul className="nn-web-sources-list">
+                    {displayView.web.sources.map((src, sIdx) => (
+                      <li key={sIdx} className="nn-web-source-item">
+                        <a
+                          href={src.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="nn-web-source-link"
+                        >
+                          {src.title || src.url}
+                        </a>
+                        {src.snippet && <p className="nn-web-source-snippet">{src.snippet}</p>}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               {/* Historical Messages */}
               {Array.isArray(displayView.messages) && displayView.messages.map((m, idx) => (
@@ -1248,6 +1688,17 @@ export default function DiscoveryLayout({
                                   Giờ: Chưa xác minh
                                 </span>
                               )}
+                            </div>
+
+                            {/* Server-computed Distance Display */}
+                            <div className="nn-restaurant-meta-row" style={{ marginTop: '2px' }}>
+                              <span
+                                className="nn-restaurant-meta-item"
+                                data-testid={`restaurant-distance-${r.id}`}
+                                style={{ color: r.distance_m != null ? '#702914' : '#8C7872', fontWeight: r.distance_m != null ? 600 : 400 }}
+                              >
+                                Khoảng cách: {formatDistanceDisplay(r)}
+                              </span>
                             </div>
 
                             {/* Unknowns warning pills */}
@@ -1372,6 +1823,9 @@ export default function DiscoveryLayout({
                         </div>
                         <div className="nn-comparison-col-item">
                           <strong>Khu vực:</strong> {cv.district || cv.address}
+                        </div>
+                        <div className="nn-comparison-col-item">
+                          <strong>Khoảng cách:</strong> {formatDistanceDisplay(cv)}
                         </div>
                         <div style={{ marginTop: '6px' }}>
                           <button
@@ -1719,6 +2173,11 @@ export default function DiscoveryLayout({
                                   )}
                                 </h4>
                                 <p className="nn-selected-sub">{item.address || item.district}</p>
+                                {item.distance_m != null && (
+                                  <p className="nn-selected-sub" data-testid={`selected-distance-${item.id}`} style={{ color: '#702914', fontWeight: 600 }}>
+                                    {formatDistanceDisplay(item)}
+                                  </p>
+                                )}
                               </div>
                             </div>
 

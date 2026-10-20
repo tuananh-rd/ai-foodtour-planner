@@ -51,6 +51,54 @@ export function validateDiscoveryAction(action) {
     return action;
   }
 
+  if (action.type === 'settings') {
+    if (!action.arguments || typeof action.arguments !== 'object') {
+      throw new DiscoveryApiError('invalid_action', 'Hành động settings yêu cầu đối tượng arguments.');
+    }
+    const hasChatModel = action.arguments.chat_model !== undefined;
+    const hasWebSearch = action.arguments.web_search_enabled !== undefined;
+    if (!hasChatModel && !hasWebSearch) {
+      throw new DiscoveryApiError('invalid_action', 'Hành động settings phải cung cấp ít nhất một thiết lập (chat_model hoặc web_search_enabled).');
+    }
+    if (hasChatModel && action.arguments.chat_model !== null && typeof action.arguments.chat_model !== 'string') {
+      throw new DiscoveryApiError('invalid_action', 'chat_model phải là chuỗi định danh mô hình hợp lệ hoặc null.');
+    }
+    if (hasWebSearch && typeof action.arguments.web_search_enabled !== 'boolean') {
+      throw new DiscoveryApiError('invalid_action', 'web_search_enabled phải là giá trị boolean (true/false).');
+    }
+    return action;
+  }
+
+  if (action.type === 'location') {
+    if (!action.arguments || typeof action.arguments !== 'object') {
+      throw new DiscoveryApiError('invalid_action', 'Hành động location yêu cầu đối tượng arguments.');
+    }
+    const { operation } = action.arguments;
+    const validOperations = ['resolve', 'choose', 'coordinates', 'clear'];
+    if (!operation || !validOperations.includes(operation)) {
+      throw new DiscoveryApiError('invalid_action', `Thao tác location '${operation}' không hợp lệ (hỗ trợ resolve, choose, coordinates, clear).`);
+    }
+    if (operation === 'resolve') {
+      if (!action.arguments.query || typeof action.arguments.query !== 'string' || !action.arguments.query.trim()) {
+        throw new DiscoveryApiError('invalid_action', 'Thao tác resolve yêu cầu query là chuỗi địa điểm không rỗng.');
+      }
+    } else if (operation === 'choose') {
+      if (!action.arguments.candidate_id || typeof action.arguments.candidate_id !== 'string') {
+        throw new DiscoveryApiError('invalid_action', 'Thao tác choose yêu cầu candidate_id hợp lệ.');
+      }
+    } else if (operation === 'coordinates') {
+      const lat = Number(action.arguments.lat);
+      const lon = Number(action.arguments.lon);
+      if (!Number.isFinite(lat) || !Number.isFinite(lon) || lat < -90 || lat > 90 || lon < -180 || lon > 180) {
+        throw new DiscoveryApiError('invalid_action', 'Tọa độ vị trí lat/lon không hợp lệ.');
+      }
+      if (!action.arguments.source || typeof action.arguments.source !== 'string') {
+        action.arguments.source = 'coordinates';
+      }
+    }
+    return action;
+  }
+
   if (action.type === 'tool') {
     if (!action.name || !ALLOWED_TOOL_NAMES.includes(action.name)) {
       throw new DiscoveryApiError('invalid_action', `Tên công cụ '${action.name}' không nằm trong danh mục cho phép của hợp đồng discovery-v1.`);
@@ -61,7 +109,7 @@ export function validateDiscoveryAction(action) {
     return action;
   }
 
-  throw new DiscoveryApiError('invalid_action', `Loại hành động '${action.type}' không được hỗ trợ (chỉ chấp nhận 'tool' hoặc 'confirm').`);
+  throw new DiscoveryApiError('invalid_action', `Loại hành động '${action.type}' không được hỗ trợ (chấp nhận 'tool', 'confirm', 'settings', 'location').`);
 }
 
 /**
@@ -189,6 +237,47 @@ export function validateDiscoveryViewShape(view, statusCode = 200) {
     throw new DiscoveryApiError('bad_response', 'Dữ liệu phản hồi thiếu trường revision hợp lệ.', view, statusCode);
   }
   return view;
+}
+
+/**
+ * GET /v1/assistant/capabilities
+ * Fetches discovery assistant capabilities (chat models, web search status, location mode).
+ * Makes no provider request and returns verified discovery-v1 capabilities.
+ */
+export async function getAssistantCapabilities(options = {}) {
+  const url = `${getApiBaseUrl()}/v1/assistant/capabilities`;
+  const headers = {
+    'Accept': 'application/json'
+  };
+
+  const res = await fetchWithTimeout(url, {
+    method: 'GET',
+    headers,
+    signal: options.signal
+  }, options.timeoutMs || 10000);
+
+  let body = null;
+  try {
+    body = await res.json();
+  } catch (jsonErr) {
+    if (jsonErr instanceof DiscoveryApiError || jsonErr?.name === 'AbortError') {
+      throw jsonErr;
+    }
+    throw new DiscoveryApiError(
+      'bad_response',
+      `Phản hồi cấu hình trợ lý không hợp lệ (mã ${res.status}).`,
+      null,
+      res.status
+    );
+  }
+
+  if (!res.ok) {
+    const code = body?.code || 'capabilities_failed';
+    const msg = body?.message || `Lỗi tải cấu hình trợ lý (${res.status}): ${res.statusText}`;
+    throw new DiscoveryApiError(code, msg, body, res.status);
+  }
+
+  return body;
 }
 
 /**
@@ -525,6 +614,76 @@ export function confirmAction(confirmationId) {
     type: 'confirm',
     confirmation_id: String(confirmationId)
   };
+}
+
+export function updateSettingsAction({ chat_model, web_search_enabled }) {
+  const args = {};
+  if (chat_model !== undefined) args.chat_model = chat_model;
+  if (web_search_enabled !== undefined) args.web_search_enabled = Boolean(web_search_enabled);
+  return {
+    type: 'settings',
+    arguments: args
+  };
+}
+
+export function resolveLocationAction(query) {
+  return {
+    type: 'location',
+    arguments: {
+      operation: 'resolve',
+      query: String(query || '').trim()
+    }
+  };
+}
+
+export function chooseLocationCandidateAction(candidateId) {
+  return {
+    type: 'location',
+    arguments: {
+      operation: 'choose',
+      candidate_id: String(candidateId)
+    }
+  };
+}
+
+export function setCoordinatesLocationAction(lat, lon, source = 'gps') {
+  return {
+    type: 'location',
+    arguments: {
+      operation: 'coordinates',
+      lat: Number(lat),
+      lon: Number(lon),
+      source: String(source)
+    }
+  };
+}
+
+export function clearLocationAction() {
+  return {
+    type: 'location',
+    arguments: {
+      operation: 'clear'
+    }
+  };
+}
+
+/**
+ * Formats server-computed distance_m as "đường chim bay" without inventing ETA or road routing.
+ */
+export function formatDistanceDisplay(restaurant) {
+  if (!restaurant || typeof restaurant !== 'object') return null;
+  const dist = restaurant.distance_m;
+  if (typeof dist === 'number' && Number.isFinite(dist)) {
+    if (dist < 1000) {
+      return `~${Math.round(dist)} m (đường chim bay)`;
+    }
+    const km = (dist / 1000).toFixed(1);
+    return `~${km} km (đường chim bay)`;
+  }
+  if (restaurant.distance_reason) {
+    return `Chưa có khoảng cách (${restaurant.distance_reason})`;
+  }
+  return 'Chưa có khoảng cách';
 }
 
 /**

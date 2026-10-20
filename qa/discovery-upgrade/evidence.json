@@ -1,0 +1,239 @@
+{
+  "testedAt": "2026-10-20T01:28:35.399Z",
+  "targetContract": "discovery-v1 (Additive Location, Model, Web)",
+  "ports": {
+    "web": 13600,
+    "mockApi": 18600,
+    "cdp": 19800
+  },
+  "viewportsTested": [
+    {
+      "name": "desktop_1440x1024",
+      "width": 1440,
+      "height": 1024
+    },
+    {
+      "name": "desktop_1280x800",
+      "width": 1280,
+      "height": 800
+    },
+    {
+      "name": "desktop_1920x1080",
+      "width": 1920,
+      "height": 1080
+    },
+    {
+      "name": "desktop_2560x1440",
+      "width": 2560,
+      "height": 1440
+    },
+    {
+      "name": "mobile_390x844",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "checks": [
+    {
+      "id": "PREFLIGHT_PORTS",
+      "name": "Isolated test ports 13600, 18600, 19800 are free",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MOCK_API_RUNNING",
+      "name": "Mock API listening on http://127.0.0.1:18600",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "FRONTEND_BUILD",
+      "name": "Next.js build succeeded in scratch environment",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "FRONTEND_RUNNING",
+      "name": "Frontend responding on http://127.0.0.1:13600",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "DISCOVERY_LAYOUT_RENDERED",
+      "name": "Discovery layout loaded successfully",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "INPUT_INTERACTIVE",
+      "name": "Chat input enabled after session authentication",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "SETTINGS_BAR_PRESENT",
+      "name": "Settings bar is present in DOM",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MODEL_OPTIONS_VERIFIED",
+      "name": "Gemini chat model options populated from capabilities",
+      "pass": true,
+      "details": {
+        "modelOptions": [
+          {
+            "value": "gemini-2.5-flash",
+            "text": "Gemini 2.5 Flash",
+            "disabled": false
+          },
+          {
+            "value": "gemini-2.5-pro",
+            "text": "Gemini 2.5 Pro",
+            "disabled": false
+          }
+        ]
+      }
+    },
+    {
+      "id": "WEB_SEARCH_DEFAULT_OFF",
+      "name": "Web search toggle defaults to unchecked/off",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "MODEL_SELECTION_DISPATCHED",
+      "name": "Settings action dispatched with selected chat_model",
+      "pass": true,
+      "details": {
+        "currentModel": "gemini-2.5-pro"
+      }
+    },
+    {
+      "id": "ORIGIN_CHOOSER_PRESENT",
+      "name": "Origin chooser component is present",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "DISTANCE_INITIAL_UNSET",
+      "name": "Server distance displays \"Chưa có khoảng cách\" when origin is unset",
+      "pass": true,
+      "details": {
+        "initialDistText": "Khoảng cách: Chưa có khoảng cách (Chưa chọn điểm xuất phát)"
+      }
+    },
+    {
+      "id": "CANDIDATES_RENDERED",
+      "name": "Catalog candidate list rendered after query resolve",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "DISTANCE_SERVER_COMPUTED",
+      "name": "Server distance labeled \"đường chim bay\" with numeric value after origin chosen",
+      "pass": true,
+      "details": {
+        "chosenDistText": "Khoảng cách: ~1.4 km (đường chim bay)"
+      }
+    },
+    {
+      "id": "ORIGIN_CLEARED",
+      "name": "Origin successfully cleared and distance reset without error",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "ORIGIN_COORDINATES_SET",
+      "name": "Origin set via validated coordinates and distance updated",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "CONFIRMATION_CARD_RENDERED",
+      "name": "Versioned confirmation gate rendered before tour finalization",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "COMPLETED_TOUR_CTA_TEXT",
+      "name": "Completed tour CTA button displays \"Xem lịch trình trên Google Maps →\"",
+      "pass": true,
+      "details": {
+        "ctaText": "Xem lịch trình trên Google Maps →"
+      }
+    },
+    {
+      "id": "COMPLETED_TOUR_CTA_URL",
+      "name": "CTA href is a verified multi-stop Google Maps URL",
+      "pass": true,
+      "details": {
+        "ctaHref": "https://www.google.com/maps/dir/?api=1&origin=21.0285%2C105.8542&destination=21.0337%2C105.8509&travelmode=walking&waypoints=21.0304%2C105.8496"
+      }
+    },
+    {
+      "id": "VIEWPORT_desktop_1440x1024",
+      "name": "Viewport 1440x1024 rendered without horizontal overflow",
+      "pass": true,
+      "details": {
+        "scrollWidth": 1425,
+        "clientWidth": 1425,
+        "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "VIEWPORT_desktop_1280x800",
+      "name": "Viewport 1280x800 rendered without horizontal overflow",
+      "pass": true,
+      "details": {
+        "scrollWidth": 1265,
+        "clientWidth": 1265,
+        "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "VIEWPORT_desktop_1920x1080",
+      "name": "Viewport 1920x1080 rendered without horizontal overflow",
+      "pass": true,
+      "details": {
+        "scrollWidth": 1905,
+        "clientWidth": 1905,
+        "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "VIEWPORT_desktop_2560x1440",
+      "name": "Viewport 2560x1440 rendered without horizontal overflow",
+      "pass": true,
+      "details": {
+        "scrollWidth": 2545,
+        "clientWidth": 2545,
+        "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "VIEWPORT_mobile_390x844",
+      "name": "Viewport 390x844 rendered without horizontal overflow",
+      "pass": true,
+      "details": {
+        "scrollWidth": 390,
+        "clientWidth": 390,
+        "hasHorizontalOverflow": false
+      }
+    },
+    {
+      "id": "ZERO_EMOJI_INVARIANT",
+      "name": "Zero Unicode emojis found across all DOM text nodes",
+      "pass": true,
+      "details": {
+        "count": 0,
+        "foundEmojis": []
+      }
+    }
+  ],
+  "summary": {
+    "total": 25,
+    "passed": 25,
+    "failed": 0
+  }
+}

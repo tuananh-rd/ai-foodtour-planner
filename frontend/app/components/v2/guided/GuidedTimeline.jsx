@@ -306,7 +306,7 @@ export default function GuidedTimeline({
             data-testid="google-maps-cta"
             className="nn-cta-btn"
           >
-            Mở lộ trình trên Google Maps →
+            Xem lịch trình trên Google Maps →
           </a>
           <p
             data-testid="google-maps-disclosure"

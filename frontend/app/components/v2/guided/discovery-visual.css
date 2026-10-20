@@ -734,3 +734,359 @@
   margin-left: 6px;
 }
 
+/* --- DISCOVERY-V1 SETTINGS & CAPABILITIES BAR --- */
+.nn-settings-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #FDF9F5;
+  border: 1px solid #EFE7E0;
+  border-radius: 10px;
+  padding: 6px 14px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+
+.nn-settings-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.nn-settings-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #5A4238;
+}
+
+.nn-settings-select {
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  border: 1px solid #D6B998;
+  background: #FFFDFB;
+  font-size: 12px;
+  color: #231815;
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.nn-settings-select:focus {
+  outline: none;
+  border-color: #CF542F;
+}
+
+.nn-web-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #5A4238;
+  cursor: pointer;
+  user-select: none;
+}
+
+.nn-web-toggle-label input[type="checkbox"] {
+  accent-color: #CF542F;
+  width: 15px;
+  height: 15px;
+  cursor: pointer;
+}
+
+.nn-web-status-badge {
+  font-size: 10.5px;
+  color: #8C7872;
+  background: #EFE7E0;
+  padding: 1px 6px;
+  border-radius: 4px;
+  margin-left: 4px;
+}
+
+/* --- DISCOVERY-V1 ORIGIN CHOOSER --- */
+.nn-origin-chooser {
+  background: #FFFEFA;
+  border: 1px solid #EFE7E0;
+  border-radius: 12px;
+  padding: 10px 14px;
+  margin: 6px 0 12px 0;
+  box-shadow: 0 2px 8px rgba(112, 41, 20, 0.03);
+}
+
+.nn-origin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #231815;
+}
+
+.nn-origin-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nn-origin-clear-btn {
+  background: transparent;
+  border: 1px solid #E2D7CC;
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  color: #8C7872;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.nn-origin-clear-btn:hover {
+  background: #F8E4D9;
+  color: #702914;
+  border-color: #CF542F;
+}
+
+.nn-origin-status-row {
+  margin-top: 6px;
+}
+
+.nn-origin-chosen-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nn-origin-current-tag {
+  background: #F8E4D9;
+  color: #702914;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.nn-origin-approx-badge {
+  background: #FEF3C7;
+  color: #92400E;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-size: 10.5px;
+  font-weight: 600;
+}
+
+.nn-origin-text-btn {
+  background: none;
+  border: none;
+  color: #CF542F;
+  font-size: 11.5px;
+  text-decoration: underline;
+  cursor: pointer;
+  padding: 0;
+}
+
+.nn-origin-unset-wrap {
+  font-size: 12px;
+  color: #7A625A;
+}
+
+.nn-geo-notice {
+  margin-top: 6px;
+  font-size: 11.5px;
+  color: #6C554E;
+  background: #F9F2EB;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+.nn-origin-controls {
+  margin-top: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nn-origin-action-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.nn-origin-gps-btn {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #CF542F;
+  background: #CF542F;
+  color: #FFFFFF;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s ease;
+}
+
+.nn-origin-gps-btn:hover {
+  opacity: 0.9;
+}
+
+.nn-origin-manual-toggle {
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 6px;
+  border: 1px solid #D6B998;
+  background: #FFFDFB;
+  color: #5A4238;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+
+.nn-origin-search-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.nn-origin-input {
+  flex: 1;
+  height: 30px;
+  padding: 0 10px;
+  border: 1px solid #D6B998;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #FFFDFB;
+  color: #231815;
+}
+
+.nn-origin-input:focus {
+  outline: none;
+  border-color: #CF542F;
+}
+
+.nn-origin-resolve-btn {
+  height: 30px;
+  padding: 0 14px;
+  border-radius: 6px;
+  border: 1px solid #702914;
+  background: #702914;
+  color: #FFFFFF;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nn-origin-coords-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.nn-origin-coord-input {
+  flex: 1;
+  min-width: 110px;
+  height: 30px;
+  padding: 0 8px;
+  border: 1px solid #D6B998;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #FFFDFB;
+}
+
+.nn-origin-candidates {
+  margin-top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nn-origin-candidates-title {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: #5A4238;
+}
+
+.nn-origin-candidate-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6px 10px;
+  background: #FDF9F5;
+  border: 1px solid #EAE3DC;
+  border-radius: 6px;
+}
+
+.nn-origin-candidate-label {
+  font-size: 12px;
+  color: #231815;
+  font-weight: 500;
+}
+
+.nn-origin-candidate-choose-btn {
+  background: #CF542F;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+
+.nn-origin-not-found {
+  margin-top: 4px;
+  font-size: 11.5px;
+  color: #991B1B;
+  background: #FEE2E2;
+  border: 1px solid #FECACA;
+  border-radius: 6px;
+  padding: 4px 8px;
+}
+
+/* --- DISCOVERY-V1 WEB SOURCES REFERENCE BOX --- */
+.nn-web-sources-box {
+  background: #F9F6F0;
+  border: 1px solid #E5DFD7;
+  border-left: 4px solid #8C7872;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 8px 0;
+  font-size: 11.5px;
+  color: #5A4238;
+}
+
+.nn-web-sources-title {
+  font-weight: 700;
+  color: #231815;
+  margin-bottom: 3px;
+}
+
+.nn-web-sources-disclaimer {
+  font-style: italic;
+  color: #7A625A;
+  margin-bottom: 6px;
+  line-height: 1.35;
+}
+
+.nn-web-sources-list {
+  margin: 0;
+  padding-left: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nn-web-source-item {
+  line-height: 1.35;
+}
+
+.nn-web-source-link {
+  color: #CF542F;
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+.nn-web-source-snippet {
+  margin: 2px 0 0 0;
+  font-size: 11px;
+  color: #6C554E;
+}
+

@@ -77,6 +77,9 @@ export function sanitizeRestaurantForDisplay(r) {
     label: r.label,
     source_url: r.source_url,
     source_fetched_at: r.source_fetched_at,
+    distance_m: r.distance_m,
+    distance_source: r.distance_source,
+    distance_reason: r.distance_reason ? normalizeDisplayText(r.distance_reason) : r.distance_reason,
     // Display text fields
     name: normalizeDisplayText(r.name),
     address: r.address ? normalizeDisplayText(r.address) : r.address,
@@ -313,6 +316,46 @@ export function sanitizeViewForDisplay(view) {
     profile: view.profile ? sanitizeProfileForDisplay(view.profile) : view.profile,
 
     // 8. Tour
-    tour: view.tour ? sanitizeTourForDisplay(view.tour) : view.tour
+    tour: view.tour ? sanitizeTourForDisplay(view.tour) : view.tour,
+
+    // 9. Settings
+    settings: view.settings ? {
+      chat_model: view.settings.chat_model,
+      web_search_enabled: Boolean(view.settings.web_search_enabled)
+    } : view.settings,
+
+    // 10. Location
+    location: view.location ? {
+      ...view.location,
+      status: view.location.status,
+      source: view.location.source,
+      approximate: Boolean(view.location.approximate),
+      label: view.location.label ? normalizeDisplayText(view.location.label) : view.location.label,
+      candidates: Array.isArray(view.location.candidates) ? view.location.candidates.map((c) => ({
+        ...c,
+        id: c.id,
+        lat: c.lat,
+        lon: c.lon,
+        kind: c.kind,
+        approximate: Boolean(c.approximate),
+        label: normalizeDisplayText(c.label)
+      })) : view.location.candidates
+    } : view.location,
+
+    // 11. Web
+    web: view.web ? {
+      ...view.web,
+      enabled: Boolean(view.web.enabled),
+      status: view.web.status,
+      reason: view.web.reason ? normalizeDisplayText(view.web.reason) : view.web.reason,
+      sources: Array.isArray(view.web.sources) ? view.web.sources.map((s) => ({
+        ...s,
+        title: normalizeDisplayText(s.title),
+        snippet: normalizeDisplayText(s.snippet),
+        url: s.url,
+        retrieved_at: s.retrieved_at,
+        untrusted: Boolean(s.untrusted)
+      })) : view.web.sources
+    } : view.web
   };
 }
