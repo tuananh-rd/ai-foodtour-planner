@@ -33,7 +33,7 @@ The original Tavily provider, transport and sanitizers are restored with the sep
 | Check | Evidence | Result |
 |---|---|---|
 | Backend targeted regression and restored free-only provider guards |137 unittest checks, including discovery, protocol, presentation, upgrade, Tavily/search safety/transport, conversation, extractor and Maps links | PASS |
-| Actual synthetic HTTP journey | [discovery-upgrade-api.json](discovery-upgrade-api.json), backendcbe95af,57 checks | PASS; actual replies/results inspected,3-stop planner/explicit240minutes/Maps origin tested;0 provider requests |
+| Actual synthetic HTTP journey | [discovery-upgrade-api.json](discovery-upgrade-api.json), backendcbe95af,73 checks | PASS; actual replies/results inspected,3-stop planner/explicit240minutes and separate5-stop/explicit600minutes tour; split Maps URLs preserve actual origin/every stop;0 provider requests |
 | Deterministic schema | `tools/export_openapi.py --check` | PASS |
 | Key-scoped model metadata | [discovery-upgrade-model-metadata.json](discovery-upgrade-model-metadata.json) |1 metadata GET, no generate/debit,13→13 |
 | New live Gemini/local dataset | [discovery-upgrade-live.json](discovery-upgrade-live.json) | BLOCKED;1 user turn/2 model transports/0 retries |
@@ -52,3 +52,5 @@ Afterward usage is15/18, remaining3 equals reserve3; reset2026-10-20T07:00:00Z (
 ## Runtime and integration checkpoint
 
 New task-owned API8230 is synthetic/rules; API8320 uses private local data and the existing Gemini configuration, currently quota-blocked. Existing user-facing3300/8300 and3310/8210 lanes remain untouched. New sessions use the `discovery-upgrade` namespace; old sessions/private datasets/secrets/ledgers are preserved. Final browser URLs/source commits will be recorded after frontend review and isolated production builds.
+
+Additional split-URL HTTP scenario initially reached the unchanged request-rate guard when appended to a long session (`discovery-upgrade-api-rate-limit.json`). It now uses an explicit separate fixture session with its own stated trip preferences; the guard is not raised or bypassed. Both actual planner tours and split URL order pass.

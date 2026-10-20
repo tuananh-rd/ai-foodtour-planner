@@ -106,6 +106,36 @@ def main():
     cleared = action('location', {'operation': 'clear'})
     check('Clear origin shows unknown distance, no zero fallback', cleared['profile']['origin'] is None and
           all(x['distance_m'] is None for x in cleared['selection']))
+    # Separate explicit long-duration fixture tour exercises a real split URL,
+    # without silently relaxing the earlier three-stop request.
+    _, session = request(api, '/v1/sessions', {})
+    path = '/v1/sessions/'+session['session_id']+'/assistant'
+    token = session['token']
+    action('location', {'operation': 'coordinates', 'lat': 21.0285, 'lon': 105.8522, 'source': 'coordinates'})
+    tool('update_preferences', {'patch': {'foods': [], 'area': 'Hồ Gươm', 'duration_min': 600,
+         'budget_vnd': 5000000, 'budget_scope': 'group', 'party_size': 2, 'vehicle': 'walk',
+         'start_time': '10:00', 'max_leg_min': 60}})
+    five = tool('search_restaurants', {'area': 'Hồ Gươm'})
+    check('Five real fixture candidates for split-link scenario', len(five['results']) == 5)
+    tool('update_foodtour_selection', {'operation': 'add', 'venue_ids': [x['id'] for x in five['results']],
+         'selection_version': five['selection_version']})
+    ready = tool('create_itinerary', {})
+    long_tour = post({'action': {'type': 'confirm', 'confirmation_id': ready['confirmation']['id']}})
+    check('Explicit long-duration five-stop planner tour', len((long_tour.get('tour') or {}).get('stops', [])) == 5)
+    status, split = request(api, path.removesuffix('/assistant')+'/tour/maps-links', token=token)
+    flattened = []
+    for link in split['links']:
+        q = parse_qs(urlsplit(link['url']).query)
+        if not flattened:
+            flattened.append(q['origin'][0])
+        else:
+            check('Split boundary shares previous destination', q['origin'][0] == flattened[-1])
+        flattened.extend(q.get('waypoints', [''])[0].split('|') if 'waypoints' in q else [])
+        flattened.append(q['destination'][0])
+    venue_by_id = {x['id']: x for x in five['results']}
+    expected = ['21.028500,105.852200'] + [f"{venue_by_id[x['venue_id']]['lat']:.6f},{venue_by_id[x['venue_id']]['lon']:.6f}"
+        for x in long_tour['tour']['stops']]
+    check('Actual multiple free URLs preserve origin and every ordered stop', status == 200 and len(split['links']) >= 2 and flattened == expected)
     _, private = request('http://127.0.0.1:8320', '/health')
     _, capabilities = request('http://127.0.0.1:8320', '/v1/assistant/capabilities')
     evidence['private_bootstrap'] = {'source': private['dataset_source'], 'mode': private['llm_provider'],

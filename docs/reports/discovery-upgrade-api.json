@@ -221,6 +221,70 @@
       "pass": true
     },
     {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Five real fixture candidates for split-link scenario",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Explicit long-duration five-stop planner tour",
+      "pass": true
+    },
+    {
+      "name": "Split boundary shares previous destination",
+      "pass": true
+    },
+    {
+      "name": "Actual multiple free URLs preserve origin and every ordered stop",
+      "pass": true
+    },
+    {
       "name": "Private bootstrap honest configured/quota, no candidate3.1 option",
       "pass": true
     },
@@ -427,6 +491,72 @@
       "result_count": 2,
       "selected_count": 3,
       "origin_status": "unset"
+    },
+    {
+      "input": "location",
+      "status": "ok",
+      "reply": {
+        "text": "Đã chọn vị trí xuất phát. Khoảng cách đường chim bay đã cập nhật; tour cũ cần xác nhận lại.",
+        "question": null
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "tool",
+      "status": "ok",
+      "reply": {
+        "text": "Đã cập nhật thông tin bạn vừa sửa và giữ các yêu cầu còn lại.",
+        "question": null
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "tool",
+      "status": "ok",
+      "reply": {
+        "text": "Có 5 quán trong dữ liệu để bạn xem và so sánh. Bộ lọc khu vực: Hồ Gươm. Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.",
+        "question": null
+      },
+      "result_count": 5,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "tool",
+      "status": "ok",
+      "reply": {
+        "text": "Đã thêm quán hợp lệ vào lựa chọn.",
+        "question": null
+      },
+      "result_count": 5,
+      "selected_count": 5,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "tool",
+      "status": "ok",
+      "reply": {
+        "text": "Đây là bản xác nhận ngắn theo các quán bạn chọn; chưa tạo lịch trình. Hãy kiểm tra cảnh báo trước khi xác nhận.",
+        "question": null
+      },
+      "result_count": 5,
+      "selected_count": 5,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "confirm",
+      "status": "ok",
+      "reply": {
+        "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+        "question": null
+      },
+      "result_count": 5,
+      "selected_count": 5,
+      "origin_status": "chosen"
     }
   ],
   "provider_requests": 0,
