@@ -1,0 +1,454 @@
+{
+  "checks": [
+    {
+      "name": "Synthetic/rules explicit and web disabled",
+      "pass": true
+    },
+    {
+      "name": "Session ownership before tools",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "General chat before origin without form",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "One origin question, no permission denial or implicit origin",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Ambiguous local input requires explicit choice",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Chosen origin resumes query and retains foods/area",
+      "pass": true
+    },
+    {
+      "name": "Results honor district membership",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "No data distinct from denied/tool failure",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Actual fixture results with backend Haversine",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Compare two, explicitly select only A",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Explicit selection only; no automatic itinerary",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Versioned confirmation before planner",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Real planner creates ordered tour",
+      "pass": true
+    },
+    {
+      "name": "Free Google Maps URL route available",
+      "pass": true
+    },
+    {
+      "name": "Maps actual origin and walking mode",
+      "pass": true
+    },
+    {
+      "name": "All Maps URLs bounded HTTPS",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Origin change invalidates tour but preserves chosen order",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Opt-in web unavailable safely, local discovery remains",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "HTTP action accepted",
+      "pass": true
+    },
+    {
+      "name": "Zero provider requests",
+      "pass": true
+    },
+    {
+      "name": "Clear origin shows unknown distance, no zero fallback",
+      "pass": true
+    },
+    {
+      "name": "Private bootstrap honest configured/quota, no candidate3.1 option",
+      "pass": true
+    },
+    {
+      "name": "Web free eligibility unverified",
+      "pass": true
+    }
+  ],
+  "transcript": [
+    {
+      "input": "Chào bạn",
+      "status": "ok",
+      "reply": {
+        "text": "Chào bạn! Mình có thể cùng bạn khám phá món, tìm quán, so sánh rồi chọn lịch trình khi bạn muốn; chưa cần điền thông tin chuyến đi.",
+        "question": null
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "unset"
+    },
+    {
+      "input": "tôi muốn ăn phở với tráng miệng ở hai bà trưng",
+      "status": "unknown",
+      "reply": {
+        "text": "Mình đã ghi nhận phở và tráng miệng ở Hai Bà Trưng; cần vị trí bạn chọn để tìm và tính khoảng cách.",
+        "question": "Bạn muốn dùng vị trí hiện tại hay nhập vị trí?"
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "unset"
+    },
+    {
+      "input": "location",
+      "status": "unknown",
+      "reply": {
+        "text": "Đây là các mốc/khu vực có trong danh mục local, tọa độ chỉ xấp xỉ.",
+        "question": "Bạn chọn vị trí nào trong danh sách?"
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "candidates"
+    },
+    {
+      "input": "location",
+      "status": "ok",
+      "reply": {
+        "text": "Có 5 quán trong dữ liệu để bạn xem và so sánh. Bộ lọc khu vực: Hai Bà Trưng. Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.",
+        "question": null
+      },
+      "result_count": 5,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "Tìm phở ở Khu thử nghiệm không tồn tại",
+      "status": "no_results",
+      "reply": {
+        "text": "Dữ liệu local chưa có quán phù hợp ở khu thu nghiem; mình vẫn giữ khu vực và món bạn vừa yêu cầu.",
+        "question": null
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "location",
+      "status": "no_results",
+      "reply": {
+        "text": "Dữ liệu local chưa có quán phù hợp ở khu thu nghiem; mình vẫn giữ khu vực và món bạn vừa yêu cầu.",
+        "question": null
+      },
+      "result_count": 0,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "Tìm phở và chè quanh Hồ Gươm",
+      "status": "ok",
+      "reply": {
+        "text": "Có 4 quán trong dữ liệu để bạn xem và so sánh. Bộ lọc khu vực: Hồ Gươm. Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 0,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "So sánh A với B và thêm A vào chuyến đi",
+      "status": "unknown",
+      "reply": {
+        "text": "Đã thêm quán hợp lệ vào lựa chọn. Có thể đối chiếu địa chỉ, khoảng giá quán và giờ theo nguồn; chỗ ngồi, độ ngọt và mức phù hợp người lớn tuổi vẫn chưa rõ.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 1,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "tool",
+      "status": "ok",
+      "reply": {
+        "text": "Đã thêm quán hợp lệ vào lựa chọn.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "600 nghìn cả nhóm cho 2 người, 20 phút mỗi chặng",
+      "status": "ok",
+      "reply": {
+        "text": "Đã ghi nhận phần bạn vừa sửa, các yêu cầu khác và lựa chọn vẫn được giữ.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "Bắt đầu lúc 18h, tổng 240 phút, đi bộ",
+      "status": "ok",
+      "reply": {
+        "text": "Đã ghi nhận phần bạn vừa sửa, các yêu cầu khác và lựa chọn vẫn được giữ.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "tool",
+      "status": "ok",
+      "reply": {
+        "text": "Đây là bản xác nhận ngắn theo các quán bạn chọn; chưa tạo lịch trình. Hãy kiểm tra cảnh báo trước khi xác nhận.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "confirm",
+      "status": "ok",
+      "reply": {
+        "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "location",
+      "status": "ok",
+      "reply": {
+        "text": "Có 4 quán trong dữ liệu để bạn xem và so sánh. Bộ lọc khu vực: Hồ Gươm. Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "settings",
+      "status": "ok",
+      "reply": {
+        "text": "Đã cập nhật lựa chọn trợ lý cho phiên này; lịch trình và quán đã chọn được giữ.",
+        "question": null
+      },
+      "result_count": 4,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "Tìm phở quanh Hồ Gươm",
+      "status": "ok",
+      "reply": {
+        "text": "Có 2 quán trong dữ liệu để bạn xem và so sánh. Bộ lọc khu vực: Hồ Gươm. Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.",
+        "question": null
+      },
+      "result_count": 2,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "settings",
+      "status": "ok",
+      "reply": {
+        "text": "Đã cập nhật lựa chọn trợ lý cho phiên này; lịch trình và quán đã chọn được giữ.",
+        "question": null
+      },
+      "result_count": 2,
+      "selected_count": 3,
+      "origin_status": "chosen"
+    },
+    {
+      "input": "location",
+      "status": "unknown",
+      "reply": {
+        "text": "Đã bỏ vị trí xuất phát; quán đã chọn vẫn được giữ.",
+        "question": "Bạn muốn dùng vị trí hiện tại hay nhập vị trí?"
+      },
+      "result_count": 2,
+      "selected_count": 3,
+      "origin_status": "unset"
+    }
+  ],
+  "provider_requests": 0,
+  "backend_commit": "cbe95afaa0a1f07db6a6f379ab92ced990694ecc",
+  "private_bootstrap": {
+    "source": "private",
+    "mode": "gemini",
+    "models": [
+      {
+        "id": "gemini-3.5-flash-lite",
+        "label": "Gemini 3.5 Flash Lite",
+        "available": false,
+        "reason": "quota",
+        "native_tools_verified": true
+      }
+    ],
+    "web": {
+      "provider": "tavily",
+      "configured": false,
+      "available": false,
+      "free_only": true,
+      "reason": "unavailable"
+    }
+  }
+}
