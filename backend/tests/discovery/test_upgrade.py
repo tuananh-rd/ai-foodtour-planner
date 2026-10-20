@@ -31,6 +31,18 @@ class ScreenshotModel:
 
 
 class ScreenshotRegression(unittest.TestCase):
+    def test_compare_then_add_only_explicit_mutation_reference(self):
+        from app.discovery.engine import authorized
+        state = State()
+        state.results = ['1', '2']
+        tools = Tools(state, fixture(), StraightLineEstimator())
+        result, _ = handle('So sánh A với B và thêm A vào chuyến đi', tools)
+        self.assertEqual([x['id'] for x in state.selection], ['1'])
+        self.assertEqual(state.comparison, ['1', '2'])
+        self.assertIn(result['status'], ('ok', 'unknown'))
+        self.assertFalse(authorized('update_foodtour_selection', {'operation': 'add', 'venue_ids': ['2']},
+            'So sánh A với B và thêm A vào chuyến đi', tools, {}, ['1', '2']))
+
     def test_preference_change_clears_stale_cards_keeps_explicit_initial_reference(self):
         state = State()
         state.patch({'area': 'Phố cổ', 'origin': {'lat': 21.0285, 'lon': 105.8522}})

@@ -77,17 +77,32 @@ def parse_patch(text, tools):
     return patch, price_search
 
 
-def references(text, tools):
+def references(text, tools, result_ids=None):
+    result_ids = tools.state.results if result_ids is None else result_ids
     ids = []
     for match in re.finditer(r'(?<!\w)([A-E])(?!\w)', text):
         index = ord(match.group(1)) - 65
-        if index < len(tools.state.results):
-            ids.append(tools.state.results[index])
+        if index < len(result_ids):
+            ids.append(result_ids[index])
     f = fold_uncached(text)
-    for identity in set(tools.state.results) | {x['id'] for x in tools.state.selection}:
+    for identity in set(result_ids) | {x['id'] for x in tools.state.selection}:
         if identity in tools.by_id and fold_uncached(tools.by_id[identity].name) in f:
             ids.append(identity)
     return list(dict.fromkeys(ids))[:5]
+
+
+def selection_references(text, tools, result_ids):
+    # Bind each mutation only to its own clause, e.g. compare A/B then add A.
+    parts = re.split(r'(?i)\s+(?:và|rồi|sau đó|va|roi)\s+|[,;.!?]', text)
+    patterns = {'add': r'\b(?:them|chon|lay)\b', 'remove': r'\b(?:bo|xoa)\b',
+                'lock': r'\b(?:khoa|giu)\b', 'unlock': r'mo khoa|bo giu'}
+    bound = {key: [] for key in patterns}
+    for part in parts:
+        folded = fold_uncached(part)
+        operation = next((key for key in ('unlock', 'remove', 'add', 'lock') if re.search(patterns[key], folded)), None)
+        if operation:
+            bound[operation].extend(references(part, tools, result_ids))
+    return {key: list(dict.fromkeys(ids)) for key, ids in bound.items()}
 
 
 def authorized(name, args, text, tools, patch, initial_refs):
@@ -102,7 +117,8 @@ def authorized(name, args, text, tools, patch, initial_refs):
         return bool(args.get('patch')) and all(same(k, v) for k, v in args['patch'].items())
     if name == 'update_foodtour_selection':
         cues = {'add': r'\bthem|chon|lay\b', 'remove': r'\bbo|xoa\b', 'lock': r'\bkhoa|giu\b', 'unlock': r'mo khoa|bo giu'}
-        return bool(re.search(cues.get(args.get('operation'), r'(?!)'), f)) and set(args.get('venue_ids', [])) <= set(initial_refs)
+        allowed = getattr(tools, 'selection_refs', {}).get(args.get('operation'), initial_refs)
+        return bool(re.search(cues.get(args.get('operation'), r'(?!)'), f)) and set(args.get('venue_ids', [])) <= set(allowed)
     if name in ('create_itinerary', 'revise_itinerary'):
         return bool(re.search(r'tao lich|lap lich|tao tour|lap tour|len lich|sap lich|tinh lai lich|sua lich', f))
     if name == 'search_restaurants':
@@ -137,13 +153,18 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
     if re.fullmatch(r'\s*xac nhan (?:tao|lap) (?:lich|tour)(?: trinh)?\s*[.!]*', f) and tools.state.confirmation:
         return tools.confirm(tools.state.confirmation['id'])
     if re.search(r'\b(?:them|chon)\b', f):
-        if not refs:
+        add_refs = getattr(tools, 'selection_refs', {}).get('add', refs)
+        if not add_refs:
             return tools.result('unknown', 'Chưa thêm quán vì chưa xác định được đúng lựa chọn.', 'Bạn muốn thêm quán nào trong các kết quả vừa xem?')
-        added = tools.run('update_foodtour_selection', {'operation': 'add', 'venue_ids': refs,
+        added = tools.run('update_foodtour_selection', {'operation': 'add', 'venue_ids': add_refs,
                     'selection_version': tools.state.selection_version})
         results.append(added)
         if added['status'] != 'ok':
             return added
+        if re.search(r'\bso sanh\b', f) and len(refs) >= 2:
+            compared = tools.run('compare_restaurants', {'venue_ids': refs})
+            compared['text'] = added['text'] + ' ' + compared['text']
+            results.append(compared)
     elif re.search(r'\b(?:bo|xoa)\s+(?:quan|[a-e])\b', f) and refs:
         return tools.run('update_foodtour_selection', {'operation': 'remove', 'venue_ids': refs,
                         'selection_version': tools.state.selection_version})
@@ -174,7 +195,7 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
             found['text'] = results[0]['text'] + ' ' + found['text']
         return found
     if results:
-        return results[0]
+        return results[-1]
     if 'thoi tiet' in f or 'troi mua' in f:
         return tools.result('unknown', 'Hiện chưa có dữ liệu thời tiết; mình vẫn có thể giúp khám phá món và dữ liệu quán.')
     if patch:
@@ -243,6 +264,7 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
     start = time.monotonic()
     initial_refs = references(text, tools)
     initial_results = list(tools.state.results)
+    tools.selection_refs = selection_references(text, tools, initial_results)
     patch, price_search = parse_patch(text, tools)
     if patch:
         changed = tools.run('update_preferences', {'patch': patch})
