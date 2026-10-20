@@ -40,6 +40,9 @@ def parse_patch(text, tools):
     if 'budget_vnd' in patch and not re.search(r'moi nguoi|per person|dau nguoi', f) and re.search(r'cho\s*\d+\s*nguoi', f):
         patch['budget_scope'] = 'group'
     place = tools.gz.resolve(text)
+    districts = [(len(k), p) for k, p in tools.gz.districts.items() if tools.gz._has(f, k)]
+    if districts and not re.search(r'(?i)(?<!\w)(?:phố|đường)(?!\w)', text):
+        place = max(districts, key=lambda row: row[0])[1]
     if place:
         patch['area'] = place.label
         if re.search(r'xuat phat|bat dau tu|di tu|^tu\s', f) or (tools.state.plan_requested and tools.state.pending_slot == 'origin'):
@@ -103,21 +106,8 @@ def authorized(name, args, text, tools, patch, initial_refs):
     if name in ('create_itinerary', 'revise_itinerary'):
         return bool(re.search(r'tao lich|lap lich|tao tour|lap tour|len lich|sap lich|tinh lai lich|sua lich', f))
     if name == 'search_restaurants':
-        area = args.get('area')
-        expected_area = tools.state.profile.area
-        if area and not expected_area:
-            return False
-        if area and expected_area and fold_uncached(area) != fold_uncached(expected_area):
-            a, b = tools.gz.resolve(area), tools.gz.resolve(expected_area)
-            if a is None or b is None or a != b:
-                return False
-        dish = args.get('dish')
-        if dish and not (any(p in f for p in local_dish_phrases(dish)) or
-                         set(food_intent(dish)) and set(food_intent(dish)) <= set(tools.state.profile.foods)):
-            return False
-        limit = re.search(r'duoi\s*(\d+)\s*(k|nghin|ngan)', f)
-        if limit and args.get('max_price_vnd') != int(limit.group(1))*1000:
-            return False
+        # Bounded read-only lookup is not a preference/selection mutation.
+        # The server binds effective filters to the user's parsed preferences below.
         return True
     if name in ('get_restaurant_details', 'compare_restaurants'):
         requested = [args['venue_id']] if name == 'get_restaurant_details' else args['venue_ids']
@@ -204,7 +194,8 @@ def model_projection(tools, text):
     history = [{'role': x['role'], 'text': x['text']} for x in tools.state.messages
                if x['role'] == 'user' and not private_turn(x['text'])
                and not is_health_or_allergy_disclosure(x['text'])][-4:]
-    return {'message': safe_text[:1000], 'profile': profile, 'recent_public_user_turns': history,
+    return {'message': safe_text[:1000], 'profile': profile,
+            'origin_selected': tools.state.profile.origin is not None, 'recent_public_user_turns': history,
             'selection': [{'id': x['id'], 'locked': x['locked']} for x in tools.state.selection],
             'last_results': [{'id': i, 'label': chr(65+n)} for n, i in enumerate(tools.state.results)],
             'versions': {'profile': tools.state.profile_version, 'selection': tools.state.selection_version}}
@@ -308,6 +299,11 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 if not permitted:
                     result = tools.result('tool_error', 'Yêu cầu công cụ chưa được người dùng cho phép; chưa thay đổi dữ liệu.')
                 else:
+                    if name == 'search_restaurants':
+                        args = {**args, 'area': tools.state.profile.area}
+                        limit = re.search(r'duoi\s*(\d+)\s*(k|nghin|ngan)', fold_uncached(text))
+                        args['max_price_vnd'] = int(limit.group(1))*1000 if limit else (
+                            (tools.state.last_search or {}).get('max_price_vnd'))
                     result = tools.run(name, args)
                     if result['status'] == 'ok' and name in ('update_preferences', 'update_foodtour_selection'):
                         result['_mutation_success'] = True
