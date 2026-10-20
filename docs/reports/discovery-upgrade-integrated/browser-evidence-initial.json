@@ -1,0 +1,206 @@
+{
+  "web": "http://127.0.0.1:3320",
+  "api": "http://127.0.0.1:8230",
+  "source_commit": "7376d2dc07ffdceb82219e04a845a763707e921b",
+  "backend_commit": "7376d2dc07ffdceb82219e04a845a763707e921b",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "general greeting without origin question",
+      "pass": true
+    },
+    {
+      "name": "exact screenshot no deny; remembers compound food; asks origin once",
+      "pass": true
+    },
+    {
+      "name": "GPS click-only denied handled without default",
+      "pass": true
+    },
+    {
+      "name": "manual ambiguous candidates not autochosen",
+      "pass": true
+    },
+    {
+      "name": "explicit origin resumes real district results",
+      "pass": true
+    },
+    {
+      "name": "new area and actual local results",
+      "pass": true
+    },
+    {
+      "name": "compares two and adds exactly A",
+      "pass": true
+    },
+    {
+      "name": "selected distance visibly labeled Haversine",
+      "pass": true
+    },
+    {
+      "name": "real confirmation before tour",
+      "pass": true
+    },
+    {
+      "name": "ok does not consume confirmation",
+      "pass": true
+    },
+    {
+      "name": "actual planner completed tour",
+      "pass": true
+    },
+    {
+      "name": "explicit Maps CTA, free URL actual origin/order",
+      "pass": false,
+      "diagnostic": {
+        "status": "ok",
+        "reply": {
+          "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+          "question": null
+        },
+        "tour_status": "conditional"
+      }
+    },
+    {
+      "name": "local map marker toggle retained",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1280",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 1280",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1440",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 1440",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1920",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 1920",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 2560",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 2560",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 390",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 390",
+      "pass": true
+    },
+    {
+      "name": "reload retains tour and selection",
+      "pass": true
+    },
+    {
+      "name": "clear origin invalidates confirmation/tour without losing selection",
+      "pass": true
+    },
+    {
+      "name": "selected unknown distance shown without raw enum",
+      "pass": true
+    },
+    {
+      "name": "manual coordinates update backend actual origin",
+      "pass": true
+    },
+    {
+      "name": "real409 recovery does not replay mutation",
+      "pass": true
+    },
+    {
+      "name": "allergy safety gate remains",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists",
+      "pass": true
+    },
+    {
+      "name": "offline readable error",
+      "pass": true
+    },
+    {
+      "name": "no external network origins",
+      "pass": true
+    },
+    {
+      "name": "actual PMTiles206",
+      "pass": true
+    },
+    {
+      "name": "no uncaught JS exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "discovery-1440.png",
+    "confirmed-1440.png",
+    "map-1440.png",
+    "viewport-1280.png",
+    "viewport-1440.png",
+    "viewport-1920.png",
+    "viewport-2560.png",
+    "viewport-390.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [
+    206,
+    206,
+    206,
+    206,
+    206,
+    206
+  ],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200
+  ]
+}

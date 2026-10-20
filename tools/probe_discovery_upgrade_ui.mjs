@@ -74,7 +74,8 @@ try{
  await until(()=>exists('google-maps-cta'));
  const maps=await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');return{href:a.href,text:a.textContent}})()`);
  const mapsUrl=new URL(maps.href);
- record('explicit Maps CTA, free URL actual origin/order',maps.text.includes('Xem lịch trình trên Google Maps')&&mapsUrl.origin==='https://www.google.com'&&mapsUrl.pathname==='/maps/dir/'&&mapsUrl.searchParams.get('api')==='1'&&mapsUrl.searchParams.get('origin')===view.profile.origin.lat.toFixed(6)+','+view.profile.origin.lon.toFixed(6)&&mapsUrl.searchParams.get('travelmode')==='walking'&&!mapsUrl.searchParams.has('key'));
+ const actualOrigin=(mapsUrl.searchParams.get('origin')||'').split(',').map(Number);
+ record('explicit Maps CTA, free URL actual origin/order',maps.text.includes('Xem lịch trình trên Google Maps')&&mapsUrl.origin==='https://www.google.com'&&mapsUrl.pathname==='/maps/dir/'&&mapsUrl.searchParams.get('api')==='1'&&Math.abs(actualOrigin[0]-view.profile.origin.lat)<1e-6&&Math.abs(actualOrigin[1]-view.profile.origin.lon)<1e-6&&mapsUrl.searchParams.get('travelmode')==='walking'&&!mapsUrl.searchParams.has('key'));
  await shot('confirmed-1440');
  await click(sel('pilot-map-toggle'));await until(()=>exists('pilot-map-canvas'));await pause(1500);await shot('map-1440');
  await click(sel('pilot-markers-toggle'));record('local map marker toggle retained',await ev(`document.querySelector('[data-testid="pilot-markers-toggle"]').getAttribute('aria-pressed')==='false'`));await click(sel('pilot-markers-toggle'));

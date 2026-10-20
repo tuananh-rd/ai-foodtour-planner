@@ -4,10 +4,11 @@ import os from 'node:os';
 import path from 'node:path';
 import net from 'node:net';
 import {spawn, execFileSync} from 'node:child_process';
-const web='http://127.0.0.1:3340', api='http://127.0.0.1:8320', port=19791;
-const output='docs/reports/discovery-upgrade-private-bootstrap.json';
+const web=process.env.DISCOVERY_WEB||'http://127.0.0.1:3340', api=process.env.DISCOVERY_API||'http://127.0.0.1:8320', port=19791;
+const output=process.env.DISCOVERY_EVIDENCE||'docs/reports/discovery-upgrade-private-bootstrap.json';
+const expectedSource=process.env.DISCOVERY_SOURCE||'private';
 const before=await(await fetch(api+'/health')).json();
-if(before.dataset_source!=='private'||before.llm_provider!=='gemini')throw Error('Expected private/Gemini lane');
+if(before.dataset_source!==expectedSource||before.llm_provider!==(expectedSource==='private'?'gemini':'rules'))throw Error('Unexpected runtime source/mode');
 await new Promise((resolve,reject)=>{const s=net.createServer();s.once('error',reject);s.listen(port,'127.0.0.1',()=>s.close(resolve));});
 const evidence={frontend:web,api,frontend_commit:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim(),
  backend_commit:before.build_commit,dataset:before.dataset_source,configured_provider:before.llm_provider,configured_model:before.llm_model,
@@ -41,7 +42,7 @@ try{
  step='bootstrap';await call('Page.navigate',{url:web});
  await until(()=>evaluate(`!!document.querySelector('[data-testid="discovery-input"]')&&!document.querySelector('[data-testid="discovery-input"]').disabled`));
  await until(()=>bootstrap!==null);evidence.bootstrap=bootstrap;
- record('authenticated initial view private discovery-v1',bootstrap.contract==='discovery-v1'&&bootstrap.dataset==='private');
+ record('authenticated initial view '+expectedSource+' discovery-v1',bootstrap.contract==='discovery-v1'&&bootstrap.dataset===expectedSource);
  step='resize';
  for(const [width,height] of [[1280,800],[1440,1024],[1920,1080],[2560,1440],[390,844]]){
   await call('Emulation.setDeviceMetricsOverride',{width,height,deviceScaleFactor:1,mobile:width===390});await pause(180);
@@ -53,7 +54,7 @@ try{
  }
  record('no assistant POST attempted',evidence.assistant_post_attempts===0);record('no external request',evidence.external_requests===0);record('no JavaScript exception',evidence.js_exceptions===0);
  const after=await(await fetch(api+'/health')).json();evidence.budget_after=after.llm_budget;
- record('no model budget consumed by bootstrap',after.llm_budget.used===before.llm_budget.used&&after.llm_budget.limit===before.llm_budget.limit);
+ record('no model budget consumed by bootstrap',JSON.stringify(after.llm_budget)===JSON.stringify(before.llm_budget));
 }catch{evidence.failed_step=step;record('runtime probe completed',false);}
 finally{fs.mkdirSync(path.dirname(output),{recursive:true});fs.writeFileSync(output,JSON.stringify(evidence,null,2));socket?.close();if(child.pid)try{execFileSync('taskkill',['/pid',String(child.pid),'/T','/F'],{stdio:'ignore'});}catch{}}
 console.log(JSON.stringify({checks:evidence.checks.length,passed:evidence.checks.filter(x=>x.pass).length,failed_step:evidence.failed_step,assistant_posts:evidence.assistant_post_attempts}));
