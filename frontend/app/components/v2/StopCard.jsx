@@ -332,7 +332,7 @@ export default function StopCard({
               }}
             >
               <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><LightGlyph /></span>
-              <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{why.text}</span>
+              <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{normalizeDisplayText(why.text)}</span>
             </span>
           ))}
         </div>

@@ -232,3 +232,16 @@ All changes were strictly confined to Antigravity-owned boundaries:
 - `docs/reports/DISCOVERY_VIEWPORT_BACKEND_REVIEW.md`
 
 No backend code was modified, no `.env` files were touched, and zero provider requests were issued.
+
+---
+
+## 8. Bounded Follow-up Corrections (`task_b2956348110d`)
+
+- **Dispatch ID:** `ctx_e1450ef0e100`
+- **Scope:** Normalization of remaining raw human-facing strings across legacy components:
+  1. `frontend/app/components/TourTimeline.jsx` (line 87): wrapped `aria-label` stop name with `normalizeDisplayText(s.name)`.
+  2. `frontend/app/components/MapView.jsx` (line 269): wrapped `stopPin` `aria-label` name with `normalizeDisplayText(stop.name)`.
+  3. `frontend/app/components/v2/StopCard.jsx` (line 335): wrapped rendered `why.text` with `normalizeDisplayText(why.text)`.
+- **Integrity:** Strictly preserved stop IDs, coordinate numbers, ordering integers, lock status, and event handlers.
+- **Verification:** 88/88 unit tests passed exit 0; Next.js 15.5.28 production build compiled in 2.8s with 0 errors.
+- **Audit Qualification:** Static scanner reports 2 lines in `frontend/lib/emojiSanitizer.js`, which are strictly comment-only illustrative docstring examples (`20🍜30`), not runtime UI code. All executable runtime UI strings across components remain 100% free of Unicode emoji literals.

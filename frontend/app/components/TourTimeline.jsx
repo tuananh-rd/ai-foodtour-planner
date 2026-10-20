@@ -84,7 +84,7 @@ export default function TourTimeline({
               id={`stop-card-${s.venue_id}`}
               role="button"
               tabIndex={0}
-              aria-label={`Điểm dừng ${s.order}: ${s.name}`}
+              aria-label={`Điểm dừng ${s.order}: ${normalizeDisplayText(s.name)}`}
               onClick={() => onSelectStop && onSelectStop(s.venue_id)}
               onKeyDown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {

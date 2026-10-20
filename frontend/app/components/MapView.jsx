@@ -266,7 +266,7 @@ export default function MapView({
           stopPin.className = 'gmp-stop-marker';
           stopPin.setAttribute('role', 'button');
           stopPin.setAttribute('tabindex', '0');
-          stopPin.setAttribute('aria-label', `Điểm dừng ${stop.order || idx + 1}: ${stop.name}`);
+          stopPin.setAttribute('aria-label', `Điểm dừng ${stop.order || idx + 1}: ${normalizeDisplayText(stop.name)}`);
           const bg = isHighlighted ? '#c2410c' : '#e05315';
           const scale = isHighlighted ? 'scale(1.15)' : 'scale(1)';
           stopPin.innerHTML = `
