@@ -31,6 +31,26 @@ class ScreenshotModel:
 
 
 class ScreenshotRegression(unittest.TestCase):
+    def test_natural_details_and_conjoined_lowercase_selection(self):
+        state = State()
+        state.results = ['1', '2']
+        detailed, _ = handle('Xem chi tiết a', Tools(state, fixture(), StraightLineEstimator()))
+        self.assertEqual(detailed['restaurant']['id'], '1')
+        self.assertEqual(state.selection, [])
+        state.results = ['1', '2']
+        handle('Thêm a và b vào chuyến đi', Tools(state, fixture(), StraightLineEstimator()))
+        self.assertEqual([x['id'] for x in state.selection], ['1', '2'])
+        self.assertIsNone(state.confirmation)
+
+    def test_negated_selection_is_not_authorization(self):
+        state = State()
+        state.results = ['1', '2']
+        handle('Đừng thêm A', Tools(state, fixture(), StraightLineEstimator()))
+        self.assertEqual(state.selection, [])
+        state.selection = [{'id': '1', 'locked': False}, {'id': '2', 'locked': False}]
+        handle('Không xóa A', Tools(state, fixture(), StraightLineEstimator()))
+        self.assertEqual([x['id'] for x in state.selection], ['1', '2'])
+
     def test_district_without_coverage_does_not_become_same_named_street(self):
         source = fixture()
         data = replace(source, venues=tuple(replace(v, district='Hoàn Kiếm',

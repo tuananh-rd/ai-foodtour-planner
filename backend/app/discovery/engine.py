@@ -87,8 +87,8 @@ def parse_patch(text, tools):
 def references(text, tools, result_ids=None):
     result_ids = tools.state.results if result_ids is None else result_ids
     ids = []
-    for match in re.finditer(r'(?<!\w)([A-E])(?!\w)', text):
-        index = ord(match.group(1)) - 65
+    for match in re.finditer(r'(?<!\w)([A-E])(?!\w)', text, re.I):
+        index = ord(match.group(1).upper()) - 65
         if index < len(result_ids):
             ids.append(result_ids[index])
     f = fold_uncached(text)
@@ -104,11 +104,18 @@ def selection_references(text, tools, result_ids):
     patterns = {'add': r'\b(?:them|chon|lay)\b', 'remove': r'\b(?:bo|xoa)\b',
                 'lock': r'\b(?:khoa|giu)\b', 'unlock': r'mo khoa|bo giu'}
     bound = {key: [] for key in patterns}
+    previous = None
     for part in parts:
         folded = fold_uncached(part)
         operation = next((key for key in ('unlock', 'remove', 'add', 'lock') if re.search(patterns[key], folded)), None)
+        if operation and re.search(r'\b(?:khong|dung|chua)\s+(?:duoc\s+)?(?:them|chon|lay|bo|xoa|khoa|giu)', folded):
+            previous = None
+            continue
+        if operation is None and previous and re.fullmatch(r'\s*[a-e](?:\s+vao\s+(?:chuyen di|tour|danh sach))?\s*', folded):
+            operation = previous
         if operation:
             bound[operation].extend(references(part, tools, result_ids))
+        previous = operation
     return {key: list(dict.fromkeys(ids)) for key, ids in bound.items()}
 
 
@@ -173,12 +180,19 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
             compared['text'] = added['text'] + ' ' + compared['text']
             results.append(compared)
     elif re.search(r'\b(?:bo|xoa)\s+(?:quan|[a-e])\b', f) and refs:
-        return tools.run('update_foodtour_selection', {'operation': 'remove', 'venue_ids': refs,
+        remove_refs = getattr(tools, 'selection_refs', {}).get('remove', refs)
+        if not remove_refs:
+            return tools.result('ok', 'Các quán đã chọn được giữ nguyên.')
+        return tools.run('update_foodtour_selection', {'operation': 'remove', 'venue_ids': remove_refs,
                         'selection_version': tools.state.selection_version})
     elif re.search(r'\bso sanh\b', f):
         if len(refs) < 2:
             return tools.result('unknown', 'Có thể so sánh các dữ liệu quán đã xem; tiêu chí chưa có dữ liệu sẽ ghi chưa rõ.', 'Bạn muốn so sánh hai quán nào?')
         return tools.run('compare_restaurants', {'venue_ids': refs})
+    elif re.search(r'chi tiet|thong tin|xem quan', f) and refs:
+        if len(refs) > 1:
+            return tools.result('unknown', 'Mình có thể xem chi tiết một quán đã hiển thị.', 'Bạn muốn xem quán nào trước?')
+        return tools.run('get_restaurant_details', {'venue_id': refs[0]})
     plan_cue = bool(re.search(r'tao lich|lap lich|tao tour|lap tour|len lich|sap lich|tinh lai lich|sua lich', f))
     if plan_cue or (tools.state.plan_requested and patch):
         return tools.run('create_itinerary', {})
