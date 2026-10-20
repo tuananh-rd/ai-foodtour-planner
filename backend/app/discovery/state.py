@@ -141,6 +141,8 @@ class State:
     def patch(self, changes):
         new = Profile.model_validate({**self.profile.model_dump(), **changes})
         if new != self.profile:
+            if new.area != self.profile.area or new.foods != self.profile.foods:
+                self.results, self.comparison = [], []
             self.profile = new
             if 'origin' in changes:
                 self.location = {'status': 'chosen' if new.origin else 'unset',

@@ -31,7 +31,9 @@ class ChatModels:
         client = getattr(self.base, 'client', None)
         if identity not in VERIFIED_MODELS:
             return False, 'model_not_verified'
-        if not client or not client.configured:
+        if not client:
+            return False, 'provider_disabled'
+        if not client.configured:
             return False, 'key_unavailable'
         if client.budget.snapshot()['remaining'] <= reserve:
             return False, 'quota'

@@ -8,11 +8,13 @@ Contract: `docs/DISCOVERY_LOCATION_MODEL_WEB_CONTRACT.md`. Codex owns contracts/
 
 | Work | Owner | State |
 |---|---|---|
-| Exact screenshot transcript/authorization and stale preferences | Codex | Investigating: parse area/food intent and per-call permission mismatch; no safety relaxation |
-| Selected origin, local manual resolution and backend distances | Codex | Contract frozen; implementation pending |
-| Verified model catalog/session settings and optional Tavily guards | Codex | Contract frozen; existing provider/ledger restored under fail-closed policy |
-| Location/model/web UI, distance cards, Maps CTA and independent QA | Antigravity | Dispatch pending to the existing verified terminal; frontend/QA only |
-| Mock/application E2E, source review and new bounded native smoke | Codex + affected review | Pending; zero new live requests so far |
+| Exact screenshot transcript/authorization and stale preferences | Codex | RED reproduced; GREEN native/mock/local tests. Read-only search separated from selection mutation; area/compound foods replace stale filters, old cards cleared, turn-start A/B binding retained |
+| Selected origin, local manual resolution and backend distances | Codex | Implemented: explicit local candidates/coordinates, origin-required search, Haversine/unknown distances and invalidation; no arbitrary-address geocoder |
+| Verified model catalog/session settings and optional Tavily guards | Codex | Implemented; only previously full-loop-verified3.5 listed, current quota unavailable. Default-off Tavily restored with original null-limit/free-only guard and separate ledger; no Tavily live calls |
+| Location/model/web UI, distance cards, Maps CTA and independent QA | Antigravity | Active task_c31403b7fbd8 / ctx_32d10036ce1c on existing terminal; scoped frontend/QA, actual synthetic application tests underway |
+| Mock/application E2E, source review and new bounded native smoke | Codex + affected review |121 targeted backend tests passed before three additional regressions; UI/review pending. NEW live smoke BLOCKED, one user turn/two requests, no retry |
+
+New live evidence: `discovery-upgrade-model-metadata.json` is one key-scoped metadata GET, no generate/debit. `discovery-upgrade-live.json` records candidate3.1 native HTTP200 with two validated local searches, followed by tool-result continuation timeout; natural chat quality NOT PASSED. Private records remain local. Ledger13→15/18, remaining3 equals reserve3, reset2026-10-20T07:00:00Z. No further provider calls, caps/billing unchanged. Candidate3.1 is not in the production registry because full continuation compatibility did not complete. The requested multiple available live model choices remain blocked; no fabricated second option.
 
 Previous completed continuation and its live limit/evidence follow below.
 

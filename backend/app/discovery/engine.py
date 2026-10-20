@@ -130,10 +130,10 @@ def food_intent(text):
     return [label for label, pattern in groups if re.search(pattern, f)]
 
 
-def fallback(text, tools, patch, price_search):
+def fallback(text, tools, patch, price_search, initial_refs=None):
     f = fold_uncached(text)
     results = []
-    refs = references(text, tools)
+    refs = references(text, tools) if initial_refs is None else initial_refs
     if re.fullmatch(r'\s*xac nhan (?:tao|lap) (?:lich|tour)(?: trinh)?\s*[.!]*', f) and tools.state.confirmation:
         return tools.confirm(tools.state.confirmation['id'])
     if re.search(r'\b(?:them|chon)\b', f):
@@ -204,7 +204,9 @@ def model_projection(tools, text):
 def tool_projection(result):
     def redact(value):
         if isinstance(value, dict):
-            return {k: redact(v) for k, v in value.items() if k not in ('lat', 'lon', 'origin', 'allergies', 'source_url')}
+            return {k: redact(v) for k, v in value.items() if k not in (
+                'lat', 'lon', 'origin', 'allergies', 'source_url',
+                'distance_m', 'distance_source', 'distance_reason')}
         if isinstance(value, list):
             return [redact(x) for x in value[:5]]
         return redact_sensitive(value)[:500] if isinstance(value, str) else value
@@ -239,24 +241,27 @@ def safe_answer(text, tools, tool_results):
 
 def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
     start = time.monotonic()
+    initial_refs = references(text, tools)
+    initial_results = list(tools.state.results)
     patch, price_search = parse_patch(text, tools)
     if patch:
         changed = tools.run('update_preferences', {'patch': patch})
         if changed['status'] != 'ok':
             return changed, {'mode': 'rules', 'calls': 0, 'reason': 'invalid_patch'}
     mode = getattr(model, 'mode', 'gemini') if model is not None and model.configured else 'rules'
-    provider = {'mode': mode, 'calls': 0}
+    provider = {'mode': mode, 'calls': 0, 'reply_source': 'rules' if mode == 'rules' else 'tools'}
     if private_turn(text) or is_health_or_allergy_disclosure(text):
         # Health, precise personal location, contacts and credentials stay local.
-        return fallback(text, tools, patch, price_search), {'mode': 'rules', 'calls': 0, 'reason': 'private_turn'}
+        return fallback(text, tools, patch, price_search, initial_refs), {'mode': 'rules', 'calls': 0, 'reason': 'private_turn', 'reply_source': 'rules'}
     if mode == 'rules':
-        return fallback(text, tools, patch, price_search), provider
+        return fallback(text, tools, patch, price_search, initial_refs), provider
     # Confirmation is server-only. Even an enabled model cannot consume its own nonce.
     if re.fullmatch(r'\s*xac nhan (?:tao|lap) (?:lich|tour)(?: trinh)?\s*[.!]*', fold_uncached(text)):
-        return fallback(text, tools, patch, price_search), provider
-    contents = [{'role': 'user', 'parts': [{'text': json.dumps(model_projection(tools, text), ensure_ascii=False)}]}]
+        return fallback(text, tools, patch, price_search, initial_refs), provider
+    projection = model_projection(tools, text)
+    projection['turn_start_results'] = [{'id': identity, 'label': chr(65+n)} for n, identity in enumerate(initial_results)]
+    contents = [{'role': 'user', 'parts': [{'text': json.dumps(projection, ensure_ascii=False)}]}]
     tool_results = []
-    initial_refs = references(text, tools)  # A/B bind to results visible at turn start, not a later search
     last = None
     try:
         for _ in range(2):
@@ -277,12 +282,14 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 valid = safe_answer(candidate, tools, tool_results)
                 if last is None:
                     # A factual search or action may never be replaced by an unsupported model answer.
-                    deterministic = fallback(text, tools, patch, price_search)
+                    deterministic = fallback(text, tools, patch, price_search, initial_refs)
                     if tools.calls or deterministic['status'] != 'ok':
                         return deterministic, provider
+                    provider['reply_source'] = 'model' if valid else 'rules'
                     return tools.result('ok', valid or deterministic['text']), provider
                 if valid and last['status'] in ('ok', 'unknown', 'no_results'):
                     last['text'] = valid
+                    provider['reply_source'] = 'model'
                 return last, provider
             if len(calls) > 6 or tools.calls + len(calls) > 6:
                 raise ProviderError('bad_response')
@@ -324,8 +331,9 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
             return last, provider
         # Budget exhaustion must not turn local discovery into a dead end. This
         # is the same deterministic fallback, never a second model/extractor.
-        local = fallback(text, tools, patch, price_search)
+        local = fallback(text, tools, patch, price_search, initial_refs)
         local['text'] = 'Model chưa phản hồi hoặc đã đạt giới hạn; đang dùng xử lý tại máy. ' + local['text']
         provider['reason'] += '_rules_fallback'
         provider['mode'] = 'rules'
+        provider['reply_source'] = 'rules'
         return local, provider

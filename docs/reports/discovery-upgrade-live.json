@@ -1,0 +1,108 @@
+{
+  "scope": "new upgrade allowance",
+  "max_user_turns": 3,
+  "max_model_requests": 6,
+  "automatic_retries": 0,
+  "dataset": "private",
+  "transports": [
+    {
+      "number": 1,
+      "requested_model": "gemini-3.1-flash-lite",
+      "http_status": 200,
+      "response_model": "gemini-3.1-flash-lite",
+      "finish_reason": "STOP",
+      "native_tools": [
+        "search_restaurants",
+        "search_restaurants"
+      ]
+    },
+    {
+      "number": 2,
+      "requested_model": "gemini-3.1-flash-lite",
+      "http_status": null,
+      "reason": "timeout"
+    }
+  ],
+  "turns": [
+    {
+      "number": 1,
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "reason": "timeout",
+        "model": "gemini-3.1-flash-lite"
+      },
+      "status": "ok",
+      "results_count": 5,
+      "selected_count": 2,
+      "quality_flags": {
+        "no_permission_denial": true,
+        "no_auto_tour": true,
+        "useful_reply": true,
+        "actual_native_tools": true,
+        "area_updated": true,
+        "compounds_remembered": true,
+        "selection_preserved": true
+      },
+      "reply_redacted": "Có [number] quán trong dữ liệu để bạn xem và so sánh. Bộ lọc khu vực: Hai Bà Trưng. Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA. Model chưa hoàn tất phần giải thích; kết quả công cụ đã xác thực vẫn được giữ.",
+      "question_count": 0
+    }
+  ],
+  "tools": [
+    {
+      "name": "update_preferences",
+      "status": "ok",
+      "result_count": 0
+    },
+    {
+      "name": "search_restaurants",
+      "status": "ok",
+      "result_count": 5
+    },
+    {
+      "name": "update_foodtour_selection",
+      "status": "ok",
+      "result_count": 0
+    },
+    {
+      "name": "update_preferences",
+      "status": "ok",
+      "result_count": 0
+    },
+    {
+      "name": "search_restaurants",
+      "status": "ok",
+      "result_count": 5
+    },
+    {
+      "name": "search_restaurants",
+      "status": "ok",
+      "result_count": 5
+    }
+  ],
+  "candidate_verification_only": "gemini-3.1-flash-lite",
+  "outcome": "blocked",
+  "budget_before": {
+    "limit": 18,
+    "used": 13,
+    "remaining": 5,
+    "exhausted": false,
+    "resets_at": "2026-10-20T07:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "configured_model": "gemini-3.5-flash-lite",
+  "planned_user_turns": 1,
+  "quota_limited": true,
+  "initial_selected_count": 2,
+  "reason": "timeout",
+  "budget_after": {
+    "limit": 18,
+    "used": 15,
+    "remaining": 3,
+    "exhausted": false,
+    "resets_at": "2026-10-20T07:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "natural_model_reply_completed": false,
+  "live_chat_quality": "NOT PASSED: tool-result continuation timeout; no retries"
+}

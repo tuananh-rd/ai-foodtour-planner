@@ -2903,6 +2903,22 @@
               }
             ],
             "title": "Reason"
+          },
+          "reply_source": {
+            "anyOf": [
+              {
+                "enum": [
+                  "model",
+                  "tools",
+                  "rules"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reply Source"
           }
         },
         "required": [

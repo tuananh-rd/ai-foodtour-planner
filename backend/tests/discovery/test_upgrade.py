@@ -31,6 +31,24 @@ class ScreenshotModel:
 
 
 class ScreenshotRegression(unittest.TestCase):
+    def test_preference_change_clears_stale_cards_keeps_explicit_initial_reference(self):
+        state = State()
+        state.patch({'area': 'Phố cổ', 'origin': {'lat': 21.0285, 'lon': 105.8522}})
+        state.results = ['1', '2']
+        state.comparison = ['1', '2']
+        handle('Thêm A rồi tìm chè ở Hai Bà Trưng', Tools(state, fixture(), StraightLineEstimator()))
+        self.assertEqual([x['id'] for x in state.selection], ['1'])
+        self.assertEqual(state.comparison, [])
+        self.assertNotEqual(state.results, ['1', '2'])
+        self.assertIsNone(state.confirmation)
+
+    def test_provider_projection_cannot_triangulate_origin_from_distances(self):
+        from app.discovery.engine import tool_projection
+        projected = tool_projection({'venues': [{'id': '1', 'lat': 21.0, 'lon': 105.8,
+            'distance_m': 15.0, 'distance_source': 'haversine', 'distance_reason': None,
+            'name': 'Synthetic'}]})
+        self.assertEqual(projected, {'venues': [{'id': '1', 'name': 'Synthetic'}]})
+
     def test_exact_screenshot_request_replaces_stale_area_without_selection_mutation(self):
         state = State()
         state.patch({'area': 'Phố cổ', 'origin': {'lat': 21.0285, 'lon': 105.8522}})
@@ -224,3 +242,34 @@ class OptionHTTPTests(unittest.TestCase):
         self.assertEqual(failed['settings']['remaining_session_calls'], first['settings']['remaining_session_calls'])
         self.assertEqual(failed['provider']['calls'], 0)
         self.assertIsNone(failed['settings']['chat_model'])
+
+    def test_mock_verified_model_changes_are_session_local_and_share_caps(self):
+        from types import SimpleNamespace
+        from app.discovery.experience import VERIFIED_MODELS
+        budget = SimpleNamespace(snapshot=lambda: {'remaining': 9})
+        base = SimpleNamespace(client=SimpleNamespace(model='mock-verified-a', configured=True, budget=budget))
+        catalog = ChatModels(base)
+        self.app.state.chat_models = catalog
+        with patch.dict(VERIFIED_MODELS, {'mock-verified-a': 'Synthetic A', 'mock-verified-b': 'Synthetic B'}, clear=True):
+            sessions = [self.client.post('/v1/sessions', json={}).json() for _ in range(2)]
+            first = sessions[0]
+            url = '/v1/sessions/'+first['session_id']+'/assistant'
+            headers = {'X-Session-Token': first['token']}
+            response = self.client.post(url, headers=headers, json={'revision': 0, 'action': {
+                'type': 'settings', 'arguments': {'chat_model': 'mock-verified-b'}}}).json()
+            self.assertEqual(response['settings']['chat_model'], 'mock-verified-b')
+            self.assertEqual(base.client.model, 'mock-verified-a')
+            selected = catalog.select('mock-verified-b')
+            self.assertEqual(selected.client.model, 'mock-verified-b')
+            self.assertIs(selected.client.budget, budget)
+            other = sessions[1]
+            restored = self.client.get('/v1/sessions/'+other['session_id']+'/assistant',
+                headers={'X-Session-Token': other['token']}).json()
+            self.assertEqual(restored['settings']['chat_model'], 'mock-verified-a')
+            budget.snapshot = lambda: {'remaining': self.app.state.llm_reserve}
+            refused = self.client.post(url, headers=headers, json={'revision': response['revision'], 'action': {
+                'type': 'settings', 'arguments': {'chat_model': 'mock-verified-a'}}}).json()
+            self.assertEqual(refused['status'], 'unavailable')
+            self.assertEqual(refused['settings']['chat_model'], 'mock-verified-b')
+            self.assertEqual(refused['settings']['remaining_session_calls'], response['settings']['remaining_session_calls'])
+            self.assertEqual(refused['provider']['calls'], 0)

@@ -32,6 +32,7 @@ class Tools:
     def __init__(self, state, data, routing, *, quality_weight=1.0):
         self.state, self.data, self.routing = state, data, routing
         self.by_id = {v.id: v for v in data.venues}
+        self.visible_ids = set(state.results) | set(state.comparison) | {x['id'] for x in state.selection}
         self.gz = Gazetteer(data.venues)
         self.quality_weight = quality_weight
         self.planned_tour = None
@@ -47,7 +48,9 @@ class Tools:
     def preferences(self):
         p = self.state.profile
         return Preferences(origin=(p.origin.lat, p.origin.lon) if p.origin else None,
-            origin_label=p.area, origin_source='place' if p.origin else None,
+            origin_label=self.state.location.get('label') if p.origin else None,
+            origin_source={'local': 'place', 'gps': 'current_location', 'coordinates': 'manual_coordinates'}.get(
+                self.state.location.get('source'), 'manual_coordinates') if p.origin else None,
             start_time_min=minute(p.start_time), duration_min=p.duration_min, party_size=p.party_size,
             budget_vnd=p.budget_vnd, budget_scope=p.budget_scope, interests=tuple(p.tastes),
             exclusions=tuple(p.exclusions), allergies=tuple(p.allergies),
@@ -187,7 +190,7 @@ class Tools:
             return self.result('tool_error', 'Danh sách lựa chọn đã thay đổi; hãy tải trạng thái mới trước khi thao tác.', code='selection_conflict')
         if len(set(venue_ids)) != len(venue_ids) or any(i not in self.by_id for i in venue_ids):
             return self.result('tool_error', 'Có ID quán không hợp lệ; chưa thay đổi danh sách.')
-        known = set(self.state.results) | set(self.state.comparison) | {x['id'] for x in self.state.selection}
+        known = self.visible_ids | set(self.state.results) | set(self.state.comparison) | {x['id'] for x in self.state.selection}
         if any(i not in known for i in venue_ids):
             return self.result('tool_error', 'Hãy tìm hoặc xem quán trước khi thêm; không nhận ID chưa được hiển thị.')
         items = copy.deepcopy(self.state.selection)

@@ -201,6 +201,7 @@ class Provider(StrictModel):
     calls: int = Field(ge=0, le=2)
     reason: str | None = None
     model: str | None = None
+    reply_source: Literal['model', 'tools', 'rules'] | None = None
 
 
 class Diagnostics(StrictModel):
