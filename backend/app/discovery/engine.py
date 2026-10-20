@@ -13,6 +13,7 @@ from app.llm import safety_parse
 from app.llm.provider import ProviderError
 from app.presentation import plain_text
 from app.planner.relevance import fold_uncached
+from .tools import DISTRICT_LABELS
 
 
 def parse_patch(text, tools):
@@ -40,11 +41,15 @@ def parse_patch(text, tools):
     if 'budget_vnd' in patch and not re.search(r'moi nguoi|per person|dau nguoi', f) and re.search(r'cho\s*\d+\s*nguoi', f):
         patch['budget_scope'] = 'group'
     place = tools.gz.resolve(text)
+    explicit_street = bool(re.search(r'(?i)(?<!\w)(?:phố|đường)(?!\w)', text))
+    district_label = next((label for key, label in DISTRICT_LABELS.items() if tools.gz._has(f, key)), None)
+    if district_label and not explicit_street:
+        place = tools.gz.districts.get(fold_uncached(district_label))
     districts = [(len(k), p) for k, p in tools.gz.districts.items() if tools.gz._has(f, k)]
     if districts and not re.search(r'(?i)(?<!\w)(?:phố|đường)(?!\w)', text):
         place = max(districts, key=lambda row: row[0])[1]
     if place:
-        patch['area'] = place.label
+        patch['area'] = ('Phố ' if explicit_street and place.kind == 'street' else '') + place.label
         if re.search(r'xuat phat|bat dau tu|di tu|^tu\s', f) or (tools.state.plan_requested and tools.state.pending_slot == 'origin'):
             patch['origin'] = {'lat': float(place.lat), 'lon': float(place.lon)}
     else:
@@ -55,6 +60,8 @@ def parse_patch(text, tools):
             candidate = m.group(1).strip()
             if candidate not in ('day', 'do', 'toi', 'minh') and len(candidate) > 2:
                 patch['area'] = candidate[:120]
+    if district_label and not explicit_street:
+        patch['area'] = district_label
     foods = food_intent(text)
     if foods:
         patch['foods'] = foods

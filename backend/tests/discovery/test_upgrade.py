@@ -31,6 +31,17 @@ class ScreenshotModel:
 
 
 class ScreenshotRegression(unittest.TestCase):
+    def test_district_without_coverage_does_not_become_same_named_street(self):
+        source = fixture()
+        data = replace(source, venues=tuple(replace(v, district='Hoàn Kiếm',
+            address='12 Hai Bà Trưng, Hoàn Kiếm, Hà Nội') for v in source.venues))
+        state = State()
+        state.patch({'origin': {'lat': 21.0285, 'lon': 105.8522}})
+        result, _ = handle(SCREENSHOT, Tools(state, data, StraightLineEstimator()))
+        self.assertEqual(result['status'], 'no_results')
+        self.assertEqual(state.results, [])
+        self.assertEqual(state.profile.area, 'Hai Bà Trưng')
+
     def test_compare_then_add_only_explicit_mutation_reference(self):
         from app.discovery.engine import authorized
         state = State()

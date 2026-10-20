@@ -12,6 +12,12 @@ from app.planner.interfaces import haversine_km
 from app.planner.relevance import fold_uncached
 from .schemas import TOOL_INPUTS
 
+# Public district labels used by this legacy local dataset; these are membership
+# filters, never invented district coordinates or proof of venue coverage.
+DISTRICT_LABELS = {fold_uncached(x): x for x in ('Ba Đình', 'Hoàn Kiếm', 'Hai Bà Trưng',
+    'Đống Đa', 'Tây Hồ', 'Cầu Giấy', 'Thanh Xuân', 'Hoàng Mai', 'Long Biên',
+    'Hà Đông', 'Bắc Từ Liêm', 'Nam Từ Liêm')}
+
 
 def safe_source(value):
     try:
@@ -119,9 +125,12 @@ class Tools:
         area_key = fold_uncached(area or '')
         for prefix in ('quan ', 'huyen '):
             area_key = area_key.removeprefix(prefix)
-        place = self.gz.districts.get(area_key) or (self.gz.resolve(area) if area else None)
+        district_filter = area_key in DISTRICT_LABELS or area_key in self.gz.districts
+        place = self.gz.districts.get(area_key) or (self.gz.resolve(area) if area and not district_filter else None)
         venues = self.data.venues
-        if area and place is None:
+        if district_filter:
+            venues = [v for v in venues if area_key == fold_uncached(v.district or '').removeprefix('quan ')]
+        elif area and place is None:
             venues = [v for v in venues if area_key in fold_uncached(v.district or '')
                       or area_key in fold_uncached(v.address or '')]
             if not venues:
@@ -140,7 +149,7 @@ class Tools:
         # uses the actual chosen origin. Street/landmark searches retain pilot radius.
         centre = (place.lat, place.lon) if place and place.kind != 'district' else (origin.lat, origin.lon)
         found = local_tools.search(venues, centre, dish=None if foods else dish, prefs=self.preferences(),
-            radius_km=100 if area and (place is None or place.kind == 'district') else local_tools.DEFAULT_RADIUS_KM,
+            radius_km=100 if area and (district_filter or place is None or place.kind == 'district') else local_tools.DEFAULT_RADIUS_KM,
             allergies=self.state.profile.allergies, max_price=max_price_vnd, limit=5)
         self.state.results = [v.id for v in found.venues]
         self.refresh_result_order()
