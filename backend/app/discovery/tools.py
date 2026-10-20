@@ -1,12 +1,15 @@
 """Deterministic, bounded tools over the existing read-only dataset and planner."""
 import copy
 import secrets
+import math
 from urllib.parse import urlsplit
 from pydantic import ValidationError
 from app.chat import tools as local_tools
 from app.chat.gazetteer import Gazetteer
 from app.chat.planning import plan_selected, routing_for
 from app.planner.types import Preferences
+from app.planner.interfaces import haversine_km
+from app.planner.relevance import fold_uncached
 from .schemas import TOOL_INPUTS
 
 
@@ -54,7 +57,13 @@ class Tools:
     def restaurant(self, identity, label=None):
         v = self.by_id[identity]
         result = local_tools.venue_view(v)
-        result.update(lat=v.lat if v.geo_ok else None, lon=v.lon if v.geo_ok else None,
+        valid = (v.geo_ok and all(type(x) in (int, float) and math.isfinite(x) for x in (v.lat, v.lon))
+                 and self.gz.inside_hanoi(v.lat, v.lon))
+        origin = self.state.profile.origin
+        metres = round(haversine_km((origin.lat, origin.lon), (v.lat, v.lon))*1000, 1) if origin and valid else None
+        result.update(lat=v.lat if valid else None, lon=v.lon if valid else None,
+            distance_m=metres, distance_source='haversine' if metres is not None else None,
+            distance_reason=None if metres is not None else ('origin_missing' if origin is None else 'venue_coordinates_missing'),
             source_url=safe_source(v.source_url), source_fetched_at=v.source_fetched_at,
             unknowns=['ingredient_allergy_safety', 'sweetness', 'dish_price', 'current_open_status'],
             locked=any(x['id'] == identity and x['locked'] for x in self.state.selection))
@@ -65,6 +74,12 @@ class Tools:
         if label:
             result['label'] = label
         return result
+
+    def refresh_result_order(self):
+        def key(identity):
+            distance = self.restaurant(identity)['distance_m']
+            return (distance is None, distance if distance is not None else 0, identity)
+        self.state.results = sorted((i for i in self.state.results if i in self.by_id), key=key)
 
     def run(self, name, arguments):
         self.calls += 1
@@ -87,28 +102,59 @@ class Tools:
 
     def search_restaurants(self, dish=None, area=None, max_price_vnd=None):
         area = area or self.state.profile.area
-        self.state.pending_search = {'dish': dish, 'area': area, 'max_price_vnd': max_price_vnd} if not area else None
-        place = self.gz.resolve(area) if area else None
-        if area and place is None:
+        query = {'dish': dish, 'area': area, 'max_price_vnd': max_price_vnd}
+        self.state.last_search = query
+        origin = self.state.profile.origin
+        if origin is None:
+            self.state.pending_search = query
             self.state.results = []
-            return self.result('unknown', 'Dữ liệu địa điểm hiện có chưa xác định được khu vực bạn nêu; chưa thể khẳng định có quán phù hợp quanh đó.')
-        centre = (place.lat, place.lon) if place else None
-        found = local_tools.search(self.data.venues, centre, dish=dish, prefs=self.preferences(),
+            wanted = ' và '.join(self.state.profile.foods) or dish or 'quán ăn'
+            where = f' ở {local_tools.clean_text(area, 120)}' if area else ''
+            return self.result('unknown', f'Mình đã ghi nhận {wanted}{where}; cần vị trí bạn chọn để tìm và tính khoảng cách.',
+                               'Bạn muốn dùng vị trí hiện tại hay nhập vị trí?')
+        self.state.pending_search = None
+        area_key = fold_uncached(area or '')
+        for prefix in ('quan ', 'huyen '):
+            area_key = area_key.removeprefix(prefix)
+        place = self.gz.districts.get(area_key) or (self.gz.resolve(area) if area else None)
+        venues = self.data.venues
+        if area and place is None:
+            venues = [v for v in venues if area_key in fold_uncached(v.district or '')
+                      or area_key in fold_uncached(v.address or '')]
+            if not venues:
+                self.state.results, self.state.comparison = [], []
+                return self.result('no_results', f'Dữ liệu local chưa có quán phù hợp ở {local_tools.clean_text(area, 120)}; mình vẫn giữ khu vực và món bạn vừa yêu cầu.')
+        elif place and place.kind == 'district':
+            venues = [v for v in venues if area_key in fold_uncached(v.district or '')]
+        foods = self.state.profile.foods
+        if foods:
+            phrases = []
+            for food in foods:
+                phrases.extend(('che', 'kem', 'trang mieng', 'tao pho', 'sua chua', 'banh ngot')
+                               if fold_uncached(food) == 'trang mieng' else local_tools.dish_phrases(food))
+            venues = [v for v in venues if local_tools.matches(v, phrases)]
+        # A requested district constrains membership, while distance/ranking always
+        # uses the actual chosen origin. Street/landmark searches retain pilot radius.
+        centre = (place.lat, place.lon) if place and place.kind != 'district' else (origin.lat, origin.lon)
+        found = local_tools.search(venues, centre, dish=None if foods else dish, prefs=self.preferences(),
+            radius_km=100 if area and (place is None or place.kind == 'district') else local_tools.DEFAULT_RADIUS_KM,
             allergies=self.state.profile.allergies, max_price=max_price_vnd, limit=5)
         self.state.results = [v.id for v in found.venues]
+        self.refresh_result_order()
         self.state.comparison = []
         if not found.venues:
             return self.result('no_results', 'Chưa tìm thấy quán trong dữ liệu đáp ứng bộ lọc này; có thể đổi món hoặc khu vực, các yêu cầu khác vẫn được giữ.')
         text = f'Có {len(found.venues)} quán trong dữ liệu để bạn xem và so sánh.'
-        if place:
-            text += f' Khu vực được hiểu là {local_tools.clean_text(place.label, 120)} (xấp xỉ); khoảng cách không phải đường đi thực.'
+        if area:
+            text += f' Bộ lọc khu vực: {local_tools.clean_text(area, 120)}.'
+        text += ' Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.'
         if max_price_vnd:
             text += ' Bộ lọc dựa trên khoảng giá quán theo nguồn; chưa chứng minh giá món cụ thể dưới mức bạn nêu.'
         if self.state.profile.tastes:
             text += ' Khẩu vị đã được giữ; dữ liệu chưa chứng minh quán điều chỉnh được độ ngọt/cay.'
         if self.state.profile.allergies:
             text += ' Chưa có quán nào được xác nhận an toàn dị ứng.'
-        question = 'Bạn muốn tìm ở khu vực nào tại Hà Nội?' if not area else None
+        question = None
         return self.result('unknown' if max_price_vnd or self.state.profile.allergies else 'ok', text, question,
                            restaurants=[self.restaurant(i, chr(65+n)) for n, i in enumerate(self.state.results)])
 

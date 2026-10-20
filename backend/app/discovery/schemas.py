@@ -20,13 +20,14 @@ class Profile(StrictModel):
     duration_min: int | None = Field(default=None, ge=30, le=720)
     vehicle: Literal['walk', 'motorbike', 'car', 'taxi'] | None = None
     tastes: list[str] = Field(default_factory=list, max_length=10)
+    foods: list[str] = Field(default_factory=list, max_length=10)
     exclusions: list[str] = Field(default_factory=list, max_length=10)
     allergies: list[str] = Field(default_factory=list, max_length=10)
     max_leg_min: int | None = Field(default=None, ge=3, le=60)
 
     @model_validator(mode='after')
     def bounded_terms(self):
-        for name in ('tastes', 'exclusions', 'allergies'):
+        for name in ('tastes', 'foods', 'exclusions', 'allergies'):
             limit = 40 if name == 'allergies' else 80
             if any(not x.strip() or len(x) > limit or any(ord(c) < 32 for c in x) for x in getattr(self, name)):
                 raise ValueError('invalid preference term')
@@ -67,8 +68,36 @@ TOOL_INPUTS = {'search_restaurants': Search, 'get_restaurant_details': Details,
                'revise_itinerary': Empty}
 
 
+class SettingsInput(StrictModel):
+    chat_model: str | None = Field(default=None, min_length=3, max_length=64)
+    web_search_enabled: bool | None = None
+
+    @model_validator(mode='after')
+    def supplied(self):
+        if not self.model_fields_set or any(getattr(self, k) is None for k in self.model_fields_set):
+            raise ValueError('explicit settings required')
+        return self
+
+
+class LocationInput(StrictModel):
+    operation: Literal['resolve', 'choose', 'coordinates', 'clear']
+    query: str | None = Field(default=None, min_length=2, max_length=160)
+    candidate_id: str | None = Field(default=None, min_length=1, max_length=64)
+    lat: float | None = Field(default=None, ge=-90, le=90)
+    lon: float | None = Field(default=None, ge=-180, le=180)
+    source: Literal['gps', 'coordinates'] | None = None
+
+    @model_validator(mode='after')
+    def shape(self):
+        expected = {'resolve': {'query'}, 'choose': {'candidate_id'},
+                    'coordinates': {'lat', 'lon', 'source'}, 'clear': set()}[self.operation]
+        if self.model_fields_set - {'operation'} != expected or any(getattr(self, k) is None for k in expected):
+            raise ValueError('invalid location action')
+        return self
+
+
 class Action(StrictModel):
-    type: Literal['tool', 'confirm']
+    type: Literal['tool', 'confirm', 'settings', 'location']
     name: str | None = None
     arguments: dict = Field(default_factory=dict)
     confirmation_id: str | None = Field(default=None, max_length=100)
@@ -79,6 +108,10 @@ class Action(StrictModel):
             if self.name not in TOOL_INPUTS or self.confirmation_id is not None:
                 raise ValueError('unknown tool')
             TOOL_INPUTS[self.name].model_validate(self.arguments)
+        elif self.type in ('settings', 'location'):
+            if self.name is not None or self.confirmation_id is not None:
+                raise ValueError('invalid settings/location action')
+            (SettingsInput if self.type == 'settings' else LocationInput).model_validate(self.arguments)
         elif self.name is not None or self.arguments or not self.confirmation_id:
             raise ValueError('explicit confirmation ID required')
         return self
@@ -129,6 +162,9 @@ class Restaurant(StrictModel):
     unknowns: list[str]
     locked: bool
     label: str | None = None
+    distance_m: float | None = None
+    distance_source: Literal['haversine'] | None = None
+    distance_reason: str | None = None
 
 
 class Reply(StrictModel):
@@ -164,6 +200,7 @@ class Provider(StrictModel):
     mode: Literal['rules', 'gemini', 'mock']
     calls: int = Field(ge=0, le=2)
     reason: str | None = None
+    model: str | None = None
 
 
 class Diagnostics(StrictModel):
@@ -190,3 +227,6 @@ class AssistantView(StrictModel):
     source: Source
     provider: Provider
     diagnostics: Diagnostics
+    settings: dict = Field(default_factory=dict)
+    location: dict = Field(default_factory=dict)
+    web: dict = Field(default_factory=dict)

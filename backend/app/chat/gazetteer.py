@@ -5,6 +5,7 @@ Resolution is approximate by design: the reply always says "đã hiểu là … 
 from __future__ import annotations
 
 import re
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Optional
@@ -44,7 +45,8 @@ class Gazetteer:
         d_disp = {}
         s_disp = {}
         for v in venues:
-            if not v.geo_ok:
+            if (not v.geo_ok or any(type(x) not in (int, float) or not math.isfinite(x) for x in (v.lat, v.lon))
+                    or not self.inside_hanoi(v.lat, v.lon)):
                 continue
             dist = (v.district or "").strip()
             if dist:

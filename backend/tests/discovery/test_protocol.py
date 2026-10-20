@@ -94,6 +94,7 @@ class ProtocolTests(unittest.TestCase):
                         'id': 'read-1', 'name': 'search_restaurants', 'args': {'dish': 'phở', 'area': 'Xuân Thủy'}}}]}
                 return {'role': 'model', 'parts': [{'text': 'Đã thêm quán vào tour.'}]}
         model, tools = Model(), self.tools()
+        tools.state.patch({'origin': {'lat': 21.035, 'lon': 105.783}})
         result, provider = handle('Tìm phở quanh Xuân Thủy', tools, model=model)
         self.assertEqual(provider['calls'], 2)
         self.assertEqual(model.inputs[1][1]['parts'][0]['thoughtSignature'], 'signature')
@@ -169,6 +170,8 @@ class PersistenceTests(unittest.TestCase):
                     response = client.post(url, headers=headers, json={'revision': rev, **payload})
                     self.assertEqual(response.status_code, 200, response.text)
                     return response.json()
+                post({'action': {'type': 'location', 'arguments': {'operation': 'coordinates',
+                      'lat': 21.0285, 'lon': 105.8522, 'source': 'coordinates'}}})
                 found = post({'text': 'Tìm quán quanh Hồ Gươm'})
                 selected_id = found['results'][0]['id']
                 post({'action': {'type': 'tool', 'name': 'update_foodtour_selection', 'arguments': {
@@ -196,8 +199,10 @@ class PersistenceTests(unittest.TestCase):
                 session = client.post('/v1/sessions', json={}).json()
                 url = f"/v1/sessions/{session['session_id']}/assistant"
                 headers = {'X-Session-Token': session['token']}
-                found = client.post(url, headers=headers, json={'revision': 0, 'text': 'Tìm phở quanh Hồ Gươm'}).json()
-                selected = client.post(url, headers=headers, json={'revision': 1, 'action': {'type': 'tool',
+                client.post(url, headers=headers, json={'revision': 0, 'action': {'type': 'location', 'arguments': {
+                    'operation': 'coordinates', 'lat': 21.0285, 'lon': 105.8522, 'source': 'coordinates'}}})
+                found = client.post(url, headers=headers, json={'revision': 1, 'text': 'Tìm phở quanh Hồ Gươm'}).json()
+                selected = client.post(url, headers=headers, json={'revision': 2, 'action': {'type': 'tool',
                     'name': 'update_foodtour_selection', 'arguments': {'operation': 'add',
                     'venue_ids': [found['results'][0]['id']], 'selection_version': 0}}}).json()
             with TestClient(create_app(data_path=path)) as restarted:
@@ -205,7 +210,7 @@ class PersistenceTests(unittest.TestCase):
                 self.assertEqual(restored['selection'], selected['selection'])
                 self.assertEqual(restored['selection_version'], 1)
                 self.assertEqual(restored['messages'], selected['messages'])
-                self.assertEqual(restored['revision'], 2)
+                self.assertEqual(restored['revision'], 3)
                 self.assertEqual(restored['profile'], selected['profile'])
 
     def test_concurrent_turns_compare_and_swap_once_and_model_transport_not_locked(self):

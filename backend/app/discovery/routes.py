@@ -8,8 +8,14 @@ from .state import State
 from .tools import Tools, routing_for
 from .engine import handle
 from app.presentation import plain_text
+from .experience import capabilities, settings_action, location_action, refresh_web
 
 router = APIRouter()
+
+
+@router.get('/v1/assistant/capabilities')
+def assistant_capabilities(request: Request):
+    return capabilities(request.app.state)
 
 
 def context(session, request):
@@ -43,6 +49,11 @@ def view(identity, session, state, tools, data, request, result=None, provider=N
                          for m in state.messages], 'tour': tour,
             'source': {'dataset_source': 'synthetic' if data.dataset_source == 'synthetic' else 'private', 'dataset_version': data.dataset_version},
             'provider': provider or {'mode': getattr(request.app.state.discovery_model, 'mode', 'gemini') if request.app.state.discovery_model.configured else 'rules', 'calls': 0},
+            'settings': {'chat_model': state.chat_model or request.app.state.chat_models.default,
+                         'web_search_enabled': state.web_search_enabled,
+                         'remaining_session_calls': max(0, request.app.state.llm_session_cap - session.chat.llm_used)},
+            'location': state.location,
+            'web': state.web,
             'diagnostics': {'tool_calls': tools.calls, 'elapsed_ms': round(elapsed_ms, 2), 'weather': 'unavailable'}}
 
 
@@ -62,21 +73,31 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
     started = time.monotonic()
     with store.owned(session_id, x_session_token) as persisted:
         store.check_revision(persisted, body.revision)
+        stored_state = State.from_session(persisted)
+        model = (request.app.state.chat_models.select(stored_state.chat_model) if stored_state.chat_model
+                 else request.app.state.discovery_model)
         old_used = persisted.chat.llm_used
-        reserve = min(2, max(0, request.app.state.llm_session_cap - old_used)) if body.text and model.configured else 0
+        reserve = min(2, max(0, request.app.state.llm_session_cap - old_used)) if body.text and model and model.configured else 0
         persisted.chat.llm_used += reserve  # conservative atomic session-call reservation
         session = copy.deepcopy(persisted)
     state, tools, data = context(session, request)
     try:
         if body.action:
             a = body.action
-            result = tools.confirm(a.confirmation_id) if a.type == 'confirm' else tools.run(a.name, a.arguments)
-            provider = {'mode': 'rules', 'calls': 0}
+            if a.type == 'settings':
+                result = settings_action(state, tools, a.arguments, request.app.state, old_used)
+            elif a.type == 'location':
+                result = location_action(state, tools, a.arguments)
+            else:
+                result = tools.confirm(a.confirmation_id) if a.type == 'confirm' else tools.run(a.name, a.arguments)
+            provider = {'mode': 'rules', 'calls': 0, 'reason': result.get('code')}
         else:
             state.remember('user', body.text)
+            refresh_web(state, body.text, request.app.state.web_search)
             result, provider = handle(body.text, tools, model=model, llm_used=old_used,
-                session_cap=old_used + reserve if model.configured else request.app.state.llm_session_cap,
+                session_cap=old_used + reserve if model and model.configured else request.app.state.llm_session_cap,
                 reserve=request.app.state.llm_reserve)
+            provider['model'] = getattr(getattr(model, 'client', None), 'model', None) if provider['mode'] == 'gemini' else None
         if result.get('proposed_changes'):
             result['text'] += ' Có thể cân nhắc: ' + '; '.join(result['proposed_changes'])
         if not result.get('text'):

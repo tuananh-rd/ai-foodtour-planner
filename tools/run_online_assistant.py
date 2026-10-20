@@ -14,6 +14,8 @@ def local_configuration():
     allowed = {'GEMINI_API_KEY', 'FOODTOUR_LLM', 'FOODTOUR_GEMINI_MODEL', 'FOODTOUR_LLM_DAILY_BUDGET',
         'FOODTOUR_BUDGET_DB', 'FOODTOUR_LLM_SESSION_CAP', 'FOODTOUR_LLM_RESERVE',
         'FOODTOUR_DATA_PATH', 'FOODTOUR_EVIDENCE_PATH'}
+    allowed.update({'TAVILY_API_KEY', 'FOODTOUR_TAVILY_ENABLED', 'FOODTOUR_TAVILY_FREE_ONLY',
+                    'FOODTOUR_TAVILY_BUDGET_DB', 'FOODTOUR_TAVILY_DAILY_CREDITS', 'FOODTOUR_TAVILY_MONTHLY_CREDITS'})
     path = ROOT / 'backend/.env'
     if not path.exists():
         return
@@ -31,6 +33,7 @@ def main():
     parser.add_argument('--web-port', type=int, default=3060)
     parser.add_argument('--dataset', choices=('synthetic', 'local'), default='synthetic')
     parser.add_argument('--llm', choices=('off', 'existing'), default='off')
+    parser.add_argument('--session-namespace', choices=('discovery-upgrade',), default=None)
     args = parser.parse_args()
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', args.port))  # Refuse occupied port; never stop its owner.
@@ -41,7 +44,8 @@ def main():
         WEB_ORIGIN=f'http://localhost:{args.web_port},http://127.0.0.1:{args.web_port}')
     local_dir = ROOT / '.venv'
     local_dir.mkdir(exist_ok=True)
-    os.environ['FOODTOUR_SESSION_DB'] = str(local_dir / ('online-' + args.dataset + '-sessions.sqlite'))
+    session_prefix = args.session_namespace or 'online'
+    os.environ['FOODTOUR_SESSION_DB'] = str(local_dir / (session_prefix + '-' + args.dataset + '-sessions.sqlite'))
     os.environ.setdefault('FOODTOUR_BUDGET_DB', str(local_dir / 'online-gemini-budget.sqlite'))
     try:
         configured_limit = int(os.environ.get('FOODTOUR_LLM_DAILY_BUDGET', '18'))
@@ -51,6 +55,8 @@ def main():
     if args.llm == 'off':
         os.environ['FOODTOUR_LLM'] = 'mock'
     if args.dataset == 'synthetic':
+        # Automated fixture QA may toggle UI web, but must never use a real search account.
+        os.environ['FOODTOUR_TAVILY_ENABLED'] = '0'
         os.environ['FOODTOUR_DATA_PATH'] = str(ROOT / 'contracts/fixtures/venues.chat.synthetic.json')
         os.environ['FOODTOUR_EVIDENCE_PATH'] = ''
     elif not os.environ.get('FOODTOUR_DATA_PATH') or not Path(os.environ['FOODTOUR_DATA_PATH']).is_file():

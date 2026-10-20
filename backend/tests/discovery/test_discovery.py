@@ -37,7 +37,14 @@ class DiscoveryTests(unittest.TestCase):
         return self.tools.run('update_foodtour_selection', {'operation': 'add', 'venue_ids': ids,
                       'selection_version': self.state.selection_version})
 
+    def locate(self):
+        # Search now requires an explicit selected origin; no implicit pilot-area default.
+        from app.discovery.experience import location_action
+        return location_action(self.state, self.tools, {'operation': 'coordinates',
+            'lat': 21.035, 'lon': 105.783, 'source': 'coordinates'})
+
     def prepare(self):
+        self.locate()
         self.tools.run('search_restaurants', {'dish': 'phở'})
         self.choose(['1', '2'])
         self.tools.run('update_preferences', {'patch': {'area': 'Xuân Thủy', 'origin': {'lat': 21.035, 'lon': 105.783},
@@ -52,10 +59,11 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIsNone(self.state.profile.party_size)
         self.assertIsNone(self.state.confirmation)
 
-    def test_followup_area_resumes_search_without_trip_questions(self):
+    def test_followup_location_choice_resumes_search_without_trip_questions(self):
         first = self.say('Tìm phở dưới 70k')
-        self.assertIn('khu vực', first['question'])
-        second = self.say('Xuân Thủy')
+        self.assertIn('vị trí', first['question'])
+        self.say('Xuân Thủy')
+        second = self.locate()
         self.assertEqual(len(self.state.results), 2)
         self.assertIsNone(second['question'])
         self.assertIn('chưa chứng minh giá món', second['text'])
@@ -65,12 +73,10 @@ class DiscoveryTests(unittest.TestCase):
     def test_short_answers_only_fill_the_one_contextual_question(self):
         self.say('2')
         self.assertIsNone(self.state.profile.party_size)
+        self.locate()
         self.say('Tìm phở quanh Xuân Thủy')
         self.say('Thêm A')
         self.say('Tạo lịch trình')
-        self.assertEqual(self.state.pending_slot, 'origin')
-        self.say('Xuân Thủy')
-        self.assertIsNotNone(self.state.profile.origin)
         self.assertEqual(self.state.pending_slot, 'start_time')
         self.say('18')
         self.assertEqual(self.state.profile.start_time, '18:00')
@@ -84,6 +90,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIsNone(self.tools.planned_tour)
 
     def test_xuan_thuy_under70k_is_discovery_not_trip_budget(self):
+        self.locate()
         r = self.say('Quanh Xuân Thủy có quán phở nào dưới 70k không?')
         self.assertEqual(len(self.state.results), 2)
         self.assertIsNone(self.state.profile.budget_vnd)
@@ -92,6 +99,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertIsNone(self.tools.planned_tour)
 
     def test_compare_add_then_che_retains_preference_and_selection(self):
+        self.locate()
         self.say('Tìm phở quanh Xuân Thủy')
         expected = list(self.state.results)
         r = self.say('So sánh A với B, tôi đi cùng bố mẹ')
@@ -115,6 +123,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(self.state.profile.max_leg_min, 20)
 
     def test_ids_versions_and_locks_are_atomic(self):
+        self.locate()
         self.tools.run('search_restaurants', {'dish': 'phở'})
         before = copy.deepcopy(self.state.selection)
         self.assertEqual(self.choose(['missing'])['status'], 'tool_error')
@@ -179,6 +188,7 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(p['reason'], 'timeout_rules_fallback')
 
     def test_exhausted_model_session_still_allows_local_discovery_without_calls(self):
+        self.locate()
         class Bomb:
             configured = True
             mode = 'mock'
@@ -262,6 +272,8 @@ class HTTPTests(unittest.TestCase):
             response = self.client.post(self.url, headers=self.headers, json={'revision': current['revision'], **payload})
             self.assertEqual(response.status_code, 200, response.text)
             return response.json()
+        post({'action': {'type': 'location', 'arguments': {'operation': 'coordinates',
+              'lat': 21.0285, 'lon': 105.8522, 'source': 'coordinates'}}})
         found = post({'text': 'Tìm quán quanh Hồ Gươm'})
         post({'action': {'type': 'tool', 'name': 'update_foodtour_selection', 'arguments': {
             'operation': 'add', 'venue_ids': [found['results'][0]['id']], 'selection_version': 0}}})
@@ -281,13 +293,15 @@ class HTTPTests(unittest.TestCase):
         self.assertEqual(legacy_restore.status_code, 200, legacy_restore.text)
         self.assertTrue(legacy_restore.json()['tour']['stops'])
 
-    def test_no_web_contract_and_no_auto_plan(self):
+    def test_web_requires_settings_action_and_search_does_not_auto_plan(self):
         r = self.client.post(self.url, headers=self.headers, json={'revision': 0, 'text': 'phở', 'web_search': True})
         self.assertEqual(r.status_code, 422)
         r = self.client.post(self.url, headers=self.headers, json={'revision': 0, 'text': 'Tìm phở quanh Hồ Gươm'})
         self.assertEqual(r.status_code, 200)
         b = r.json()
-        self.assertTrue(b['results'])
+        self.assertFalse(b['results'])
+        self.assertIn('vị trí', b['reply']['question'])
+        self.assertFalse(b['settings']['web_search_enabled'])
         self.assertIsNone(b['tour'])
         self.assertIsNone(b['confirmation'])
         self.assertIsNone(b['profile']['party_size'])

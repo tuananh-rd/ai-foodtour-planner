@@ -39,8 +39,10 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app.state.chat_understander_injected = chat_understander is not None
     app.state.chat_understanding_provider = None
     app.state.chat_engine_cache = None
-    # Retired: no Tavily factory/key discovery/transport, including legacy injection.
-    app.state.web_search = None
+    # Optional retrieval is separate from chat models. Factory performs no I/O;
+    # the existing provider preserves free-only/null-limit/ledger admission.
+    from app.providers.tavily import TavilySearch
+    app.state.web_search = web_search if web_search is not None else TavilySearch.from_env()
     app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 6)
     app.state.llm_reserve = setting("FOODTOUR_LLM_RESERVE", 3)
     app.state.venues = VenueRepository(data_path)
@@ -76,6 +78,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app.state.llm_budget = gemini.budget if gemini is not None and gemini.configured else None
     from app.discovery.gemini import GeminiTools
     app.state.discovery_model = GeminiTools(gemini if llm_mode == 'gemini' else None)
+    from app.discovery.experience import ChatModels
+    app.state.chat_models = ChatModels(app.state.discovery_model)
     if llm_mode == "gemini" and gemini is not None and gemini.configured:
         app.state.chat_understanding_provider = GeminiUnderstandingProvider(gemini)
     # Conversation shares the explicitly configured client and its existing budget.

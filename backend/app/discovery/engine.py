@@ -44,10 +44,19 @@ def parse_patch(text, tools):
         patch['area'] = place.label
         if re.search(r'xuat phat|bat dau tu|di tu|^tu\s', f) or (tools.state.plan_requested and tools.state.pending_slot == 'origin'):
             patch['origin'] = {'lat': float(place.lat), 'lon': float(place.lon)}
-    elif re.search(r'\b(?:quanh|khu vuc|gan)\b', f):
-        m = re.search(r'(?:quanh|khu vuc|gan)\s+(.+?)(?:\s+(?:co|tim|duoi|toi nay|thi|khong)\b|[,;?.]|$)', f)
+    else:
+        # A named area is valid preference intent even outside our local catalog.
+        # In particular, "ở Hai Bà Trưng" must replace a stale Phố cổ filter.
+        m = re.search(r'(?<!\w)(?:quanh|khu vuc|gan|tai|o)\s+(?:(?:sang|thanh|la)\s+)?(.+?)(?:\s+(?:co|tim|duoi|toi nay|thi|khong)\b|[,;?.]|$)', f)
         if m:
-            patch['area'] = m.group(1)[:120]
+            candidate = m.group(1).strip()
+            if candidate not in ('day', 'do', 'toi', 'minh') and len(candidate) > 2:
+                patch['area'] = candidate[:120]
+    foods = food_intent(text)
+    if foods:
+        patch['foods'] = foods
+    if re.search(r'gan day|quanh day|gan toi|gan minh', f):
+        patch['area'] = None
     taste_map = {'it ngot': 'ít ngọt', 'bot ngot': 'bớt ngọt', 'it duong': 'ít đường', 'khong cay': 'không cay',
                  'it cay': 'ít cay', 'an nhat': 'ăn nhạt', 'it man': 'ít mặn'}
     tastes = [v for k, v in taste_map.items() if k in f]
@@ -81,7 +90,13 @@ def references(text, tools):
 def authorized(name, args, text, tools, patch, initial_refs):
     f = fold_uncached(text)
     if name == 'update_preferences':
-        return bool(args.get('patch')) and all(k in patch and patch[k] == v for k, v in args['patch'].items())
+        def same(key, value):
+            if key not in patch:
+                return False
+            if key == 'area' and isinstance(value, str):
+                return fold_uncached(value) == fold_uncached(patch[key])
+            return patch[key] == value
+        return bool(args.get('patch')) and all(same(k, v) for k, v in args['patch'].items())
     if name == 'update_foodtour_selection':
         cues = {'add': r'\bthem|chon|lay\b', 'remove': r'\bbo|xoa\b', 'lock': r'\bkhoa|giu\b', 'unlock': r'mo khoa|bo giu'}
         return bool(re.search(cues.get(args.get('operation'), r'(?!)'), f)) and set(args.get('venue_ids', [])) <= set(initial_refs)
@@ -97,7 +112,8 @@ def authorized(name, args, text, tools, patch, initial_refs):
             if a is None or b is None or a != b:
                 return False
         dish = args.get('dish')
-        if dish and not any(p in f for p in local_dish_phrases(dish)):
+        if dish and not (any(p in f for p in local_dish_phrases(dish)) or
+                         set(food_intent(dish)) and set(food_intent(dish)) <= set(tools.state.profile.foods)):
             return False
         limit = re.search(r'duoi\s*(\d+)\s*(k|nghin|ngan)', f)
         if limit and args.get('max_price_vnd') != int(limit.group(1))*1000:
@@ -105,7 +121,7 @@ def authorized(name, args, text, tools, patch, initial_refs):
         return True
     if name in ('get_restaurant_details', 'compare_restaurants'):
         requested = [args['venue_id']] if name == 'get_restaurant_details' else args['venue_ids']
-        known = set(initial_refs) if initial_refs else set(tools.state.results) | {x['id'] for x in tools.state.selection}
+        known = set(initial_refs) | set(tools.state.results) | {x['id'] for x in tools.state.selection}
         return bool(requested) and set(requested) <= known
     return False
 
@@ -113,6 +129,15 @@ def authorized(name, args, text, tools, patch, initial_refs):
 def local_dish_phrases(dish):
     from app.chat.tools import dish_phrases
     return dish_phrases(dish)
+
+
+def food_intent(text):
+    """Bounded public food categories; no location, health or model authority."""
+    f = fold_uncached(re.sub(r'(?i)(?<!\w)phố(?!\w)', ' ', text))
+    groups = [('phở', r'\bpho\b'), ('bún', r'\bbun\b'), ('bánh', r'\bbanh\b'),
+              ('chè', r'\bche\b'), ('tráng miệng', r'trang mieng|dessert'),
+              ('cà phê', r'ca phe|coffee')]
+    return [label for label, pattern in groups if re.search(pattern, f)]
 
 
 def fallback(text, tools, patch, price_search):
@@ -142,7 +167,8 @@ def fallback(text, tools, patch, price_search):
     if re.search(r'\b(?:ok|oke|okay|vang|duoc)\b', f) and len(f.split()) <= 3:
         return tools.result('ok', 'Mình giữ các thông tin đã có; câu này chưa được coi là xác nhận tạo lịch.')
     dish = knowledge.lookup_dish(f)
-    search_cue = re.search(r'\b(?:tim|quan|quanh|gan|o dau|dia chi)\b', f)
+    search_cue = re.search(r'\b(?:tim|quan|quanh|gan|o dau|dia chi)\b', f) or (
+        food_intent(text) and re.search(r'muon an|goi y|\bo\s|\btai\s', f))
     if tools.state.pending_search and patch.get('area') and not search_cue and not dish:
         return tools.run('search_restaurants', {**tools.state.pending_search, 'area': tools.state.profile.area})
     if search_cue or (dish and results):
@@ -264,7 +290,7 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                     if tools.calls or deterministic['status'] != 'ok':
                         return deterministic, provider
                     return tools.result('ok', valid or deterministic['text']), provider
-                if valid and last['status'] == 'ok':
+                if valid and last['status'] in ('ok', 'unknown', 'no_results'):
                     last['text'] = valid
                 return last, provider
             if len(calls) > 6 or tools.calls + len(calls) > 6:

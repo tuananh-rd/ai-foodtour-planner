@@ -89,6 +89,11 @@
           "diagnostics": {
             "$ref": "#/components/schemas/Diagnostics"
           },
+          "location": {
+            "additionalProperties": true,
+            "title": "Location",
+            "type": "object"
+          },
           "messages": {
             "items": {
               "$ref": "#/components/schemas/Message"
@@ -135,6 +140,11 @@
             "title": "Session Id",
             "type": "string"
           },
+          "settings": {
+            "additionalProperties": true,
+            "title": "Settings",
+            "type": "object"
+          },
           "source": {
             "$ref": "#/components/schemas/Source"
           },
@@ -159,6 +169,11 @@
                 "type": "null"
               }
             ]
+          },
+          "web": {
+            "additionalProperties": true,
+            "title": "Web",
+            "type": "object"
           }
         },
         "required": [
@@ -2764,6 +2779,14 @@
             "title": "Exclusions",
             "type": "array"
           },
+          "foods": {
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "title": "Foods",
+            "type": "array"
+          },
           "max_leg_min": {
             "anyOf": [
               {
@@ -2858,6 +2881,17 @@
             ],
             "title": "Mode",
             "type": "string"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model"
           },
           "reason": {
             "anyOf": [
@@ -2999,6 +3033,40 @@
             },
             "title": "Dish Tags",
             "type": "array"
+          },
+          "distance_m": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance M"
+          },
+          "distance_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Reason"
+          },
+          "distance_source": {
+            "anyOf": [
+              {
+                "const": "haversine",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Distance Source"
           },
           "district": {
             "title": "District",
@@ -5012,7 +5080,9 @@
           "type": {
             "enum": [
               "tool",
-              "confirm"
+              "confirm",
+              "settings",
+              "location"
             ],
             "title": "Type",
             "type": "string"
@@ -5158,6 +5228,22 @@
           }
         },
         "summary": "Health"
+      }
+    },
+    "/v1/assistant/capabilities": {
+      "get": {
+        "operationId": "assistant_capabilities_v1_assistant_capabilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Assistant Capabilities"
       }
     },
     "/v1/client-config": {
