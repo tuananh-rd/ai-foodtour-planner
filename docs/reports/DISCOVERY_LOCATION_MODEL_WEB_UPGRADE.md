@@ -32,7 +32,7 @@ The original Tavily provider, transport and sanitizers are restored with support
 
 | Check | Evidence | Result |
 |---|---|---|
-| Backend targeted regression and restored free-only provider guards |138 unittest checks, including general food knowledge without preference mutation, discovery, protocol, presentation, upgrade, Tavily/search safety/transport, conversation, extractor and Maps links | PASS at `e01590f` |
+| Backend targeted regression and restored free-only provider guards |138 unittest checks, including general food knowledge without preference mutation and clear unknown-history response, discovery, protocol, presentation, upgrade, Tavily/search safety/transport, conversation, extractor and Maps links | PASS at `f98f099` |
 | Actual synthetic HTTP journey | [discovery-upgrade-api-e01590f.json](discovery-upgrade-api-e01590f.json), backend`e01590f`,73 checks | PASS; actual replies/results inspected,3-stop planner/explicit240minutes and separate5-stop/explicit600minutes tour; split Maps URLs preserve actual origin/every stop;0 provider requests |
 | Deterministic schema | `tools/export_openapi.py --check` | PASS |
 | Key-scoped model metadata | [discovery-upgrade-model-metadata.json](discovery-upgrade-model-metadata.json) |1 metadata GET, no generate/debit,13→13 |
