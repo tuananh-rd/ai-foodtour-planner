@@ -271,6 +271,7 @@ export default function DiscoveryLayout({
   );
 
   const isMountedRef = useRef(true);
+  const operationLockRef = useRef(false);
   const latestSessionRef = useRef({
     sessionId,
     sessionToken,
@@ -468,8 +469,9 @@ export default function DiscoveryLayout({
   // Send natural text message
   const handleSendMessage = async (customText = null) => {
     const textToSend = customText !== null ? customText : inputText;
-    if (!sessionReady || !textToSend || !textToSend.trim() || busy) return;
+    if (!sessionReady || !textToSend || !textToSend.trim() || busy || operationLockRef.current) return;
 
+    operationLockRef.current = true;
     requestTokenRef.current += 1;
     const currentToken = requestTokenRef.current;
 
@@ -510,6 +512,7 @@ export default function DiscoveryLayout({
         }
       }
     } finally {
+      operationLockRef.current = false;
       if (isMountedRef.current && currentToken === requestTokenRef.current) {
         setBusy(false);
         setBusyMessage('');
@@ -521,8 +524,9 @@ export default function DiscoveryLayout({
   // Dispatch a discovery action
   const handleDispatchAction = async (action, loadingMsg = 'Đang thực hiện…', onSuccess = null) => {
     const currentSession = latestSessionRef.current;
-    if (!currentSession.sessionReady || busy) return;
+    if (!currentSession.sessionReady || busy || operationLockRef.current) return;
 
+    operationLockRef.current = true;
     requestTokenRef.current += 1;
     const currentToken = requestTokenRef.current;
 
@@ -556,6 +560,7 @@ export default function DiscoveryLayout({
         setErrorBanner(err.message || 'Lỗi khi thực hiện thao tác.');
       }
     } finally {
+      operationLockRef.current = false;
       if (isMountedRef.current && currentToken === requestTokenRef.current) {
         setBusy(false);
         setBusyMessage('');
@@ -709,59 +714,76 @@ export default function DiscoveryLayout({
       return;
     }
     const currentSession = latestSessionRef.current;
-    if (!currentSession.sessionReady || busy || gpsPending) return;
+    if (!currentSession.sessionReady || busy || gpsPending || operationLockRef.current) return;
 
+    operationLockRef.current = true;
     setGpsPending(true);
+    setBusy(true);
+    setBusyMessage('Đang xin quyền định vị GPS…');
     setGeoNotice('Đang xin quyền định vị GPS…');
 
     // Capture the target session parameters at invocation time
     const invokedSessionId = currentSession.sessionId;
     const invokedToken = currentSession.sessionToken;
 
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        if (!isMountedRef.current) return;
-        setGpsPending(false);
+    try {
+      navigator.geolocation.getCurrentPosition(
+        (pos) => {
+          operationLockRef.current = false;
+          if (!isMountedRef.current) return;
+          setGpsPending(false);
+          setBusy(false);
+          setBusyMessage('');
 
-        // Compare against LIVE ref, NOT the stale closed lexical scope
-        const liveSession = latestSessionRef.current;
-        if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
-          // Stale callback after session reset or change; discard!
-          return;
-        }
+          // Compare against LIVE ref, NOT the stale closed lexical scope
+          const liveSession = latestSessionRef.current;
+          if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
+            // Stale callback after session reset or change; discard!
+            return;
+          }
 
-        const lat = Number(pos.coords.latitude.toFixed(6));
-        const lon = Number(pos.coords.longitude.toFixed(6));
-        setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon}`);
+          const lat = Number(pos.coords.latitude.toFixed(6));
+          const lon = Number(pos.coords.longitude.toFixed(6));
+          setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon}`);
 
-        try {
-          const action = setCoordinatesLocationAction(lat, lon, 'gps');
-          handleDispatchAction(action, 'Đang cập nhật điểm xuất phát GPS…');
-        } catch (err) {
-          setErrorBanner(err.message);
-        }
-      },
-      (err) => {
-        if (!isMountedRef.current) return;
-        setGpsPending(false);
+          try {
+            const action = setCoordinatesLocationAction(lat, lon, 'gps');
+            handleDispatchAction(action, 'Đang cập nhật điểm xuất phát GPS…');
+          } catch (err) {
+            setErrorBanner(err.message);
+          }
+        },
+        (err) => {
+          operationLockRef.current = false;
+          if (!isMountedRef.current) return;
+          setGpsPending(false);
+          setBusy(false);
+          setBusyMessage('');
 
-        const liveSession = latestSessionRef.current;
-        if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
-          return;
-        }
+          const liveSession = latestSessionRef.current;
+          if (invokedSessionId !== liveSession.sessionId || invokedToken !== liveSession.sessionToken) {
+            return;
+          }
 
-        if (err.code === 1) { // PERMISSION_DENIED
-          setGeoNotice('Bạn đã từ chối quyền truy cập vị trí GPS.');
-        } else if (err.code === 2) { // POSITION_UNAVAILABLE
-          setGeoNotice('Không thể xác định vị trí từ thiết bị.');
-        } else if (err.code === 3) { // TIMEOUT
-          setGeoNotice('Quá thời gian xác định vị trí GPS.');
-        } else {
-          setGeoNotice(`Lỗi GPS: ${err.message || 'Không thể lấy vị trí'}`);
-        }
-      },
-      { timeout: 10000, enableHighAccuracy: true, maximumAge: 60000 }
-    );
+          if (err.code === 1) { // PERMISSION_DENIED
+            setGeoNotice('Bạn đã từ chối quyền truy cập vị trí GPS.');
+          } else if (err.code === 2) { // POSITION_UNAVAILABLE
+            setGeoNotice('Không thể xác định vị trí từ thiết bị.');
+          } else if (err.code === 3) { // TIMEOUT
+            setGeoNotice('Quá thời gian xác định vị trí GPS.');
+          } else {
+            setGeoNotice(`Lỗi GPS: ${err.message || 'Không thể lấy vị trí'}`);
+          }
+        },
+        { timeout: 10000, enableHighAccuracy: true, maximumAge: 60000 }
+      );
+    } catch (syncErr) {
+      operationLockRef.current = false;
+      setGpsPending(false);
+      setBusy(false);
+      setBusyMessage('');
+      setGeoNotice(`Lỗi khởi tạo GPS: ${syncErr.message || 'Không thể lấy vị trí'}`);
+    }
   }, [busy, gpsPending]);
 
   const handleResolveOrigin = (e) => {
@@ -1042,13 +1064,18 @@ export default function DiscoveryLayout({
               disabled={!sessionReady || busy}
             >
               {Array.isArray(capabilities?.chat_models) && capabilities.chat_models.length > 0 ? (
-                capabilities.chat_models.map((m) => (
-                  <option key={m.id} value={m.id} disabled={!m.available}>
-                    {m.label || m.id}{!m.available ? ` (${m.reason || 'không khả dụng'})` : ''}
-                  </option>
-                ))
+                <>
+                  {(!displayView.settings?.chat_model && !capabilities?.default_chat_model) && (
+                    <option value="" disabled>Không có model khả dụng / Xử lý tại máy</option>
+                  )}
+                  {capabilities.chat_models.map((m) => (
+                    <option key={m.id} value={m.id} disabled={!m.available}>
+                      {m.label || m.id}{!m.available ? ` (${m.reason || 'không khả dụng'})` : ''}
+                    </option>
+                  ))}
+                </>
               ) : (
-                <option value="">{capabilitiesLoading ? 'Đang tải mô hình…' : 'Mặc định hệ thống'}</option>
+                <option value="">{capabilitiesLoading ? 'Đang tải mô hình…' : 'Không có model khả dụng / Xử lý tại máy'}</option>
               )}
             </select>
           </div>
@@ -1072,7 +1099,12 @@ export default function DiscoveryLayout({
               <span>Tìm kiếm web</span>
             </label>
             {capabilities?.web_search && !capabilities.web_search.available && (
-              <span className="nn-web-status-badge">Chưa hỗ trợ</span>
+              <span
+                className="nn-web-status-badge"
+                title={capabilities.web_search.reason ? `Lý do: ${capabilities.web_search.reason}` : 'Tìm kiếm web chưa khả dụng'}
+              >
+                Chưa khả dụng
+              </span>
             )}
           </div>
         </div>
@@ -2090,6 +2122,9 @@ export default function DiscoveryLayout({
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
                     origin={displayView.profile?.origin || view.profile?.origin}
                     vehicle={displayView.profile?.vehicle || view.profile?.vehicle}
+                    sessionId={sessionId}
+                    sessionToken={sessionToken}
+                    revision={displayView.revision || view.revision}
                     onReplaceStop={(stop) => handleStartStopReplacement(stop)}
                     onChangeStop={(stop) => handleStartStopReplacement(stop)}
                     onAdjustStops={() => handleOpenSelectionEditor()}

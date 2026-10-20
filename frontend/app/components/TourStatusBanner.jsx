@@ -74,6 +74,7 @@ const STATUS_CONFIG = {
 };
 
 const UNKNOWN_LABELS = {
+  elderly_access: 'tiếp cận người cao tuổi / đi lại thuận tiện',
   hours: 'giờ mở cửa theo ngày',
   price_per_person: 'giá theo người',
   route: 'tuyến đi bộ thực tế',

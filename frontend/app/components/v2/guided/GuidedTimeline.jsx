@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { isValidGoogleMapsDirUrl } from '../../../../lib/mapsUrlValidation';
-import { buildDiscoveryMapsUrl, buildDiscoveryLegUrls } from '../../../../lib/discoveryMaps';
+import { buildDiscoveryMapsUrl, buildDiscoveryMapsSplitUrls, buildDiscoveryLegUrls, resolveTravelMode } from '../../../../lib/discoveryMaps';
+import { getDiscoveryMapsLinks } from '../../../../lib/discoveryApi';
 import { formatWarningMessage } from './ConfirmSummaryCard';
 import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import './guided-leaves.css';
@@ -11,6 +12,7 @@ import './guided-leaves.css';
 const COMPACT_UNKNOWN = {
   allergy_ingredients: 'thành phần để đánh giá dị ứng',
   ingredient_allergy_safety: 'an toàn thành phần dị ứng',
+  elderly_access: 'tiếp cận người cao tuổi / đi lại thuận tiện',
   sweetness: 'độ ngọt món ăn',
   dish_price: 'giá từng món ăn',
   current_open_status: 'trạng thái mở cửa hiện tại',
@@ -54,6 +56,9 @@ export default function GuidedTimeline({
   lockedStops = [],
   origin = null,
   vehicle = null,
+  sessionId = null,
+  sessionToken = null,
+  revision = null,
   onReplaceStop,
   onChangeStop,
   onAdjustStops,
@@ -66,9 +71,62 @@ export default function GuidedTimeline({
   const stops = tour.stops;
   const hasUnknowns = Array.isArray(tour.unknowns) && tour.unknowns.length > 0;
 
-  // Build Free Google Maps Directions URL via discoveryMaps
+  // Server-generated Google Maps links
+  const [serverMaps, setServerMaps] = useState(null);
+  const [mapsLoading, setMapsLoading] = useState(false);
+  const [mapsError, setMapsError] = useState(null);
+
+  useEffect(() => {
+    if (!sessionId || !sessionToken || !tour || !Array.isArray(tour.stops) || tour.stops.length === 0) {
+      setServerMaps(null);
+      setMapsLoading(false);
+      setMapsError(null);
+      return;
+    }
+    let active = true;
+    const ac = new AbortController();
+    const travelMode = resolveTravelMode(vehicle).mode;
+    setMapsLoading(true);
+    setMapsError(null);
+
+    getDiscoveryMapsLinks(sessionId, sessionToken, travelMode, { signal: ac.signal })
+      .then((res) => {
+        if (active && res && Array.isArray(res.links) && res.links.length > 0) {
+          setServerMaps(res);
+        }
+      })
+      .catch((err) => {
+        if (active && err?.name !== 'AbortError') {
+          setMapsError(err?.message || 'Không thể lấy liên kết từ máy chủ');
+        }
+      })
+      .finally(() => {
+        if (active) setMapsLoading(false);
+      });
+
+    return () => {
+      active = false;
+      ac.abort();
+    };
+  }, [sessionId, sessionToken, tour, vehicle, revision]);
+
+  // Build Free Google Maps Directions URL via discoveryMaps (client fallback)
   const mapsUrlInfo = buildDiscoveryMapsUrl({ origin, stops, vehicle });
-  const mapsUrl = mapsUrlInfo?.url || null;
+  const clientSplitLinks = mapsUrlInfo?.splitLinks || [];
+
+  // Effective links: prioritize server split links if available, else clientSplitLinks
+  const serverLinks = serverMaps?.links || null;
+  const effectiveLinks = (Array.isArray(serverLinks) && serverLinks.length > 0)
+    ? serverLinks.map((sl) => ({
+        index: sl.index,
+        of: sl.of,
+        url: sl.url,
+        label: sl.of > 1 ? `Chặng ${sl.index}/${sl.of}` : 'Toàn bộ lộ trình'
+      }))
+    : clientSplitLinks;
+
+  const primaryUrl = effectiveLinks[0]?.url || mapsUrlInfo?.url || null;
+  const isMultiLeg = effectiveLinks.length > 1;
 
   // Build Per-Leg URLs (mobile fallback / detailed segments)
   const legUrls = buildDiscoveryLegUrls({ origin, stops, vehicle });
@@ -292,27 +350,52 @@ export default function GuidedTimeline({
           : 'Dị ứng: chưa quán nào được xác nhận an toàn dị ứng. Bạn hãy hỏi trực tiếp nhân viên quán về thành phần trước khi gọi món.'}
       </div>
 
-      {/* Primary CTA: Dark Card with Free Google Maps Walking URL */}
-      {mapsUrl && (
+      {/* Primary CTA: Dark Card with Free Google Maps Walking URL (Requires valid origin) */}
+      {primaryUrl && (
         <div className="nn-dark-cta-card">
           <div className="nn-cta-header">
             <h4 className="nn-cta-title">Sẵn sàng cho một buổi tối ngon?</h4>
-            <p className="nn-cta-desc">Lịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.</p>
+            <p className="nn-cta-desc">
+              {isMultiLeg
+                ? `Lịch trình có ${stops.length} điểm dừng (được chia thành ${effectiveLinks.length} chặng trên Google Maps để đảm bảo điều hướng đầy đủ, không rơi chặng).`
+                : 'Lịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.'}
+              {mapsLoading && <span style={{ fontSize: 11, color: '#C4B5A5', marginLeft: 6 }}> (Đang đồng bộ máy chủ…)</span>}
+            </p>
           </div>
           <a
-            href={mapsUrl}
+            href={primaryUrl}
             target="_blank"
             rel="noopener noreferrer"
             data-testid="google-maps-cta"
             className="nn-cta-btn"
           >
-            Xem lịch trình trên Google Maps →
+            {isMultiLeg
+              ? `Xem lịch trình trên Google Maps (Chặng 1/${effectiveLinks.length}) →`
+              : 'Xem lịch trình trên Google Maps →'}
           </a>
+          {isMultiLeg && (
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginTop: 8 }}>
+              {effectiveLinks.slice(1).map((leg) => (
+                <a
+                  key={leg.index}
+                  href={leg.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  data-testid={`google-maps-cta-${leg.index}`}
+                  className="nn-cta-btn"
+                  style={{ flex: '1 1 140px', textAlign: 'center', background: '#3D3430', color: '#FFF' }}
+                >
+                  Mở {leg.label || `Chặng ${leg.index}/${leg.of}`} →
+                </a>
+              ))}
+            </div>
+          )}
           <p
             data-testid="google-maps-disclosure"
             className="nn-maps-disclosure"
           >
             Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.{mapsUrlInfo?.disclosureNote ? ` ${mapsUrlInfo.disclosureNote}` : ''}
+            {mapsError && <span style={{ display: 'block', fontSize: 11, color: '#E5989B', marginTop: 2 }}>({mapsError} - đang dùng lộ trình dự phòng)</span>}
           </p>
         </div>
       )}

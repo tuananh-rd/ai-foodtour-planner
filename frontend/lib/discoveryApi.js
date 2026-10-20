@@ -746,6 +746,7 @@ export function safeExternalUrl(url) {
 export const UNKNOWN_LABELS_VI = {
   ingredient_allergy_safety: 'an toàn thành phần dị ứng',
   allergy_ingredients: 'thành phần đánh giá dị ứng',
+  elderly_access: 'tiếp cận người cao tuổi / đi lại thuận tiện',
   sweetness: 'độ ngọt món ăn',
   dish_price: 'giá từng món ăn',
   current_open_status: 'trạng thái mở cửa hiện tại',
@@ -770,3 +771,55 @@ export function formatUnknownLabel(key) {
   }
   return trimmed.replace(/_/g, ' ');
 }
+
+/**
+ * Fetches server-generated Free Google Maps Links for tour itinerary.
+ * Endpoint: GET /v1/sessions/{id}/tour/maps-links?mode=walking|driving
+ * Includes X-Session-Token authentication.
+ */
+export async function getDiscoveryMapsLinks(sessionId, sessionToken, mode = 'walking', options = {}) {
+  if (!sessionId || typeof sessionId !== 'string') {
+    throw new DiscoveryApiError('invalid_session_id', 'Thiếu sessionId hợp lệ.');
+  }
+  if (!sessionToken || typeof sessionToken !== 'string') {
+    throw new DiscoveryApiError('unauthorized', 'Thiếu sessionToken hợp lệ.');
+  }
+
+  const validModes = ['walking', 'driving'];
+  const targetMode = validModes.includes(mode) ? mode : 'walking';
+
+  const headers = {
+    'Accept': 'application/json',
+    'X-Session-Token': sessionToken
+  };
+
+  const query = new URLSearchParams({ mode: targetMode });
+  const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}/tour/maps-links?${query.toString()}`;
+
+  let res;
+  try {
+    res = await fetch(url, {
+      method: 'GET',
+      headers,
+      signal: options?.signal
+    });
+  } catch (err) {
+    if (err.name === 'AbortError') throw err;
+    throw new DiscoveryApiError('network_error', 'Không thể kết nối đến máy chủ.');
+  }
+
+  if (!res.ok) {
+    let errData = null;
+    try {
+      errData = await res.json();
+    } catch {
+      // Ignore JSON parse error on non-OK response
+    }
+    const code = errData?.detail?.code || errData?.code || 'maps_links_error';
+    const message = errData?.detail?.message || errData?.message || `Lỗi máy chủ (${res.status})`;
+    throw new DiscoveryApiError(code, message, errData?.detail || errData, res.status);
+  }
+
+  return await res.json();
+}
+

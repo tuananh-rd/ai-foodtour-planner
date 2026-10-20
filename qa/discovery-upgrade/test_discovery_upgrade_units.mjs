@@ -15,8 +15,16 @@ import {
   setCoordinatesLocationAction,
   clearLocationAction,
   formatDistanceDisplay,
+  formatUnknownLabel,
   DiscoveryApiError
 } from '../../frontend/lib/discoveryApi.js';
+
+import {
+  buildDiscoveryMapsUrl,
+  buildDiscoveryMapsSplitUrls
+} from '../../frontend/lib/discoveryMaps.js';
+
+import { isValidGoogleMapsDirUrl } from '../../frontend/lib/mapsUrlValidation.js';
 
 import {
   normalizeDisplayText,
@@ -225,6 +233,141 @@ matchingCallback(21.033, 105.85);
 assert(dispatchedActions.length === 1, 'Action dispatched when session is unchanged');
 assert(dispatchedActions[0].session.sessionId === 'sess-2', 'Dispatched to correct live session');
 assert(dispatchedActions[0].action.arguments.lat === 21.033, 'Dispatched with correct coordinates');
+
+// 6. Unknown Labels & elderly_access Translation
+console.log('\n[6] Testing Unknown Labels & elderly_access Vietnamese Translation...');
+assert(formatUnknownLabel('elderly_access') === 'tiếp cận người cao tuổi / đi lại thuận tiện', 'Translates elderly_access to Vietnamese without English leak');
+assert(formatUnknownLabel('ingredient_allergy_safety') === 'an toàn thành phần dị ứng', 'Translates ingredient_allergy_safety');
+assert(formatUnknownLabel('sweetness') === 'độ ngọt món ăn', 'Translates sweetness');
+
+// 7. Discovery Maps URL and Split Multi-Run Chains
+console.log('\n[7] Testing Discovery Maps URLs & Multi-Run Split Chains...');
+const sampleOrigin = { lat: 21.0285, lon: 105.8542, label: 'Khách sạn Hà Nội' };
+const stops1 = [{ name: 'Quán 1', lat: 21.030, lon: 105.850 }];
+const stops4 = [
+  { name: 'Quán 1', lat: 21.030, lon: 105.850 },
+  { name: 'Quán 2', lat: 21.031, lon: 105.851 },
+  { name: 'Quán 3', lat: 21.032, lon: 105.852 },
+  { name: 'Quán 4', lat: 21.033, lon: 105.853 }
+];
+const stops5 = [
+  ...stops4,
+  { name: 'Quán 5', lat: 21.034, lon: 105.854 }
+];
+const stops6 = [
+  ...stops5,
+  { name: 'Quán 6', lat: 21.035, lon: 105.855 }
+];
+
+// No origin must return empty array / null
+assert(buildDiscoveryMapsUrl({ origin: null, stops: stops4 }) === null, 'buildDiscoveryMapsUrl returns null without valid origin');
+assert(buildDiscoveryMapsSplitUrls({ origin: null, stops: stops4 }).length === 0, 'buildDiscoveryMapsSplitUrls returns empty array without valid origin');
+
+// Single stop with origin
+const split1 = buildDiscoveryMapsSplitUrls({ origin: sampleOrigin, stops: stops1 });
+assert(split1.length === 1, '1-stop tour produces exactly 1 split link');
+assert(isValidGoogleMapsDirUrl(split1[0].url), '1-stop split URL is valid Google Maps dir URL');
+assert(split1[0].waypointCount === 0, '1-stop split URL has 0 waypoints');
+
+// 4 stops with origin (5 points total: origin + 3 waypoints + destination)
+const split4 = buildDiscoveryMapsSplitUrls({ origin: sampleOrigin, stops: stops4 });
+assert(split4.length === 1, '4-stop tour produces 1 link fitting max 3 waypoints');
+assert(isValidGoogleMapsDirUrl(split4[0].url), '4-stop URL is valid Google Maps dir URL');
+assert(split4[0].waypointCount === 3, '4-stop URL has exactly 3 waypoints');
+const url4Info = buildDiscoveryMapsUrl({ origin: sampleOrigin, stops: stops4 });
+assert(url4Info !== null && url4Info.isSplit === false, '4-stop buildDiscoveryMapsUrl has isSplit: false');
+
+// 5 stops with origin (6 points total: origin + 5 stops)
+// Must split into 2 links: Link 1 (points 0..4, 3 waypoints), Link 2 (points 4..5, 0 waypoints)
+const split5 = buildDiscoveryMapsSplitUrls({ origin: sampleOrigin, stops: stops5 });
+assert(split5.length === 2, '5-stop tour with origin splits into exactly 2 links to bound waypoints <= 3');
+assert(isValidGoogleMapsDirUrl(split5[0].url), 'Split 5 link 1 is valid');
+assert(isValidGoogleMapsDirUrl(split5[1].url), 'Split 5 link 2 is valid');
+assert(split5[0].waypointCount <= 3, 'Split 5 link 1 has <= 3 waypoints');
+assert(split5[1].waypointCount <= 3, 'Split 5 link 2 has <= 3 waypoints');
+assert(split5[0].toName === split5[1].fromName, 'Split 5 links chain contiguously (zero stops dropped)');
+const url5Info = buildDiscoveryMapsUrl({ origin: sampleOrigin, stops: stops5 });
+assert(url5Info !== null && url5Info.isSplit === true, '5-stop buildDiscoveryMapsUrl indicates isSplit: true');
+assert(url5Info.splitLinks.length === 2, '5-stop buildDiscoveryMapsUrl includes all splitLinks');
+
+// 6 stops with origin (7 points total)
+const split6 = buildDiscoveryMapsSplitUrls({ origin: sampleOrigin, stops: stops6 });
+assert(split6.length === 2, '6-stop tour with origin splits into 2 links');
+assert(split6[0].waypointCount <= 3 && split6[1].waypointCount <= 3, 'All 6-stop links have waypoints <= 3');
+assert(split6[0].toName === split6[1].fromName, '6-stop links chain contiguously without dropping stops');
+
+// 8. Shared Synchronous Operation Lock & Concurrency Simulation
+console.log('\n[8] Testing Shared Operation Lock across GPS pending and Chat...');
+class MockOperationManager {
+  constructor() {
+    this.operationLock = false;
+    this.gpsPending = false;
+    this.chatCalls = 0;
+    this.gpsSuccessCalls = 0;
+  }
+
+  triggerChat(text) {
+    if (this.operationLock || this.gpsPending) return false;
+    this.operationLock = true;
+    try {
+      this.chatCalls += 1;
+      return true;
+    } finally {
+      this.operationLock = false;
+    }
+  }
+
+  triggerGps(mockPosCallback, mockErrCallback) {
+    if (this.operationLock || this.gpsPending) return false;
+    this.operationLock = true;
+    this.gpsPending = true;
+
+    // Simulate async geolocation API
+    this._resolveGps = (pos) => {
+      // Release lock BEFORE callback dispatch
+      this.operationLock = false;
+      this.gpsPending = false;
+      if (mockPosCallback) mockPosCallback(pos);
+    };
+
+    this._rejectGps = (err) => {
+      this.operationLock = false;
+      this.gpsPending = false;
+      if (mockErrCallback) mockErrCallback(err);
+    };
+
+    return true;
+  }
+}
+
+const mgr = new MockOperationManager();
+assert(mgr.triggerGps(() => { mgr.gpsSuccessCalls += 1; }), 'Initial GPS trigger acquires lock and starts');
+assert(mgr.gpsPending === true, 'gpsPending is true while waiting for browser geolocation');
+assert(mgr.operationLock === true, 'operationLock is held while GPS is pending');
+
+// Concurrent chat while GPS pending must be blocked
+const chatBlocked = mgr.triggerChat('Tìm quán phở');
+assert(chatBlocked === false, 'Chat dispatch is blocked while GPS is pending');
+assert(mgr.chatCalls === 0, 'No chat message processed during GPS pending');
+
+// GPS callback completes
+mgr._resolveGps({ coords: { latitude: 21.0285, longitude: 105.8542 } });
+assert(mgr.gpsPending === false, 'gpsPending released on callback completion');
+assert(mgr.operationLock === false, 'operationLock released before action dispatch');
+assert(mgr.gpsSuccessCalls === 1, 'GPS success callback executed');
+
+// Now chat can proceed cleanly
+const chatAllowed = mgr.triggerChat('Tìm quán bún chả');
+assert(chatAllowed === true, 'Chat dispatch succeeds after GPS lock is released');
+assert(mgr.chatCalls === 1, 'Chat processed successfully');
+
+// Test error callback releases lock
+const mgrErr = new MockOperationManager();
+mgrErr.triggerGps(null, () => {});
+assert(mgrErr.operationLock === true, 'Lock acquired on second GPS trigger');
+mgrErr._rejectGps(new Error('Permission denied'));
+assert(mgrErr.operationLock === false, 'Lock released on GPS error');
+assert(mgrErr.gpsPending === false, 'gpsPending released on GPS error');
 
 console.log('\n================================================================');
 console.log(`DISCOVERY UPGRADE UNIT TESTS: Passed: ${passed} | Failed: ${failed}`);

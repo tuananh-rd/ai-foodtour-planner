@@ -9,6 +9,8 @@
  * - When origin is NOT provided, fall back safely without setting origin=destination for single stop.
  * - Travel modes: walking for walk, driving for car/taxi/motorbike with honest motorbike approximation.
  * - Conforms strictly to isValidGoogleMapsDirUrl allowlist.
+ * - Bounded waypoints (<= 3 waypoints per Google Maps URL, <= 2048 chars).
+ * - Multi-run split chaining when stops exceed 5 points so NO STOPS ARE DROPPED ("không rơi chặng").
  */
 
 import { isValidGoogleMapsDirUrl } from './mapsUrlValidation.js';
@@ -48,77 +50,112 @@ export function getCoordString(point) {
 }
 
 /**
+ * Builds multi-run split Google Maps URLs ensuring NO STOPS ARE DROPPED ("không rơi chặng").
+ * Public Google Maps direction URLs limit to at most 3 waypoints (5 points total: origin + 3 waypoints + dest).
+ * When points exceed 5, the route is partitioned into ordered contiguous runs where run[k].destination === run[k+1].origin.
+ */
+export function buildDiscoveryMapsSplitUrls({ origin, stops, vehicle }) {
+  if (!isValidCoordinate(origin)) return [];
+  if (!Array.isArray(stops) || stops.length === 0) return [];
+  const validStops = stops.filter(isValidCoordinate);
+  if (validStops.length === 0 || validStops.length !== stops.length) return [];
+
+  const { mode: travelmode } = resolveTravelMode(vehicle);
+  const points = [
+    { label: origin.label || 'Điểm xuất phát', coord: getCoordString(origin) }
+  ];
+  validStops.forEach((s, idx) => {
+    points.push({ label: s.name || `Điểm ${idx + 1}`, coord: getCoordString(s) });
+  });
+
+  if (points.length === 0) return [];
+
+  if (points.length === 1) {
+    const q = new URLSearchParams({ api: '1', destination: points[0].coord, travelmode });
+    const u = `https://www.google.com/maps/dir/?${q.toString()}`;
+    if (isValidGoogleMapsDirUrl(u)) {
+      return [{
+        index: 1,
+        of: 1,
+        url: u,
+        fromName: points[0].label,
+        toName: points[0].label,
+        waypointCount: 0,
+        label: 'Toàn bộ lộ trình'
+      }];
+    }
+    return [];
+  }
+
+  const links = [];
+  let start = 0;
+  while (start < points.length - 1) {
+    const end = Math.min(start + 4, points.length - 1);
+    const runPoints = points.slice(start, end + 1);
+
+    const q = new URLSearchParams({
+      api: '1',
+      origin: runPoints[0].coord,
+      destination: runPoints[runPoints.length - 1].coord,
+      travelmode
+    });
+
+    if (runPoints.length > 2) {
+      const waypoints = runPoints.slice(1, -1).map((p) => p.coord).join('|');
+      q.set('waypoints', waypoints);
+    }
+
+    const u = `https://www.google.com/maps/dir/?${q.toString()}`;
+    if (isValidGoogleMapsDirUrl(u)) {
+      links.push({
+        index: links.length + 1,
+        of: 1,
+        url: u,
+        fromName: runPoints[0].label,
+        toName: runPoints[runPoints.length - 1].label,
+        waypointCount: Math.max(0, runPoints.length - 2),
+        label: ''
+      });
+    }
+
+    if (end === start) break;
+    start = end;
+  }
+
+  links.forEach((l) => {
+    l.of = links.length;
+    l.label = links.length > 1
+      ? `Chặng ${l.index}/${l.of}: ${l.fromName} → ${l.toName}`
+      : 'Toàn bộ lộ trình';
+  });
+
+  return links;
+}
+
+/**
  * Builds the complete multi-stop Google Maps directions URL.
+ * Automatically delegates to buildDiscoveryMapsSplitUrls to ensure bounded waypoints (<= 3)
+ * without dropping any stop.
  */
 export function buildDiscoveryMapsUrl({ origin, stops, vehicle }) {
+  if (!isValidCoordinate(origin)) return null;
   if (!Array.isArray(stops) || stops.length === 0) return null;
   const validStops = stops.filter(isValidCoordinate);
   if (validStops.length === 0 || validStops.length !== stops.length) return null;
 
   const modeInfo = resolveTravelMode(vehicle);
-  const travelmode = modeInfo.mode;
-  const hasUserOrigin = isValidCoordinate(origin);
+  const splitLinks = buildDiscoveryMapsSplitUrls({ origin, stops, vehicle });
+  if (!splitLinks || splitLinks.length === 0) return null;
 
-  let candidateUrl = null;
-
-  if (hasUserOrigin) {
-    const originStr = getCoordString(origin);
-    const destStr = getCoordString(validStops[validStops.length - 1]);
-
-    const query = new URLSearchParams({
-      api: '1',
-      origin: originStr,
-      destination: destStr,
-      travelmode
-    });
-
-    if (validStops.length > 1) {
-      // All intermediate stops (from index 0 up to index n-2) become waypoints
-      // ensuring ALL selected stops are visited in exact order
-      const waypoints = validStops.slice(0, -1).map(getCoordString).join('|');
-      query.set('waypoints', waypoints);
-    }
-
-    candidateUrl = `https://www.google.com/maps/dir/?${query.toString()}`;
-  } else {
-    // Legacy caller without user origin - DO NOT invent GPS
-    if (validStops.length === 1) {
-      // Single stop: link directly to stop destination without origin=destination
-      const destStr = getCoordString(validStops[0]);
-      const query = new URLSearchParams({
-        api: '1',
-        destination: destStr,
-        travelmode
-      });
-      candidateUrl = `https://www.google.com/maps/dir/?${query.toString()}`;
-    } else {
-      const originStr = getCoordString(validStops[0]);
-      const destStr = getCoordString(validStops[validStops.length - 1]);
-      const query = new URLSearchParams({
-        api: '1',
-        origin: originStr,
-        destination: destStr,
-        travelmode
-      });
-      if (validStops.length > 2) {
-        const waypoints = validStops.slice(1, -1).map(getCoordString).join('|');
-        query.set('waypoints', waypoints);
-      }
-      candidateUrl = `https://www.google.com/maps/dir/?${query.toString()}`;
-    }
-  }
-
-  if (candidateUrl && isValidGoogleMapsDirUrl(candidateUrl)) {
-    return {
-      url: candidateUrl,
-      travelmode,
-      isMotorbike: modeInfo.isMotorbike,
-      disclosureNote: modeInfo.disclosureNote || null,
-      modeLabel: modeInfo.label
-    };
-  }
-
-  return null;
+  return {
+    url: splitLinks[0].url,
+    splitLinks,
+    isSplit: splitLinks.length > 1,
+    travelmode: modeInfo.mode,
+    isMotorbike: modeInfo.isMotorbike,
+    disclosureNote: modeInfo.disclosureNote || null,
+    modeLabel: modeInfo.label
+  };
 }
 
 /**
