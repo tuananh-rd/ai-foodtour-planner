@@ -21,6 +21,7 @@ export function validateDiscoveryMapsLink(link, expectedMode) {
   try {
     const url = new URL(link.url);
     if (url.searchParams.get('api') !== '1') return false;
+    if (!url.searchParams.get('origin')?.trim() || !url.searchParams.get('destination')?.trim()) return false;
     if (expectedMode && url.searchParams.get('travelmode') !== expectedMode) return false;
     const waypoints = url.searchParams.get('waypoints');
     return !waypoints || waypoints.split('|').length <= 3;
@@ -31,7 +32,8 @@ export function validateDiscoveryMapsLink(link, expectedMode) {
 
 export function normalizeDiscoveryMapsResponse(response, expectedMode) {
   if (!response || typeof response !== 'object') return null;
-  const links = (Array.isArray(response.links) ? response.links : [])
+  const sourceLinks = Array.isArray(response.links) ? response.links : [];
+  let links = sourceLinks
     .filter((link) => validateDiscoveryMapsLink(link, expectedMode))
     .sort((a, b) => Number(a.index || 0) - Number(b.index || 0));
   const skipped = Array.isArray(response.skipped) ? response.skipped : [];
@@ -39,8 +41,10 @@ export function normalizeDiscoveryMapsResponse(response, expectedMode) {
   let status = ['ok', 'partial', 'unavailable'].includes(response.status)
     ? response.status
     : (links.length ? 'ok' : 'unavailable');
-  if (status === 'ok' && skipped.length) status = 'partial';
-  if (!links.length && status !== 'partial') status = 'unavailable';
+  const filteringDroppedLinks = links.length < sourceLinks.length;
+  if (status === 'ok' && (skipped.length || filteringDroppedLinks)) status = links.length ? 'partial' : 'unavailable';
+  if (!links.length) status = 'unavailable';
+  if (status === 'unavailable') links = [];
   return { status, links, skipped, notes };
 }
 

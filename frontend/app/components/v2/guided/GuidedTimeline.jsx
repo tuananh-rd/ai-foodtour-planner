@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { buildDiscoveryMapsUrl, buildDiscoveryLegUrls, getDiscoveryMapsRequestIdentity, isValidCoordinate, normalizeDiscoveryMapsResponse, resolveEffectiveDiscoveryMapsLinks, resolveTravelMode, validateDiscoveryMapsLink } from '../../../../lib/discoveryMaps';
 import { getDiscoveryMapsLinks } from '../../../../lib/discoveryApi';
+import { translateServerNote } from '../../../../lib/mapsUrlValidation';
 import { formatWarningMessage } from './ConfirmSummaryCard';
 import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import './guided-leaves.css';
@@ -118,7 +119,7 @@ export default function GuidedTimeline({
       .catch((err) => {
         if (active && mapsIdentityRef.current === requestedIdentity && err?.name !== 'AbortError') {
           setServerMaps(null);
-          setMapsError(err?.message || 'Không thể lấy liên kết từ máy chủ');
+          setMapsError({ identity: requestedIdentity, message: err?.message || 'Không thể lấy liên kết từ máy chủ' });
         }
       })
       .finally(() => {
@@ -143,6 +144,7 @@ export default function GuidedTimeline({
 
   const currentServerMaps = serverMaps && serverMaps.identity === mapsIdentity ? serverMaps : null;
   const staleServerResponse = Boolean(serverMaps && !currentServerMaps);
+  const currentMapsError = mapsError?.identity === mapsIdentity ? mapsError.message : null;
   const serverStatus = currentServerMaps?.status || null;
   const isServerUnavailable = serverStatus === 'unavailable';
   const isServerPartial = serverStatus === 'partial';
@@ -165,6 +167,7 @@ export default function GuidedTimeline({
 
   // Build Per-Leg URLs (mobile fallback / detailed segments)
   const legUrls = hasValidOrigin ? buildDiscoveryLegUrls({ origin, stops, vehicle }) : [];
+  const showClientLegFallback = !currentServerMaps && !staleServerResponse;
 
   // Allergy label display
   const hasAllergies = Array.isArray(allergies) && allergies.length > 0;
@@ -401,10 +404,26 @@ export default function GuidedTimeline({
               ))}
             </ul>
           )}
-          {currentServerMaps.notes?.filter((note) => typeof note === 'string' && note.trim()).map((note, index) => (
-            <p key={`maps-note-${index}`} style={{ margin: '4px 0 0' }}>{note}</p>
+        </div>
+      )}
+      {currentServerMaps?.notes?.some((note) => typeof note === 'string' && note.trim()) && (
+        <div data-testid="google-maps-notes" className="nn-maps-disclosure" role="note">
+          {currentServerMaps.notes.filter((note) => typeof note === 'string' && note.trim()).map((note, index) => (
+            <p key={`maps-note-${index}`} style={{ margin: index ? '4px 0 0' : 0 }}>
+              {normalizeDisplayText(translateServerNote(note))}
+            </p>
           ))}
         </div>
+      )}
+      {mapsLoading && (
+        <p data-testid="google-maps-loading" className="nn-maps-disclosure" role="status">
+          Đang đồng bộ liên kết điều hướng từ máy chủ…
+        </p>
+      )}
+      {currentMapsError && (
+        <p data-testid="google-maps-error" className="nn-maps-disclosure" role="alert">
+          {normalizeDisplayText(currentMapsError)}. Đang dùng liên kết dự phòng nếu có.
+        </p>
       )}
       {primaryUrl && (
         <div className="nn-dark-cta-card">
@@ -416,7 +435,6 @@ export default function GuidedTimeline({
                 : isMultiLeg
                   ? `Lịch trình có ${stops.length} điểm dừng, được chia thành ${effectiveLinks.length} chặng Google Maps theo đúng thứ tự.`
                   : 'Lịch trình đã sẵn sàng. Mở Google Maps để bắt đầu di chuyển.'}
-              {mapsLoading && <span style={{ fontSize: 11, color: '#C4B5A5', marginLeft: 6 }}> (Đang đồng bộ máy chủ…)</span>}
             </p>
           </div>
           <a
@@ -452,13 +470,12 @@ export default function GuidedTimeline({
             className="nn-maps-disclosure"
           >
             Mở liên kết chỉ đường trên Google Maps miễn phí. Danh sách điểm đến được gắn vào URL; không sử dụng API trả phí.{mapsUrlInfo?.disclosureNote ? ` ${mapsUrlInfo.disclosureNote}` : ''}
-            {mapsError && <span style={{ display: 'block', fontSize: 11, color: '#E5989B', marginTop: 2 }}>({mapsError} - đang dùng lộ trình dự phòng)</span>}
           </p>
         </div>
       )}
 
       {/* Per-leg fallback links for mobile / multi-stop tours (NFE-07) */}
-      {legUrls.length > 0 && (
+      {showClientLegFallback && legUrls.length > 0 && (
         <details
           style={{
             background: 'var(--nn-card, #FFFEFA)',

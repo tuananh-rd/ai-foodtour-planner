@@ -4,6 +4,8 @@ import fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 import { getDiscoveryMapsLinks } from '../../frontend/lib/discoveryApi.js';
+import { translateServerNote } from '../../frontend/lib/mapsUrlValidation.js';
+import { normalizeDisplayText } from '../../frontend/lib/emojiSanitizer.js';
 import {
   getDiscoveryMapsRequestIdentity,
   normalizeDiscoveryMapsResponse,
@@ -63,7 +65,7 @@ assert.equal(resolveEffectiveDiscoveryMapsLinks({ serverMaps: unavailable, origi
 assert.equal(resolveEffectiveDiscoveryMapsLinks({ serverMaps: null, origin, stops, vehicle: 'walk' }).length, 1,
   'client fallback remains available after a transport error');
 
-assert.equal(normalizeDiscoveryMapsResponse({ status: 'partial', links: [], skipped: [{ reason: 'url_too_long' }] }, 'walking').status, 'partial');
+assert.equal(normalizeDiscoveryMapsResponse({ status: 'partial', links: [], skipped: [{ reason: 'url_too_long' }] }, 'walking').status, 'unavailable');
 assert.equal(normalizeDiscoveryMapsResponse({ status: 'ok', links: [], skipped: [], notes: [] }, 'walking').status, 'unavailable',
   'empty successful response is surfaced as unavailable');
 assert.equal(normalizeDiscoveryMapsResponse({ status: 'ok', links: [{ index: 1, url: validUrl() + 'x'.repeat(2100) }] }, 'walking').links.length, 0,
@@ -72,6 +74,30 @@ assert.equal(normalizeDiscoveryMapsResponse({ status: 'ok', links: [{ index: 1, 
   'URLs with more than three waypoints are rejected');
 assert.equal(normalizeDiscoveryMapsResponse({ status: 'ok', links: [{ index: 1, url: validUrl('a', 'b', 'driving') }] }, 'walking').links.length, 0,
   'wrong travel mode is rejected');
+const mixedValidity = normalizeDiscoveryMapsResponse({
+  status: 'ok',
+  links: [
+    { index: 1, of: 2, url: validUrl() },
+    { index: 2, of: 2, url: 'https://www.google.com/maps/dir/?api=1&travelmode=walking' }
+  ]
+}, 'walking');
+assert.equal(mixedValidity.status, 'partial', 'dropping invalid links downgrades an otherwise ok response');
+assert.equal(mixedValidity.links.length, 1);
+const noUsableLinks = normalizeDiscoveryMapsResponse({
+  status: 'ok', links: [{ index: 1, url: 'https://www.google.com/maps/dir/?api=1&travelmode=walking' }]
+}, 'walking');
+assert.equal(noUsableLinks.status, 'unavailable', 'rejecting every link cannot retain an ok status');
+assert.equal(noUsableLinks.links.length, 0);
+assert.equal(normalizeDiscoveryMapsResponse({
+  status: 'ok', links: [{ index: 1, url: 'https://www.google.com/maps/dir/?api=1&destination=21.1%2C105.1&travelmode=walking' }]
+}, 'walking').status, 'unavailable', 'links without an explicit origin are rejected');
+assert.equal(normalizeDiscoveryMapsResponse({
+  status: 'ok', links: [{ index: 1, url: 'https://www.google.com/maps/dir/?api=1&origin=21.0%2C105.0&travelmode=walking' }]
+}, 'walking').status, 'unavailable', 'links without a destination are rejected');
+assert.equal(translateServerNote("The schedule is the app's proposal; Google may show different times."),
+  'Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác.');
+assert.equal(normalizeDisplayText(translateServerNote('Skipped stops break the itinerary into separate usable runs; missing legs are not connected.')),
+  'Các điểm dừng bị bỏ qua chia lịch trình thành các chặng riêng biệt; các chặng thiếu không được tự động nối. Lý do được liệt kê trong danh sách bỏ qua, bao gồm các điểm vượt quá giới hạn độ dài liên kết.');
 
 const originalFetch = globalThis.fetch;
 let requestedUrl;
@@ -106,6 +132,18 @@ const layoutSource = fs.readFileSync(path.join(root, 'frontend/app/components/v2
 assert.ok(timelineSource.indexOf('useEffect(() => {') < timelineSource.indexOf('if (!tour || stops.length === 0) {'), 'timeline hooks run before conditional return');
 assert.match(timelineSource, /ac\.abort\(\)/, 'Maps effect aborts during cleanup');
 assert.match(timelineSource, /mapsIdentityRef\.current !== requestedIdentity/, 'stale Maps responses are ignored');
+assert.match(timelineSource, /data-testid="google-maps-loading"[\s\S]*role="status"/,
+  'loading status is rendered independently from the CTA');
+assert.match(timelineSource, /data-testid="google-maps-error"[\s\S]*role="alert"/,
+  'error alert is rendered independently from the CTA');
+assert.ok(timelineSource.indexOf('data-testid="google-maps-loading"') < timelineSource.indexOf('{primaryUrl && ('),
+  'loading status is outside the CTA conditional');
+assert.ok(timelineSource.indexOf('data-testid="google-maps-error"') < timelineSource.indexOf('{primaryUrl && ('),
+  'error alert is outside the CTA conditional');
+assert.match(timelineSource, /normalizeDisplayText\(translateServerNote\(note\)\)/,
+  'server notes are translated and sanitized before display');
+assert.match(timelineSource, /showClientLegFallback = !currentServerMaps && !staleServerResponse/,
+  'client per-leg fallback is hidden for authoritative partial/unavailable/stale server results');
 assert.match(layoutSource, /gpsRequestRef\.current !== gpsRequestId/, 'stale GPS callbacks are ignored');
 assert.match(layoutSource, /invokedRevision !== liveSession\.revision/, 'GPS callbacks are discarded after a revision change');
 assert.match(layoutSource, /setGpsPending\(false\)[\s\S]*operationLockRef\.current = false/, 'session changes release pending GPS lock');
