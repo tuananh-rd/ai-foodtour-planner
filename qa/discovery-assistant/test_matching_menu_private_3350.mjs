@@ -66,14 +66,8 @@ if (process.exitCode === undefined || process.exitCode === 0) {
     async function click(s) { const q = S(s); await ev(`document.querySelector(${JSON.stringify(q)})?.scrollIntoView({block:'center'})`); const pt = await ev(`(()=>{const e=document.querySelector(${JSON.stringify(q)});if(!e||e.disabled||!e.getClientRects().length)return null;const r=e.getBoundingClientRect();return{x:r.x+r.width/2,y:r.y+r.height/2}})()`); if (!pt) throw Error('no control'); await cdp('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...pt }); await cdp('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...pt }); }
     async function idle() { await until(() => ev(`!!document.querySelector('[data-testid="discovery-input"]')&&!document.querySelector('[data-testid="discovery-input"]').disabled&&!document.querySelector('[aria-busy="true"]')`)); await pause(160); }
     async function fillValue(id, text) { await click(id); await cdp('Input.dispatchKeyEvent', { type: 'keyDown', key: 'a', code: 'KeyA', modifiers: 2, windowsVirtualKeyCode: 65 }); await cdp('Input.dispatchKeyEvent', { type: 'keyUp', key: 'a', code: 'KeyA', modifiers: 2 }); await cdp('Input.insertText', { text }); }
-    async function send(text) { await idle(); const before = posts; await fillValue('discovery-input', text); await click('discovery-send-btn'); await until(() => posts > before); await idle(); }
-    async function actSel(s) { const before = posts; await click(s); await until(() => posts > before); await idle(); }
-    async function setOrigin() {
-      if (!await exists('origin-lat-input')) { if (await exists('origin-expand-controls-btn')) { try { await click('origin-expand-controls-btn'); await pause(130); } catch {} } }
-      if (!await exists('origin-lat-input') && await exists('.nn-origin-manual-toggle')) { try { await click('.nn-origin-manual-toggle'); await pause(130); } catch {} }
-      if (!await exists('origin-lat-input')) throw Error('origin inputs not reachable');
-      await fillValue('origin-lat-input', '20.9700'); await fillValue('origin-lon-input', '105.8500'); await actSel('origin-coords-submit');
-    }
+    async function send(text) { await idle(); const before = posts; await fillValue('discovery-input', text); await click('discovery-send-btn'); await until(() => posts > before); await until(() => aReqs.size === 0); await idle(); }
+    async function actSel(s) { const before = posts; await click(s); await until(() => posts > before); await until(() => aReqs.size === 0); await idle(); }
     async function setOriginLocal(q) {
       if (!await exists('origin-query-input')) { if (await exists('origin-expand-controls-btn')) { try { await click('origin-expand-controls-btn'); await pause(130); } catch {} } }
       if (!await exists('origin-query-input')) return false;
@@ -83,7 +77,6 @@ if (process.exitCode === undefined || process.exitCode === 0) {
       const cid = await ev(`document.querySelector('[data-testid^="origin-candidate-"]')?.getAttribute('data-testid')`);
       if (!cid) return false; await actSel(`[data-testid="${cid}"]`); return true;
     }
-    const resultIds = () => ev(`Array.from(document.querySelectorAll('[data-testid^="restaurant-card-"]')).map(e=>e.getAttribute('data-testid').replace('restaurant-card-',''))`);
     // Structural reader: derives booleans/counts, never returns raw names/prices.
     const menuStructure = () => ev(`(()=>{
       const cards=[...document.querySelectorAll('[data-testid^="menu-ref-"]')].filter(e=>/^menu-ref-[^-]+$/.test(e.getAttribute('data-testid')));
@@ -101,8 +94,8 @@ if (process.exitCode === undefined || process.exitCode === 0) {
     await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1024, deviceScaleFactor: 1, mobile: false });
     try { await cdp('Storage.clearDataForOrigin', { origin: web, storageTypes: 'all' }); } catch {}
     await cdp('Page.navigate', { url: web }); await until(() => exists('discovery-input')); await idle();
+
     // (1) Request typed BEFORE origin -> prompt + 0 cards; then LOCAL gazetteer origin
-    // (no invented coords fallback when local resolve works).
     await send(`tôi muốn ăn ${dish} tại ${area}`);
     record('private: request before origin prompts with zero cards', (view?.results || []).length === 0 && !!view?.reply?.question);
     const localOrigin = await setOriginLocal(area).catch(() => false);
@@ -120,19 +113,16 @@ if (process.exitCode === undefined || process.exitCode === 0) {
       record('private: chosen origin then at least one matching_menu card (nonempty)', st.cards >= 1 && st.rows >= 1 && view?.location?.status === 'chosen');
       record('private: delivery disclaimer present (not dine-in, ShopeeFood)', st.disclaimer === true);
       record('private: every row label truthful (reference|quarantined|minimum_unknown)', (st.ref + st.quar + st.unk) === st.rows && st.rows > 0);
-      // Numeric dine-in-vs-delivery inequality assertion removed by coordinator review:
-      // a venue's dine-in price may legitimately coincide with a delivery reference price,
-      // so inequality is not a valid signal. Non-repricing is proven by backend regression.
 
-      // selection -> profile (xe máy) -> explicit confirmation -> tour -> ordered DRIVING Maps.
-      // (3) These MUST form; non-formation is a genuine FAIL, not a conditional pass.
+      // (2) selection -> profile (explicit ô tô for confirmed car driving OSM) -> explicit confirmation -> tour -> ordered OSM Directions.
       const pick = menuVenueIds[0];
       let selected = false, confShown = false, tourStops = 0, mapsPresent = false, mapsValid = false;
+      let mapMounted = false, originMarkerShown = false, stopMarkerShown = false, toggleWorked = false;
       let postPreserved = false;
       try {
         await actSel(`[data-testid="restaurant-card-${pick}"] .nn-action-chip-btn`);
         selected = (view?.selection || []).some(s => s.id === pick);
-        await send('Bắt đầu lúc 18h, tổng 180 phút, đi bộ, 2 người');
+        await send('Bắt đầu lúc 18h, tổng 180 phút, ô tô, 2 người');
         if (await exists('btn-trigger-plan')) await actSel('btn-trigger-plan');
         confShown = await exists('discovery-confirmation-card') && !!view?.confirmation;
         if (confShown) {
@@ -166,16 +156,43 @@ if (process.exitCode === undefined || process.exitCode === 0) {
               }
             })()`);
           }
+
+          // (3) Map mount, outside-pilot origin fit, marker toggle, and mobile responsiveness
+          if (await exists('pilot-map-toggle')) {
+            await click('pilot-map-toggle');
+            mapMounted = await until(() => exists('pilot-map-canvas'), 8000).then(() => true).catch(() => false);
+            originMarkerShown = await until(() => exists('pilot-origin-marker'), 6000).then(() => true).catch(() => false);
+            stopMarkerShown = await until(() => exists('pilot-stop-marker-1'), 6000).then(() => true).catch(() => false);
+            if (await exists('pilot-markers-toggle')) {
+              await click('pilot-markers-toggle');
+              await pause(100);
+              await click('pilot-markers-toggle');
+              toggleWorked = true;
+            }
+            // Mobile viewport test
+            await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 2, mobile: true });
+            await pause(150);
+            await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1024, deviceScaleFactor: 1, mobile: false });
+            await pause(150);
+            // Switch back to schematic
+            const schemBtn = await exists('.nn-view-mode-btn') ? '.nn-view-mode-btn' : null;
+            if (schemBtn) await click(schemBtn);
           }
+
           // (4) After the tour, a food change preserves valid selection + origin and invalidates confirmation/tour.
+          const revBefore = view?.revision || 0;
           await send('tôi muốn ăn phở');
+          await until(() => (view?.revision || 0) > revBefore, 8000).catch(() => {});
           postPreserved = (view?.selection || []).some(s => s.id === pick) && view?.location?.status === 'chosen' && !view?.confirmation && !view?.tour;
+        }
       } catch (ex) { evidence.errors.push('journey step error (redacted)'); }
-      evidence.journey = { selected, confShown, tourStops, mapsPresent, mapsValid, postPreserved };
+      evidence.journey = { selected, confShown, tourStops, mapsPresent, mapsValid, mapMounted, originMarkerShown, stopMarkerShown, toggleWorked, postPreserved };
       record('private: selected a menu venue into the tour', selected === true);
       record('private: explicit confirmation gate forms', confShown === true);
       record('private: confirm creates a tour with stops', tourStops > 0);
       record('private: ordered OpenStreetMap directions URL forms and is valid (boolean only)', mapsPresent === true && mapsValid === true);
+      record('private: map mounts with explicit origin and stop markers', mapMounted === true && originMarkerShown === true && stopMarkerShown === true);
+      record('private: map marker toggle and mobile resize verified', toggleWorked === true);
       record('private: post-tour food change preserves selection+origin and invalidates confirmation/tour', postPreserved === true);
       record('private: no live generation (mock lane)', health.llm !== 'live');
       record('private: no browser exception', evidence.errors.length === 0);

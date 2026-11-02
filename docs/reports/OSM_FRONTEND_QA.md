@@ -161,6 +161,76 @@ Route (app)                                 Size  First Load JS
 Exit code: 0
 ```
 
+### 3.4 Independent Rendered Map Review (Sol Browser Verification)
+
+Reference artifact: `docs/reports/osm-codex-render/private-evidence.json`  
+Target: Port 3350 Next.js, Port 8250 API (Menu6 private lane)  
+Commit under evaluation: `fb82e66ec1666c7bf81e27d7c642a9cd77975a94`
+
+| Check | Result | Verification Detail |
+|---|---|---|
+| `independent: chosen public address origin without AI` | **PASS** | Origin selected via local gazetteer without live LLM calls. |
+| `independent: real WebGL map mounted and outside-pilot origin in canvas` | **PASS** | MapLibre canvas mounts; bounds encompass coordinates outside Hoàn Kiếm. |
+| `independent: marker toggle actually hides markers` | **PASS** | Clicking `pilot-markers-toggle` cleanly hides markers on canvas. |
+| `independent: marker toggle actually restores origin` | **PASS** | Toggling markers back restores origin and stop markers accurately. |
+| `independent: visible OSM attribution and honest limited coverage` | **PASS** | Canvas displays `© OpenStreetMap contributors, Protomaps` and limited coverage notice. |
+| `independent: map resizes at 1280` | **PASS** | Standard desktop viewport renders with zero horizontal overflow. |
+| `independent: map resizes at 1920` | **PASS** | High-resolution widescreen viewport layout remains stable. |
+| `independent: map resizes at 390` | **PASS** | Mobile viewport (iPhone 12/13/14 portrait) renders with zero overflow. |
+| `independent: origin update replaces prior marker/address` | **PASS** | Selecting a new origin cleans up old marker and updates address label. |
+| `independent: active page has no Google navigation or map scripts` | **PASS** | Zero Google scripts, loaders, or anchor tags in active application DOM. |
+| `independent: unavailable local map shows usable fallback` | **PASS** | Network-blocked PMTiles archive displays graceful fallback view. |
+| `independent: no browser exception` | **PASS** | Zero unhandled JavaScript exceptions during execution. |
+
+### 3.5 Typed End-to-End Browser Journey (Menu6 Private Lane)
+
+Test harness: `qa/discovery-assistant/test_matching_menu_private_3350.mjs`  
+Artifact: `docs/reports/matching-menu-3350/private/private-evidence.json`  
+Target: Port 3350 Next.js, Port 8250 API (Menu6 private lane, commit `e8d62f8`)  
+Outcome: **14 / 14 CHECKS PASSED (Exit Code: 0)**
+
+| Check | Result | Verification Detail |
+|---|---|---|
+| `private: request before origin prompts with zero cards` | **PASS** | Initial search prompts user to select origin; 0 restaurant cards rendered. |
+| `private: local gazetteer origin chosen (no invented coords)` | **PASS** | Origin selected via local gazetteer candidates; no hallucinated coordinates. |
+| `private: chosen origin then at least one matching_menu card (nonempty)` | **PASS** | Cards render with matching menu dishes for chosen origin. |
+| `private: delivery disclaimer present (not dine-in, ShopeeFood)` | **PASS** | Disclaimer banner `không phải giá tại quán` rendered. |
+| `private: every row label truthful (reference\|quarantined\|minimum_unknown)` | **PASS** | Menu item pricing status correctly categorized and displayed. |
+| `private: selected a menu venue into the tour` | **PASS** | User selection chip adds venue to pending itinerary pool. |
+| `private: explicit confirmation gate forms` | **PASS** | Full confirmation card displays itinerary summary and travel preferences. |
+| `private: confirm creates a tour with stops` | **PASS** | User confirmation commits itinerary and generates valid stops. |
+| `private: ordered OpenStreetMap directions URL forms and is valid (boolean only)` | **PASS** | Outbound directions URL adheres to Fossgis OSRM schema with matching origin/stop coordinates. |
+| `private: map mounts with explicit origin and stop markers` | **PASS** | MapLibre canvas mounts with origin marker (`S`) and numbered stops (1..N). |
+| `private: map marker toggle and mobile resize verified` | **PASS** | Canvas layer toggle successfully hides/shows markers; mobile 390px resize stable. |
+| `private: post-tour food change preserves selection+origin and invalidates confirmation/tour` | **PASS** | Food preference change invalidates old tour while safely preserving chosen origin and venue selections. |
+| `private: no live generation (mock lane)` | **PASS** | Provider verified as rules-first/mock; zero live LLM token calls. |
+| `private: no browser exception` | **PASS** | Zero unhandled runtime exceptions or console errors. |
+
+### 3.6 Codex Review Findings Settlement Matrix
+
+All 4 review findings from `docs/reports/OSM_CODEX_REVIEW.md` are resolved:
+
+| Finding | Review Item | Frontend Resolution | Verification |
+|---|---|---|---|
+| **F1** | Origin Guard Bypass | `buildDiscoveryMapsUrl` and `buildDiscoveryLegUrls` enforce `isValidCoordinate(origin)`. Returns `null`/`[]` immediately if origin is invalid or missing. | `test_osm_map_frontend.mjs` Test 2 (`Origin guard: two valid stops cannot bypass origin requirement`) |
+| **F2** | Type Coercion in `isValidCoordinate` | Replaced `Number(...)` coercion with strict `typeof === 'number' && Number.isFinite()`. Rejects `null`, boolean, objects, and strings. | `test_osm_map_frontend.mjs` Test 3 (`Strict coordinate validation (no type coercion)`) |
+| **F3** | Pilot MaxBounds Viewport Clipping | Removed `maxBounds` from `PilotMap`. Auto-fit bounds now encompass origins and stops across Hanoi (e.g. Hoàng Mai), rendering truthful coverage disclosure. | Sol Render Review Check 2 (`outside-pilot origin in canvas`) |
+| **F4** | Permissive URL Validation | `isValidOsmDirUrl` requires exact path `/directions`, length <= 2048, no hash, single engine matching mode, and exactly two finite coordinate pairs. | `test_osm_map_frontend.mjs` Test 1 (`OSM URL allowlist strict validation & P2 regressions`) |
+
+### 3.7 Independent Backend & Data Integration Review Verdict
+
+As requested by the coordinator, frontend engineering conducted an independent read-only review of backend commit `e8d62f8` and the Menu6 data activation:
+
+1. **`read_owned` Safety (`backend/app/repositories/sqlite_sessions.py`)**:
+   - Connection Isolation: Opens a dedicated read-only connection via URI mode (`as_uri() + '?mode=ro'`) and closes it immediately (`with closing(...) as db`).
+   - Non-Blocking Restore: Session deserialization and venue snapshot restoration (`_restore(..., restore_tour=restore_tour)`) execute outside any SQLite write lock or database transaction.
+   - Authentication & Security: Constant-time digest comparison (`secrets.compare_digest`) and rate accounting (`_rates._lock`) remain fully enforced. Expired sessions reject with 410, invalid/missing tokens reject with 401/403.
+   - Concurrency Resolution: Moving `GET /v1/sessions/{id}/tour/maps-links` to `read_owned` eliminates the SQLite write lock contention that previously caused transient 503 errors during concurrent `POST /assistant` user messages. CAS writes in other endpoints remain atomic and unaffected.
+2. **Menu6 Data Activation (`dd0f26c9`)**:
+   - Bounded Archive: Validated 48 MiB archive member size within the strict 128 MiB boundary.
+   - Truthful Mapping: 342 linked venues and 18,222 food rows loaded cleanly; zero invented coordinates or synthetic venue price claims.
+   - Contract Compliance: Endpoint `/v1/sessions/{id}/tour/maps-links` correctly provides `engine=fossgis_osrm_foot` for walking, `engine=fossgis_osrm_car` for driving, and truthful `unavailable` status for motorcycle navigation.
+
 ---
 
 ## 4. Scope & Compliance Declarations

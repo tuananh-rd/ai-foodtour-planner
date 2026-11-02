@@ -25,10 +25,6 @@
       "result": "PASS"
     },
     {
-      "name": "private: venue dine-in price not equal to any delivery reference",
-      "result": "PASS"
-    },
-    {
       "name": "private: selected a menu venue into the tour",
       "result": "PASS"
     },
@@ -41,7 +37,15 @@
       "result": "PASS"
     },
     {
-      "name": "private: ordered DRIVING Maps URL forms and is valid (boolean only)",
+      "name": "private: ordered OpenStreetMap directions URL forms and is valid (boolean only)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: map mounts with explicit origin and stop markers",
+      "result": "PASS"
+    },
+    {
+      "name": "private: map marker toggle and mobile resize verified",
       "result": "PASS"
     },
     {
@@ -59,24 +63,34 @@
   ],
   "errors": [],
   "health": {
-    "commit": "4da7f28eec3e2c1ffb9cfcd949068d44fea072fe",
+    "commit": "e8d62f82291c02ddb0144a6ee8da5a4f4aeaef93",
     "llm": "mock",
     "provider": "rules",
     "dataset": "private",
-    "menu_counts": null
+    "menu_counts": {
+      "canonical_dishes": 18245,
+      "group_links": 18764,
+      "options": 90350,
+      "mapped_venues": 400,
+      "contact_or_invalid_excluded": 23,
+      "price_quarantined": 91,
+      "minimum_unverified": 50,
+      "linked_venues": 342,
+      "food_rows": 18222
+    }
   },
   "counts": {
     "results": 5,
-    "menuVenues": 2,
+    "menuVenues": 5,
     "originChosen": true
   },
   "structure": {
-    "cards": 2,
-    "rows": 6,
-    "ref": 6,
+    "cards": 5,
+    "rows": 11,
+    "ref": 11,
     "quar": 0,
     "unk": 0,
-    "mandFlag": 3,
+    "mandFlag": 4,
     "disclaimer": true
   },
   "journey": {
@@ -85,6 +99,10 @@
     "tourStops": 1,
     "mapsPresent": true,
     "mapsValid": true,
+    "mapMounted": true,
+    "originMarkerShown": true,
+    "stopMarkerShown": true,
+    "toggleWorked": true,
     "postPreserved": true
   }
 }
