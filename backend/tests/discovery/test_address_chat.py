@@ -79,6 +79,10 @@ class AddressChatTests(unittest.TestCase):
         result, provenance = handle('Chào bạn, mình mới tìm hiểu ẩm thực Hà Nội.', self.tools(), model=Model())
         self.assertEqual(provenance['reply_source'], 'model')
         self.assertNotIn('cần vị trí', result['text'])
+        tools = self.tools()
+        tools.state.patch({'foods': ['chè']})
+        handle('Bún chả khác bún đậu thế nào?', tools, model=Model())
+        self.assertEqual(tools.state.profile.foods, ['chè'])
 
     def test_sqlite_reservation_survives_without_revision_and_caps_model_calls(self):
         import tempfile

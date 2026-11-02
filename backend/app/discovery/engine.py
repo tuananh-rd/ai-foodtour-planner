@@ -18,8 +18,8 @@ from .tools import DISTRICT_LABELS
 
 def knowledge_question(text):
     f = fold_uncached(text)
-    return bool(re.search(r'la gi|nguon goc|lich su|cach nau|khac (?:gi|nhau)', f)) and not re.search(
-        r'\b(?:tim|quan|dia chi)\b|muon an|goi y|o dau', f)
+    return bool(re.search(r'la gi|nguon goc|lich su|cach nau|tim hieu|khac.*(?:the nao|ra sao|gi|nhau)', f)) and not re.search(
+        r'\b(?:tim(?! hieu)|quan|dia chi)\b|muon an|goi y|o dau', f)
 
 
 def parse_patch(text, tools):

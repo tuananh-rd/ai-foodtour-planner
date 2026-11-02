@@ -69,6 +69,7 @@ class ReverseAddress:
                 props = item.get('properties', {})
                 coords = item.get('geometry', {}).get('coordinates', [])
                 if (len(coords) != 2 or any(type(x) not in (float, int) or not math.isfinite(x) for x in coords)
+                        or not (-180 <= coords[0] <= 180 and -90 <= coords[1] <= 90)
                         or haversine_km((lat, lon), (coords[1], coords[0])) > .5):
                     raise ValueError('no nearby address')
                 def value(name):
