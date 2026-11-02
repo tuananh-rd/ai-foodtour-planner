@@ -96,7 +96,7 @@ def parse_patch(text, tools):
 
 
 def references(text, tools, result_ids=None):
-    result_ids = tools.state.results if result_ids is None else result_ids
+    result_ids = (tools.state.results or tools.state.comparison) if result_ids is None else result_ids
     ids = []
     for match in re.finditer(r'(?<!\w)([A-E])(?!\w)', text, re.I):
         index = ord(match.group(1).upper()) - 65
@@ -160,7 +160,7 @@ def authorized(name, args, text, tools, patch, initial_refs):
         return True
     if name in ('get_restaurant_details', 'compare_restaurants'):
         requested = [args['venue_id']] if name == 'get_restaurant_details' else args['venue_ids']
-        known = set(initial_refs) | set(tools.state.results) | {x['id'] for x in tools.state.selection}
+        known = set(initial_refs) | set(tools.state.results) | set(tools.state.comparison) | {x['id'] for x in tools.state.selection}
         return bool(requested) and set(requested) <= known
     return False
 
@@ -220,7 +220,7 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
     if re.search(r'\b(?:ok|oke|okay|vang|duoc)\b', f) and len(f.split()) <= 3:
         return tools.result('ok', 'Mình giữ các thông tin đã có; câu này chưa được coi là xác nhận tạo lịch.')
     dish = knowledge.lookup_dish(f)
-    search_cue = re.search(r'\b(?:tim|quan|quanh|gan|o dau|dia chi)\b', f) or (
+    search_cue = re.search(r'\b(?:tim(?! hieu)|quan|quanh|gan|o dau|dia chi)\b', f) or (
         food_intent(text) and re.search(r'muon an|goi y|\bo\s|\btai\s', f))
     if tools.state.pending_search and patch.get('area') and not search_cue and not dish:
         return tools.run('search_restaurants', {**tools.state.pending_search, 'area': tools.state.profile.area})
@@ -265,7 +265,7 @@ def model_projection(tools, text):
             'recent_general_dialogue': tools.state.public_dialogue[-6:],
             'origin_selected': tools.state.profile.origin is not None, 'recent_public_user_turns': history,
             'selection': [{'id': x['id'], 'locked': x['locked']} for x in tools.state.selection],
-            'last_results': [{'id': i, 'label': chr(65+n)} for n, i in enumerate(tools.state.results)],
+            'last_results': [{'id': i, 'label': chr(65+n)} for n, i in enumerate(tools.state.results or tools.state.comparison)],
             'versions': {'profile': tools.state.profile_version, 'selection': tools.state.selection_version}}
 
 
@@ -310,7 +310,7 @@ def safe_answer(text, tools, tool_results):
 def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
     start = time.monotonic()
     initial_refs = references(text, tools)
-    initial_results = list(tools.state.results)
+    initial_results = list(tools.state.results or tools.state.comparison)
     tools.selection_refs = selection_references(text, tools, initial_results)
     patch, price_search = parse_patch(text, tools)
     if patch:
@@ -354,7 +354,7 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 if last is None:
                     # A factual search or action may never be replaced by an unsupported model answer.
                     f = fold_uncached(text)
-                    requires_tools = bool(re.search(r'tim|so sanh|chi tiet|thong tin quan|tao lich|lap lich|tao tour|lap tour', f)
+                    requires_tools = bool(re.search(r'\btim(?! hieu)\b|so sanh|chi tiet|thong tin quan|tao lich|lap lich|tao tour|lap tour', f)
                                           or (tools.state.results and re.search(r'quan nao|re hon|gan nhat|quan thu|quan dau', f))
                                           or any(getattr(tools, 'selection_refs', {}).values()))
                     if valid and not requires_tools:

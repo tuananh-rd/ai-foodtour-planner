@@ -176,6 +176,7 @@ class SQLiteSessionStore:
                 raise APIError(410, 'session_expired', 'Phiên đã hết hạn; hãy tạo phiên mới.')
             self._purge(db, now)
             session = self._restore(row, restore_tour=restore_tour)
+            original_llm_used = session.chat.llm_used
             # Only hashes/expiry and rate counters are kept here, no preferences/tours.
             with self._rates._lock:
                 self._rates._expire(now)
@@ -186,6 +187,13 @@ class SQLiteSessionStore:
             with self._rates.owned(identity, token):
                 yield session
             if session.revision == row[2]:
+                # AI admission reservations deliberately do not advance the public
+                # revision, but must survive releasing this transaction for I/O.
+                if session.chat.llm_used != original_llm_used:
+                    retained = json.loads(row[5]) if row[5] else {}
+                    retained['llm_used'] = max(original_llm_used, session.chat.llm_used)
+                    db.execute('UPDATE sessions SET chat=? WHERE id=? AND revision=?',
+                               (json.dumps(retained, ensure_ascii=False), identity, row[2]))
                 # Reads do not rewrite old metadata: repeat reads retain the stale-data note.
                 return
             encoded_tour = None

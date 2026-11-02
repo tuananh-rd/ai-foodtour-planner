@@ -76,6 +76,40 @@ class AddressChatTests(unittest.TestCase):
         self.assertIn('nước dùng thanh', reply['text'])
         self.assertEqual(provider['reply_source'], 'model')
         self.assertIsNone(tools.state.profile.origin)
+        result, provenance = handle('Chào bạn, mình mới tìm hiểu ẩm thực Hà Nội.', self.tools(), model=Model())
+        self.assertEqual(provenance['reply_source'], 'model')
+        self.assertNotIn('cần vị trí', result['text'])
+
+    def test_sqlite_reservation_survives_without_revision_and_caps_model_calls(self):
+        import tempfile
+        from pathlib import Path
+        from unittest.mock import patch
+        from fastapi.testclient import TestClient
+        from app.main import create_app
+        class Model:
+            configured = True
+            mode = 'mock'
+            calls = 0
+            def generate(self, *args, **kwargs):
+                self.calls += 1
+                return {'role': 'model', 'parts': [{'text': 'Chào bạn.'}]}
+        with tempfile.TemporaryDirectory() as tmp, patch.dict('os.environ', {
+                'FOODTOUR_SESSION_DB': str(Path(tmp)/'sessions.sqlite'), 'FOODTOUR_LLM': 'mock',
+                'FOODTOUR_LLM_SESSION_CAP': '2', 'GEMINI_API_KEY': '', 'FOODTOUR_EXPLAIN': 'template'}):
+            app = create_app(data_path=Path(__file__).resolve().parents[4]/'contracts/fixtures/venues.chat.synthetic.json')
+            model = Model()
+            app.state.discovery_model = model
+            with TestClient(app) as client:
+                session = client.post('/v1/sessions', json={}).json()
+                route = '/v1/sessions/'+session['session_id']+'/assistant'
+                headers = {'X-Session-Token': session['token']}
+                first = client.post(route, headers=headers, json={'revision': 0, 'text': 'Chào bạn'}).json()
+                second = client.post(route, headers=headers, json={'revision': first['revision'], 'text': 'Xin chào'}).json()
+                third = client.post(route, headers=headers, json={'revision': second['revision'], 'text': 'Chào lại'}).json()
+                self.assertEqual(model.calls, 2)
+                self.assertEqual(third['provider']['calls'], 0)
+                self.assertEqual(third['settings']['remaining_session_calls'], 0)
+                self.assertIn('quota', third['provider']['reason'])
 
     def test_two_model_questions_rejected_and_ordinal_reference_bound(self):
         from app.discovery.engine import safe_answer
@@ -85,6 +119,8 @@ class AddressChatTests(unittest.TestCase):
         self.assertEqual(references('Chọn quán đầu tiên', tools), tools.state.results[:1])
         tools.state.public_dialogue = [{'role': 'assistant', 'text': 'Bạn thích món nước hay món khô?'}]
         self.assertEqual(model_projection(tools, 'món nước')['recent_general_dialogue'], tools.state.public_dialogue)
+        tools.state.comparison, tools.state.results = tools.state.results[:2], []
+        self.assertEqual(references('Chọn A và B', tools), tools.state.comparison)
 
 
 if __name__ == '__main__': unittest.main()

@@ -2873,6 +2873,17 @@
             "title": "Calls",
             "type": "integer"
           },
+          "configured_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Configured Model"
+          },
           "mode": {
             "enum": [
               "rules",
@@ -2919,6 +2930,17 @@
               }
             ],
             "title": "Reply Source"
+          },
+          "response_model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Response Model"
           }
         },
         "required": [

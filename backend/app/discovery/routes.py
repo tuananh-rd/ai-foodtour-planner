@@ -114,6 +114,9 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
                 {'role': 'assistant', 'text': result['text'][:700]}])[-6:]
     with store.owned(session_id, x_session_token) as current:
         store.check_revision(current, body.revision)  # no replay against a concurrently changed version
+        # Refund only unused reservation after a successful CAS. Failed/concurrent
+        # turns retain conservative admission so a reset or race cannot refund use.
+        current.chat.llm_used = max(old_used, current.chat.llm_used - max(0, reserve - provider['calls']))
         current.chat.discovery = state.dump()
         current.preferences = tools.preferences()
         if state.tour_stale:
