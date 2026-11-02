@@ -177,7 +177,7 @@ const invalidResponse = classifyServiceInterruption({ mode: 'rules', failure: {k
 assert(!invalidResponse.message.includes('Kết nối') && !invalidResponse.message.includes('lâu hơn'), 'Invalid AI response is not diagnosed as network error or timeout');
 assert(classifyServiceInterruption(null, [...oldMessages, {role: 'assistant', text: 'Phản hồi mới đã hoàn tất.'}]) === null,
   'Historical legacy prefixes do not resurrect an outage after later response and reload');
-assert(classifyServiceInterruption({mode: 'rules', reason: 'not_a_timeout_diagnosis'}).category !== 'timeout',
+assert(classifyServiceInterruption({mode: 'rules', reason: 'not_a_timeout_diagnosis'})?.category !== 'timeout',
   'Unrecognized legacy text does not invent a timeout');
 
 console.log(`\n========================================`);
