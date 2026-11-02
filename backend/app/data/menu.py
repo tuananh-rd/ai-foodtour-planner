@@ -1,19 +1,18 @@
 """Bounded local menu evidence. Delivery references never become planner/dine-in prices."""
-import hashlib
-import json
 import os
 import re
-import zipfile
 from collections import Counter, defaultdict
 from app.planner.relevance import fold_uncached
 from app.planner.types import Venue
 import math
+from .menu_archive import read_menu_archive
 
 
 def contact_row(name):
     folded=fold_uncached(name)
-    return bool(re.search(r'\b(?:hotline|phone|telephone|sdt|dt|lien he|dien thoai|dat hang qua|zalo)\b',folded)
-                or re.search(r'(?<!\d)(?:\+?84|0)[\d .-]{8,14}(?!\d)',name))
+    digits=re.sub(r'[\s.()+-]','',name)
+    return bool(re.fullmatch(r'\d{8,15}',digits) or (len(name)<=60 and
+        re.search(r'\b(?:hotline|hot line|phone|telephone|sdt|so dien thoai)\b',folded)))
 
 
 def amount(value, zero=False):
@@ -22,23 +21,15 @@ def amount(value, zero=False):
 
 def load_menu_archive(path, venue_ids):
     counts=Counter()
-    with zipfile.ZipFile(path) as archive:
-        wanted=('shopeefood_dishes.json','shopeefood_menu_items.json',
-                'shopeefood_menu_options.json','shopeefood_mapping.json')
-        blobs={}
-        for name in wanted:
-            info=archive.getinfo(name)
-            if info.file_size > 20000000:
-                raise ValueError('menu_file_too_large')
-            blobs[name]=archive.read(name)
-    dishes_doc=json.loads(blobs[wanted[0]])
+    archive=read_menu_archive(path)
+    wanted=('shopeefood_dishes.json','shopeefood_menu_items.json',
+            'shopeefood_menu_options.json','shopeefood_mapping.json')
+    dishes_doc=archive.documents[wanted[0]]
     dishes=dishes_doc['dishes']; links=dishes_doc['dish_groups']
-    items=json.loads(blobs[wanted[1]])['items']
-    options=json.loads(blobs[wanted[2]])['options']
-    mappings=json.loads(blobs[wanted[3]])['venues']
+    items=archive.documents[wanted[1]]['items']
+    options=archive.documents[wanted[2]]['options']
+    mappings=archive.documents[wanted[3]]['venues']
     counts.update(canonical_dishes=len(dishes),group_links=len(links),options=len(options),mapped_venues=len(mappings))
-    if len(dishes)>10000 or len(options)>100000:
-        raise ValueError('menu_row_cap')
     confirmed={str(m['foody_id']) for m in mappings if m.get('match_status')=='confirmed'} & set(venue_ids)
     item_by_id={i['item_id']:i for i in items}
     item_links=defaultdict(list)
@@ -56,7 +47,7 @@ def load_menu_archive(path, venue_ids):
             counts['unmatched_or_duplicate']+=1;continue
         seen.add(identity)
         name=dish.get('name_norm') or dish.get('name_raw') or ''
-        if not isinstance(name,str) or not name.strip() or contact_row(name):
+        if dish.get('is_dish') is False or dish.get('dish_kind')=='non_dish' or not isinstance(name,str) or not name.strip() or contact_row(name):
             counts['contact_or_invalid_excluded']+=1;continue
         linked=[item_by_id[i] for i in item_links[identity] if i in item_by_id]
         if not linked or any(str(i.get('foody_id'))!=venue for i in linked):
@@ -97,7 +88,7 @@ def load_menu_archive(path, venue_ids):
             'source_fetched_at':next((i.get('fetched_at') for i in linked if i.get('fetched_at')),None)})
     counts['linked_venues']=len(result)
     counts['food_rows']=sum(map(len,result.values()))
-    version=hashlib.sha256(b''.join(blobs.values())).hexdigest()
+    version=archive.sha256
     return dict(result),dict(counts),version
 
 
@@ -108,10 +99,7 @@ def configured_menu(venue_ids):
 
 def mapped_venues(path,existing_ids):
     """Add only explicitly confirmed source mappings missing from the older catalog."""
-    with zipfile.ZipFile(path) as archive:
-        info=archive.getinfo('shopeefood_mapping.json')
-        if info.file_size>2000000:raise ValueError('mapping_too_large')
-        mappings=json.loads(archive.read(info))['venues']
+    mappings=read_menu_archive(path).documents['shopeefood_mapping.json']['venues']
     result=[]
     for m in mappings:
         identity=str(m.get('foody_id',''))

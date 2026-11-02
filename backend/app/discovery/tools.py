@@ -47,10 +47,17 @@ class Tools:
         self.calls = 0
         self.authorized_confirmation = False
         if state.dataset_version and state.dataset_version != data.dataset_version:
+            previous_count=len(state.selection)
             state.selection = [x for x in state.selection if x['id'] in self.by_id]
             state.selection_version += 1
             state.results, state.comparison = [], []
+            state.pending_search,state.last_search,state.pending_slot=None,None,None
+            state.plan_requested=False
             state.invalidate()
+            notice='Dữ liệu quán/thực đơn đã thay đổi; cần tìm lại kết quả và xem lại món/giá trước khi xác nhận lịch. Các quán còn hợp lệ được giữ nguyên.'
+            if len(state.selection)<previous_count:
+                notice+=' Quán không còn trong dữ liệu đã được bỏ khỏi lựa chọn.'
+            state.remember('assistant',notice)
         state.dataset_version = data.dataset_version
 
     def preferences(self):

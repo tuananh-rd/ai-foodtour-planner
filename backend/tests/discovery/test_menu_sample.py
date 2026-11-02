@@ -20,18 +20,26 @@ def menu_archive(path):
     for n,name in enumerate(names):
         identity=f'dish{n}';item=f'item{n}'
         dishes.append({'dish_id':identity,'foody_id':'fried0','name_norm':name,
+            'source_dish_id':n+1,'shopee_delivery_id':100,'price_channel':'shopeefood_delivery','currency':'VND',
+            'is_dish':n!=1,
             'price_verification':'unverified' if n==2 else 'verified','conflict_status':'none',
             'budget_price_vnd':100 if n==2 else 30000,'min_total_vnd':None if n==2 else 35000 if n==3 else 30000,
             'has_mandatory_options':n in (3,5),'min_required_surcharge_status':'computed' if n in (3,5) else 'none_required',
             'is_available':n!=4})
         items.append({'item_id':item,'foody_id':'fried0','price_flag':'bad' if n==2 else None,
+                      'source_dish_id':n+1,'shopee_delivery_id':100,'group_id':n+1,'name_norm':name,
+                      'price_channel':'shopeefood_delivery','currency':'VND','is_dish':n!=1,
+                      'price_verification':'unverified' if n==2 else 'verified',
                       'fetched_at':'2026-11-02T00:00:00Z'})
-        links.append({'dish_id':identity,'item_id':item})
+        links.append({'dish_id':identity,'item_id':item,'foody_id':'fried0',
+                      'source_dish_id':n+1,'shopee_delivery_id':100,'group_id':n+1})
     for price in (5000,10000):
-        options.append({'item_id':'item3','option_group_id':'sauce','mandatory':True,'min_select':1,'option_price_vnd':price})
-    docs={'shopeefood_dishes.json':{'dishes':dishes,'dish_groups':links},
-        'shopeefood_menu_items.json':{'items':items},'shopeefood_menu_options.json':{'options':options},
-        'shopeefood_mapping.json':{'venues':[{'foody_id':'fried0','match_status':'confirmed',
+        options.append({'option_id':str(price),'foody_id':'fried0','item_id':'item3','option_group_id':'sauce','mandatory':True,'min_select':1,'option_price_vnd':price})
+    docs={'shopeefood_dishes.json':{'schema':'shopeefood-dishes/1','dishes':dishes,'dish_groups':links},
+        'shopeefood_menu_items.json':{'schema':'shopeefood-menu-items/1','items':items},
+        'shopeefood_menu_options.json':{'schema':'shopeefood-menu-options/1','options':options},
+        'shopeefood_mapping.json':{'schema':'shopeefood-mapping/1','venues':[{'foody_id':'fried0','match_status':'confirmed',
+            'shopee_status':'ok','shopee_delivery_id':100,'fetched_at':'2026-11-02T00:00:00Z',
             'foody_name':'[SYNTHETIC] menu venue','foody_address':'Đống Đa, Hà Nội','foody_district':'Đống Đa',
             'shopee_lat':21.02,'shopee_lon':105.83}]}}
     with zipfile.ZipFile(path,'w') as archive:

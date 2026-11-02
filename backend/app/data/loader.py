@@ -303,14 +303,19 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
     for before, after in zip(venues, merged):
         if before.price_min_vnd is None and after.price_evidence == 'verified':
             flags['unknown_price'] -= 1
-    from .menu import configured_menu,mapped_venues
+    from .menu import mapped_venues
+    from .menu_archive import read_menu_archive
     try:
         menu_path=os.getenv('FOODTOUR_MENU_PATH','').strip()
         if menu_path:
-            additions=mapped_venues(menu_path,{v.id for v in merged})
+            archive=read_menu_archive(menu_path)
+            additions=mapped_venues(archive,{v.id for v in merged})
             merged=tuple(merged)+additions
             flags['menu_mapped_venues_added']=len(additions)
-        menu,menu_counts,menu_version=configured_menu(v.id for v in merged)
+            from .menu import load_menu_archive
+            menu,menu_counts,menu_version=load_menu_archive(archive,(v.id for v in merged))
+        else:
+            menu,menu_counts,menu_version={},{},''
     except (ValueError,KeyError,TypeError,OSError,zipfile.BadZipFile):
         raise DatasetLoadError('menu_invalid') from None
     if menu_version:
