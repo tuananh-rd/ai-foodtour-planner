@@ -126,5 +126,36 @@ class AddressChatTests(unittest.TestCase):
         tools.state.comparison, tools.state.results = tools.state.results[:2], []
         self.assertEqual(references('Chọn A và B', tools), tools.state.comparison)
 
+    def test_native_selection_uses_visible_comparison_after_results_clear(self):
+        tools = self.tools()
+        identities = list(tools.by_id)[:2]
+        tools.state.comparison = identities
+        tools.state.results = []
+
+        class Model:
+            configured = True
+            mode = 'mock'
+            calls = 0
+
+            def generate(self, contents, **kwargs):
+                self.calls += 1
+                if self.calls == 1:
+                    projection = json.loads(contents[0]['parts'][0]['text'])
+                    self_ids = [item['id'] for item in projection['turn_start_results']]
+                    if self_ids != identities:
+                        raise AssertionError('Visible comparison must supply actual IDs')
+                    return {'role': 'model', 'parts': [{'functionCall': {
+                        'id': 'select-visible', 'name': 'update_foodtour_selection',
+                        'args': {'operation': 'add', 'venue_ids': identities,
+                                 'selection_version': projection['versions']['selection']}}}]}
+                return {'role': 'model', 'parts': [{'text': 'Đã thêm các quán bạn chọn.'}]}
+
+        result, provider = handle('Chọn A và B', tools, model=Model())
+        self.assertEqual(result['status'], 'ok')
+        self.assertEqual(provider['calls'], 2)
+        self.assertEqual([item['id'] for item in tools.state.selection], identities)
+        self.assertIsNone(tools.state.confirmation)
+        self.assertIsNone(tools.planned_tour)
+
 
 if __name__ == '__main__': unittest.main()
