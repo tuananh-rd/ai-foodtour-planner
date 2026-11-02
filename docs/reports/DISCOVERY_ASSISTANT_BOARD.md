@@ -1,4 +1,30 @@
-## User rejected broader food-intent acceptance — active (2026-11-02)
+## Resume and approved local menu integration — active (2026-11-02)
+
+Sole coordinator Sol resumed HEAD5e792bc in run_a4b75f502189, current lead
+term_827f82f3-d9db-4e5f-abc0-a0d2853dbcc0. Same Claude Opus4.8 medium conversation reused:
+task_d3bf55bec179 retry ctx_554791af0e7b, terminal term_f490cf7f-9b8b-436a-8b29-aa07a32bf39a.
+Usage screen:3% current/15% weekly, credits off. Start observation timed out, but actual transcript
+shows the current task being processed and read-only affected review completed; no duplicate worker.
+Claude independently approves aafedf6 and preserved28+40 evidence; no valid suites repeated.
+
+Ownership: Sol backend/data/menu importer/runtime/contracts; Claude frontend matching-menu display,
+affected review and targeted actual-browser QA, no overlapping files. AG remains inactive.
+3350 and8250 restored (HTTP200/health5e792bc); private budget remains15/18, reserve3.8250 then
+temporarily switched to isolated rules/synthetic matrix for safe UI QA, private session/ledger
+preserved. No new app generation, paid credits, caps/ledger reset, push/deploy or scraping.
+
+Approved local archive has535 canonical dishes/559 group links/3239 options. Local-only importer
+linked12 confirmed venues (6 missing from older1702-row catalog added from confirmed source mapping),
+excluded2 contact rows, retained533 food/menu rows, quarantined4 prices and left4 minimums unknown.
+Archive remains ignored under .venv/private-menu/, no records in Git. Backend72a1932/627395e:
+bounded matching_menu(max3), literal menu-name evidence before tag fallback, mandatory option
+minimums, delivery-reference budget filters, no dine-in/hour/allergy inference.90 targeted tests
+PASS. Private in-memory journey finds actual menu evidence, explicitly selects/confirms1-stop
+conditional tour and ordered Maps; no-data preserves origin/selection,0 provider calls.
+Pending: Claude menu UI/review, one build, targeted actual-browser menu journey and final private
+runtime restoration. Do not claim whole app complete from rules evidence.
+
+## User rejected broader food-intent acceptance — historical checkpoint (2026-11-02)
 
 The prior acceptance below was phở-specific only; the user rejected3350 after the exact fried
 chicken transcript silently acknowledged/ignored the food request and failed to resume search
