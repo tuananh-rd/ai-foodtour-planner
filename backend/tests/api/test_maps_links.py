@@ -75,6 +75,20 @@ class MapsBuilderTests(unittest.TestCase):
         self.assertFalse(self.build()['uses_api'])
         self.assertEqual(self.build()['provider'],'openstreetmap_urls')
 
+    def test_shared_client_fixtures_match_osm_contract(self):
+        from app.api.schemas import MapsLinksResponse
+        from app.planner.maps_url import build_maps_links
+        fixture=json.loads((Path(__file__).resolve().parents[3]/
+            'contracts/fixtures/maps_links.synthetic.json').read_text(encoding='utf-8'))
+        self.assertTrue(fixture['synthetic'])
+        for case in fixture['cases']:
+            given=case['input']
+            result=build_maps_links(given['origin'],given['origin_address'],
+                tuple(Stop(s['venue_id'],s['order'],Leg(None,0,'unknown')) for s in given['stops']),
+                tuple(Venue(**v) for v in given['venues']),given['mode'])
+            self.assertEqual(result,case['response'],case['name'])
+            MapsLinksResponse.model_validate(result)
+
 
 class MapsEndpointTests(unittest.TestCase):
     def setUp(self):
