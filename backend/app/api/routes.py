@@ -159,19 +159,15 @@ def health(request: Request):
 @router.get('/v1/client-config', response_model=ClientConfig)
 def client_config(request: Request, response: Response):
     response.headers['Cache-Control'] = 'no-store'
-    key = os.getenv('GOOGLE_MAPS_BROWSER_KEY', '').strip()
-    map_id = os.getenv('GOOGLE_MAPS_MAP_ID', '').strip()
-    secrets = [os.getenv(name, '').strip() for name in ('GOOGLE_MAPS_SERVER_KEY', 'GEMINI_API_KEY', 'ORS_API_KEY')]
-    ready = bool(key and map_id and not any(secret and (secret in key or secret in map_id) for secret in secrets))
     return {'features': {'chat_v2': chat_enabled(), 'guided_ui': guided_enabled(), 'ui_v2': os.getenv('FOODTOUR_UI_V2', '').strip().casefold() in ('1', 'true', 'yes')},
-        'maps': {'provider': 'google', 'status': 'ready' if ready else 'unavailable',
-        'reason': None if ready else 'not_configured', 'js_api_key': key if ready else None,
-        'map_id': map_id if ready else None, 'language': 'vi', 'region': 'VN',
+        'maps': {'provider': 'openstreetmap', 'status': 'ready',
+        'reason': None, 'js_api_key': None,
+        'map_id': None, 'language': 'vi', 'region': 'VN',
         'default_center': {'lat': 21.0285, 'lon': 105.8522}, 'default_zoom': 15},
         'geocoding': {'status': 'ready' if request.app.state.geocoder.configured else 'unavailable'},
         'routing': {'provider': request.app.state.provider_info['routing_provider'],
                     'status': 'ready' if getattr(request.app.state.routing, 'configured', False) else 'unavailable'},
-        'privacy': {'sent_to_google': ['map_tiles', 'autocomplete_text', 'route_coordinates'], 'doc': 'docs/PHASE4.md'}}
+        'privacy': {'sent_to_google': [], 'doc': 'docs/PHASE4.md'}}
 
 
 @router.post('/v1/geocode', response_model=GeocodeResponse)

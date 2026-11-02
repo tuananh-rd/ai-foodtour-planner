@@ -41,20 +41,22 @@ class GoogleAPI(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         return r.json(), {'X-Session-Token': r.json()['token']}
 
-    def test_config_unavailable_null_keys_and_ready_browser_key_only(self):
+    def test_config_osm_never_exposes_legacy_google_key(self):
         r = self.client.get('/v1/client-config')
         self.assertEqual(r.status_code, 200, r.text)
         self.assertEqual(r.headers['Cache-Control'], 'no-store')
-        self.assertEqual(r.json()['maps']['status'], 'unavailable')
+        self.assertEqual(r.json()['maps']['status'], 'ready')
+        self.assertEqual(r.json()['maps']['provider'], 'openstreetmap')
+        self.assertEqual(r.json()['privacy']['sent_to_google'], [])
         self.assertIsNone(r.json()['maps']['js_api_key'])
         self.assertIsNone(r.json()['maps']['map_id'])
         with patch.dict(os.environ, {'GOOGLE_MAPS_BROWSER_KEY': 'fake-restricted-browser-key', 'GOOGLE_MAPS_MAP_ID': 'synthetic-map'}):
             r = self.client.get('/v1/client-config')
             self.assertEqual(r.json()['maps']['status'], 'ready')
-            self.assertEqual(r.json()['maps']['js_api_key'], 'fake-restricted-browser-key')
+            self.assertIsNone(r.json()['maps']['js_api_key'])
         with patch.dict(os.environ, {'GOOGLE_MAPS_BROWSER_KEY': fake.KEY, 'GOOGLE_MAPS_MAP_ID': 'synthetic-map'}):
             r = self.client.get('/v1/client-config')
-            self.assertEqual(r.json()['maps']['status'], 'unavailable')
+            self.assertEqual(r.json()['maps']['status'], 'ready')
         self.assertNotIn(fake.KEY, r.text)
 
     def test_health_routing_and_geocoding_no_secrets(self):

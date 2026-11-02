@@ -389,7 +389,7 @@ class MapVenues(Model):
 
 
 class MapsConfig(Model):
-    provider: Literal['google'] = 'google'
+    provider: Literal['openstreetmap'] = 'openstreetmap'
     status: Literal['ready', 'unavailable']
     reason: Literal['not_configured'] | None
     js_api_key: str | None
