@@ -1,4 +1,32 @@
-## Resume and approved local menu integration — active (2026-11-02)
+## Larger archive migration preparation — NOT ACTIVATED (2026-11-03)
+
+User authorizes preparation only, no current dataset/runtime swap. Baselineff778c6 remains serving
+the12-venue sample. Sol owns validator/importer/staging/rollback/cache/session safeguards and docs.
+Existing Claude Opus4.8 medium is read-only reviewer, no duplicate editor or paid credits;
+usage readiness verified63% session/23% week, credits off. Initial reviewtask_35f6f595495b /
+ctx_23b2ff787590 settled APPROVE at70c635f (noP0/P1,3P2 advisories). Same terminal reused for
+delta review task_6315da1fb540 /ctx_b75033f369b1, terminal term_f490cf7f-9b8b-436a-8b29-aa07a32bf39a,
+settled APPROVE at167ab42. All3 P2 advisories resolved or documented; both review dispatches
+settled, pre-existing terminal retained by release receipt (external_terminal), no active editor.
+
+Prepared9346046/57c24c6/2bfd94a/90ada2c: strict bounded inert ZIP+schema/IDs/branch refs, pure
+dry-run default, private hash-addressed stage+manifest, explicit future activation/rollback with
+partial acknowledgement/branch-reassignment rejection/backup/activation lock/atomic replace.
+One snapshot feeds mapping and menu, content hash invalidates same-path cache. Dataset changes
+clear stale planning/search/confirmation, preserve valid locks/origin and visibly flag menu review.
+V6/mixed exports require complete is_dish flags; legacy flagless12 archive warns but stays compatible.
+
+ZIP(4) read-only dry-run VALID_NOT_ACTIVATED:50 attempted/45menus,2178 canonical incl2nonfood,
+2276links,12092options,2176 food rows,94 source-unavailable items;2error/3noservice venues reported
+separately;4price quarantine/3minimum unverified. No real archive staged/activated/rolled back.
+138 affected tests PASS with1existing skip; final21 focused tests PASS (overlap, not159unique).
+Active12 SHA, running8250 datasetversion/build andbudget unchanged from before fingerprint.
+No server restart/.env/session/ledger change, scraping, Gemini/Tavily, credits, caps, push/deploy.
+Operator/data-team contract: docs/MENU_ARCHIVE_OPERATIONS.md; evidence MENU_MIGRATION_PREPARATION.md.
+Final status READY FOR LATER STAGING/ACTIVATION, NOT ACTIVATED. Aggregate artifacts:
+menu-migration-dry-run.json and menu-migration-preservation.json. Serving12 sample stays unchanged.
+
+## Resume and approved local menu integration — historical (2026-11-02)
 
 Sole coordinator Sol resumed HEAD5e792bc in run_a4b75f502189, current lead
 term_827f82f3-d9db-4e5f-abc0-a0d2853dbcc0. Same Claude Opus4.8 medium conversation reused:
