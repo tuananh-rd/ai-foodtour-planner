@@ -1090,65 +1090,279 @@
   color: #6C554E;
 }
 
-/* --- VIEWPORT ACCOMMODATION WITH SETTINGS BAR --- */
-/* Compensates for settings bar height (~52px) so composer bottom stays inside viewport */
+/* --- VIEWPORT ACCOMMODATION WITH SETTINGS BAR & BOUNDED ACTIVE CHAT --- */
 @media (min-width: 901px) {
   .nn-canvas-wrapper .nn-topbar {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+  }
+
+  .nn-settings-bar {
+    margin-bottom: 8px;
+    padding: 6px 14px;
   }
 
   .nn-chat-card {
-    height: calc(100dvh - 192px);
-    min-height: 500px;
+    height: calc(100dvh - 132px);
+    min-height: 540px;
   }
 
   .nn-tour-col {
-    height: calc(100dvh - 192px);
-    min-height: 500px;
+    height: calc(100dvh - 132px);
+    min-height: 540px;
   }
 
   .nn-main-grid.nn-active-chat {
     grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); /* 60% chat / 40% itinerary */
   }
+
+  .nn-chat-card.nn-chat-active {
+    padding: 14px 18px 10px 18px;
+    height: calc(100dvh - 132px);
+    min-height: 540px;
+  }
+
+  .nn-chat-card.nn-chat-active .nn-stream {
+    flex: 1 1 0%;
+    min-height: 320px;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    padding-right: 4px;
+  }
 }
 
-/* --- ACTIVE CHAT EXPANSION & HERO COLLAPSE --- */
+/* --- ACTIVE CHAT EXPANSION, HERO COLLAPSE & COMPACT ORIGIN --- */
 .nn-chat-card.nn-chat-active .nn-chat-card-header {
-  height: 36px;
-  margin-bottom: 8px;
+  height: 26px;
+  margin-bottom: 4px;
 }
 
-.nn-chat-card.nn-chat-active .nn-hero-heading {
-  font-size: 19px;
-  line-height: 26px;
-  margin: 0 0 4px;
+.nn-chat-card.nn-chat-active .nn-assistant-badge {
+  height: 24px;
+  font-size: 10px;
+  padding: 0 8px;
 }
 
-.nn-chat-card.nn-chat-active .nn-hero-sub {
-  display: none;
+.nn-chat-card.nn-chat-active .nn-assistant-tagline {
+  font-size: 11px;
 }
 
-.nn-chat-card.nn-chat-active .nn-chips-row {
-  margin-bottom: 6px;
-  gap: 6px;
-}
-
+.nn-chat-card.nn-chat-active .nn-hero-heading,
+.nn-chat-card.nn-chat-active .nn-hero-sub,
+.nn-chat-card.nn-chat-active .nn-chips-row,
 .nn-chat-card.nn-chat-active .nn-chat-divider {
-  margin: 4px 0 8px 0;
+  display: none !important;
 }
 
 .nn-chat-card.nn-chat-active .nn-bubble {
   font-size: 15px;
-  line-height: 1.55;
+  line-height: 1.5;
 }
 
 .nn-composer input {
   font-size: 16px; /* readable typography, prevents iOS zoom */
 }
 
+/* Compact persistent origin/edit in active chat */
+.nn-chat-card.nn-chat-active .nn-origin-chooser {
+  padding: 4px 8px;
+  margin: 2px 0 6px 0;
+  border-radius: 8px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-header {
+  font-size: 11px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-title {
+  gap: 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-status-row {
+  margin-top: 2px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-chosen-wrap {
+  gap: 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-current-tag {
+  font-size: 11px;
+  padding: 1px 6px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-approx-badge,
+.nn-chat-card.nn-chat-active .nn-origin-status-tag {
+  font-size: 9.5px;
+  padding: 0 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-attribution {
+  font-size: 9.5px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-text-btn {
+  font-size: 10.5px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-gps-disclosure {
+  font-size: 9.5px;
+  margin-top: 2px;
+  line-height: 1.25;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-clear-btn {
+  font-size: 10px;
+  padding: 1px 5px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-search-form {
+  margin-top: 4px;
+  gap: 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-input {
+  height: 26px;
+  font-size: 11.5px;
+  padding: 0 8px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-resolve-btn {
+  height: 26px;
+  font-size: 11px;
+  padding: 0 8px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-action-buttons {
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-gps-btn,
+.nn-chat-card.nn-chat-active .nn-origin-manual-toggle {
+  height: 26px;
+  font-size: 11px;
+  padding: 0 6px;
+}
+
+.nn-chat-card.nn-chat-active .nn-origin-edit-label-form {
+  margin-top: 4px;
+  gap: 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-composer {
+  flex: none;
+  margin-top: 6px;
+}
+
+/* --- MOBILE 390px VIEWPORT BOUNDED FLEX INTERNAL SCROLLING --- */
 @media (max-width: 900px) {
+  .nn-sidebar {
+    padding: 6px 12px;
+    gap: 4px;
+  }
+
+  .nn-brand-block {
+    margin-bottom: 2px;
+  }
+
+  .nn-brand-logo {
+    font-size: 18px;
+    line-height: 22px;
+  }
+
+  .nn-brand-slogan {
+    display: none;
+  }
+
+  .nn-new-trip-btn {
+    height: 28px;
+    min-height: 28px;
+    font-size: 11px;
+    padding: 0 8px;
+    margin: 0;
+  }
+
+  .nn-sidebar-nav {
+    display: none;
+  }
+
+  .nn-canvas-wrapper {
+    padding: 6px 10px 10px 10px;
+  }
+
+  .nn-topbar {
+    margin-bottom: 4px;
+    gap: 2px;
+  }
+
+  .nn-breadcrumb {
+    font-size: 9.5px;
+    letter-spacing: 0.5px;
+  }
+
+  .nn-topbar-utilities {
+    gap: 4px;
+  }
+
+  .nn-util-chip {
+    height: 24px;
+    font-size: 10.5px;
+    padding: 0 8px;
+  }
+
+  .nn-settings-bar {
+    margin-bottom: 4px;
+    padding: 4px 8px;
+  }
+
+  .nn-mobile-tabs {
+    margin-bottom: 4px;
+    height: 32px;
+  }
+
+  .nn-mobile-tab {
+    height: 32px;
+    font-size: 12px;
+    padding: 0 8px;
+  }
+
+  .nn-chat-card.nn-chat-active {
+    height: calc(100dvh - 188px);
+    max-height: calc(100dvh - 188px);
+    min-height: 480px;
+    padding: 8px 10px 6px 10px;
+    box-sizing: border-box;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
   .nn-chat-card.nn-chat-active .nn-stream {
-    min-height: 50vh; /* stream takes >= 50% 390 mobile viewport */
+    flex: 1 1 0%;
+    min-height: 422px;
+    overflow-y: auto !important;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding-right: 2px;
+  }
+
+  .nn-chat-card.nn-chat-active .nn-composer {
+    flex: none;
+    margin-top: 6px;
+  }
+
+  .nn-chat-card.nn-chat-active .nn-composer-card {
+    min-height: 42px;
+    padding: 3px 6px;
+  }
+
+  .nn-chat-card.nn-chat-active .nn-composer input {
+    font-size: 16px;
+    padding: 4px 6px;
   }
 }
 

@@ -241,6 +241,7 @@ export default function DiscoveryLayout({
   const [showManualCoords, setShowManualCoords] = useState(false);
   const [editingLabel, setEditingLabel] = useState(false);
   const [labelInput, setLabelInput] = useState('');
+  const [originControlsOpen, setOriginControlsOpen] = useState(false);
 
   // Load assistant capabilities (chat models, web search status) on mount
   useEffect(() => {
@@ -843,6 +844,7 @@ export default function DiscoveryLayout({
       const action = clearLocationAction();
       handleDispatchAction(action, 'Đang xóa điểm xuất phát…', () => {
         setGeoNotice(null);
+        setOriginControlsOpen(true);
       });
     } catch (err) {
       setErrorBanner(err.message);
@@ -1512,10 +1514,21 @@ export default function DiscoveryLayout({
                     </button>
                   </div>
                 ) : (
-                  <div className="nn-origin-unset-wrap">
+                  <div className="nn-origin-unset-wrap" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
                     <span className="nn-origin-unset-text">
                       Chưa thiết lập điểm xuất phát (Bạn vẫn có thể trò chuyện tự do).
                     </span>
+                    {isChatActive && (
+                      <button
+                        type="button"
+                        data-testid="origin-expand-controls-btn"
+                        className="nn-origin-text-btn"
+                        onClick={() => setOriginControlsOpen(!originControlsOpen)}
+                        style={{ marginLeft: '8px', whiteSpace: 'nowrap' }}
+                      >
+                        {originControlsOpen ? 'Thu gọn' : 'Thiết lập vị trí ▾'}
+                      </button>
+                    )}
                   </div>
                 )}
               </div>
@@ -1571,7 +1584,7 @@ export default function DiscoveryLayout({
               )}
 
               {/* Origin Action Controls: Click-only GPS + Place Resolve Query */}
-              {(displayView.location?.status !== 'chosen' && !displayView.profile?.origin || showManualCoords) && (
+              {((!isChatActive || originControlsOpen || showManualCoords || displayView.location?.status === 'candidates') && (displayView.location?.status !== 'chosen' && !displayView.profile?.origin || showManualCoords)) && (
                 <div className="nn-origin-controls">
                   <div className="nn-origin-action-buttons">
                     <button
