@@ -180,6 +180,55 @@ assert(classifyServiceInterruption(null, [...oldMessages, {role: 'assistant', te
 assert(classifyServiceInterruption({mode: 'rules', reason: 'not_a_timeout_diagnosis'})?.category !== 'timeout',
   'Unrecognized legacy text does not invent a timeout');
 
+// 9. Incident-anchored truthfulness regressions (Lane 3350 takeover)
+// Guards real, currently-correct branches that were exercised by the actual
+// 3350 outage but had no dedicated assertion. No new behavior is introduced.
+console.log('\n[9] Incident-anchored truthfulness regressions (3350 takeover)...');
+
+// 9a. Structured timeout fixture. Historical3350 retained only a legacy reason;
+// its transport/deadline source cannot be reconstructed from elapsed time alone.
+// Must classify as timeout, retain NO HTTP status, and preserve the raw reason
+// verbatim for diagnostics only (never surfaced as a quota/429 claim).
+const incident3350 = classifyServiceInterruption({
+  mode: 'rules',
+  reply_source: 'rules',
+  reason: 'timeout_rules_fallback',
+  failure: { kind: 'timeout', source: 'transport', http_status: null }
+});
+assert(incident3350.category === 'timeout', 'Structured transport timeout is category timeout');
+assert(incident3350.httpStatus === null, '3350 timeout retains no HTTP status (not a provider error)');
+assert(incident3350.rawReason === 'timeout_rules_fallback', '3350 raw reason preserved verbatim for diagnostics');
+assert(!incident3350.message.includes('429') && !incident3350.message.includes('giới hạn'),
+  '3350 timeout copy never claims a quota/limit root cause');
+
+// 9b. Daily reserve pause with remaining allowance must NOT masquerade as a
+// provider 429. Encodes the "reserve 3 remaining, NOT proven 429" truth.
+const reservePause = classifyServiceInterruption({
+  mode: 'rules',
+  reply_source: 'rules',
+  failure: { kind: 'quota', source: 'daily_reserve', http_status: null }
+});
+assert(reservePause.category === 'daily_reserve', 'daily_reserve pause stays daily_reserve');
+assert(reservePause.category !== 'provider_429' && reservePause.httpStatus === null,
+  'daily_reserve pause is never attributed to a provider 429');
+
+// 9c. Local admission (request handled at machine by rules) is a distinct,
+// truthful local state, not an upstream provider failure.
+const localAdmission = classifyServiceInterruption({
+  mode: 'rules',
+  reply_source: 'rules',
+  failure: { kind: 'quota', source: 'local_admission', http_status: null }
+});
+assert(localAdmission.category === 'local_admission', 'local_admission classified as local_admission');
+assert(localAdmission.httpStatus === null, 'local_admission carries no HTTP status');
+
+// 9d. Remaining benign non-outage reasons (clarification, greeting) must not
+// raise a service-interruption banner for normal conversational turns.
+assert(classifyServiceInterruption({ mode: 'rules', reply_source: 'rules', reason: 'clarification' }) === null,
+  'clarification is not an outage');
+assert(classifyServiceInterruption({ mode: 'rules', reply_source: 'rules', reason: 'greeting' }) === null,
+  'greeting is not an outage');
+
 console.log(`\n========================================`);
 console.log(`ALL TESTS PASSED! (${passed} passed, ${failed} failed)`);
 console.log(`========================================\n`);
