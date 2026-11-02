@@ -372,6 +372,8 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 if valid and last['status'] in ('ok', 'unknown', 'no_results') and not (last.get('question') and '?' in valid):
                     last['text'] = valid
                     provider['reply_source'] = 'model'
+                elif not valid:
+                    provider['reason'] = 'safe_answer_rejected'
                 return last, provider
             if len(calls) > 6 or tools.calls + len(calls) > 6:
                 raise ProviderError('bad_response')
