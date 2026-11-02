@@ -92,6 +92,20 @@ explicit confirm → conditional3-stop tour → Maps endpoint `status:ok`,1 link
 responses report provider.calls0. This proves the fixture supports the full journey; it does not
 substitute for Claude's independent typed UI acceptance.
 
-Independent browser matrix, fresh/restored UI, explicit confirmation/tour/Maps, affected source
-review, final runtime restoration and final outcome are pending; see `FOOD_INTENT_ACTUAL_QA.md`.
+Claude independently completed28 UI checks (13 food variants, one origin-after, compare/reload,
+confirmation and3-stop tour/Maps CTA); Sol then completed40 integration supplement checks after
+Claude coding usage was exhausted. Combined evidence covers28 food/accent/origin cells, actual
+second-area change/selection preservation and rendered Maps URL origin/order/walking/length.
+All executed final checks PASS; no frontend production change/build was required. Exact attribution
+and evidence are in `FOOD_INTENT_ACTUAL_QA.md`.
+
+Final independent review of current `aafedf6` and supplemental acceptance is **BLOCKED** by Claude
+coding usage (CLI reset22:30 local). Automatic continue was cancelled, dispatch fenced/failed,
+conversation/WIP retained. No credit/model switch was attempted. This is separate from app Gemini
+limits; no complete independent acceptance or live conversation success is claimed.
+
+Final read-only health after restoration: API8250 source`b22af8f` (includes backend`aafedf6`),
+private dataset, original configured `gemini-3.5-flash-lite`, used15/18, remaining3/reserve3,
+reset `2026-11-03T08:00:00Z`. App URL remains `http://127.0.0.1:3350`; private sessions are
+preserved and historical messages are not rewritten.3320/8230 process owners are unchanged.
 No live generation, cap/ledger reset, billing, push or deployment is authorized or performed.

@@ -1,0 +1,28 @@
+{
+  "label": "RED pre-fix capture (broader food intent rejected)",
+  "observed_by": "Claude frontend/QA, direct typed journey against 8250 rules/synthetic lane",
+  "baseline_commit_per_coordinator": "08c78b5",
+  "note": "Captured on the PRE-FIX rules lane before Sol deployed the general parser + expanded food-matrix fixture (post-fix build aafedf64). The pre-fix lane was redeployed, so this state is no longer reproducible; the transcript below is the verbatim observation retained as RED evidence. Synthetic lane only; no private data, no provider.",
+  "sequence": "greeting -> 'tôi muốn ăn gà rán tại đống đa' -> local Đống Đa origin -> 'tôi muốn ăn gà rán'",
+  "findings": [
+    {
+      "step": "compound: tôi muốn ăn gà rán tại đống đa",
+      "status": "ok",
+      "cards": [],
+      "reply": "Đã ghi nhận phần bạn vừa sửa, các yêu cầu khác và lựa chọn vẫn được giữ.",
+      "defect": "Generic acknowledgement; the specific dish 'gà rán' was dropped by the parser rather than driving a search."
+    },
+    {
+      "step": "refine: tôi muốn ăn gà rán",
+      "status": "ok",
+      "cards": [],
+      "reply": "Mình có thể giúp khám phá món, tìm và so sánh quán trong dữ liệu Hà Nội. Các yêu cầu đã biết và quán đã chọn vẫn được giữ.",
+      "defect": "Generic acknowledgement, no search/no_results for the specific dish (broader food intent rejected)."
+    },
+    {
+      "step": "origin set (reply observed in chat history)",
+      "reply_fragment": "Đã chọn vị trí xuất phát. Khoảng cách đường chim bay đã cập nhật; tour cũ cần xác nhận lại.",
+      "defect": "Unconditional old-tour copy ('tour cũ cần xác nhận lại' = old itinerary needs re-confirmation) emitted although no tour was ever created. Driven by state.invalidate() setting tour_stale=True on any profile patch (e.g. origin change) regardless of whether a tour exists. Backend reply copy; the frontend renders reply text verbatim and gates its own tour UI correctly."
+    }
+  ]
+}

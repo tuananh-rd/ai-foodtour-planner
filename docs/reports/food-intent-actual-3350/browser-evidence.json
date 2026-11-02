@@ -1,0 +1,149 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "source_commit": "b22af8f291c86856879a383aea800c3a5b6ae5e0",
+  "mode": "REAL 3350 UI -> direct 8250 fetch; observed only (no interception)",
+  "checks": [
+    {
+      "name": "A [phở gà] \"tôi muốn ăn phở gà\" -> exact ids [\"chicken0\",\"chicken1\",\"chicken2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [phở gà] \"toi muon an pho ga\" -> exact ids [\"chicken0\",\"chicken1\",\"chicken2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [phở bò] \"tôi muốn ăn phở bò\" -> exact ids [\"beef0\",\"beef1\",\"beef2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [phở bò] \"toi muon an pho bo\" -> exact ids [\"beef0\",\"beef1\",\"beef2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [phở cuốn] \"tôi muốn ăn phở cuốn\" -> exact ids [\"roll0\",\"roll1\",\"roll2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [phở cuốn] \"toi muon an pho cuon\" -> exact ids [\"roll0\",\"roll1\",\"roll2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [gà rán] \"tôi muốn ăn gà rán\" -> exact ids [\"fried0\",\"fried1\",\"fried2\",\"fried_hbt\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [gà rán] \"toi muon an ga ran\" -> exact ids [\"fried0\",\"fried1\",\"fried2\",\"fried_hbt\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [bún chả] \"tôi muốn ăn bún chả\" -> exact ids [\"bun0\",\"bun1\",\"bun2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [bún chả] \"toi muon an bun cha\" -> exact ids [\"bun0\",\"bun1\",\"bun2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [cơm] \"tôi muốn ăn cơm\" -> exact ids [\"rice0\",\"rice1\",\"rice2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [cơm] \"toi muon an com\" -> exact ids [\"rice0\",\"rice1\",\"rice2\"] (ok)",
+      "result": "PASS"
+    },
+    {
+      "name": "A [unknown] \"tôi muốn ăn món lạ xyzqwer\" -> exact ids [] (no_results)",
+      "result": "PASS"
+    },
+    {
+      "name": "B dish before origin -> 0 cards + location prompt",
+      "result": "PASS"
+    },
+    {
+      "name": "B origin-after resumes -> exact beef ids",
+      "result": "PASS"
+    },
+    {
+      "name": "C food change clears old dish, swaps to exact new ids",
+      "result": "PASS"
+    },
+    {
+      "name": "C area change updates results (subset, non-vacuous, no decoys)",
+      "result": "PASS"
+    },
+    {
+      "name": "D compare 2 venues -> comparison view of exactly those 2",
+      "result": "PASS"
+    },
+    {
+      "name": "E reload restores origin + selection (no message replay)",
+      "result": "PASS"
+    },
+    {
+      "name": "F three venues selected",
+      "result": "PASS"
+    },
+    {
+      "name": "F profile context preserved selection",
+      "result": "PASS"
+    },
+    {
+      "name": "F explicit confirmation gate shown",
+      "result": "PASS"
+    },
+    {
+      "name": "F confirm creates tour with 3 ordered stops",
+      "result": "PASS"
+    },
+    {
+      "name": "F ordered Google Maps links rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "G API tour proof: confirmation -> 3 stops -> ordered maps links",
+      "result": "PASS"
+    },
+    {
+      "name": "no unexpected remote origins",
+      "result": "PASS",
+      "note": "[]"
+    },
+    {
+      "name": "no browser exception",
+      "result": "PASS"
+    },
+    {
+      "name": "no live generation (rules lane, budget null/unchanged)",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "green-reload-restore.png",
+    "green-before-plan.png",
+    "green-tour-maps.png"
+  ],
+  "errors": [],
+  "transient": [],
+  "remoteOrigins": [],
+  "health": {
+    "commit": "aafedf64a32fa5edd8d8090561a782b53f5d5e61",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "synthetic",
+    "dataset_version": "synthetic-food-matrix"
+  },
+  "compareStages": [
+    "toggled",
+    "trigger-present",
+    "clicked-execute",
+    "post-observed",
+    "comparison-rendered"
+  ],
+  "apiTourProof": {
+    "confirmation": true,
+    "tourStops": 3,
+    "mapsStatus": "ok",
+    "mapsLinks": 1
+  }
+}

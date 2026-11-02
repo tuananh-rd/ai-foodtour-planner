@@ -1,0 +1,188 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "source_commit": "b22af8f291c86856879a383aea800c3a5b6ae5e0",
+  "mode": "REAL 3350 UI -> direct 8250 fetch; observed only (no interception)",
+  "executor": "Sol integration supplement after Claude coding usage limit",
+  "checks": [
+    {
+      "name": "A [unknown] \"toi muon an mon la xyzqwer\" -> exact ids [] (no_results)",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở gà] tôi muốn ăn phở gà tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở gà] tôi muốn ăn phở gà tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở gà] toi muon an pho ga tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở gà] toi muon an pho ga tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở bò] tôi muốn ăn phở bò tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở bò] tôi muốn ăn phở bò tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở bò] toi muon an pho bo tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở bò] toi muon an pho bo tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở cuốn] tôi muốn ăn phở cuốn tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở cuốn] tôi muốn ăn phở cuốn tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở cuốn] toi muon an pho cuon tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [phở cuốn] toi muon an pho cuon tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [gà rán] tôi muốn ăn gà rán tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [gà rán] tôi muốn ăn gà rán tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [gà rán] toi muon an ga ran tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [gà rán] toi muon an ga ran tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [bún chả] tôi muốn ăn bún chả tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [bún chả] tôi muốn ăn bún chả tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [bún chả] toi muon an bun cha tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [bún chả] toi muon an bun cha tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [cơm] tôi muốn ăn cơm tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [cơm] tôi muốn ăn cơm tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [cơm] toi muon an com tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [cơm] toi muon an com tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [unknown] tôi muốn ăn món lạ xyzqwer tại Đống Đa: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [unknown] tôi muốn ăn món lạ xyzqwer tại Đống Đa: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "B [unknown] toi muon an mon la xyzqwer tai dong da: before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "B [unknown] toi muon an mon la xyzqwer tai dong da: local origin resumes exact literal search",
+      "result": "PASS"
+    },
+    {
+      "name": "C food change clears old dish, swaps to exact new ids",
+      "result": "PASS"
+    },
+    {
+      "name": "C second area changes exact results while preserving selection",
+      "result": "PASS"
+    },
+    {
+      "name": "F three venues selected",
+      "result": "PASS"
+    },
+    {
+      "name": "F profile context preserved selection",
+      "result": "PASS"
+    },
+    {
+      "name": "F explicit confirmation gate shown",
+      "result": "PASS"
+    },
+    {
+      "name": "F confirm creates tour with 3 ordered stops",
+      "result": "PASS"
+    },
+    {
+      "name": "F ordered Google Maps links rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "F Maps URL uses actual origin, walking and ordered coordinates within2048",
+      "result": "PASS"
+    },
+    {
+      "name": "no unexpected remote origins",
+      "result": "PASS",
+      "note": "[]"
+    },
+    {
+      "name": "no browser exception",
+      "result": "PASS"
+    },
+    {
+      "name": "no live generation (rules lane, budget null/unchanged)",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "supplement-second-area.png",
+    "green-before-plan.png",
+    "green-tour-maps.png"
+  ],
+  "errors": [],
+  "transient": [],
+  "remoteOrigins": [],
+  "health": {
+    "commit": "aafedf64a32fa5edd8d8090561a782b53f5d5e61",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "synthetic",
+    "dataset_version": "synthetic-food-matrix"
+  },
+  "syntheticMapsHrefs": [
+    "https://www.google.com/maps/dir/?api=1&origin=21.020000%2C105.830000&destination=21.020100%2C105.830000&waypoints=21.020060%2C105.830000%7C21.020080%2C105.830000&travelmode=walking"
+  ]
+}

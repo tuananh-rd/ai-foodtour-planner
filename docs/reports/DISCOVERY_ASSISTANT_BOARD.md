@@ -22,9 +22,28 @@ separate required read after native preference ack, pending origin resume, food/
 no unconditional old-tour wording.86 targeted tests PASS (28 food/accent/origin subcases).
 Private read-only gà-rán coverage11 district/98 total; in-memory fresh/legacy replay returns5
 tag-supported results without provider calls or persisted session changes. Actual8250 API full
-3-stop conditional-tour/Maps integration PASS; independent stronger browser matrix/UI journey
-is still pending, and weaker/vacuous assertions were rejected in review. Source/runtime stable
-`aafedf6` for that QA. Details: `FOOD_INTENT_BACKEND.md`.
+3-stop conditional-tour/Maps integration PASS. Independent task `ctx_c24017c43ac7` settled with
+28 UI checks PASS (13 food variants, one origin-after, compare, reload, confirmation and3-stop
+tour/Maps CTA). This is **not**28 matrix cells. Same Claude reused for narrow completion
+`task_d3bf55bec179` / `ctx_691492b03dda`, observed turn_started: remaining origin-after cells,
+actual second-area/selected preservation, Maps URL parameter/order validation and affected review
+of current `aafedf6`. That final task hit Claude coding usage limit before completion: automatic
+continue cancelled (verified screen), stop refused external terminal without process action,
+dispatch explicitly abandoned/fenced and Task failed with quota reason. Conversation/WIP retained,
+no active editor, no credits/model switch. CLI says reset22:30 local. Final independent review is
+BLOCKED; do not claim full acceptance or respawn a duplicate worker.
+
+Sol completed remaining integration-harness work after the editor stopped:40/40 supplemental
+checks PASS,0 FAIL/UNTESTED, exit0. Together with preserved independent evidence this covers28
+food/accent/origin cells, second-area change with selected preservation, explicit3-stop tour and
+real rendered Maps URL origin/order/walking/2048 validation. Source did not change during QA;
+backend86 tests and private read-only replays remain valid. Sol's supplement is **not** independent
+Claude review. No frontend production edit/build. Report attribution: `FOOD_INTENT_ACTUAL_QA.md`.
+
+3350/API8250 restored private/configured Gemini, health source`b22af8f` (includes backend`aafedf6`),
+model unchanged, ledger15/18 remaining3/reserve3.3320/8230 process owners unchanged, private
+sessions/ledger preserved. Temporary synthetic API stopped. No further app generation or cap reset.
+Details and exact blocker: `FOOD_INTENT_BACKEND.md`.
 
 ## Previous narrow functional incident — specific food refinement (2026-11-02)
 
