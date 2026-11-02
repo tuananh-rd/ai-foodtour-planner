@@ -6,6 +6,7 @@ from app.planner.interfaces import StraightLineEstimator
 from app.discovery.state import State
 from app.discovery.tools import Tools
 from app.discovery.engine import handle, food_intent
+from app.discovery.food import matches_food
 from app.discovery.experience import location_action
 
 
@@ -66,6 +67,15 @@ class FoodRefinementTests(unittest.TestCase):
     def test_compound_intent_preserves_specific_phrase(self):
         self.assertEqual(food_intent('tôi muốn ăn phở gà với tráng miệng'),['phở gà','tráng miệng'])
         self.assertEqual(food_intent('tôi muốn ăn tào phớ'),['tào phớ'])
+
+    def test_food_intent_uses_search_phrase_not_editorial_heading(self):
+        for phrase in ('bún', 'nem', 'trà', 'sinh tố', 'bánh'):
+            with self.subTest(phrase=phrase):
+                intent = food_intent('tôi muốn ăn ' + phrase)
+                self.assertEqual(intent, [phrase])
+                venue = Venue('tagged', 'Không suy món từ tên', 21.02, 105.83,
+                              dish_tags=(phrase,))
+                self.assertTrue(matches_food(venue, intent[0]))
 
     def test_native_mock_refinement_does_not_require_selection_permission(self):
         state,data=State(),refinement_data()

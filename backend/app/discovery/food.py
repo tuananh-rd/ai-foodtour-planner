@@ -5,6 +5,7 @@ from app.chat import knowledge
 
 PHO_VARIANTS = {'ga': 'gà', 'bo': 'bò', 'cuon': 'cuốn', 'xao': 'xào',
                 'chien': 'chiên', 'tron': 'trộn', 'tai': 'tái', 'nam': 'nạm', 'chin': 'chín'}
+INTENT_LABELS = {'bun': 'bún', 'nem': 'nem', 'tra': 'trà', 'sinh to': 'sinh tố', 'banh': 'bánh'}
 
 
 def food_intent(text):
@@ -18,7 +19,9 @@ def food_intent(text):
         if key == 'pho':
             continue
         for match in re.finditer(r'(?<!\w)'+re.escape(key)+r'(?!\w)', folded):
-            matches.append((match.start(), match.end(), label.lower()))
+            # Knowledge headings may contain editorial alternatives ("Món bún",
+            # "Nem / chả giò"); they are not literal menu evidence to search for.
+            matches.append((match.start(), match.end(), INTENT_LABELS.get(key, label.lower())))
     for label, pattern in [('bánh', r'\bbanh\b'), ('tào phớ', r'\btao pho\b'), ('tráng miệng', r'trang mieng|dessert'), ('cà phê', r'ca phe|coffee')]:
         for match in re.finditer(pattern, folded):
             matches.append((match.start(), match.end(), label))
