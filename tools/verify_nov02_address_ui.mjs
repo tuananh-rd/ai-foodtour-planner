@@ -20,7 +20,7 @@ const evidence={web,api,source_commit:execFileSync('git',['rev-parse','HEAD'],{e
 const record=(name,pass)=>{evidence.checks.push({name,pass:!!pass,...(!pass?{diagnostic:{status:view?.status,reply:view?.reply,tour_status:view?.tour?.status}}:{})});console.log(JSON.stringify({name,pass:!!pass}));};
 const chrome=spawn('C:/Program Files/Google/Chrome/Application/chrome.exe',['--headless=new','--no-first-run','--disable-background-networking',
   '--enable-unsafe-swiftshader',`--remote-debugging-port=${port}`,`--user-data-dir=${fs.mkdtempSync(path.join(os.tmpdir(),'discovery-qa-'))}`,'about:blank'],{stdio:'ignore',windowsHide:true});
-let ws,seq=0,view=null,posts=0,addressFixture=null,fixtureRequests=0;const pending=new Map();
+let ws,seq=0,view=null,posts=0,addressFixture=null,fixtureRequests=0;const pending=new Map(),requestMethods=new Map();
 try{
  let target;await until(async()=>{target=(await(await fetch(`http://127.0.0.1:${port}/json`)).json()).find(x=>x.type==='page');return target;});
  ws=new WebSocket(target.webSocketDebuggerUrl);await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject;});
@@ -53,11 +53,12 @@ try{
    }
 if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p?.reject(Error(m.error.message)):p?.resolve(m.result);return;}
    if(m.method==='Network.requestWillBeSent'){
+     requestMethods.set(m.params.requestId,m.params.request.method);
      const u=new URL(m.params.request.url);if(/^https?:$/.test(u.protocol)&&![new URL(web).origin,new URL(api).origin].includes(u.origin)&&!evidence.remoteOrigins.includes(u.origin))evidence.remoteOrigins.push(u.origin);
    }
    if(m.method==='Network.responseReceived'){
      const r=m.params.response;
-     if(/\/assistant$/.test(r.url)){evidence.statuses.push(r.status);cdp('Network.getResponseBody',{requestId:m.params.requestId}).then(x=>{try{const b=JSON.parse(x.body);if(b.contract==='discovery-v1')view=b;posts++;}catch{posts++;}}).catch(()=>posts++);}
+     if(/\/assistant$/.test(r.url)){const isPost=requestMethods.get(m.params.requestId)==='POST';evidence.statuses.push(r.status);cdp('Network.getResponseBody',{requestId:m.params.requestId}).then(x=>{try{const b=JSON.parse(x.body);if(b.contract==='discovery-v1'&&(!view||b.revision>=view.revision))view=b;}catch{}if(isPost)posts++;}).catch(()=>{if(isPost)posts++;});}
      if(r.url.includes('.pmtiles'))evidence.ranges.push(r.status);
    }
    if(m.method==='Runtime.exceptionThrown')evidence.errors.push(String(m.params.exceptionDetails?.exception?.description||m.params.exceptionDetails?.text||'Uncaught browser exception').replace(/[a-f0-9]{32,64}/gi,'[redacted]').slice(0,900));

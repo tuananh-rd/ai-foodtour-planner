@@ -1,0 +1,45 @@
+{
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "source_commit": "af9d1ccb2bb70ec380efd7c654265f3253a269fa",
+  "backend_commit": "42138007f645a5b46fb88179f33066caa88e4e1f",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "general greeting without origin question",
+      "pass": true
+    },
+    {
+      "name": "exact screenshot no deny; remembers compound food; asks origin once",
+      "pass": true
+    },
+    {
+      "name": "exact request reached actual response revision",
+      "pass": true
+    },
+    {
+      "name": "no browser exceptions",
+      "pass": true
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [
+    200,
+    200,
+    200,
+    200
+  ]
+}

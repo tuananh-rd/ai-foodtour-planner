@@ -1,0 +1,8 @@
+{
+  "source": "566122f919ac69ffa03db096c221aeb33b6e4dac",
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "mode": "synthetic/rules",
+  "exit": 0,
+  "error": null
+}

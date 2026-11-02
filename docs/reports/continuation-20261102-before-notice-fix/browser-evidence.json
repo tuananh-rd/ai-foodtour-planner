@@ -1,0 +1,344 @@
+{
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "source_commit": "5cfcd23f5c499a8c10985426ec17cbe26be81f83",
+  "backend_commit": "42138007f645a5b46fb88179f33066caa88e4e1f",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "general greeting without origin question",
+      "pass": true
+    },
+    {
+      "name": "exact screenshot no deny; remembers compound food; asks origin once",
+      "pass": true
+    },
+    {
+      "name": "GPS click-only denied handled without default",
+      "pass": true
+    },
+    {
+      "name": "manual ambiguous candidates not autochosen",
+      "pass": true
+    },
+    {
+      "name": "explicit origin resumes real district results",
+      "pass": true
+    },
+    {
+      "name": "new area and actual local results",
+      "pass": true
+    },
+    {
+      "name": "compares two and adds exactly A",
+      "pass": true
+    },
+    {
+      "name": "selected distance visibly labeled Haversine",
+      "pass": true
+    },
+    {
+      "name": "real confirmation before tour",
+      "pass": true
+    },
+    {
+      "name": "ok does not consume confirmation",
+      "pass": true
+    },
+    {
+      "name": "actual planner completed tour",
+      "pass": true
+    },
+    {
+      "name": "explicit Maps CTA, free URL actual origin/order",
+      "pass": true
+    },
+    {
+      "name": "local map marker toggle retained",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1280",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 1280",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 1280",
+      "pass": true
+    },
+    {
+      "name": "composer within viewport 1280",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 1280",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1440",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 1440",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 1440",
+      "pass": true
+    },
+    {
+      "name": "composer within viewport 1440",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 1440",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1920",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 1920",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 1920",
+      "pass": true
+    },
+    {
+      "name": "composer within viewport 1920",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 1920",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 2560",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 2560",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 2560",
+      "pass": true
+    },
+    {
+      "name": "composer within viewport 2560",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 2560",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 390",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 390",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 390",
+      "pass": false,
+      "diagnostic": {
+        "status": "ok",
+        "reply": {
+          "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+          "question": null
+        },
+        "tour_status": "conditional"
+      }
+    },
+    {
+      "name": "composer within viewport 390",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 390",
+      "pass": true
+    },
+    {
+      "name": "reload retains tour and selection",
+      "pass": true
+    },
+    {
+      "name": "clear origin invalidates confirmation/tour without losing selection",
+      "pass": true
+    },
+    {
+      "name": "selected unknown distance shown without raw enum",
+      "pass": true
+    },
+    {
+      "name": "manual coordinates update backend actual origin",
+      "pass": true
+    },
+    {
+      "name": "manual display label retains coordinates and gates",
+      "pass": true
+    },
+    {
+      "name": "primary origin label hides raw coordinates",
+      "pass": true
+    },
+    {
+      "name": "reading older messages is not forced to bottom",
+      "pass": true
+    },
+    {
+      "name": "near-bottom chat remains at newest reply",
+      "pass": true
+    },
+    {
+      "name": "real409 recovery does not replay mutation",
+      "pass": true
+    },
+    {
+      "name": "allergy safety gate remains",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists",
+      "pass": true
+    },
+    {
+      "name": "offline readable error",
+      "pass": true
+    },
+    {
+      "name": "no external network origins",
+      "pass": true
+    },
+    {
+      "name": "actual PMTiles206",
+      "pass": true
+    },
+    {
+      "name": "no uncaught JS exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "discovery-1440.png",
+    "confirmed-1440.png",
+    "map-1440.png",
+    "viewport-1280.png",
+    "active-chat-1440.png",
+    "viewport-1440.png",
+    "viewport-1920.png",
+    "viewport-2560.png",
+    "active-chat-390.png",
+    "viewport-390.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [
+    206,
+    206,
+    206,
+    206,
+    206,
+    206
+  ],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200
+  ],
+  "activeChatMetrics": [
+    {
+      "width": 1280,
+      "active": true,
+      "card": 567,
+      "header": 26,
+      "stream": 369,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 731.75,
+      "viewport": 800
+    },
+    {
+      "width": 1440,
+      "active": true,
+      "card": 663,
+      "header": 26,
+      "stream": 593,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 955.75,
+      "viewport": 1024
+    },
+    {
+      "width": 1920,
+      "active": true,
+      "card": 951,
+      "header": 26,
+      "stream": 649,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 1011.75,
+      "viewport": 1080
+    },
+    {
+      "width": 2560,
+      "active": true,
+      "card": 1335,
+      "header": 26,
+      "stream": 1009,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 1371.75,
+      "viewport": 1440
+    },
+    {
+      "width": 390,
+      "active": true,
+      "card": 370,
+      "header": 26,
+      "stream": 420.25,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 823.25,
+      "viewport": 844
+    }
+  ]
+}

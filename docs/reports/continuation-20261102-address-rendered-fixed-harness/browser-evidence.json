@@ -1,0 +1,81 @@
+{
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "source_commit": "e338f13184a78534552ec877567bcdc90c0012ab",
+  "backend_commit": "42138007f645a5b46fb88179f33066caa88e4e1f",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "visible disclosure before GPS click",
+      "pass": true
+    },
+    {
+      "name": "click requests address resolution (upstream stubbed)",
+      "pass": true
+    },
+    {
+      "name": "resolved approximate address and attribution shown",
+      "pass": true
+    },
+    {
+      "name": "raw GPS coordinates absent from visible label",
+      "pass": true
+    },
+    {
+      "name": "unavailable address allows manual label",
+      "pass": true
+    },
+    {
+      "name": "unavailable copy does not invent missing map data",
+      "pass": true
+    },
+    {
+      "name": "manual label backed by real API retains origin",
+      "pass": true
+    },
+    {
+      "name": "GPS denied keeps origin unset",
+      "pass": true
+    },
+    {
+      "name": "GPS timeout keeps origin unset",
+      "pass": true
+    },
+    {
+      "name": "no remote network / geocoder / model request",
+      "pass": true
+    },
+    {
+      "name": "no uncaught browser exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "address-resolved.png",
+    "address-manual.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "gpsResolveRequested": true,
+  "addressEvidence": "GPS hardware and address responses simulated via CDP; outgoing resolve_address stripped before real synthetic API; no upstream geocoder/model call"
+}

@@ -1,0 +1,80 @@
+{
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "source_commit": "e338f13184a78534552ec877567bcdc90c0012ab",
+  "backend_commit": "42138007f645a5b46fb88179f33066caa88e4e1f",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "visible disclosure before GPS click",
+      "pass": true
+    },
+    {
+      "name": "click requests address resolution (upstream stubbed)",
+      "pass": true
+    },
+    {
+      "name": "resolved approximate address and attribution shown",
+      "pass": true
+    },
+    {
+      "name": "raw GPS coordinates absent from visible label",
+      "pass": true
+    },
+    {
+      "name": "unavailable address allows manual label",
+      "pass": true
+    },
+    {
+      "name": "unavailable copy does not invent missing map data",
+      "pass": true
+    },
+    {
+      "name": "manual label backed by real API retains origin",
+      "pass": true
+    },
+    {
+      "name": "GPS denied keeps origin unset",
+      "pass": true
+    },
+    {
+      "name": "journey completed",
+      "pass": false,
+      "diagnostic": {
+        "status": "unknown",
+        "reply": {
+          "text": "Đã bỏ vị trí xuất phát; quán đã chọn vẫn được giữ.",
+          "question": "Bạn muốn dùng vị trí hiện tại hay nhập vị trí?"
+        }
+      }
+    }
+  ],
+  "screenshots": [
+    "address-resolved.png",
+    "address-manual.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "gpsResolveRequested": true,
+  "blocker": "Observable browser state timed out"
+}

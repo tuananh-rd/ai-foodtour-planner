@@ -1,0 +1,18 @@
+﻿{
+    "observed_at":  "2026-11-02T12:03:43.8733300Z",
+    "web_status":  200,
+    "api_status":  "ok",
+    "backend_source":  "e338f13184a78534552ec877567bcdc90c0012ab",
+    "ui_source":  "af9d1ccb2bb70ec380efd7c654265f3253a269fa",
+    "dataset":  "private",
+    "provider":  "gemini",
+    "configured_model":  "gemini-3.5-flash-lite",
+    "budget":  {
+                   "limit":  18,
+                   "used":  10,
+                   "remaining":  8,
+                   "reset_at":  null
+               },
+    "generation_calls_in_this_verification":  0,
+    "live_quality":  "NOT VERIFIED on repaired final journey; six-turn allowance consumed"
+}

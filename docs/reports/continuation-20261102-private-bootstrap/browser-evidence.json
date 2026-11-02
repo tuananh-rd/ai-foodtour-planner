@@ -1,0 +1,48 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "source_commit": "af9d1ccb2bb70ec380efd7c654265f3253a269fa",
+  "backend_commit": "e338f13184a78534552ec877567bcdc90c0012ab",
+  "dataset": "private",
+  "provider": "gemini configured",
+  "liveGemini": "NO GENERATION: final repaired quality remains unverified",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "configured verified model visible",
+      "pass": true
+    },
+    {
+      "name": "private bootstrap exports no venue records",
+      "pass": true
+    },
+    {
+      "name": "no generated request during bootstrap",
+      "pass": true
+    },
+    {
+      "name": "no uncaught browser exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [
+    200,
+    200
+  ],
+  "budget": {
+    "before_used": 10,
+    "after_used": 10,
+    "limit": 18
+  }
+}

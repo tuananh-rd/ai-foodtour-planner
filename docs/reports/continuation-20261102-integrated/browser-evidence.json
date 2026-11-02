@@ -1,0 +1,328 @@
+{
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "source_commit": "e338f13184a78534552ec877567bcdc90c0012ab",
+  "backend_commit": "42138007f645a5b46fb88179f33066caa88e4e1f",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "general greeting without origin question",
+      "pass": true
+    },
+    {
+      "name": "exact screenshot no deny; remembers compound food; asks origin once",
+      "pass": true
+    },
+    {
+      "name": "GPS click-only denied handled without default",
+      "pass": true
+    },
+    {
+      "name": "manual ambiguous candidates not autochosen",
+      "pass": true
+    },
+    {
+      "name": "explicit origin resumes real district results",
+      "pass": true
+    },
+    {
+      "name": "new area and actual local results",
+      "pass": true
+    },
+    {
+      "name": "compares two and adds exactly A",
+      "pass": true
+    },
+    {
+      "name": "selected distance visibly labeled Haversine",
+      "pass": true
+    },
+    {
+      "name": "real confirmation before tour",
+      "pass": true
+    },
+    {
+      "name": "ok does not consume confirmation",
+      "pass": true
+    },
+    {
+      "name": "actual planner completed tour",
+      "pass": true
+    },
+    {
+      "name": "explicit Maps CTA, free URL actual origin/order",
+      "pass": true
+    },
+    {
+      "name": "local map marker toggle retained",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1280",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 1280",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 1280",
+      "pass": false,
+      "diagnostic": {
+        "status": "ok",
+        "reply": {
+          "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+          "question": null
+        },
+        "tour_status": "conditional"
+      }
+    },
+    {
+      "name": "no emoji DOM 1280",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1440",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 1440",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 1440",
+      "pass": false,
+      "diagnostic": {
+        "status": "ok",
+        "reply": {
+          "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+          "question": null
+        },
+        "tour_status": "conditional"
+      }
+    },
+    {
+      "name": "no emoji DOM 1440",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 1920",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 1920",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 1920",
+      "pass": false,
+      "diagnostic": {
+        "status": "ok",
+        "reply": {
+          "text": "Planner đã tạo lịch và kiểm tra ràng buộc; giờ/giá/chặng ước tính và các điểm chưa xác minh được ghi rõ trong lịch trình.",
+          "question": null
+        },
+        "tour_status": "conditional"
+      }
+    },
+    {
+      "name": "no emoji DOM 1920",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 2560",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 2560",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 2560",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 2560",
+      "pass": true
+    },
+    {
+      "name": "fluid fit 390",
+      "pass": true
+    },
+    {
+      "name": "active class and readable type 390",
+      "pass": true
+    },
+    {
+      "name": "active stream usable 390",
+      "pass": true
+    },
+    {
+      "name": "no emoji DOM 390",
+      "pass": true
+    },
+    {
+      "name": "reload retains tour and selection",
+      "pass": true
+    },
+    {
+      "name": "clear origin invalidates confirmation/tour without losing selection",
+      "pass": true
+    },
+    {
+      "name": "selected unknown distance shown without raw enum",
+      "pass": true
+    },
+    {
+      "name": "manual coordinates update backend actual origin",
+      "pass": true
+    },
+    {
+      "name": "manual display label retains coordinates and gates",
+      "pass": true
+    },
+    {
+      "name": "primary origin label hides raw coordinates",
+      "pass": true
+    },
+    {
+      "name": "real409 recovery does not replay mutation",
+      "pass": true
+    },
+    {
+      "name": "allergy safety gate remains",
+      "pass": true
+    },
+    {
+      "name": "keyboard focus exists",
+      "pass": true
+    },
+    {
+      "name": "offline readable error",
+      "pass": true
+    },
+    {
+      "name": "no external network origins",
+      "pass": true
+    },
+    {
+      "name": "actual PMTiles206",
+      "pass": true
+    },
+    {
+      "name": "no uncaught JS exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "discovery-1440.png",
+    "confirmed-1440.png",
+    "map-1440.png",
+    "viewport-1280.png",
+    "viewport-1440.png",
+    "viewport-1920.png",
+    "viewport-2560.png",
+    "viewport-390.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [
+    206,
+    206,
+    206,
+    206,
+    206,
+    206
+  ],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    200,
+    409,
+    200,
+    200,
+    200
+  ],
+  "activeChatMetrics": [
+    {
+      "width": 1280,
+      "active": true,
+      "card": 576,
+      "header": 36,
+      "stream": 135.5,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 669.75,
+      "viewport": 800
+    },
+    {
+      "width": 1440,
+      "active": true,
+      "card": 672,
+      "header": 36,
+      "stream": 359.5,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 893.75,
+      "viewport": 1024
+    },
+    {
+      "width": 1920,
+      "active": true,
+      "card": 960,
+      "header": 36,
+      "stream": 415.5,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 949.75,
+      "viewport": 1080
+    },
+    {
+      "width": 2560,
+      "active": true,
+      "card": 1344,
+      "header": 36,
+      "stream": 775.5,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 1309.75,
+      "viewport": 1440
+    },
+    {
+      "width": 390,
+      "active": true,
+      "card": 362,
+      "header": 36,
+      "stream": 3693,
+      "font": 15,
+      "inputFont": 16,
+      "inputBottom": 4578.046875,
+      "viewport": 844
+    }
+  ]
+}

@@ -1,0 +1,207 @@
+{
+  "web": "http://127.0.0.1:3330",
+  "api": "http://127.0.0.1:8240",
+  "source_commit": "af9d1ccb2bb70ec380efd7c654265f3253a269fa",
+  "backend_commit": "42138007f645a5b46fb88179f33066caa88e4e1f",
+  "dataset": "synthetic",
+  "provider": "rules",
+  "liveGemini": "NOT TESTED",
+  "checks": [
+    {
+      "name": "no automatic GPS or HoanKiem origin",
+      "pass": true
+    },
+    {
+      "name": "model and optional web separate; unavailable choices honest",
+      "pass": true
+    },
+    {
+      "name": "general chat stream usable 1280",
+      "pass": true
+    },
+    {
+      "name": "general chat composer visible 1280",
+      "pass": true
+    },
+    {
+      "name": "general chat stream usable 390",
+      "pass": true
+    },
+    {
+      "name": "general chat composer visible 390",
+      "pass": true
+    },
+    {
+      "name": "mobile manual origin editor retains visible composer",
+      "pass": true
+    },
+    {
+      "name": "mobile manual origin submit remains accessible",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "mobile-origin-editor.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [
+    200,
+    200,
+    200
+  ],
+  "shellMetrics": [
+    {
+      "width": 1280,
+      "height": 800,
+      "metrics": {
+        ".nn-sidebar": {
+          "top": 0,
+          "height": 828,
+          "bottom": 828,
+          "display": "flex"
+        },
+        ".nn-main": null,
+        ".nn-topbar": {
+          "top": 24,
+          "height": 38,
+          "bottom": 62,
+          "display": "flex"
+        },
+        ".nn-main-grid": {
+          "top": 120,
+          "height": 668,
+          "bottom": 788,
+          "display": "grid"
+        },
+        ".nn-chat-card": {
+          "top": 120,
+          "height": 668,
+          "bottom": 788,
+          "display": "flex"
+        },
+        ".nn-chat-card-header": {
+          "top": 134,
+          "height": 26,
+          "bottom": 160,
+          "display": "flex"
+        },
+        ".nn-hero-heading": {
+          "top": 0,
+          "height": 0,
+          "bottom": 0,
+          "display": "none"
+        },
+        ".nn-chips-row": {
+          "top": 0,
+          "height": 0,
+          "bottom": 0,
+          "display": "none"
+        },
+        ".nn-origin-chooser": {
+          "top": 166,
+          "height": 46.5,
+          "bottom": 212.5,
+          "display": "block"
+        },
+        ".nn-stream": {
+          "top": 218.5,
+          "height": 402.25,
+          "bottom": 620.75,
+          "display": "flex"
+        },
+        ".nn-composer": {
+          "top": 682.75,
+          "height": 54,
+          "bottom": 736.75,
+          "display": "flex"
+        },
+        ".nn-mobile-tabs": {
+          "top": 0,
+          "height": 0,
+          "bottom": 0,
+          "display": "none"
+        }
+      }
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "metrics": {
+        ".nn-sidebar": {
+          "top": 0,
+          "height": 68,
+          "bottom": 68,
+          "display": "flex"
+        },
+        ".nn-main": null,
+        ".nn-topbar": {
+          "top": 74,
+          "height": 40.25,
+          "bottom": 114.25,
+          "display": "flex"
+        },
+        ".nn-main-grid": {
+          "top": 226.25,
+          "height": 606,
+          "bottom": 832.25,
+          "display": "grid"
+        },
+        ".nn-chat-card": {
+          "top": 226.25,
+          "height": 606,
+          "bottom": 832.25,
+          "display": "flex"
+        },
+        ".nn-chat-card-header": {
+          "top": 232.25,
+          "height": 26,
+          "bottom": 258.25,
+          "display": "flex"
+        },
+        ".nn-hero-heading": {
+          "top": 0,
+          "height": 0,
+          "bottom": 0,
+          "display": "none"
+        },
+        ".nn-chips-row": {
+          "top": 0,
+          "height": 0,
+          "bottom": 0,
+          "display": "none"
+        },
+        ".nn-origin-chooser": {
+          "top": 264.25,
+          "height": 64.5,
+          "bottom": 328.75,
+          "display": "block"
+        },
+        ".nn-stream": {
+          "top": 334.75,
+          "height": 435.5,
+          "bottom": 770.25,
+          "display": "flex"
+        },
+        ".nn-composer": {
+          "top": 774.25,
+          "height": 54,
+          "bottom": 828.25,
+          "display": "flex"
+        },
+        ".nn-mobile-tabs": {
+          "top": 190.25,
+          "height": 32,
+          "bottom": 222.25,
+          "display": "flex"
+        }
+      }
+    }
+  ],
+  "expandedOrigin": {
+    "originHeight": 270.671875,
+    "streamHeight": 229.328125,
+    "composerBottom": 823.25
+  }
+}

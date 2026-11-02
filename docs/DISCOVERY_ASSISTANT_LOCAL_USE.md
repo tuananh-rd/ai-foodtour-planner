@@ -1,8 +1,16 @@
 # Local discovery assistant
 
-Open **http://127.0.0.1:3300**. Current mode is immutable production UI from`4fdfe92`, actual API8300, private local venue dataset and configured Gemini`gemini-3.5-flash-lite`. Existing caps/keys/ledger are preserved. The authorized native smoke already used3 chat turns/5 model requests total; no additional automated live probe should repeat it. Actual response/tool/call-count evidence is in`reports/DISCOVERY_VIEWPORT_EMOJI_LIVE.md`.
+Current2026-11-02 production UI source `af9d1cc`:
 
-For the fixture journey below, use **http://127.0.0.1:3310** (actual API8210, explicitly synthetic/rules, no provider calls). `[SYNTHETIC]` venues are fictional. Historical3200 is no longer the current delivery URL.
+- **http://127.0.0.1:3330** / API8240: synthetic/rules, verified offline journey. `[SYNTHETIC]` venues are fictional.
+- **http://127.0.0.1:3350** / API8250: private local dataset and configured Gemini `gemini-3.5-flash-lite`. Final repaired model-led journey is **not live-verified**. Six authorized smoke turns/ten generated requests are already consumed; no further automated live probe under that allowance. Caps/keys/ledger unchanged; private bootstrap makes no generation. Tavily stays off/unavailable.
+- Existing **http://127.0.0.1:3320** / API8230 was preserved for user testing.
+
+GPS runs only after a click. The visible disclosure explains rounded coordinates sent to Photon/OSM for nearby address lookup, never Gemini/Tavily. Approximate labels do not verify a house number; unavailable lookup keeps usable coordinates and permits a manual display label. A manual label does not relocate the origin. Active chat collapses the location form behind **Thiết lập vị trí** while general chat remains available. Editing origin invalidates confirmation/tour; Google Maps uses actual origin and ordered stops without a paid API.
+
+Final evidence and initial failures: [continuation report](reports/CONTINUATION_20261102_FINAL.md). Older3300/API8300 and3310/API8210 below refer to the previous delivery, not the current verification lane.
+
+For the fixture journey below, use **http://127.0.0.1:3330** (actual API8240, explicitly synthetic/rules, no model calls). Historical3200/3300/3310 are not the current delivery URLs.
 
 Start with “Chào bạn” or ask about a dish. To exercise the populated fixture area, send “Tìm quán quanh Hồ Gươm”, then “So sánh A với B”. Choose a result with its button or “Thêm A rồi tìm chè ít ngọt”. The app retains selection/preferences and reports unknown sweetness/ingredients instead of inventing matches.
 
