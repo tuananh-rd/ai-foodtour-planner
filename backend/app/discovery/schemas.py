@@ -152,6 +152,17 @@ class RestaurantRating(StrictModel):
     count: int | None
 
 
+class MenuReference(StrictModel):
+    name: str
+    reference_price_vnd: int | None
+    min_total_vnd: int | None
+    price_status: Literal['reference','quarantined','minimum_unknown']
+    mandatory_options: bool
+    price_channel: Literal['shopeefood_delivery']
+    availability: Literal['unknown','unavailable','source_available']
+    source_fetched_at: str | None
+
+
 class Restaurant(StrictModel):
     id: str
     name: str
@@ -171,6 +182,7 @@ class Restaurant(StrictModel):
     distance_m: float | None = None
     distance_source: Literal['haversine'] | None = None
     distance_reason: str | None = None
+    matching_menu: list[MenuReference] = Field(default_factory=list,max_length=3)
 
 
 class Reply(StrictModel):

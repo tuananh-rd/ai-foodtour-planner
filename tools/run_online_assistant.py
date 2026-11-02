@@ -38,6 +38,9 @@ def main():
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', args.port))  # Refuse occupied port; never stop its owner.
     local_configuration()
+    menu_path=ROOT / '.venv/private-menu/shopeefood_menu.zip'
+    if args.dataset == 'local' and menu_path.is_file():
+        os.environ['FOODTOUR_MENU_PATH']=str(menu_path)
     os.environ.update(FOODTOUR_CHAT_V2='1', FOODTOUR_UI_GUIDED='1', FOODTOUR_UI_V2='1',
         FOODTOUR_ROUTING='estimate', FOODTOUR_GEOCODER='off', FOODTOUR_EXPLAIN='template',
         GOOGLE_MAPS_BROWSER_KEY='', GOOGLE_MAPS_SERVER_KEY='', GOOGLE_MAPS_MAP_ID='',

@@ -12,6 +12,7 @@ import io
 import json
 import math
 import os
+import zipfile
 from collections import Counter
 from dataclasses import dataclass, field
 from decimal import Decimal, InvalidOperation
@@ -35,6 +36,8 @@ class Dataset:
     flags: dict[str, int]
     evidence_overlay: dict[str, int] = field(default_factory=empty_counts)
     evidence_rejections: dict[str, int] = field(default_factory=dict)
+    menu_by_venue: dict = field(default_factory=dict)
+    menu_counts: dict = field(default_factory=dict)
 
 
 def aggregate_report(dataset: Dataset) -> dict:
@@ -299,5 +302,17 @@ def load_dataset(path: str | Path | None = None) -> Dataset:
     for before, after in zip(venues, merged):
         if before.price_min_vnd is None and after.price_evidence == 'verified':
             flags['unknown_price'] -= 1
+    from .menu import configured_menu,mapped_venues
+    try:
+        menu_path=os.getenv('FOODTOUR_MENU_PATH','').strip()
+        if menu_path:
+            additions=mapped_venues(menu_path,{v.id for v in merged})
+            merged=tuple(merged)+additions
+            flags['menu_mapped_venues_added']=len(additions)
+        menu,menu_counts,menu_version=configured_menu(v.id for v in merged)
+    except (ValueError,KeyError,TypeError,OSError,zipfile.BadZipFile):
+        raise DatasetLoadError('menu_invalid') from None
+    if menu_version:
+        version=hashlib.sha256((version+menu_version).encode()).hexdigest()
     return Dataset(merged, version, "synthetic" if synthetic else "private", len(rows),
-                   dict(rejected), dict(flags), evidence_counts, evidence_rejections)
+                   dict(rejected), dict(flags), evidence_counts, evidence_rejections,menu,menu_counts)

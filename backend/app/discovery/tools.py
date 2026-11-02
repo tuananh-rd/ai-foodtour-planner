@@ -6,6 +6,7 @@ from urllib.parse import urlsplit
 from pydantic import ValidationError
 from app.chat import tools as local_tools
 from .food import matches_food
+from app.data.menu import matching_menu
 from app.chat.gazetteer import Gazetteer
 from app.chat.planning import plan_selected, routing_for
 from app.planner.types import Preferences
@@ -72,6 +73,7 @@ class Tools:
         origin = self.state.profile.origin
         metres = round(haversine_km((origin.lat, origin.lon), (v.lat, v.lon))*1000, 1) if origin and valid else None
         result.update(lat=v.lat if valid else None, lon=v.lon if valid else None,
+            matching_menu=matching_menu(self.data.menu_by_venue.get(identity,[]),self.state.profile.foods)[:3],
             distance_m=metres, distance_source='haversine' if metres is not None else None,
             distance_reason=None if metres is not None else ('origin_missing' if origin is None else 'venue_coordinates_missing'),
             source_url=safe_source(v.source_url), source_fetched_at=v.source_fetched_at,
@@ -141,7 +143,8 @@ class Tools:
             venues = [v for v in venues if area_key in fold_uncached(v.district or '')]
         foods = self.state.profile.foods or ([dish] if dish else [])
         if foods:
-            venues = [v for v in venues if any(matches_food(v,food) for food in foods)]
+            venues = [v for v in venues if (bool(matching_menu(self.data.menu_by_venue[v.id],foods))
+                if v.id in self.data.menu_by_venue else any(matches_food(v,food) for food in foods))]
         # A requested district constrains membership, while distance/ranking always
         # uses the actual chosen origin. Street/landmark searches retain pilot radius.
         centre = (place.lat, place.lon) if place and place.kind != 'district' else (origin.lat, origin.lon)

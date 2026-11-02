@@ -274,7 +274,7 @@ def tool_projection(result):
         if isinstance(value, dict):
             return {k: redact(v) for k, v in value.items() if k not in (
                 'lat', 'lon', 'origin', 'allergies', 'source_url',
-                'distance_m', 'distance_source', 'distance_reason')}
+                'distance_m', 'distance_source', 'distance_reason', 'matching_menu')}
         if isinstance(value, list):
             return [redact(x) for x in value[:5]]
         return redact_sensitive(value)[:500] if isinstance(value, str) else value

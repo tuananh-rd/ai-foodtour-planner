@@ -15,6 +15,7 @@ def main():
     parser.add_argument('--port',type=int,required=True)
     parser.add_argument('--without-chicken',action='store_true')
     parser.add_argument('--matrix',action='store_true',help='Broader food/origin/tour acceptance dataset')
+    parser.add_argument('--menu',action='store_true',help='Synthetic local-menu contract evidence')
     args=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix='food-refinement-') as tmp:
         os.environ.update(FOODTOUR_LLM='mock',GEMINI_API_KEY='',TAVILY_API_KEY='',
@@ -28,7 +29,10 @@ def main():
         from app.main import create_app
         from backend.tests.discovery.test_food_refinement import refinement_data
         app=create_app()
-        if args.matrix:
+        if args.menu:
+            from backend.tests.discovery.test_menu_sample import menu_data
+            data=menu_data()
+        elif args.matrix:
             from backend.tests.discovery.test_food_intent_matrix import matrix_data
             data=matrix_data()
         else:
