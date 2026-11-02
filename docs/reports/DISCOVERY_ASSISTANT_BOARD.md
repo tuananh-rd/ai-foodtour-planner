@@ -1,4 +1,32 @@
-## Latest functional incident — specific food refinement (2026-11-02)
+## User rejected broader food-intent acceptance — active (2026-11-02)
+
+The prior acceptance below was phở-specific only; the user rejected3350 after the exact fried
+chicken transcript silently acknowledged/ignored the food request and failed to resume search
+after local origin selection. It also mentioned an old tour with no tour present.
+Sol owns generalized intent/search/pending-state fixes and safe runtime; Claude Opus4.8 medium
+independently owns real user QA, task `task_864b2b927d81` / `ctx_c24017c43ac7`, same terminal
+`term_f490cf7f-9b8b-436a-8b29-aa07a32bf39a`, observed turn_started. AG inactive.
+
+Acceptance: exact greeting/fried-chicken/local-origin/repeated-food transcript RED then GREEN;
+matrix phở gà/phở bò/phở cuốn/gà rán/bún chả/cơm/unknown dish with accents/noaccents,
+origin before/after, food/area changes and preserved selection. Unknown dish stays literal;
+request must search, report no-data or ask one specific missing detail, never generic ack.
+General knowledge/allergy/incidental dish references must not become main search intent.
+Direct browser3350→actual8250 rules backend (no intercepted responses), fresh/restored sessions,
+compare/select/explicit confirmation/tour/Maps when fixture evidence permits; honest no-data end.
+No further provider generation, caps/ledger reset, paid operations, push/deploy.3350 temporarily
+uses isolated synthetic/rules for this QA; private sessions/ledger and3320/8230 preserved.
+
+Backend implementation `aafedf6`: grammar-based literal food request, unknown preservation,
+separate required read after native preference ack, pending origin resume, food/area invalidation,
+no unconditional old-tour wording.86 targeted tests PASS (28 food/accent/origin subcases).
+Private read-only gà-rán coverage11 district/98 total; in-memory fresh/legacy replay returns5
+tag-supported results without provider calls or persisted session changes. Actual8250 API full
+3-stop conditional-tour/Maps integration PASS; independent stronger browser matrix/UI journey
+is still pending, and weaker/vacuous assertions were rejected in review. Source/runtime stable
+`aafedf6` for that QA. Details: `FOOD_INTENT_BACKEND.md`.
+
+## Previous narrow functional incident — specific food refinement (2026-11-02)
 
 Sol owns backend/runtime/integration; Claude Opus4.8 medium owns affected UI review and QA;
 Antigravity remains inactive. Core affected review `task_7591fe5013ca` / `ctx_147054156d22`
