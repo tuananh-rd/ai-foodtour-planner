@@ -1,3 +1,20 @@
+## Latest functional incident — specific food refinement (2026-11-02)
+
+Sol owns backend/runtime/integration; Claude Opus4.8 medium owns affected UI review and QA;
+Antigravity remains inactive. Core affected review `task_7591fe5013ca` / `ctx_147054156d22`
+settled APPROVED; same terminal reused for execution `task_89c74f1de140` / `ctx_197004e4aee7`
+with observed `turn_started`. Terminal `term_f490cf7f-9b8b-436a-8b29-aa07a32bf39a`.
+No duplicate editor or new provider generation.
+
+Backend fixes `724c73a`, `5bb9cbb`, `067193f`, `5541059`: retain specific phở intent, match
+compound dish-tag evidence only, clear stale results/comparison/planning intent, preserve
+origin/locked selection and explicit confirmation gates. Separate authorized read-only search
+from denied native mutation. Preserve validated no-match replies against unsupported model text.
+70 targeted tests PASS; private snapshot replay is in-memory/read-only and returns no chicken-phở
+match. Real-API fixture browser verification and integration into3350 are pending. Private health
+before integration: used15/18, remaining3 equals reserve3; no probes/reset/cap increase permitted.
+Details: `FOOD_REFINEMENT_BACKEND.md`, affected review/browser report `FOOD_REFINEMENT_QA.md`.
+
 ## Latest coding ownership — Claude Opus4.8 medium
 
 Claude takeover audit settled `task_5a5712ef3ca6` / `ctx_55370073af79`, retained. Independent review found no reproducible frontend defect, added10 focused outage helper assertions (54/54 PASS). Sol review corrected invalid fixture kind and avoided claiming historicaltimeout source from elapsedtime alone; no productioncode/model/caps/deadline changed. Report: `CLAUDE_3350_OFFLINE_HANDOFF.md`. Existing3350 offline render16/16 remains the UI evidence; live connectivity cause unresolved, no new provider allowance/calls.
