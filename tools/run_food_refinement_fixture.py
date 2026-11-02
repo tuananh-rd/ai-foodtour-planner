@@ -14,6 +14,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--port',type=int,required=True)
     parser.add_argument('--without-chicken',action='store_true')
+    parser.add_argument('--matrix',action='store_true',help='Broader food/origin/tour acceptance dataset')
     args=parser.parse_args()
     with tempfile.TemporaryDirectory(prefix='food-refinement-') as tmp:
         os.environ.update(FOODTOUR_LLM='mock',GEMINI_API_KEY='',TAVILY_API_KEY='',
@@ -27,7 +28,11 @@ def main():
         from app.main import create_app
         from backend.tests.discovery.test_food_refinement import refinement_data
         app=create_app()
-        data=refinement_data(not args.without_chicken)
+        if args.matrix:
+            from backend.tests.discovery.test_food_intent_matrix import matrix_data
+            data=matrix_data()
+        else:
+            data=refinement_data(not args.without_chicken)
         app.state.venues.snapshot=lambda:data
         app.state.build_commit=subprocess.check_output(['git','rev-parse','HEAD'],cwd=ROOT,text=True).strip()
         import uvicorn

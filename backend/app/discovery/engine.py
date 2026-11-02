@@ -14,13 +14,13 @@ from app.llm.provider import ProviderError
 from app.presentation import plain_text
 from app.planner.relevance import fold_uncached
 from .tools import DISTRICT_LABELS
-from .food import food_intent
+from .food import food_intent, food_search_requested, needs_food_clarification
 
 
 def knowledge_question(text):
     f = fold_uncached(text)
     return bool(re.search(r'la gi|nguon goc|lich su|cach nau|tim hieu|khac.*(?:the nao|ra sao|gi|nhau)', f)) and not re.search(
-        r'\b(?:tim(?! hieu)|quan|dia chi)\b|muon an|goi y|o dau', f)
+        r'\b(?:tim(?! hieu)|dia chi)\b|muon an|goi y|o dau', f)
 
 
 def parse_patch(text, tools):
@@ -147,6 +147,8 @@ def authorized(name, args, text, tools, patch, initial_refs):
                 return False
             if key == 'area' and isinstance(value, str):
                 return fold_uncached(value) == fold_uncached(patch[key])
+            if key == 'foods' and isinstance(value, list) and all(isinstance(x, str) for x in value):
+                return [fold_uncached(x) for x in value] == [fold_uncached(x) for x in patch[key]]
             return patch[key] == value
         return bool(args.get('patch')) and all(same(k, v) for k, v in args['patch'].items())
     if name == 'update_foodtour_selection':
@@ -207,16 +209,22 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
             return tools.result('unknown', 'Mình có thể xem chi tiết một quán đã hiển thị.', 'Bạn muốn xem quán nào trước?')
         return tools.run('get_restaurant_details', {'venue_id': refs[0]})
     plan_cue = bool(re.search(r'tao lich|lap lich|tao tour|lap tour|len lich|sap lich|tinh lai lich|sua lich', f))
-    if plan_cue or (tools.state.plan_requested and patch):
+    if plan_cue or (tools.state.plan_requested and patch and not food_search_requested(text)
+                    and not patch.get('foods') and not patch.get('area')):
         return tools.run('create_itinerary', {})
     if re.search(r'\b(?:ok|oke|okay|vang|duoc)\b', f) and len(f.split()) <= 3:
         return tools.result('ok', 'Mình giữ các thông tin đã có; câu này chưa được coi là xác nhận tạo lịch.')
     dish = knowledge.lookup_dish(f)
-    search_cue = re.search(r'\b(?:tim(?! hieu)|quan|quanh|gan|o dau|dia chi)\b', f) or (
-        food_intent(text) and re.search(r'muon an|goi y|\bo\s|\btai\s', f))
+    if needs_food_clarification(text):
+        tools.state.results, tools.state.comparison, tools.state.pending_search = [], [], None
+        return tools.result('unknown', 'Mình chưa xác định được món cụ thể trong yêu cầu này; chưa tìm hoặc đổi món.',
+                            'Bạn muốn tìm món gì?')
+    search_cue = not knowledge_question(text) and (re.search(r'\b(?:tim(?! hieu)|quan|quanh|gan|o dau|dia chi)\b', f) or (
+        food_intent(text) and re.search(r'muon an|goi y|\bo\s|\btai\s', f)))
     if tools.state.pending_search and patch.get('area') and not search_cue and not dish:
         return tools.run('search_restaurants', {**tools.state.pending_search, 'area': tools.state.profile.area})
-    if search_cue or (dish and results) or (patch.get('foods') and not knowledge_question(text)):
+    if (search_cue or (dish and results) or (patch.get('foods') and not knowledge_question(text))
+            or (patch.get('area') and tools.state.profile.foods and not knowledge_question(text))):
         # Lookup selects the most specific dish mentioned (e.g. add A then find chè).
         dish_name = dish[1] if dish else None
         max_price = None
@@ -317,6 +325,8 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
         return fallback(text, tools, patch, price_search, initial_refs), {'mode': 'rules', 'calls': 0, 'reason': 'private_turn', 'reply_source': 'rules'}
     if mode == 'rules':
         return fallback(text, tools, patch, price_search, initial_refs), provider
+    if needs_food_clarification(text):
+        return fallback(text, tools, patch, price_search, initial_refs), provider
     # Confirmation is server-only. Even an enabled model cannot consume its own nonce.
     if re.fullmatch(r'\s*xac nhan (?:tao|lap) (?:lich|tour)(?: trinh)?\s*[.!]*', fold_uncached(text)):
         return fallback(text, tools, patch, price_search, initial_refs), provider
@@ -325,6 +335,20 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
     contents = [{'role': 'user', 'parts': [{'text': json.dumps(projection, ensure_ascii=False)}]}]
     tool_results = []
     last = None
+    search_performed = False
+    required_search = bool(not knowledge_question(text) and (
+        patch.get('foods') or (patch.get('area') and tools.state.profile.foods)
+        or food_search_requested(text)))
+    if re.search(r'tao lich|lap lich|tao tour|lap tour|len lich|sap lich|tinh lai lich|sua lich', fold_uncached(text)):
+        required_search = False
+
+    def complete_required_search():
+        # A preference acknowledgement is not a search. This is a separately
+        # authorized read, never a replay of model-requested mutations.
+        maximum = re.search(r'duoi\s*(\d+)\s*(k|nghin|ngan)', fold_uncached(text)) if price_search else None
+        return tools.run('search_restaurants', {'area': tools.state.profile.area,
+            'max_price_vnd': int(maximum[1])*1000 if maximum else None})
+
     failure_source = 'transport'
     try:
         for _ in range(2):
@@ -348,6 +372,11 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 raise ProviderError('bad_response')
             calls = [p['functionCall'] for p in content['parts'] if isinstance(p, dict) and 'functionCall' in p]
             if not calls:
+                if required_search and not search_performed:
+                    reason = ('denied_mutation_readonly_search' if last and last.get('code') == 'authority_denied'
+                              else 'model_missing_required_tool' if last is None else 'model_missing_required_search')
+                    provider.update(reason=reason, reply_source='tools')
+                    return complete_required_search(), provider
                 candidate = ''.join(p.get('text', '') for p in content['parts'] if isinstance(p, dict) and not p.get('thought'))
                 valid = safe_answer(candidate, tools, tool_results)
                 if last is None:
@@ -403,6 +432,8 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                         args['max_price_vnd'] = int(limit.group(1))*1000 if limit else (
                             (tools.state.last_search or {}).get('max_price_vnd'))
                     result = tools.run(name, args)
+                    if name == 'search_restaurants' and result['status'] in ('ok','unknown','no_results'):
+                        search_performed = True
                     if result['status'] == 'ok' and name in ('update_preferences', 'update_foodtour_selection'):
                         result['_mutation_success'] = True
                         result['_operation'] = args.get('operation')
@@ -414,6 +445,11 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 responses.append({'functionResponse': response})
             contents.append({'role': 'user', 'parts': responses})
         provider['reason'] = 'turn_call_cap'
+        if required_search and not search_performed:
+            if last and last.get('code') == 'authority_denied':
+                provider['reason'] = 'denied_mutation_readonly_search'
+            provider['reply_source'] = 'tools'
+            return complete_required_search(), provider
         if (last and last.get('code') == 'authority_denied' and patch.get('foods')
                 and not any(getattr(tools, 'selection_refs', {}).values())):
             # Keep the mutation denied. Fulfil the separately authorized read-only
@@ -433,6 +469,10 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
         provider['failure'] = {'kind': failure_kind, 'source': failure_source}
         if type(status) is int and 400 <= status <= 599:
             provider['failure']['http_status'] = status
+        if required_search and not search_performed:
+            provider['mode'], provider['reply_source'] = 'rules', 'rules'
+            provider['reason'] += '_rules_fallback'
+            return complete_required_search(), provider
         if last is not None:
             if (last.get('code') == 'authority_denied' and patch.get('foods')
                     and not any(getattr(tools, 'selection_refs', {}).values())):

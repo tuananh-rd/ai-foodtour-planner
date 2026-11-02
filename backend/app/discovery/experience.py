@@ -154,7 +154,7 @@ def location_action(state, tools, arguments, reverse_address=None):
     if state.pending_search or state.last_search:
         pending = copy.deepcopy(state.pending_search or state.last_search)
         return tools.run('search_restaurants', pending)
-    return tools.result('ok', 'Đã chọn vị trí xuất phát. Khoảng cách đường chim bay đã cập nhật; tour cũ cần xác nhận lại.')
+    return tools.result('ok', 'Đã chọn vị trí xuất phát. Khoảng cách đường chim bay đã cập nhật.')
 
 
 def refresh_web(state, text, search):
