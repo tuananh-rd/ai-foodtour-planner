@@ -1,0 +1,11 @@
+{
+  "source": "3f119f0e5956fa01d388bf078d1ed04e53db65be",
+  "dataset_version": "0eecfd11835ad9b10f84eb82cf1da95caba3a604ab04721332130d7402fc6898",
+  "real_menu_result_count": 5,
+  "explicitly_selected_stops": 3,
+  "confirmation_required": true,
+  "confirmed_tour_stops": 3,
+  "ordered_osm_legs_origin_vehicle_verified": true,
+  "no_api_routing_calls": true,
+  "provider_calls": 0
+}

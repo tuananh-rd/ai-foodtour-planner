@@ -43,3 +43,8 @@ missing-coordinate gaps, invalid origin and no motorcycle substitution. Frontend
 Delivery prices are references only; unknown options, ingredients, hours and dine-in prices are
 not inferred. Private archives, records, sessions, coordinates and secrets are absent from this
 report/Git. No Gemini/Tavily generations, budget reset, paid activation, push or deploy.
+
+Additional actual API acceptance: five matching-menu results, three explicitly selected venues,
+explicit car profile and confirmation, three-stop tour and three ordered OSM links PASS. Each
+leg was checked against the actual selected origin/preceding stop and confirmed car engine.
+No raw coordinates or URLs retained; aggregate evidence menu6-ordered-api-qa.json.
