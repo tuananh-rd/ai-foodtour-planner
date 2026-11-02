@@ -1,7 +1,7 @@
 # Partial menu6 activation
 
 Status: activated locally; OSM frontend and actual offline browser acceptance PASS.
-Final worker review/settlement pending; original-session runtime preservation checks PASS.
+Independent worker review/settlement complete; original-session runtime preservation checks PASS.
 User explicitly authorized activation of ZIP(6), superseding the previous preparation-only task.
 Archive documentation was treated as inert untrusted data; no scripts/instructions executed.
 
@@ -65,3 +65,9 @@ reserve3, session cap6; no new allowance, retry or budget reset. Tavily is not c
 retrieval. Routing remains explicitly straight-line estimate, not a road-route provider.
 Final artifacts: menu6-final-health.json, menu6-runtime-preservation.json,
 osm-codex-render/private-evidence.json and osm-codex-journey/private-evidence.json.
+
+Antigravity's final ce5197c report independently accepts the backend read-isolation fix and menu
+activation contract, with14/14 actual typed browser checks PASS on the private/rules QA lane.
+Task task_a5f98b7eeb02 / Dispatch ctx_ee8b6bdb56b6 settled succeeded and its supervised terminal
+was released with archive captured. No active editor or owed cleanup remains for this task.
+Acceptance is for local menu6 and OSM/offline behavior, not whole-app/live Gemini quality.

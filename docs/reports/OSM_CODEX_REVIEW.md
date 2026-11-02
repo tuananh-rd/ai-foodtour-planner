@@ -1,7 +1,7 @@
 # OSM integration review
 
 Current verdict: frontend findings resolved in fb82e66; actual offline acceptance PASS with
-backend e8d62f8. Worker settlement and final original-session runtime checks pending.
+backend e8d62f8. Independent worker review/settlement and original-session runtime checks PASS.
 The initial rejection and its evidence are retained below.
 Reviewed current Antigravity working patch after its build-ready status (2026-11-03).
 Build success and18contract/7unit passes are worker-reported; browser acceptance is pending.

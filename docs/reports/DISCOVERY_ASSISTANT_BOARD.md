@@ -1,3 +1,13 @@
+## Final checkpoint — menu6 ACTIVE, OSM offline acceptance PASS (2026-11-03)
+
+Serving http://127.0.0.1:3350 / API http://127.0.0.1:8250. UI fb82e66, backend e8d62f8; final QA ce5197c. Menu6 SHA dd0f26c9 validated/staged/activated, prior12 rollback0088011f verified privately.400 attempted,338menus,18,245canonical/18,764links/90,350options;18,222foodrows after23nonfood exclusions;91pricequarantine/50minimumunverified;55noservice/2error/1review/4confirmedempty disclosed.
+
+22migration/menu tests,18frontend contract groups,8targeted OSM regression groups PASS. Affected backend map10tests PASS across targeted runs (initial assertion typo fixed);10session repository tests PASS. Actual menu6 API3stop/3OSMleg order andorigin PASS; AG14typedbrowserchecks, Sol12renderchecks and10typed/no-data/changefood/area checks PASS. These overlap and are not summed into a unique-test claim. Found real browser503: mapread heldSQLite write lock duringlarge datasetrestore; e8d62f8 read_owned isolatesreadonlysnapshot, preservesauth/expiry/rate/CAS andcannotoverwrite newerwrite.
+
+Original private-session namespace, original budget DB and caps restored and fingerprint-unchanged. Final health private/menu6; Gemini configured gemini-3.5-flash-lite, used15/18 remaining3/reserve3/sessioncap6; no newgeneration orreset, livequality NOT VERIFIED. Tavily retrieval unconfigured. Routes remain straight-line estimates; OSM perleg links onlyonuserclick, motorcycle unsupported, no carsubstitution. Local PMTiles HoanKiem coverage only; outsidepilot markers/basicbackground withwarning. Missingcoords/gaps/order synthetic+sourcevalidated, notclaimed asinvalidrecordsfromprivatearchive. No Google active navigation, paidservice, push/deploy orprivatepublication.
+
+AG task_a5f98b7eeb02 / ctx_ee8b6bdb56b6 SUCCEEDED; independentbackend/datareview accepted ce5197c; workerreleased/archived. Claude rests. Coordinator term_becbf035-3b75-4625-840a-3780f738d7ec, Run generation7. Evidence MENU6_ACTIVATION.md, OSM_CODEX_REVIEW.md, OSM_FRONTEND_QA.md and aggregate JSON artifacts. Scope complete locally; whole-app/liveGeminiquality remains outside this acceptance.
+
 ## Current checkpoint — menu6 active, OSM frontend pending (2026-11-03)
 
 Coordinator rebound to term_becbf035-3b75-4625-840a-3780f738d7ec, Run generation7; oldlead exited.
