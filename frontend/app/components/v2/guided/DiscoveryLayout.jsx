@@ -1209,7 +1209,7 @@ export default function DiscoveryLayout({
           <section
             ref={chatSectionRef}
             data-testid="discovery-chat-section"
-            className={`nn-chat-card${isChatActive ? ' nn-chat-active' : ''}${activeMobileTab !== 'chat' ? ' nn-hidden-mobile' : ''}`}
+            className={`nn-chat-card${isChatActive ? ' nn-chat-active' : ''}${activeMobileTab !== 'chat' ? ' nn-hidden-mobile' : ''}${(originControlsOpen || showManualCoords || displayView.location?.status === 'candidates') ? ' nn-origin-expanded' : ''}`}
           >
             <div className="nn-chat-card-header">
               <div className="nn-assistant-badge">
