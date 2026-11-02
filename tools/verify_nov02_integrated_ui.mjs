@@ -54,6 +54,7 @@ try{
  await send('Chào bạn');record('general greeting without origin question',view.reply.question===null&&view.profile.origin===null);
  await send('tôi muốn ăn phở với tráng miệng ở hai bà trưng');
  record('exact screenshot no deny; remembers compound food; asks origin once',view.profile.area==='Hai Bà Trưng'&&view.profile.foods.includes('phở')&&view.profile.foods.includes('tráng miệng')&&view.profile.origin===null&&!!view.reply.question&&!/chưa được người dùng cho phép/.test(view.reply.text));
+ if(await exists('origin-expand-controls-btn'))await click(sel('origin-expand-controls-btn'));
  await click(sel('origin-gps-button'));await until(()=>ev(`document.querySelector('[data-testid="origin-geo-notice"]')?.textContent.includes('từ chối')`));
  record('GPS click-only denied handled without default',await ev('window.__gpsCalls===1')&&view.profile.origin===null);
  async function fill(id,text){await click(sel(id));await cdp('Input.dispatchKeyEvent',{type:'keyDown',key:'a',code:'KeyA',modifiers:2,windowsVirtualKeyCode:65});await cdp('Input.dispatchKeyEvent',{type:'keyUp',key:'a',code:'KeyA',modifiers:2});await cdp('Input.insertText',{text});}
