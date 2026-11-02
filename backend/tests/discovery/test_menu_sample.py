@@ -82,3 +82,14 @@ class MenuSampleTests(unittest.TestCase):
             self.assertEqual(len(mapped_venues(archive,set())),1)
             self.assertEqual(mapped_venues(archive,{'fried0'}),())
             self.assertIsNone(mapped_venues(archive,set())[0].price_min_vnd)
+
+    def test_delivery_budget_uses_required_minimum_not_venue_range_or_quarantined_price(self):
+        data=menu_data();state=State()
+        state.patch({'origin':{'lat':21.02,'lon':105.83},'area':'Đống Đa'})
+        rows=[r for r in data.menu_by_venue['fried0'] if r['name']=='Gà rán chọn sốt']
+        data=replace(data,menu_by_venue={'fried0':rows})
+        result,_=handle('tôi muốn ăn gà rán dưới 32k',Tools(state,data,StraightLineEstimator()))
+        self.assertNotIn('fried0',state.results)
+        self.assertIsNone(state.profile.budget_vnd)
+        handle('tôi muốn ăn gà rán dưới 40k',Tools(state,data,StraightLineEstimator()))
+        self.assertIn('fried0',state.results)

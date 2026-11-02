@@ -41,7 +41,7 @@ def parse_patch(text, tools):
             patch['start_time'] = f'{number:02d}:00'
     # A discovery price filter is not the trip budget.
     price_search = bool(re.search(r'\bduoi\s*\d+\s*(?:k|nghin|ngan)', f) and
-                        re.search(r'\b(?:tim|quan|pho|bun|che|banh)\b', f) and 'ngan sach' not in f)
+                        (food_search_requested(text) or re.search(r'\b(?:tim|quan|pho|bun|che|banh)\b', f)) and 'ngan sach' not in f)
     if price_search:
         patch.pop('budget_vnd', None)
         patch.pop('budget_scope', None)

@@ -145,12 +145,20 @@ class Tools:
         if foods:
             venues = [v for v in venues if (bool(matching_menu(self.data.menu_by_venue[v.id],foods))
                 if v.id in self.data.menu_by_venue else any(matches_food(v,food) for food in foods))]
+        if max_price_vnd is not None:
+            venues=[v for v in venues if (any(r['min_total_vnd'] is not None and r['min_total_vnd']<=max_price_vnd
+                for r in matching_menu(self.data.menu_by_venue[v.id],foods)) if v.id in self.data.menu_by_venue
+                else v.price_min_vnd is not None and v.price_min_vnd<=max_price_vnd)]
         # A requested district constrains membership, while distance/ranking always
         # uses the actual chosen origin. Street/landmark searches retain pilot radius.
         centre = (place.lat, place.lon) if place and place.kind != 'district' else (origin.lat, origin.lon)
         found = local_tools.search(venues, centre, dish=None if foods else dish, prefs=self.preferences(),
             radius_km=100 if area and (district_filter or place is None or place.kind == 'district') else local_tools.DEFAULT_RADIUS_KM,
-            allergies=self.state.profile.allergies, max_price=max_price_vnd, limit=5)
+            allergies=self.state.profile.allergies, max_price=None, limit=len(venues))
+        # Prefer explicit menu evidence over coarse category matches while
+        # keeping the existing deterministic rank within each evidence group.
+        found.venues.sort(key=lambda v: not bool(matching_menu(self.data.menu_by_venue.get(v.id,[]),foods)))
+        found.venues=found.venues[:5]
         self.state.results = [v.id for v in found.venues]
         self.refresh_result_order()
         self.state.comparison = []
@@ -163,7 +171,7 @@ class Tools:
             text += f' Bộ lọc khu vực: {local_tools.clean_text(area, 120)}.'
         text += ' Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.'
         if max_price_vnd:
-            text += ' Bộ lọc dựa trên khoảng giá quán theo nguồn; chưa chứng minh giá món cụ thể dưới mức bạn nêu.'
+            text += ' Giá menu là tham khảo giao hàng, tính lựa chọn bắt buộc khi đủ dữ liệu; giá ăn tại quán, phí và hóa đơn chưa rõ. Quán thiếu menu vẫn dùng khoảng giá nguồn; chưa chứng minh giá món cụ thể dưới mức bạn nêu.'
         if self.state.profile.tastes:
             text += ' Khẩu vị đã được giữ; dữ liệu chưa chứng minh quán điều chỉnh được độ ngọt/cay.'
         if self.state.profile.allergies:
