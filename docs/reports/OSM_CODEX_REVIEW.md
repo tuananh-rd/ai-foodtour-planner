@@ -22,3 +22,21 @@ did not create a new Task/editor or grant acceptance. No overlapping frontend ed
 Required after fixes: affected regressions, correct8250 real-mode build, actual3350 private-menu
 typed journey plus map mount/resize/toggle/origin/order/mobile/missing-coordinate/unavailable
 checks. No additional app AI generation or provider-budget change is authorized.
+
+## Delta review: fb82e66
+
+All four findings were corrected in actual source; independently reproduced null-origin and
+malformed-URL cases now GREEN. Strict numeric helper is reused by PilotMap, original stop
+orders preserved, restrictive bounds removed, local tile coverage disclosed. Existing worker
+build reports exit0; compiled API8250 verified and corrected production UI loaded on3350.
+
+Independent rendered review:12checks PASS on actual3350/API8250 private/mock/rules lane, no
+response interception: WebGL map and outside-pilot origin inside canvas; actual marker hide/restore;
+visible OSM attribution and coverage notice;1280/1920/390resize without horizontal overflow;
+clear/change origin replaces address/marker; no Google navigation/script; blocked local PMTiles
+shows usable fallback; no browser exception. Aggregate evidence osm-codex-render/private-evidence.json.
+Harness-only failures (hidden-sidebar selector, incomplete chosen-origin helper and an escaped
+evaluation expression) were corrected; no product changes were inferred from those failures.
+Missing-coordinate gaps/order remain synthetic helper + source-reviewed component validation,
+not claimed as missing coordinates returned by the validated private dataset. Full typed menu
+journey/worker settlement still pending. No live routing or Gemini quality acceptance.

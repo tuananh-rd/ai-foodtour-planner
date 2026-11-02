@@ -1,0 +1,81 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "lane": "private-menu (Sol-safe launcher)",
+  "privacy": "counts/booleans only; no names/ids/prices/screenshots",
+  "checks": [
+    {
+      "name": "independent: chosen public address origin without AI",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: real WebGL map mounted and outside-pilot origin in canvas",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: marker toggle actually hides markers",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: marker toggle actually restores origin",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: visible OSM attribution and honest limited coverage",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: map resizes at 1280",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: map resizes at 1920",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: map resizes at 390",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: origin update replaces prior marker/address",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: active page has no Google navigation or map scripts",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: unavailable local map shows usable fallback",
+      "result": "PASS"
+    },
+    {
+      "name": "independent: no browser exception",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "health": {
+    "commit": "3f119f0e5956fa01d388bf078d1ed04e53db65be",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "private",
+    "menu_counts": {
+      "canonical_dishes": 18245,
+      "group_links": 18764,
+      "options": 90350,
+      "mapped_venues": 400,
+      "contact_or_invalid_excluded": 23,
+      "price_quarantined": 91,
+      "minimum_unverified": 50,
+      "linked_venues": 342,
+      "food_rows": 18222
+    }
+  },
+  "originChange": {
+    "chosen": true,
+    "labelChanged": true,
+    "insideCanvas": true,
+    "locationChosen": true
+  },
+  "provider_calls": 0
+}
