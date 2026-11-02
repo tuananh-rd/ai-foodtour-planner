@@ -341,6 +341,7 @@ class Health(Model):
     routing_last_error: str | None = None
     dataset_source: Literal["private", "synthetic"]
     dataset_version: str
+    menu_counts: dict[str, int] = Field(default_factory=dict)
     evidence_overlay: EvidenceOverlayCounts = Field(default_factory=EvidenceOverlayCounts)
     geocoding: GeocodingHealth = Field(default_factory=lambda: GeocodingHealth(status='unavailable'))
 

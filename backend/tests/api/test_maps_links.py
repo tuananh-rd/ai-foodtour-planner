@@ -98,6 +98,15 @@ class MapsEndpointTests(unittest.TestCase):
         self.app = create_app(data_path=Path(self.temp.name) / 'absent.json', sessions=self.store)
         self.client = self.enterContext(TestClient(self.app))
 
+    def test_health_menu_counts_only_no_records(self):
+        data=self.app.state.venues.snapshot()
+        with patch.object(self.app.state.venues,'snapshot',return_value=replace(data,
+                menu_counts={'food_rows':12,'price_quarantined':2})):
+            result=self.client.get('/health')
+        self.assertEqual(result.status_code,200)
+        self.assertEqual(result.json()['menu_counts'],{'food_rows':12,'price_quarantined':2})
+        self.assertNotIn('menu_by_venue',result.json())
+
     def test_confirmed_motorcycle_cannot_be_relabelled_as_car(self):
         created=self.client.post('/v1/sessions').json()
         headers={'X-Session-Token':created['token']}
