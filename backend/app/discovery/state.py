@@ -17,6 +17,7 @@ class State:
     comparison: list = field(default_factory=list)
     confirmation: dict | None = None
     messages: list = field(default_factory=list)
+    public_dialogue: list = field(default_factory=list)
     dataset_version: str | None = None
     plan_requested: bool = False
     tour_stale: bool = False
@@ -100,6 +101,9 @@ class State:
         if isinstance(raw.get('location'), dict):
             obj.location = copy.deepcopy(raw['location'])
             obj.location['candidates'] = obj.location.get('candidates', [])[:5]
+        obj.public_dialogue = [x for x in raw.get('public_dialogue', []) if isinstance(x, dict)
+                              and x.get('role') in ('user', 'assistant') and isinstance(x.get('text'), str)
+                              and len(x['text']) <= 700][-6:]
         if isinstance(raw.get('web'), dict):
             obj.web = copy.deepcopy(raw['web'])
             obj.web['sources'] = obj.web.get('sources', [])[:3]

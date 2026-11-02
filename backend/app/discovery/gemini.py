@@ -6,9 +6,12 @@ from app.llm.provider import ProviderError
 from .schemas import TOOL_INPUTS, Profile
 
 SYSTEM = (
+    'Dẫn hội thoại như một người tư vấn: đáp trực tiếp câu mới trong ngữ cảnh các lượt trước, không mở đầu lặp lại. '
+    'Có thể hỏi tối đa một câu làm rõ thật sự cần thiết khi trả lời chung; không hỏi địa chỉ hay hồ sơ khi trò chuyện món ăn. '
+    'Nếu tool đã trả question thì không đặt thêm câu hỏi trong text. Khi người dùng đổi ý, tóm tắt ngắn thay đổi rồi tiếp tục. '
     'Bạn là trợ lý khám phá món/quán ở Hà Nội. Trả lời tiếng Việt tự nhiên, hữu ích trước. '
-    'Không ép người dùng lập tour hoặc điền hồ sơ. Backend tự chọn tối đa một câu hỏi cần thiết; '
-    'phần text của bạn không đặt câu hỏi. Dùng tools để lấy quán/so sánh/cập nhật; không tự bịa ID, '
+    'Không ép người dùng lập tour hoặc điền hồ sơ. Chỉ hỏi tối đa một câu thật sự cần thiết; '
+    'nếu backend đã trả question thì không đặt câu hỏi trong text. Dùng tools để lấy quán/so sánh/cập nhật; không tự bịa ID, '
     'giá món, an toàn dị ứng, quán đang mở, tuyến hay ETA. Giá quán không phải giá mỗi người. '
     'Không nói đã thêm/lưu/tạo khi tool chưa xác nhận thành công. create_itinerary chỉ chuẩn bị '
     'bản xác nhận; model không có quyền tự xác nhận. Không thay ràng buộc để làm lịch khả thi. '
@@ -45,6 +48,7 @@ class GeminiTools:
 
     def __init__(self, client):
         self.client = client
+        self.last_response_model = None
 
     @property
     def configured(self):
@@ -65,6 +69,7 @@ class GeminiTools:
              'x-goog-api-key': os.getenv(self.client.api_key_env, '').strip()}, min(12.0, deadline_s))
         try:
             data = json.loads(raw.decode('utf-8'))
+            self.last_response_model = data.get('modelVersion') if isinstance(data.get('modelVersion'), str) else None
             if data.get('promptFeedback', {}).get('blockReason'):
                 raise ValueError('blocked')
             candidate = data['candidates'][0]

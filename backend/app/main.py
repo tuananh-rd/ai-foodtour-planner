@@ -39,6 +39,8 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     app.state.chat_understander_injected = chat_understander is not None
     app.state.chat_understanding_provider = None
     app.state.chat_engine_cache = None
+    from app.providers.reverse_address import ReverseAddress
+    app.state.reverse_address = ReverseAddress.from_env()
     # Optional retrieval is separate from chat models. Factory performs no I/O;
     # the existing provider preserves free-only/null-limit/ledger admission.
     from app.providers.tavily import TavilySearch

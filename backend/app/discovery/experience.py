@@ -89,8 +89,15 @@ def settings_action(state, tools, arguments, app, llm_used):
     return tools.result('ok', 'Đã cập nhật lựa chọn trợ lý cho phiên này; lịch trình và quán đã chọn được giữ.')
 
 
-def location_action(state, tools, arguments):
+def location_action(state, tools, arguments, reverse_address=None):
     a = LocationInput.model_validate(arguments)
+    if a.operation == 'label':
+        if not state.profile.origin:
+            return tools.result('tool_error', 'Hãy chọn vị trí trước khi sửa tên địa chỉ.')
+        state.location.update(label=plain_text(a.label), address_status='manual', approximate=True,
+                              address_provider=None, address_reason=None, attribution=None)
+        state.invalidate()
+        return tools.result('ok', 'Đã sửa tên địa chỉ; tọa độ tính khoảng cách được giữ nguyên.')
     if a.operation == 'resolve':
         query = fold_uncached(a.query.strip())
         matches = []
@@ -131,6 +138,16 @@ def location_action(state, tools, arguments):
     state.patch({'origin': {'lat': lat, 'lon': lon}})
     state.location = {'status': 'chosen', 'label': label, 'source': source,
                       'approximate': source == 'local', 'candidates': []}
+    if a.label:
+        state.location.update(label=plain_text(a.label), approximate=True, address_status='manual')
+    elif source == 'gps' and a.resolve_address:
+        if reverse_address:
+            state.location.update(reverse_address.resolve(lat, lon))
+        else:
+            state.location.update(label='Vị trí GPS chưa có địa chỉ', approximate=True,
+                                  address_status='unavailable', address_provider=None, address_reason='disabled')
+    else:
+        state.location.update(address_status='not_requested', address_provider=None)
     tools.refresh_result_order()
     if state.pending_search or state.last_search:
         pending = copy.deepcopy(state.pending_search or state.last_search)

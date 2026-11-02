@@ -80,19 +80,25 @@ class SettingsInput(StrictModel):
 
 
 class LocationInput(StrictModel):
-    operation: Literal['resolve', 'choose', 'coordinates', 'clear']
+    operation: Literal['resolve', 'choose', 'coordinates', 'clear', 'label']
     query: str | None = Field(default=None, min_length=2, max_length=160)
     candidate_id: str | None = Field(default=None, min_length=1, max_length=64)
     lat: float | None = Field(default=None, ge=-90, le=90)
     lon: float | None = Field(default=None, ge=-180, le=180)
     source: Literal['gps', 'coordinates'] | None = None
+    resolve_address: bool = False
+    label: str | None = Field(default=None, min_length=2, max_length=160)
 
     @model_validator(mode='after')
     def shape(self):
         expected = {'resolve': {'query'}, 'choose': {'candidate_id'},
-                    'coordinates': {'lat', 'lon', 'source'}, 'clear': set()}[self.operation]
-        if self.model_fields_set - {'operation'} != expected or any(getattr(self, k) is None for k in expected):
+                    'coordinates': {'lat', 'lon', 'source'}, 'clear': set(), 'label': {'label'}}[self.operation]
+        optional = {'resolve_address', 'label'} if self.operation == 'coordinates' else set()
+        supplied = self.model_fields_set - {'operation'}
+        if not expected <= supplied or supplied - expected - optional or any(getattr(self, k) is None for k in expected):
             raise ValueError('invalid location action')
+        if self.resolve_address and self.source != 'gps':
+            raise ValueError('reverse lookup requires explicit GPS action')
         return self
 
 
@@ -201,6 +207,8 @@ class Provider(StrictModel):
     calls: int = Field(ge=0, le=2)
     reason: str | None = None
     model: str | None = None
+    configured_model: str | None = None
+    response_model: str | None = None
     reply_source: Literal['model', 'tools', 'rules'] | None = None
 
 

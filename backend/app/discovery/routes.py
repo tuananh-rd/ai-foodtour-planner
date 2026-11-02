@@ -87,7 +87,7 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
             if a.type == 'settings':
                 result = settings_action(state, tools, a.arguments, request.app.state, old_used)
             elif a.type == 'location':
-                result = location_action(state, tools, a.arguments)
+                result = location_action(state, tools, a.arguments, request.app.state.reverse_address)
             else:
                 result = tools.confirm(a.confirmation_id) if a.type == 'confirm' else tools.run(a.name, a.arguments)
             provider = {'mode': 'rules', 'calls': 0, 'reason': result.get('code')}
@@ -105,6 +105,13 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
     except Exception:
         result, provider = tools.result('tool_error', 'Công cụ gặp lỗi; chưa xác nhận thao tác thành công. Hãy thử lại sau.'), {'mode': 'rules', 'calls': 0, 'reason': 'tool_error'}
     state.remember('assistant', result['text'] + (' ' + result['question'] if result.get('question') else ''))
+    if body.text and provider.get('reply_source') == 'model' and not tools.calls and not state.results and not state.selection:
+        from app.chat.conversation_reply import private_turn
+        from app.assistant.conversation import is_health_or_allergy_disclosure
+        if not private_turn(body.text) and not is_health_or_allergy_disclosure(body.text):
+            state.public_dialogue = (state.public_dialogue + [
+                {'role': 'user', 'text': body.text[:700]},
+                {'role': 'assistant', 'text': result['text'][:700]}])[-6:]
     with store.owned(session_id, x_session_token) as current:
         store.check_revision(current, body.revision)  # no replay against a concurrently changed version
         current.chat.discovery = state.dump()

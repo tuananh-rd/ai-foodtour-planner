@@ -103,6 +103,9 @@ def references(text, tools, result_ids=None):
         if index < len(result_ids):
             ids.append(result_ids[index])
     f = fold_uncached(text)
+    for cue, n in ((r'quan (?:dau tien|dau|thu nhat)', 0), (r'quan thu hai', 1), (r'quan thu ba', 2)):
+        if re.search(cue, f) and n < len(result_ids):
+            ids.append(result_ids[n])
     for identity in set(result_ids) | {x['id'] for x in tools.state.selection}:
         if identity in tools.by_id and fold_uncached(tools.by_id[identity].name) in f:
             ids.append(identity)
@@ -135,6 +138,11 @@ def authorized(name, args, text, tools, patch, initial_refs):
     if name == 'update_preferences':
         def same(key, value):
             if key not in patch:
+                # Literal public food/taste edits missed by the small local parser
+                # remain bounded to what the user actually said; never GPS/health.
+                if (key in ('foods', 'tastes') and isinstance(value, list) and value
+                        and not knowledge_question(text) and re.search(r'muon|thich|doi|chon mon|an mon|it ', f)):
+                    return all(isinstance(x, str) and fold_uncached(x) in f for x in value)
                 return False
             if key == 'area' and isinstance(value, str):
                 return fold_uncached(value) == fold_uncached(patch[key])
@@ -196,11 +204,13 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
             return tools.result('ok', 'Các quán đã chọn được giữ nguyên.')
         return tools.run('update_foodtour_selection', {'operation': 'remove', 'venue_ids': remove_refs,
                         'selection_version': tools.state.selection_version})
-    elif re.search(r'\bso sanh\b', f):
+    elif re.search(r'\bso sanh\b|quan nao|re hon|gan nhat', f):
+        if not refs and tools.state.results:
+            refs = tools.state.results[:3]
         if len(refs) < 2:
             return tools.result('unknown', 'Có thể so sánh các dữ liệu quán đã xem; tiêu chí chưa có dữ liệu sẽ ghi chưa rõ.', 'Bạn muốn so sánh hai quán nào?')
         return tools.run('compare_restaurants', {'venue_ids': refs})
-    elif re.search(r'chi tiet|thong tin|xem quan', f) and refs:
+    elif re.search(r'chi tiet|thong tin|xem quan|quan thu|quan dau', f) and refs:
         if len(refs) > 1:
             return tools.result('unknown', 'Mình có thể xem chi tiết một quán đã hiển thị.', 'Bạn muốn xem quán nào trước?')
         return tools.run('get_restaurant_details', {'venue_id': refs[0]})
@@ -252,6 +262,7 @@ def model_projection(tools, text):
                if x['role'] == 'user' and not private_turn(x['text'])
                and not is_health_or_allergy_disclosure(x['text'])][-4:]
     return {'message': safe_text[:1000], 'profile': profile,
+            'recent_general_dialogue': tools.state.public_dialogue[-6:],
             'origin_selected': tools.state.profile.origin is not None, 'recent_public_user_turns': history,
             'selection': [{'id': x['id'], 'locked': x['locked']} for x in tools.state.selection],
             'last_results': [{'id': i, 'label': chr(65+n)} for n, i in enumerate(tools.state.results)],
@@ -273,7 +284,7 @@ def tool_projection(result):
 def safe_answer(text, tools, tool_results):
     if isinstance(text, str):
         text = plain_text(text)
-    if not isinstance(text, str) or not text.strip() or len(text) > 1200 or '?' in text:
+    if not isinstance(text, str) or not text.strip() or len(text) > 1200 or text.count('?') > 1:
         return None
     if any(pattern.search(text) for pattern in (RE_ALLERGY_CLEARANCE, RE_OPERATIONAL_CLAIM, RE_ETA_CLAIM,
                                                RE_AGENT_ROLEPLAY, RE_INSTRUCTION_LEAKAGE)):
@@ -307,7 +318,8 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
         if changed['status'] != 'ok':
             return changed, {'mode': 'rules', 'calls': 0, 'reason': 'invalid_patch'}
     mode = getattr(model, 'mode', 'gemini') if model is not None and model.configured else 'rules'
-    provider = {'mode': mode, 'calls': 0, 'reply_source': 'rules' if mode == 'rules' else 'tools'}
+    provider = {'mode': mode, 'calls': 0, 'reply_source': 'rules' if mode == 'rules' else 'tools',
+                'configured_model': getattr(getattr(model, 'client', None), 'model', None)}
     if private_turn(text) or is_health_or_allergy_disclosure(text):
         # Health, precise personal location, contacts and credentials stay local.
         return fallback(text, tools, patch, price_search, initial_refs), {'mode': 'rules', 'calls': 0, 'reason': 'private_turn', 'reply_source': 'rules'}
@@ -332,6 +344,7 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
             # Count conservatively before calling, including provider/schema/timeout failures.
             provider['calls'] += 1
             content = model.generate(copy.deepcopy(contents), deadline_s=remaining)
+            provider['response_model'] = getattr(model, 'last_response_model', None)
             if not isinstance(content, dict) or content.get('role') != 'model' or not isinstance(content.get('parts'), list):
                 raise ProviderError('bad_response')
             calls = [p['functionCall'] for p in content['parts'] if isinstance(p, dict) and 'functionCall' in p]
@@ -340,12 +353,23 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 valid = safe_answer(candidate, tools, tool_results)
                 if last is None:
                     # A factual search or action may never be replaced by an unsupported model answer.
+                    f = fold_uncached(text)
+                    requires_tools = bool(re.search(r'tim|so sanh|chi tiet|thong tin quan|tao lich|lap lich|tao tour|lap tour', f)
+                                          or (tools.state.results and re.search(r'quan nao|re hon|gan nhat|quan thu|quan dau', f))
+                                          or any(getattr(tools, 'selection_refs', {}).values()))
+                    if valid and not requires_tools:
+                        provider['reply_source'] = 'model'
+                        return tools.result('ok', valid), provider
                     deterministic = fallback(text, tools, patch, price_search, initial_refs)
-                    if tools.calls or deterministic['status'] != 'ok':
+                    if requires_tools or deterministic['status'] != 'ok':
+                        provider['reply_source'] = 'tools' if tools.calls else 'rules'
+                        provider['reason'] = 'model_missing_required_tool'
                         return deterministic, provider
                     provider['reply_source'] = 'model' if valid else 'rules'
+                    if not valid:
+                        provider['reason'] = 'safe_answer_rejected'
                     return tools.result('ok', valid or deterministic['text']), provider
-                if valid and last['status'] in ('ok', 'unknown', 'no_results'):
+                if valid and last['status'] in ('ok', 'unknown', 'no_results') and not (last.get('question') and '?' in valid):
                     last['text'] = valid
                     provider['reply_source'] = 'model'
                 return last, provider
@@ -362,7 +386,7 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 except (ValueError, KeyError, TypeError, AttributeError):
                     permitted = False
                 if not permitted:
-                    result = tools.result('tool_error', 'Yêu cầu công cụ chưa được người dùng cho phép; chưa thay đổi dữ liệu.')
+                    result = tools.result('tool_error', 'Thao tác thay đổi chưa được xác nhận hoặc quán không thuộc kết quả đã xem; lựa chọn hiện tại được giữ.', code='authority_denied')
                 else:
                     if name == 'search_restaurants':
                         args = {**args, 'area': tools.state.profile.area}

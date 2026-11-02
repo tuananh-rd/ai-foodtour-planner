@@ -1,3 +1,9 @@
+## Active 2026-11-02 — GPS address, natural conversation, active chat
+
+Baseline `e3bdbeb`; latest direct ownership: Sol backend/AI/review/integration, Antigravity frontend/QA, Claude read-only adviser if configured Sonnet5.5 medium exists; Luna inactive. Runtime `9a2fb5cb-ef6c-464f-bc45-c746e542d6a9`; current lead `term_48a7ecc5-6563-406e-a00b-ba563db742b5`, existing Run rebound. Fleet inspection found no active frontend worker/task; no Luna task was launched. Frontend worktree was clean and merged with the accepted baseline, preserving history.
+
+Short implementation sequence: (1) freeze additive location address response and implement bounded Photon backend cache/timeout with no GPS in model/search projections; (2) AG expands active chat, collapses hero and shows truthful GPS address/approximate/failure/edit states; (3) Sol improves model-led context/clarification and provenance without relaxing IDs/selection/confirmation/allergy/CAS; (4) targeted offline/rendered tests, separate integration lane and bounded current-config Gemini journey. Preserve3320/API8230 and all private environment/ledgers. New6-turn/12-request upper allowance respects lower configured caps, no retries/cap changes; no Tavily live. Claude advice is parallel and cannot block independent coding. No push/deploy.
+
 # Discovery-first assistant task board
 
 ## Active upgrade - 2026-10-20: location, verified chat models and optional web
