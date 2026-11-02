@@ -91,6 +91,7 @@ try{
    record('active class and readable type '+width,active.active&&active.font>=15&&active.inputFont>=16);
    record('active stream usable '+width,active.stream>=height*(width===390?.5:.4));
    record('composer within viewport '+width,active.inputBottom<=height);
+   if(width===1440||width===390)await shot('active-chat-'+width);
    if(width===390)await tab('tour');
 
    record('no emoji DOM '+width,await ev(`!/[\\p{Extended_Pictographic}\\u{1F1E6}-\\u{1F1FF}\\uFE0F\\u20E3]/u.test(document.body.innerText)`));
