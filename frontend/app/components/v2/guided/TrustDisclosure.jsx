@@ -249,7 +249,7 @@ export default function TrustDisclosure({ turn, health }) {
                 <b>Khoảng cách:</b> Ước tính khoảng cách đi bộ đường chim bay
               </div>
               <div>
-                <b>Chỉ đường Google Maps:</b> Khi bấm mở lộ trình, ứng dụng tạo liên kết HTTPS chứa toạ độ các quán để mở trên Google Maps. Google Maps tính toán lại tuyến đường và thời gian thực tế độc lập với ứng dụng.
+                <b>Chỉ đường OpenStreetMap:</b> Khi bấm mở lộ trình, ứng dụng tạo liên kết HTTPS chứa toạ độ các quán để mở trên OpenStreetMap. OpenStreetMap tính toán lại tuyến đường và thời gian thực tế độc lập với ứng dụng.
               </div>
               <div className="nn-peach-box" style={{ fontSize: 13 }}>
                 Lưu ý an toàn: Dữ liệu không có thông tin nguyên liệu thành phần; chưa quán nào được xác nhận an toàn dị ứng.

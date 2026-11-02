@@ -132,29 +132,50 @@ if (process.exitCode === undefined || process.exitCode === 0) {
       try {
         await actSel(`[data-testid="restaurant-card-${pick}"] .nn-action-chip-btn`);
         selected = (view?.selection || []).some(s => s.id === pick);
-        await send('Bắt đầu lúc 18h, tổng 180 phút, xe máy, 2 người');
+        await send('Bắt đầu lúc 18h, tổng 180 phút, đi bộ, 2 người');
         if (await exists('btn-trigger-plan')) await actSel('btn-trigger-plan');
         confShown = await exists('discovery-confirmation-card') && !!view?.confirmation;
         if (confShown) {
           await actSel('btn-confirm-itinerary');
           tourStops = (view?.tour?.stops || []).length;
           await until(() => exists('guided-timeline')).catch(() => {});
-          mapsPresent = await until(() => exists('google-maps-cta')).then(() => true).catch(() => false);
+          mapsPresent = await until(() => exists('osm-directions-cta') || exists('google-maps-cta')).then(() => true).catch(() => false);
           if (mapsPresent) {
             const origin = view?.profile?.origin; const stops = view?.tour?.stops || [];
-            // Validity computed in-page; only the boolean is exported (no private coords). Motorbike -> driving.
-            mapsValid = await ev(`(()=>{const a=document.querySelector('[data-testid="google-maps-cta"]');if(!a||!a.href)return false;try{const u=new URL(a.href),q=u.searchParams;const pts=${JSON.stringify(stops.map(s => [s.lat, s.lon]))};const o=${JSON.stringify(origin ? [origin.lat, origin.lon] : null)};const eq=(v,p)=>{const c=String(v).split(',').map(Number);return c.length===2&&Math.abs(c[0]-p[0])<1e-5&&Math.abs(c[1]-p[1])<1e-5};const order=[...(q.get('waypoints')?.split('|')||[]),q.get('destination')];return u.origin==='https://www.google.com'&&u.pathname==='/maps/dir/'&&q.get('api')==='1'&&q.get('travelmode')==='driving'&&o&&eq(q.get('origin'),o)&&order.length===pts.length&&order.every((x,i)=>eq(x,pts[i]));}catch(e){return false}})()`);
+            mapsValid = await ev(`(()=>{
+              const a = document.querySelector('[data-testid="osm-directions-cta"]') || document.querySelector('[data-testid="google-maps-cta"]');
+              if (!a || !a.href) return false;
+              try {
+                const u = new URL(a.href), q = u.searchParams;
+                const pts = ${JSON.stringify(stops.map(s => [s.lat, s.lon]))};
+                const o = ${JSON.stringify(origin ? [origin.lat, origin.lon] : null)};
+                const eq = (coordStr, p) => {
+                  const c = String(coordStr).split(',').map(Number);
+                  return c.length === 2 && Math.abs(c[0] - p[0]) < 1e-4 && Math.abs(c[1] - p[1]) < 1e-4;
+                };
+                if (u.origin !== 'https://www.openstreetmap.org' || u.pathname !== '/directions') return false;
+                const engine = q.get('engine');
+                if (engine !== 'fossgis_osrm_foot' && engine !== 'fossgis_osrm_car') return false;
+                const route = q.get('route');
+                if (!route) return false;
+                const parts = route.split(';');
+                if (parts.length !== 2) return false;
+                return o && pts.length > 0 && eq(parts[0], o) && eq(parts[1], pts[0]);
+              } catch (e) {
+                return false;
+              }
+            })()`);
+          }
           }
           // (4) After the tour, a food change preserves valid selection + origin and invalidates confirmation/tour.
           await send('tôi muốn ăn phở');
           postPreserved = (view?.selection || []).some(s => s.id === pick) && view?.location?.status === 'chosen' && !view?.confirmation && !view?.tour;
-        }
       } catch (ex) { evidence.errors.push('journey step error (redacted)'); }
       evidence.journey = { selected, confShown, tourStops, mapsPresent, mapsValid, postPreserved };
       record('private: selected a menu venue into the tour', selected === true);
       record('private: explicit confirmation gate forms', confShown === true);
       record('private: confirm creates a tour with stops', tourStops > 0);
-      record('private: ordered DRIVING Maps URL forms and is valid (boolean only)', mapsPresent === true && mapsValid === true);
+      record('private: ordered OpenStreetMap directions URL forms and is valid (boolean only)', mapsPresent === true && mapsValid === true);
       record('private: post-tour food change preserves selection+origin and invalidates confirmation/tour', postPreserved === true);
       record('private: no live generation (mock lane)', health.llm !== 'live');
       record('private: no browser exception', evidence.errors.length === 0);

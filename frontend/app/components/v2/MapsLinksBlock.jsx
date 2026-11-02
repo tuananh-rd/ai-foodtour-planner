@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getMapsLinks } from '../../../lib/api';
 import { useStatusQueue } from '../../ui/StatusQueue';
-import { isValidGoogleMapsDirUrl, translateSkippedReason, translateServerNote } from '../../../lib/mapsUrlValidation';
+import { isValidOsmDirUrl, translateSkippedReason, translateServerNote } from '../../../lib/mapsUrlValidation';
 
 /**
  * Free Google Maps URLs Itinerary Block (Contract v1.7, GMAPS-URL-2).
@@ -16,7 +16,7 @@ import { isValidGoogleMapsDirUrl, translateSkippedReason, translateServerNote } 
  * - Strict URL allowlist before rendering ANY anchor: https, exact www.google.com host, no credentials,
  *   default port, /maps/dir/ path. Accepted URLs preserved verbatim; rejected links disclosed.
  * - Segmented walking/driving toggle (default walking, >=44px touch target, full radio keyboard navigation).
- * - Exactly one link: primary button 'Xem lịch trình trên Google Maps'.
+ * - Exactly one link: primary button 'Xem lịch trình trên OpenStreetMap'.
  * - n > 1 links: ordered list 'Chặng i/n: <from> → <to>'.
  * - Real <a href target="_blank" rel="noopener noreferrer">.
  * - Status partial/unavailable rendered honestly with server notes and accurate reason translation.
@@ -216,7 +216,7 @@ export default function MapsLinksBlock({
         id: 'maps_links_error',
         type: 'error',
         title: 'Không thể tạo liên kết bản đồ',
-        message: err?.message || 'Có lỗi khi lấy đường dẫn Google Maps. Bạn có thể bấm thử lại.',
+        message: err?.message || 'Có lỗi khi lấy đường dẫn OpenStreetMap. Bạn có thể bấm thử lại.',
         action: {
           label: 'Thử lại',
           onClick: () => {
@@ -292,7 +292,7 @@ export default function MapsLinksBlock({
 
   // Strict URL allowlist before rendering ANY anchor:
   // Must be https:, hostname exactly www.google.com, no credentials, default port, pathname starting with /maps/dir/
-  const validLinks = rawLinks.filter((link) => link && isValidGoogleMapsDirUrl(link.url));
+  const validLinks = rawLinks.filter((link) => link && isValidOsmDirUrl(link.url));
   const rejectedCount = rawLinks.length - validLinks.length;
   const isAllRejected = rawLinks.length > 0 && validLinks.length === 0;
 
@@ -319,7 +319,7 @@ export default function MapsLinksBlock({
     <section
       data-maps-links-block
       data-testid="maps-links-block"
-      aria-label="Liên kết Google Maps"
+      aria-label="Liên kết OpenStreetMap"
       className={`ft-maps-links-block ${className}`.trim()}
       style={{
         backgroundColor: '#FFFFFF',
@@ -367,7 +367,7 @@ export default function MapsLinksBlock({
             }}
           >
             <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><CompassGlyph /></span>
-            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Mở trên Google Maps</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Mở trên OpenStreetMap</span>
           </h4>
           <p
             style={{
@@ -505,7 +505,7 @@ export default function MapsLinksBlock({
             marginBottom: '10px',
           }}
         >
-          Đang tạo đường dẫn chỉ đường Google Maps...
+          Đang tạo đường dẫn chỉ đường OpenStreetMap...
         </div>
       )}
 
@@ -533,7 +533,7 @@ export default function MapsLinksBlock({
             <div>
               <strong>Lịch trình một phần:</strong>{' '}
               {allUrlTooLong
-                ? 'Độ dài liên kết vượt quá giới hạn của Google Maps nên một số chặng không thể đưa vào chỉ đường.'
+                ? 'Độ dài liên kết vượt quá giới hạn nên một số chặng không thể đưa vào chỉ đường.'
                 : allNoUsablePoint
                 ? 'Một số quán chưa có toạ độ nên không đưa vào liên kết.'
                 : 'Một số chặng không thể đưa vào liên kết do thiếu toạ độ/địa chỉ hoặc vượt quá độ dài liên kết.'}
@@ -581,7 +581,7 @@ export default function MapsLinksBlock({
               {isAllRejected
                 ? 'Tất cả các liên kết được tạo đều không vượt qua bước kiểm tra an toàn URL.'
                 : allUrlTooLong
-                ? 'Lịch trình vượt quá giới hạn độ dài liên kết của Google Maps.'
+                ? 'Lịch trình vượt quá giới hạn độ dài liên kết.'
                 : allNoUsablePoint
                 ? 'Các quán trong lịch trình chưa có toạ độ hoặc địa chỉ hợp lệ để dẫn đường.'
                 : 'Không thể tạo đường dẫn cho các điểm trong lịch trình (do thiếu toạ độ/địa chỉ hoặc độ dài liên kết vượt quá giới hạn).'}
@@ -667,7 +667,7 @@ export default function MapsLinksBlock({
             }}
           >
             <span aria-hidden="true" style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><MapGlyph /></span>
-            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Xem lịch trình trên Google Maps</span>
+            <span style={{ minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>Xem lịch trình trên OpenStreetMap</span>
           </a>
         </div>
       )}
@@ -758,11 +758,11 @@ export default function MapsLinksBlock({
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><LockGlyph /></span>
-          <span>Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới Google khi bạn mở liên kết.</span>
+          <span>Liên kết chứa toạ độ điểm xuất phát/quán ăn hoặc địa chỉ dự phòng và chỉ được gửi tới OpenStreetMap khi bạn mở liên kết.</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', minWidth: 0, maxWidth: '100%', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>
           <span style={{ display: 'inline-flex', alignItems: 'center', flexShrink: 0 }}><ClockGlyph /></span>
-          <span>Thứ tự theo gợi ý của ứng dụng; Google có thể hiển thị thời gian khác.</span>
+          <span>Thứ tự theo gợi ý của ứng dụng; thời gian di chuyển thực tế có thể khác.</span>
         </div>
       </div>
     </section>

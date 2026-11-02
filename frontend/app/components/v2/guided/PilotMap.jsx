@@ -5,46 +5,35 @@ import { normalizeDisplayText } from '../../../../lib/emojiSanitizer';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import './pilot-map.css';
 
-export const PILOT_BOUNDS = {
-  west: 105.835,
-  south: 21.018,
-  east: 105.866,
-  north: 21.046
-};
-
-const DEFAULT_CENTER = [105.8505, 21.032];
-const DEFAULT_ZOOM = 13.5;
-
-/**
- * Authoritative bounds check for Hoan Kiem pilot area.
- * Shared directly with QA test suites.
- */
-export function isInsidePilotBounds(lat, lon) {
-  if (typeof lat !== 'number' || typeof lon !== 'number' || isNaN(lat) || isNaN(lon)) return false;
-  return (
-    lon >= PILOT_BOUNDS.west &&
-    lon <= PILOT_BOUNDS.east &&
-    lat >= PILOT_BOUNDS.south &&
-    lat <= PILOT_BOUNDS.north
-  );
-}
+import { PILOT_BOUNDS, DEFAULT_CENTER, DEFAULT_ZOOM, isInsidePilotBounds } from '../../../../lib/pilotBounds.js';
+import { isValidCoordinate } from '../../../../lib/discoveryMaps.js';
+export { PILOT_BOUNDS, DEFAULT_CENTER, DEFAULT_ZOOM, isInsidePilotBounds };
 
 /**
  * PilotMap
  * Interactive local map using self-hosted Hoan Kiem PMTiles vector archive and MapLibre GL.
  * 
  * Invariants & review gates:
- * - Exact pilot maxBounds: [[105.835, 21.018], [105.866, 21.046]] (no expanded offsets)
- * - MapLibre 6 web worker setup using official bundler pattern with same-origin fallback
- * - Controlled loading timeout (8s) and failure fallback on all source/Range/network errors
+ * - Displays explicitly selected origin with human-readable label and distinct marker
+ * - Missing coordinates are NEVER placed at 0,0 and NEVER coerced from null/empty/bool
+ * - Dashed connectors represent straight-line estimates only (no road route or live ETA claims)
+ * - Missing coordinates break adjacency: connectors NEVER bridge or skip over missing stops
  * - Complete map and marker destruction on error, replace, and unmount
- * - Immediate synchronous marker placement on map creation to eliminate map-ready race
  * - Native <button> markers with keyboard activation (Enter/Space) and safe popup focus management
- * - Stable testids: pilot-map-canvas, pilot-markers-toggle, pilot-map-fallback
+ * - Stable testids: pilot-map-canvas, pilot-markers-toggle, pilot-origin-marker, pilot-map-fallback
  * - Same-origin asset only (/maps/hoankiem-20261018.pmtiles); zero remote tiles or glyphs
  * - Visible OpenStreetMap & Protomaps attribution with map date
+ * - Zero emoji in UI strings
+ * - Discloses local tile coverage outside Hoan Kiem without restrictive viewport clipping
  */
-export default function PilotMap({ stops = [], onFallbackToSchematic }) {
+export default function PilotMap({
+  stops = [],
+  origin = null,
+  originLabel = '',
+  onFallbackToSchematic,
+  className = '',
+  style = {}
+}) {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const maplibreglRef = useRef(null);
@@ -57,20 +46,48 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
   const [mapError, setMapError] = useState(null);
   const [markersVisible, setMarkersVisible] = useState(true);
 
-  // Memoize valid stops to prevent unneeded effect re-executions
+  // Validate and memoize explicit origin using strict numeric checks (no coercion)
+  const validOrigin = useMemo(() => {
+    if (!isValidCoordinate(origin)) return null;
+    const lat = origin.lat;
+    const lon = origin.lon !== undefined ? origin.lon : origin.lng;
+    const label = normalizeDisplayText(origin.label || originLabel || 'Điểm xuất phát');
+    return {
+      lat,
+      lon,
+      label,
+      inBounds: isInsidePilotBounds(lat, lon)
+    };
+  }, [origin, originLabel]);
+
+  // Memoize valid stops using strict numeric checks (no coercion of null, bool, or strings)
   const validStops = useMemo(() => {
     return (stops || []).map((s, idx) => {
-      const lat = s.lat ?? s.venue?.lat ?? null;
-      const lon = s.lon ?? s.venue?.lon ?? null;
+      const candidate = {
+        lat: typeof s.lat === 'number' ? s.lat : (typeof s.venue?.lat === 'number' ? s.venue.lat : null),
+        lon: s.lon !== undefined
+          ? (typeof s.lon === 'number' ? s.lon : null)
+          : (s.lng !== undefined
+          ? (typeof s.lng === 'number' ? s.lng : null)
+          : (s.venue?.lon !== undefined
+          ? (typeof s.venue.lon === 'number' ? s.venue.lon : null)
+          : (typeof s.venue?.lng === 'number' ? s.venue.lng : null)))
+      };
+      const hasCoords = isValidCoordinate(candidate);
+      const stopOrder = (typeof s.order === 'number' && s.order > 0)
+        ? s.order
+        : ((typeof s.index === 'number' && s.index > 0) ? s.index : idx + 1);
+
       return {
-        index: idx + 1,
+        index: stopOrder,
+        order: stopOrder,
         id: s.venue_id || s.id || `stop-${idx}`,
-        name: normalizeDisplayText(s.name || s.venue?.name || `Điểm ${idx + 1}`),
+        name: normalizeDisplayText(s.name || s.venue?.name || `Điểm ${stopOrder}`),
         address: normalizeDisplayText(s.address || s.venue?.address || ''),
         district: normalizeDisplayText(s.district || s.venue?.district || ''),
-        lat: typeof lat === 'number' && !isNaN(lat) ? lat : null,
-        lon: typeof lon === 'number' && !isNaN(lon) ? lon : null,
-        inBounds: isInsidePilotBounds(lat, lon)
+        lat: hasCoords ? candidate.lat : null,
+        lon: hasCoords ? candidate.lon : null,
+        inBounds: hasCoords ? isInsidePilotBounds(candidate.lat, candidate.lon) : false
       };
     });
   }, [stops]);
@@ -78,52 +95,181 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
   const stopsRef = useRef(validStops);
   stopsRef.current = validStops;
 
+  const originRef = useRef(validOrigin);
+  originRef.current = validOrigin;
+
   const markersVisibleRef = useRef(markersVisible);
   markersVisibleRef.current = markersVisible;
 
   const outOfBoundsCount = useMemo(() => {
-    return validStops.filter((s) => s.lat !== null && s.lon !== null && !s.inBounds).length;
-  }, [validStops]);
+    const stopOut = validStops.filter((s) => s.lat !== null && s.lon !== null && !s.inBounds).length;
+    const originOut = validOrigin && !validOrigin.inBounds ? 1 : 0;
+    return stopOut + originOut;
+  }, [validStops, validOrigin]);
 
   const missingCoordsCount = useMemo(() => {
     return validStops.filter((s) => s.lat === null || s.lon === null).length;
   }, [validStops]);
 
-  // Synchronous, generation-tracked marker rendering
-  const renderMarkersSync = useCallback((map, maplibregl, stopsToRender, isVisible) => {
-    const currentGen = ++markerGenRef.current;
+  // Compute contiguous connector segments
+  // Missing coordinates break adjacency: NEVER bridge or skip over missing stops
+  const connectorSegments = useMemo(() => {
+    const segments = [];
+    let currentSeg = [];
 
-    // Clear existing markers immediately
+    if (validOrigin && validOrigin.lat !== null && validOrigin.lon !== null) {
+      currentSeg.push([validOrigin.lon, validOrigin.lat]);
+    }
+
+    for (const stop of validStops) {
+      if (stop.lat !== null && stop.lon !== null) {
+        if (currentSeg.length > 0) {
+          currentSeg.push([stop.lon, stop.lat]);
+          segments.push(currentSeg);
+        }
+        currentSeg = [[stop.lon, stop.lat]];
+      } else {
+        // Missing coordinate breaks adjacency
+        currentSeg = [];
+      }
+    }
+
+    return segments;
+  }, [validOrigin, validStops]);
+
+  // Full cleanup helper to prevent WebGL context leaks
+  const cleanupMap = useCallback(() => {
+    markerGenRef.current += 1;
     markersRef.current.forEach((m) => {
       try { m.remove(); } catch (_) {}
     });
     markersRef.current = [];
 
-    if (!isVisible || !map || !maplibregl) return;
+    if (mapInstanceRef.current) {
+      try {
+        mapInstanceRef.current.remove();
+      } catch (_) {}
+      mapInstanceRef.current = null;
+    }
+    mapLoadedRef.current = false;
+    setMapReady(false);
+  }, []);
 
-    stopsToRender.forEach((stop) => {
-      if (stop.lat === null || stop.lon === null) return;
+  // Update connector lines GeoJSON
+  const updateConnectors = useCallback((map, segments) => {
+    if (!map) return;
+    const source = map.getSource('route-connectors');
+    if (!source) return;
 
-      // Native <button> element for accessible keyboard focus and Enter/Space activation
-      const btn = document.createElement('button');
-      btn.type = 'button';
-      btn.className = `nn-map-marker${stop.index === stopsToRender.length && stopsToRender.length > 1 ? ' last' : ''}`;
-      const stopNameClean = normalizeDisplayText(stop.name);
-      const stopAddrClean = normalizeDisplayText(stop.address || stop.district);
+    const features = segments.map((seg, idx) => ({
+      type: 'Feature',
+      id: `seg-${idx}`,
+      geometry: {
+        type: 'LineString',
+        coordinates: seg
+      },
+      properties: {
+        estimated: true,
+        label: 'Đường nối ước tính'
+      }
+    }));
 
-      btn.textContent = String(stop.index);
-      btn.title = stopNameClean;
-      btn.setAttribute('tabindex', '0');
-      btn.setAttribute('aria-label', `Điểm dừng ${stop.index}: ${stopNameClean}`);
+    try {
+      source.setData({
+        type: 'FeatureCollection',
+        features
+      });
+    } catch (_) {}
+  }, []);
 
-      // Safe DOM popup with textContent only (no innerHTML)
+  // Synchronous marker rendering
+  const renderMarkersSync = useCallback((map, maplibregl, stopsToRender, originToRender, isVisible) => {
+    markerGenRef.current += 1;
+    const currentGen = markerGenRef.current;
+
+    // Remove existing markers
+    markersRef.current.forEach((m) => {
+      try { m.remove(); } catch (_) {}
+    });
+    markersRef.current = [];
+
+    if (!map || !maplibregl || !isVisible) return;
+
+    // 1. Explicit Origin Marker
+    if (originToRender && originToRender.lat !== null && originToRender.lon !== null) {
+      const originBtn = document.createElement('button');
+      originBtn.type = 'button';
+      originBtn.className = 'nn-map-origin-marker';
+      originBtn.setAttribute('data-testid', 'pilot-origin-marker');
+      const originLabelClean = normalizeDisplayText(originToRender.label);
+      originBtn.textContent = 'S';
+      originBtn.title = `Điểm xuất phát: ${originLabelClean}`;
+      originBtn.setAttribute('tabindex', '0');
+      originBtn.setAttribute('aria-label', `Điểm xuất phát: ${originLabelClean}`);
+
       const popupContent = document.createElement('div');
       popupContent.className = 'nn-map-popup-card';
       popupContent.setAttribute('tabindex', '-1');
 
       const titleEl = document.createElement('div');
       titleEl.className = 'nn-map-popup-title';
-      titleEl.textContent = `${stop.index}. ${stopNameClean}`;
+      titleEl.textContent = `Xuất phát: ${originLabelClean}`;
+      popupContent.appendChild(titleEl);
+
+      const descEl = document.createElement('div');
+      descEl.className = 'nn-map-popup-addr';
+      descEl.textContent = originToRender.inBounds
+        ? 'Điểm xuất phát đã chọn'
+        : 'Điểm xuất phát (khu vực ngoài trung tâm)';
+      popupContent.appendChild(descEl);
+
+      const linkEl = document.createElement('a');
+      linkEl.className = 'nn-map-popup-link';
+      linkEl.href = `https://www.openstreetmap.org/search?query=${encodeURIComponent(originToRender.label)}`;
+      linkEl.target = '_blank';
+      linkEl.rel = 'noopener noreferrer';
+      linkEl.textContent = 'Mở OpenStreetMap';
+      popupContent.appendChild(linkEl);
+
+      const popup = new maplibregl.Popup({ offset: 15, closeButton: true }).setDOMContent(popupContent);
+      popup.on('close', () => {
+        try { originBtn.focus(); } catch (_) {}
+      });
+
+      if (currentGen !== markerGenRef.current) return;
+
+      const originMarker = new maplibregl.Marker({ element: originBtn })
+        .setLngLat([originToRender.lon, originToRender.lat])
+        .setPopup(popup)
+        .addTo(map);
+
+      markersRef.current.push(originMarker);
+    }
+
+    // 2. Sequential Numbered Tour Stops
+    stopsToRender.forEach((stop, idx) => {
+      if (stop.lat === null || stop.lon === null) return;
+
+      const stopOrder = stop.order || stop.index || (idx + 1);
+      const btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = `nn-map-marker${idx === stopsToRender.length - 1 && stopsToRender.length > 1 ? ' last' : ''}`;
+      btn.setAttribute('data-testid', `pilot-stop-marker-${stopOrder}`);
+      const stopNameClean = normalizeDisplayText(stop.name);
+      const stopAddrClean = normalizeDisplayText(stop.address || stop.district);
+
+      btn.textContent = String(stopOrder);
+      btn.title = stopNameClean;
+      btn.setAttribute('tabindex', '0');
+      btn.setAttribute('aria-label', `Điểm dừng ${stopOrder}: ${stopNameClean}`);
+
+      const popupContent = document.createElement('div');
+      popupContent.className = 'nn-map-popup-card';
+      popupContent.setAttribute('tabindex', '-1');
+
+      const titleEl = document.createElement('div');
+      titleEl.className = 'nn-map-popup-title';
+      titleEl.textContent = `${stopOrder}. ${stopNameClean}`;
       popupContent.appendChild(titleEl);
 
       if (stopAddrClean) {
@@ -135,15 +281,14 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
 
       const linkEl = document.createElement('a');
       linkEl.className = 'nn-map-popup-link';
-      linkEl.href = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${stop.name} ${stop.address || stop.district || 'Hà Nội'}`)}`;
+      linkEl.href = `https://www.openstreetmap.org/search?query=${encodeURIComponent(`${stop.name} ${stop.address || stop.district || 'Hà Nội'}`)}`;
       linkEl.target = '_blank';
       linkEl.rel = 'noopener noreferrer';
-      linkEl.textContent = 'Mở Google Maps';
+      linkEl.textContent = 'Mở OpenStreetMap';
       popupContent.appendChild(linkEl);
 
       const popup = new maplibregl.Popup({ offset: 15, closeButton: true }).setDOMContent(popupContent);
 
-      // Safe focus restoration on popup close
       popup.on('close', () => {
         try { btn.focus(); } catch (_) {}
       });
@@ -159,49 +304,70 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
     });
   }, []);
 
-  const cleanupMap = useCallback(() => {
-    markersRef.current.forEach((m) => {
-      try { m.remove(); } catch (_) {}
-    });
-    markersRef.current = [];
-    if (mapInstanceRef.current) {
-      try { mapInstanceRef.current.remove(); } catch (_) {}
-      mapInstanceRef.current = null;
+  // Fit bounds to all valid points (origin + tour stops), not clipped to pilot bounds
+  const fitMapToBounds = useCallback((map, maplibregl, stopsToFit, originToFit) => {
+    if (!map || !maplibregl) return;
+    const points = [];
+    if (originToFit && originToFit.lat !== null && originToFit.lon !== null) {
+      points.push([originToFit.lon, originToFit.lat]);
     }
-    maplibreglRef.current = null;
-    mapLoadedRef.current = false;
-    setMapReady(false);
+    stopsToFit.forEach((s) => {
+      if (s.lat !== null && s.lon !== null) {
+        points.push([s.lon, s.lat]);
+      }
+    });
+
+    if (points.length === 0) return;
+
+    if (points.length === 1) {
+      map.easeTo({ center: points[0], zoom: 14, duration: 200 });
+      return;
+    }
+
+    const bounds = new maplibregl.LngLatBounds();
+    points.forEach((pt) => bounds.extend(pt));
+    try {
+      map.fitBounds(bounds, {
+        padding: { top: 40, bottom: 40, left: 40, right: 40 },
+        maxZoom: 15.5,
+        duration: 200
+      });
+    } catch (_) {}
   }, []);
 
+  // Initialize Map
   useEffect(() => {
     let isCancelled = false;
-
-    // Bounded loading timeout (8s) per review requirement
     const timeoutId = setTimeout(() => {
-      if (!isCancelled && !mapLoadedRef.current) {
-        cleanupMap();
-        setMapError('Quá thời gian tải bản đồ hoặc kết nối mạng nội bộ bị gián đoạn.');
+      if (!mapLoadedRef.current && !isCancelled) {
+        setMapError('Tải bản đồ quá thời gian quy định.');
         setLoading(false);
       }
-    }, 8000);
+    }, 10000);
 
     async function initMap() {
       if (!mapContainerRef.current) return;
+      cleanupMap();
 
       try {
-        const { Protocol } = await import('pmtiles');
-        const maplibregl = await import('maplibre-gl');
+        const [maplibreglModule, pmtilesModule] = await Promise.all([
+          import('maplibre-gl'),
+          import('pmtiles')
+        ]);
 
         if (isCancelled) return;
 
-        // Register pmtiles protocol once on client
+        const maplibregl = maplibreglModule.default || maplibreglModule;
+        const { Protocol } = pmtilesModule;
+
+        // Register PMTiles protocol globally once
         if (typeof window !== 'undefined' && !window._pmtilesProtocolRegistered) {
           const protocol = new Protocol();
           maplibregl.addProtocol('pmtiles', protocol.tile);
           window._pmtilesProtocolRegistered = true;
         }
 
-        // Configure MapLibre 6 web worker: official bundler URL with versioned local fallback
+        // Configure MapLibre web worker
         if (typeof window !== 'undefined' && !window._maplibreWorkerConfigured) {
           try {
             const bundlerUrl = new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).toString();
@@ -214,13 +380,20 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
 
         const pmtilesUrl = `${window.location.origin}/maps/hoankiem-20261018.pmtiles`;
 
-        // Local vector style matching existing visual palette without remote dependencies
+        // Local vector style matching warm editorial palette without remote dependencies
         const localStyle = {
           version: 8,
           sources: {
             protomaps: {
               type: 'vector',
               url: `pmtiles://${pmtilesUrl}`
+            },
+            'route-connectors': {
+              type: 'geojson',
+              data: {
+                type: 'FeatureCollection',
+                features: []
+              }
             }
           },
           layers: [
@@ -230,42 +403,46 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
               paint: { 'background-color': '#EBF2ED' }
             },
             {
+              id: 'water',
+              type: 'fill',
+              source: 'protomaps',
+              'source-layer': 'water',
+              paint: { 'fill-color': '#CDE0D8' }
+            },
+            {
               id: 'earth',
               type: 'fill',
               source: 'protomaps',
               'source-layer': 'earth',
-              paint: { 'fill-color': '#E5EDE7' }
+              paint: { 'fill-color': '#DFECE5' }
             },
             {
               id: 'landuse',
               type: 'fill',
               source: 'protomaps',
               'source-layer': 'landuse',
-              paint: { 'fill-color': '#DCE7DF' }
-            },
-            {
-              id: 'water',
-              type: 'fill',
-              source: 'protomaps',
-              'source-layer': 'water',
-              paint: { 'fill-color': '#BCE3D5' }
+              paint: { 'fill-color': '#E4EFE8' }
             },
             {
               id: 'buildings',
               type: 'fill',
               source: 'protomaps',
               'source-layer': 'buildings',
-              paint: { 'fill-color': '#D8E3DC', 'fill-outline-color': '#C8D6CD' }
+              paint: {
+                'fill-color': '#DFDACF',
+                'fill-outline-color': '#CEC8BC',
+                'fill-opacity': 0.75
+              }
             },
             {
-              id: 'roads_casing',
+              id: 'roads-casing',
               type: 'line',
               source: 'protomaps',
               'source-layer': 'roads',
-              paint: { 'line-color': '#CAD8D0', 'line-width': 2 }
+              paint: { 'line-color': '#C8D5CD', 'line-width': 2.8 }
             },
             {
-              id: 'roads',
+              id: 'roads-inner',
               type: 'line',
               source: 'protomaps',
               'source-layer': 'roads',
@@ -277,24 +454,28 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
               source: 'protomaps',
               'source-layer': 'boundaries',
               paint: { 'line-color': '#88A596', 'line-dasharray': [2, 2] }
+            },
+            {
+              id: 'estimated-connectors',
+              type: 'line',
+              source: 'route-connectors',
+              paint: {
+                'line-color': '#166B52',
+                'line-width': 2.5,
+                'line-dasharray': [3, 2]
+              }
             }
           ]
         };
 
-        // Exact pilot bounds without expanded offsets per review gate (msg_1b00b24b7fe4)
-        const exactPilotMaxBounds = [
-          [PILOT_BOUNDS.west, PILOT_BOUNDS.south],
-          [PILOT_BOUNDS.east, PILOT_BOUNDS.north]
-        ];
-
+        // Initialize MapLibre without restrictive pilot maxBounds so actual tour (e.g. Hoang Mai) fits correctly
         const map = new maplibregl.Map({
           container: mapContainerRef.current,
           style: localStyle,
           center: DEFAULT_CENTER,
           zoom: DEFAULT_ZOOM,
-          minZoom: 10,
-          maxZoom: 16,
-          maxBounds: exactPilotMaxBounds,
+          minZoom: 8,
+          maxZoom: 18,
           cooperativeGestures: true,
           attributionControl: false
         });
@@ -304,15 +485,14 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
         mapInstanceRef.current = map;
         maplibreglRef.current = maplibregl;
 
-        // Immediately attach initial markers to canvas container synchronously
-        renderMarkersSync(map, maplibregl, stopsRef.current, markersVisibleRef.current);
+        // Render initial markers synchronously
+        renderMarkersSync(map, maplibregl, stopsRef.current, originRef.current, markersVisibleRef.current);
 
-        // Controlled fallback for all map errors unconditionally without raw console leaks
         map.on('error', () => {
           if (!isCancelled) {
             clearTimeout(timeoutId);
             cleanupMap();
-            setMapError('Không thể tải dữ liệu bản đồ nội bộ hoặc WebGL không khả dụng.');
+            setMapError('Lỗi hiển thị bản đồ vector nội bộ.');
             setLoading(false);
           }
         });
@@ -323,7 +503,9 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
             mapLoadedRef.current = true;
             setLoading(false);
             setMapReady(true);
-            renderMarkersSync(map, maplibregl, stopsRef.current, markersVisibleRef.current);
+            renderMarkersSync(map, maplibregl, stopsRef.current, originRef.current, markersVisibleRef.current);
+            updateConnectors(map, connectorSegments);
+            fitMapToBounds(map, maplibregl, stopsRef.current, originRef.current);
           }
         });
       } catch (err) {
@@ -338,28 +520,49 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
 
     initMap();
 
+    // Auto-resize observer on container and window
+    let resizeObserver = null;
+    if (typeof ResizeObserver !== 'undefined' && mapContainerRef.current) {
+      resizeObserver = new ResizeObserver(() => {
+        if (mapInstanceRef.current) {
+          try { mapInstanceRef.current.resize(); } catch (_) {}
+        }
+      });
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
+    const handleWindowResize = () => {
+      if (mapInstanceRef.current) {
+        try { mapInstanceRef.current.resize(); } catch (_) {}
+      }
+    };
+    window.addEventListener('resize', handleWindowResize);
+
     return () => {
       isCancelled = true;
       clearTimeout(timeoutId);
+      if (resizeObserver) resizeObserver.disconnect();
+      window.removeEventListener('resize', handleWindowResize);
       cleanupMap();
     };
-  }, [cleanupMap, renderMarkersSync]);
+  }, [cleanupMap, renderMarkersSync, updateConnectors, fitMapToBounds, connectorSegments]);
 
-  // Synchronize stop markers on validStops, markersVisible, or mapReady change
+  // Synchronize stop markers & origin on changes
   useEffect(() => {
     const map = mapInstanceRef.current;
     const maplibregl = maplibreglRef.current;
     if (!map || !maplibregl) return;
-    renderMarkersSync(map, maplibregl, validStops, markersVisible);
-  }, [validStops, markersVisible, mapReady, renderMarkersSync]);
+    renderMarkersSync(map, maplibregl, validStops, validOrigin, markersVisible);
+    updateConnectors(map, connectorSegments);
+  }, [validStops, validOrigin, markersVisible, mapReady, renderMarkersSync, updateConnectors, connectorSegments]);
 
   if (mapError) {
     return (
-      <div className="nn-pilot-map-container" data-testid="pilot-map-fallback">
+      <div className={`nn-pilot-map-container ${className}`.trim()} style={style} data-testid="pilot-map-fallback">
         <div className="nn-map-fallback-banner">
           <div className="nn-map-fallback-title">Chưa thể hiển thị bản đồ tương tác</div>
           <p className="nn-map-fallback-desc">
-            {mapError} Bạn vẫn có thể xem sơ đồ các chặng hoặc mở chỉ đường Google Maps miễn phí.
+            {mapError} Bạn vẫn có thể xem sơ đồ các chặng hoặc mở chỉ đường OpenStreetMap miễn phí.
           </p>
           {typeof onFallbackToSchematic === 'function' && (
             <button
@@ -377,31 +580,47 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
   }
 
   return (
-    <div className="nn-pilot-map-container" data-testid="pilot-map-container" role="region" aria-label="Bản đồ ẩm thực Hoàn Kiếm">
+    <div
+      className={`nn-pilot-map-container ${className}`.trim()}
+      style={style}
+      data-testid="pilot-map-container"
+      role="region"
+      aria-label="Bản đồ ẩm thực Hà Nội"
+    >
       {/* Controls Bar */}
       <div className="nn-map-controls-bar" data-testid="map-controls-bar">
-        <button
-          type="button"
-          className="nn-map-marker-toggle-btn"
-          data-testid="pilot-markers-toggle"
-          data-legacy-testid="map-marker-toggle-btn"
-          onClick={() => setMarkersVisible((v) => !v)}
-          aria-pressed={markersVisible}
-        >
-          {markersVisible ? 'Ẩn điểm dừng' : 'Hiện điểm dừng'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          <button
+            type="button"
+            className="nn-map-marker-toggle-btn"
+            data-testid="pilot-markers-toggle"
+            data-legacy-testid="map-marker-toggle-btn"
+            onClick={() => setMarkersVisible((v) => !v)}
+            aria-pressed={markersVisible}
+          >
+            {markersVisible ? 'Ẩn điểm dừng' : 'Hiện điểm dừng'}
+          </button>
 
-        {outOfBoundsCount > 0 && (
-          <span className="nn-map-coverage-warning" data-testid="map-coverage-warning">
-            Lưu ý: {outOfBoundsCount} điểm ngoài khu vực thí điểm
-          </span>
-        )}
+          {connectorSegments.length > 0 && (
+            <span className="nn-map-estimated-label" data-testid="map-estimated-label" title="Đường nối thẳng ước tính giữa các điểm, không phải lộ trình đường sá thực tế">
+              Đường nối ước tính
+            </span>
+          )}
+        </div>
 
-        {missingCoordsCount > 0 && (
-          <span className="nn-map-coverage-warning" data-testid="map-missing-coords-warning">
-            Thông tin: {missingCoordsCount} điểm chưa có toạ độ
-          </span>
-        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
+          {outOfBoundsCount > 0 && (
+            <span className="nn-map-coverage-warning" data-testid="map-coverage-warning">
+              Thông tin: {outOfBoundsCount} điểm ngoài khu vực Hoàn Kiếm (hiển thị trên nền cơ bản)
+            </span>
+          )}
+
+          {missingCoordsCount > 0 && (
+            <span className="nn-map-coverage-warning" data-testid="map-missing-coords-warning">
+              Thông tin: {missingCoordsCount} điểm chưa có toạ độ
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Map Canvas with stable pilot-map-canvas testid and loading state */}
@@ -416,12 +635,18 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
 
       {loading && (
         <div className="sr-only" role="status" aria-live="polite">
-          Đang tải bản đồ khu vực Hoàn Kiếm…
+          Đang tải bản đồ khu vực…
         </div>
       )}
 
       {/* Accessible Screen Reader List */}
       <ol className="sr-only" aria-label="Danh sách điểm dừng trên bản đồ">
+        {validOrigin && (
+          <li>
+            Xuất phát: {validOrigin.label}
+            {validOrigin.inBounds ? ' (trong khu vực Hoàn Kiếm)' : ' (ngoài khu vực Hoàn Kiếm)'}
+          </li>
+        )}
         {validStops.map((stop) => (
           <li key={stop.id}>
             {stop.index}. {stop.name} - {stop.address || stop.district || 'Hà Nội'}
@@ -433,7 +658,7 @@ export default function PilotMap({ stops = [], onFallbackToSchematic }) {
       {/* Visible Attribution */}
       <div className="nn-map-attribution" data-testid="map-attribution">
         <span>
-          (c) 
+          (c){' '}
           <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
             OpenStreetMap
           </a>{' '}

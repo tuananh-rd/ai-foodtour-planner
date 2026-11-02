@@ -1003,6 +1003,26 @@ export default function DiscoveryLayout({
     return [];
   }, [view.tour, view.selection, view.results]);
 
+  const effectiveOrigin = useMemo(() => {
+    const profOrig = displayView.profile?.origin;
+    if (profOrig && typeof profOrig.lat === 'number' && typeof profOrig.lon === 'number') {
+      return {
+        lat: profOrig.lat,
+        lon: profOrig.lon,
+        label: profOrig.label || displayView.location?.label || 'Điểm xuất phát'
+      };
+    }
+    const loc = displayView.location;
+    if (loc && typeof loc.lat === 'number' && typeof loc.lon === 'number' && loc.status === 'chosen') {
+      return {
+        lat: loc.lat,
+        lon: loc.lon,
+        label: loc.label || 'Điểm xuất phát'
+      };
+    }
+    return null;
+  }, [displayView.profile?.origin, displayView.location]);
+
   const selectedVenueIds = useMemo(() => {
     return new Set((view.selection || []).map((s) => s.id));
   }, [view.selection]);
@@ -2335,6 +2355,8 @@ export default function DiscoveryLayout({
               <div className="nn-map-container-wrap">
                 <PilotMap
                   stops={mapStops}
+                  origin={effectiveOrigin}
+                  originLabel={effectiveOrigin?.label || displayView.location?.label || 'Điểm xuất phát'}
                   onFallbackToSchematic={() => setViewMode('schematic')}
                 />
               </div>
@@ -2393,7 +2415,7 @@ export default function DiscoveryLayout({
                     tour={displayView.tour || view.tour}
                     allergies={displayView.profile?.allergies || []}
                     lockedStops={(view.selection || []).filter((s) => s.locked).map((s) => s.id)}
-                    origin={displayView.profile?.origin || view.profile?.origin}
+                    origin={effectiveOrigin || displayView.profile?.origin || view.profile?.origin}
                     vehicle={displayView.profile?.vehicle || view.profile?.vehicle}
                     sessionId={sessionId}
                     sessionToken={sessionToken}
@@ -2533,7 +2555,7 @@ export default function DiscoveryLayout({
                         {[
                           ['01', 'BƯỚC 1', 'Trò chuyện & Khám phá quán', 'Nêu sở thích, khẩu vị, khu vực để trợ lý tìm kiếm các địa điểm phù hợp.'],
                           ['02', 'BƯỚC 2', 'Chọn quán & So sánh', 'Thêm quán ưng ý vào danh sách tour (tối đa 5 quán) hoặc so sánh các tiêu chí.'],
-                          ['03', 'BƯỚC 3', 'Xác nhận & Nhận lịch trình', 'Xem lại thông tin và xác nhận để tạo lộ trình tối ưu kèm chỉ đường Google Maps.']
+                          ['03', 'BƯỚC 3', 'Xác nhận & Nhận lịch trình', 'Xem lại thông tin và xác nhận để tạo lộ trình tối ưu kèm chỉ đường OpenStreetMap.']
                         ].map(([badge, stage, title, desc]) => (
                           <div className="nn-editorial-stop-card" key={badge}>
                             <div className="nn-stop-badge">{badge}</div>

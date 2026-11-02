@@ -2,77 +2,18 @@ export const SYNTHETIC_MAPS_LINKS = {
   "single_walking": {
     "status": "ok",
     "travelmode": "walking",
-    "provider": "google_maps_urls",
-    "uses_api": false,
-    "links": [
-      {
-        "index": 1,
-        "of": 1,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000&travelmode=walking",
-        "from_stop": null,
-        "to_stop": 3,
-        "waypoint_count": 2,
-        "url_length": 180,
-        "point_kinds": [
-          "latlng",
-          "latlng",
-          "latlng",
-          "latlng"
-        ]
-      }
-    ],
-    "skipped": [],
-    "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times."
-    ]
-  },
-  "single_driving": {
-    "status": "ok",
-    "travelmode": "driving",
-    "provider": "google_maps_urls",
-    "uses_api": false,
-    "links": [
-      {
-        "index": 1,
-        "of": 1,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000&travelmode=driving",
-        "from_stop": null,
-        "to_stop": 3,
-        "waypoint_count": 2,
-        "url_length": 180,
-        "point_kinds": [
-          "latlng",
-          "latlng",
-          "latlng",
-          "latlng"
-        ]
-      }
-    ],
-    "skipped": [],
-    "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times."
-    ]
-  },
-  "split_mobile": {
-    "status": "ok",
-    "travelmode": "walking",
-    "provider": "google_maps_urls",
+    "provider": "openstreetmap_urls",
     "uses_api": false,
     "links": [
       {
         "index": 1,
         "of": 3,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.004000%2C105.850000&waypoints=21.001000%2C105.850000%7C21.002000%2C105.850000%7C21.003000%2C105.850000&travelmode=walking",
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.000000%2C105.850000%3B21.001000%2C105.850000",
         "from_stop": null,
-        "to_stop": 4,
-        "waypoint_count": 3,
-        "url_length": 205,
+        "to_stop": 1,
+        "waypoint_count": 0,
+        "url_length": 115,
         "point_kinds": [
-          "latlng",
-          "latlng",
-          "latlng",
           "latlng",
           "latlng"
         ]
@@ -80,15 +21,12 @@ export const SYNTHETIC_MAPS_LINKS = {
       {
         "index": 2,
         "of": 3,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.004000%2C105.850000&destination=21.008000%2C105.850000&waypoints=21.005000%2C105.850000%7C21.006000%2C105.850000%7C21.007000%2C105.850000&travelmode=walking",
-        "from_stop": 4,
-        "to_stop": 8,
-        "waypoint_count": 3,
-        "url_length": 205,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.001000%2C105.850000%3B21.002000%2C105.850000",
+        "from_stop": 1,
+        "to_stop": 2,
+        "waypoint_count": 0,
+        "url_length": 115,
         "point_kinds": [
-          "latlng",
-          "latlng",
-          "latlng",
           "latlng",
           "latlng"
         ]
@@ -96,15 +34,12 @@ export const SYNTHETIC_MAPS_LINKS = {
       {
         "index": 3,
         "of": 3,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.008000%2C105.850000&destination=21.012000%2C105.850000&waypoints=21.009000%2C105.850000%7C21.010000%2C105.850000%7C21.011000%2C105.850000&travelmode=walking",
-        "from_stop": 8,
-        "to_stop": 12,
-        "waypoint_count": 3,
-        "url_length": 205,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.002000%2C105.850000%3B21.003000%2C105.850000",
+        "from_stop": 2,
+        "to_stop": 3,
+        "waypoint_count": 0,
+        "url_length": 115,
         "point_kinds": [
-          "latlng",
-          "latlng",
-          "latlng",
           "latlng",
           "latlng"
         ]
@@ -112,27 +47,51 @@ export const SYNTHETIC_MAPS_LINKS = {
     ],
     "skipped": [],
     "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times."
+      "Coordinates are shared with OpenStreetMap and its routing service only when you open a link.",
+      "Each link opens one ordered leg. Map connectors are estimates, not road routes or live travel times."
     ]
   },
-  "address_fallback": {
+  "single_driving": {
     "status": "ok",
-    "travelmode": "walking",
-    "provider": "google_maps_urls",
+    "travelmode": "driving",
+    "provider": "openstreetmap_urls",
     "uses_api": false,
     "links": [
       {
         "index": 1,
-        "of": 1,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.003000%2C105.850000&waypoints=12+Ph%E1%BB%91+Hu%E1%BA%BF+%26+B%C3%BAn+%2B+Ch%C3%A8+%231%2C+Synthetic+H%C3%A0+N%E1%BB%99i%7C21.002000%2C105.850000&travelmode=walking",
+        "of": 3,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=21.000000%2C105.850000%3B21.001000%2C105.850000",
         "from_stop": null,
-        "to_stop": 3,
-        "waypoint_count": 2,
-        "url_length": 248,
+        "to_stop": 1,
+        "waypoint_count": 0,
+        "url_length": 114,
         "point_kinds": [
           "latlng",
-          "address",
+          "latlng"
+        ]
+      },
+      {
+        "index": 2,
+        "of": 3,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=21.001000%2C105.850000%3B21.002000%2C105.850000",
+        "from_stop": 1,
+        "to_stop": 2,
+        "waypoint_count": 0,
+        "url_length": 114,
+        "point_kinds": [
+          "latlng",
+          "latlng"
+        ]
+      },
+      {
+        "index": 3,
+        "of": 3,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_car&route=21.002000%2C105.850000%3B21.003000%2C105.850000",
+        "from_stop": 2,
+        "to_stop": 3,
+        "waypoint_count": 0,
+        "url_length": 114,
+        "point_kinds": [
           "latlng",
           "latlng"
         ]
@@ -140,26 +99,25 @@ export const SYNTHETIC_MAPS_LINKS = {
     ],
     "skipped": [],
     "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times."
+      "Coordinates are shared with OpenStreetMap and its routing service only when you open a link.",
+      "Each link opens one ordered leg. Map connectors are estimates, not road routes or live travel times."
     ]
   },
-  "partial_gap": {
-    "status": "partial",
+  "split_mobile": {
+    "status": "ok",
     "travelmode": "walking",
-    "provider": "google_maps_urls",
+    "provider": "openstreetmap_urls",
     "uses_api": false,
     "links": [
       {
         "index": 1,
         "of": 2,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=21.002000%2C105.850000&waypoints=21.001000%2C105.850000&travelmode=walking",
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.000000%2C105.850000%3B21.001000%2C105.850000",
         "from_stop": null,
-        "to_stop": 2,
-        "waypoint_count": 1,
-        "url_length": 155,
+        "to_stop": 1,
+        "waypoint_count": 0,
+        "url_length": 115,
         "point_kinds": [
-          "latlng",
           "latlng",
           "latlng"
         ]
@@ -167,11 +125,50 @@ export const SYNTHETIC_MAPS_LINKS = {
       {
         "index": 2,
         "of": 2,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.004000%2C105.850000&destination=21.005000%2C105.850000&travelmode=walking",
-        "from_stop": 4,
-        "to_stop": 5,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.001000%2C105.850000%3B21.002000%2C105.850000",
+        "from_stop": 1,
+        "to_stop": 2,
         "waypoint_count": 0,
-        "url_length": 122,
+        "url_length": 115,
+        "point_kinds": [
+          "latlng",
+          "latlng"
+        ]
+      }
+    ],
+    "skipped": [],
+    "notes": [
+      "Coordinates are shared with OpenStreetMap and its routing service only when you open a link.",
+      "Each link opens one ordered leg. Map connectors are estimates, not road routes or live travel times."
+    ]
+  },
+  "partial_gap": {
+    "status": "partial",
+    "travelmode": "walking",
+    "provider": "openstreetmap_urls",
+    "uses_api": false,
+    "links": [
+      {
+        "index": 1,
+        "of": 2,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.000000%2C105.850000%3B21.001000%2C105.850000",
+        "from_stop": null,
+        "to_stop": 1,
+        "waypoint_count": 0,
+        "url_length": 115,
+        "point_kinds": [
+          "latlng",
+          "latlng"
+        ]
+      },
+      {
+        "index": 2,
+        "of": 2,
+        "url": "https://www.openstreetmap.org/directions?engine=fossgis_osrm_foot&route=21.003000%2C105.850000%3B21.004000%2C105.850000",
+        "from_stop": 3,
+        "to_stop": 4,
+        "waypoint_count": 0,
+        "url_length": 115,
         "point_kinds": [
           "latlng",
           "latlng"
@@ -180,21 +177,21 @@ export const SYNTHETIC_MAPS_LINKS = {
     ],
     "skipped": [
       {
-        "stop_order": 3,
-        "venue_id": "synthetic-maps-3",
+        "stop_order": 2,
+        "venue_id": "synthetic-maps-2",
         "reason": "no_usable_point"
       }
     ],
     "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times.",
-      "Skipped stops break the itinerary into separate usable runs; missing legs are not connected. Reasons are listed in skipped, including adjacent points that exceed the encoded URL limit."
+      "Coordinates are shared with OpenStreetMap and its routing service only when you open a link.",
+      "Each link opens one ordered leg. Map connectors are estimates, not road routes or live travel times.",
+      "Missing-coordinate stops break the itinerary; no missing leg is connected or address guessed."
     ]
   },
   "unavailable": {
     "status": "unavailable",
     "travelmode": "walking",
-    "provider": "google_maps_urls",
+    "provider": "openstreetmap_urls",
     "uses_api": false,
     "links": [],
     "skipped": [
@@ -205,75 +202,21 @@ export const SYNTHETIC_MAPS_LINKS = {
       }
     ],
     "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times.",
-      "Skipped stops break the itinerary into separate usable runs; missing legs are not connected. Reasons are listed in skipped, including adjacent points that exceed the encoded URL limit."
+      "Coordinates are shared with OpenStreetMap and its routing service only when you open a link.",
+      "A valid selected origin is required; no origin or address is inferred."
     ]
   },
-  "long_addresses": {
-    "status": "ok",
+  "motorbike_unavailable": {
+    "status": "unavailable",
     "travelmode": "walking",
-    "provider": "google_maps_urls",
+    "provider": "openstreetmap_urls",
     "uses_api": false,
-    "links": [
-      {
-        "index": 1,
-        "of": 4,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=21.000000%2C105.850000&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF1&waypoints=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF0&travelmode=walking",
-        "from_stop": null,
-        "to_stop": 2,
-        "waypoint_count": 1,
-        "url_length": 1463,
-        "point_kinds": [
-          "latlng",
-          "address",
-          "address"
-        ]
-      },
-      {
-        "index": 2,
-        "of": 4,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF1&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF2&travelmode=walking",
-        "from_stop": 2,
-        "to_stop": 3,
-        "waypoint_count": 0,
-        "url_length": 1430,
-        "point_kinds": [
-          "address",
-          "address"
-        ]
-      },
-      {
-        "index": 3,
-        "of": 4,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF2&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF3&travelmode=walking",
-        "from_stop": 3,
-        "to_stop": 4,
-        "waypoint_count": 0,
-        "url_length": 1430,
-        "point_kinds": [
-          "address",
-          "address"
-        ]
-      },
-      {
-        "index": 4,
-        "of": 4,
-        "url": "https://www.google.com/maps/dir/?api=1&origin=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF3&destination=%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF%E1%BA%BF4&travelmode=walking",
-        "from_stop": 4,
-        "to_stop": 5,
-        "waypoint_count": 0,
-        "url_length": 1430,
-        "point_kinds": [
-          "address",
-          "address"
-        ]
-      }
-    ],
+    "links": [],
     "skipped": [],
     "notes": [
-      "Links contain the origin/venue coordinates or fallback addresses and are sent to Google only when the user opens them.",
-      "The schedule is the app's proposal; Google may show different times."
+      "Coordinates are shared with OpenStreetMap and its routing service only when you open a link.",
+      "Each link opens one ordered leg. Map connectors are estimates, not road routes or live travel times.",
+      "Motorcycle routing is unavailable; no car route is substituted. Use the numbered map stops."
     ]
   }
 };

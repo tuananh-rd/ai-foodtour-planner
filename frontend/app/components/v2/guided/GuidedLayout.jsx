@@ -748,7 +748,7 @@ export default function GuidedLayout({
 
     if (showTour) {
       if (lastFocusedKeyRef.current !== 'tour') {
-        const mapsCta = document.querySelector('[data-testid="google-maps-cta"]');
+        const mapsCta = document.querySelector('[data-testid="osm-directions-cta"], [data-testid="google-maps-cta"]');
         if (mapsCta) {
           mapsCta.focus();
           mapsCta.scrollIntoView({ block: 'nearest' });
@@ -1343,7 +1343,7 @@ export default function GuidedLayout({
                     {[
                       ['01', 'BƯỚC 1', 'Trò chuyện & nêu ý', 'Cho biết khu vực, thời gian, số người, món muốn ăn hoặc kiêng ăn.'],
                       ['02', 'BƯỚC 2', 'Xem lại & xác nhận', 'Kiểm tra thông tin đã hiểu, lưu ý về giờ/giá theo nguồn, dị ứng.'],
-                      ['03', 'BƯỚC 3', 'Nhận lịch trình & Maps', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường Google Maps.']
+                      ['03', 'BƯỚC 3', 'Nhận lịch trình & Bản đồ', 'Xem từng điểm dừng, đổi quán, khoá quán và mở chỉ đường OpenStreetMap.']
                     ].map(([badge, stage, title, desc]) => (
                       <div className="nn-editorial-stop-card" key={badge}>
                         <div className="nn-stop-badge">{badge}</div>

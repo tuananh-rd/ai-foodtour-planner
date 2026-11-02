@@ -223,8 +223,8 @@ async function runTests() {
   assert(caughtAbort === true, "Must propagate AbortError when signal is aborted");
   console.log("  [PASS] AbortError properly propagated without being swallowed");
 
-  // 16. getMapsLinks contract v1.7 (mock mode, travelmode, limits, 409 no_tour)
-  console.log("Test 16: GET /v1/sessions/{id}/tour/maps-links (contract v1.7)");
+  // 16. getMapsLinks contract OSM (mock mode, travelmode, limits, 409 no_tour)
+  console.log("Test 16: GET /v1/sessions/{id}/tour/maps-links (contract OSM)");
   const emptySession = await createSession();
   let caughtNoTour = false;
   try {
@@ -244,22 +244,21 @@ async function runTests() {
   const walkingLinks = await getMapsLinks(session.session_id, 'walking', session.token);
   assert(walkingLinks.status === 'ok', "status must be ok");
   assert(walkingLinks.travelmode === 'walking', "travelmode must be walking");
-  assert(walkingLinks.provider === 'google_maps_urls', "provider must be google_maps_urls");
+  assert(walkingLinks.provider === 'openstreetmap_urls', "provider must be openstreetmap_urls");
   assert(walkingLinks.uses_api === false, "uses_api must be false");
   assert(Array.isArray(walkingLinks.links) && walkingLinks.links.length > 0, "links must be a non-empty array");
   for (const l of walkingLinks.links) {
-    assert(l.url.startsWith('https://www.google.com/maps/dir/'), "url origin and path");
-    assert(l.url.includes('api=1'), "api=1 must be present");
-    assert(!l.url.includes('dir_action'), "dir_action must NEVER be present");
-    assert(l.waypoint_count <= 3, "waypoint_count must be <= 3");
+    assert(l.url.startsWith('https://www.openstreetmap.org/directions'), "url origin and path");
+    assert(l.url.includes('engine=fossgis_osrm_foot'), "engine=fossgis_osrm_foot must be present");
+    assert(l.waypoint_count === 0, "waypoint_count must be 0 for per-leg OSM links");
     assert(l.url_length <= 2048 && l.url.length <= 2048, "url_length must be <= 2048");
   }
 
   // Driving mode toggle
   const drivingLinks = await getMapsLinks(session.session_id, 'driving', session.token);
   assert(drivingLinks.travelmode === 'driving', "travelmode must be driving");
-  assert(drivingLinks.links[0].url.includes('travelmode=driving'), "url travelmode driving");
-  console.log("  [PASS] Free Google Maps URLs contract v1.7 verified in mock mode");
+  assert(drivingLinks.links[0].url.includes('engine=fossgis_osrm_car'), "url engine driving");
+  console.log("  [PASS] OpenStreetMap directions URLs verified in mock mode");
 
   // 17. getMapsLinks real mode error propagation
   console.log("Test 17: GET /v1/sessions/{id}/tour/maps-links (real mode error propagation)");

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { geocodeAddress } from '../../lib/api';
-import { loadGoogleMaps } from '../../lib/googleMapsLoader';
+// Google Maps loader removed in favor of local OpenStreetMap/PMTiles
 
 const PRESET_LOCATIONS = [
   { id: 'hoankiem', name: 'Hồ Hoàn Kiếm / Phố Cổ', lat: 21.033, lon: 105.850 },
@@ -720,7 +720,7 @@ export default function PreferencesPanel({
             </div>
           </div>
 
-          {/* Privacy Note (Mandatory per docs/PHASE4.md 'Data sent to Google') */}
+          {/* Privacy Note */}
           <div
             role="note"
             data-testid="privacy-disclosure"
@@ -735,22 +735,16 @@ export default function PreferencesPanel({
               lineHeight: 1.5
             }}
           >
-            <strong>Dữ liệu gửi tới Google:</strong>
+            <strong>Thông tin quyền riêng tư và dữ liệu vị trí:</strong>
             <ul style={{ margin: '4px 0 0 0', paddingLeft: 16 }}>
               <li>
-                <strong>Vị trí hiện tại:</strong> Ứng dụng chỉ hỏi vị trí khi bạn bấm nút &quot;Dùng vị trí hiện tại&quot;. Tuỳ trình duyệt, trình duyệt có thể dùng dịch vụ vị trí riêng của hãng (nằm ngoài kiểm soát của ứng dụng). Toạ độ được lưu vào phiên làm việc trên máy chủ (TTL/SQLite) khi lưu tuỳ chọn hoặc lập lịch trình.
+                <strong>Vị trí hiện tại:</strong> Ứng dụng chỉ hỏi vị trí khi bạn bấm nút &quot;Dùng vị trí hiện tại&quot;. Toạ độ được lưu vào phiên làm việc trên máy chủ khi lưu tuỳ chọn hoặc lập lịch trình.
               </li>
               <li>
-                <strong>Tuyến đi bộ (Google Routes):</strong> Khi lập lịch trình hoặc đổi quán, toạ độ xuất phát cùng toạ độ các quán ăn ứng viên (≤ 16 điểm khi lập, ≤ 45 điểm khi đổi quán) được gửi tới Google Routes để tính đường đi.
+                <strong>Bản đồ:</strong> Sử dụng dữ liệu OpenStreetMap và bộ nén PMTiles nội bộ; danh sách quán ăn không bao giờ tải lên dịch vụ bên ngoài.
               </li>
               <li>
-                <strong>Tìm kiếm địa chỉ:</strong> Ký tự bạn gõ vào ô tìm kiếm được gửi tới Google Places / Geocoding. Nhập toạ độ thủ công không gửi dữ liệu tới Google.
-              </li>
-              <li>
-                <strong>Trợ lý AI (Gemini):</strong> Nội dung chat và tiêu chí lọc được gửi tới Gemini nếu được cấu hình; toạ độ GPS chính xác không bao giờ gửi tới Gemini.
-              </li>
-              <li>
-                <strong>Bản đồ:</strong> Trình duyệt tải các ô bản đồ hiển thị; danh sách quán ăn nội bộ không bao giờ tải lên Google.
+                <strong>Chỉ đường:</strong> Tọa độ chỉ được chia sẻ với OpenStreetMap khi bạn nhấn mở liên kết chỉ đường.
               </li>
             </ul>
           </div>

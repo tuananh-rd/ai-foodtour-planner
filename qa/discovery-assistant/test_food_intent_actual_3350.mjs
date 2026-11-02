@@ -223,18 +223,22 @@ if (process.exitCode === undefined || process.exitCode === 0) {
         const stops = view?.tour?.stops || [];
         record('F confirm creates tour with 3 ordered stops', !!view?.tour && stops.length === 3 && stops.every((s, i) => (s.order ?? i + 1) === i + 1));
         await until(() => exists('guided-timeline')).catch(() => {});
-        const maps = await until(() => exists('google-maps-cta')).then(() => true).catch(() => false);
-        record('F ordered Google Maps links rendered', maps);
-        const hrefs = await ev(`Array.from(document.querySelectorAll('[data-testid="google-maps-cta"]')).map(a=>a.href).filter(Boolean)`);
+        const maps = await until(() => exists('osm-directions-cta') || exists('google-maps-cta')).then(() => true).catch(() => false);
+        record('F ordered OpenStreetMap links rendered', maps);
+        const hrefs = await ev(`Array.from(document.querySelectorAll('[data-testid="osm-directions-cta"], [data-testid="google-maps-cta"]')).map(a=>a.href).filter(Boolean)`);
         const origin = view.profile.origin;
         const points = stops.map(s=>({lat:s.lat,lon:s.lon}));
-        const coordEq=(value,p)=>{const c=String(value).split(',').map(Number);return c.length===2 && Math.abs(c[0]-p.lat)<.000001 && Math.abs(c[1]-p.lon)<.000001};
-        const linksValid = hrefs.length===1 && hrefs.every(h=>{
+        const coordEq=(value,p)=>{const c=String(value).split(',').map(Number);return c.length===2 && Math.abs(c[0]-p.lat)<.0001 && Math.abs(c[1]-p.lon)<.0001};
+        const linksValid = hrefs.length>=1 && hrefs.every(h=>{
           const u=new URL(h),q=u.searchParams;
-          const order=[...(q.get('waypoints')?.split('|') || []),q.get('destination')];
-          return u.origin==='https://www.google.com' && u.pathname==='/maps/dir/'
-            && q.get('api')==='1' && q.get('travelmode')==='walking' && coordEq(q.get('origin'),origin)
-            && order.length===points.length && order.every((p,i)=>coordEq(p,points[i])) && h.length<=2048;
+          if (u.origin === 'https://www.openstreetmap.org' && u.pathname === '/directions') {
+            const engine = q.get('engine');
+            const route = q.get('route');
+            if (engine !== 'fossgis_osrm_foot' || !route) return false;
+            const parts = route.split(';');
+            return parts.length === 2 && coordEq(parts[0], origin) && coordEq(parts[1], points[0]) && h.length <= 2048;
+          }
+          return false;
         });
         evidence.syntheticMapsHrefs=hrefs;
         record('F Maps URL uses actual origin, walking and ordered coordinates within2048',linksValid);

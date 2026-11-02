@@ -175,3 +175,29 @@
   white-space: nowrap;
   border-width: 0;
 }
+
+/* Origin Marker */
+.nn-map-marker.nn-map-origin-marker {
+  background: #17352B;
+  color: #FFFFFF;
+  border: 2px solid #FFFFFF;
+  font-weight: 800;
+  font-size: 11px;
+}
+
+.nn-map-origin-marker:hover {
+  transform: scale(1.15);
+}
+
+.nn-map-estimated-label {
+  color: #166B52;
+  font-size: 11px;
+  background: #E8F3EE;
+  border: 1px solid #C4DFD3;
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
