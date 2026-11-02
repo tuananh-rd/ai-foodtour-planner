@@ -1,0 +1,96 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "source_commit": "0b8229c530e00eac6e9dd3885c147c02176a28de",
+  "backend_commit": "4e7db57b069720dd103fe8a174a476d7985faa32",
+  "dataset": "private app URL; fixture replies only",
+  "provider": "MOCK RESPONSES",
+  "liveGemini": "NO GENERATION; all assistant POSTs fulfilled by CDP",
+  "checks": [
+    {
+      "name": "actual3350 page",
+      "pass": true
+    },
+    {
+      "name": "legacy outage status is one neutral notice",
+      "pass": true
+    },
+    {
+      "name": "legacy generic prefix removed display-only",
+      "pass": true
+    },
+    {
+      "name": "origin question rendered once",
+      "pass": true
+    },
+    {
+      "name": "repeated timeouts keep one status region",
+      "pass": true
+    },
+    {
+      "name": "raw reason absent outside diagnostics",
+      "pass": true
+    },
+    {
+      "name": "source remains local rather than fake model",
+      "pass": true
+    },
+    {
+      "name": "diagnostics retains raw reason and failure origin",
+      "pass": true
+    },
+    {
+      "name": "outage composer stays visible 1440",
+      "pass": true
+    },
+    {
+      "name": "outage no horizontal overflow 1440",
+      "pass": true
+    },
+    {
+      "name": "outage composer stays visible 390",
+      "pass": true
+    },
+    {
+      "name": "outage no horizontal overflow 390",
+      "pass": true
+    },
+    {
+      "name": "local origin action does not claim AI recovery",
+      "pass": true
+    },
+    {
+      "name": "only successful model response clears status",
+      "pass": true
+    },
+    {
+      "name": "no actual generation and no remote origins",
+      "pass": true
+    },
+    {
+      "name": "no browser exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "legacy-history-3350.png",
+    "outage-1440.png",
+    "outage-390.png"
+  ],
+  "errors": [],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [
+    200,
+    200,
+    200,
+    200,
+    200,
+    200
+  ],
+  "budget": {
+    "before_used": 12,
+    "after_used": 12
+  },
+  "fixtureExplanation": "All assistant POSTs fulfilled by CDP; handler errors abort requests rather than forward. All displayed venue arrays empty; no user session/token exported."
+}

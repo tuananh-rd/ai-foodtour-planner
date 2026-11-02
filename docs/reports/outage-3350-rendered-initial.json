@@ -1,0 +1,24 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "source_commit": "4e7db57b069720dd103fe8a174a476d7985faa32",
+  "backend_commit": "4e7db57b069720dd103fe8a174a476d7985faa32",
+  "dataset": "private app URL; fixture replies only",
+  "provider": "MOCK RESPONSES",
+  "liveGemini": "NO GENERATION; all assistant POSTs fulfilled by CDP",
+  "checks": [
+    {
+      "name": "journey completed",
+      "pass": false,
+      "diagnostic": {}
+    }
+  ],
+  "screenshots": [],
+  "errors": [
+    "Unexpected token 'O', \"OK\" is not valid JSON"
+  ],
+  "remoteOrigins": [],
+  "ranges": [],
+  "statuses": [],
+  "blocker": "Observable browser state timed out"
+}

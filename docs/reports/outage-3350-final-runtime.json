@@ -1,0 +1,13 @@
+﻿{
+    "web_status":  200,
+    "backend":  "0b8229c530e00eac6e9dd3885c147c02176a28de",
+    "ui":  "0b8229c",
+    "model":  "gemini-3.5-flash-lite",
+    "daily_limit":  18,
+    "used":  12,
+    "remaining":  6,
+    "reserve":  3,
+    "session_cap":  6,
+    "generation_calls_in_followup":  0,
+    "baseline3320_status":  200
+}
