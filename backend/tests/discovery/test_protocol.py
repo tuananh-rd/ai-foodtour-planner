@@ -69,7 +69,9 @@ class ProtocolTests(unittest.TestCase):
         self.assertEqual(client.last_usage, {'promptTokenCount': 10})
         self.assertEqual(len(declarations()), 7)
         self.assertTrue(all('parametersJsonSchema' in x for x in declarations()))
-        self.assertNotIn('confirm', str(declarations()))
+        self.assertFalse(any('confirm' in item['name'] for item in declarations()))
+        self.assertTrue(all('confirmation_id' not in item['parametersJsonSchema'].get('properties', {})
+                            for item in declarations()))
 
     def test_malformed_unknown_tool_and_oversize_fail_closed_without_retry(self):
         for parts in ([], [{'functionCall': {'name': 'web_search', 'args': {}}}], [{'functionCall': {'name': 'search_restaurants', 'args': []}}]):
