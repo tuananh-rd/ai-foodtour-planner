@@ -154,9 +154,15 @@ class SecurityMiddleware:
             # Fixed enums/numeric counters only: never copy an arbitrary payload or exception.
             for key, allowed in {'understanding': {'rules', 'action', 'llm', 'cache'},
                                  'planner_status': {'verified_feasible', 'conditional', 'insufficient_evidence', 'no_solution'},
-                                 'algorithm': {'guided-fixed-v1'}, 'contract': {'v1.9.3'}}.items():
+                                 'algorithm': {'guided-fixed-v1'}, 'contract': {'v1.9.3', 'discovery-v1'},
+                                 'reply_source': {'model', 'tools', 'rules'},
+                                 'provider_failure_kind': {'timeout', 'quota', 'unavailable', 'bad_response', 'tool_error'},
+                                 'provider_failure_source': {'session_cap', 'daily_reserve', 'turn_deadline', 'transport', 'provider_http', 'local_admission'}}.items():
                 if isinstance(pipeline.get(key), str) and pipeline[key] in allowed:
                     record[key] = pipeline[key]
+            provider_status = pipeline.get('provider_http_status')
+            if type(provider_status) is int and 400 <= provider_status <= 599:
+                record['provider_http_status'] = provider_status
             version = pipeline.get('dataset_version')
             if isinstance(version, str) and re.fullmatch(r'[0-9a-f]{64}', version):
                 record['dataset_version'] = version  # opaque content version, never an input path/name
@@ -166,7 +172,8 @@ class SecurityMiddleware:
                     'obligation_open', 'rate_limited'}:
                 record['error_code'] = code
             for key in ('provider_attempted', 'provider_validated', 'planner_checked'):
-                if type(pipeline.get(key)) is int and pipeline[key] in (0, 1):
+                allowed_counts = (0, 1, 2) if key == 'provider_attempted' and pipeline.get('contract') == 'discovery-v1' else (0, 1)
+                if type(pipeline.get(key)) is int and pipeline[key] in allowed_counts:
                     record[key] = pipeline[key]
             for key in ('extraction_ms', 'planning_ms'):
                 value = pipeline.get(key)

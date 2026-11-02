@@ -333,16 +333,23 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
     contents = [{'role': 'user', 'parts': [{'text': json.dumps(projection, ensure_ascii=False)}]}]
     tool_results = []
     last = None
+    failure_source = 'transport'
     try:
         for _ in range(2):
             remaining = 12 - (time.monotonic() - start)
-            if remaining <= .1 or llm_used + provider['calls'] >= session_cap:
+            if remaining <= .1:
+                failure_source = 'turn_deadline'
+                raise ProviderError('timeout')
+            if llm_used + provider['calls'] >= session_cap:
+                failure_source = 'session_cap'
                 raise ProviderError('quota')
             client = getattr(model, 'client', None)
             if client and client.budget.snapshot()['remaining'] <= reserve:
+                failure_source = 'daily_reserve'
                 raise ProviderError('quota')
             # Count conservatively before calling, including provider/schema/timeout failures.
             provider['calls'] += 1
+            failure_source = 'transport'
             content = model.generate(copy.deepcopy(contents), deadline_s=remaining)
             provider['response_model'] = getattr(model, 'last_response_model', None)
             if not isinstance(content, dict) or content.get('role') != 'model' or not isinstance(content.get('parts'), list):
@@ -410,13 +417,22 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
         return last or tools.result('unavailable', 'Lượt xử lý đã đạt giới hạn; các thay đổi đã kiểm chứng vẫn được giữ.'), provider
     except (ProviderError, TimeoutError, ValueError, TypeError, KeyError, AttributeError) as error:
         provider['reason'] = getattr(error, 'kind', 'timeout' if isinstance(error, TimeoutError) else 'tool_error')
+        status = getattr(error, 'status', None)
+        if type(status) is int and 400 <= status <= 599:
+            failure_source = 'provider_http'
+        elif getattr(error, 'llm_calls', None) == 0:
+            failure_source = 'local_admission'
+        failure_kind = provider['reason'] if provider['reason'] in ('timeout', 'quota', 'unavailable', 'bad_response', 'tool_error') else 'tool_error'
+        provider['failure'] = {'kind': failure_kind, 'source': failure_source}
+        if type(status) is int and 400 <= status <= 599:
+            provider['failure']['http_status'] = status
         if last is not None:
-            last['text'] += ' Model chưa hoàn tất phần giải thích; kết quả công cụ đã xác thực vẫn được giữ.'
             return last, provider
         # Budget exhaustion must not turn local discovery into a dead end. This
         # is the same deterministic fallback, never a second model/extractor.
         local = fallback(text, tools, patch, price_search, initial_refs)
-        local['text'] = 'Model chưa phản hồi hoặc đã đạt giới hạn; đang dùng xử lý tại máy. ' + local['text']
+        # Service status belongs to one UI status region, not every chat bubble.
+        # Do not conflate a transport timeout with a proven usage limit.
         provider['reason'] += '_rules_fallback'
         provider['mode'] = 'rules'
         provider['reply_source'] = 'rules'

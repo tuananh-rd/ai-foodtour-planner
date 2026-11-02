@@ -2884,6 +2884,16 @@
             ],
             "title": "Configured Model"
           },
+          "failure": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/ProviderFailure"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
           "mode": {
             "enum": [
               "rules",
@@ -2948,6 +2958,53 @@
           "calls"
         ],
         "title": "Provider",
+        "type": "object"
+      },
+      "ProviderFailure": {
+        "additionalProperties": false,
+        "properties": {
+          "http_status": {
+            "anyOf": [
+              {
+                "maximum": 599.0,
+                "minimum": 400.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Http Status"
+          },
+          "kind": {
+            "enum": [
+              "timeout",
+              "quota",
+              "unavailable",
+              "bad_response",
+              "tool_error"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "source": {
+            "enum": [
+              "session_cap",
+              "daily_reserve",
+              "turn_deadline",
+              "transport",
+              "provider_http",
+              "local_admission"
+            ],
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "source"
+        ],
+        "title": "ProviderFailure",
         "type": "object"
       },
       "RankingHealth": {

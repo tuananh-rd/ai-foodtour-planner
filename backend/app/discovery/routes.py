@@ -29,6 +29,10 @@ def context(session, request):
 def view(identity, session, state, tools, data, request, result=None, provider=None, elapsed_ms=0):
     from app.api.routes import render_tour
     result = result or {'status': 'ok', 'text': '', 'question': None}
+    if provider is None and state.last_provider_failure:
+        provider = {'mode': 'rules', 'calls': 0, 'reply_source': 'rules',
+                    'reason': state.last_provider_failure['kind'] + '_rules_fallback',
+                    'failure': state.last_provider_failure}
     tour = None
     if session.tour is not None and not state.tour_stale:
         tour = render_tour(session.tour, data, session.tour_preferences or session.preferences, session.revision,
@@ -104,6 +108,11 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
             result = tools.result('tool_error', 'Chưa hoàn tất thao tác; lựa chọn đã xác thực trước đó vẫn được giữ.')
     except Exception:
         result, provider = tools.result('tool_error', 'Công cụ gặp lỗi; chưa xác nhận thao tác thành công. Hãy thử lại sau.'), {'mode': 'rules', 'calls': 0, 'reason': 'tool_error'}
+    if body.text:
+        if provider.get('failure'):
+            state.last_provider_failure = copy.deepcopy(provider['failure'])
+        elif provider.get('mode') == 'gemini' and provider.get('calls', 0) > 0:
+            state.last_provider_failure = None  # a real response, not a local action, clears outage state
     state.remember('assistant', result['text'] + (' ' + result['question'] if result.get('question') else ''))
     if body.text and provider.get('reply_source') == 'model' and not tools.calls and not state.results and not state.selection:
         from app.chat.conversation_reply import private_turn
@@ -130,4 +139,8 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
             current.tour_selected_ids = tuple(x['id'] for x in state.selection)
         current.revision += 1
         request.scope['foodtour_pipeline'] = {'contract': 'discovery-v1', 'provider_attempted': provider['calls'], 'tool_calls': tools.calls}
+        failure = provider.get('failure') or {}
+        request.scope['foodtour_pipeline'].update(
+            reply_source=provider.get('reply_source'), provider_failure_kind=failure.get('kind'),
+            provider_failure_source=failure.get('source'), provider_http_status=failure.get('http_status'))
         return view(session_id, current, state, tools, data, request, result, provider, (time.monotonic()-started)*1000)

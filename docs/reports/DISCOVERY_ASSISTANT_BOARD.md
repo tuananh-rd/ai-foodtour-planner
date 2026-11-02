@@ -1,4 +1,8 @@
-## Active 2026-11-02 — GPS address, natural conversation, active chat
+## Active3350 outage follow-up — 2026-11-02
+
+User actual3350 screenshots supersede any inference from configured Gemini/bootstrap: live conversation is NOT accepted. Read-only health/log/session correlation shows two12-second transport timeouts, daily12/18/remaining6/reserve3, session2/6, retained Đống Đa intent; no provider HTTPstatus to claim429 or invalid configuration. No new generation/ledger reset/cap change. Sol implements structured failure metadata and sanitized logging without repeated chat apologies; AG owns single-state outage UI, raw-code diagnostics only and duplicate reply/question rendering. Current task `task_59996e510d7c` / `ctx_0b4169f0099d`, same AG terminal/conversation/defaultmodel, no duplicate editor. Detailed diagnosis: `OUTAGE_3350_20261102.md`. Final offline build/rendered acceptance pending; remote timeout cause remains an explicit live blocker.
+
+## Previous offline completion — GPS address, natural conversation, active chat
 
 FINAL OFFLINE INTEGRATION COMPLETE: production UI `af9d1cc`, synthetic/rules **http://127.0.0.1:3330** / API8240; private local-data/Gemini-configured **http://127.0.0.1:3350** / API8250. Original3320/API8230 remains untouched. Both configured builds exit0; final address14/14 and shell8/8 rendered PASS. Actual typed synthetic journey55/56 retained one stale-response harness assertion; targeted transcript6/6 passes after POST/revision synchronization fix, all product gates and final five-width layout checks pass. Mobile stream452px/composer823px, readable15/16px, no horizontal overflow/emoji. Full exact matrix and limitations: `CONTINUATION_20261102_FINAL.md`.
 

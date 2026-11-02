@@ -202,6 +202,12 @@ class Source(StrictModel):
     dataset_version: str
 
 
+class ProviderFailure(StrictModel):
+    kind: Literal['timeout', 'quota', 'unavailable', 'bad_response', 'tool_error']
+    source: Literal['session_cap', 'daily_reserve', 'turn_deadline', 'transport', 'provider_http', 'local_admission']
+    http_status: int | None = Field(default=None, ge=400, le=599)
+
+
 class Provider(StrictModel):
     mode: Literal['rules', 'gemini', 'mock']
     calls: int = Field(ge=0, le=2)
@@ -210,6 +216,7 @@ class Provider(StrictModel):
     configured_model: str | None = None
     response_model: str | None = None
     reply_source: Literal['model', 'tools', 'rules'] | None = None
+    failure: ProviderFailure | None = None
 
 
 class Diagnostics(StrictModel):

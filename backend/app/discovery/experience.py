@@ -80,6 +80,8 @@ def settings_action(state, tools, arguments, app, llm_used):
         if not available or llm_used >= app.llm_session_cap:
             return tools.result('unavailable', 'Model này chưa khả dụng hoặc đã đạt giới hạn; lựa chọn hiện tại được giữ.',
                                 code=reason or 'session_quota')
+        if identity != (state.chat_model or app.chat_models.default):
+            state.last_provider_failure = None
         state.chat_model = identity
     if 'web_search_enabled' in supplied:
         state.web_search_enabled = supplied['web_search_enabled']

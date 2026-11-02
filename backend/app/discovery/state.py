@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 import copy
 import json
 from app.assistant.conversation import redact_sensitive
-from .schemas import Profile
+from .schemas import Profile, ProviderFailure
 from app.presentation import plain_text
 
 
@@ -18,6 +18,7 @@ class State:
     confirmation: dict | None = None
     messages: list = field(default_factory=list)
     public_dialogue: list = field(default_factory=list)
+    last_provider_failure: dict | None = None
     dataset_version: str | None = None
     plan_requested: bool = False
     tour_stale: bool = False
@@ -97,6 +98,11 @@ class State:
             raise ValueError('invalid chat model')
         obj.chat_model = model
         obj.web_search_enabled = raw.get('web_search_enabled') is True
+        if isinstance(raw.get('last_provider_failure'), dict):
+            try:
+                obj.last_provider_failure = ProviderFailure.model_validate(raw['last_provider_failure']).model_dump(exclude_none=True)
+            except ValueError:
+                pass
         # Only server-created bounded structures are persisted here; API actions validate input.
         if isinstance(raw.get('location'), dict):
             obj.location = copy.deepcopy(raw['location'])
