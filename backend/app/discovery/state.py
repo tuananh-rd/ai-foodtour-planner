@@ -153,6 +153,10 @@ class State:
         if new != self.profile:
             if new.area != self.profile.area or new.foods != self.profile.foods:
                 self.results, self.comparison = [], []
+                pending = self.pending_search
+                self.last_search = None
+                self.pending_search = ({'dish': None, 'area': new.area,
+                    'max_price_vnd': pending.get('max_price_vnd')} if pending else None)
             self.profile = new
             if 'origin' in changes:
                 self.location = {'status': 'chosen' if new.origin else 'unset',

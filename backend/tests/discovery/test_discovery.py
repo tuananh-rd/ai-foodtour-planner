@@ -199,7 +199,8 @@ class DiscoveryTests(unittest.TestCase):
         self.assertEqual(result['status'], 'ok')
         self.assertEqual(provider['calls'], 0)
         self.assertEqual(provider['reason'], 'quota_rules_fallback')
-        self.assertIn('xử lý tại máy', result['text'])
+        self.assertEqual(provider['reply_source'], 'rules')
+        self.assertEqual(provider['failure']['source'], 'session_cap')
 
     def test_model_cannot_add_or_confirm_without_user_authority(self):
         self.tools.run('search_restaurants', {'dish': 'phở'})

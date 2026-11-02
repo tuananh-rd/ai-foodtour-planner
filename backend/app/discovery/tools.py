@@ -5,6 +5,7 @@ import math
 from urllib.parse import urlsplit
 from pydantic import ValidationError
 from app.chat import tools as local_tools
+from .food import matches_food
 from app.chat.gazetteer import Gazetteer
 from app.chat.planning import plan_selected, routing_for
 from app.planner.types import Preferences
@@ -116,7 +117,7 @@ class Tools:
         origin = self.state.profile.origin
         if origin is None:
             self.state.pending_search = query
-            self.state.results = []
+            self.state.results, self.state.comparison = [], []
             wanted = ' và '.join(self.state.profile.foods) or dish or 'quán ăn'
             where = f' ở {local_tools.clean_text(area, 120)}' if area else ''
             return self.result('unknown', f'Mình đã ghi nhận {wanted}{where}; cần vị trí bạn chọn để tìm và tính khoảng cách.',
@@ -138,13 +139,9 @@ class Tools:
                 return self.result('no_results', f'Dữ liệu local chưa có quán phù hợp ở {local_tools.clean_text(area, 120)}; mình vẫn giữ khu vực và món bạn vừa yêu cầu.')
         elif place and place.kind == 'district':
             venues = [v for v in venues if area_key in fold_uncached(v.district or '')]
-        foods = self.state.profile.foods
+        foods = self.state.profile.foods or ([dish] if dish else [])
         if foods:
-            phrases = []
-            for food in foods:
-                phrases.extend(('che', 'kem', 'trang mieng', 'tao pho', 'sua chua', 'banh ngot')
-                               if fold_uncached(food) == 'trang mieng' else local_tools.dish_phrases(food))
-            venues = [v for v in venues if local_tools.matches(v, phrases)]
+            venues = [v for v in venues if any(matches_food(v,food) for food in foods)]
         # A requested district constrains membership, while distance/ranking always
         # uses the actual chosen origin. Street/landmark searches retain pilot radius.
         centre = (place.lat, place.lon) if place and place.kind != 'district' else (origin.lat, origin.lon)
@@ -155,7 +152,9 @@ class Tools:
         self.refresh_result_order()
         self.state.comparison = []
         if not found.venues:
-            return self.result('no_results', 'Chưa tìm thấy quán trong dữ liệu đáp ứng bộ lọc này; có thể đổi món hoặc khu vực, các yêu cầu khác vẫn được giữ.')
+            wanted = ' và '.join(foods)
+            return self.result('no_results', f'Chưa tìm thấy quán có dữ liệu món {wanted} phù hợp với bộ lọc hiện tại; mình giữ nguyên món và khu vực. Bạn có thể chủ động chọn món hoặc khu vực khác.' if wanted else
+                'Chưa tìm thấy quán trong dữ liệu đáp ứng bộ lọc này; các yêu cầu khác vẫn được giữ.')
         text = f'Có {len(found.venues)} quán trong dữ liệu để bạn xem và so sánh.'
         if area:
             text += f' Bộ lọc khu vực: {local_tools.clean_text(area, 120)}.'

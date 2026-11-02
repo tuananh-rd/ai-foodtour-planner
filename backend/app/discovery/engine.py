@@ -14,6 +14,7 @@ from app.llm.provider import ProviderError
 from app.presentation import plain_text
 from app.planner.relevance import fold_uncached
 from .tools import DISTRICT_LABELS
+from .food import food_intent
 
 
 def knowledge_question(text):
@@ -170,15 +171,6 @@ def local_dish_phrases(dish):
     return dish_phrases(dish)
 
 
-def food_intent(text):
-    """Bounded public food categories; no location, health or model authority."""
-    f = fold_uncached(re.sub(r'(?i)(?<!\w)phố(?!\w)', ' ', text))
-    groups = [('phở', r'\bpho\b'), ('bún', r'\bbun\b'), ('bánh', r'\bbanh\b'),
-              ('chè', r'\bche\b'), ('tráng miệng', r'trang mieng|dessert'),
-              ('cà phê', r'ca phe|coffee')]
-    return [label for label, pattern in groups if re.search(pattern, f)]
-
-
 def fallback(text, tools, patch, price_search, initial_refs=None):
     f = fold_uncached(text)
     results = []
@@ -224,7 +216,7 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
         food_intent(text) and re.search(r'muon an|goi y|\bo\s|\btai\s', f))
     if tools.state.pending_search and patch.get('area') and not search_cue and not dish:
         return tools.run('search_restaurants', {**tools.state.pending_search, 'area': tools.state.profile.area})
-    if search_cue or (dish and results):
+    if search_cue or (dish and results) or (patch.get('foods') and not knowledge_question(text)):
         # Lookup selects the most specific dish mentioned (e.g. add A then find chè).
         dish_name = dish[1] if dish else None
         max_price = None
@@ -363,7 +355,8 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                     f = fold_uncached(text)
                     requires_tools = bool(re.search(r'\btim(?! hieu)\b|so sanh|chi tiet|thong tin quan|tao lich|lap lich|tao tour|lap tour', f)
                                           or (tools.state.results and re.search(r'quan nao|re hon|gan nhat|quan thu|quan dau', f))
-                                          or any(getattr(tools, 'selection_refs', {}).values()))
+                                          or any(getattr(tools, 'selection_refs', {}).values())
+                                          or (patch.get('foods') and not knowledge_question(text)))
                     if valid and not requires_tools:
                         provider['reply_source'] = 'model'
                         return tools.result('ok', valid), provider
@@ -376,6 +369,11 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                     if not valid:
                         provider['reason'] = 'safe_answer_rejected'
                     return tools.result('ok', valid or deterministic['text']), provider
+                if (last.get('code') == 'authority_denied' and patch.get('foods')
+                        and not any(getattr(tools, 'selection_refs', {}).values())):
+                    provider['reason'] = 'denied_mutation_readonly_search'
+                    provider['reply_source'] = 'tools'
+                    return fallback(text, tools, patch, price_search, initial_refs), provider
                 if valid and last['status'] in ('ok', 'unknown', 'no_results') and not (last.get('question') and '?' in valid):
                     last['text'] = valid
                     provider['reply_source'] = 'model'
@@ -414,6 +412,13 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                 responses.append({'functionResponse': response})
             contents.append({'role': 'user', 'parts': responses})
         provider['reason'] = 'turn_call_cap'
+        if (last and last.get('code') == 'authority_denied' and patch.get('foods')
+                and not any(getattr(tools, 'selection_refs', {}).values())):
+            # Keep the mutation denied. Fulfil the separately authorized read-only
+            # food refinement using server-parsed preferences and current origin.
+            provider['reason'] = 'denied_mutation_readonly_search'
+            provider['reply_source'] = 'tools'
+            return fallback(text, tools, patch, price_search, initial_refs), provider
         return last or tools.result('unavailable', 'Lượt xử lý đã đạt giới hạn; các thay đổi đã kiểm chứng vẫn được giữ.'), provider
     except (ProviderError, TimeoutError, ValueError, TypeError, KeyError, AttributeError) as error:
         provider['reason'] = getattr(error, 'kind', 'timeout' if isinstance(error, TimeoutError) else 'tool_error')
@@ -427,6 +432,10 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
         if type(status) is int and 400 <= status <= 599:
             provider['failure']['http_status'] = status
         if last is not None:
+            if (last.get('code') == 'authority_denied' and patch.get('foods')
+                    and not any(getattr(tools, 'selection_refs', {}).values())):
+                provider['reply_source'] = 'tools'
+                return fallback(text, tools, patch, price_search, initial_refs), provider
             return last, provider
         # Budget exhaustion must not turn local discovery into a dead end. This
         # is the same deterministic fallback, never a second model/extractor.
