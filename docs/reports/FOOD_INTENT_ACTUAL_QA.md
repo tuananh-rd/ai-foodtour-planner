@@ -1,6 +1,6 @@
 # Lane 3350 Broader Food Intent — Independent User QA (RED + GREEN)
 
-## Latest checkpoint — review COMPLETE; menu UI in progress
+## Latest checkpoint — review COMPLETE; menu UI shipped and QA'd
 
 The28 independent Claude checks below passed, but are **not28 matrix cells**: they include
 13 origin-first variants, one origin-after and other workflow assertions. Full matrix coverage is
@@ -25,10 +25,15 @@ Evidence: `food-intent-actual-3350/sol-supplement/browser-evidence.json`.
 - Existing passed comparison/reload/API-proof sections were not re-run. The full tour was run
   again only to obtain and validate its real rendered URL. Supplemental screenshots are synthetic.
 
-**These40 checks were executed by Sol, not Claude. Final independent affected review of
-`aafedf6` and acceptance of this supplement remain BLOCKED by Claude usage. This report is not
-a claim that the user has accepted3350 or that live Gemini works.** Backend targeted count is
-**86**, not the historical70 quoted below. Final harness treats UNTESTED as a non-success exit.
+Those 40 supplement checks were executed by Sol; the preserved Claude 28/28 are independent. The
+independent affected review of `aafedf6` is **COMPLETE** and the supplement **ACCEPTED** (see §4);
+the matching-menu source `72a1932` / `627395e` / `5cf329d` is **APPROVED** (see §7). The menu UI was
+implemented by Claude and frozen at build **`4da7f28` (exit 0)**, then QA'd live: public menu 13/13
+and the private journey 12 meaningful checks (one numeric dine-in-vs-delivery inequality assertion
+was excluded by coordinator review as logically invalid — see §7). Per coordinator, combined
+targeted tests tally **90**, plus **5** affected-review checks and **33** data checks (**1** skip);
+the whole matrix and the backend suites were **not** re-run. This report makes no claim that the
+user has accepted 3350 or that live Gemini quality works.
 
 3350/API8250 was restored to original private-data/session/config mode after isolated QA;
 private sessions/ledger and3320/8230 were preserved. See `FOOD_INTENT_BACKEND.md` for final health.
@@ -195,16 +200,22 @@ live ("Giá món tối thiểu chưa xác định"). At 390px the card has no ho
 composer stays reachable. Evidence: `docs/reports/matching-menu-3350/browser-evidence.json` +
 screenshots.
 
-**Private menu journey — EXECUTED, 13/13 PASS (exit 0)** via the Sol-safe launcher
-(`run_local_menu_qa.py --port 8250`, mock LLM, keys blank, disposable DBs, private ZIP), 3350 on
-`4da7f28`. Flow: request typed before origin (prompt, 0 cards) → local gazetteer origin chosen (no
-invented coords) → nonempty `matching_menu` card → add to tour → profile "…xe máy…" → explicit
-confirmation → tour with a stop → ordered **driving** Google Maps URL validated (api=1, origin =
-profile.origin, waypoints+destination in stop order) → post-tour food change preserved
-selection+origin and invalidated confirmation/tour. Evidence is **counts/booleans/status only** (2
-menu venues, 6 reference rows, tour formed, Maps valid) — no venue names/ids/prices/URLs/screenshots
-written; raw menu stays in the gitignored `.venv`. The original private ledger/session was untouched
-(mock lane, no live generation). No app-Gemini quality is claimed.
+**Private menu journey — EXECUTED; 12 meaningful checks accepted (exit 0)** via the Sol-safe
+launcher (`run_local_menu_qa.py --port 8250`, mock LLM, keys blank, disposable DBs, private ZIP),
+3350 on `4da7f28`. Flow: request typed before origin (prompt, 0 cards) → local gazetteer origin
+chosen (no invented coords) → nonempty `matching_menu` card → add to tour → profile "…xe máy…" →
+explicit confirmation → tour with **1 stop** → ordered **driving** Google Maps URL validated (api=1,
+origin = profile.origin, waypoints+destination in stop order) → post-tour food change preserved
+selection+origin and invalidated confirmation/tour. The captured historical evidence
+(`.../private/private-evidence.json`) recorded 13 checks; on coordinator review the one numeric
+"venue dine-in price ≠ any delivery reference" inequality assertion is **excluded as logically
+invalid** (a dine-in price may legitimately coincide with a delivery reference; non-repricing is
+proven by backend regression), leaving **12 meaningful checks accepted**. That assertion is removed
+from the harness going forward; the historical evidence file is left unedited. Evidence is
+**counts/booleans/status only** (2 menu venues, 6 reference rows, confirmed 1-stop tour, driving
+Maps valid) — no venue names/ids/prices/URLs/screenshots written; raw menu stays in the gitignored
+`.venv`. The original private ledger/session was untouched (mock lane, no live generation). No
+app-Gemini quality is claimed.
 
 ## 6. Files
 

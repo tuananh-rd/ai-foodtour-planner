@@ -120,8 +120,9 @@ if (process.exitCode === undefined || process.exitCode === 0) {
       record('private: chosen origin then at least one matching_menu card (nonempty)', st.cards >= 1 && st.rows >= 1 && view?.location?.status === 'chosen');
       record('private: delivery disclaimer present (not dine-in, ShopeeFood)', st.disclaimer === true);
       record('private: every row label truthful (reference|quarantined|minimum_unknown)', (st.ref + st.quar + st.unk) === st.rows && st.rows > 0);
-      const notRepriced = await ev(`(()=>{const rs=${JSON.stringify((view?.results || []).filter(r => r.matching_menu && r.matching_menu.length).map(r => ({ p: (r.price && (r.price.max_vnd || r.price.min_vnd)) || null, refs: r.matching_menu.map(m => m.reference_price_vnd) })))}; return rs.every(x=>x.p===null|| !x.refs.includes(x.p));})()`);
-      record('private: venue dine-in price not equal to any delivery reference', notRepriced === true);
+      // Numeric dine-in-vs-delivery inequality assertion removed by coordinator review:
+      // a venue's dine-in price may legitimately coincide with a delivery reference price,
+      // so inequality is not a valid signal. Non-repricing is proven by backend regression.
 
       // selection -> profile (xe máy) -> explicit confirmation -> tour -> ordered DRIVING Maps.
       // (3) These MUST form; non-formation is a genuine FAIL, not a conditional pass.
