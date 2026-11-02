@@ -1,3 +1,10 @@
+## Current checkpoint — menu6 active, OSM frontend pending (2026-11-03)
+
+Coordinator rebound to term_becbf035-3b75-4625-840a-3780f738d7ec, Run generation7; oldlead exited.
+Backend/data committed193106a, OSM key-free config8dd5890, confirmedvehicle regression96059df, sharedfixtures3e58c44, aggregatehealth3f119f0, rollback/health evidence3213004, real3stopAPI flowf76481f.22migration/menu plus9 distinct OSM/config/health tests passed across targeted runs (no full-suite rerun).
+Actual private menu6 API journey:5matchingmenuvenues ->3explicitselected ->carprofile ->confirmation ->3stopstour ->3orderedOSMlegs with actualorigin PASS, no-data/changefood/area withpreservedselection/origin PASS. Providercalls0; this is rules acceptance, not Gemini quality.
+3350 oldcompiledUI PID16472 temporarily retained;8250 private/mock/rules QA launcher30004/child39792 health3f119f0, sourceprivate menu18,222foodrows. Original private sessions/ledger untouched. AG same task_a5f98b7eeb02 / ctx_ee8b6bdb56b6 implements frontendhelpers/timeline/map; no duplicate editor. Sent findings URLvalidation and pilotbounds clipping, finalbuild/browser still REQUIRED. Partial UI review findings sent: exact bounded OSM URL validation, missing-origin builder guard, strict non-coercing marker coordinates, original stop numbering and out-of-pilot bounds. No frontend acceptance/settlement received at this checkpoint; no overlapping edits or test reruns. No claim of completed OSM UI or handover yet.
+
 ## Menu6 activation and OSM migration — IN PROGRESS (2026-11-03)
 
 Latest user authority: Codex backend/data/integration; Claude rests; Antigravity frontend/QA.
