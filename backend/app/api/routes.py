@@ -282,13 +282,13 @@ def read_session(session_id: str, request: Request,
 @router.get('/v1/sessions/{session_id}/tour/maps-links', response_model=MapsLinksResponse)
 def maps_links(session_id: str, request: Request, mode: Literal['walking', 'driving'] = 'walking',
                x_session_token: str | None = Header(default=None)):
-    with request.app.state.sessions.owned(session_id, x_session_token, restore_tour=False) as session:
-        if session.tour is None or not session.tour.stops:
-            raise APIError(409, 'no_tour', 'Chưa có lịch trình với điểm dừng.')
-        data = session.snapshot
-        return build_maps_links(session.preferences.origin, session.preferences.origin_label,
-                                session.tour.stops, data.venues if data else (), mode,
-                                vehicle=session.tour_vehicle)
+    session=request.app.state.sessions.read_owned(session_id, x_session_token, restore_tour=False)
+    if session.tour is None or not session.tour.stops:
+        raise APIError(409, 'no_tour', 'Chưa có lịch trình với điểm dừng.')
+    data = session.snapshot
+    return build_maps_links(session.preferences.origin, session.preferences.origin_label,
+                            session.tour.stops, data.venues if data else (), mode,
+                            vehicle=session.tour_vehicle)
 
 
 @router.post("/v1/sessions/{session_id}/messages", response_model=SessionView)

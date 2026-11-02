@@ -4,7 +4,7 @@ import json
 import secrets
 import sqlite3
 import time
-from contextlib import contextmanager
+from contextlib import contextmanager, closing
 from dataclasses import replace
 from pathlib import Path
 
@@ -208,6 +208,41 @@ class SQLiteSessionStore:
             db.execute('UPDATE sessions SET preferences=?,revision=?,tour=?,chat=? WHERE id=? AND revision=?',
                        (PreferencesSchema.from_domain(session.preferences).model_dump_json(),
                         session.revision, encoded_tour, encode_chat(session.chat), identity, row[2]))
+
+    def read_owned(self, identity, token, *, restore_tour=False):
+        """Authenticate one immutable row, then restore outside any DB/write lock.
+
+        Map rendering can load a large dataset. It must not block a simultaneous
+        chat/CAS write, and it must never persist this possibly older read snapshot.
+        """
+        if not token or len(token) > 200:
+            raise APIError(401, 'unauthorized_session', 'Thiếu thông tin xác thực phiên.')
+        try:
+            if not self.path.is_absolute():
+                raise ValueError('absolute database path required')
+            with closing(sqlite3.connect(self.path.as_uri()+'?mode=ro', uri=True,
+                                          timeout=self.timeout)) as db:
+                row=db.execute('SELECT token_hash,preferences,revision,expires_at,tour,chat '
+                               'FROM sessions WHERE id=?',(identity,)).fetchone()
+            now=self.clock()
+            expected=row[0] if row is not None else bytes(32)
+            digest=hashlib.sha256(token.encode()).digest()
+            if not isinstance(expected,bytes) or not secrets.compare_digest(expected,digest) or row is None:
+                raise APIError(403,'unauthorized_session','Không có quyền truy cập phiên.')
+            if row[3]<=now:
+                raise APIError(410,'session_expired','Phiên đã hết hạn; hãy tạo phiên mới.')
+            # Keep the same bounded token rate gate, without holding it during restore.
+            with self._rates._lock:
+                self._rates._expire(now)
+                if identity not in self._rates._sessions:
+                    self._rates._sessions[identity]=Session(expected,row[3],window_start=now)
+                while len(self._rates._sessions)>self.max_sessions:
+                    del self._rates._sessions[next(iter(self._rates._sessions))]
+            with self._rates.owned(identity,token):
+                pass
+            return self._restore(row,restore_tour=restore_tour)
+        except (sqlite3.Error,ValueError,TypeError,KeyError,IndexError,OverflowError,DatasetLoadError):
+            raise unavailable() from None
 
     def authorize_token(self, token):
         if not token or len(token) > 200:

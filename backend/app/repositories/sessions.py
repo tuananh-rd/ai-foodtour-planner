@@ -44,6 +44,7 @@ class SessionStoreInterface(Protocol):
 
     def create(self) -> dict: ...
     def owned(self, identity: str, token: str, *, restore_tour: bool = True) -> ContextManager[Session]: ...
+    def read_owned(self, identity: str, token: str, *, restore_tour: bool = False) -> Session: ...
     def check_revision(self, session: Session, expected: int) -> None: ...
     def authorize_token(self, token: str) -> None: ...
 
@@ -105,6 +106,10 @@ class SessionStore:
             yield working
             encode_chat(working.chat)
             self._sessions[identity] = working
+
+    def read_owned(self, identity, token, *, restore_tour=False):
+        with self.owned(identity, token, restore_tour=restore_tour) as session:
+            return copy.deepcopy(session)
 
     @staticmethod
     def check_revision(session, expected):

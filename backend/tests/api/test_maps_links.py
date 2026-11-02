@@ -4,6 +4,8 @@ import json
 import sqlite3
 import tempfile
 import unittest
+import threading
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import replace
 from contextlib import closing
 from pathlib import Path
@@ -169,3 +171,55 @@ class MapsEndpointTests(unittest.TestCase):
         self.assertEqual(result.json()['status'], 'ok')
         with closing(sqlite3.connect(store.path)) as db:
             self.assertEqual(before, db.execute('SELECT preferences,revision,tour,expires_at FROM sessions').fetchall())
+
+    def test_slow_map_restore_does_not_block_chat_write_or_overwrite_new_revision(self):
+        store=SQLiteSessionStore(Path(self.temp.name)/'concurrent.sqlite',self.app.state.venues,
+                                 self.app.state.routing,timeout=0.05)
+        self.app.state.sessions=store
+        created=self.client.post('/v1/sessions').json()
+        identity,token=created['session_id'],created['token']
+        headers={'X-Session-Token':token}
+        base=f'/v1/sessions/{identity}'
+        state=self.client.post(base+'/messages',headers=headers,
+            json={'text':'quanh Hồ Gươm trong 4 giờ, 500k mỗi người'}).json()
+        self.assertTrue(state['tour']['stops'])
+        data=self.app.state.venues.snapshot()
+        entered,release=threading.Event(),threading.Event()
+        def slow_first_snapshot():
+            if not entered.is_set():
+                entered.set()
+                if not release.wait(5):raise AssertionError('map restore never released')
+            return data
+        with patch.object(self.app.state.venues,'snapshot',side_effect=slow_first_snapshot), \
+                ThreadPoolExecutor(max_workers=1) as pool:
+            read=pool.submit(self.client.get,base+'/tour/maps-links',headers=headers)
+            try:
+                self.assertTrue(entered.wait(2),'map read did not start')
+                # The expensive map snapshot is still blocked. A normal CAS write must succeed.
+                with store.owned(identity,token,restore_tour=False) as current:
+                    store.check_revision(current,state['revision'])
+                    current.revision+=1
+                with closing(sqlite3.connect(store.path)) as db:
+                    self.assertEqual(db.execute('SELECT revision FROM sessions WHERE id=?',
+                        (identity,)).fetchone()[0],state['revision']+1)
+            finally:
+                release.set()
+            self.assertEqual(read.result(timeout=5).status_code,200)
+        # The older map read must not write its snapshot over the committed revision.
+        self.assertEqual(store.read_owned(identity,token).revision,state['revision']+1)
+
+    def test_sqlite_map_read_keeps_auth_expiry_and_rate_guards(self):
+        now=[1000.0]
+        store=SQLiteSessionStore(Path(self.temp.name)/'read-auth.sqlite',self.app.state.venues,
+                                 self.app.state.routing,clock=lambda:now[0],rate_limit=1)
+        session=store.create();identity,token=session['session_id'],session['token']
+        from app.api.errors import APIError
+        for bad,status in ((None,401),('wrong',403)):
+            with self.assertRaises(APIError) as error:store.read_owned(identity,bad)
+            self.assertEqual(error.exception.status,status)
+        store.read_owned(identity,token)
+        with self.assertRaises(APIError) as error:store.read_owned(identity,token)
+        self.assertEqual(error.exception.status,429)
+        now[0]+=store.ttl_seconds+1
+        with self.assertRaises(APIError) as error:store.read_owned(identity,token)
+        self.assertEqual(error.exception.status,410)
