@@ -31,7 +31,8 @@ the matching-menu source `72a1932` / `627395e` / `5cf329d` is **APPROVED** (see 
 implemented by Claude and frozen at build **`4da7f28` (exit 0)**, then QA'd live: public menu 13/13
 and the private journey 12 meaningful checks (one numeric dine-in-vs-delivery inequality assertion
 was excluded by coordinator review as logically invalid — see §7). Per coordinator, combined
-targeted tests tally **90**, plus **5** affected-review checks and **33** data checks (**1** skip);
+targeted tests tally **90**, plus **5** affected menu tests and **33** data tests (**1** skip),
+with overlapping counts;
 the whole matrix and the backend suites were **not** re-run. This report makes no claim that the
 user has accepted 3350 or that live Gemini quality works.
 

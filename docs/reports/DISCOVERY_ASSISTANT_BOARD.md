@@ -21,8 +21,20 @@ bounded matching_menu(max3), literal menu-name evidence before tag fallback, man
 minimums, delivery-reference budget filters, no dine-in/hour/allergy inference.90 targeted tests
 PASS. Private in-memory journey finds actual menu evidence, explicitly selects/confirms1-stop
 conditional tour and ordered Maps; no-data preserves origin/selection,0 provider calls.
-Pending: Claude menu UI/review, one build, targeted actual-browser menu journey and final private
-runtime restoration. Do not claim whole app complete from rules evidence.
+Completed: Claude independently approved current food/menu source and preserved evidence; UI4da7f28
+single build exit0; public menu13/13 PASS; private actual UI request→local origin→menu→selection
+→confirmation→1-stop tour→ordered driving Maps PASS.12 meaningful private checks accepted after
+excluding1 invalid numeric-inequality assertion from the historical13. Sol actual private API
+no-data/area-change supplement PASS with origin/selection preserved. No suite repeated for resume.
+QA source/doc cleanup settled succeeded atb8709cf in task_387aa02d3c9d / ctx_f406a21fc349:
+invalid inequality removed, stale review-blocked wording corrected, syntax exit0, no production
+edits or test reruns. Release retained the pre-existing terminal (external_terminal, no process
+action); no active editing authority or reclaimable terminal remains for this work.
+
+Restored3350 UI4da7f28/API8250 source920f4d8, private menu-enabled dataset version independently
+matched to local loader, budget15/18 remaining3/reserve3, cap6.3320/8230 unchanged, private
+sessions/ledger intact. No new app generation/paid operations; live Gemini remains unverified.
+Concise checkpoint: `MENU_RESUME_CHECKPOINT.md`; detailed evidence: `LOCAL_MENU_INTEGRATION.md`.
 
 ## User rejected broader food-intent acceptance — historical checkpoint (2026-11-02)
 
