@@ -24,6 +24,8 @@ import {
   setLabelLocationAction,
   clearLocationAction,
   formatDistanceDisplay,
+  formatMenuReferencePrice,
+  formatMenuMinimum,
   safeExternalUrl,
   UNKNOWN_LABELS_VI,
   formatUnknownLabel,
@@ -1906,6 +1908,33 @@ export default function DiscoveryLayout({
                                 {r.dish_tags.map((tag, tIdx) => (
                                   <span key={tIdx} className="nn-dish-tag">{tag}</span>
                                 ))}
+                              </div>
+                            )}
+
+                            {/* Matching menu (ShopeeFood delivery reference, max 3; NOT a dine-in price) */}
+                            {Array.isArray(r.matching_menu) && r.matching_menu.length > 0 && (
+                              <div className="nn-menu-ref" data-testid={`menu-ref-${r.id}`}>
+                                <div className="nn-menu-ref-title">
+                                  Món khớp trên thực đơn giao hàng (ShopeeFood) — giá tham khảo, không phải giá tại quán:
+                                </div>
+                                {r.matching_menu.slice(0, 3).map((mref, mIdx) => {
+                                  const minLabel = formatMenuMinimum(mref);
+                                  return (
+                                    <div key={mIdx} className="nn-menu-ref-row" data-testid={`menu-ref-${r.id}-${mIdx}`}>
+                                      <span className="nn-menu-ref-name">{normalizeDisplayText(mref.name)}</span>
+                                      <span className="nn-menu-ref-price" data-testid={`menu-ref-price-${r.id}-${mIdx}`}>
+                                        {formatMenuReferencePrice(mref)}
+                                      </span>
+                                      {minLabel && <span className="nn-menu-ref-min">{minLabel}</span>}
+                                      {mref.mandatory_options === true && (
+                                        <span className="nn-menu-ref-flag">cần chọn tuỳ chọn bắt buộc</span>
+                                      )}
+                                    </div>
+                                  );
+                                })}
+                                <div className="nn-menu-ref-note">
+                                  Giá tham khảo từ kênh giao hàng ShopeeFood; giá món tối thiểu gồm tùy chọn bắt buộc khi xác định, chưa gồm phí giao hàng/phí khác; không bảo đảm giá, giờ mở cửa hay an toàn dị ứng tại quán.
+                                </div>
                               </div>
                             )}
 

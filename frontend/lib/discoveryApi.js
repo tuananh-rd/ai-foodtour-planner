@@ -755,6 +755,37 @@ export function formatDistanceDisplay(restaurant) {
 }
 
 /**
+ * Formats a MenuReference (discovery-v1 matching_menu) delivery reference price,
+ * truthfully. ShopeeFood delivery reference — NEVER presented as a dine-in price.
+ * Quarantined or missing prices are shown as unverified, not invented.
+ */
+export function formatMenuReferencePrice(mref) {
+  if (!mref || typeof mref !== 'object') return 'Giá chưa xác định';
+  if (mref.price_status === 'quarantined' || mref.reference_price_vnd === null || mref.reference_price_vnd === undefined) {
+    return 'Giá chưa xác minh';
+  }
+  const p = Number(mref.reference_price_vnd);
+  if (!Number.isFinite(p)) return 'Giá chưa xác định';
+  return `~${p.toLocaleString('vi-VN')} đ (giao hàng)`;
+}
+
+/**
+ * Formats the mandatory-option minimum for a MenuReference, or a truthful
+ * "not determined" when the source minimum could not be verified.
+ */
+export function formatMenuMinimum(mref) {
+  if (!mref || typeof mref !== 'object') return null;
+  // min_total_vnd is the per-item minimum INCLUDING mandatory options, not an order minimum.
+  if (mref.min_total_vnd !== null && mref.min_total_vnd !== undefined && Number.isFinite(Number(mref.min_total_vnd))) {
+    return `Giá món tối thiểu ~${Number(mref.min_total_vnd).toLocaleString('vi-VN')} đ`;
+  }
+  if (mref.mandatory_options === true || mref.price_status === 'minimum_unknown') {
+    return 'Giá món tối thiểu chưa xác định';
+  }
+  return null;
+}
+
+/**
  * Safe external URL helper to guard untrusted href links (http/https only).
  */
 export function safeExternalUrl(url) {

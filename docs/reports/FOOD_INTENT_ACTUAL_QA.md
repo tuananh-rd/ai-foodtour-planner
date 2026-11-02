@@ -1,13 +1,12 @@
 # Lane 3350 Broader Food Intent — Independent User QA (RED + GREEN)
 
-## Latest integration checkpoint — review BLOCKED
+## Latest checkpoint — review COMPLETE; menu UI in progress
 
 The28 independent Claude checks below passed, but are **not28 matrix cells**: they include
-13 origin-first variants, one origin-after and other workflow assertions. The final independent
-task `task_d3bf55bec179` / `ctx_691492b03dda` stopped at the Claude coding usage limit before
-reviewing the current backend diff `aafedf6` or completing its supplements. Automatic continue
-was cancelled; the dispatch was fenced/failed and its conversation/WIP retained. No credit,
-model switch or new provider allowance was used. CLI displayed next reset22:30 local.
+13 origin-first variants, one origin-after and other workflow assertions. Full matrix coverage is
+now established by preserved Claude evidence (28/28) **plus** the Sol integration supplement
+(40/40, build aafedf64) — accepted here with the independent `aafedf6` affected review in §4 and
+the matching-menu work in §7. Per coordinator, the whole matrix was **not** re-run.
 
 After that editor stopped, Sol completed only integration-harness work and ran
 `QA_SUPPLEMENT=1` with a separate evidence directory: **40/40 PASS,0 FAIL,0 UNTESTED, exit0**.
@@ -110,16 +109,32 @@ Evidence: `docs/reports/food-intent-actual-3350/browser-evidence.json` + screens
 (`green-reload-restore.png`, `green-before-plan.png`, `green-tour-maps.png`). Synthetic venue
 ids/text only; no session id, token, GPS, or private records exported.
 
-## 4. Backend affected-review (read-only)
+## 4. Backend affected-review (read-only) — aafedf6, APPROVED
 
-- The RED defects are backend-owned (parser dropping specific dishes; generic-ack replies;
-  `tour_stale`/old-tour copy). The frontend needed no change and none was made.
-- Prior-dispatch review of `067193f` (canonical dish-intent labels so editorial headings never
-  become search phrases) and `5541059` (a model sentence cannot overwrite a `no_results` reply into
-  an availability claim) stands — APPROVED.
-- Build aafedf64 ("synthetic-food-matrix") adds the general parser + expanded fixture; behaviour is
-  verified green above. The 70 targeted backend tests already PASS (per coordinator) and were **not**
-  re-run.
+Independent review of the CURRENT fix `aafedf6` ("recognize literal food requests independently of
+dish catalog"); earlier `067193f`/`5541059` are superseded context, not the focus.
+
+- **food.py** — grammar-based literal food recognition independent of the dish catalog
+  (`_REQUEST` request verbs + `_STOP` noun-phrase terminators, negation guard), so non-catalog
+  dishes like "gà rán" are captured as the literal food. `needs_food_clarification` returns a
+  truthful clarify (clearing stale results/pending) when a request has no parseable food and is not
+  a general-venue search. A bare-dish guard keeps incidental dish mentions from silently changing
+  the preference.
+- **engine.py** — a `required_search` guarantee: a food/area request always yields a real
+  `search_restaurants` even when the model returns no tool, hits the turn-call cap, is denied, or
+  errors/times out, via `complete_required_search()` — a **separately authorized READ** (never a
+  replay of denied mutations), so the selection-authority gate is not weakened
+  (`denied_mutation_readonly_search`). Also: `knowledge_question` refinement, `foods` list CAS in
+  `authorized`, plan-cue gating so a food/area request cannot misroute into `create_itinerary`, and
+  an area-change-with-existing-foods search trigger.
+- **state.py** — clears `plan_requested`/`pending_slot` on **foods OR area** change (fixes the
+  stale-plan misroute for area changes too).
+- **experience.py** — removes the unconditional "tour cũ cần xác nhận lại" old-tour copy (the RED
+  defect); origin reply is now just "Đã chọn vị trí xuất phát. Khoảng cách đường chim bay đã cập
+  nhật." Verified live before the lane reverted.
+- No frontend change was required for the food-intent fix, and none was made there.
+- **86** targeted backend tests PASS (recorded on `DISCOVERY_ASSISTANT_BOARD.md`; the historical
+  "70" is superseded). Not re-run per instruction.
 
 ## 5. Limitations
 
@@ -129,10 +144,64 @@ ids/text only; no session id, token, GPS, or private records exported.
 - Harness records transient per-item timeouts as UNTESTED (none in the final run); it is resilient
   so a single hiccup cannot abort the matrix.
 
+## 7. Matching-menu integration (ShopeeFood delivery reference)
+
+New user-approved scope: show a bounded per-venue delivery-menu reference. Contract (frozen):
+`Restaurant.matching_menu: MenuReference[≤3]` where `MenuReference = {name, reference_price_vnd:
+int|null, min_total_vnd: int|null, price_status: reference|quarantined|minimum_unknown,
+mandatory_options: bool, price_channel: 'shopeefood_delivery', availability:
+unknown|unavailable|source_available, source_fetched_at: str|null}`. Delivery reference — **never**
+a dine-in price; no allergy/hour claims.
+
+**Backend review (read-only) — `72a1932`, APPROVED.** `schemas.py` adds `MenuReference` (StrictModel)
+and `Restaurant.matching_menu` (`max_length=3`) exactly per contract. `data/menu.py` loads the
+bounded ShopeeFood archive: excludes contact/hotline rows, caps rows, honours only confirmed
+venue mappings, quarantines anomalous prices (→ `reference_price_vnd: null`, `price_status:
+quarantined`), computes mandatory-option minima (→ `minimum_unknown` when unverifiable), cross-checks
+`min_total_vnd`, and derives `availability`. `tools.py` attaches `matching_menu(...)[:3]` to each
+rendered restaurant for the current foods, with dish-tag fallback only for menu-less venues;
+`matching_menu` is excluded from the LLM projection. Delivery references never reprice the venue's
+dine-in price. **89** targeted backend tests PASS (`.venv/menu-targeted-tests.log`); not re-run.
+`627395e` then uses the menu `min_total_vnd` as the delivery price filter (menu-backed venues kept
+when a row's minimum ≤ cap, menu-less venues fall back to source range; menu-backed venues sorted
+first), with a truthful disclaimer distinguishing delivery reference from dine-in price/fees.
+`5cf329d` fixes the mandatory-option guard so a dish flagged mandatory with no actual mandatory
+group resolves to `minimum_unknown`, and adds `tools/run_local_menu_qa.py` — a private QA launcher
+that boots the app with `FOODTOUR_LLM=mock`, all provider/Maps keys blanked, geocoder off,
+disposable session/budget DBs, and the private menu ZIP (no accounts/caps/ledgers). Reviewed and
+APPROVED.
+
+**Frontend (implemented, my scope).** Added a truthful `matching_menu` card to each restaurant
+result in `DiscoveryLayout.jsx` (testids `menu-ref-<id>` / `menu-ref-<id>-<n>` /
+`menu-ref-price-<id>-<n>`): per row shows the delivery reference price, the mandatory minimum (or
+"Giá món tối thiểu chưa xác định"), a "cần chọn tuỳ chọn bắt buộc" flag, with a header + note stating it is
+a ShopeeFood delivery reference, "không phải giá tại quán", and claims no price/hours/allergy at the
+venue. Quarantined rows render "Giá chưa xác minh" (no fabricated price). Client formatters
+`formatMenuReferencePrice` / `formatMenuMinimum` added to `frontend/lib/discoveryApi.js`; scoped
+styles in `discovery-visual.css`. Names pass through `normalizeDisplayText` (no emoji).
+
+**Menu QA (ready).** `qa/discovery-assistant/test_matching_menu_3350.mjs` — one bounded, targeted
+browser test (real 3350 UI, direct 8250, no interception). It asserts, against the synthetic
+`menu_data` (venue `fried0`): a 3-row menu card in menu order (reference `Gà rán phần thử` ~30.000 đ
+giao hàng; quarantined `Gà rán giá lỗi` → "Giá chưa xác minh"; mandatory `Gà rán chọn sốt` → "Giá
+món tối thiểu ~35.000 đ" + bắt buộc), the delivery disclaimer, the venue dine-in price unchanged, a
+menu-less venue showing no card, and unknown→no_results→no cards. It currently **SKIPS** (UNTESTED,
+exit 0) because 8250 is on `synthetic-food-matrix`, not the `--menu` fixture, and awaits a 3350
+build that includes the new card.
+
+**Remaining to finish the task:** (a) Sol switches 8250 to the rules `--menu` fixture; (b) 3350 is
+rebuilt to include the new `matching_menu` card; then (c) I run the menu QA to assert it live. No
+`worker_done` until that executes.
+
 ## 6. Files
 
-- `qa/discovery-assistant/test_food_intent_actual_3350.mjs` — executed acceptance harness (28/28
-  PASS, exit 0).
+- `qa/discovery-assistant/test_food_intent_actual_3350.mjs` — executed acceptance harness (Claude
+  28/28 PASS; Sol supplement 40/40 PASS on aafedf64).
+- `qa/discovery-assistant/test_matching_menu_3350.mjs` — bounded menu card QA (ready; skips until
+  `--menu` lane + rebuilt 3350).
+- `frontend/app/components/v2/guided/DiscoveryLayout.jsx`, `frontend/lib/discoveryApi.js`,
+  `frontend/app/components/v2/guided/discovery-visual.css` — matching_menu card UI + formatters + styles.
 - `docs/reports/food-intent-actual-3350/` — `browser-evidence.json`, `red-prefix-evidence.json`,
-  3 sanitized screenshots.
+  `sol-supplement/`, screenshots.
+- `docs/reports/matching-menu-3350/browser-evidence.json` — menu QA evidence (skip state).
 - `docs/reports/FOOD_INTENT_ACTUAL_QA.md` — this report.
