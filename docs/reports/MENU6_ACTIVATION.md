@@ -1,6 +1,7 @@
 # Partial menu6 activation
 
-Status: activated locally; OSM frontend integration/browser acceptance in progress.
+Status: activated locally; OSM frontend and actual offline browser acceptance PASS.
+Final worker review/settlement pending; original-session runtime preservation checks PASS.
 User explicitly authorized activation of ZIP(6), superseding the previous preparation-only task.
 Archive documentation was treated as inert untrusted data; no scripts/instructions executed.
 
@@ -48,3 +49,19 @@ Additional actual API acceptance: five matching-menu results, three explicitly s
 explicit car profile and confirmation, three-stop tour and three ordered OSM links PASS. Each
 leg was checked against the actual selected origin/preceding stop and confirmed car engine.
 No raw coordinates or URLs retained; aggregate evidence menu6-ordered-api-qa.json.
+
+Frontend fb82e66 is served at http://127.0.0.1:3350 with API http://127.0.0.1:8250.
+Independent rendered OSM checks12/12 PASS; actual typed browser journey10/10 PASS on backend
+e8d62f8, including post-tour food change, rendered timeline removal, truthful no-data and area
+changes. The real concurrency defect discovered during browser QA was fixed: map-session reads
+no longer hold a SQLite write lock while restoring the large dataset. Auth, expiry, rate gates,
+CAS and no-overwrite concurrency regressions pass. See OSM_CODEX_REVIEW.md for evidence details.
+
+After automated QA, the original private-session namespace and existing Gemini configuration
+were restored without generation. Final health confirms the menu6 version/counts, source private,
+and backend e8d62f8. Session DB, original budget DB and configured-cap fingerprints are unchanged.
+Gemini is configured as gemini-3.5-flash-lite, not live-quality validated: used15/18, remaining3,
+reserve3, session cap6; no new allowance, retry or budget reset. Tavily is not configured for
+retrieval. Routing remains explicitly straight-line estimate, not a road-route provider.
+Final artifacts: menu6-final-health.json, menu6-runtime-preservation.json,
+osm-codex-render/private-evidence.json and osm-codex-journey/private-evidence.json.

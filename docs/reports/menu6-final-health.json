@@ -1,0 +1,34 @@
+{
+  "status": "ok",
+  "build_commit": "e8d62f82291c02ddb0144a6ee8da5a4f4aeaef93",
+  "dataset_source": "private",
+  "dataset_version": "0eecfd11835ad9b10f84eb82cf1da95caba3a604ab04721332130d7402fc6898",
+  "menu_counts": {
+    "canonical_dishes": 18245,
+    "group_links": 18764,
+    "options": 90350,
+    "mapped_venues": 400,
+    "contact_or_invalid_excluded": 23,
+    "price_quarantined": 91,
+    "minimum_unverified": 50,
+    "linked_venues": 342,
+    "food_rows": 18222
+  },
+  "llm": "live",
+  "llm_provider": "gemini",
+  "llm_model": "gemini-3.5-flash-lite",
+  "assistant_provider": "gemini",
+  "llm_budget": {
+    "limit": 18,
+    "remaining": 3,
+    "exhausted": false,
+    "session_cap": 6,
+    "reserve": 3,
+    "used": 15,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "web_search_configured": false,
+  "routing": "straight_line_estimate",
+  "live_generation_validation": "NOT_RUN; existing user allowance exhausted"
+}

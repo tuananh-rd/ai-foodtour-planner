@@ -31,9 +31,9 @@ staging time, effective/source counts and warnings/errors. Raw inputs remain pri
 Archive bytes are captured once; stage writes exactly those validated bytes, avoiding a source
 file changing between validation and copy. Never commit version directories or raw crawl reports.
 
-## Explicit later activation and rollback (not run in this iteration)
+## Explicit activation and rollback
 
-Only perform these after a later instruction authorizes changing the serving dataset. Read the
+Only perform these when the user authorizes changing the serving dataset. Read the
 staged manifest and retain the previous hash returned by activation. Substitute a real staged
 hash from the validation output; hashes below are notation, not commands to run literally.
 

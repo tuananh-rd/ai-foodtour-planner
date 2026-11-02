@@ -1,6 +1,8 @@
 # OSM integration review
 
-Verdict: changes requested before loading the frontend candidate on3350.
+Current verdict: frontend findings resolved in fb82e66; actual offline acceptance PASS with
+backend e8d62f8. Worker settlement and final original-session runtime checks pending.
+The initial rejection and its evidence are retained below.
 Reviewed current Antigravity working patch after its build-ready status (2026-11-03).
 Build success and18contract/7unit passes are worker-reported; browser acceptance is pending.
 
@@ -40,3 +42,33 @@ evaluation expression) were corrected; no product changes were inferred from tho
 Missing-coordinate gaps/order remain synthetic helper + source-reviewed component validation,
 not claimed as missing coordinates returned by the validated private dataset. Full typed menu
 journey/worker settlement still pending. No live routing or Gemini quality acceptance.
+
+## Actual typed journey and concurrency fix
+
+The independent real3350 browser journey reproduced HTTP503 immediately after tour confirmation
+when entering a new food request. This was a real backend failure, separate from earlier harness
+issues: the map-links GET held `BEGIN IMMEDIATE` while SQLite session restoration reloaded the
+large validated dataset. The simultaneous chat POST hit SQLite's bounded busy timeout. Sequential
+API tests did not overlap the automatic map request and therefore passed.
+
+Fix e8d62f8 adds an authenticated read-only session snapshot for the map endpoint: read one row,
+close the database connection, then restore its tour/dataset. It never persists the older read.
+Normal mutation transactions and CAS are unchanged; constant-time token checks, expiry and the
+same bounded process-local rate gate remain. An event-driven regression blocks map restoration
+while a concurrent CAS write commits and verifies that the old map read cannot overwrite it.
+The affected map suite has10tests:9passed in the initial run, one test assertion used the wrong
+APIError attribute and was corrected; that test plus10repository tests then passed. No product
+guard was weakened to make the test pass.
+
+Actual browser rerun on e8d62f8:10checks PASS, no interception, no automatic retries, zero model
+calls and no browser exception. Typed food request -> choose local address -> actual menu result
+-> selection -> explicit car profile -> confirmation -> tour -> OSM origin/order/car link PASS.
+Immediate post-tour food change preserves origin/selection, clears confirmation/tour and removes
+the rendered timeline. Literal unavailable food returns no unrelated cards; changing area keeps
+that truthful zero-result state and valid selected origin/venues. Evidence:
+`osm-codex-journey/private-evidence.json`. The separate real API three-stop check verifies all
+three ordered OSM legs; the one-stop browser check does not claim a multi-stop browser route.
+
+Prices remain delivery references. Local PMTiles covers the HoanKiem pilot; outside it the map
+honestly shows a basic background with markers/connectors and a coverage warning. External OSM
+directions are per leg; motorcycle routing is unavailable and never silently changed to car.
