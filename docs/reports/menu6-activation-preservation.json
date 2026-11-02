@@ -1,0 +1,9 @@
+{
+  "active_sha256": "dd0f26c9afc15c7036348fec4aa781df23825cd607eae911d37e2444b799bdd7",
+  "expected_sha256": "dd0f26c9afc15c7036348fec4aa781df23825cd607eae911d37e2444b799bdd7",
+  "previous_sha256": "0088011f43cf989c210cf321c6d8747821f1f6451bb2bdd96d44bdf1762608b2",
+  "previous_archive_verified": true,
+  "previous_manifest_verified": true,
+  "new_manifest_verified": true,
+  "activation_lock_remaining": false
+}
