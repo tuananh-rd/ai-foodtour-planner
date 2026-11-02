@@ -11,8 +11,9 @@ compound dish-tag evidence only, clear stale results/comparison/planning intent,
 origin/locked selection and explicit confirmation gates. Separate authorized read-only search
 from denied native mutation. Preserve validated no-match replies against unsupported model text.
 70 targeted tests PASS; private snapshot replay is in-memory/read-only and returns no chicken-phở
-match. Real-API fixture browser verification and integration into3350 are pending. Private health
-before integration: used15/18, remaining3 equals reserve3; no probes/reset/cap increase permitted.
+match. Integrated task-owned API8250 now reports source6418792, private data, unchanged model and
+used15/18, remaining3 equals reserve3;3350 web and3320/8230 preserved. Real-API fixture browser
+verification is pending. No probes/reset/cap increase permitted.
 Details: `FOOD_REFINEMENT_BACKEND.md`, affected review/browser report `FOOD_REFINEMENT_QA.md`.
 
 ## Latest coding ownership — Claude Opus4.8 medium

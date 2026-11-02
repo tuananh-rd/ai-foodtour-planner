@@ -72,5 +72,8 @@ No Gemini/Tavily requests, ledger resets, retries, cap changes or paid operation
 or performed for this fix. Native tests are mocked; they do not prove live Gemini conversation
 quality. Current private data cannot substantiate a chicken-phở result and must report no match.
 
-Integration and final browser settlement are pending at this checkpoint. The existing 3320/8230
-lane and private session/ledger files are preserved.
+The task-owned API8250 was restarted with its original local-data/session-namespace/configuration.
+Read-only health confirms backend source `6418792` (includes all four code commits), private data,
+unchanged Gemini model, and used15/18 with reserve3. The3350 web process remains unchanged.
+The3320/8230 processes and private session/ledger files are preserved. Final actual-fixture browser
+settlement remains pending at this checkpoint; no live conversation success is claimed.
