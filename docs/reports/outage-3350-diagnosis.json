@@ -1,0 +1,19 @@
+{
+  "target": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "observed_ui_source": "af9d1cc",
+  "observed_backend_source": "e338f13",
+  "configured_model": "gemini-3.5-flash-lite",
+  "actual_ui_verified": "Existing Chrome address/accessibility and screenshot; no chat submitted",
+  "budget": {"daily_limit": 18, "used": 12, "remaining": 6, "reserve": 3, "session_cap": 6, "matched_session_used": 2},
+  "matched_session": {"count": 1, "revision": 2, "user_turns": 2, "reported_area_retained": true, "origin_selected": false, "generic_prefix_count": 2},
+  "assistant_requests": {"app_http_status": [200, 200], "latency_ms": [12992.242, 13163.954], "provider_attempted": [1, 1]},
+  "ui_reason": "timeout_rules_fallback",
+  "reply_source": "rules",
+  "upstream_http_status": null,
+  "classification": "Transport wait expired at existing 12-second deadline; remote provider/network cause unresolved",
+  "not_established": ["provider429", "invalid_model", "invalid_key", "remote_quota_exhaustion"],
+  "diagnostic_generation_calls": 0,
+  "ledger_resets": 0,
+  "secret_or_private_record_export": false
+}

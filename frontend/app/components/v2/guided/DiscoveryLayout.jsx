@@ -222,16 +222,17 @@ export default function DiscoveryLayout({
   const [activeInterruption, setActiveInterruption] = useState(null);
 
   useEffect(() => {
-    // If successful real model response, clear any active interruption!
-    if (displayView.provider?.reply_source === 'model' && displayView.provider?.mode !== 'rules') {
+    const classified = classifyServiceInterruption(displayView.provider, displayView.messages);
+    // An actual native response may truthfully use tool text, not model prose.
+    if (displayView.provider?.mode === 'gemini' && displayView.provider?.calls > 0 &&
+        !displayView.provider?.failure && !classified) {
       setActiveInterruption(null);
       return;
     }
 
     // Check if new provider or messages yield an active interruption
-    const classified = classifyServiceInterruption(displayView.provider, displayView.messages);
     if (classified) {
-      setActiveInterruption(classified);
+      setActiveInterruption(previous => classified.category === 'legacy_local' && previous ? previous : classified);
     }
   }, [displayView.provider, displayView.messages]);
 

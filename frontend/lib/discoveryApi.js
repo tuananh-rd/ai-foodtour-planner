@@ -969,7 +969,7 @@ export function classifyServiceInterruption(provider, messages = []) {
         source: 'transport',
         httpStatus,
         rawReason: reason || null,
-        message: 'Kết nối tới nhà cung cấp AI gặp sự cố. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+        message: 'Chưa thể sử dụng phản hồi từ AI. Ứng dụng đang hỗ trợ từ dữ liệu tại máy.'
       };
     }
 
@@ -1048,15 +1048,15 @@ export function classifyServiceInterruption(provider, messages = []) {
   if (typeof reason === 'string' && reason.trim()) {
     const r = reason.trim().toLowerCase();
 
-    // Explicit 429
+    // A legacy reason string alone does not retain an upstream HTTP status.
     if (r.includes('429')) {
       return {
         active: true,
-        category: 'provider_429',
-        source: 'provider_http',
-        httpStatus: 429,
+        category: 'legacy_limit',
+        source: 'legacy_reason',
+        httpStatus: null,
         rawReason: reason,
-        message: 'Đã đạt giới hạn sử dụng từ nhà cung cấp AI. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+        message: 'Lượt AI trước chưa hoàn tất. Ứng dụng đang hỗ trợ từ dữ liệu tại máy.'
       };
     }
 
@@ -1065,7 +1065,7 @@ export function classifyServiceInterruption(provider, messages = []) {
       return {
         active: true,
         category: 'timeout',
-        source: 'turn_deadline',
+        source: 'legacy_timeout',
         httpStatus: null,
         rawReason: reason,
         message: 'Hệ thống phản hồi lâu hơn dự kiến. Trợ lý đang phục vụ bằng quy tắc nội bộ để không gián đoạn cuộc trò chuyện của bạn.'

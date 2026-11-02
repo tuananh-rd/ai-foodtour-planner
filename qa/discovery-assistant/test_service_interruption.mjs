@@ -66,7 +66,7 @@ const tr1 = classifyServiceInterruption({
   failure: { kind: 'unavailable', source: 'transport' }
 });
 assert(tr1.category === 'transport', 'Transport without kind=timeout is category transport, NOT timeout');
-assert(tr1.message.includes('Kết nối tới nhà cung cấp AI gặp sự cố'), 'Transport message correctly describes connection issue');
+assert(tr1.message.includes('Chưa thể sử dụng phản hồi từ AI'), 'Unspecified transport failure does not invent a network root cause');
 
 // 2. HTTP status validation: requires integer 400..599 (Finding 2)
 console.log('\n[2] Testing HTTP Status Validation (Finding 2)...');
@@ -170,6 +170,11 @@ assert(stripLegacyOutagePrefix(raw2) === 'Gợi ý quán phở', 'Comma prefix s
 const raw3 = 'Chào bạn! Em có thể giúp bạn tìm quán ngon.';
 assert(hasLegacyGenericPrefix(raw3) === false, 'hasLegacyGenericPrefix false on normal text');
 assert(stripLegacyOutagePrefix(raw3) === raw3, 'Normal text without prefix preserved completely');
+
+const unproven429 = classifyServiceInterruption({ mode: 'rules', reason: '429_rules_fallback' });
+assert(unproven429.category !== 'provider_429' && unproven429.httpStatus === null, 'Legacy string does not invent retained HTTP status');
+const invalidResponse = classifyServiceInterruption({ mode: 'rules', failure: {kind: 'bad_response', source: 'transport'} });
+assert(!invalidResponse.message.includes('Kết nối') && !invalidResponse.message.includes('lâu hơn'), 'Invalid AI response is not diagnosed as network error or timeout');
 
 console.log(`\n========================================`);
 console.log(`ALL TESTS PASSED! (${passed} passed, ${failed} failed)`);
