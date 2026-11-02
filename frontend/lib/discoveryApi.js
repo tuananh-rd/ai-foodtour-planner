@@ -855,3 +855,307 @@ export async function getDiscoveryMapsLinks(sessionId, sessionToken, mode = 'wal
   return await res.json();
 }
 
+/**
+ * Exact legacy generic prefix from backend:
+ * "Model chưa phản hồi hoặc đã đạt giới hạn; đang dùng xử lý tại máy. "
+ */
+const LEGACY_GENERIC_PREFIX_REGEX = /^Model chưa phản hồi hoặc đã đạt giới hạn[;,]?\s*đang dùng xử lý tại máy\.\s*/i;
+
+/**
+ * Checks if text contains exact legacy generic prefix.
+ */
+export function hasLegacyGenericPrefix(text) {
+  if (typeof text !== 'string') return false;
+  return LEGACY_GENERIC_PREFIX_REGEX.test(text);
+}
+
+/**
+ * Strips legacy generic outage prefixes display-only from assistant text.
+ * Preserves stored history untouched.
+ */
+export function stripLegacyOutagePrefix(text) {
+  if (typeof text !== 'string') return text;
+  return text.replace(LEGACY_GENERIC_PREFIX_REGEX, '');
+}
+
+/**
+ * Returns human-readable truthful label for reply source without claiming fake model success.
+ * Prioritizes explicit 'tools' before generic 'mode: rules'.
+ */
+export function formatReplySource(replySource, model = null, mode = null) {
+  if (replySource === 'tools') {
+    return 'CÔNG CỤ NỘI BỘ';
+  }
+  if (replySource === 'rules' || mode === 'rules') {
+    return 'QUY TẮC NỘI BỘ';
+  }
+  if (replySource === 'model' && mode !== 'rules') {
+    return model ? model.toUpperCase() : 'MÔ HÌNH AI';
+  }
+  return null;
+}
+
+/**
+ * Benign reasons that are normal conversation handling, NOT service outages.
+ */
+const BENIGN_NON_OUTAGE_REASONS = new Set([
+  'private_turn',
+  'safe_answer_rejected',
+  'health_disclosure',
+  'clarification',
+  'greeting'
+]);
+
+/**
+ * Classifies AI service state and interruptions truthfully according to
+ * Sol failure schema (kind, source, http_status) and legacy reason codes.
+ * Returns null if service is operating normally.
+ * Strictly avoids compound guesses like "timeout OR quota".
+ */
+export function classifyServiceInterruption(provider, messages = []) {
+  if (!provider || typeof provider !== 'object') {
+    // If no provider metadata but messages contain legacy prefix, derive neutral legacy status
+    if (Array.isArray(messages) && messages.some(m => m.role === 'assistant' && hasLegacyGenericPrefix(m.text))) {
+      return {
+        active: true,
+        category: 'legacy_local',
+        source: 'legacy_prefix',
+        httpStatus: null,
+        rawReason: null,
+        message: 'Trợ lý đang hoạt động ở chế độ quy tắc nội bộ.'
+      };
+    }
+    return null;
+  }
+
+  const { reply_source, mode, reason, failure } = provider;
+
+  // Benign reasons (privacy/safety guards, etc.) are NOT service outages
+  if (reason && BENIGN_NON_OUTAGE_REASONS.has(reason.trim())) {
+    return null;
+  }
+
+  // If model succeeded normally without rules fallback or error
+  if (reply_source === 'model' && mode !== 'rules' && !failure && !reason) {
+    return null;
+  }
+
+  // 1. Structured failure from Sol backend: provider.failure = { kind, source, http_status }
+  if (failure && typeof failure === 'object') {
+    const source = failure.source;
+    const kind = failure.kind;
+    const hasValidHttpStatus = typeof failure.http_status === 'number' &&
+      Number.isInteger(failure.http_status) &&
+      failure.http_status >= 400 && failure.http_status <= 599;
+    const httpStatus = hasValidHttpStatus ? failure.http_status : null;
+
+    // Timeout: classify timeout ONLY kind === 'timeout' or source === 'turn_deadline'
+    if (kind === 'timeout' || source === 'turn_deadline') {
+      return {
+        active: true,
+        category: 'timeout',
+        source: source || 'turn_deadline',
+        httpStatus,
+        rawReason: reason || null,
+        message: 'Hệ thống phản hồi lâu hơn dự kiến. Trợ lý đang phục vụ bằng quy tắc nội bộ để không gián đoạn cuộc trò chuyện của bạn.'
+      };
+    }
+
+    // Transport / Network failure that is NOT a timeout (e.g. unavailable, bad_response)
+    if (source === 'transport') {
+      return {
+        active: true,
+        category: 'transport',
+        source: 'transport',
+        httpStatus,
+        rawReason: reason || null,
+        message: 'Kết nối tới nhà cung cấp AI gặp sự cố. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+
+    // Provider HTTP status (only valid integer 400..599)
+    if (source === 'provider_http' || httpStatus !== null) {
+      if (httpStatus === 429) {
+        return {
+          active: true,
+          category: 'provider_429',
+          source: 'provider_http',
+          httpStatus: 429,
+          rawReason: reason || null,
+          message: 'Đã đạt giới hạn sử dụng từ nhà cung cấp AI. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+        };
+      }
+      return {
+        active: true,
+        category: 'provider_http',
+        source: 'provider_http',
+        httpStatus,
+        rawReason: reason || null,
+        message: 'Nhà cung cấp AI gặp sự cố. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+
+    // App limit: session cap
+    if (source === 'session_cap') {
+      return {
+        active: true,
+        category: 'session_cap',
+        source: 'session_cap',
+        httpStatus: null,
+        rawReason: reason || null,
+        message: 'Đã đạt giới hạn số lượt trò chuyện của phiên. Các chức năng xem quán và lịch trình vẫn hoạt động bình thường.'
+      };
+    }
+
+    // App limit: daily reserve (non-zero remaining is app usage guard pausing AI)
+    if (source === 'daily_reserve') {
+      return {
+        active: true,
+        category: 'daily_reserve',
+        source: 'daily_reserve',
+        httpStatus: null,
+        rawReason: reason || null,
+        message: 'Hệ thống tạm dừng gọi AI để bảo lưu hạn ngạch sử dụng. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+
+    // Local admission
+    if (source === 'local_admission') {
+      return {
+        active: true,
+        category: 'local_admission',
+        source: 'local_admission',
+        httpStatus: null,
+        rawReason: reason || null,
+        message: 'Yêu cầu được xử lý trực tiếp tại máy theo quy tắc nội bộ.'
+      };
+    }
+
+    // Generic structured quota failure
+    if (kind === 'quota') {
+      return {
+        active: true,
+        category: 'quota_fallback',
+        source: source || 'quota',
+        httpStatus,
+        rawReason: reason || null,
+        message: 'Đã đạt giới hạn xử lý yêu cầu. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+  }
+
+  // 2. Legacy reason fallbacks (when provider.failure is absent)
+  if (typeof reason === 'string' && reason.trim()) {
+    const r = reason.trim().toLowerCase();
+
+    // Explicit 429
+    if (r.includes('429')) {
+      return {
+        active: true,
+        category: 'provider_429',
+        source: 'provider_http',
+        httpStatus: 429,
+        rawReason: reason,
+        message: 'Đã đạt giới hạn sử dụng từ nhà cung cấp AI. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+
+    // Timeout: only for timeout_rules_fallback or explicit timeout
+    if (r.includes('timeout')) {
+      return {
+        active: true,
+        category: 'timeout',
+        source: 'turn_deadline',
+        httpStatus: null,
+        rawReason: reason,
+        message: 'Hệ thống phản hồi lâu hơn dự kiến. Trợ lý đang phục vụ bằng quy tắc nội bộ để không gián đoạn cuộc trò chuyện của bạn.'
+      };
+    }
+
+    // Per-turn limit (turn_call_cap is per-turn limit, NOT session cap)
+    if (r === 'turn_call_cap') {
+      return {
+        active: true,
+        category: 'turn_call_cap',
+        source: 'turn_call_cap',
+        httpStatus: null,
+        rawReason: reason,
+        message: 'Lượt xử lý đạt giới hạn số thao tác trong một tin nhắn. Các thay đổi đã kiểm chứng vẫn được giữ.'
+      };
+    }
+
+    // Local session cap / turn budget
+    if (r === 'session_cap' || r === 'turn_budget_exceeded') {
+      return {
+        active: true,
+        category: 'session_cap',
+        source: 'session_cap',
+        httpStatus: null,
+        rawReason: reason,
+        message: 'Đã đạt giới hạn số lượt trò chuyện của phiên. Các chức năng xem quán và lịch trình vẫn hoạt động bình thường.'
+      };
+    }
+
+    // Daily reserve
+    if (r === 'daily_reserve_cap' || r.includes('daily_reserve')) {
+      return {
+        active: true,
+        category: 'daily_reserve',
+        source: 'daily_reserve',
+        httpStatus: null,
+        rawReason: reason,
+        message: 'Hệ thống tạm dừng gọi AI để bảo lưu hạn ngạch sử dụng. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+
+    // Generic quota with unknown origin
+    if (r.includes('quota')) {
+      return {
+        active: true,
+        category: 'quota_fallback',
+        source: 'legacy_quota',
+        httpStatus: null,
+        rawReason: reason,
+        message: 'Đã đạt giới hạn xử lý yêu cầu. Trợ lý đang phục vụ bằng quy tắc nội bộ.'
+      };
+    }
+
+    // Tool error
+    if (r.includes('tool_error')) {
+      return {
+        active: true,
+        category: 'tool_error',
+        source: 'tool_error',
+        httpStatus: null,
+        rawReason: reason,
+        message: 'Công cụ nội bộ gặp lỗi khi xử lý. Trợ lý đã giữ nguyên dữ liệu đã xác thực.'
+      };
+    }
+  }
+
+  // Check if messages have legacy prefix when metadata is absent (reloading old prepatch sessions)
+  if (Array.isArray(messages) && messages.some(m => m.role === 'assistant' && hasLegacyGenericPrefix(m.text))) {
+    return {
+      active: true,
+      category: 'legacy_local',
+      source: 'legacy_prefix',
+      httpStatus: null,
+      rawReason: null,
+      message: 'Trợ lý đang hoạt động ở chế độ quy tắc nội bộ.'
+    };
+  }
+
+  // If rules fallback happened without specific failure or reason
+  if (reply_source === 'rules' && mode === 'rules' && reason) {
+    return {
+      active: true,
+      category: 'generic',
+      source: 'rules',
+      httpStatus: null,
+      rawReason: reason,
+      message: 'Trợ lý đang hoạt động ở chế độ quy tắc nội bộ.'
+    };
+  }
+
+  return null;
+}

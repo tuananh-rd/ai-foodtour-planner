@@ -27,6 +27,9 @@ import {
   safeExternalUrl,
   UNKNOWN_LABELS_VI,
   formatUnknownLabel,
+  stripLegacyOutagePrefix,
+  formatReplySource,
+  classifyServiceInterruption,
   DiscoveryApiError
 } from '../../../../lib/discoveryApi';
 import { normalizeDisplayText, sanitizeViewForDisplay, sanitizeRestaurantForDisplay } from '../../../../lib/emojiSanitizer';
@@ -213,6 +216,29 @@ export default function DiscoveryLayout({
   // Display-only projection with Unicode emojis stripped from human-facing text
   // Preserves raw identity, tokens, coordinates, locks, and revisions identically
   const displayView = useMemo(() => sanitizeViewForDisplay(view), [view]);
+
+  // Stateful service interruption: persists across local actions & old reload,
+  // cleared only on actual successful model response or actual model change.
+  const [activeInterruption, setActiveInterruption] = useState(null);
+
+  useEffect(() => {
+    // If successful real model response, clear any active interruption!
+    if (displayView.provider?.reply_source === 'model' && displayView.provider?.mode !== 'rules') {
+      setActiveInterruption(null);
+      return;
+    }
+
+    // Check if new provider or messages yield an active interruption
+    const classified = classifyServiceInterruption(displayView.provider, displayView.messages);
+    if (classified) {
+      setActiveInterruption(classified);
+    }
+  }, [displayView.provider, displayView.messages]);
+
+  // Reset activeInterruption when sessionId changes
+  useEffect(() => {
+    setActiveInterruption(null);
+  }, [sessionId]);
 
   const [sessionError, setSessionError] = useState(null);
   const [initialLoaded, setInitialLoaded] = useState(false);
@@ -1714,30 +1740,50 @@ export default function DiscoveryLayout({
               )}
             </div>
 
+            {/* Single-State Accessible Service Interruption Banner */}
+            {activeInterruption && (
+              <div
+                className="nn-service-state-banner"
+                data-testid="service-interruption-banner"
+                role="status"
+                aria-live="polite"
+              >
+                <span className="nn-service-state-icon">
+                  <AlertGlyph size={14} color="#C44A24" />
+                </span>
+                <span className="nn-service-state-text">
+                  {activeInterruption.message}
+                </span>
+              </div>
+            )}
+
             {/* Scrollable Message Stream */}
             <div className="nn-stream" ref={chatScrollRef} onScroll={handleChatScroll} data-testid="discovery-messages-list">
-              {/* Initial Assistant Welcome */}
-              <div className="nn-editorial-welcome">
-                <div className="nn-editorial-badge">
-                  <StarGlyph size={10} color="#CF542F" /> MĂM MĂM
-                  {displayView.provider?.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
-                  {displayView.provider?.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
-                  {displayView.provider?.reply_source === 'model' && (displayView.provider?.model ? ` · ${displayView.provider.model.toUpperCase()}` : ' · MÔ HÌNH AI')}
-                  {displayView.provider?.reason && displayView.provider?.reply_source !== 'model' && (
-                    <span className="nn-fallback-reason" title={`Lý do: ${displayView.provider.reason}`} style={{ marginLeft: '4px', opacity: 0.85, fontSize: '10px' }}>
-                      ({displayView.provider.reason})
-                    </span>
+              {/* Initial Assistant Welcome (rendered ONLY on start before any interaction) */}
+              {(!displayView.messages || displayView.messages.length === 0) && (
+                <div className="nn-editorial-welcome">
+                  <div className="nn-editorial-badge">
+                    <StarGlyph size={10} color="#CF542F" /> MĂM MĂM
+                    {formatReplySource(
+                      displayView.provider?.reply_source,
+                      displayView.provider?.model,
+                      displayView.provider?.mode
+                    ) && ` · ${formatReplySource(
+                      displayView.provider?.reply_source,
+                      displayView.provider?.model,
+                      displayView.provider?.mode
+                    )}`}
+                  </div>
+                  <div className="nn-bubble editorial-body">
+                    {stripLegacyOutagePrefix(displayView.reply?.text) || DEFAULT_ASSISTANT_VIEW.reply.text}
+                  </div>
+                  {displayView.reply?.question && (
+                    <div style={{ marginTop: '6px', fontWeight: 600, color: 'var(--nn-accent, #C44A24)', fontSize: '13.5px' }}>
+                      {displayView.reply.question}
+                    </div>
                   )}
                 </div>
-                <div className="nn-bubble editorial-body">
-                  {displayView.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}
-                </div>
-                {displayView.reply?.question && (
-                  <div style={{ marginTop: '6px', fontWeight: 600, color: 'var(--nn-accent, #C44A24)', fontSize: '13.5px' }}>
-                    {displayView.reply.question}
-                  </div>
-                )}
-              </div>
+              )}
 
               {/* Untrusted Web Sources Reference Box */}
               {Array.isArray(displayView.web?.sources) && displayView.web.sources.length > 0 && (
@@ -1782,8 +1828,22 @@ export default function DiscoveryLayout({
               )}
 
               {/* Historical Messages */}
-              {Array.isArray(displayView.messages) && displayView.messages.map((m, idx) => (
-                m.role === 'user' ? (
+              {Array.isArray(displayView.messages) && displayView.messages.length > 0 && displayView.messages.map((m, idx) => {
+                const isLatestAssistant = m.role === 'assistant' && (
+                  idx === displayView.messages.length - 1 ||
+                  !displayView.messages.slice(idx + 1).some(next => next.role === 'assistant')
+                );
+                const replySourceLabel = m.reply_source
+                  ? formatReplySource(m.reply_source, m.model)
+                  : isLatestAssistant
+                  ? formatReplySource(
+                      displayView.provider?.reply_source,
+                      displayView.provider?.model,
+                      displayView.provider?.mode
+                    )
+                  : null;
+
+                return m.role === 'user' ? (
                   <div key={idx} className="nn-bubble user">
                     {m.text}
                   </div>
@@ -1791,36 +1851,19 @@ export default function DiscoveryLayout({
                   <div key={idx} className="nn-editorial-assistant">
                     <div className="nn-editorial-badge">
                       <StarGlyph size={10} color="#CF542F" /> MĂM MĂM
-                      {m.reply_source ? (
-                        <>
-                          {m.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
-                          {m.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
-                          {m.reply_source === 'model' && (m.model ? ` · ${m.model.toUpperCase()}` : ' · MÔ HÌNH AI')}
-                          {m.reason && m.reply_source !== 'model' && (
-                            <span className="nn-fallback-reason" title={`Lý do: ${m.reason}`} style={{ marginLeft: '4px', opacity: 0.85, fontSize: '10px' }}>
-                              ({m.reason})
-                            </span>
-                          )}
-                        </>
-                      ) : idx === displayView.messages.length - 1 ? (
-                        <>
-                          {displayView.provider?.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
-                          {displayView.provider?.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
-                          {displayView.provider?.reply_source === 'model' && (displayView.provider?.model ? ` · ${displayView.provider.model.toUpperCase()}` : ' · MÔ HÌNH AI')}
-                          {displayView.provider?.reason && displayView.provider?.reply_source !== 'model' && (
-                            <span className="nn-fallback-reason" title={`Lý do: ${displayView.provider.reason}`} style={{ marginLeft: '4px', opacity: 0.85, fontSize: '10px' }}>
-                              ({displayView.provider.reason})
-                            </span>
-                          )}
-                        </>
-                      ) : null}
+                      {replySourceLabel && ` · ${replySourceLabel}`}
                     </div>
                     <div className="nn-bubble editorial-body">
-                      {m.text}
+                      {stripLegacyOutagePrefix(m.text)}
                     </div>
+                    {isLatestAssistant && displayView.reply?.question && !m.text.includes(displayView.reply.question) && (
+                      <div style={{ marginTop: '6px', fontWeight: 600, color: 'var(--nn-accent, #C44A24)', fontSize: '13.5px' }}>
+                        {displayView.reply.question}
+                      </div>
+                    )}
                   </div>
-                )
-              ))}
+                );
+              })}
 
               {/* Restaurant Results Cards */}
               {Array.isArray(displayView.results) && displayView.results.length > 0 && (
@@ -2222,6 +2265,7 @@ export default function DiscoveryLayout({
                       'Quy tắc hệ thống (Rules)'
                     }` : ''}
                     {view.provider?.reason ? ` [Lý do: ${view.provider.reason}]` : ''}
+                    {view.provider?.failure ? ` [Chi tiết lỗi: nguồn=${view.provider.failure.source || 'n/a'}, loại=${view.provider.failure.kind || 'n/a'}${view.provider.failure.http_status ? `, HTTP ${view.provider.failure.http_status}` : ''}]` : ''}
                     {` (Gọi: ${view.provider?.calls || 0} lượt)`}
                   </div>
                   <div>Thời gian xử lý: {view.diagnostics?.elapsed_ms || 0}ms | Thời tiết: {view.diagnostics?.weather || 'unavailable'}</div>
