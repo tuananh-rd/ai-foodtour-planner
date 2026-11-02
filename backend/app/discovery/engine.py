@@ -374,7 +374,9 @@ def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
                     provider['reason'] = 'denied_mutation_readonly_search'
                     provider['reply_source'] = 'tools'
                     return fallback(text, tools, patch, price_search, initial_refs), provider
-                if valid and last['status'] in ('ok', 'unknown', 'no_results') and not (last.get('question') and '?' in valid):
+                # A fluent model sentence cannot turn an empty search into menu evidence.
+                # Keep the factual no-match answer from the validated local tool.
+                if valid and last['status'] in ('ok', 'unknown') and not (last.get('question') and '?' in valid):
                     last['text'] = valid
                     provider['reply_source'] = 'model'
                 elif not valid:

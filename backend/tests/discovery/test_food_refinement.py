@@ -141,3 +141,23 @@ class FoodRefinementTests(unittest.TestCase):
         self.assertEqual(state.results,['chicken'])
         self.assertNotEqual(result.get('code'),'authority_denied')
         self.assertEqual(state.selection,[])
+
+    def test_native_text_cannot_replace_empty_search_with_availability_claim(self):
+        state, data = State(), refinement_data(False)
+        state.patch({'origin': {'lat': 21.02, 'lon': 105.83}})
+        class Model:
+            configured = True
+            mode = 'mock'
+            calls = 0
+            def generate(self, *args, **kwargs):
+                self.calls += 1
+                if self.calls == 1:
+                    return {'role': 'model', 'parts': [{'functionCall': {
+                        'name': 'search_restaurants', 'args': {'dish': 'phở gà'}}}]}
+                return {'role': 'model', 'parts': [{'text': 'Có quán phở gà phù hợp để bạn chọn.'}]}
+        reply, provider = handle('tôi muốn ăn phở gà cơ', self.tools(state, data), model=Model())
+        self.assertEqual(reply['status'], 'no_results')
+        self.assertEqual(state.results, [])
+        self.assertIn('Chưa tìm thấy', reply['text'])
+        self.assertNotIn('Có quán', reply['text'])
+        self.assertEqual(provider['reply_source'], 'tools')
