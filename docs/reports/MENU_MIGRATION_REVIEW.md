@@ -1,11 +1,11 @@
 # Menu Migration — Independent Read-Only Review
 
 Reviewer: Claude (frontend/QA/review, claude-opus-4-8). Implementation/tests/operator docs: Sol.
-Scope: commits `9346046` + `57c24c6` (current HEAD after `ff778c6`). Read-only; no
-staging/activation/rollback, no server/env/config/session/ledger changes, no production edits. Only
-this report is authored.
+Scope: commits `9346046` + `57c24c6` + `2bfd94a` + `90ada2c` (current HEAD after `ff778c6`), plus the
+operator docs. Read-only; no staging/activation/rollback, no server/env/config/session/ledger
+changes, no production edits. Only this report is authored.
 
-## Verdict: APPROVE (no P0/P1; three P2 advisories)
+## Verdict: APPROVE (no P0/P1; all three P2 advisories now resolved or documented — see Delta review)
 
 The migration is a bounded, inert, dry-run-by-default pipeline with strict validation, content-hash
 staging, and an explicit, atomic, backup-guarded activation/rollback. All required properties are
@@ -79,6 +79,39 @@ and I did not stage/activate anything.
   persists if a process dies mid-activation, wedging future activations until manual removal. Both
   are safe (fail-closed) but should be documented for the operator (recovery + the no-fallback
   choice).
+
+## Delta review — `2bfd94a`, `90ada2c` + operator docs (P2s closed)
+
+Reviewed the two commits made after the approval above; both are correct and narrow, and together
+with the operator docs they close all three P2 advisories. No new source defect found.
+
+- **P2-1 RESOLVED (source) — `90ada2c`.** `read_menu_archive` sets `require_nonfood` when the
+  `V6_DATA_SEMANTICS.md` marker is present, and `validate_documents` also sets it when **any**
+  canonical/item row carries `is_dish`; a row then missing the flag is a hard reject
+  (`nonfood_flag_required`, `menu_archive.py:111,162-166`). So a V6 export must carry complete
+  `is_dish` flags — no flag-missing non-food row can slip through as food. Only a truly legacy,
+  wholly flagless archive still warns (`legacy_nonfood_flag_missing`) and relies on the phone/name
+  filter, which the operator docs document as the intended legacy behavior.
+- **P2-2 RESOLVED (documented intentional) — operator docs.** `MENU_ARCHIVE_OPERATIONS.md:90-92`
+  declares the `dish_groups` embedded in `shopeefood_dishes.json` authoritative and states the
+  accompanying CSVs are not imported or cross-validated (data-team must align CSV↔JSON before
+  delivery; a CSV-only change does not alter records). This matches the validator
+  (`menu_archive.py:121`). Intentional, documented limitation.
+- **P2-3 RESOLVED (documented intentional) — operator docs.** `MENU_ARCHIVE_OPERATIONS.md:60-66`
+  documents stale-activation-lock manual recovery (verify no operator is activating, then remove the
+  lock) and the fail-closed `menu_invalid` stance for a malformed manual replace with no silent
+  stale-evidence fallback; `:70` confirms content-hash invalidation on changed bytes even at the same
+  path/mtime. Intentional, documented.
+- **Bonus hardening — `2bfd94a`.** `menu_archive.py` now rejects a canonical
+  `has_mandatory_options=false` when any linked item actually has a mandatory option group
+  (`mandatory_option_flag_conflict`, `:197-204`); `menu.py` marks the item minimum **unknown** when a
+  mandatory group's `max_select < min_select` (`:72-73`) rather than underquoting by summing fewer
+  than the required selections. Both are correct truthful-pricing guards.
+
+Per coordinator the focused migration/menu suite is now **21 PASS, exit 0** (earlier combined
+affected regression 138 PASS, 1 existing private-fixture skip); `TemporaryDirectory`-only, no provider
+transports. I ran no suites/stage/activation (no concrete delta failure warranted a narrow test);
+sample `(4)` remains read-only dry-run with no staging/activation/runtime change.
 
 ## Compatibility (bounded, read-only; no records)
 
