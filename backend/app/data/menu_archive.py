@@ -96,7 +96,8 @@ def read_menu_archive(path):
                 require(not info.flag_bits&1,'archive_encrypted')
                 require(info.file_size<=MAX_MEMBER,'archive_member_size_cap')
                 require(info.file_size<=max(1,info.compress_size)*250,'archive_compression_ratio')
-            require(set(FILES)<=set(archive.namelist()),'archive_required_file_missing')
+            archive_names=set(archive.namelist())
+            require(set(FILES)<=archive_names,'archive_required_file_missing')
             documents={}
             for name,(schema,key,limit) in FILES.items():
                 with archive.open(name) as stream:blob=stream.read(MAX_MEMBER+1)
@@ -106,18 +107,19 @@ def read_menu_archive(path):
                 require(isinstance(doc.get(key),list) and len(doc[key])<=limit,'row_cap_or_type')
                 require(all(isinstance(r,dict) for r in doc[key]),'row_not_object')
                 documents[name]=doc
-        counts,warnings=validate_documents(documents)
+        counts,warnings=validate_documents(documents,require_nonfood='V6_DATA_SEMANTICS.md' in archive_names)
         return MenuArchive(documents,hashlib.sha256(raw).hexdigest(),counts,warnings,raw)
     except MenuValidationError: raise
     except (OSError,ValueError,KeyError,TypeError,RecursionError,RuntimeError,zipfile.BadZipFile,NotImplementedError):
         raise MenuValidationError('archive_unreadable_or_malformed') from None
 
 
-def validate_documents(docs):
+def validate_documents(docs,require_nonfood=False):
     dishes=docs['shopeefood_dishes.json']['dishes']
     items=docs['shopeefood_menu_items.json']['items']
     options=docs['shopeefood_menu_options.json']['options']
     mappings=docs['shopeefood_mapping.json']['venues']
+    require_nonfood=require_nonfood or any('is_dish' in r for r in dishes+items)
     links=docs['shopeefood_dishes.json'].get('dish_groups')
     require(isinstance(links,list) and len(links)<=30000 and all(isinstance(r,dict) for r in links),'links_type_or_cap')
     by_venue=unique(mappings,'foody_id','mapping_id')
@@ -160,7 +162,9 @@ def validate_documents(docs):
             require((isinstance(name,str) and 0<len(name)<=2000)
                 or (rows is dishes and row.get('conflict_status')=='conflict' and name is None),'food_name_type')
             if 'is_dish' in row:require(type(row['is_dish']) is bool,'is_dish_type')
-            else:warnings['legacy_nonfood_flag_missing']+=1
+            else:
+                require(not require_nonfood,'nonfood_flag_required')
+                warnings['legacy_nonfood_flag_missing']+=1
             require(row.get('price_channel')=='shopeefood_delivery' and row.get('currency')=='VND','price_channel_or_currency')
             require(type(row.get('is_available')) is bool or row.get('is_available') is None,'availability_type')
             for key in ('budget_price_vnd','min_total_vnd','list_price_vnd','promo_price_vnd','min_required_surcharge_vnd'):

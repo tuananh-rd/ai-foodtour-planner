@@ -66,6 +66,17 @@ class MenuMigrationTests(unittest.TestCase):
         self.rejected(lambda d:d['shopeefood_dishes.json'].update(schema='future/2'),'schema_unsupported')
         self.rejected(lambda d:d['shopeefood_dishes.json']['dishes'][0].update(is_dish='false'),'is_dish_type')
 
+    def test_v6_or_mixed_export_requires_nonfood_flags_but_legacy_is_warned(self):
+        d=copy.deepcopy(self.docs)
+        d['shopeefood_dishes.json']['dishes'][0].pop('is_dish');write(self.input,d)
+        with self.assertRaisesRegex(MenuValidationError,'nonfood_flag_required'):read_menu_archive(self.input)
+        for filename,key in [('shopeefood_dishes.json','dishes'),('shopeefood_menu_items.json','items')]:
+            for r in d[filename][key]:r.pop('is_dish',None)
+        write(self.input,d)
+        self.assertGreater(read_menu_archive(self.input).warnings['legacy_nonfood_flag_missing'],0)
+        with zipfile.ZipFile(self.input,'a') as z:z.writestr('V6_DATA_SEMANTICS.md','Untrusted reference only')
+        with self.assertRaisesRegex(MenuValidationError,'nonfood_flag_required'):read_menu_archive(self.input)
+
     def test_duplicate_ids_canonical_key_and_orphan(self):
         self.rejected(lambda d:d['shopeefood_menu_items.json']['items'].append(copy.deepcopy(d['shopeefood_menu_items.json']['items'][0])),'item_id_duplicate')
         def duplicate(d):
