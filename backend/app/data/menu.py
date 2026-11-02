@@ -68,9 +68,10 @@ def load_menu_archive(path, venue_ids):
         mandatory=dish.get('has_mandatory_options') is True
         minima=[]
         for item in linked:
-            total=0;known=True
+            total=0;known=True;required_group_seen=False
             for group in option_groups[item['item_id']].values():
                 if not any(o.get('mandatory') is True for o in group):continue
+                required_group_seen=True
                 selections={o.get('min_select') for o in group}
                 prices=[amount(o.get('option_price_vnd'),zero=True) for o in group]
                 if (len(selections)!=1 or type(next(iter(selections))) is not int
@@ -79,7 +80,7 @@ def load_menu_archive(path, venue_ids):
                 minimum=next(iter(selections))
                 if len(prices)<minimum:known=False;break
                 total+=sum(sorted(prices)[:minimum])
-            if mandatory and not option_groups[item['item_id']]:known=False
+            if mandatory and not required_group_seen:known=False
             minima.append(total if known else None)
         surcharge=(minima[0] if minima and all(x==minima[0] and x is not None for x in minima) else None)
         if mandatory and dish.get('min_required_surcharge_status')!='computed':surcharge=None

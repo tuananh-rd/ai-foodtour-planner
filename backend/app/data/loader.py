@@ -50,6 +50,7 @@ def aggregate_report(dataset: Dataset) -> dict:
         "flags_by_reason": dict(sorted(dataset.flags.items())),
         "evidence_overlay": dict(dataset.evidence_overlay),
         "evidence_rejections_by_reason": dict(dataset.evidence_rejections),
+        "menu_counts": dict(dataset.menu_counts),
     }
 
 
