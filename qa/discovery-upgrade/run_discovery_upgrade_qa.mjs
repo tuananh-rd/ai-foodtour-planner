@@ -221,7 +221,10 @@ function createMockDiscoveryServer() {
       label: null,
       source: null,
       approximate: false,
-      candidates: []
+      candidates: [],
+      address_status: 'not_requested',
+      address_provider: null,
+      attribution: null
     },
     web: {
       enabled: false,
@@ -453,13 +456,49 @@ function createMockDiscoveryServer() {
                 const lat = Number(act.arguments?.lat);
                 const lon = Number(act.arguments?.lon);
                 state.location.status = 'chosen';
-                state.location.label = `Tọa độ GPS (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
                 state.location.source = act.arguments?.source || 'gps';
-                state.location.approximate = false;
-                state.profile.origin = { lat, lon, label: state.location.label, approximate: false };
+                if (act.arguments?.label) {
+                  state.location.label = act.arguments.label;
+                  state.location.address_status = 'manual';
+                  state.location.address_provider = null;
+                  state.location.attribution = null;
+                  state.location.approximate = true;
+                } else if (act.arguments?.resolve_address && (act.arguments?.source === 'gps' || !act.arguments?.source)) {
+                  state.location.label = 'Phố Huế, Hoàn Kiếm, Hà Nội';
+                  state.location.address_status = 'resolved';
+                  state.location.address_provider = 'photon';
+                  state.location.attribution = '© OpenStreetMap contributors';
+                  state.location.approximate = true;
+                } else {
+                  state.location.label = 'Vị trí của bạn';
+                  state.location.address_status = 'not_requested';
+                  state.location.address_provider = null;
+                  state.location.attribution = null;
+                  state.location.approximate = false;
+                }
+                state.profile.origin = { lat, lon, label: state.location.label, approximate: state.location.approximate };
                 recalculateDistances();
                 state.confirmation = null;
                 state.tour = null;
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify(state));
+                return;
+              }
+
+              if (op === 'label') {
+                const label = (act.arguments?.label || '').trim();
+                if (label.length >= 2 && label.length <= 160) {
+                  state.location.label = label;
+                  state.location.address_status = 'manual';
+                  state.location.approximate = true;
+                  state.location.address_provider = null;
+                  state.location.attribution = null;
+                  if (state.profile.origin) {
+                    state.profile.origin.label = label;
+                  }
+                  state.confirmation = null;
+                  state.tour = null;
+                }
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify(state));
                 return;
@@ -836,8 +875,15 @@ async function main() {
   }, 10000, 200, 'Distance reset to unknown after origin clear');
   recordCheck('ORIGIN_CLEARED', 'Origin successfully cleared and distance reset without error', true);
 
-  // Test E: Manual Coordinates Origin Setting
-  console.log('\n--- Test E: Manual Coordinates Origin Setting ---');
+  // Test E: Manual Coordinates Origin Setting & Address Controls
+  console.log('\n--- Test E: Manual Coordinates Origin Setting & Address Controls ---');
+  // Check GPS disclosure note
+  const disclosure = await evalJs('document.querySelector(\'[data-testid="origin-gps-disclosure"]\')?.textContent');
+  recordCheck('GPS_DISCLOSURE_PRESENT', 'GPS disclosure explains Photon/OpenStreetMap without model/web leak',
+    Boolean(disclosure && disclosure.includes('Photon') && disclosure.includes('OpenStreetMap')),
+    { disclosure }
+  );
+
   await click('.nn-origin-manual-toggle');
   await typeInput('[data-testid="origin-lat-input"]', '21.0285');
   await typeInput('[data-testid="origin-lon-input"]', '105.8542');
@@ -848,6 +894,42 @@ async function main() {
     return txt && txt.includes('đường chim bay');
   }, 10000, 200, 'Distance updated after manual coordinates');
   recordCheck('ORIGIN_COORDINATES_SET', 'Origin set via validated coordinates and distance updated', true);
+
+  const originTagText = await evalJs('document.querySelector(\'[data-testid="origin-current-tag"]\')?.textContent');
+  recordCheck('RAW_COORDINATES_PROTECTED', 'Origin label does not leak raw coordinate numbers',
+    Boolean(originTagText && !originTagText.includes('21.0285, 105.8542') && !originTagText.includes('21.028500')),
+    { originTagText }
+  );
+
+  // Test E2: Manual Label Edit Operation
+  console.log('\n--- Test E2: Manual Label Edit Operation ---');
+  await click('[data-testid="origin-edit-label-btn"]');
+  await typeInput('[data-testid="origin-label-input"]', 'Cổng khách sạn Metropole');
+  await click('[data-testid="origin-save-label-btn"]');
+
+  await until(async () => {
+    const tag = await evalJs('document.querySelector(\'[data-testid="origin-current-tag"]\')?.textContent');
+    return tag && tag.includes('Cổng khách sạn Metropole');
+  }, 10000, 200, 'Label updated after manual edit');
+
+  const manualStatusPresent = await evalJs('Boolean(document.querySelector(\'[data-testid="origin-status-manual"]\'))');
+  recordCheck('ORIGIN_LABEL_MANUAL_EDIT', 'Manual label edit operation updates label and reflects manual status tag',
+    manualStatusPresent
+  );
+
+  // Test E3: Active-Chat UX Layout
+  console.log('\n--- Test E3: Active-Chat UX Layout ---');
+  await typeInput('[data-testid="discovery-input"]', 'Tìm quán ăn ngon gần đây');
+  await evalJs('document.querySelector(\'[data-testid="discovery-input"]\').closest("form").requestSubmit()');
+
+  await until(async () => {
+    return await evalJs('document.querySelector(".nn-main-grid")?.classList.contains("nn-active-chat")');
+  }, 10000, 200, 'Active chat layout class applied');
+
+  const chatCardActive = await evalJs('document.querySelector(".nn-chat-card")?.classList.contains("nn-chat-active")');
+  recordCheck('ACTIVE_CHAT_UX_APPLIED', 'Active chat triggers 60/40 grid layout and active card class',
+    chatCardActive
+  );
 
   // Test F: Selection, Planning, and Completed Tour CTA
   console.log('\n--- Test F: Selection, Planning, and Completed Tour CTA ---');

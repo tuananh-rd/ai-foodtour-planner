@@ -21,6 +21,7 @@ import {
   resolveLocationAction,
   chooseLocationCandidateAction,
   setCoordinatesLocationAction,
+  setLabelLocationAction,
   clearLocationAction,
   formatDistanceDisplay,
   safeExternalUrl,
@@ -236,8 +237,10 @@ export default function DiscoveryLayout({
   const [capabilities, setCapabilities] = useState(null);
   const [capabilitiesLoading, setCapabilitiesLoading] = useState(false);
   const [originQuery, setOriginQuery] = useState('');
-  const [manualCoords, setManualCoords] = useState({ lat: '', lon: '' });
+  const [manualCoords, setManualCoords] = useState({ lat: '', lon: '', label: '' });
   const [showManualCoords, setShowManualCoords] = useState(false);
+  const [editingLabel, setEditingLabel] = useState(false);
+  const [labelInput, setLabelInput] = useState('');
 
   // Load assistant capabilities (chat models, web search status) on mount
   useEffect(() => {
@@ -299,6 +302,7 @@ export default function DiscoveryLayout({
   const gpsRequestRef = useRef(0);
   const abortControllerRef = useRef(null);
   const chatScrollRef = useRef(null);
+  const isNearBottomRef = useRef(true);
   const inputRef = useRef(null);
   const modalRef = useRef(null);
   const triggerElRef = useRef(null);
@@ -415,10 +419,20 @@ export default function DiscoveryLayout({
     };
   }, [sessionId, sessionToken, parentInitializing, fetchAssistantView]);
 
-  // Auto-scroll chat to bottom
+  // Track pre-append scroll position: records whether user is within 80px of bottom
+  const handleChatScroll = useCallback((e) => {
+    const el = e.currentTarget;
+    const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+    isNearBottomRef.current = dist <= 80;
+  }, []);
+
+  // Auto-scroll chat: stick to bottom only if user was near bottom (pre-append ref <= 80px) or on initial message
   useEffect(() => {
     if (chatScrollRef.current) {
-      chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
+      const el = chatScrollRef.current;
+      if (isNearBottomRef.current || (view.messages && view.messages.length <= 1)) {
+        el.scrollTop = el.scrollHeight;
+      }
     }
   }, [view.messages, view.results, view.comparison, view.confirmation, busy]);
 
@@ -754,11 +768,11 @@ export default function DiscoveryLayout({
 
           const lat = Number(pos.coords.latitude.toFixed(6));
           const lon = Number(pos.coords.longitude.toFixed(6));
-          setGeoNotice(`Đã nhận tọa độ: ${lat}, ${lon}`);
+          setGeoNotice('Đã nhận vị trí thiết bị. Đang xác định địa chỉ qua Photon/OpenStreetMap…');
 
           try {
-            const action = setCoordinatesLocationAction(lat, lon, 'gps');
-            handleDispatchAction(action, 'Đang cập nhật điểm xuất phát GPS…');
+            const action = setCoordinatesLocationAction(lat, lon, 'gps', true);
+            handleDispatchAction(action, 'Đang xác định địa chỉ GPS…');
           } catch (err) {
             setErrorBanner(err.message);
           }
@@ -841,6 +855,7 @@ export default function DiscoveryLayout({
 
     const rawLat = String(manualCoords.lat ?? '').trim();
     const rawLon = String(manualCoords.lon ?? '').trim();
+    const rawLabel = String(manualCoords.label ?? '').trim();
 
     if (!rawLat || !rawLon) {
       setErrorBanner('Tọa độ không được để trống.');
@@ -858,9 +873,33 @@ export default function DiscoveryLayout({
     }
 
     try {
-      const action = setCoordinatesLocationAction(lat, lon, 'coordinates');
+      const action = setCoordinatesLocationAction(
+        lat,
+        lon,
+        'coordinates',
+        false,
+        rawLabel.length >= 2 ? rawLabel : null
+      );
       handleDispatchAction(action, 'Đang thiết lập tọa độ…', () => {
         setShowManualCoords(false);
+      });
+    } catch (err) {
+      setErrorBanner(err.message);
+    }
+  };
+
+  const handleSaveLabel = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!sessionReady || busy) return;
+    const trimmed = labelInput.trim();
+    if (trimmed.length < 2) {
+      setErrorBanner('Tên địa chỉ phải có từ 2 đến 160 ký tự.');
+      return;
+    }
+    try {
+      const action = setLabelLocationAction(trimmed);
+      handleDispatchAction(action, 'Đang cập nhật tên địa chỉ…', () => {
+        setEditingLabel(false);
       });
     } catch (err) {
       setErrorBanner(err.message);
@@ -935,7 +974,14 @@ export default function DiscoveryLayout({
   }, [view.selection]);
 
   const stops = displayView.tour?.stops || [];
-  const areaDisplay = displayView.profile?.area || (stops[0]?.district ? stops[0].district : null);
+  const areaDisplay = displayView.profile?.area || displayView.location?.label || (stops[0]?.district ? stops[0].district : null);
+
+  const isChatActive = Boolean(
+    (Array.isArray(view.messages) && view.messages.length > 0) ||
+    (Array.isArray(view.turns) && view.turns.length > 0) ||
+    (Array.isArray(displayView.results) && displayView.results.length > 0) ||
+    view.tour
+  );
 
   return (
     <div data-testid="guided-container" aria-busy={busy} className="nn-root">
@@ -1156,12 +1202,12 @@ export default function DiscoveryLayout({
         </nav>
 
         {/* Main Content Grid: Left Chat Card (668px) + Right Tour Column (476px) */}
-        <main className="nn-main-grid">
+        <main className={`nn-main-grid${isChatActive ? ' nn-active-chat' : ''}`}>
           {/* LEFT CHAT CARD */}
           <section
             ref={chatSectionRef}
             data-testid="discovery-chat-section"
-            className={`nn-chat-card${activeMobileTab !== 'chat' ? ' nn-hidden-mobile' : ''}`}
+            className={`nn-chat-card${isChatActive ? ' nn-chat-active' : ''}${activeMobileTab !== 'chat' ? ' nn-hidden-mobile' : ''}`}
           >
             <div className="nn-chat-card-header">
               <div className="nn-assistant-badge">
@@ -1418,12 +1464,44 @@ export default function DiscoveryLayout({
               <div className="nn-origin-status-row">
                 {displayView.location?.status === 'chosen' || displayView.profile?.origin ? (
                   <div className="nn-origin-chosen-wrap">
-                    <span className="nn-origin-current-tag">
-                      {displayView.location?.label || (displayView.profile?.origin ? `${displayView.profile.origin.lat.toFixed(4)}, ${displayView.profile.origin.lon.toFixed(4)}` : 'Đã chọn điểm xuất phát')}
+                    <span className="nn-origin-current-tag" data-testid="origin-current-tag">
+                      {displayView.location?.label || 'Điểm xuất phát đã chọn'}
                     </span>
                     {(displayView.location?.approximate || displayView.profile?.origin?.approximate) && (
-                      <span className="nn-origin-approx-badge">Gần đúng</span>
+                      <span className="nn-origin-approx-badge" title="Tọa độ xấp xỉ, không suy đoán số nhà">Gần đúng</span>
                     )}
+                    {displayView.location?.address_status === 'resolved' && (
+                      <span className="nn-origin-status-tag resolved" data-testid="origin-status-resolved">
+                        Đã xác định địa chỉ
+                      </span>
+                    )}
+                    {displayView.location?.address_status === 'unavailable' && (
+                      <span className="nn-origin-status-tag unavailable" data-testid="origin-status-unavailable" title={displayView.location.address_reason ? `Lý do: ${displayView.location.address_reason}` : 'Không tìm thấy địa chỉ'}>
+                        Chưa xác định tên đường
+                      </span>
+                    )}
+                    {displayView.location?.address_status === 'manual' && (
+                      <span className="nn-origin-status-tag manual" data-testid="origin-status-manual">
+                        Tên tự đặt
+                      </span>
+                    )}
+                    {displayView.location?.attribution && (
+                      <span className="nn-origin-attribution" data-testid="origin-attribution">
+                        ({displayView.location.attribution.replace(/\u00a9/g, '(c)')})
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      data-testid="origin-edit-label-btn"
+                      className="nn-origin-text-btn"
+                      onClick={() => {
+                        setLabelInput(displayView.location?.label || '');
+                        setEditingLabel(!editingLabel);
+                      }}
+                      disabled={!sessionReady || busy}
+                    >
+                      {editingLabel ? 'Đóng sửa tên' : 'Sửa tên địa chỉ'}
+                    </button>
                     <button
                       type="button"
                       className="nn-origin-text-btn"
@@ -1442,6 +1520,49 @@ export default function DiscoveryLayout({
                 )}
               </div>
 
+              {/* Editing label inline form */}
+              {editingLabel && (
+                <form onSubmit={handleSaveLabel} className="nn-origin-edit-label-form" data-testid="origin-edit-label-form" style={{ marginTop: '6px', display: 'flex', gap: '6px', alignItems: 'center' }}>
+                  <input
+                    type="text"
+                    data-testid="origin-label-input"
+                    aria-label="Tên địa chỉ gợi nhớ"
+                    maxLength={160}
+                    className="nn-origin-input"
+                    value={labelInput}
+                    onChange={(e) => setLabelInput(e.target.value)}
+                    placeholder="Nhập tên địa chỉ gợi nhớ (vd: Cổng khách sạn, Nhà riêng)…"
+                    disabled={!sessionReady || busy}
+                  />
+                  <button
+                    type="submit"
+                    data-testid="origin-save-label-btn"
+                    className="nn-origin-resolve-btn"
+                    disabled={!sessionReady || busy || labelInput.trim().length < 2}
+                  >
+                    Lưu tên
+                  </button>
+                  <button
+                    type="button"
+                    className="nn-origin-clear-btn"
+                    onClick={() => setEditingLabel(false)}
+                  >
+                    Huỷ
+                  </button>
+                </form>
+              )}
+
+              {/* Notice when address_status === 'unavailable' */}
+              {displayView.location?.status === 'chosen' && displayView.location?.address_status === 'unavailable' && !editingLabel && (
+                <div className="nn-origin-unavailable-notice" data-testid="origin-address-unavailable" style={{ fontSize: '11.5px', color: '#8A4B12', background: '#FFF3E0', padding: '4px 8px', borderRadius: '4px', marginTop: '6px' }}>
+                  {displayView.location?.address_reason === 'rate_limited'
+                    ? 'Chưa thể tra cứu tên đường do giới hạn tần suất yêu cầu. Bạn có thể bấm "Sửa tên địa chỉ" để đặt tên gợi nhớ.'
+                    : displayView.location?.address_reason === 'disabled'
+                    ? 'Dịch vụ xác định tên đường đang tạm tắt. Bạn có thể bấm "Sửa tên địa chỉ" để đặt tên gợi nhớ.'
+                    : 'Chưa xác định được tên đường từ tọa độ này. Bạn có thể bấm "Sửa tên địa chỉ" để đặt tên gợi nhớ thủ công.'}
+                </div>
+              )}
+
               {/* Geolocation Notice */}
               {geoNotice && (
                 <div className="nn-geo-notice" data-testid="origin-geo-notice">
@@ -1459,6 +1580,7 @@ export default function DiscoveryLayout({
                       className="nn-origin-gps-btn"
                       onClick={handleTriggerGPS}
                       disabled={!sessionReady || busy || gpsPending}
+                      title="Lấy vị trí GPS hiện tại từ thiết bị và xác định tên đường qua Photon (OpenStreetMap)"
                     >
                       {gpsPending ? 'Đang định vị GPS…' : 'Vị trí GPS hiện tại'}
                     </button>
@@ -1471,12 +1593,17 @@ export default function DiscoveryLayout({
                       {showManualCoords ? 'Ẩn nhập toạ độ' : 'Nhập toạ độ thủ công'}
                     </button>
                   </div>
+                  <div className="nn-origin-gps-disclosure" data-testid="origin-gps-disclosure" style={{ fontSize: '11px', color: '#7A625A', marginTop: '4px', lineHeight: '1.4' }}>
+                    Tọa độ GPS chỉ gửi đến Photon (OpenStreetMap) để xác định tên đường gần bạn; tuyệt đối không gửi đến mô hình AI hoặc tìm kiếm web.
+                  </div>
 
                   {/* Place query search form */}
                   <form onSubmit={handleResolveOrigin} className="nn-origin-search-form">
                     <input
                       type="text"
                       data-testid="origin-query-input"
+                      aria-label="Tìm kiếm phố hoặc địa danh"
+                      maxLength={160}
                       className="nn-origin-input"
                       value={originQuery}
                       onChange={(e) => setOriginQuery(e.target.value)}
@@ -1513,6 +1640,16 @@ export default function DiscoveryLayout({
                         placeholder="Kinh độ (Lon, vd: 105.8542)"
                         value={manualCoords.lon}
                         onChange={(e) => setManualCoords({ ...manualCoords, lon: e.target.value })}
+                      />
+                      <input
+                        type="text"
+                        data-testid="origin-manual-label-input"
+                        aria-label="Tên gợi nhớ vị trí thủ công"
+                        maxLength={160}
+                        className="nn-origin-coord-input"
+                        placeholder="Tên gợi nhớ (tùy chọn, vd: Cổng khách sạn)"
+                        value={manualCoords.label || ''}
+                        onChange={(e) => setManualCoords({ ...manualCoords, label: e.target.value })}
                       />
                       <button
                         type="submit"
@@ -1562,10 +1699,20 @@ export default function DiscoveryLayout({
             </div>
 
             {/* Scrollable Message Stream */}
-            <div className="nn-stream" ref={chatScrollRef} data-testid="discovery-messages-list">
+            <div className="nn-stream" ref={chatScrollRef} onScroll={handleChatScroll} data-testid="discovery-messages-list">
               {/* Initial Assistant Welcome */}
               <div className="nn-editorial-welcome">
-                <div className="nn-editorial-badge"><StarGlyph size={10} color="#CF542F" /> MĂM MĂM</div>
+                <div className="nn-editorial-badge">
+                  <StarGlyph size={10} color="#CF542F" /> MĂM MĂM
+                  {displayView.provider?.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
+                  {displayView.provider?.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
+                  {displayView.provider?.reply_source === 'model' && (displayView.provider?.model ? ` · ${displayView.provider.model.toUpperCase()}` : ' · MÔ HÌNH AI')}
+                  {displayView.provider?.reason && displayView.provider?.reply_source !== 'model' && (
+                    <span className="nn-fallback-reason" title={`Lý do: ${displayView.provider.reason}`} style={{ marginLeft: '4px', opacity: 0.85, fontSize: '10px' }}>
+                      ({displayView.provider.reason})
+                    </span>
+                  )}
+                </div>
                 <div className="nn-bubble editorial-body">
                   {displayView.reply?.text || DEFAULT_ASSISTANT_VIEW.reply.text}
                 </div>
@@ -1628,8 +1775,29 @@ export default function DiscoveryLayout({
                   <div key={idx} className="nn-editorial-assistant">
                     <div className="nn-editorial-badge">
                       <StarGlyph size={10} color="#CF542F" /> MĂM MĂM
-                      {displayView.provider?.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
-                      {displayView.provider?.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
+                      {m.reply_source ? (
+                        <>
+                          {m.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
+                          {m.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
+                          {m.reply_source === 'model' && (m.model ? ` · ${m.model.toUpperCase()}` : ' · MÔ HÌNH AI')}
+                          {m.reason && m.reply_source !== 'model' && (
+                            <span className="nn-fallback-reason" title={`Lý do: ${m.reason}`} style={{ marginLeft: '4px', opacity: 0.85, fontSize: '10px' }}>
+                              ({m.reason})
+                            </span>
+                          )}
+                        </>
+                      ) : idx === displayView.messages.length - 1 ? (
+                        <>
+                          {displayView.provider?.reply_source === 'rules' && ' · QUY TẮC NỘI BỘ'}
+                          {displayView.provider?.reply_source === 'tools' && ' · CÔNG CỤ NỘI BỘ'}
+                          {displayView.provider?.reply_source === 'model' && (displayView.provider?.model ? ` · ${displayView.provider.model.toUpperCase()}` : ' · MÔ HÌNH AI')}
+                          {displayView.provider?.reason && displayView.provider?.reply_source !== 'model' && (
+                            <span className="nn-fallback-reason" title={`Lý do: ${displayView.provider.reason}`} style={{ marginLeft: '4px', opacity: 0.85, fontSize: '10px' }}>
+                              ({displayView.provider.reason})
+                            </span>
+                          )}
+                        </>
+                      ) : null}
                     </div>
                     <div className="nn-bubble editorial-body">
                       {m.text}

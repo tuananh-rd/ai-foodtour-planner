@@ -1106,5 +1106,120 @@
     height: calc(100dvh - 192px);
     min-height: 500px;
   }
+
+  .nn-main-grid.nn-active-chat {
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); /* 60% chat / 40% itinerary */
+  }
+}
+
+/* --- ACTIVE CHAT EXPANSION & HERO COLLAPSE --- */
+.nn-chat-card.nn-chat-active .nn-chat-card-header {
+  height: 36px;
+  margin-bottom: 8px;
+}
+
+.nn-chat-card.nn-chat-active .nn-hero-heading {
+  font-size: 19px;
+  line-height: 26px;
+  margin: 0 0 4px;
+}
+
+.nn-chat-card.nn-chat-active .nn-hero-sub {
+  display: none;
+}
+
+.nn-chat-card.nn-chat-active .nn-chips-row {
+  margin-bottom: 6px;
+  gap: 6px;
+}
+
+.nn-chat-card.nn-chat-active .nn-chat-divider {
+  margin: 4px 0 8px 0;
+}
+
+.nn-chat-card.nn-chat-active .nn-bubble {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+.nn-composer input {
+  font-size: 16px; /* readable typography, prevents iOS zoom */
+}
+
+@media (max-width: 900px) {
+  .nn-chat-card.nn-chat-active .nn-stream {
+    min-height: 50vh; /* stream takes >= 50% 390 mobile viewport */
+  }
+}
+
+/* --- GPS ADDRESS STATUS & DISCLOSURE STYLES --- */
+.nn-origin-status-tag {
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 4px;
+  display: inline-flex;
+  align-items: center;
+}
+
+.nn-origin-status-tag.resolved {
+  background: #E8F5E9;
+  color: #2E7D32;
+  border: 1px solid #C8E6C9;
+}
+
+.nn-origin-status-tag.unavailable {
+  background: #FFF3E0;
+  color: #D84315;
+  border: 1px solid #FFE0B2;
+}
+
+.nn-origin-status-tag.manual {
+  background: #EDE7F6;
+  color: #512DA8;
+  border: 1px solid #D1C4E9;
+}
+
+.nn-origin-attribution {
+  font-size: 10px;
+  color: #8C7872;
+  font-style: italic;
+}
+
+.nn-origin-gps-disclosure {
+  font-size: 11px;
+  color: #7A625A;
+  margin-top: 4px;
+  line-height: 1.4;
+  font-style: italic;
+}
+
+.nn-origin-unavailable-notice {
+  font-size: 11.5px;
+  color: #8A4B12;
+  background: #FFF3E0;
+  border: 1px solid #FFE0B2;
+  padding: 4px 8px;
+  border-radius: 4px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.nn-origin-edit-label-form {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+  align-items: center;
+}
+
+.nn-fallback-reason {
+  display: inline-block;
+  font-size: 10px;
+  color: #702914;
+  background: #F8E4D9;
+  padding: 1px 4px;
+  border-radius: 3px;
+  margin-left: 4px;
+  font-weight: 500;
 }
 

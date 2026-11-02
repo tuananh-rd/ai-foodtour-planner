@@ -78,9 +78,9 @@ export function validateDiscoveryAction(action) {
       throw new DiscoveryApiError('invalid_action', 'Hành động location yêu cầu đối tượng arguments.');
     }
     const { operation } = action.arguments;
-    const validOperations = ['resolve', 'choose', 'coordinates', 'clear'];
+    const validOperations = ['resolve', 'choose', 'coordinates', 'clear', 'label'];
     if (!operation || !validOperations.includes(operation)) {
-      throw new DiscoveryApiError('invalid_action', `Thao tác location '${operation}' không hợp lệ (hỗ trợ resolve, choose, coordinates, clear).`);
+      throw new DiscoveryApiError('invalid_action', `Thao tác location '${operation}' không hợp lệ (hỗ trợ resolve, choose, coordinates, clear, label).`);
     }
     if (operation === 'resolve') {
       if (!action.arguments.query || typeof action.arguments.query !== 'string' || !action.arguments.query.trim()) {
@@ -90,6 +90,10 @@ export function validateDiscoveryAction(action) {
       if (!action.arguments.candidate_id || typeof action.arguments.candidate_id !== 'string') {
         throw new DiscoveryApiError('invalid_action', 'Thao tác choose yêu cầu candidate_id hợp lệ.');
       }
+    } else if (operation === 'label') {
+      if (!action.arguments.label || typeof action.arguments.label !== 'string' || action.arguments.label.trim().length < 2 || action.arguments.label.trim().length > 160) {
+        throw new DiscoveryApiError('invalid_action', 'Thao tác label yêu cầu label là chuỗi từ 2 đến 160 ký tự.');
+      }
     } else if (operation === 'coordinates') {
       const lat = Number(action.arguments.lat);
       const lon = Number(action.arguments.lon);
@@ -98,6 +102,14 @@ export function validateDiscoveryAction(action) {
       }
       if (!action.arguments.source || typeof action.arguments.source !== 'string') {
         action.arguments.source = 'coordinates';
+      }
+      if (action.arguments.resolve_address && action.arguments.source !== 'gps') {
+        throw new DiscoveryApiError('invalid_action', 'Tùy chọn resolve_address chỉ được phép khi source là gps.');
+      }
+      if (action.arguments.label !== undefined && action.arguments.label !== null) {
+        if (typeof action.arguments.label !== 'string' || action.arguments.label.trim().length < 2 || action.arguments.label.trim().length > 160) {
+          throw new DiscoveryApiError('invalid_action', 'Nhãn tọa độ tùy chọn phải là chuỗi từ 2 đến 160 ký tự.');
+        }
       }
     }
     return action;
@@ -663,7 +675,7 @@ export function chooseLocationCandidateAction(candidateId) {
   };
 }
 
-export function setCoordinatesLocationAction(lat, lon, source = 'coordinates') {
+export function setCoordinatesLocationAction(lat, lon, source = 'coordinates', resolveAddress = false, label = null) {
   if (lat === null || lat === undefined || lat === '' || lon === null || lon === undefined || lon === '') {
     throw new DiscoveryApiError('invalid_action', 'Tọa độ vị trí lat/lon không được để trống.');
   }
@@ -673,13 +685,33 @@ export function setCoordinatesLocationAction(lat, lon, source = 'coordinates') {
     throw new DiscoveryApiError('invalid_action', 'Tọa độ vị trí lat/lon không hợp lệ (lat: [-90, 90], lon: [-180, 180]).');
   }
   const safeSource = source === 'gps' ? 'gps' : 'coordinates';
+  const args = {
+    operation: 'coordinates',
+    lat: numLat,
+    lon: numLon,
+    source: safeSource
+  };
+  if (resolveAddress && safeSource === 'gps') {
+    args.resolve_address = true;
+  }
+  if (label && typeof label === 'string' && label.trim().length >= 2) {
+    args.label = label.trim().slice(0, 160);
+  }
+  return {
+    type: 'location',
+    arguments: args
+  };
+}
+
+export function setLabelLocationAction(label) {
+  if (!label || typeof label !== 'string' || label.trim().length < 2 || label.trim().length > 160) {
+    throw new DiscoveryApiError('invalid_action', 'Tên địa chỉ phải là chuỗi từ 2 đến 160 ký tự.');
+  }
   return {
     type: 'location',
     arguments: {
-      operation: 'coordinates',
-      lat: numLat,
-      lon: numLon,
-      source: safeSource
+      operation: 'label',
+      label: label.trim().slice(0, 160)
     }
   };
 }

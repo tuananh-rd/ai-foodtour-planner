@@ -13,6 +13,7 @@ import {
   resolveLocationAction,
   chooseLocationCandidateAction,
   setCoordinatesLocationAction,
+  setLabelLocationAction,
   clearLocationAction,
   formatDistanceDisplay,
   formatUnknownLabel,
@@ -103,6 +104,23 @@ assert(validateDiscoveryAction(lGps) === lGps, 'validateDiscoveryAction accepts 
 const lClear = clearLocationAction();
 assert(lClear.type === 'location' && lClear.arguments.operation === 'clear', 'clearLocationAction creates clear action');
 assert(validateDiscoveryAction(lClear) === lClear, 'validateDiscoveryAction accepts clear operation');
+
+const lLabel = setLabelLocationAction('Cổng khách sạn Metropole');
+assert(lLabel.type === 'location' && lLabel.arguments.operation === 'label' && lLabel.arguments.label === 'Cổng khách sạn Metropole', 'setLabelLocationAction creates label action');
+assert(validateDiscoveryAction(lLabel) === lLabel, 'validateDiscoveryAction accepts label operation');
+assertThrows(() => setLabelLocationAction(''), 'invalid_action', 'setLabelLocationAction rejects empty label');
+assertThrows(() => setLabelLocationAction('x'), 'invalid_action', 'setLabelLocationAction rejects < 2 chars label');
+assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'label', label: '' } }), 'invalid_action', 'Rejects empty label in validateDiscoveryAction');
+
+const lGpsResolved = setCoordinatesLocationAction(21.0285, 105.8542, 'gps', true);
+assert(lGpsResolved.arguments.resolve_address === true, 'setCoordinatesLocationAction sets resolve_address: true for gps');
+assert(validateDiscoveryAction(lGpsResolved) === lGpsResolved, 'validateDiscoveryAction accepts resolve_address on gps');
+
+assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'coordinates', lat: 21.0285, lon: 105.8542, source: 'coordinates', resolve_address: true } }), 'invalid_action', 'Rejects resolve_address on non-gps coordinates');
+
+const lManualLabel = setCoordinatesLocationAction(21.0285, 105.8542, 'coordinates', false, 'Nhà riêng');
+assert(lManualLabel.arguments.label === 'Nhà riêng', 'setCoordinatesLocationAction accepts optional label');
+assert(validateDiscoveryAction(lManualLabel) === lManualLabel, 'validateDiscoveryAction accepts optional label on coordinates');
 
 assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'unknown' } }), 'invalid_action', 'Rejects unsupported location operation');
 assertThrows(() => validateDiscoveryAction({ type: 'location', arguments: { operation: 'resolve', query: '' } }), 'invalid_action', 'Rejects empty resolve query');

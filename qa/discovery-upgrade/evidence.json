@@ -1,5 +1,5 @@
 {
-  "testedAt": "2026-10-20T01:55:21.880Z",
+  "testedAt": "2026-11-02T11:28:39.070Z",
   "targetContract": "discovery-v1 (Additive Location, Model, Web)",
   "ports": {
     "web": 13600,
@@ -144,8 +144,36 @@
       "details": {}
     },
     {
+      "id": "GPS_DISCLOSURE_PRESENT",
+      "name": "GPS disclosure explains Photon/OpenStreetMap without model/web leak",
+      "pass": true,
+      "details": {
+        "disclosure": "Tọa độ GPS chỉ gửi đến Photon (OpenStreetMap) để xác định tên đường gần bạn; tuyệt đối không gửi đến mô hình AI hoặc tìm kiếm web."
+      }
+    },
+    {
       "id": "ORIGIN_COORDINATES_SET",
       "name": "Origin set via validated coordinates and distance updated",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "RAW_COORDINATES_PROTECTED",
+      "name": "Origin label does not leak raw coordinate numbers",
+      "pass": true,
+      "details": {
+        "originTagText": "Vị trí của bạn"
+      }
+    },
+    {
+      "id": "ORIGIN_LABEL_MANUAL_EDIT",
+      "name": "Manual label edit operation updates label and reflects manual status tag",
+      "pass": true,
+      "details": {}
+    },
+    {
+      "id": "ACTIVE_CHAT_UX_APPLIED",
+      "name": "Active chat triggers 60/40 grid layout and active card class",
       "pass": true,
       "details": {}
     },
@@ -214,7 +242,7 @@
       "pass": true,
       "details": {
         "found": true,
-        "bottom": 706,
+        "bottom": 675,
         "windowHeight": 800,
         "insideViewport": true
       }
@@ -282,8 +310,8 @@
     }
   ],
   "summary": {
-    "total": 30,
-    "passed": 30,
+    "total": 34,
+    "passed": 34,
     "failed": 0
   }
 }
