@@ -175,6 +175,10 @@ const unproven429 = classifyServiceInterruption({ mode: 'rules', reason: '429_ru
 assert(unproven429.category !== 'provider_429' && unproven429.httpStatus === null, 'Legacy string does not invent retained HTTP status');
 const invalidResponse = classifyServiceInterruption({ mode: 'rules', failure: {kind: 'bad_response', source: 'transport'} });
 assert(!invalidResponse.message.includes('Kết nối') && !invalidResponse.message.includes('lâu hơn'), 'Invalid AI response is not diagnosed as network error or timeout');
+assert(classifyServiceInterruption(null, [...oldMessages, {role: 'assistant', text: 'Phản hồi mới đã hoàn tất.'}]) === null,
+  'Historical legacy prefixes do not resurrect an outage after later response and reload');
+assert(classifyServiceInterruption({mode: 'rules', reason: 'not_a_timeout_diagnosis'}).category !== 'timeout',
+  'Unrecognized legacy text does not invent a timeout');
 
 console.log(`\n========================================`);
 console.log(`ALL TESTS PASSED! (${passed} passed, ${failed} failed)`);

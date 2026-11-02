@@ -29,6 +29,9 @@ try{
    if(m.method==='Fetch.requestPaused'){
      const p=m.params;
      (async()=>{
+       if(!['GET','POST'].includes(p.request.method)){
+         await cdp('Fetch.continueRequest',{requestId:p.requestId});return;
+       }
        if(p.responseStatusCode){
          const raw=await cdp('Fetch.getResponseBody',{requestId:p.requestId});
          const b=JSON.parse(raw.base64Encoded?Buffer.from(raw.body,'base64').toString('utf8'):raw.body);

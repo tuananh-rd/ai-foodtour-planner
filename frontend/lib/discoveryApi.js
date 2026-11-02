@@ -912,10 +912,18 @@ const BENIGN_NON_OUTAGE_REASONS = new Set([
  * Returns null if service is operating normally.
  * Strictly avoids compound guesses like "timeout OR quota".
  */
+function latestAssistantHasLegacyPrefix(messages) {
+  if (!Array.isArray(messages)) return false;
+  for (let index = messages.length - 1; index >= 0; index--) {
+    if (messages[index]?.role === 'assistant') return hasLegacyGenericPrefix(messages[index].text);
+  }
+  return false;
+}
+
 export function classifyServiceInterruption(provider, messages = []) {
   if (!provider || typeof provider !== 'object') {
     // If no provider metadata but messages contain legacy prefix, derive neutral legacy status
-    if (Array.isArray(messages) && messages.some(m => m.role === 'assistant' && hasLegacyGenericPrefix(m.text))) {
+    if (latestAssistantHasLegacyPrefix(messages)) {
       return {
         active: true,
         category: 'legacy_local',
@@ -1061,7 +1069,7 @@ export function classifyServiceInterruption(provider, messages = []) {
     }
 
     // Timeout: only for timeout_rules_fallback or explicit timeout
-    if (r.includes('timeout')) {
+    if (r === 'timeout' || r === 'timeout_rules_fallback') {
       return {
         active: true,
         category: 'timeout',
@@ -1134,7 +1142,7 @@ export function classifyServiceInterruption(provider, messages = []) {
   }
 
   // Check if messages have legacy prefix when metadata is absent (reloading old prepatch sessions)
-  if (Array.isArray(messages) && messages.some(m => m.role === 'assistant' && hasLegacyGenericPrefix(m.text))) {
+  if (latestAssistantHasLegacyPrefix(messages)) {
     return {
       active: true,
       category: 'legacy_local',
