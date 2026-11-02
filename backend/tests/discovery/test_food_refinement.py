@@ -38,6 +38,8 @@ class FoodRefinementTests(unittest.TestCase):
         state.selection=[{'id':'beef','locked':True}]
         state.comparison=['roll','beef']
         state.confirmation={'id':'old'}
+        state.plan_requested=True
+        state.pending_slot='start_time'
         before=state.profile.origin.model_copy()
         result, provider=handle('tôi muốn ăn phở gà cơ', self.tools(state, data))
         self.assertEqual(state.profile.foods, ['phở gà'])
@@ -47,6 +49,8 @@ class FoodRefinementTests(unittest.TestCase):
         self.assertEqual(state.selection,[{'id':'beef','locked':True}])
         self.assertIsNone(state.confirmation)
         self.assertTrue(state.tour_stale)
+        self.assertFalse(state.plan_requested)
+        self.assertIsNone(state.pending_slot)
         self.assertNotIn('chưa được',result['text'])
         self.assertEqual(provider['calls'],0)
 
@@ -61,6 +65,7 @@ class FoodRefinementTests(unittest.TestCase):
 
     def test_compound_intent_preserves_specific_phrase(self):
         self.assertEqual(food_intent('tôi muốn ăn phở gà với tráng miệng'),['phở gà','tráng miệng'])
+        self.assertEqual(food_intent('tôi muốn ăn tào phớ'),['tào phớ'])
 
     def test_native_mock_refinement_does_not_require_selection_permission(self):
         state,data=State(),refinement_data()

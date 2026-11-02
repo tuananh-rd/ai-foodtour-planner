@@ -151,6 +151,8 @@ class State:
     def patch(self, changes):
         new = Profile.model_validate({**self.profile.model_dump(), **changes})
         if new != self.profile:
+            if new.foods != self.profile.foods:
+                self.plan_requested, self.pending_slot = False, None
             if new.area != self.profile.area or new.foods != self.profile.foods:
                 self.results, self.comparison = [], []
                 pending = self.pending_search

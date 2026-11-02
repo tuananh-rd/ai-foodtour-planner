@@ -10,7 +10,7 @@ PHO_VARIANTS = {'ga': 'gà', 'bo': 'bò', 'cuon': 'cuốn', 'xao': 'xào',
 def food_intent(text):
     folded = fold_uncached(re.sub(r'(?i)(?<!\w)phố(?!\w)', ' ', text))
     matches = []
-    for match in re.finditer(r'\bpho(?:\s+(ga|bo|cuon|xao|chien|tron|tai|nam|chin))?\b', folded):
+    for match in re.finditer(r'(?<!tao )\bpho(?:\s+(ga|bo|cuon|xao|chien|tron|tai|nam|chin))?\b', folded):
         matches.append((match.start(), match.end(), 'phở' + (' '+PHO_VARIANTS[match[1]] if match[1] else '')))
     # Keep known multi-word dishes instead of reducing every request to a family.
     for entry in knowledge.DISHES:
@@ -19,7 +19,7 @@ def food_intent(text):
             continue
         for match in re.finditer(r'(?<!\w)'+re.escape(key)+r'(?!\w)', folded):
             matches.append((match.start(), match.end(), label.lower()))
-    for label, pattern in [('bánh', r'\bbanh\b'), ('tráng miệng', r'trang mieng|dessert'), ('cà phê', r'ca phe|coffee')]:
+    for label, pattern in [('bánh', r'\bbanh\b'), ('tào phớ', r'\btao pho\b'), ('tráng miệng', r'trang mieng|dessert'), ('cà phê', r'ca phe|coffee')]:
         for match in re.finditer(pattern, folded):
             matches.append((match.start(), match.end(), label))
     selected=[]
@@ -38,7 +38,7 @@ def matches_food(venue, food):
         for phrase in phrases:
             pattern=r'(?<!\w)'+re.escape(phrase)+r'(?!\w)'
             if phrase=='pho':
-                pattern=r'(?<!\w)pho(?!\w)(?!\s+(?:cuon|xao|chien|tron)(?!\w))'
+                pattern=r'(?<!tao )(?<!\w)pho(?!\w)(?!\s+(?:cuon|xao|chien|tron)(?!\w))'
             if re.search(pattern,tag):
                 return True
     return False
