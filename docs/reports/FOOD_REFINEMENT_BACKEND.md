@@ -75,5 +75,19 @@ quality. Current private data cannot substantiate a chicken-phở result and mus
 The task-owned API8250 was restarted with its original local-data/session-namespace/configuration.
 Read-only health confirms backend source `6418792` (includes all four code commits), private data,
 unchanged Gemini model, and used15/18 with reserve3. The3350 web process remains unchanged.
-The3320/8230 processes and private session/ledger files are preserved. Final actual-fixture browser
-settlement remains pending at this checkpoint; no live conversation success is claimed.
+The3320/8230 processes and private session/ledger files are preserved.
+
+Actual3350 browser evidence now records **25/25 checks passing**, exit0, over both real fixture
+APIs. Sol independently inspected the available/absent final screenshots: available shows only
+the compound-tag chicken venue; absent shows an explicit no-match answer and no result cards.
+The previously selected beef venue remains selected, as required. Browser extras did not form a
+confirmation with the minimal profile and did not lock the venue; those assertions are covered
+by backend regressions, not claimed as browser coverage. Eight screenshots and sanitized JSON
+are under `food-refinement-3350/`. The first browser attempt failed because the isolated launcher
+omitted guided UI flags; correcting that fixture bootstrap enabled the successful execution.
+Claude's actual-browser task `task_89c74f1de140` / `ctx_197004e4aee7` settled succeeded and
+approved the final backend changes. Release retained its pre-existing terminal without process
+action; no active frontend editor remains. Temporary fixture APIs8261/8262 were stopped after
+settlement. Final read-only8250 health still shows used15/18, remaining3/reserve3. No live Gemini
+conversation success is claimed. Test URL: `http://127.0.0.1:3350` (reload to reconnect; server
+sessions remain preserved). Existing saved historical chat bubbles are not rewritten.

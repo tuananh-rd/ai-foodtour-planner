@@ -2,8 +2,10 @@
 
 Sol owns backend/runtime/integration; Claude Opus4.8 medium owns affected UI review and QA;
 Antigravity remains inactive. Core affected review `task_7591fe5013ca` / `ctx_147054156d22`
-settled APPROVED; same terminal reused for execution `task_89c74f1de140` / `ctx_197004e4aee7`
-with observed `turn_started`. Terminal `term_f490cf7f-9b8b-436a-8b29-aa07a32bf39a`.
+settled APPROVED; same terminal reused for execution `task_89c74f1de140` / `ctx_197004e4aee7`,
+now settled succeeded with 25/25 actual-rules browser checks and final backend review APPROVED.
+Release receipt retained the pre-existing terminal (`external_terminal`, no process action):
+`term_f490cf7f-9b8b-436a-8b29-aa07a32bf39a`, idle, no active editing authority.
 No duplicate editor or new provider generation.
 
 Backend fixes `724c73a`, `5bb9cbb`, `067193f`, `5541059`: retain specific phở intent, match
@@ -13,7 +15,10 @@ from denied native mutation. Preserve validated no-match replies against unsuppo
 70 targeted tests PASS; private snapshot replay is in-memory/read-only and returns no chicken-phở
 match. Integrated task-owned API8250 now reports source6418792, private data, unchanged model and
 used15/18, remaining3 equals reserve3;3350 web and3320/8230 preserved. Real-API fixture browser
-verification is pending. No probes/reset/cap increase permitted.
+verification is complete: available chicken-only, absent truthful no_results, preserved origin
+and selection, no mutation denial or decoys. No frontend production edit/build required.
+Only isolated temporary QA APIs8261/8262 were stopped after settlement. No probes/reset/cap
+increase; live Gemini conversation quality remains unverified/locally reserve-blocked.
 Details: `FOOD_REFINEMENT_BACKEND.md`, affected review/browser report `FOOD_REFINEMENT_QA.md`.
 
 ## Latest coding ownership — Claude Opus4.8 medium

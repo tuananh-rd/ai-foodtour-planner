@@ -1,0 +1,290 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "privateApi": "http://127.0.0.1:8250",
+  "fixtures": {
+    "available": "http://127.0.0.1:8261",
+    "absent": "http://127.0.0.1:8262"
+  },
+  "source_commit": "c7963a988e8fe80306c7343ac0deaa597493f683",
+  "provider": "ACTUAL RULES fixtures 8261/8262 (refinement_data)",
+  "liveGemini": "NO GENERATION; all 8250 API proxied to rules fixtures, POST never continued to 8250",
+  "datasets": [
+    "available",
+    "absent"
+  ],
+  "checks": [
+    {
+      "name": "[available] phở before origin: 0 cards and a location prompt",
+      "pass": true
+    },
+    {
+      "name": "[available] origin chosen resumes phở search including beef",
+      "pass": true
+    },
+    {
+      "name": "[available] generic phở includes chicken, excludes decoys",
+      "pass": true
+    },
+    {
+      "name": "[available] beef added to selection (extra)",
+      "pass": true
+    },
+    {
+      "name": "[available] origin preserved after refinement",
+      "pass": true
+    },
+    {
+      "name": "[available] stale beef card cleared from results",
+      "pass": true
+    },
+    {
+      "name": "[available] no false match: roll/snack/name_only never appear",
+      "pass": true
+    },
+    {
+      "name": "[available] no mutation-deny / authority-denied text",
+      "pass": true
+    },
+    {
+      "name": "[available] foods updated to phở gà and provider.calls==0 (pure rules)",
+      "pass": true
+    },
+    {
+      "name": "[available] phở gà -> chicken-only (actual results, not HTTP 200)",
+      "pass": true
+    },
+    {
+      "name": "[available] beef selection preserved after refinement (extra)",
+      "pass": true
+    },
+    {
+      "name": "[absent] phở before origin: 0 cards and a location prompt",
+      "pass": true
+    },
+    {
+      "name": "[absent] origin chosen resumes phở search including beef",
+      "pass": true
+    },
+    {
+      "name": "[absent] generic phở is beef-only (no chicken/decoys)",
+      "pass": true
+    },
+    {
+      "name": "[absent] beef added to selection (extra)",
+      "pass": true
+    },
+    {
+      "name": "[absent] origin preserved after refinement",
+      "pass": true
+    },
+    {
+      "name": "[absent] stale beef card cleared from results",
+      "pass": true
+    },
+    {
+      "name": "[absent] no false match: roll/snack/name_only never appear",
+      "pass": true
+    },
+    {
+      "name": "[absent] no mutation-deny / authority-denied text",
+      "pass": true
+    },
+    {
+      "name": "[absent] foods updated to phở gà and provider.calls==0 (pure rules)",
+      "pass": true
+    },
+    {
+      "name": "[absent] phở gà -> honest no_results (0 cards, mentions phở gà)",
+      "pass": true
+    },
+    {
+      "name": "[absent] beef selection preserved after refinement (extra)",
+      "pass": true
+    },
+    {
+      "name": "no /assistant POST ever continued to private 8250 (all proxied)",
+      "pass": true
+    },
+    {
+      "name": "no unexpected remote API origins",
+      "pass": true
+    },
+    {
+      "name": "no browser exception",
+      "pass": true
+    }
+  ],
+  "screenshots": [
+    "available-0-init.png",
+    "available-1-before-origin.png",
+    "available-2-generic-pho.png",
+    "available-3-pho-ga.png",
+    "absent-0-init.png",
+    "absent-1-before-origin.png",
+    "absent-2-generic-pho.png",
+    "absent-3-pho-ga.png"
+  ],
+  "errors": [],
+  "remoteOriginsAborted": [],
+  "proxied": {
+    "available": 10,
+    "absent": 10
+  },
+  "proxyLog": [
+    {
+      "d": "available",
+      "method": "POST",
+      "path": "/v1/sessions",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "GET",
+      "path": "/v1/assistant/capabilities",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "GET",
+      "path": "/v1/client-config",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "GET",
+      "path": "/v1/sessions/bKeT4YAdBayEjdyVYm2RLytRk_uKP3Nj/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "POST",
+      "path": "/v1/sessions/bKeT4YAdBayEjdyVYm2RLytRk_uKP3Nj/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "POST",
+      "path": "/v1/sessions/bKeT4YAdBayEjdyVYm2RLytRk_uKP3Nj/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "POST",
+      "path": "/v1/sessions/bKeT4YAdBayEjdyVYm2RLytRk_uKP3Nj/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "POST",
+      "path": "/v1/sessions/bKeT4YAdBayEjdyVYm2RLytRk_uKP3Nj/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "available",
+      "method": "POST",
+      "path": "/v1/sessions/bKeT4YAdBayEjdyVYm2RLytRk_uKP3Nj/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "POST",
+      "path": "/v1/sessions",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "GET",
+      "path": "/health",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "GET",
+      "path": "/v1/assistant/capabilities",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "GET",
+      "path": "/v1/client-config",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "GET",
+      "path": "/v1/sessions/1ufu11enPMRLqQU9QIV--j95H_inzzQG/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "POST",
+      "path": "/v1/sessions/1ufu11enPMRLqQU9QIV--j95H_inzzQG/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "POST",
+      "path": "/v1/sessions/1ufu11enPMRLqQU9QIV--j95H_inzzQG/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "POST",
+      "path": "/v1/sessions/1ufu11enPMRLqQU9QIV--j95H_inzzQG/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "POST",
+      "path": "/v1/sessions/1ufu11enPMRLqQU9QIV--j95H_inzzQG/assistant",
+      "status": 200,
+      "fulfilled": true
+    },
+    {
+      "d": "absent",
+      "method": "POST",
+      "path": "/v1/sessions/1ufu11enPMRLqQU9QIV--j95H_inzzQG/assistant",
+      "status": 200,
+      "fulfilled": true
+    }
+  ],
+  "init_available": {
+    "inputDisabled": true,
+    "busy": false,
+    "banner": "Đang khởi tạo phiên làm việc…"
+  },
+  "notes": [
+    "[available] itinerary confirmation not formed with minimal profile (rules asked to clarify next step: \"Danh sách quán và các yêu cầu đã biết vẫn được giữ; chỉ cần làm rõ bước tiếp the\"); confirmation-invalidation browser assertion skipped. Backend invalidate() on foods-change is covered by Sol's unit tests.",
+    "[absent] itinerary confirmation not formed with minimal profile (rules asked to clarify next step: \"Danh sách quán và các yêu cầu đã biết vẫn được giữ; chỉ cần làm rõ bước tiếp the\"); confirmation-invalidation browser assertion skipped. Backend invalidate() on foods-change is covered by Sol's unit tests."
+  ],
+  "init_absent": {
+    "inputDisabled": false,
+    "busy": false,
+    "banner": null
+  },
+  "fixtureExplanation": "Every 8250 request proxied to the dataset fixture (8261 available / 8262 absent); OPTIONS answered locally; POST never continued to 8250; other origins aborted. No session id or token stored in evidence; synthetic venue ids only."
+}
