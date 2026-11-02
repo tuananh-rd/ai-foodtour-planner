@@ -84,6 +84,22 @@ class MapsEndpointTests(unittest.TestCase):
         self.app = create_app(data_path=Path(self.temp.name) / 'absent.json', sessions=self.store)
         self.client = self.enterContext(TestClient(self.app))
 
+    def test_confirmed_motorcycle_cannot_be_relabelled_as_car(self):
+        created=self.client.post('/v1/sessions').json()
+        headers={'X-Session-Token':created['token']}
+        base=f"/v1/sessions/{created['session_id']}"
+        self.client.post(base+'/messages',headers=headers,
+                         json={'text':'quanh Hồ Gươm trong 4 giờ, 500k mỗi người'})
+        session=self.store._sessions[created['session_id']]
+        self.assertTrue(session.tour.stops)
+        session.tour_vehicle='motorbike'
+        result=self.client.get(base+'/tour/maps-links?mode=driving',headers=headers)
+        self.assertEqual(result.status_code,200)
+        self.assertEqual(result.json()['status'],'unavailable')
+        self.assertEqual(result.json()['links'],[])
+        self.assertTrue(any('Motorcycle' in n for n in result.json()['notes']))
+        self.assertEqual(session.tour_vehicle,'motorbike')
+
     def test_auth_no_tour_readonly_and_no_providers(self):
         created = self.client.post('/v1/sessions').json()
         url = f"/v1/sessions/{created['session_id']}/tour/maps-links"
