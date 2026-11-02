@@ -1,0 +1,45 @@
+{
+  "status": "valid_not_activated",
+  "manifest_schema": "foodtour-menu-stage/1",
+  "sha256": "dd0f26c9afc15c7036348fec4aa781df23825cd607eae911d37e2444b799bdd7",
+  "counts": {
+    "attempted_venues": 400,
+    "menu_venues": 338,
+    "canonical_records": 18245,
+    "group_links": 18764,
+    "options": 90350,
+    "explicit_nonfood_records": 23,
+    "unavailable_records": 87,
+    "crawl_statuses": {
+      "empty_confirmed": 4,
+      "error": 2,
+      "no_service": 55,
+      "ok": 338,
+      "review": 1
+    },
+    "last_attempt_statuses": {
+      "empty_confirmed": 4,
+      "error": 2,
+      "no_service": 55,
+      "ok": 338,
+      "review": 1
+    },
+    "effective": {
+      "canonical_dishes": 18245,
+      "group_links": 18764,
+      "options": 90350,
+      "mapped_venues": 400,
+      "contact_or_invalid_excluded": 23,
+      "price_quarantined": 91,
+      "minimum_unverified": 50,
+      "linked_venues": 342,
+      "food_rows": 18222
+    }
+  },
+  "warnings": {
+    "unconfirmed_venue": 58,
+    "price_quarantined": 91,
+    "minimum_unverified": 50
+  },
+  "errors": []
+}

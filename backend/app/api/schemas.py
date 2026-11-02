@@ -39,7 +39,7 @@ class MapsSkippedStop(Model):
 class MapsLinksResponse(Model):
     status: Literal['ok', 'partial', 'unavailable']
     travelmode: Literal['walking', 'driving']
-    provider: Literal['google_maps_urls'] = 'google_maps_urls'
+    provider: Literal['openstreetmap_urls'] = 'openstreetmap_urls'
     uses_api: Literal[False] = False
     links: list[MapsLink]
     skipped: list[MapsSkippedStop]

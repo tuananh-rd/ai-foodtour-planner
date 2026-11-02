@@ -1,7 +1,8 @@
 # Local menu archive operations
 
-This iteration prepares tooling only. The active12-venue archive, runtime, sessions, budget and
-configuration remain unchanged. No activation/rollback of a real archive was performed.
+The tooling was initially prepared without activation. On2026-11-03 the user explicitly
+authorized partial ZIP(6) activation; see reports/MENU6_ACTIVATION.md for the actual operation.
+Private archives, sessions and budget remain outside Git; activation never resets provider usage.
 
 ## Validate first (default is read-only)
 
@@ -124,7 +125,7 @@ Deliver a closed, finalized ZIP (prefer an atomic rename after writing), not a f
   portions, current opening status, route geometry or travel ETA. Option-only names are not
   standalone dishes. No fuzzy synonyms or branch-name matching is performed.
 
-Bounds are explicit: compressed archive≤64MiB, total expanded≤128MiB, member≤32MiB,≤64 members,
+Bounds are explicit: compressed archive≤64MiB, total expanded≤128MiB, member≤48MiB,≤64 members,
 compression ratio≤250;≤20k canonical dishes,30k items/links,200k options,2k mappings. Bigger input
 is rejected for a reviewed limit change, not silently truncated. ZIP traversal, duplicate members,
 symlinks, encryption, duplicate JSON keys and non-finite JSON numbers are rejected; nothing is extracted.

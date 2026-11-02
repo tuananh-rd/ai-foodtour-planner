@@ -1,4 +1,4 @@
-"""Synthetic URL-only acceptance; never contact Google."""
+"""Synthetic URL-only acceptance; never contact a routing provider."""
 import socket
 import json
 import sqlite3
@@ -28,124 +28,52 @@ def venues(count):
 
 
 class MapsBuilderTests(unittest.TestCase):
-    def build(self, count=3, data=None, origin=(21, 105), mode="walking"):
+    def build(self, count=3, data=None, origin=(21,105), mode='walking', vehicle=None):
         from app.planner.maps_url import build_maps_links
-        return build_maps_links(origin, None, stops(count), venues(count) if data is None else data, mode)
+        return build_maps_links(origin, 'Never geocode this address', stops(count),
+            venues(count) if data is None else data, mode, vehicle)
 
-    def queries(self, result):
-        for i, link in enumerate(result['links'], 1):
-            parts = urlsplit(link['url'])
-            self.assertEqual((parts.scheme, parts.netloc, parts.path),
-                             ('https', 'www.google.com', '/maps/dir/'))
-            query = parse_qs(parts.query)
-            self.assertEqual(query['api'], ['1'])
-            self.assertEqual(query['travelmode'], [result['travelmode']])
-            self.assertNotIn('dir_action', query)
-            self.assertLessEqual(link['waypoint_count'], 3)
-            self.assertEqual(link['url_length'], len(link['url']))
-            self.assertLessEqual(link['url_length'], 2048)
-            self.assertEqual((link['index'], link['of']), (i, len(result['links'])))
-            self.assertEqual(len(link['point_kinds']), link['waypoint_count'] + 2)
-            yield query
-
-    def test_order_modes_and_mobile_splitting_one_through_twelve(self):
-        for count in range(1, 13):
-            for mode in ('walking', 'driving'):
-                with self.subTest(count=count, mode=mode):
-                    result = self.build(count, mode=mode)
-                    self.assertEqual(result['status'], 'ok')
-                    actual = []
-                    previous = None
-                    for query in self.queries(result):
-                        if previous is None:
-                            actual.append(query['origin'][0])
-                        else:
-                            self.assertEqual(query['origin'][0], previous)
-                        actual.extend(query.get('waypoints', [''])[0].split('|') if 'waypoints' in query else [])
-                        actual.append(query['destination'][0])
-                        previous = query['destination'][0]
-                    self.assertEqual(actual, ['21.000000,105.000000'] +
-                                     [f'{21 + i / 1000:.6f},105.000000' for i in range(1, count + 1)])
-                    self.assertIsNone(result['links'][0]['from_stop'])
-                    self.assertEqual(result['links'][-1]['to_stop'], count)
-
-    def test_address_encoding_normalisation_and_coordinate_precedence(self):
-        address = '  12\tPhố Huế & Bún + Chè #1? / Hà Nội\n\x00\u200b '
-        data = (replace(venues(1)[0], lat=None, address=address),)
-        result = self.build(1, data)
-        query = list(self.queries(result))[0]
-        self.assertEqual(query['destination'], ['12 Phố Huế & Bún + Chè #1? / Hà Nội'])
-        self.assertEqual(result['links'][0]['point_kinds'], ['latlng', 'address'])
-        self.assertIn('%26', result['links'][0]['url'])
-        self.assertIn('%2B', result['links'][0]['url'])
-        result = self.build(1, (replace(venues(1)[0], address=address),))
-        self.assertEqual(result['links'][0]['point_kinds'], ['latlng', 'latlng'])
-
-    def test_invalid_coordinates_fallback_or_explicit_skip(self):
-        for lat, lon in ((None, 105), (float('nan'), 105), (21, float('inf')),
-                         (91, 105), (21, -181), ('bad', 105), (True, 105)):
-            with self.subTest(lat=lat, lon=lon):
-                data = (replace(venues(1)[0], lat=lat, lon=lon, address=' Synthetic address '),)
-                self.assertEqual(self.build(1, data)['links'][0]['point_kinds'][-1], 'address')
-        data = list(venues(4))
-        data[1] = replace(data[1], lat=None, address='')
-        result = self.build(4, data)
-        self.assertEqual(result['status'], 'partial')
-        self.assertEqual(result['skipped'], [{'stop_order': 2, 'venue_id': 'synthetic-2',
-                                              'reason': 'no_usable_point'}])
-        self.assertEqual([(v['from_stop'], v['to_stop']) for v in result['links']], [(None, 1), (3, 4)])
-        self.assertEqual(self.build(1, (replace(venues(1)[0], lat=None),))['status'], 'unavailable')
-
-    def test_length_shrinks_waypoints_and_rejects_unencodable_pairs(self):
-        data = tuple(replace(v, lat=None, address='ế' * 190 + str(i)) for i, v in enumerate(venues(5)))
-        result = self.build(5, data)
-        list(self.queries(result))
-        self.assertTrue(result['skipped'])
-        self.assertTrue(all(s['reason'] == 'url_too_long' for s in result['skipped']))
-        data = tuple(replace(v, lat=None, address='ế' * 75 + str(i)) for i, v in enumerate(venues(5)))
-        result = self.build(5, data)
-        list(self.queries(result))
-        self.assertEqual(result['status'], 'ok')
-        self.assertGreater(len(result['links']), 2)
-        self.assertTrue(all(v['waypoint_count'] < 3 for v in result['links']))
-
-    def test_address_cap_privacy_origin_fallback_and_no_network(self):
-        from app.planner.maps_url import build_maps_links
-        with patch.object(socket.socket, 'connect', side_effect=AssertionError('outbound network')):
-            result = build_maps_links(None, 'Synthetic start', stops(1),
-                                      (replace(venues(1)[0], lat=None, address='a' * 400),), 'walking')
-        query = list(self.queries(result))[0]
-        self.assertEqual(query['origin'], ['Synthetic start'])
-        self.assertEqual(query['destination'], ['a' * 200])
-        self.assertTrue(any('only when' in note and 'Google' in note for note in result['notes']))
-        self.assertFalse(result['uses_api'])
-        self.assertEqual(result['provider'], 'google_maps_urls')
-
-    def test_isolated_run_and_no_usable_points(self):
-        data = (replace(venues(2)[0], lat=None), venues(2)[1])
-        result = self.build(2, data)
-        self.assertEqual(result['status'], 'partial')
-        query = list(self.queries(result))[0]
-        self.assertEqual(query['origin'], query['destination'])
-        self.assertEqual(result['links'][0]['from_stop'], 2)
-        result = self.build(2, tuple(replace(v, lat=None) for v in venues(2)))
-        self.assertEqual(result['status'], 'unavailable')
-        self.assertEqual(result['links'], [])
-        self.assertEqual([s['stop_order'] for s in result['skipped']], [1, 2])
-
-    def test_frontend_fixtures_match_builder_and_schema(self):
+    def test_order_and_modes_one_through_twelve_without_network(self):
         from app.api.schemas import MapsLinksResponse
-        from app.planner.maps_url import build_maps_links
-        path = Path(__file__).resolve().parents[3] / 'contracts/fixtures/maps_links.synthetic.json'
-        fixture = json.loads(path.read_text(encoding='utf-8'))
-        self.assertTrue(fixture['synthetic'])
-        for case in fixture['cases']:
-            given = case['input']
-            result = build_maps_links(given['origin'], given['origin_address'],
-                tuple(Stop(s['venue_id'], s['order'], Leg(None, 0, 'unknown')) for s in given['stops']),
-                tuple(Venue(**v) for v in given['venues']), given['mode'])
-            self.assertEqual(result, case['response'], case['name'])
-            MapsLinksResponse.model_validate(result)
+        with patch.object(socket.socket,'connect',side_effect=AssertionError('network')):
+            for count in range(1,13):
+                for mode,engine in [('walking','fossgis_osrm_foot'),('driving','fossgis_osrm_car')]:
+                    result=self.build(count,mode=mode)
+                    MapsLinksResponse.model_validate(result)
+                    self.assertEqual(result['status'],'ok')
+                    self.assertEqual(len(result['links']),count)
+                    previous='21.000000,105.000000'
+                    for i,link in enumerate(result['links'],1):
+                        u=urlsplit(link['url']);q=parse_qs(u.query)
+                        self.assertEqual((u.scheme,u.netloc,u.path),('https','www.openstreetmap.org','/directions'))
+                        self.assertEqual(q['engine'],[engine])
+                        a,b=q['route'][0].split(';')
+                        self.assertEqual(a,previous)
+                        self.assertEqual(b,f'{21+i/1000:.6f},105.000000')
+                        self.assertEqual((link['index'],link['of'],link['to_stop']),(i,count,i))
+                        self.assertEqual(link['from_stop'],i-1 if i>1 else None)
+                        self.assertEqual(link['waypoint_count'],0)
+                        self.assertLessEqual(len(link['url']),2048)
+                        previous=b
+
+    def test_missing_coordinate_never_address_guessed_or_bridged(self):
+        data=list(venues(4));data[1]=replace(data[1],lat=None,address='Synthetic address')
+        result=self.build(4,data)
+        self.assertEqual(result['status'],'partial')
+        self.assertEqual([(l['from_stop'],l['to_stop']) for l in result['links']],[(None,1),(3,4)])
+        self.assertEqual(result['skipped'][0]['stop_order'],2)
+        for invalid in (None,True,float('nan'),float('inf'),91,'21'):
+            self.assertEqual(self.build(1,[replace(venues(1)[0],lat=invalid)])['links'],[])
+
+    def test_origin_required_and_no_mode_substitution(self):
+        self.assertEqual(self.build(origin=None)['links'],[])
+        self.assertEqual(self.build(mode='driving',vehicle='motorbike')['links'],[])
+        self.assertEqual(self.build(mode='driving',vehicle='walk')['links'],[])
+        self.assertEqual(self.build(mode='walking',vehicle='car')['links'],[])
+        self.assertTrue(self.build(mode='walking',vehicle='walk')['links'])
+        self.assertTrue(self.build(mode='driving',vehicle='taxi')['links'])
+        self.assertFalse(self.build()['uses_api'])
+        self.assertEqual(self.build()['provider'],'openstreetmap_urls')
 
 
 class MapsEndpointTests(unittest.TestCase):

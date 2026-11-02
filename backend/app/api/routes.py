@@ -290,7 +290,8 @@ def maps_links(session_id: str, request: Request, mode: Literal['walking', 'driv
             raise APIError(409, 'no_tour', 'Chưa có lịch trình với điểm dừng.')
         data = session.snapshot
         return build_maps_links(session.preferences.origin, session.preferences.origin_label,
-                                session.tour.stops, data.venues if data else (), mode)
+                                session.tour.stops, data.venues if data else (), mode,
+                                vehicle=session.tour_vehicle)
 
 
 @router.post("/v1/sessions/{session_id}/messages", response_model=SessionView)

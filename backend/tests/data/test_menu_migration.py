@@ -34,6 +34,18 @@ def write(path,docs):
 
 
 class MenuMigrationTests(unittest.TestCase):
+    def test_member_cap_is_bounded_independently_of_total(self):
+        from app.data.menu_archive import MAX_MEMBER, MAX_EXPANDED
+        self.assertEqual(MAX_MEMBER, 48*1024*1024)
+        self.assertEqual(MAX_EXPANDED, 128*1024*1024)
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'oversized.zip'
+            # Stored entries avoid triggering ratio checks instead of the member boundary.
+            with zipfile.ZipFile(path,'w',compression=zipfile.ZIP_STORED) as archive:
+                archive.writestr('oversized.json', b' '*(MAX_MEMBER+1))
+            with self.assertRaisesRegex(MenuValidationError,'archive_member_size_cap'):
+                read_menu_archive(path)
+
     def setUp(self):
         self.temp=tempfile.TemporaryDirectory();self.addCleanup(self.temp.cleanup)
         self.root=Path(self.temp.name);self.input=self.root/'input.zip';menu_archive(self.input)

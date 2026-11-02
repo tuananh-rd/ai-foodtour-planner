@@ -16,7 +16,8 @@ FILES = {
     'shopeefood_mapping.json': ('shopeefood-mapping/1', 'venues', 2000),
 }
 MAX_ARCHIVE = 64*1024*1024
-MAX_MEMBER = 32*1024*1024
+# V6 option exports may exceed 32 MiB; the total expansion and row caps stay fixed.
+MAX_MEMBER = 48*1024*1024
 MAX_EXPANDED = 128*1024*1024
 CRAWL_STATUSES={'ok','error','no_service','not_collected','review','empty_confirmed','not_rendered','blocked'}
 

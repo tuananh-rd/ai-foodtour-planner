@@ -1,0 +1,9 @@
+{
+  "executor": "Sol actual private rules API supplement",
+  "source": "ce7d633 plus menu6/OSM working changes",
+  "request_before_origin_prompt": true,
+  "actual_menu_result_selected": true,
+  "no_data_literal_zero_results_preserved_selection_origin": true,
+  "area_change_same_no_data_preserved_selection_origin": true,
+  "provider_calls": 0
+}

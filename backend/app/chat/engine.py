@@ -813,7 +813,7 @@ class ChatEngine:
         elif reason == "no_weather_data":
             R.blocks.append(notice_b("info", "no_weather_data", NO_WEATHER))
         elif reason == "not_supported_yet":
-            R.blocks.append(notice_b("info", "not_supported_yet", "Mình chưa hỗ trợ đặt bàn, đặt xe, thanh toán hay lưu/chia sẻ lịch trình; hiện mình có thể mở lịch trình bằng liên kết Google Maps sau khi lập tour."))
+            R.blocks.append(notice_b("info", "not_supported_yet", "Mình chưa hỗ trợ đặt bàn, đặt xe, thanh toán hay lưu/chia sẻ lịch trình; sau khi lập tour bạn có thể xem các điểm dừng trên OpenStreetMap."))
         else:
             R.blocks.append(text_b("Mình chỉ tư vấn ăn uống và lập food tour ở Hà Nội. Bạn muốn tìm món hay quán nào không?"))
         R.tools.append("none")

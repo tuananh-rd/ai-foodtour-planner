@@ -1,3 +1,9 @@
+## Menu6 activation and OSM migration — IN PROGRESS (2026-11-03)
+
+Latest user authority: Codex backend/data/integration; Claude rests; Antigravity frontend/QA.
+AG task_a5f98b7eeb02 / ctx_ee8b6bdb56b6 / term_b8b00b30-e515-40cc-a83f-1abd1041f67e, configured default, Orca turn_started observed. No overlapping frontend editor.
+Menu6 production validator PASS after reviewed member bound48MiB (total128MiB unchanged),22 affected tests PASS.400 attempted/338 menus/18,245 canonical,23 nonfood excluded/91 price quarantined/50 minima unknown. Actual staged/activated SHA dd0f26c9; prior12 rollback0088011f preserved privately. API8250 disposable private/rules/mock QA lane, web3350 retained until frontend OSM build. New acceptance replaces Google with OSM ordered origins/legs, marker toggle/resize/mobile/missingcoords/offline, real menu browser flow plus no-data/change checks. No provider generations or budget reset. Final evidence pending.
+
 ## Larger archive migration preparation — NOT ACTIVATED (2026-11-03)
 
 User authorizes preparation only, no current dataset/runtime swap. Baselineff778c6 remains serving
