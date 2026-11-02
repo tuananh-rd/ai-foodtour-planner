@@ -23,6 +23,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { spawn, execFileSync } from 'node:child_process';
+import { formatMenuMinimum, formatMenuReferencePrice } from '../../frontend/lib/discoveryApi.js';
 
 const web = process.env.DISCOVERY_WEB || 'http://127.0.0.1:3350';
 const api = process.env.DISCOVERY_API || 'http://127.0.0.1:8250';
@@ -106,6 +107,35 @@ if (process.exitCode === undefined || process.exitCode === 0) {
       const other = (view?.results || []).find(r => r.id !== 'fried0' && (!r.matching_menu || r.matching_menu.length === 0));
       if (other) record('menu-less venue shows no matching_menu card', !(await exists(`menu-ref-${other.id}`)), `other=${other.id}`);
       else record('menu-less venue shows no matching_menu card', 'UNTESTED', 'no menu-less venue in this result set');
+      // minimum_unknown render: "Gà rán thiếu option" is the 4th gà rán row and is
+      // correctly excluded by the max-3 cap, so verify the client render path that
+      // the card uses for a minimum_unknown row deterministically via the formatter,
+      // and confirm the live top-3 excludes it (expected).
+      const unknownRowInView = menuRows.some(m => m.price_status === 'minimum_unknown');
+      record('minimum_unknown row excluded from the capped top-3 gà rán card (expected)', !unknownRowInView);
+      record('minimum_unknown renders truthful "Giá món tối thiểu chưa xác định" (formatter)',
+        formatMenuMinimum({ price_status: 'minimum_unknown', mandatory_options: true, min_total_vnd: null }) === 'Giá món tối thiểu chưa xác định'
+        && formatMenuReferencePrice({ price_status: 'quarantined', reference_price_vnd: null }) === 'Giá chưa xác minh');
+
+      // Targeted render of the minimum_unknown row: the exact phrase matches only
+      // "Gà rán thiếu option" so the max-3 cap cannot drop it; it must render live.
+      await send('tôi muốn ăn gà rán thiếu option');
+      const tRows = await rowTexts('fried0');
+      const f0 = (view?.results || []).find(r => r.id === 'fried0');
+      record('gà rán thiếu option isolates and renders the minimum_unknown row live',
+        tRows.length === 1 && /Gà rán thiếu option/.test(tRows[0] || '') && /Giá món tối thiểu chưa xác định/.test(tRows[0] || '')
+        && (f0?.matching_menu || []).length === 1 && f0.matching_menu[0].price_status === 'minimum_unknown');
+      await shot('menu-thieu-option');
+
+      // 390px: no horizontal overflow and the composer stays reachable with the menu card.
+      await cdp('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: true });
+      await pause(200); await ev('window.scrollTo(0,0)');
+      const noOverflow = await ev('document.documentElement.scrollWidth<=innerWidth');
+      const composer = await exists('discovery-input');
+      record('390px: menu card renders with no horizontal overflow + composer reachable', noOverflow && composer, `scrollWidth<=innerWidth=${noOverflow}`);
+      await shot('menu-390');
+      await cdp('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1024, deviceScaleFactor: 1, mobile: false });
+
       // Unknown dish -> no_results -> no menu cards.
       await send('tôi muốn ăn món lạ xyzqwer tại Đống Đa');
       record('unknown dish: no_results and no menu cards', view?.status === 'no_results' && !(await ev(`!!document.querySelector('[data-testid^="menu-ref-"]')`)));

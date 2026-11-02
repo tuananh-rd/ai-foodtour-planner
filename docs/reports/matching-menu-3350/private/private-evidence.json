@@ -1,0 +1,90 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "lane": "private-menu (Sol-safe launcher)",
+  "privacy": "counts/booleans only; no names/ids/prices/screenshots",
+  "checks": [
+    {
+      "name": "private: request before origin prompts with zero cards",
+      "result": "PASS"
+    },
+    {
+      "name": "private: local gazetteer origin chosen (no invented coords)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: chosen origin then at least one matching_menu card (nonempty)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: delivery disclaimer present (not dine-in, ShopeeFood)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: every row label truthful (reference|quarantined|minimum_unknown)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: venue dine-in price not equal to any delivery reference",
+      "result": "PASS"
+    },
+    {
+      "name": "private: selected a menu venue into the tour",
+      "result": "PASS"
+    },
+    {
+      "name": "private: explicit confirmation gate forms",
+      "result": "PASS"
+    },
+    {
+      "name": "private: confirm creates a tour with stops",
+      "result": "PASS"
+    },
+    {
+      "name": "private: ordered DRIVING Maps URL forms and is valid (boolean only)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: post-tour food change preserves selection+origin and invalidates confirmation/tour",
+      "result": "PASS"
+    },
+    {
+      "name": "private: no live generation (mock lane)",
+      "result": "PASS"
+    },
+    {
+      "name": "private: no browser exception",
+      "result": "PASS"
+    }
+  ],
+  "errors": [],
+  "health": {
+    "commit": "4da7f28eec3e2c1ffb9cfcd949068d44fea072fe",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "private",
+    "menu_counts": null
+  },
+  "counts": {
+    "results": 5,
+    "menuVenues": 2,
+    "originChosen": true
+  },
+  "structure": {
+    "cards": 2,
+    "rows": 6,
+    "ref": 6,
+    "quar": 0,
+    "unk": 0,
+    "mandFlag": 3,
+    "disclaimer": true
+  },
+  "journey": {
+    "selected": true,
+    "confShown": true,
+    "tourStops": 1,
+    "mapsPresent": true,
+    "mapsValid": true,
+    "postPreserved": true
+  }
+}

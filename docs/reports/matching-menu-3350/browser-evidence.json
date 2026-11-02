@@ -1,0 +1,101 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "source_commit": "4da7f28eec3e2c1ffb9cfcd949068d44fea072fe",
+  "mode": "REAL 3350 UI -> direct 8250; observed only",
+  "checks": [
+    {
+      "name": "fried0 renders matching_menu card with exactly 3 rows in menu order",
+      "result": "PASS"
+    },
+    {
+      "name": "row0 reference price (delivery)",
+      "result": "PASS"
+    },
+    {
+      "name": "row1 quarantined shows unverified, no fabricated price",
+      "result": "PASS"
+    },
+    {
+      "name": "row2 mandatory item-minimum + bắt buộc flag",
+      "result": "PASS"
+    },
+    {
+      "name": "delivery disclaimer present, no dine-in/allergy/hour claim",
+      "result": "PASS"
+    },
+    {
+      "name": "venue dine-in price not repriced from delivery reference",
+      "result": "PASS"
+    },
+    {
+      "name": "menu-less venue shows no matching_menu card",
+      "result": "PASS",
+      "note": "other=fried1"
+    },
+    {
+      "name": "minimum_unknown row excluded from the capped top-3 gà rán card (expected)",
+      "result": "PASS"
+    },
+    {
+      "name": "minimum_unknown renders truthful \"Giá món tối thiểu chưa xác định\" (formatter)",
+      "result": "PASS"
+    },
+    {
+      "name": "gà rán thiếu option isolates and renders the minimum_unknown row live",
+      "result": "PASS"
+    },
+    {
+      "name": "390px: menu card renders with no horizontal overflow + composer reachable",
+      "result": "PASS",
+      "note": "scrollWidth<=innerWidth=true"
+    },
+    {
+      "name": "unknown dish: no_results and no menu cards",
+      "result": "PASS"
+    },
+    {
+      "name": "no browser exception",
+      "result": "PASS"
+    }
+  ],
+  "screenshots": [
+    "menu-fried0.png",
+    "menu-thieu-option.png",
+    "menu-390.png"
+  ],
+  "errors": [],
+  "health": {
+    "commit": "f5cf7dd3d525beb4eacd5ef4550efccbde7f1d3e",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "synthetic",
+    "dataset_version": "synthetic-menu-matrix"
+  },
+  "fried0_menu": [
+    {
+      "name": "Gà rán phần thử",
+      "price_status": "reference",
+      "ref": 30000,
+      "min": 30000,
+      "mandatory": false,
+      "channel": "shopeefood_delivery"
+    },
+    {
+      "name": "Gà rán giá lỗi",
+      "price_status": "quarantined",
+      "ref": null,
+      "min": null,
+      "mandatory": false,
+      "channel": "shopeefood_delivery"
+    },
+    {
+      "name": "Gà rán chọn sốt",
+      "price_status": "reference",
+      "ref": 30000,
+      "min": 35000,
+      "mandatory": true,
+      "channel": "shopeefood_delivery"
+    }
+  ]
+}

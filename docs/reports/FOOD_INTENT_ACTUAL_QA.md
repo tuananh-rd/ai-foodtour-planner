@@ -185,23 +185,40 @@ browser test (real 3350 UI, direct 8250, no interception). It asserts, against t
 `menu_data` (venue `fried0`): a 3-row menu card in menu order (reference `Gà rán phần thử` ~30.000 đ
 giao hàng; quarantined `Gà rán giá lỗi` → "Giá chưa xác minh"; mandatory `Gà rán chọn sốt` → "Giá
 món tối thiểu ~35.000 đ" + bắt buộc), the delivery disclaimer, the venue dine-in price unchanged, a
-menu-less venue showing no card, and unknown→no_results→no cards. It currently **SKIPS** (UNTESTED,
-exit 0) because 8250 is on `synthetic-food-matrix`, not the `--menu` fixture, and awaits a 3350
-build that includes the new card.
+menu-less venue showing no card, and unknown→no_results→no cards. **Public menu QA — EXECUTED, 13/13 PASS (exit 0)** on `synthetic-menu-matrix` with 3350 serving
+`4da7f28`. The `fried0` card shows the 3 rows in menu order (reference ~30.000 đ giao hàng;
+quarantined → "Giá chưa xác minh", no fabricated price; mandatory → "Giá món tối thiểu ~35.000 đ" +
+bắt buộc); the delivery disclaimer is present ("không phải giá tại quán", no allergy/hour); the
+venue dine-in price is not repriced; a menu-less venue shows no card; unknown→no_results→no cards.
+The exact phrase "tôi muốn ăn gà rán thiếu option" isolates and renders the `minimum_unknown` row
+live ("Giá món tối thiểu chưa xác định"). At 390px the card has no horizontal overflow and the
+composer stays reachable. Evidence: `docs/reports/matching-menu-3350/browser-evidence.json` +
+screenshots.
 
-**Remaining to finish the task:** (a) Sol switches 8250 to the rules `--menu` fixture; (b) 3350 is
-rebuilt to include the new `matching_menu` card; then (c) I run the menu QA to assert it live. No
-`worker_done` until that executes.
+**Private menu journey — EXECUTED, 13/13 PASS (exit 0)** via the Sol-safe launcher
+(`run_local_menu_qa.py --port 8250`, mock LLM, keys blank, disposable DBs, private ZIP), 3350 on
+`4da7f28`. Flow: request typed before origin (prompt, 0 cards) → local gazetteer origin chosen (no
+invented coords) → nonempty `matching_menu` card → add to tour → profile "…xe máy…" → explicit
+confirmation → tour with a stop → ordered **driving** Google Maps URL validated (api=1, origin =
+profile.origin, waypoints+destination in stop order) → post-tour food change preserved
+selection+origin and invalidated confirmation/tour. Evidence is **counts/booleans/status only** (2
+menu venues, 6 reference rows, tour formed, Maps valid) — no venue names/ids/prices/URLs/screenshots
+written; raw menu stays in the gitignored `.venv`. The original private ledger/session was untouched
+(mock lane, no live generation). No app-Gemini quality is claimed.
 
 ## 6. Files
 
 - `qa/discovery-assistant/test_food_intent_actual_3350.mjs` — executed acceptance harness (Claude
   28/28 PASS; Sol supplement 40/40 PASS on aafedf64).
-- `qa/discovery-assistant/test_matching_menu_3350.mjs` — bounded menu card QA (ready; skips until
-  `--menu` lane + rebuilt 3350).
+- `qa/discovery-assistant/test_matching_menu_3350.mjs` — public menu card QA (13/13 PASS on
+  `--menu`).
+- `qa/discovery-assistant/test_matching_menu_private_3350.mjs` — one private menu journey
+  (13/13 PASS; counts/booleans-only evidence).
 - `frontend/app/components/v2/guided/DiscoveryLayout.jsx`, `frontend/lib/discoveryApi.js`,
-  `frontend/app/components/v2/guided/discovery-visual.css` — matching_menu card UI + formatters + styles.
+  `frontend/app/components/v2/guided/discovery-visual.css` — matching_menu card UI + formatters +
+  styles (frozen at commit `4da7f28`).
 - `docs/reports/food-intent-actual-3350/` — `browser-evidence.json`, `red-prefix-evidence.json`,
   `sol-supplement/`, screenshots.
-- `docs/reports/matching-menu-3350/browser-evidence.json` — menu QA evidence (skip state).
+- `docs/reports/matching-menu-3350/browser-evidence.json` (+ screenshots) — public menu QA; and
+  `.../private/private-evidence.json` — private journey (counts/booleans/status only).
 - `docs/reports/FOOD_INTENT_ACTUAL_QA.md` — this report.
