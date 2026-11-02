@@ -63,6 +63,7 @@ try{
  const candidate=view.location.candidates.find(x=>x.label==='Hồ Gươm');if(!candidate)throw Error('Public landmark candidate absent');
  await action('origin-candidate-'+candidate.id);
  record('explicit origin resumes real district results',view.location.status==='chosen'&&view.results.length>0&&view.results.every(x=>x.district==='Hai Bà Trưng'&&x.distance_m!==null));
+ record('manual origin success clears stale GPS denial',!await exists('origin-geo-notice'));
  await send('Tìm phở và chè quanh Hồ Gươm');record('new area and actual local results',view.profile.area==='Hồ Gươm'&&view.results.length>=2);
  await send('So sánh A với B và thêm A vào chuyến đi');record('compares two and adds exactly A',view.comparison?.venues.length===2&&view.selection.length===1);
  record('selected distance visibly labeled Haversine',await ev(`document.querySelector('[data-testid^="selected-distance-"]')?.textContent.includes('đường chim bay')`));

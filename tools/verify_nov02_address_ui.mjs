@@ -84,6 +84,7 @@ if(m.id){const p=pending.get(m.id);pending.delete(m.id);m.error?p?.reject(Error(
  addressFixture='resolved';await action('origin-gps-button');
  record('click requests address resolution (upstream stubbed)',fixtureRequests===1&&evidence.gpsResolveRequested===true);
  record('resolved approximate address and attribution shown',await exists('origin-status-resolved')&&await exists('origin-attribution')&&await ev(`document.querySelector('[data-testid="origin-current-tag"]').textContent.includes('Phố giả lập')&&document.body.innerText.includes('Gần đúng')`));
+ record('completed GPS address clears stale progress notice',!await exists('origin-geo-notice'));
  record('raw GPS coordinates absent from visible label',await ev(`!document.querySelector('[data-testid="origin-current-tag"]').textContent.includes('21.0285')`));
  await shot('address-resolved');
  await action('origin-clear-button');addressFixture='unavailable';await action('origin-gps-button');

@@ -566,6 +566,9 @@ export default function DiscoveryLayout({
       if (updatedView && typeof updatedView === 'object') {
         setView(updatedView);
       }
+      if (action?.type === 'location' && updatedView?.location?.status === 'chosen') {
+        setGeoNotice(null);
+      }
       if (updatedView?.tour) {
         setEditingSelectionAfterTour(false);
         setReplaceTargetStop(null);
