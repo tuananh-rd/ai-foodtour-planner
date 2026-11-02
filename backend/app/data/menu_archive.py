@@ -148,6 +148,7 @@ def validate_documents(docs):
     canonical=set()
     for rows in (dishes,items):
         for row in rows:
+            require(identifier(row.get('foody_id')),'record_venue_id_type')
             venue=str(row.get('foody_id',''));mapping=by_venue.get(venue)
             require(mapping is not None and mapping.get('match_status')=='confirmed','record_mapping_orphan')
             require(identifier(row.get('source_dish_id')) and identifier(row.get('shopee_delivery_id')),'canonical_key_type')
@@ -175,6 +176,8 @@ def validate_documents(docs):
             warnings['conflicted_dish']+=1
     linked_items=set();linked_dishes=set();link_keys=set();observations={}
     for link in links:
+        require(all(identifier(link.get(k)) for k in
+            ('dish_id','item_id','foody_id','shopee_delivery_id','source_dish_id')),'link_reference_type')
         dish=by_dish.get(str(link.get('dish_id')));item=by_item.get(str(link.get('item_id')))
         require(dish is not None and item is not None,'dish_group_orphan')
         require(type(link.get('group_id')) is int or identifier(link.get('group_id')),'group_id_type')
@@ -191,6 +194,7 @@ def validate_documents(docs):
                ('name_norm','description','list_price_vnd','promo_price_vnd','is_available','properties','option_group_count')):
             require(by_dish[identity].get('conflict_status')=='conflict','unmarked_canonical_conflict')
     for row in options:
+        require(identifier(row.get('item_id')) and identifier(row.get('foody_id')),'option_reference_type')
         item=by_item.get(str(row.get('item_id')))
         require(item is not None and str(row.get('foody_id'))==str(item['foody_id']),'option_orphan_or_branch')
         require((type(row.get('option_group_id')) is int or identifier(row.get('option_group_id')))
