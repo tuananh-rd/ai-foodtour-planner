@@ -109,6 +109,16 @@ class MenuMigrationTests(unittest.TestCase):
         required=next(r for r in menu['fried0'] if r['name']=='Gà rán chọn sốt')
         self.assertEqual(required['min_total_vnd'],35000)
 
+    def test_mandatory_option_contradictions_never_underquote(self):
+        self.rejected(lambda d:d['shopeefood_dishes.json']['dishes'][3].update(has_mandatory_options=False),
+                      'mandatory_option_flag_conflict')
+        d=copy.deepcopy(self.docs)
+        for row in d['shopeefood_menu_options.json']['options']:row['max_select']=0
+        write(self.input,d)
+        menu,_,_=load_menu_archive(self.input,{'fried0'})
+        row=next(r for r in menu['fried0'] if r['name']=='Gà rán chọn sốt')
+        self.assertIsNone(row['min_total_vnd']);self.assertEqual(row['price_status'],'minimum_unknown')
+
     def test_zip_path_duplicate_json_and_size_bounds(self):
         with zipfile.ZipFile(self.input,'a') as z:z.writestr('../escape.txt','data')
         with self.assertRaisesRegex(MenuValidationError,'archive_unsafe_path'):read_menu_archive(self.input)

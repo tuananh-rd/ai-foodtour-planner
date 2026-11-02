@@ -193,14 +193,19 @@ def validate_documents(docs):
         if any(len({json.dumps(r.get(field),sort_keys=True) for r in rows})>1 for field in
                ('name_norm','description','list_price_vnd','promo_price_vnd','is_available','properties','option_group_count')):
             require(by_dish[identity].get('conflict_status')=='conflict','unmarked_canonical_conflict')
+    required_items=set()
     for row in options:
         require(identifier(row.get('item_id')) and identifier(row.get('foody_id')),'option_reference_type')
         item=by_item.get(str(row.get('item_id')))
         require(item is not None and str(row.get('foody_id'))==str(item['foody_id']),'option_orphan_or_branch')
         require((type(row.get('option_group_id')) is int or identifier(row.get('option_group_id')))
                 and type(row.get('mandatory')) is bool,'option_group_type')
+        if row['mandatory']:required_items.add(str(row['item_id']))
         for key in ('min_select','max_select','option_price_vnd'):
             require(row.get(key) is None or type(row[key]) is int,'option_numeric_type')
+    for identity,rows in observations.items():
+        require(by_dish[identity].get('has_mandatory_options') is not False or
+                not any(str(r['item_id']) in required_items for r in rows),'mandatory_option_flag_conflict')
     counts={'attempted_venues':len(mappings),'menu_venues':len({str(r['foody_id']) for r in dishes}),
         'canonical_records':len(dishes),'group_links':len(links),'options':len(options),
         'explicit_nonfood_records':sum(r.get('is_dish') is False for r in dishes),

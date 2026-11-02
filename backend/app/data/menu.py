@@ -69,7 +69,8 @@ def load_menu_archive(path, venue_ids):
                     or next(iter(selections))<1 or any(p is None for p in prices)):
                     known=False;break
                 minimum=next(iter(selections))
-                if len(prices)<minimum:known=False;break
+                maxima=[o.get('max_select') for o in group if o.get('max_select') is not None]
+                if len(prices)<minimum or any(v<minimum for v in maxima):known=False;break
                 total+=sum(sorted(prices)[:minimum])
             if mandatory and not required_group_seen:known=False
             minima.append(total if known else None)
