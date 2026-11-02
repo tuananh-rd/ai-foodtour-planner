@@ -1,0 +1,23 @@
+{
+  "backend_source": "b92dff1d6b47a471d96a02a74e434bd08615a2cd",
+  "mode": "synthetic/rules",
+  "checks": [
+    {
+      "name": "manual coordinates no reverse request",
+      "pass": true
+    },
+    {
+      "name": "manual label preserves internal coordinates",
+      "pass": true
+    },
+    {
+      "name": "greeting no onboarding",
+      "pass": true
+    },
+    {
+      "name": "backend Haversine distances after display edit",
+      "pass": true
+    }
+  ],
+  "provider_calls": 0
+}

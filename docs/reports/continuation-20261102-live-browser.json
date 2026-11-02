@@ -1,0 +1,142 @@
+{
+  "backend_source": "17a8f54",
+  "frontend_source": "e3bdbeb pre-UX snapshot",
+  "mode": "private local dataset/Gemini configured",
+  "turns": [
+    {
+      "input": "Chào bạn, mình mới tìm hiểu ẩm thực Hà Nội.",
+      "provider": {
+        "mode": "gemini",
+        "calls": 1,
+        "reason": "model_missing_required_tool",
+        "model": "gemini-3.5-flash-lite",
+        "configured_model": "gemini-3.5-flash-lite",
+        "response_model": "gemini-3.5-flash-lite",
+        "reply_source": "tools"
+      },
+      "status": "unknown",
+      "reply": "Mình đã ghi nhận quán ăn; cần vị trí bạn chọn để tìm và tính khoảng cách.",
+      "question": true,
+      "results": 0,
+      "selection": 0,
+      "tools": 1
+    },
+    {
+      "input": "Bún chả khác bún đậu thế nào?",
+      "provider": {
+        "mode": "gemini",
+        "calls": 1,
+        "model": "gemini-3.5-flash-lite",
+        "configured_model": "gemini-3.5-flash-lite",
+        "response_model": "gemini-3.5-flash-lite",
+        "reply_source": "model"
+      },
+      "status": "ok",
+      "reply": "Bún chả và bún đậu mắm tôm là hai món bún nổi tiếng ở Hà Nội với phong cách thưởng thức rất khác nhau.\n\nBún chả sử dụng thịt lợn (gồm chả viên và chả miếng) được tẩm ướp gia vị rồi nướng trên bếp than hoa cho dậy mùi thơm. Nước dùng của bún chả là nước mắm chua ngọt ấm được pha loãng vừa phải, ăn kèm đĩa bún tươi, nộm su hào/đủ đủ xanh và rất nhiều rau sống. Khi ăn, thực khách gắp bún và rau vào bát nước chấm có sẵn chả nướng nóng hổi.\n\nBún đậu mắm tôm mang hương vị đậm đà và dân dã hơn. Các thành phần chính gồm bún lá ép chặt, đậu hũ chiên giòn rụm, thịt chân giò luộc thái mỏng, chả cốm, nem rán và đôi khi có dồi sụn. Điểm nhấn quyết định của món này là chén mắm tôm đánh sủi bọt với chanh, đường, ớt và dầu rán đậu nóng, ăn kèm các loại kinh giới, tía tô, húng quế và lát dưa chuột.",
+      "question": false,
+      "results": 0,
+      "selection": 0,
+      "tools": 1
+    },
+    {
+      "input": "Thôi đổi ý, mình muốn ăn phở với tráng miệng ở Hai Bà Trưng.",
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "model": "gemini-3.5-flash-lite",
+        "configured_model": "gemini-3.5-flash-lite",
+        "response_model": "gemini-3.5-flash-lite",
+        "reply_source": "tools"
+      },
+      "status": "unknown",
+      "reply": "Mình đã ghi nhận phở và tráng miệng ở Hai Bà Trưng; cần vị trí bạn chọn để tìm và tính khoảng cách.",
+      "question": true,
+      "results": 0,
+      "selection": 0,
+      "tools": 2
+    },
+    {
+      "input": "So sánh A với B",
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "model": "gemini-3.5-flash-lite",
+        "configured_model": "gemini-3.5-flash-lite",
+        "response_model": "gemini-3.5-flash-lite",
+        "reply_source": "tools"
+      },
+      "status": "unknown",
+      "reply": "Có thể đối chiếu địa chỉ, khoảng giá quán và giờ theo nguồn; chỗ ngồi, độ ngọt và mức phù hợp người lớn tuổi vẫn chưa rõ.",
+      "question": false,
+      "results": 0,
+      "selection": 0,
+      "tools": 2
+    },
+    {
+      "input": "Chọn A và B",
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "reason": "turn_call_cap",
+        "model": "gemini-3.5-flash-lite",
+        "configured_model": "gemini-3.5-flash-lite",
+        "response_model": "gemini-3.5-flash-lite",
+        "reply_source": "tools"
+      },
+      "status": "tool_error",
+      "reply": "Thao tác thay đổi chưa được xác nhận hoặc quán không thuộc kết quả đã xem; lựa chọn hiện tại được giữ.",
+      "question": false,
+      "results": 5,
+      "selection": 0,
+      "tools": 1
+    },
+    {
+      "input": "Tạo lịch trình đi bộ lúc 16:00 trong 240 phút, ngân sách 600 nghìn cả nhóm cho 2 người.",
+      "provider": {
+        "mode": "gemini",
+        "calls": 2,
+        "model": "gemini-3.5-flash-lite",
+        "configured_model": "gemini-3.5-flash-lite",
+        "response_model": "gemini-3.5-flash-lite",
+        "reply_source": "model"
+      },
+      "status": "unknown",
+      "reply": "Bạn chưa chọn quán nào vào danh sách để tạo lịch trình. Vui lòng chọn các quán (như A và B) từ danh sách kết quả trước khi tiến hành tạo lịch.",
+      "question": true,
+      "results": 5,
+      "selection": 0,
+      "tools": 2
+    }
+  ],
+  "checks": [
+    {
+      "name": "public fixture origin action",
+      "pass": true
+    }
+  ],
+  "requests_conservative": 10,
+  "max_user_turns": 6,
+  "max_model_requests": 12,
+  "no_retry": true,
+  "before": {
+    "limit": 18,
+    "remaining": 18,
+    "exhausted": false,
+    "session_cap": 6,
+    "reserve": 3,
+    "used": 0,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "after": {
+    "limit": 18,
+    "remaining": 8,
+    "exhausted": false,
+    "session_cap": 6,
+    "reserve": 3,
+    "used": 10,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "transport_usage_delta": 10
+}
