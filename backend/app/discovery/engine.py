@@ -263,6 +263,8 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
 
 def model_projection(tools, text):
     profile = tools.state.profile.model_dump(exclude={'origin', 'allergies', 'exclusions'})
+    if profile.get('area') and private_turn(profile['area']):
+        profile['area']=None
     # Bounded public evidence/history only; exact GPS and health never enter the provider projection.
     safe_text = redact_sensitive(text)
     safe_text = re.sub(r'(?i)(?:dị\s*ứng|di ung)[^,.;!?]*', '[thông tin sức khỏe xử lý tại máy]', safe_text)

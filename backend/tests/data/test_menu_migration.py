@@ -34,6 +34,18 @@ def write(path,docs):
 
 
 class MenuMigrationTests(unittest.TestCase):
+    def test_repository_validates_unchanged_content_once_and_rejects_bad_replacement(self):
+        from app.data import DatasetLoadError
+        from app.data import load_dataset
+        path=ROOT/'contracts/fixtures/venues.chat.synthetic.json'
+        with patch.dict(os.environ,{'FOODTOUR_MENU_PATH':str(self.active),'FOODTOUR_EVIDENCE_PATH':''}), \
+                patch('app.repositories.venues.load_dataset',wraps=load_dataset) as loader:
+            repo=VenueRepository(path)
+            repo.snapshot();repo.snapshot()
+            self.assertEqual(loader.call_count,1)
+            self.active.write_bytes(b'bad archive')
+            with self.assertRaises(DatasetLoadError):repo.snapshot()
+
     def test_member_cap_is_bounded_independently_of_total(self):
         from app.data.menu_archive import MAX_MEMBER, MAX_EXPANDED
         self.assertEqual(MAX_MEMBER, 48*1024*1024)
