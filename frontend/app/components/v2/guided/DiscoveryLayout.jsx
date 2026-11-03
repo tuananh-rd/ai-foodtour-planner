@@ -3037,12 +3037,12 @@ export default function DiscoveryLayout({
                 <div className="nn-venue-menu-items-list" data-testid="venue-menu-items-list">
                   {menuData.items.map((dish) => {
                     const isAvailable = dish.availability === 'source_available';
-                    const isUnavailable = dish.availability === 'source_unavailable' || dish.availability === 'out_of_stock';
+                    const isUnavailable = dish.availability === 'unavailable' || dish.availability === 'source_unavailable' || dish.availability === 'out_of_stock';
                     const availabilityLabel = isAvailable
-                      ? 'Có sẵn'
+                      ? 'Nguồn ghi nhận có món'
                       : isUnavailable
                         ? 'Tạm hết món'
-                        : (dish.availability ? dish.availability : 'Chưa rõ tình trạng');
+                        : 'Chưa rõ tình trạng';
                     const availabilityClass = isAvailable
                       ? 'available'
                       : isUnavailable
