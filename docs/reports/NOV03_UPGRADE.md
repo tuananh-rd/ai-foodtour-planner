@@ -6,6 +6,8 @@ Status: backend offline acceptance passed; frontend integration and rendered acc
 
 The old accent-folded substring matching conflated soup `phở` with `phô mai`, `phố`, and `tào phớ`. Matching now compares complete Unicode tokens and phrases, retains accent distinctions when available, and explicitly distinguishes soup from rolled/fried variants. Menu evidence and explicit dish categories establish relevance; venue names and addresses do not. Specific and unknown requested dishes remain literal; no unrelated replacement is silently substituted. Stored stale search cards are revalidated, while explicit selected/locked venues remain selected.
 
+A second RED regression found the parser removed individual words as generic modifiers: `phô mai`, `pho mai`, `bánh ngọt`, `mì cay`, `bánh ít`, and `bánh bột lọc` were reduced to broader prefixes. These words now remain in the dish phrase; an explicit quantity+taste phrase such as `ít cay` still ends it. All six contrasts are GREEN in `c0a312c`; ten affected refinement checks passed. An older origin-required test was updated to the new area-search contract, rather than reinstating onboarding.
+
 The exact screenshot request, `tôi muốn ăn phở ở đống đa, 2 người ăn, ngân sách khoảng 300k`, now searches without requiring an origin. Distance remains unknown until an origin is explicitly chosen. A tour still requires origin and current explicit confirmation. General chat is not blocked by location onboarding.
 
 Full-menu HTTP access is authenticated and restricted to venues already visible to that session. It exposes canonical food rows, groups, descriptions, availability, prices and option groups with explicit pagination and totals. Nonfood, anomalous prices and unverified mandatory-option minima retain their existing treatment. Delivery source metadata is retained internally; repeated visible price disclaimers are removed without asserting verified dine-in prices.
@@ -33,7 +35,7 @@ Provider references reviewed before implementation: [OSM tile policy](https://op
 - A real concurrent-request 503 exposed repeated archive parsing under the session write lock. Content-hashed repository snapshots now reuse validated data, invalidate same-path replacements, and reject malformed replacements rather than returning stale cache. Replacement and rollback checks passed.
 - Affected backend checks: 32 tests before stale-result refinement, 17 targeted checks after it, 34 importer/cache tests, and 10 upgrade/replacement checks after cache correction. These overlap and are not additive. Three explicit-confirmation/allergy checks passed after final copy removal. Initial test-launch mistakes (pytest unavailable, missing PYTHONPATH) were corrected; they are not product test failures.
 
-Backend commits: `9a18141`, `bb0050a`, `21cf811`, `4e910a2`, `5660b60`.
+Backend commits: `9a18141`, `bb0050a`, `21cf811`, `4e910a2`, `5660b60`, `c0a312c`.
 
 ## Remaining acceptance
 
