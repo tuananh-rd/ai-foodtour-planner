@@ -1,0 +1,38 @@
+{
+  "exact_screenshot_request": {
+    "status": "ok",
+    "result_count": 5,
+    "no_origin_required": true,
+    "no_cheese_or_street_matches": true,
+    "distance_unknown": true
+  },
+  "ga_ran_dong_da": {
+    "status": "ok",
+    "result_count": 5
+  },
+  "actual_menu": {
+    "canonical_total": 136,
+    "groups": 14,
+    "options_total": 71,
+    "canonical_and_options_equal_active_archive": true
+  },
+  "multiple_unknown_area_selection": {
+    "multiple_foods_remembered": true,
+    "literal_unknown_zero_results": true,
+    "area_change_zero_results": true,
+    "selected_preserved": true
+  },
+  "public_detailed_address": {
+    "status": "candidates",
+    "candidate_count": 5,
+    "origin_not_automatically_chosen": true,
+    "explicit_choice_applied": true
+  },
+  "explicit_map_pin": {
+    "applied": true,
+    "address_status": "resolved"
+  },
+  "provider_calls": 0,
+  "source": "4e910a2653f242d194bc800c7cd2af5cd3962127",
+  "archive": "dd0f26c9afc15c7036348fec4aa781df23825cd607eae911d37e2444b799bdd7"
+}

@@ -274,7 +274,7 @@ class Tools:
                 return self.result('unknown', 'Giờ kết thúc và tổng thời lượng chưa khớp; chưa tạo lịch.', 'Bạn muốn giữ khoảng giờ hay tổng thời lượng vừa nêu?')
             self.state.patch({'duration_min': duration})
             p = self.state.profile
-        warnings = ['Khoảng giá quán không phải hóa đơn hoặc giá mỗi người; giờ nguồn ghi không chứng minh đang mở.',
+        warnings = ['Giờ nguồn ghi không chứng minh quán đang mở.',
                     'Thời gian tại mỗi quán đề xuất 45 phút; chặng di chuyển ước tính, không phải tuyến đường thực.']
         if p.max_leg_min is None:
             warnings.append('Giới hạn mỗi chặng đề xuất 20 phút, chỉ áp dụng sau xác nhận này.')
