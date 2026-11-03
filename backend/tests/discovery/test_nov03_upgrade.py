@@ -29,7 +29,7 @@ class UpgradeTests(unittest.TestCase):
     def test_menu_filter_uses_same_token_accent_contract(self):
         with tempfile.TemporaryDirectory() as directory:
             path=Path(directory)/'menu.zip'
-            menu_archive(path,['Phở bò','Hotline 0900000000','Trà sữa phô mai',
+            menu_archive(path,['Phở bò 🍜','Hotline 0900000000','Trà sữa phô mai',
                 'Tào phớ','Phở cuốn','Phố Huế','Bánh ngọt'])
             for query in ('phở','pho'):
                 self.assertEqual([x['name'] for x in catalog(path,'fried0',q=query)['items']],['Phở bò'])

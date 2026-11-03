@@ -60,7 +60,7 @@ def catalog(path,venue_id,*,offset=0,limit=25,q='',group=None,dish_id=None,
                 'price_kind':text(o.get('price_kind'),80),
                 'is_default':o.get('is_default') if type(o.get('is_default')) is bool else None})
         returned=sum(len(g['options']) for g in option_groups.values())
-        public.append({'id':key,'name':row['name'],'description':text(dish.get('description')),
+        public.append({'id':key,'name':text(row['name'],160),'description':text(dish.get('description')),
             'groups':dish_groups,'price_vnd':row['reference_price_vnd'],
             'min_total_vnd':row['min_total_vnd'],'price_status':row['price_status'],
             'availability':row['availability'],'required_options':row['mandatory_options'],
