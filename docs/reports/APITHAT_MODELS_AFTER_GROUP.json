@@ -1,0 +1,36 @@
+{
+  "group_change_provenance": "Reported by user: root/coordinator changed key group via Chrome UI, not this worker",
+  "reported_ui_group": "GPT-pro 0.0429x",
+  "reported_limit_unchanged": 100000,
+  "reported_model_restriction_count_unchanged": 1,
+  "operation": "one authenticated official SDK models.list, first page only",
+  "generation_attempts": 0,
+  "preflight": {
+    "limit": 18,
+    "used": 18,
+    "remaining": 0,
+    "exhausted": true,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "request_time_vn": "2026-11-03T10:33:05+07:00",
+  "http_status": 200,
+  "model_count": 1,
+  "requested_model_allowed": true,
+  "latency_ms": 663,
+  "diagnostics": {
+    "http_status": 200,
+    "content_type": "application/json",
+    "cf-ray": "a54850ca1c3aa146-SIN"
+  },
+  "postflight": {
+    "limit": 18,
+    "used": 18,
+    "remaining": 0,
+    "exhausted": true,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "native_tool_proof": false,
+  "provider_enabled_file_unchanged": true
+}

@@ -1,5 +1,32 @@
 # November03 discovery upgrade contract
 
+## Latest accepted runtime update — official SDK direct chat
+
+Source992d8ae uses provider-documented OpenAI Python SDK3.42.1 with default identity,
+retries0, verified TLS/trust_envfalse and bounded Responses60s turn deadline. Its
+frontend waits75s; Gemini/legacy Chat and Photon deadlines remain unchanged.
+Luna low reasoning is documented; output512 is unchanged. Existing JSON/CAS flow
+is retained instead of adding partial SSE mutation semantics.
+
+The user approved daily18→20, same ledger/session cap6. Two new attempts: native
+request timed out at12,922ms before a tool response; final simple60s-bounded greeting
+returned200/completed, modelgpt-6-luna,327input+70output=397tokens in11,997ms. Cost
+not supplied. Runtime reserve3 is restored/unchanged; daily now20/20 and no further
+generation allowance remains. APIThật enabled1 applies only to reviewed direct chat.
+
+Catalog separates direct_chat_verifiedtrue from native_tools_verifiedfalse. Direct
+requests omit tools and reject unexpected function calls. Model selection is a
+zero-generation settings change: selectabletrue may coexist with availablefalse/
+reasonquota; actual generation admission and session use are never reset/bypassed.
+Gemini remains an option/default, existing sessions retain explicit choices. The UI
+labels direct-only limitations and exhausted quota. Nine actual settings-only
+browser checks at1440/390PASS with text POSTs guarded; ledger20/20 unchanged.
+
+Native search→real tool result→continuation remains pending actual proof and new
+explicit allowance/ordinary admission. Earlier prepared-native and zero-attempt
+paragraphs below are historical decisions, superseded only by this reviewed direct
+mode. No full model-led food-search acceptance is asserted.
+
 Latest user authority: Codex backend/data/contracts/integration; Antigravity frontend/mechanical
 QA; Claude rests. No AI generation allowance, ledger/cap changes, paid activation or publication.
 

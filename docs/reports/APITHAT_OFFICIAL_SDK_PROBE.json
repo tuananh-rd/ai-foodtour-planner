@@ -1,0 +1,42 @@
+{
+  "sdk_version": "3.42.1",
+  "provider_docs": "https://docs.apithat.dev/huong-dan/base-url/",
+  "sdk_identity": "unchanged official SDK defaults",
+  "max_retries": 0,
+  "trust_env": false,
+  "tls_verified": true,
+  "models_http_attempts": 1,
+  "generation_http_attempts": 0,
+  "total_authorized_generation_attempts": 2,
+  "preflight": {
+    "limit": 18,
+    "used": 17,
+    "remaining": 1,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "key_present": true,
+  "config_enabled_unchanged": true,
+  "native_tool_proof": false,
+  "models_request_time_vn": "2026-11-03T10:25:56+07:00",
+  "models_status": 200,
+  "model_count": 0,
+  "requested_model_allowed": false,
+  "models_latency_ms": 2514,
+  "models_diagnostics": {
+    "http_status": 200,
+    "content_type": "application/json",
+    "cf-ray": "a548465deac95f42-SIN"
+  },
+  "blocker": "requested_model_not_on_returned_page_no_generation",
+  "postflight": {
+    "limit": 18,
+    "used": 17,
+    "remaining": 1,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "reserve_runtime_unchanged": true
+}

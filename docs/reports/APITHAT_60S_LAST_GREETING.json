@@ -1,0 +1,48 @@
+{
+  "protocol": "responses",
+  "sdk_identity": "unchanged official OpenAI Python SDK",
+  "model": "gpt-6-luna",
+  "deadline_s": 60,
+  "max_output_tokens": 512,
+  "reasoning_effort": "low",
+  "reasoning_reference": "https://developers.openai.com/api/docs/models/gpt-6-luna",
+  "preflight": {
+    "limit": 20,
+    "used": 19,
+    "remaining": 1,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "attempts": 1,
+  "new_allowance_attempts_total": 2,
+  "native_tool_proof": false,
+  "retry": false,
+  "time_vn": "2026-11-03T10:41:21+07:00",
+  "response_model": "gpt-6-luna",
+  "response_status": "completed",
+  "usage": {
+    "input_tokens": 327,
+    "output_tokens": 70,
+    "total_tokens": 397
+  },
+  "reasoning_tokens": 0,
+  "public_reply": "Bún chả là món ăn Hà Nội nổi tiếng với thịt heo nướng thơm lừng, ăn kèm bún, rau sống và nước chấm chua ngọt. Hương vị hài hòa giữa béo, thơm, chua và ngọt khiến món ăn này rất hấp dẫn.",
+  "direct_reply_verified": true,
+  "tool_call_count": 0,
+  "latency_ms": 11997,
+  "diagnostics": {
+    "http_status": 200,
+    "content_type": "application/json",
+    "cf-ray": "a5485ce76b4d8089-SIN"
+  },
+  "postflight": {
+    "limit": 20,
+    "used": 20,
+    "remaining": 0,
+    "exhausted": true,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "reserve_runtime_unchanged": true
+}

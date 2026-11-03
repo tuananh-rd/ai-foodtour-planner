@@ -1,0 +1,41 @@
+{
+  "sdk_version": "3.42.1",
+  "protocol": "responses",
+  "requested_model": "gpt-6-luna",
+  "preflight": {
+    "limit": 18,
+    "used": 17,
+    "remaining": 1,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "generation_attempts_this_probe": 1,
+  "total_generation_attempts": 3,
+  "no_model_listing_gate": true,
+  "native_tools_verified": false,
+  "retry": false,
+  "max_output_tokens": 128,
+  "reserve_environment_unchanged": true,
+  "request_time_vn": "2026-11-03T10:29:14+07:00",
+  "error": {
+    "kind": "unavailable",
+    "http_status": 503
+  },
+  "latency_ms": 755,
+  "diagnostics": {
+    "http_status": 503,
+    "content_type": "application/json",
+    "cf-ray": "a5484b271e5f3437-SIN",
+    "error_code": "model_not_found",
+    "error_type": "new_api_error"
+  },
+  "postflight": {
+    "limit": 18,
+    "used": 18,
+    "remaining": 0,
+    "exhausted": true,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  }
+}

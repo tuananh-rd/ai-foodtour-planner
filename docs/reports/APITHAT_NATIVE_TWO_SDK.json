@@ -1,0 +1,71 @@
+{
+  "protocol": "responses",
+  "model": "gpt-6-luna",
+  "transport": "official OpenAI SDK default identity",
+  "preflight": {
+    "limit": 20,
+    "used": 18,
+    "remaining": 2,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "attempts": 1,
+  "requests": [
+    {
+      "tool_result_items": 0,
+      "max_output_tokens": 512,
+      "ordinal": 1,
+      "time_vn": "2026-11-03T10:37:06+07:00",
+      "error": {
+        "kind": "timeout",
+        "status": null
+      },
+      "diagnostics": {},
+      "latency_ms": 12922
+    }
+  ],
+  "tools": [
+    {
+      "name": "update_preferences",
+      "status": "ok",
+      "count": 0,
+      "code": null
+    }
+  ],
+  "checks": {
+    "native_search_completed": false,
+    "actual_tool_result_continuation": false,
+    "final_model_answer": false,
+    "selection_tour_unchanged": true,
+    "response_model_exact": false
+  },
+  "native_tools_verified": false,
+  "daily_limit_authorized": 20,
+  "session_cap": 6,
+  "temporary_probe_reserve": 0,
+  "runtime_reserve_unchanged": true,
+  "lane": "disposable in-memory public preferences, real local menu6 bounded public tool evidence",
+  "provider": {
+    "mode": "rules",
+    "calls": 1,
+    "configured_model": "gpt-6-luna",
+    "reply_source": "rules",
+    "failure": {
+      "kind": "timeout",
+      "source": "transport"
+    },
+    "reason": "timeout_rules_fallback"
+  },
+  "answer_status": "unknown",
+  "has_answer": true,
+  "blocker": "native_tool_continuation_not_proven_within_two_attempts",
+  "postflight": {
+    "limit": 20,
+    "used": 19,
+    "remaining": 1,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "source": "992d8ae514b161c34d5989e7defd3274fde20506",
+  "url": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "provider_catalog": {
+    "id": "apithat:gpt-6-luna",
+    "provider": "apithat",
+    "api_mode": "responses",
+    "available": false,
+    "selectable": true,
+    "reason": "quota",
+    "direct_chat_verified": true,
+    "native_tools_verified": false
+  },
+  "budget": {
+    "limit": 20,
+    "remaining": 0,
+    "exhausted": true,
+    "session_cap": 6,
+    "reserve": 3,
+    "used": 20,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "key_present": true,
+  "key_unchanged": true,
+  "provider_enabled": true,
+  "env_only_approved_daily_limit_changed": true,
+  "daily_limit_value": "20",
+  "existing_private_session_namespace_preserved": true,
+  "gemini_retained": true,
+  "direct_live_proof": "APITHAT_60S_LAST_GREETING.json",
+  "native_tool_proof": false,
+  "ui_settings_checks_passed": 9,
+  "ui_text_generation_posts": 0,
+  "backend_targeted_tests_passed": 39,
+  "final_build_exit": 0,
+  "backend_responses_timeout_s": 60,
+  "frontend_responses_timeout_ms": 75000,
+  "streaming_added": false,
+  "remaining_limits": [
+    "Daily20 exhausted; selectable model is not a quota bypass.",
+    "Full native-tool search/continuation needs separate authorized proof."
+  ]
+}

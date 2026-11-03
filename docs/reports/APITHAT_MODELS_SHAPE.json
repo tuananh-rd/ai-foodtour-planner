@@ -1,0 +1,22 @@
+{
+  "purpose": "Raw JSON versus official SDK parser shape only",
+  "generation_attempts": 0,
+  "authenticated_models_get_attempts": 1,
+  "http_status": 200,
+  "root_type": "dict",
+  "top_level_keys": [
+    "data",
+    "object",
+    "success"
+  ],
+  "data_type": "list",
+  "data_count": 0,
+  "models_type": "NoneType",
+  "result_type": "NoneType",
+  "raw_requested_model_present": false,
+  "sdk_data_type": "list",
+  "sdk_data_count": 0,
+  "raw_sdk_count_equal": true,
+  "meaning": "Empty listing does not prove generation authorization or prohibition.",
+  "latency_ms": 747
+}
