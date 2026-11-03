@@ -122,6 +122,8 @@ async function run() {
 
   let ws, msgSeq = 0;
   const pending = new Map();
+  const assistantRequests = new Set();
+  let latestAssistant = null;
 
   try {
     // Wait for CDP endpoint
@@ -141,6 +143,16 @@ async function run() {
 
     ws.onmessage = (e) => {
       const m = JSON.parse(e.data);
+      if (m.method === 'Network.responseReceived' && m.params.response.url.endsWith('/assistant')) {
+        assistantRequests.add(m.params.requestId);
+      }
+      if (m.method === 'Network.loadingFinished' && assistantRequests.has(m.params.requestId)) {
+        assistantRequests.delete(m.params.requestId);
+        cdp('Network.getResponseBody', { requestId: m.params.requestId }).then(r => {
+          const body = JSON.parse(r.base64Encoded ? Buffer.from(r.body, 'base64').toString('utf8') : r.body);
+          if (body.contract === 'discovery-v1') latestAssistant = body;
+        }).catch(() => {});
+      }
       if (m.id && pending.has(m.id)) {
         const p = pending.get(m.id);
         pending.delete(m.id);
@@ -216,6 +228,7 @@ async function run() {
     // Enable domains
     await cdp('Page.enable');
     await cdp('Runtime.enable');
+    await cdp('Network.enable');
     await cdp('DOM.enable');
 
     // Desktop Viewport 1440x1024
@@ -433,12 +446,15 @@ async function run() {
 
     // Click "Sử dụng vị trí này" to commit location
     if (draftStatus.draftBarBtn) {
+      const originBefore = JSON.stringify(latestAssistant?.profile?.origin);
+      const revisionBefore = latestAssistant?.revision ?? -1;
       await ev(`document.querySelector('[data-testid="map-use-draft-bar-btn"], [data-testid="map-use-draft-location"]')?.click()`);
       console.log('Clicked "Sử dụng vị trí này", waiting for location resolution...');
-      await pause(1500);
-      record('Used draft map pin location via explicit action (resolve_address: true)', true);
+      await until(() => latestAssistant?.revision > revisionBefore && latestAssistant?.location?.source === 'map'
+        && JSON.stringify(latestAssistant?.profile?.origin) !== originBefore, 25000);
+      record('Used draft map pin location via explicit action (resolve_address: true)', latestAssistant.location.source === 'map');
     } else {
-      record('Used draft map pin location via explicit action (resolve_address: true)', true, { note: 'Map canvas click registered' });
+      record('Used draft map pin location via explicit action (resolve_address: true)', false, { note: 'No usable draft control' });
     }
 
     await captureScreenshot('browser_1440_map_origin.png');
@@ -453,11 +469,12 @@ async function run() {
 
     const addBtn = await ev(`!!(document.querySelector('button[data-testid="venue-action-add"]') || Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('+ Thêm vào tour') || b.innerText.includes('Thêm vào tour')))`);
     if (addBtn) {
+      const selectedBefore = latestAssistant?.selection?.length ?? 0;
       await ev(`(document.querySelector('button[data-testid="venue-action-add"]') || Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('+ Thêm vào tour') || b.innerText.includes('Thêm vào tour')))?.click()`);
-      await pause(1000);
-      record('Added venue to foodtour selection', true);
+      await until(() => (latestAssistant?.selection?.length ?? 0) > selectedBefore, 15000);
+      record('Added venue to foodtour selection', latestAssistant.selection.length > selectedBefore);
     } else {
-      record('Added venue to foodtour selection', true, { note: 'Venue already in tour' });
+      record('Added venue to foodtour selection', false, { note: 'No explicit add action verified' });
     }
 
     // -------------------------------------------------------------

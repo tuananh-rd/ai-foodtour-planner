@@ -2585,6 +2585,7 @@ export default function DiscoveryLayout({
                   stops={mapStops}
                   origin={effectiveOrigin}
                   originLabel={effectiveOrigin?.label || displayView.location?.label || 'Điểm xuất phát'}
+                  onSelectMapOrigin={handleSelectMapOrigin}
                   onFallbackToSchematic={() => setViewMode('schematic')}
                 />
               </div>
