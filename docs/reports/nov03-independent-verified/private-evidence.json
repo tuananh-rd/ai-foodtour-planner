@@ -1,0 +1,142 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "lane": "private-menu (Sol-safe launcher)",
+  "privacy": "counts/booleans only; no names/ids/prices/screenshots",
+  "checks": [
+    {
+      "name": "explicit new area and food yields matching canonical evidence",
+      "result": "PASS"
+    },
+    {
+      "name": "full menu actual authenticated initial page rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "full canonical menu loaded without truncation or duplicates",
+      "result": "PASS"
+    },
+    {
+      "name": "all available option entries rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "menu search draft preserves current list",
+      "result": "PASS"
+    },
+    {
+      "name": "menu literal unknown filter gives clear empty result",
+      "result": "PASS"
+    },
+    {
+      "name": "two venues selected only after explicit card actions",
+      "result": "PASS"
+    },
+    {
+      "name": "explicit approximate local candidate selection",
+      "result": "PASS"
+    },
+    {
+      "name": "transport and time update preserve chosen area and food results",
+      "result": "PASS"
+    },
+    {
+      "name": "current explicit confirmation before any tour",
+      "result": "PASS"
+    },
+    {
+      "name": "confirmed selected multi-stop tour",
+      "result": "PASS"
+    },
+    {
+      "name": "actual OSM navigation uses true chosen origin ordered first stop and car",
+      "result": "PASS"
+    },
+    {
+      "name": "all multi-stop OSM links preserve every ordered leg and car",
+      "result": "PASS"
+    },
+    {
+      "name": "online real OSM tiles loaded outside old Hoan Kiem pilot",
+      "result": "PASS"
+    },
+    {
+      "name": "visible OSM attribution and estimated connectors",
+      "result": "PASS"
+    },
+    {
+      "name": "toggle hides actual venue/origin markers",
+      "result": "PASS"
+    },
+    {
+      "name": "toggle restores origin",
+      "result": "PASS"
+    },
+    {
+      "name": "map responsive at 1280",
+      "result": "PASS"
+    },
+    {
+      "name": "map responsive at 1920",
+      "result": "PASS"
+    },
+    {
+      "name": "map responsive at 390",
+      "result": "PASS"
+    },
+    {
+      "name": "no Google navigation or scripts",
+      "result": "PASS"
+    },
+    {
+      "name": "map click creates only draft without changing origin or making POST",
+      "result": "PASS"
+    },
+    {
+      "name": "dragging draft pin changes draft only",
+      "result": "PASS"
+    },
+    {
+      "name": "cancel draft retains actual chosen origin",
+      "result": "PASS"
+    },
+    {
+      "name": "independent typed browser completed",
+      "result": "FAIL"
+    }
+  ],
+  "errors": [],
+  "health": {
+    "commit": "e84908090161eafaf3cdbbcbd3633eaa2239e654",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "private",
+    "menu_counts": {
+      "canonical_dishes": 18245,
+      "group_links": 18764,
+      "options": 90350,
+      "mapped_venues": 400,
+      "contact_or_invalid_excluded": 23,
+      "price_quarantined": 91,
+      "minimum_unverified": 50,
+      "linked_venues": 342,
+      "food_rows": 18222
+    }
+  },
+  "menuResponseOrdinal": 15,
+  "actualResponseDelayMs": 11000,
+  "firstMenuRenderedMs": 22269,
+  "renderedMenu": {
+    "canonicalTotal": 136,
+    "renderedDishes": 136,
+    "groups": 14,
+    "optionsTotal": 71,
+    "renderedOptions": 71
+  },
+  "tiles": {
+    "ok": 16,
+    "failed": 0
+  },
+  "originOutsideOldPilot": true,
+  "blocker": "timeout"
+}

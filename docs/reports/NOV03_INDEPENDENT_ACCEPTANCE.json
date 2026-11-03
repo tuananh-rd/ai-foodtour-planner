@@ -1,0 +1,175 @@
+{
+  "acceptance": "offline affected scope accepted using compositional evidence; not live Gemini quality",
+  "frontend": "952eb77",
+  "backend": "e849080",
+  "menu": {
+    "canonicalTotal": 136,
+    "renderedDishes": 136,
+    "groups": 14,
+    "optionsTotal": 71,
+    "renderedOptions": 71
+  },
+  "cold_menu_with_real_response_delay_ms": 22269,
+  "second_real_response_delay_ms": 11000,
+  "tile_responses": {
+    "ok": 16,
+    "failed": 0
+  },
+  "origin_outside_old_pilot": true,
+  "screenshot_request_and_no_data": [
+    {
+      "name": "exact screenshot typed: soup results without origin or unrelated cheese/tea",
+      "result": "PASS"
+    },
+    {
+      "name": "result cards actually rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "visible repetitive price disclaimers removed",
+      "result": "PASS"
+    },
+    {
+      "name": "literal unknown: zero actual results and no stale cards",
+      "result": "PASS"
+    },
+    {
+      "name": "explicit new area and food yields matching canonical evidence",
+      "result": "PASS"
+    }
+  ],
+  "verified_unchanged_checks": [
+    {
+      "name": "explicit new area and food yields matching canonical evidence",
+      "result": "PASS"
+    },
+    {
+      "name": "full menu actual authenticated initial page rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "full canonical menu loaded without truncation or duplicates",
+      "result": "PASS"
+    },
+    {
+      "name": "all available option entries rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "menu search draft preserves current list",
+      "result": "PASS"
+    },
+    {
+      "name": "menu literal unknown filter gives clear empty result",
+      "result": "PASS"
+    },
+    {
+      "name": "two venues selected only after explicit card actions",
+      "result": "PASS"
+    },
+    {
+      "name": "explicit approximate local candidate selection",
+      "result": "PASS"
+    },
+    {
+      "name": "transport and time update preserve chosen area and food results",
+      "result": "PASS"
+    },
+    {
+      "name": "current explicit confirmation before any tour",
+      "result": "PASS"
+    },
+    {
+      "name": "confirmed selected multi-stop tour",
+      "result": "PASS"
+    },
+    {
+      "name": "actual OSM navigation uses true chosen origin ordered first stop and car",
+      "result": "PASS"
+    },
+    {
+      "name": "all multi-stop OSM links preserve every ordered leg and car",
+      "result": "PASS"
+    },
+    {
+      "name": "online real OSM tiles loaded outside old Hoan Kiem pilot",
+      "result": "PASS"
+    },
+    {
+      "name": "visible OSM attribution and estimated connectors",
+      "result": "PASS"
+    },
+    {
+      "name": "toggle hides actual venue/origin markers",
+      "result": "PASS"
+    },
+    {
+      "name": "toggle restores origin",
+      "result": "PASS"
+    },
+    {
+      "name": "map responsive at 1280",
+      "result": "PASS"
+    },
+    {
+      "name": "map responsive at 1920",
+      "result": "PASS"
+    },
+    {
+      "name": "map responsive at 390",
+      "result": "PASS"
+    },
+    {
+      "name": "no Google navigation or scripts",
+      "result": "PASS"
+    },
+    {
+      "name": "map click creates only draft without changing origin or making POST",
+      "result": "PASS"
+    },
+    {
+      "name": "dragging draft pin changes draft only",
+      "result": "PASS"
+    },
+    {
+      "name": "cancel draft retains actual chosen origin",
+      "result": "PASS"
+    }
+  ],
+  "affected_pin_checks": [
+    {
+      "name": "isolated QA two-stop tour for origin invalidation regression",
+      "result": "PASS"
+    },
+    {
+      "name": "map click creates only draft without changing origin or making POST",
+      "result": "PASS"
+    },
+    {
+      "name": "dragging draft pin changes draft only",
+      "result": "PASS"
+    },
+    {
+      "name": "cancel draft retains actual chosen origin",
+      "result": "PASS"
+    },
+    {
+      "name": "explicit map use updates origin preserves selection and invalidates tour",
+      "result": "PASS"
+    },
+    {
+      "name": "no browser exception or provider calls",
+      "result": "PASS"
+    }
+  ],
+  "map_service_failure": true,
+  "provider_calls": 0,
+  "limitations": [
+    "Composite evidence: source fixes rerun affected checks only; historical suite failures preserved.",
+    "AG21 initially included click-only false positives; independent test found and fixed missing map callback.",
+    "The earlier options count failure was asynchronous harness aggregation; complete response-ID aggregation equals71 DOM options.",
+    "One attempt to resume a temporary browser profile failed; fresh isolated UI setup was used for pin regression.",
+    "Routes are estimated connectors, not road geometry/ETA; OSM routing links open on user action.",
+    "Raw screenshots removed from current tracked tree and retained privately; old local commits are not rewritten or published."
+  ]
+}

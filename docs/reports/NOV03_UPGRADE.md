@@ -1,6 +1,6 @@
 # Nov03 food relevance, conversation evidence and full-menu upgrade
 
-Status: backend offline acceptance passed; initial rendered checks passed; remaining menu/tour/map acceptance pending a reproduced menu-timeout fix.
+Status: affected offline scope accepted using independent browser evidence and focused regressions. Live Gemini conversation quality remains unverified.
 
 ## Root cause and changes
 
@@ -40,6 +40,20 @@ Backend commits: `9a18141`, `bb0050a`, `21cf811`, `4e910a2`, `5660b60`, `c0a312c
 `5f0aea1` applies the same token/accent contract to full-menu name filtering; seven targeted menu checks passed. An initial parenthesis typo was corrected before the passing run. The private original-session, budget-file and cap fingerprints were verified unchanged during QA. These final backend changes still require the integration runtime restart; they are not claimed as already served by the older QA process.
 
 ## Remaining acceptance
+
+### Final independent verdict
+
+`NOV03_INDEPENDENT_ACCEPTANCE.json` records the final composite acceptance. The actual browser loaded136/136 canonical dishes,14 groups and71/71 options. A fresh-process cold load plus an11second delay of an unchanged real HTTP response rendered in22,269ms under the25second menu timeout. No validation was mocked. Two explicitly selected venues produced a confirmed two-stop tour; every OSM leg preserved actual origin, stop order and car mode. Real raster tiles and street names outside the old pilot were visually inspected. Marker toggles,1280/1920/390 resizing and blocked-tile fallback passed.
+
+Independent rendering also exposed an accent-folding bug: `ô tô` became location preposition `ở`, corrupting area during a transport update. `e849080` recognizes the location preposition before folding candidate names; the RED regression and17 affected checks passed. The actual browser now preserves area, food and results after the same transport/time update.
+
+AG's initial21 checks were partial, and its map-use assertion was a false positive: the test clicked without verifying a server mutation. The parent never supplied the existing map-origin callback. After AG settlement/release, coordinator integration `952eb77` wired that callback and strengthened the test to require actual revision/origin/selection changes. The configured build exited0. A focused fresh UI regression passed all6 checks: two-stop setup, draft click, drag, cancel, explicit use preserving both selections while invalidating the tour, and no exceptions/provider calls. A failed temporary-profile resume was a harness issue; the successful regression used fresh isolated UI setup.
+
+The earlier71-option mismatch was asynchronous harness aggregation, not missing menu data; accumulating every response by canonical ID verified71 API and71 rendered options. Earlier failures remain in diagnostic evidence, rather than being renamed PASS.
+
+The original private session namespace and Gemini configuration were restored on8250;3350 serves952eb77. Original sessions, budget and caps fingerprints are unchanged. Health reports configured Gemini, used15/18 with3 remaining and3 reserve; no generation was made and no live quality acceptance is claimed. AG task714d1491a909/dispatch40671eda9dc4 settled successfully for its frontend implementation and was released; no reclaimable worker remains. User Word documents were not modified.
+
+Raw AG screenshots were removed from the current tracked tree and retained locally; historical local commits were not rewritten or pushed. Future publication must account for that local history. Connectors remain estimates and unsupported routing modes are not substituted.
 
 Configured frontend `01c1508` was reviewed and served on3350 after correcting API8250 build flags, full-menu JSX, availability enums and unknown option constraints/prices. Independent actual typed-browser checks passed the exact screenshot request, rendered result cards, absence of repeated price disclaimers, literal no-data clearing stale cards, and explicit area/food change. Evidence: `nov03-independent/initial-evidence.json`.
 
