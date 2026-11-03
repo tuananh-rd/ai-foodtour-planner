@@ -56,6 +56,7 @@ class ChatModels:
             available,reason=self.available(self.alternate.identity,reserve)
             rows.append({'id':self.alternate.identity,'label':'API Thật · '+self.alternate.client.model+' (chưa kiểm chứng)',
                          'provider':'apithat','available':available,'reason':reason,
+                         'api_mode':self.alternate.client.api_mode,
                          'native_tools_verified':self.alternate.native_tools_verified})
         return rows
 

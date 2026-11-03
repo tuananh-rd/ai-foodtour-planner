@@ -84,7 +84,9 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     alternate=None
     if os.getenv('APITHAT_MODEL','').strip():
         from app.discovery.openai_compatible import ApiThatClient, ApiThatTools
-        alternate=ApiThatTools(ApiThatClient(gemini.budget if gemini is not None else None))
+        from app.discovery.responses import ApiThatResponsesTools
+        client=ApiThatClient(gemini.budget if gemini is not None else None)
+        alternate=(ApiThatTools if client.api_mode=='chat_completions' else ApiThatResponsesTools)(client)
     app.state.chat_models = ChatModels(app.state.discovery_model,alternate)
     if llm_mode == "gemini" and gemini is not None and gemini.configured:
         app.state.chat_understanding_provider = GeminiUnderstandingProvider(gemini)

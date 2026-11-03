@@ -1,0 +1,22 @@
+{
+  "provider_documentation": "User supplied APIThatBot image inspected locally; no screenshot/private notification content copied to Git",
+  "documented_protocols": {
+    "responses": {"base": "https://apithat.dev/v1", "path": "/responses", "recommended_for_new_integrations": true},
+    "chat_completions": {"base": "https://apithat.dev/v1", "path": "/chat/completions", "supported": true},
+    "anthropic": {"base": "https://apithat.dev", "sdk_path": "/v1/messages", "implemented": false}
+  },
+  "client_selection": "APITHAT_API_MODE=responses|chat_completions; new default responses; no automatic fallback",
+  "responses_native_mapping": "function_call.call_id -> function_call_output.call_id, never item id",
+  "reasoning_replay": "exact native output items in-turn only, store:false, no persisted or remote conversation id",
+  "offline_tests": {"responses": 8, "initial_combined_run": 27, "affected_refinement_run": 3, "counts_overlap": true, "result": "PASS"},
+  "new_generation_attempts": 0,
+  "new_api_endpoint_probes": 0,
+  "user_agent_changed": false,
+  "private_key_file_changed": false,
+  "remaining_authorized_attempts": 1,
+  "live_native_tool_proof": false,
+  "capability_enabled": false,
+  "network_blocker": "Cloudflare1010 client signature policy; protocol readiness does not resolve access",
+  "approved_provider_sdk_header_policy_supplied": false,
+  "runtime_restarted": false
+}

@@ -1,5 +1,31 @@
 # API Thật chatbot: current local state and403 diagnosis
 
+## Protocol readiness (latest official bot image supplied by the user)
+
+The image confirms Responses is recommended for new integrations at base
+`https://apithat.dev/v1`, POST`/responses`; Chat Completions is still supported at
+the same base, POST`/chat/completions`. The earlier Chat endpoint was valid.
+Anthropic uses base`https://apithat.dev` and its SDK adds`/v1/messages`; this app
+does not implement Anthropic. The image specifies Bearer auth for GET`/v1/models`.
+
+Set server-only`APITHAT_API_MODE=responses` (new default) or`chat_completions` to
+choose protocol explicitly. No auto fallback or duplicate`/v1` occurs. The private
+key file and current runtime are unchanged; absent api_mode defaults to Responses
+on future startup. This preparation does not activate the provider.
+
+Responses maps function_call.call_id to function_call_output.call_id, preserving
+the exact output/reasoning items in-turn, with store:false and no remote conversation
+ID. Flat function tools, completion/refusal validation, bounded payloads, usage
+input_tokens/output_tokens and model-first privacy/authority/grounding are covered
+offline. Eight Responses regressions passed; the initial combined run passed27
+checks, then three affected checks passed after routing refinement (overlapping).
+
+See the contract and primary [Responses mapping](https://developers.openai.com/api/docs/guides/migrate-to-responses)
+and [reasoning continuation](https://developers.openai.com/api/docs/guides/reasoning) references.
+No live generation, endpoint test or UA change was made. Changing protocol does not
+resolve1010; the image contains no approved client header/SDK/WAF remediation.
+The last attempt is preserved and native-tool capability remains unverified/disabled.
+
 ## Identified blocker: client-signature policy (latest evidence)
 
 The user supplied an unauthenticated public `GET /v1/models` comparison, not a
@@ -127,11 +153,12 @@ and public values only, not a replacement for the existing local file:
 ```dotenv
 APITHAT_BASE_URL=https://apithat.dev/v1
 APITHAT_MODEL=gpt-6-luna
+APITHAT_API_MODE=responses
 APITHAT_API_KEY=
 FOODTOUR_APITHAT_ENABLED=0
 ```
 
-`tools/run_online_assistant.py` loads only these four variables from the separate
+`tools/run_online_assistant.py` loads only these five variables from the separate
 file, with process environment taking precedence. This file cannot change caps,
 ledger paths or public client variables. It remains Git-ignored; no key is in Git,
 reports, screenshots or frontend variables. Existing private sessions and Gemini

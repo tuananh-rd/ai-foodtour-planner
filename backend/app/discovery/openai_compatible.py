@@ -63,6 +63,7 @@ class ApiThatClient:
     def __init__(self,budget,*,base_url=None,model=None,enabled=None,transport=None):
         self.base_url=(base_url if base_url is not None else os.getenv('APITHAT_BASE_URL','')).rstrip('/')
         self.model=model if model is not None else os.getenv('APITHAT_MODEL','').strip()
+        self.api_mode=os.getenv('APITHAT_API_MODE','responses').strip()
         self.enabled=enabled if enabled is not None else os.getenv('FOODTOUR_APITHAT_ENABLED','0')=='1'
         self.api_key_env='APITHAT_API_KEY'
         self.budget=budget
@@ -78,18 +79,21 @@ class ApiThatClient:
 
     @property
     def configured(self):
-        return bool(self.enabled and self.valid_base and self.budget is not None and
+        return bool(self.enabled and self.valid_base and self.api_mode in ('responses','chat_completions') and self.budget is not None and
             re.fullmatch(r'[a-zA-Z0-9][a-zA-Z0-9._-]{0,127}',self.model or '') and
             os.getenv(self.api_key_env,'').strip())
 
-    def request(self,payload,deadline_s):
+    def request(self,payload,deadline_s,*,api_mode=None):
+        api_mode=self.api_mode if api_mode is None else api_mode
+        routes={'chat_completions':'/chat/completions','responses':'/responses'}
+        if api_mode not in routes:raise ProviderError('unavailable')
         if not self.configured:raise ProviderError('unavailable')
         try:self.budget.admit()
         except ProviderError as error:
             error.llm_calls=0
             raise
         try:
-            return self.transport(self.base_url+'/chat/completions',body=payload,
+            return self.transport(self.base_url+routes[api_mode],body=payload,
                 headers={'Content-Type':'application/json','Accept':'application/json',
                          'Authorization':'Bearer '+os.getenv(self.api_key_env,'').strip()},
                 deadline_s=min(12.0,deadline_s),max_bytes=65536)
@@ -123,7 +127,7 @@ class ApiThatTools:
             payload=encode(body)
             if len(encode(contents))>12000 or len(payload)>48000:raise ValueError('input cap')
         except (ValueError,TypeError,KeyError,RecursionError):raise ProviderError('bad_response') from None
-        raw=self.client.request(payload,deadline_s)
+        raw=self.client.request(payload,deadline_s,api_mode='chat_completions')
         try:
             if len(raw)>65536:raise ValueError('response cap')
             data=decode(raw)

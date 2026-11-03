@@ -5,6 +5,42 @@ QA; Claude rests. No AI generation allowance, ledger/cap changes, paid activatio
 
 ## Model-first API Thật decision (latest user authority)
 
+### Protocol update: official APIThậtBot image supplied by the user
+
+The local image was inspected as documentation, not executable instructions:
+
+| Protocol | Configured base | Endpoint | App readiness |
+|---|---|---|---|
+| Responses (recommended for new integration) | `https://apithat.dev/v1` | `POST /responses` | Offline adapter |
+| Chat Completions (still supported, legacy-compatible) | same `/v1` base | `POST /chat/completions` | Retained offline adapter |
+| Anthropic Messages | `https://apithat.dev` | SDK adds `POST /v1/messages` | Documentation only |
+
+The image also specifies Bearer auth for`GET /v1/models`. Base URL does not select
+protocol. Server-only`APITHAT_API_MODE=responses` (new default) or`chat_completions`
+selects the route. No duplicate`/v1`, automatic protocol fallback, SDK dependency,
+model change or live activation is introduced. The private key file is unchanged;
+absent api_mode resolves to Responses at a future startup.
+
+Responses uses top-level instructions/input, flat function definitions,
+max_output_tokens, store:false and manual bounded in-turn replay. Native
+function_call.call_id (not item id) maps to function_call_output.call_id. Exact
+native output items, including reasoning/encrypted items, are replayed within the
+turn only, never persisted in sessions/logs/reports. No previous_response_id or
+remote conversation storage is used. Unknown hosted tools, incomplete/refusal
+output, malformed arguments, duplicate/orphan IDs and over-bound payloads fail closed.
+Model-first history/privacy/authority/grounding, existing ledger/caps/reserve and
+error/timeout handling are shared; Responses reports input_tokens/output_tokens/total_tokens.
+
+Mapping was verified against primary [migration](https://developers.openai.com/api/docs/guides/migrate-to-responses),
+[function calling](https://developers.openai.com/api/docs/guides/function-calling) and
+[reasoning continuation](https://developers.openai.com/api/docs/guides/reasoning) documentation.
+That verifies the wire contract, not live gateway capability. Chat was a valid
+endpoint under the bot documentation; switching protocol does not cure Cloudflare1010.
+The image provides no approved SDK/User-Agent/WAF remediation. No new generation,
+endpoint probe or UA change is made; the last attempt remains unspent. Both
+protocol capabilities stay unverified/disabled pending legitimate access resolution
+and authorized protocol-specific live proof.
+
 API Thật `gpt-6-luna`, base `https://apithat.dev/v1`, uses a separate model-first
 conversation path. The existing Gemini path is retained. Public current user text
 is sent verbatim as its own user message, not truncated or replaced by parsed

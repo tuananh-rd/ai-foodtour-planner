@@ -180,6 +180,7 @@ class ApiThatTests(unittest.TestCase):
             capability=client.get('/v1/assistant/capabilities').json()
             self.assertEqual(capability['default_chat_model'],'gemini-3.5-flash-lite')
             row=next(r for r in capability['chat_models'] if r['id']=='apithat:gpt-6-luna')
+            self.assertEqual(row['api_mode'],'responses')
             self.assertFalse(row['available']);self.assertEqual(row['reason'],'native_tools_unverified')
             session=client.post('/v1/sessions').json()
             response=client.post('/v1/sessions/'+session['session_id']+'/assistant',

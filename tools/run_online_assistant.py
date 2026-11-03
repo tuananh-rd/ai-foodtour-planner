@@ -26,7 +26,7 @@ def local_configuration():
     # Optional dedicated local secret file; never import executable/config-wide content.
     private_provider = ROOT / 'backend/.env.apithat.local'
     if private_provider.exists():
-        provider_keys={'APITHAT_BASE_URL','APITHAT_MODEL','APITHAT_API_KEY','FOODTOUR_APITHAT_ENABLED'}
+        provider_keys={'APITHAT_BASE_URL','APITHAT_MODEL','APITHAT_API_KEY','APITHAT_API_MODE','FOODTOUR_APITHAT_ENABLED'}
         for line in private_provider.read_text(encoding='utf-8-sig').splitlines():
             if line.lstrip().startswith('#') or '=' not in line:continue
             key,value=line.split('=',1)
