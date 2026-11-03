@@ -41,8 +41,7 @@
     {
       "name": "Opened detail modal on venue",
       "result": "PASS",
-      "ok": true,
-      "venueText": "Ánh Sáng - Phở Bò, Cơm Rang, Phở Xào & Mì Xào"
+      "ok": true
     },
     {
       "name": "Full menu section modal rendered with [data-testid=\"venue-menu-section\"]",
