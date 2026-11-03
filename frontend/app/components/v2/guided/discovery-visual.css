@@ -1726,6 +1726,53 @@
   color: #374151;
 }
 
+.nn-dish-option-group-badge.unknown {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.nn-dish-availability-badge {
+  font-size: 10px;
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.nn-dish-availability-badge.available {
+  background: #ECFDF5;
+  color: #065F46;
+}
+
+.nn-dish-availability-badge.unavailable {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.nn-dish-availability-badge.unknown {
+  background: #F3F4F6;
+  color: #4B5563;
+}
+
+.nn-dish-required-options-badge {
+  font-size: 10px;
+  background: #EFF6FF;
+  color: #1E40AF;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.nn-dish-min-total {
+  font-size: 11px;
+  color: #7A625A;
+  font-style: italic;
+}
+
+.nn-venue-menu-dish-card.unavailable {
+  opacity: 0.7;
+  background: #FAFAFA;
+}
+
 .nn-dish-options-list {
   display: flex;
   flex-wrap: wrap;

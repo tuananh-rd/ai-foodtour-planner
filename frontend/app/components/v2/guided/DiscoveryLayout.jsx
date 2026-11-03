@@ -3036,19 +3036,57 @@ export default function DiscoveryLayout({
               {menuData && menuData.items && menuData.items.length > 0 && (
                 <div className="nn-venue-menu-items-list" data-testid="venue-menu-items-list">
                   {menuData.items.map((dish) => {
+                    const isAvailable = dish.availability === 'source_available';
+                    const isUnavailable = dish.availability === 'source_unavailable' || dish.availability === 'out_of_stock';
+                    const availabilityLabel = isAvailable
+                      ? 'Có sẵn'
+                      : isUnavailable
+                        ? 'Tạm hết món'
+                        : (dish.availability ? dish.availability : 'Chưa rõ tình trạng');
+                    const availabilityClass = isAvailable
+                      ? 'available'
+                      : isUnavailable
+                        ? 'unavailable'
+                        : 'unknown';
+
                     const dishPriceFormatted = dish.price_vnd != null
                       ? `${Number(dish.price_vnd).toLocaleString('vi-VN')} đ`
                       : (dish.price_text || (dish.price_status === 'quarantined' ? 'Giá chưa xác minh' : 'Chưa rõ giá'));
 
+                    const showMinTotal = dish.min_total_vnd != null && (dish.price_vnd == null || dish.min_total_vnd > dish.price_vnd);
+
+                    const requiredOptionsLabel = dish.required_options === true
+                      ? 'Bắt buộc chọn tùy chọn'
+                      : dish.required_options === false
+                        ? null
+                        : (dish.required_options == null ? null : 'Chưa rõ quy định tùy chọn');
+
                     return (
-                      <div key={dish.id} className="nn-venue-menu-dish-card" data-testid={`venue-menu-dish-${dish.id}`}>
+                      <div key={dish.id} className={`nn-venue-menu-dish-card${isUnavailable ? ' unavailable' : ''}`} data-testid={`venue-menu-dish-${dish.id}`}>
                         <div className="nn-venue-menu-dish-header">
-                          <span className="nn-venue-menu-dish-name" data-testid={`dish-name-${dish.id}`}>
-                            {dish.name}
-                          </span>
-                          <span className="nn-venue-menu-dish-price" data-testid={`dish-price-${dish.id}`}>
-                            {dishPriceFormatted}
-                          </span>
+                          <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', flexWrap: 'wrap' }}>
+                            <span className="nn-venue-menu-dish-name" data-testid={`dish-name-${dish.id}`}>
+                              {dish.name}
+                            </span>
+                            <span className={`nn-dish-availability-badge ${availabilityClass}`} data-testid={`dish-availability-${dish.id}`}>
+                              {availabilityLabel}
+                            </span>
+                            {requiredOptionsLabel && (
+                              <span className="nn-dish-required-options-badge" data-testid={`dish-required-options-${dish.id}`}>
+                                {requiredOptionsLabel}
+                              </span>
+                            )}
+                          </div>
+                          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '2px' }}>
+                            <span className="nn-venue-menu-dish-price" data-testid={`dish-price-${dish.id}`}>
+                              {dishPriceFormatted}
+                            </span>
+                            {showMinTotal && (
+                              <span className="nn-dish-min-total" data-testid={`dish-min-total-${dish.id}`}>
+                                Tối thiểu: {Number(dish.min_total_vnd).toLocaleString('vi-VN')} đ
+                              </span>
+                            )}
+                          </div>
                         </div>
                         {dish.description && (
                           <div className="nn-venue-menu-dish-desc">{dish.description}</div>
@@ -3066,28 +3104,60 @@ export default function DiscoveryLayout({
                         {/* Option groups */}
                         {Array.isArray(dish.option_groups) && dish.option_groups.length > 0 && (
                           <div className="nn-dish-option-groups" data-testid={`dish-options-${dish.id}`}>
-                            {dish.option_groups.map((og) => (
-                              <div key={og.id} className="nn-dish-option-group-item">
-                                <div className="nn-dish-option-group-title">
-                                  {og.name}
-                                  <span className={`nn-dish-option-group-badge ${og.mandatory || og.min_select > 0 ? 'mandatory' : 'optional'}`}>
-                                    {og.mandatory || og.min_select > 0 ? 'Bắt buộc' : 'Tùy chọn'}
-                                    {(og.min_select > 0 || og.max_select > 0) ? ` (chọn ${og.min_select ?? 0}–${og.max_select ?? 'nhiều'})` : ''}
-                                  </span>
-                                </div>
-                                {Array.isArray(og.options) && og.options.length > 0 && (
-                                  <div className="nn-dish-options-list">
-                                    {og.options.map((opt) => (
-                                      <span key={opt.id} className="nn-dish-option-chip">
-                                        {opt.name}
-                                        {opt.price_vnd ? ` (+${Number(opt.price_vnd).toLocaleString('vi-VN')} đ)` : ''}
-                                        {opt.is_default ? ' [Mặc định]' : ''}
-                                      </span>
-                                    ))}
+                            {dish.option_groups.map((og) => {
+                              const mandatoryClass = og.mandatory === true
+                                ? 'mandatory'
+                                : og.mandatory === false
+                                  ? 'optional'
+                                  : 'unknown';
+                              const mandatoryLabel = og.mandatory === true
+                                ? 'Bắt buộc'
+                                : og.mandatory === false
+                                  ? 'Tùy chọn'
+                                  : 'Chưa rõ bắt buộc';
+
+                              let selectRangeLabel = '';
+                              if (og.min_select != null && og.max_select != null) {
+                                selectRangeLabel = ` (chọn ${og.min_select}–${og.max_select})`;
+                              } else if (og.min_select != null) {
+                                selectRangeLabel = ` (chọn tối thiểu ${og.min_select})`;
+                              } else if (og.max_select != null) {
+                                selectRangeLabel = ` (chọn tối đa ${og.max_select})`;
+                              }
+
+                              return (
+                                <div key={og.id} className="nn-dish-option-group-item">
+                                  <div className="nn-dish-option-group-title">
+                                    {og.name}
+                                    <span className={`nn-dish-option-group-badge ${mandatoryClass}`}>
+                                      {mandatoryLabel}{selectRangeLabel}
+                                    </span>
                                   </div>
-                                )}
-                              </div>
-                            ))}
+                                  {Array.isArray(og.options) && og.options.length > 0 && (
+                                    <div className="nn-dish-options-list">
+                                      {og.options.map((opt) => {
+                                        let optPriceLabel = '';
+                                        if (opt.price_vnd === 0) {
+                                          optPriceLabel = ' (+0 đ)';
+                                        } else if (typeof opt.price_vnd === 'number' && opt.price_vnd > 0) {
+                                          optPriceLabel = ` (+${Number(opt.price_vnd).toLocaleString('vi-VN')} đ)`;
+                                        } else if (opt.price_vnd == null) {
+                                          optPriceLabel = ' (Chưa rõ giá)';
+                                        }
+
+                                        return (
+                                          <span key={opt.id} className="nn-dish-option-chip">
+                                            {opt.name}
+                                            {optPriceLabel}
+                                            {opt.is_default ? ' [Mặc định]' : ''}
+                                          </span>
+                                        );
+                                      })}
+                                    </div>
+                                  )}
+                                </div>
+                              );
+                            })}
                           </div>
                         )}
 
@@ -3109,7 +3179,7 @@ export default function DiscoveryLayout({
                     );
                   })}
 
-                  {/* Load more menu items button */}
+                                    {/* Load more menu items button */}
                   {menuData.has_more && (
                     <button
                       type="button"
