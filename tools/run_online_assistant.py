@@ -61,7 +61,8 @@ def main():
         configured_limit = int(os.environ.get('FOODTOUR_LLM_DAILY_BUDGET', '18'))
     except ValueError:
         configured_limit = 0
-    os.environ['FOODTOUR_LLM_DAILY_BUDGET'] = str(max(0, min(18, configured_limit)))
+    # User explicitly approved daily18->20 for the two-call SDK native-tool QA.
+    os.environ['FOODTOUR_LLM_DAILY_BUDGET'] = str(max(0, min(20, configured_limit)))
     if args.llm == 'off':
         os.environ['FOODTOUR_LLM'] = 'mock'
     if args.dataset == 'synthetic':

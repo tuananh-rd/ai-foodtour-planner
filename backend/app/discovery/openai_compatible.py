@@ -67,7 +67,7 @@ class ApiThatClient:
         self.enabled=enabled if enabled is not None else os.getenv('FOODTOUR_APITHAT_ENABLED','0')=='1'
         self.api_key_env='APITHAT_API_KEY'
         self.budget=budget
-        self.transport=transport or request_bytes
+        self.transport=transport  # Injected only for offline tests; production uses provider-documented SDK.
         self.last_usage={}
         try:
             url=urlsplit(self.base_url)
@@ -93,10 +93,15 @@ class ApiThatClient:
             error.llm_calls=0
             raise
         try:
+            timeout_cap=60.0 if api_mode=='responses' else 12.0
+            if self.transport is None:
+                from app.providers.apithat_sdk import generate_sdk
+                return generate_sdk(os.getenv(self.api_key_env,'').strip(),self.base_url,api_mode,
+                                    decode(payload),min(timeout_cap,deadline_s))
             return self.transport(self.base_url+routes[api_mode],body=payload,
                 headers={'Content-Type':'application/json','Accept':'application/json',
                          'Authorization':'Bearer '+os.getenv(self.api_key_env,'').strip()},
-                deadline_s=min(12.0,deadline_s),max_bytes=65536)
+                deadline_s=min(timeout_cap,deadline_s),max_bytes=65536)
         except ProviderError:
             # A gateway429 is not proof the shared local daily ledger is exhausted.
             # Admission counts the attempt; preserve other models and do not retry.

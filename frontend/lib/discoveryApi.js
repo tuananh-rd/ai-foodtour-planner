@@ -361,6 +361,11 @@ export async function getDiscoveryAssistant(sessionId, sessionToken = '', option
  * POST /v1/sessions/{id}/assistant (Text turn)
  * Sends a natural user message.
  */
+export function discoveryChatTimeout(chatModel, apiMode = 'responses') {
+  return typeof chatModel === 'string' && chatModel.startsWith('apithat:') && apiMode !== 'chat_completions'
+    ? 75000 : 25000;
+}
+
 export async function sendDiscoveryMessage(sessionId, revision, text, sessionToken = '', options = {}) {
   if (!sessionId) {
     throw new DiscoveryApiError('missing_session_id', 'Thiếu sessionId khi gửi tin nhắn.');
@@ -392,7 +397,7 @@ export async function sendDiscoveryMessage(sessionId, revision, text, sessionTok
     headers,
     body: JSON.stringify(payload),
     signal: options.signal
-  }, options.timeoutMs || 25000);
+  }, options.timeoutMs || discoveryChatTimeout(options.chatModel, options.apiMode));
 
   let body = null;
   try {

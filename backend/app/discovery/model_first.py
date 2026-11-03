@@ -33,6 +33,7 @@ def handle_model_first(text,tools,*,model,llm_used,session_cap,reserve):
                          safe_answer,tool_projection)
     from .schemas import TOOL_INPUTS
     started=time.monotonic()
+    turn_deadline=min(60,max(.1,getattr(model,'turn_deadline_s',12)))
     initial_refs=references(text,tools)
     tools.selection_refs=selection_references(text,tools,list(tools.state.results or tools.state.comparison))
     provider={'mode':'apithat','calls':0,'configured_model':model.client.model,'reply_source':'tools'}
@@ -50,7 +51,7 @@ def handle_model_first(text,tools,*,model,llm_used,session_cap,reserve):
     contents=contents_for(tools,text)
     try:
         for _ in range(2):  # Existing turn cap, including native continuation.
-            remaining=12-(time.monotonic()-started)
+            remaining=turn_deadline-(time.monotonic()-started)
             if remaining<=.1:
                 failure_source='turn_deadline';raise ProviderError('timeout')
             if llm_used+provider['calls']>=session_cap:

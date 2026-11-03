@@ -169,7 +169,7 @@ class ApiThatTests(unittest.TestCase):
                 self.assertEqual(os.environ['APITHAT_MODEL'],'gpt-6-luna')
                 self.assertNotIn('NEXT_PUBLIC_API_KEY',os.environ)
 
-    def test_capabilities_and_session_selection_fail_closed_without_live_verification(self):
+    def test_verified_direct_chat_selectable_but_native_tool_capability_stays_false(self):
         from fastapi.testclient import TestClient
         from app.main import create_app
         settings={'FOODTOUR_LLM':'gemini','GEMINI_API_KEY':'synthetic-gemini-key',
@@ -181,10 +181,11 @@ class ApiThatTests(unittest.TestCase):
             self.assertEqual(capability['default_chat_model'],'gemini-3.5-flash-lite')
             row=next(r for r in capability['chat_models'] if r['id']=='apithat:gpt-6-luna')
             self.assertEqual(row['api_mode'],'responses')
-            self.assertFalse(row['available']);self.assertEqual(row['reason'],'native_tools_unverified')
+            self.assertTrue(row['selectable']);self.assertTrue(row['direct_chat_verified'])
+            self.assertFalse(row['native_tools_verified'])
             session=client.post('/v1/sessions').json()
             response=client.post('/v1/sessions/'+session['session_id']+'/assistant',
                 headers={'X-Session-Token':session['token']},json={'revision':0,'action':{
                     'type':'settings','arguments':{'chat_model':'apithat:gpt-6-luna'}}}).json()
-            self.assertEqual(response['status'],'unavailable');self.assertEqual(response['provider']['calls'],0)
-            self.assertEqual(response['settings']['chat_model'],'gemini-3.5-flash-lite')
+            self.assertEqual(response['status'],'ok');self.assertEqual(response['provider']['calls'],0)
+            self.assertEqual(response['settings']['chat_model'],'apithat:gpt-6-luna')

@@ -550,7 +550,9 @@ export default function DiscoveryLayout({
         currentSession.sessionId,
         currentSession.revision,
         textToSend,
-        currentSession.sessionToken
+        currentSession.sessionToken,
+        { chatModel: view.settings?.chat_model,
+          apiMode: capabilities?.chat_models?.find((m) => m.id === view.settings?.chat_model)?.api_mode }
       );
       if (!isMountedRef.current || currentToken !== requestTokenRef.current) return;
       if (updatedView && typeof updatedView === 'object') {
@@ -1404,8 +1406,8 @@ export default function DiscoveryLayout({
                     <option value="" disabled>Không có model khả dụng / Xử lý tại máy</option>
                   )}
                   {capabilities.chat_models.map((m) => (
-                    <option key={m.id} value={m.id} disabled={!m.available}>
-                      {m.label || m.id}{!m.available ? ` (${m.reason || 'không khả dụng'})` : ''}
+                    <option key={m.id} value={m.id} disabled={m.selectable === undefined ? !m.available : !m.selectable}>
+                      {m.label || m.id}{!m.available ? ` (${m.reason === 'quota' ? 'hết hạn mức hôm nay' : m.reason || 'không khả dụng'})` : ''}
                     </option>
                   ))}
                 </>
@@ -1413,6 +1415,11 @@ export default function DiscoveryLayout({
                 <option value="">{capabilitiesLoading ? 'Đang tải mô hình…' : 'Không có model khả dụng / Xử lý tại máy'}</option>
               )}
             </select>
+            {capabilities?.chat_models?.find((m) => m.id === displayView.settings?.chat_model)?.direct_chat_verified && (
+              <span data-testid="direct-chat-mode-notice" className="nn-web-status-badge">
+                Trò chuyện trực tiếp; tra cứu quán bằng model chưa được kiểm chứng.
+              </span>
+            )}
           </div>
 
           <div className="nn-settings-group">

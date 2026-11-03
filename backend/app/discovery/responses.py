@@ -34,6 +34,9 @@ def responses_input(contents):
 
 
 class ApiThatResponsesTools(ApiThatTools):
+    turn_deadline_s=60
+    expose_tools=True
+    direct_chat_verified=False
     native_tools_verified=False  # Separate Responses proof required, never inferred from Chat support.
 
     def generate(self,contents,*,deadline_s):
@@ -44,6 +47,10 @@ class ApiThatResponsesTools(ApiThatTools):
                           'parameters':d['parametersJsonSchema'],'strict':False} for d in declarations()],
                 'tool_choice':'auto','stream':False,'store':False,'include':['reasoning.encrypted_content'],
                 'max_output_tokens':512}
+            if self.client.model=='gpt-6-luna':body['reasoning']={'effort':'low'}
+            if not self.expose_tools:
+                for key in ('tools','tool_choice','include'):body.pop(key,None)
+                body['instructions']+=' Chế độ hiện tại chỉ trò chuyện kiến thức ẩm thực chung; không có công cụ tra cứu quán. Không khẳng định đã tìm quán, kiểm tra menu, giờ mở hay tạo tour. Nếu cần dữ liệu quán chưa có trong ngữ cảnh, nói rõ giới hạn; không tự bịa địa điểm.'
             payload=encode(body)
             if len(encode(contents))>12000 or len(payload)>48000:raise ValueError('input cap')
         except (ValueError,TypeError,KeyError,RecursionError):raise ProviderError('bad_response') from None
@@ -62,6 +69,7 @@ class ApiThatResponsesTools(ApiThatTools):
                 kind=item['type']
                 if kind=='reasoning':continue  # Opaque exact item is returned below for continuation, not user text.
                 if kind=='function_call':
+                    if not self.expose_tools:raise ValueError('native tools not enabled')
                     identity=item['call_id'];name=item['name'];args=decode(item['arguments'])
                     if (name not in TOOL_INPUTS or not isinstance(identity,str) or
                         not re.fullmatch(r'[a-zA-Z0-9_-]{1,128}',identity) or identity in ids or
@@ -81,3 +89,9 @@ class ApiThatResponsesTools(ApiThatTools):
             return {'role':'model','parts':parts,'_responses_output':copy.deepcopy(output)}
         except (ValueError,UnicodeError,TypeError,KeyError,IndexError,AttributeError,RecursionError):
             raise ProviderError('bad_response') from None
+
+
+class ApiThatDirectResponsesTools(ApiThatResponsesTools):
+    """Reviewed real greeting proof only; native tool proof remains absent."""
+    expose_tools=False
+    direct_chat_verified=True

@@ -32,7 +32,8 @@ class ChatModels:
         if self.alternate is not None and identity == self.alternate.identity:
             if not self.alternate.client.enabled:return False,'provider_disabled'
             if not self.alternate.configured:return False,'key_or_config_unavailable'
-            if not self.alternate.native_tools_verified:return False,'native_tools_unverified'
+            if not (self.alternate.native_tools_verified or getattr(self.alternate,'direct_chat_verified',False)):
+                return False,'native_tools_unverified'
             if self.alternate.client.budget.snapshot()['remaining']<=reserve:return False,'quota'
             return True,None
         client = getattr(self.base, 'client', None)
@@ -46,16 +47,26 @@ class ChatModels:
             return False, 'quota'
         return True, None
 
+    def selectable(self,identity):
+        # Choosing a model is a zero-generation settings action, never a quota reset.
+        if self.alternate is not None and identity==self.alternate.identity:
+            return bool(self.alternate.configured and (self.alternate.native_tools_verified or
+                getattr(self.alternate,'direct_chat_verified',False)))
+        client=getattr(self.base,'client',None)
+        return bool(identity in VERIFIED_MODELS and client and client.configured)
+
     def catalog(self, reserve):
         rows = []
         for identity, label in VERIFIED_MODELS.items():
             available, reason = self.available(identity, reserve)
-            rows.append({'id': identity, 'label': label, 'available': available,
+            rows.append({'id': identity, 'label': label, 'available': available,'selectable':self.selectable(identity),
                          'reason': reason, 'native_tools_verified': True})
         if self.alternate is not None:
             available,reason=self.available(self.alternate.identity,reserve)
-            rows.append({'id':self.alternate.identity,'label':'API Thật · '+self.alternate.client.model+' (chưa kiểm chứng)',
+            direct=getattr(self.alternate,'direct_chat_verified',False)
+            rows.append({'id':self.alternate.identity,'label':'API Thật · '+self.alternate.client.model+(' (trò chuyện)' if direct else ' (chưa kiểm chứng)'),
                          'provider':'apithat','available':available,'reason':reason,
+                         'selectable':self.selectable(self.alternate.identity),'direct_chat_verified':direct,
                          'api_mode':self.alternate.client.api_mode,
                          'native_tools_verified':self.alternate.native_tools_verified})
         return rows
@@ -64,7 +75,7 @@ class ChatModels:
         if identity is None:
             return self.base
         if self.alternate is not None and identity == self.alternate.identity:
-            if not self.alternate.native_tools_verified or not self.alternate.configured:return None
+            if not self.selectable(identity):return None
             model=copy.copy(self.alternate)
             model.client=copy.copy(model.client)
             return model
@@ -95,7 +106,7 @@ def settings_action(state, tools, arguments, app, llm_used):
     identity = supplied.get('chat_model')
     if identity is not None:
         available, reason = app.chat_models.available(identity, app.llm_reserve)
-        if not available or llm_used >= app.llm_session_cap:
+        if not app.chat_models.selectable(identity):
             return tools.result('unavailable', 'Model này chưa khả dụng hoặc đã đạt giới hạn; lựa chọn hiện tại được giữ.',
                                 code=reason or 'session_quota')
         if identity != (state.chat_model or app.chat_models.default):

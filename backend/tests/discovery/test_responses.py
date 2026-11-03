@@ -46,6 +46,7 @@ class ResponsesTests(unittest.TestCase):
         self.assertEqual(body['input'][-1],{'role':'user','content':message})
         self.assertFalse(body['store']);self.assertNotIn('previous_response_id',body)
         self.assertEqual(body['max_output_tokens'],512);self.assertNotIn('messages',body)
+        self.assertEqual(body['reasoning'],{'effort':'low'})
         self.assertTrue(all(t['type']=='function' and 'name' in t and 'function' not in t and t['strict'] is False for t in body['tools']))
         self.assertEqual(model.client.last_usage,{'input_tokens':14,'output_tokens':9,'total_tokens':23})
 
@@ -116,3 +117,36 @@ class ResponsesTests(unittest.TestCase):
         model.client.api_mode='chat_completions';model.client.request(b'{}',3)
         self.assertEqual(requests,['https://apithat.dev/v1/responses','https://apithat.dev/v1/chat/completions'])
         self.assertEqual(model.client.model,'gpt-6-luna')
+
+    def test_responses_turn_deadline60_legacy_chat_transport12(self):
+        deadlines=[]
+        model=self.model(lambda url,**kwargs:deadlines.append(kwargs['deadline_s']) or output([text('Chào bạn.')]))
+        handle('Chào bạn',tools(),model=model)
+        self.assertGreater(deadlines[0],50);self.assertLessEqual(deadlines[0],60)
+        model.client.request(b'{}',60,api_mode='chat_completions')
+        self.assertEqual(deadlines[-1],12)
+
+    def test_direct_chat_omits_tools_and_rejects_unexpected_tool_calls(self):
+        from app.discovery.responses import ApiThatDirectResponsesTools
+        requests=[]
+        def transport(url,**kwargs):requests.append(json.loads(kwargs['body']));return output([text('Chào bạn.')])
+        base=self.model(transport);model=ApiThatDirectResponsesTools(base.client)
+        result,provider=handle('Chào bạn',tools(),model=model)
+        self.assertEqual(provider['reply_source'],'model')
+        self.assertNotIn('tools',requests[0]);self.assertNotIn('tool_choice',requests[0])
+        self.assertFalse(model.native_tools_verified)
+        bad=ApiThatDirectResponsesTools(self.model(lambda *a,**k:output([call()])).client)
+        with self.assertRaises(ProviderError):bad.generate([{'role':'user','parts':[{'text':'hello'}]}],deadline_s=60)
+
+    def test_direct_selection_does_not_bypass_daily_quota_or_refund_usage(self):
+        from app.discovery.responses import ApiThatDirectResponsesTools
+        base=self.model(lambda *a,**k:output([text('Chào bạn.')]))
+        direct=ApiThatDirectResponsesTools(base.client)
+        direct.client.budget=DailyLLMBudget(0)
+        catalog=ChatModels(GeminiTools(None),direct)
+        row=catalog.catalog(3)[-1]
+        self.assertTrue(row['selectable']);self.assertFalse(row['available']);self.assertEqual(row['reason'],'quota')
+        chosen=catalog.select(direct.identity);self.assertIsNotNone(chosen)
+        result,provider=handle('Chào bạn',tools(),model=chosen)
+        self.assertEqual(provider['calls'],0);self.assertEqual(provider['failure']['source'],'daily_reserve')
+        self.assertEqual(chosen.client.budget.snapshot()['used'],0)

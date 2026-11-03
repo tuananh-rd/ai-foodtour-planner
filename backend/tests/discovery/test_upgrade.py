@@ -329,7 +329,8 @@ class OptionHTTPTests(unittest.TestCase):
             budget.snapshot = lambda: {'remaining': self.app.state.llm_reserve}
             refused = self.client.post(url, headers=headers, json={'revision': response['revision'], 'action': {
                 'type': 'settings', 'arguments': {'chat_model': 'mock-verified-a'}}}).json()
-            self.assertEqual(refused['status'], 'unavailable')
-            self.assertEqual(refused['settings']['chat_model'], 'mock-verified-b')
+            self.assertEqual(refused['status'], 'ok')  # Settings remain selectable; actual generation still enforces quota.
+            self.assertEqual(refused['settings']['chat_model'], 'mock-verified-a')
+            self.assertEqual(catalog.available('mock-verified-a',self.app.state.llm_reserve),(False,'quota'))
             self.assertEqual(refused['settings']['remaining_session_calls'], response['settings']['remaining_session_calls'])
             self.assertEqual(refused['provider']['calls'], 0)
