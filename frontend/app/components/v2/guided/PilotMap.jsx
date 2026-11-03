@@ -11,26 +11,30 @@ export { PILOT_BOUNDS, DEFAULT_CENTER, DEFAULT_ZOOM, isInsidePilotBounds };
 
 /**
  * PilotMap
- * Interactive local map using self-hosted Hoan Kiem PMTiles vector archive and MapLibre GL.
+ * Interactive map using standard online OpenStreetMap raster tiles and MapLibre GL.
  * 
  * Invariants & review gates:
  * - Displays explicitly selected origin with human-readable label and distinct marker
+ * - Supports explicit map-click and draft draggable origin pin with Use Location callback
  * - Missing coordinates are NEVER placed at 0,0 and NEVER coerced from null/empty/bool
  * - Dashed connectors represent straight-line estimates only (no road route or live ETA claims)
  * - Missing coordinates break adjacency: connectors NEVER bridge or skip over missing stops
  * - Complete map and marker destruction on error, replace, and unmount
  * - Native <button> markers with keyboard activation (Enter/Space) and safe popup focus management
- * - Stable testids: pilot-map-canvas, pilot-markers-toggle, pilot-origin-marker, pilot-map-fallback
- * - Same-origin asset only (/maps/hoankiem-20261018.pmtiles); zero remote tiles or glyphs
- * - Visible OpenStreetMap & Protomaps attribution with map date
+ * - Stable testids: pilot-map-canvas, pilot-markers-toggle, pilot-origin-marker, pilot-map-fallback, pilot-draft-origin-marker, map-use-draft-location
+ * - Standard online OSM raster tiles (https://tile.openstreetmap.org/{z}/{x}/{y}.png)
+ * - Configurable via process.env.NEXT_PUBLIC_OSM_TILE_URL
+ * - Visible OpenStreetMap attribution with copyright link
+ * - Normal browser cache and referer; zero unauthorized prefetching
+ * - Discloses street/road detail across Hanoi without restrictive viewport clipping
  * - Zero emoji in UI strings
- * - Discloses local tile coverage outside Hoan Kiem without restrictive viewport clipping
  */
 export default function PilotMap({
   stops = [],
   origin = null,
   originLabel = '',
   onFallbackToSchematic,
+  onSelectMapOrigin,
   className = '',
   style = {}
 }) {
@@ -38,6 +42,7 @@ export default function PilotMap({
   const mapInstanceRef = useRef(null);
   const maplibreglRef = useRef(null);
   const markersRef = useRef([]);
+  const draftMarkerRef = useRef(null);
   const markerGenRef = useRef(0);
   const mapLoadedRef = useRef(false);
 
@@ -45,6 +50,7 @@ export default function PilotMap({
   const [mapReady, setMapReady] = useState(false);
   const [mapError, setMapError] = useState(null);
   const [markersVisible, setMarkersVisible] = useState(true);
+  const [draftOrigin, setDraftOrigin] = useState(null);
 
   // Validate and memoize explicit origin using strict numeric checks (no coercion)
   const validOrigin = useMemo(() => {
@@ -59,6 +65,13 @@ export default function PilotMap({
       inBounds: isInsidePilotBounds(lat, lon)
     };
   }, [origin, originLabel]);
+
+  // Clear draft origin pin when a new validOrigin is committed
+  useEffect(() => {
+    if (validOrigin) {
+      setDraftOrigin(null);
+    }
+  }, [validOrigin?.lat, validOrigin?.lon]);
 
   // Memoize valid stops using strict numeric checks (no coercion of null, bool, or strings)
   const validStops = useMemo(() => {
@@ -145,6 +158,11 @@ export default function PilotMap({
     });
     markersRef.current = [];
 
+    if (draftMarkerRef.current) {
+      try { draftMarkerRef.current.remove(); } catch (_) {}
+      draftMarkerRef.current = null;
+    }
+
     if (mapInstanceRef.current) {
       try {
         mapInstanceRef.current.remove();
@@ -199,7 +217,7 @@ export default function PilotMap({
     if (originToRender && originToRender.lat !== null && originToRender.lon !== null) {
       const originBtn = document.createElement('button');
       originBtn.type = 'button';
-      originBtn.className = 'nn-map-origin-marker';
+      originBtn.className = 'nn-map-marker nn-map-origin-marker';
       originBtn.setAttribute('data-testid', 'pilot-origin-marker');
       const originLabelClean = normalizeDisplayText(originToRender.label);
       originBtn.textContent = 'S';
@@ -304,12 +322,96 @@ export default function PilotMap({
     });
   }, []);
 
-  // Fit bounds to all valid points (origin + tour stops), not clipped to pilot bounds
-  const fitMapToBounds = useCallback((map, maplibregl, stopsToFit, originToFit) => {
+  // Update draft origin draggable marker
+  const onSelectMapOriginRef = useRef(onSelectMapOrigin);
+  onSelectMapOriginRef.current = onSelectMapOrigin;
+
+  useEffect(() => {
+    const map = mapInstanceRef.current;
+    const maplibregl = maplibreglRef.current;
+    if (!map || !maplibregl) return;
+
+    if (draftMarkerRef.current) {
+      try { draftMarkerRef.current.remove(); } catch (_) {}
+      draftMarkerRef.current = null;
+    }
+
+    if (!draftOrigin || draftOrigin.lat === null || draftOrigin.lon === null) {
+      return;
+    }
+
+    const draftEl = document.createElement('div');
+    draftEl.className = 'nn-map-draft-origin-marker';
+    draftEl.setAttribute('data-testid', 'pilot-draft-origin-marker');
+    draftEl.setAttribute('title', 'Kéo để chỉnh vị trí hoặc nhấn Sử dụng vị trí này');
+
+    const draftInner = document.createElement('span');
+    draftInner.className = 'nn-map-draft-origin-inner';
+    draftInner.textContent = 'G';
+    draftEl.appendChild(draftInner);
+
+    const popupContent = document.createElement('div');
+    popupContent.className = 'nn-map-popup-card';
+    popupContent.setAttribute('tabindex', '-1');
+
+    const titleEl = document.createElement('div');
+    titleEl.className = 'nn-map-popup-title';
+    titleEl.textContent = 'Vị trí đã chọn trên bản đồ';
+    popupContent.appendChild(titleEl);
+
+    const addrEl = document.createElement('div');
+    addrEl.className = 'nn-map-popup-addr';
+    addrEl.textContent = `Chờ xác nhận (tọa độ xấp xỉ: ${draftOrigin.lat.toFixed(5)}, ${draftOrigin.lon.toFixed(5)})`;
+    popupContent.appendChild(addrEl);
+
+    const useBtn = document.createElement('button');
+    useBtn.type = 'button';
+    useBtn.className = 'nn-map-use-location-btn';
+    useBtn.setAttribute('data-testid', 'map-use-draft-location');
+    useBtn.textContent = 'Sử dụng vị trí này';
+    useBtn.onclick = () => {
+      if (typeof onSelectMapOriginRef.current === 'function') {
+        onSelectMapOriginRef.current({ lat: draftOrigin.lat, lon: draftOrigin.lon });
+      }
+    };
+    popupContent.appendChild(useBtn);
+
+    const popup = new maplibregl.Popup({ offset: 15, closeButton: true }).setDOMContent(popupContent);
+
+    const draftMarker = new maplibregl.Marker({
+      element: draftEl,
+      draggable: true
+    })
+      .setLngLat([draftOrigin.lon, draftOrigin.lat])
+      .setPopup(popup)
+      .addTo(map);
+
+    draftMarker.on('dragend', () => {
+      const lngLat = draftMarker.getLngLat();
+      setDraftOrigin({
+        lat: Number(lngLat.lat.toFixed(6)),
+        lon: Number(lngLat.lng.toFixed(6))
+      });
+    });
+
+    draftMarkerRef.current = draftMarker;
+
+    return () => {
+      if (draftMarkerRef.current) {
+        try { draftMarkerRef.current.remove(); } catch (_) {}
+        draftMarkerRef.current = null;
+      }
+    };
+  }, [draftOrigin]);
+
+  // Fit bounds to all valid points (origin + tour stops + draftOrigin), not clipped to pilot bounds
+  const fitMapToBounds = useCallback((map, maplibregl, stopsToFit, originToFit, draftToFit) => {
     if (!map || !maplibregl) return;
     const points = [];
     if (originToFit && originToFit.lat !== null && originToFit.lon !== null) {
       points.push([originToFit.lon, originToFit.lat]);
+    } else if (draftToFit && draftToFit.lat !== null && draftToFit.lon !== null) {
+      points.push([draftToFit.lon, draftToFit.lat]);
     }
     stopsToFit.forEach((s) => {
       if (s.lat !== null && s.lon !== null) {
@@ -350,24 +452,12 @@ export default function PilotMap({
       cleanupMap();
 
       try {
-        const [maplibreglModule, pmtilesModule] = await Promise.all([
-          import('maplibre-gl'),
-          import('pmtiles')
-        ]);
-
+        const maplibreglModule = await import('maplibre-gl');
         if (isCancelled) return;
 
         const maplibregl = maplibreglModule.default || maplibreglModule;
-        const { Protocol } = pmtilesModule;
 
-        // Register PMTiles protocol globally once
-        if (typeof window !== 'undefined' && !window._pmtilesProtocolRegistered) {
-          const protocol = new Protocol();
-          maplibregl.addProtocol('pmtiles', protocol.tile);
-          window._pmtilesProtocolRegistered = true;
-        }
-
-        // Configure MapLibre web worker
+        // Configure MapLibre web worker safely
         if (typeof window !== 'undefined' && !window._maplibreWorkerConfigured) {
           try {
             const bundlerUrl = new URL('maplibre-gl/dist/maplibre-gl-worker.mjs', import.meta.url).toString();
@@ -378,15 +468,19 @@ export default function PilotMap({
           window._maplibreWorkerConfigured = true;
         }
 
-        const pmtilesUrl = `${window.location.origin}/maps/hoankiem-20261018.pmtiles`;
+        const osmTileUrl = (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_OSM_TILE_URL)
+          || 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
 
-        // Local vector style matching warm editorial palette without remote dependencies
-        const localStyle = {
+        // Online OpenStreetMap raster style with route connectors
+        const osmRasterStyle = {
           version: 8,
           sources: {
-            protomaps: {
-              type: 'vector',
-              url: `pmtiles://${pmtilesUrl}`
+            'osm-raster': {
+              type: 'raster',
+              tiles: [osmTileUrl],
+              tileSize: 256,
+              attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors',
+              maxzoom: 19
             },
             'route-connectors': {
               type: 'geojson',
@@ -398,62 +492,11 @@ export default function PilotMap({
           },
           layers: [
             {
-              id: 'background',
-              type: 'background',
-              paint: { 'background-color': '#EBF2ED' }
-            },
-            {
-              id: 'water',
-              type: 'fill',
-              source: 'protomaps',
-              'source-layer': 'water',
-              paint: { 'fill-color': '#CDE0D8' }
-            },
-            {
-              id: 'earth',
-              type: 'fill',
-              source: 'protomaps',
-              'source-layer': 'earth',
-              paint: { 'fill-color': '#DFECE5' }
-            },
-            {
-              id: 'landuse',
-              type: 'fill',
-              source: 'protomaps',
-              'source-layer': 'landuse',
-              paint: { 'fill-color': '#E4EFE8' }
-            },
-            {
-              id: 'buildings',
-              type: 'fill',
-              source: 'protomaps',
-              'source-layer': 'buildings',
-              paint: {
-                'fill-color': '#DFDACF',
-                'fill-outline-color': '#CEC8BC',
-                'fill-opacity': 0.75
-              }
-            },
-            {
-              id: 'roads-casing',
-              type: 'line',
-              source: 'protomaps',
-              'source-layer': 'roads',
-              paint: { 'line-color': '#C8D5CD', 'line-width': 2.8 }
-            },
-            {
-              id: 'roads-inner',
-              type: 'line',
-              source: 'protomaps',
-              'source-layer': 'roads',
-              paint: { 'line-color': '#FFFFFF', 'line-width': 1.2 }
-            },
-            {
-              id: 'boundaries',
-              type: 'line',
-              source: 'protomaps',
-              'source-layer': 'boundaries',
-              paint: { 'line-color': '#88A596', 'line-dasharray': [2, 2] }
+              id: 'osm-raster-layer',
+              type: 'raster',
+              source: 'osm-raster',
+              minzoom: 0,
+              maxzoom: 19
             },
             {
               id: 'estimated-connectors',
@@ -468,19 +511,37 @@ export default function PilotMap({
           ]
         };
 
-        // Initialize MapLibre without restrictive pilot maxBounds so actual tour (e.g. Hoang Mai) fits correctly
+        const initialCenter = (originRef.current && originRef.current.lat !== null)
+          ? [originRef.current.lon, originRef.current.lat]
+          : DEFAULT_CENTER;
+
         const map = new maplibregl.Map({
           container: mapContainerRef.current,
-          style: localStyle,
-          center: DEFAULT_CENTER,
+          style: osmRasterStyle,
+          center: initialCenter,
           zoom: DEFAULT_ZOOM,
-          minZoom: 8,
-          maxZoom: 18,
+          minZoom: 6,
+          maxZoom: 19,
           cooperativeGestures: true,
-          attributionControl: false
+          attributionControl: false,
+          prefetchZoomDelta: 0,
+          cancelPendingTileRequestsWhileZooming: true,
+          refreshExpiredTiles: false
         });
 
         map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+
+        // Handle map click to place draft draggable origin pin
+        map.on('click', (e) => {
+          if (e.originalEvent?.defaultPrevented) return;
+          const { lng, lat } = e.lngLat;
+          if (lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180) {
+            setDraftOrigin({
+              lat: Number(lat.toFixed(6)),
+              lon: Number(lng.toFixed(6))
+            });
+          }
+        });
 
         mapInstanceRef.current = map;
         maplibreglRef.current = maplibregl;
@@ -491,9 +552,12 @@ export default function PilotMap({
         map.on('error', () => {
           if (!isCancelled) {
             clearTimeout(timeoutId);
-            cleanupMap();
-            setMapError('Lỗi hiển thị bản đồ vector nội bộ.');
-            setLoading(false);
+            // Non-fatal tile network errors do not tear down the whole map canvas unless critical
+            if (!mapLoadedRef.current) {
+              cleanupMap();
+              setMapError('Lỗi kết nối bản đồ OpenStreetMap.');
+              setLoading(false);
+            }
           }
         });
 
@@ -505,14 +569,14 @@ export default function PilotMap({
             setMapReady(true);
             renderMarkersSync(map, maplibregl, stopsRef.current, originRef.current, markersVisibleRef.current);
             updateConnectors(map, connectorSegments);
-            fitMapToBounds(map, maplibregl, stopsRef.current, originRef.current);
+            fitMapToBounds(map, maplibregl, stopsRef.current, originRef.current, draftOrigin);
           }
         });
       } catch (err) {
         if (!isCancelled) {
           clearTimeout(timeoutId);
           cleanupMap();
-          setMapError('Lỗi khởi tạo bản đồ nội bộ hoặc WebGL không khả dụng.');
+          setMapError('Lỗi khởi tạo bản đồ OpenStreetMap hoặc WebGL không khả dụng.');
           setLoading(false);
         }
       }
@@ -611,7 +675,7 @@ export default function PilotMap({
         <div style={{ display: 'flex', alignItems: 'center', gap: 6, flexWrap: 'wrap' }}>
           {outOfBoundsCount > 0 && (
             <span className="nn-map-coverage-warning" data-testid="map-coverage-warning">
-              Thông tin: {outOfBoundsCount} điểm ngoài khu vực Hoàn Kiếm (hiển thị trên nền cơ bản)
+              Khu vực: {outOfBoundsCount} điểm ngoài quận Hoàn Kiếm (đầy đủ bản đồ đường phố)
             </span>
           )}
 
@@ -622,6 +686,37 @@ export default function PilotMap({
           )}
         </div>
       </div>
+
+      {/* Floating Draft Origin Bar */}
+      {draftOrigin && (
+        <div className="nn-map-draft-bar" data-testid="map-draft-bar">
+          <span className="nn-map-draft-text">
+            Vị trí đã chọn trên bản đồ (chờ xác nhận: {draftOrigin.lat.toFixed(4)}, {draftOrigin.lon.toFixed(4)})
+          </span>
+          <div style={{ display: 'flex', gap: '6px' }}>
+            <button
+              type="button"
+              className="nn-map-use-location-btn"
+              data-testid="map-use-draft-bar-btn"
+              onClick={() => {
+                if (typeof onSelectMapOrigin === 'function') {
+                  onSelectMapOrigin({ lat: draftOrigin.lat, lon: draftOrigin.lon });
+                }
+              }}
+            >
+              Sử dụng vị trí này
+            </button>
+            <button
+              type="button"
+              className="nn-map-cancel-draft-btn"
+              data-testid="map-clear-draft-btn"
+              onClick={() => setDraftOrigin(null)}
+            >
+              Hủy
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Map Canvas with stable pilot-map-canvas testid and loading state */}
       <div
@@ -635,7 +730,7 @@ export default function PilotMap({
 
       {loading && (
         <div className="sr-only" role="status" aria-live="polite">
-          Đang tải bản đồ khu vực…
+          Đang tải bản đồ OpenStreetMap khu vực…
         </div>
       )}
 
@@ -644,13 +739,11 @@ export default function PilotMap({
         {validOrigin && (
           <li>
             Xuất phát: {validOrigin.label}
-            {validOrigin.inBounds ? ' (trong khu vực Hoàn Kiếm)' : ' (ngoài khu vực Hoàn Kiếm)'}
           </li>
         )}
         {validStops.map((stop) => (
           <li key={stop.id}>
             {stop.index}. {stop.name} - {stop.address || stop.district || 'Hà Nội'}
-            {stop.inBounds ? ' (trong khu vực Hoàn Kiếm)' : ' (ngoài khu vực Hoàn Kiếm)'}
           </li>
         ))}
       </ol>
@@ -662,9 +755,9 @@ export default function PilotMap({
           <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">
             OpenStreetMap
           </a>{' '}
-          contributors, Protomaps
+          contributors
         </span>
-        <span>Dữ liệu: 2026-10-18</span>
+        <span>Bản đồ trực tuyến OpenStreetMap</span>
       </div>
     </div>
   );

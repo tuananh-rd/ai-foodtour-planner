@@ -103,8 +103,8 @@ export function validateDiscoveryAction(action) {
       if (!action.arguments.source || typeof action.arguments.source !== 'string') {
         action.arguments.source = 'coordinates';
       }
-      if (action.arguments.resolve_address && action.arguments.source !== 'gps') {
-        throw new DiscoveryApiError('invalid_action', 'Tùy chọn resolve_address chỉ được phép khi source là gps.');
+      if (action.arguments.resolve_address && action.arguments.source !== 'gps' && action.arguments.source !== 'map') {
+        throw new DiscoveryApiError('invalid_action', 'Tùy chọn resolve_address chỉ được phép khi source là gps hoặc map.');
       }
       if (action.arguments.label !== undefined && action.arguments.label !== null) {
         if (typeof action.arguments.label !== 'string' || action.arguments.label.trim().length < 2 || action.arguments.label.trim().length > 160) {
@@ -684,14 +684,14 @@ export function setCoordinatesLocationAction(lat, lon, source = 'coordinates', r
   if (!Number.isFinite(numLat) || !Number.isFinite(numLon) || numLat < -90 || numLat > 90 || numLon < -180 || numLon > 180) {
     throw new DiscoveryApiError('invalid_action', 'Tọa độ vị trí lat/lon không hợp lệ (lat: [-90, 90], lon: [-180, 180]).');
   }
-  const safeSource = source === 'gps' ? 'gps' : 'coordinates';
+  const safeSource = (source === 'gps' || source === 'map') ? source : 'coordinates';
   const args = {
     operation: 'coordinates',
     lat: numLat,
     lon: numLon,
     source: safeSource
   };
-  if (resolveAddress && safeSource === 'gps') {
+  if (resolveAddress && (safeSource === 'gps' || safeSource === 'map')) {
     args.resolve_address = true;
   }
   if (label && typeof label === 'string' && label.trim().length >= 2) {
@@ -729,7 +729,7 @@ export function clearLocationAction() {
  * Standard Vietnamese translations for backend distance_reason enum values.
  */
 export const DISTANCE_REASON_LABELS_VI = {
-  origin_missing: 'chưa có điểm xuất phát',
+  origin_missing: 'chưa chọn điểm xuất phát',
   venue_coordinates_missing: 'quán thiếu toạ độ'
 };
 
@@ -766,7 +766,7 @@ export function formatMenuReferencePrice(mref) {
   }
   const p = Number(mref.reference_price_vnd);
   if (!Number.isFinite(p)) return 'Giá chưa xác định';
-  return `~${p.toLocaleString('vi-VN')} đ (giao hàng)`;
+  return `${p.toLocaleString('vi-VN')} đ`;
 }
 
 /**
@@ -1197,4 +1197,55 @@ export function classifyServiceInterruption(provider, messages = []) {
   }
 
   return null;
+}
+
+/**
+ * GET /v1/sessions/{id}/venues/{venue_id}/menu
+ * Fetches paginated canonical menu for one visible venue.
+ */
+export async function fetchVenueMenu(sessionId, venueId, options = {}, sessionToken = null) {
+  if (!sessionId || typeof sessionId !== 'string') {
+    throw new DiscoveryApiError('invalid_argument', 'Session ID không được để trống.');
+  }
+  if (!venueId || typeof venueId !== 'string') {
+    throw new DiscoveryApiError('invalid_argument', 'Venue ID không được để trống.');
+  }
+
+  const offset = Number.isInteger(options.offset) && options.offset >= 0 ? options.offset : 0;
+  const limit = Number.isInteger(options.limit) && options.limit >= 1 && options.limit <= 50 ? options.limit : 25;
+  const q = typeof options.q === 'string' ? options.q.trim() : '';
+  const group = options.group ? String(options.group).trim() : null;
+  const dishId = options.dishId ? String(options.dishId).trim() : null;
+  const optionOffset = Number.isInteger(options.optionOffset) && options.optionOffset >= 0 ? options.optionOffset : 0;
+  const optionLimit = Number.isInteger(options.optionLimit) && options.optionLimit >= 1 && options.optionLimit <= 500 ? options.optionLimit : 100;
+
+  const params = new URLSearchParams();
+  params.set('offset', String(offset));
+  params.set('limit', String(limit));
+  if (q) params.set('q', q);
+  if (group) params.set('group', group);
+  if (dishId) params.set('dish_id', dishId);
+  params.set('option_offset', String(optionOffset));
+  params.set('option_limit', String(optionLimit));
+
+  const url = `${getApiBaseUrl()}/v1/sessions/${encodeURIComponent(sessionId)}/venues/${encodeURIComponent(venueId)}/menu?${params.toString()}`;
+  const headers = { 'Accept': 'application/json' };
+  if (sessionToken) {
+    headers['X-Session-Token'] = sessionToken;
+  }
+
+  const res = await fetchWithTimeout(url, { method: 'GET', headers }, options.timeoutMs || 10000);
+  let body = null;
+  try {
+    body = await res.json();
+  } catch (jsonErr) {
+    throw new DiscoveryApiError('bad_response', `Phản hồi thực đơn không hợp lệ (mã ${res.status}).`, null, res.status);
+  }
+
+  if (!res.ok) {
+    const code = body?.code || `http_${res.status}`;
+    const msg = body?.message || `Lỗi tải thực đơn quán (mã ${res.status}).`;
+    throw new DiscoveryApiError(code, msg, body, res.status);
+  }
+  return body;
 }

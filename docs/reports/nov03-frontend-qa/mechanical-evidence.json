@@ -1,0 +1,123 @@
+{
+  "timestamp": "2026-11-03T00:42:33.592Z",
+  "api": "http://127.0.0.1:8250",
+  "web": "http://127.0.0.1:3350",
+  "checks": [
+    {
+      "name": "API health endpoint accessible",
+      "passed": true,
+      "details": {
+        "status": "ok"
+      }
+    },
+    {
+      "name": "Safety guard: Rules/mock offline lane verified (no live Gemini consumed)",
+      "passed": true,
+      "details": {
+        "llm": "mock",
+        "provider": "rules"
+      }
+    },
+    {
+      "name": "Location action accepts source: \"map\" with resolve_address: true",
+      "passed": true
+    },
+    {
+      "name": "Location action rejects resolve_address on non-gps/non-map source",
+      "passed": true
+    },
+    {
+      "name": "Price formatting returns clean plain price without \"(giao hàng)\" disclaimer",
+      "passed": true,
+      "details": {
+        "output": "45.000 đ"
+      }
+    },
+    {
+      "name": "Quarantined price truthfully returns \"Giá chưa xác minh\"",
+      "passed": true
+    },
+    {
+      "name": "Distance display truthfully explains \"chưa chọn điểm xuất phát\"",
+      "passed": true,
+      "details": {
+        "output": "Chưa có khoảng cách (chưa chọn điểm xuất phát)"
+      }
+    },
+    {
+      "name": "OSM Direction URL allowlist strictly validates walking engine",
+      "passed": true
+    },
+    {
+      "name": "Session creation returns session_id and token",
+      "passed": true
+    },
+    {
+      "name": "Assistant initial view has discovery-v1 contract",
+      "passed": true
+    },
+    {
+      "name": "Search \"phở tại Đống Đa\" returns venues",
+      "passed": true,
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "name": "Area-only search without origin has distance_m=null and distance_reason=\"origin_missing\"",
+      "passed": true
+    },
+    {
+      "name": "Pho matching strictly excludes cheese, tào phớ, phở cuốn/xào/chiên/trộn",
+      "passed": true,
+      "details": {
+        "matchingDishesChecked": 3,
+        "falsePositiveFound": false
+      }
+    },
+    {
+      "name": "Contrast: \"gà rán tại Đống Đa\" returns 0 matching_menu venues (truthful no-data in active archive)",
+      "passed": true,
+      "details": {
+        "menuVenuesCount": 0
+      }
+    },
+    {
+      "name": "Positive area: \"gà rán tại Cầu Giấy\" returns positive venues",
+      "passed": true,
+      "details": {
+        "count": 5
+      }
+    },
+    {
+      "name": "Unknown dish \"món lạ xyzqwer\" returns 0 results (no silent relaxation)",
+      "passed": true
+    },
+    {
+      "name": "GET /v1/sessions/{id}/venues/{venue_id}/menu returns HTTP 200",
+      "passed": true
+    },
+    {
+      "name": "Menu response has status \"ok\" or \"unavailable\"",
+      "passed": true,
+      "details": {
+        "status": "unavailable"
+      }
+    },
+    {
+      "name": "Origin set via source: \"map\" with resolve_address: true commits location",
+      "passed": true,
+      "details": {
+        "status": "chosen",
+        "source": "map",
+        "label": "Phố Trần Nguyên Hãn, Hoàn Kiếm, Hà Nội"
+      }
+    },
+    {
+      "name": "Venue added to tour selection",
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "overall": "PASS"
+}

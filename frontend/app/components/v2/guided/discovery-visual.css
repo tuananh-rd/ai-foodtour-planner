@@ -1517,3 +1517,256 @@
   color: #8C7872;
 }
 
+
+/* Unobtrusive Source Entry & Full Menu Styles */
+.nn-source-entry {
+  font-size: 11px;
+  color: #8C7872;
+  margin-top: 4px;
+}
+
+.nn-view-full-menu-btn {
+  background: #FFFDF8;
+  border: 1px solid #D9C2B0;
+  color: #702914;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: all 0.15s ease;
+}
+
+.nn-view-full-menu-btn:hover {
+  background: #F8EFE4;
+  border-color: #B88E75;
+}
+
+/* Full Menu Modal Section */
+.nn-venue-menu-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border-top: 1px solid #EADBCE;
+  padding-top: 12px;
+  margin-top: 6px;
+}
+
+.nn-venue-menu-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.nn-venue-menu-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #231815;
+}
+
+.nn-venue-menu-source {
+  font-size: 11px;
+  color: #8C7872;
+}
+
+.nn-venue-menu-search-form {
+  display: flex;
+  gap: 6px;
+}
+
+.nn-venue-menu-search-input {
+  flex: 1;
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid #D9C2B0;
+  border-radius: 6px;
+  background: #FFFFFF;
+  color: #231815;
+}
+
+.nn-venue-menu-search-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #166B52;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.nn-venue-menu-groups {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+}
+
+.nn-venue-menu-group-chip {
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 12px;
+  border: 1px solid #D9C2B0;
+  background: #FFFFFF;
+  color: #5A4327;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.nn-venue-menu-group-chip.active {
+  background: #166B52;
+  color: #FFFFFF;
+  border-color: #166B52;
+}
+
+.nn-venue-menu-items-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.nn-venue-menu-dish-card {
+  background: #FFFFFF;
+  border: 1px solid #EADBCE;
+  border-radius: 8px;
+  padding: 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nn-venue-menu-dish-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.nn-venue-menu-dish-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: #231815;
+}
+
+.nn-venue-menu-dish-price {
+  font-size: 12.5px;
+  font-weight: 700;
+  color: #702914;
+  white-space: nowrap;
+}
+
+.nn-venue-menu-dish-desc {
+  font-size: 11.5px;
+  color: #5A4327;
+}
+
+.nn-venue-menu-dish-groups {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.nn-venue-menu-dish-group-tag {
+  font-size: 10px;
+  background: #FBF4E6;
+  color: #7D4E1D;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.nn-dish-option-groups {
+  margin-top: 4px;
+  padding-left: 8px;
+  border-left: 2px solid #EADBCE;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nn-dish-option-group-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #5A4327;
+}
+
+.nn-dish-option-group-badge {
+  font-size: 10px;
+  margin-left: 4px;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.nn-dish-option-group-badge.mandatory {
+  background: #FEE2E2;
+  color: #991B1B;
+}
+
+.nn-dish-option-group-badge.optional {
+  background: #E5E7EB;
+  color: #374151;
+}
+
+.nn-dish-options-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-size: 11px;
+  color: #40534C;
+}
+
+.nn-dish-option-chip {
+  background: #F9FAFB;
+  border: 1px solid #E5E7EB;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+.nn-dish-load-more-options-btn {
+  background: none;
+  border: none;
+  color: #166B52;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  margin-top: 2px;
+}
+
+.nn-venue-menu-load-more-btn {
+  background: #FFFFFF;
+  border: 1px solid #166B52;
+  color: #166B52;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  align-self: center;
+  margin-top: 4px;
+}
+
+.nn-venue-menu-load-more-btn:hover {
+  background: #F0FDF4;
+}
+
+.nn-confirm-missing-origin-notice {
+  background: #FEF2F2;
+  border: 1px solid #FCA5A5;
+  color: #991B1B;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}

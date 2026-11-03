@@ -201,3 +201,91 @@
   align-items: center;
   gap: 4px;
 }
+
+/* Draft Draggable Origin Pin & Use Location Controls */
+.nn-map-draft-origin-marker {
+  width: 30px;
+  height: 30px;
+  background: #E65100;
+  color: #FFFFFF;
+  border: 3px solid #FFFFFF;
+  border-radius: 50% 50% 50% 0;
+  transform: rotate(-45deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.35);
+  cursor: grab;
+  transition: transform 0.15s ease;
+}
+
+.nn-map-draft-origin-marker:active {
+  cursor: grabbing;
+}
+
+.nn-map-draft-origin-inner {
+  transform: rotate(45deg);
+  font-size: 11px;
+  font-weight: 800;
+  color: #FFFFFF;
+}
+
+.nn-map-draft-bar {
+  position: absolute;
+  top: 40px;
+  left: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(6px);
+  border: 1px solid #166B52;
+  border-radius: 8px;
+  padding: 6px 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+  font-size: 12px;
+}
+
+.nn-map-draft-text {
+  color: #17352B;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.nn-map-use-location-btn {
+  background: #166B52;
+  color: #FFFFFF;
+  border: none;
+  border-radius: 6px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.nn-map-use-location-btn:hover {
+  background: #104F3D;
+}
+
+.nn-map-cancel-draft-btn {
+  background: #F4FAF6;
+  color: #40534C;
+  border: 1px solid #DDE7E1;
+  border-radius: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.nn-map-cancel-draft-btn:hover {
+  background: #E8F3EE;
+}

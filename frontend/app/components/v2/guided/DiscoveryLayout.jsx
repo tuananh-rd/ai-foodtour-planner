@@ -23,6 +23,7 @@ import {
   setCoordinatesLocationAction,
   setLabelLocationAction,
   clearLocationAction,
+  fetchVenueMenu,
   formatDistanceDisplay,
   formatMenuReferencePrice,
   formatMenuMinimum,
@@ -257,6 +258,13 @@ export default function DiscoveryLayout({
   const [profileForm, setProfileForm] = useState(INITIAL_NULLABLE_PROFILE);
   const [selectedForCompare, setSelectedForCompare] = useState([]);
   const [detailVenue, setDetailVenue] = useState(null);
+  const [menuData, setMenuData] = useState(null);
+  const [menuLoading, setMenuLoading] = useState(false);
+  const [menuError, setMenuError] = useState(null);
+  const [menuSearchQuery, setMenuSearchQuery] = useState('');
+  const [menuSelectedGroup, setMenuSelectedGroup] = useState(null);
+  const [loadingMoreMenu, setLoadingMoreMenu] = useState(false);
+  const [loadingMoreOptionsDishId, setLoadingMoreOptionsDishId] = useState(null);
   const displayDetailVenue = useMemo(() => detailVenue ? sanitizeRestaurantForDisplay(detailVenue) : null, [detailVenue]);
   const [errorBanner, setErrorBanner] = useState(null);
   const [geoNotice, setGeoNotice] = useState(null);
@@ -867,6 +875,237 @@ export default function DiscoveryLayout({
       handleDispatchAction(action, 'Đang chọn điểm xuất phát…');
     } catch (err) {
       setErrorBanner(err.message);
+    }
+  };
+
+  const handleSelectMapOrigin = useCallback(({ lat, lon }) => {
+    if (!sessionReady || busy) return;
+    try {
+      const action = setCoordinatesLocationAction(lat, lon, 'map', true);
+      handleDispatchAction(action, 'Đang chọn vị trí từ bản đồ…');
+    } catch (err) {
+      setErrorBanner(err.message);
+    }
+  }, [sessionReady, busy, handleDispatchAction]);
+
+  // Full Menu Identity Ref & State Guards
+  const menuRequestIdRef = useRef(0);
+
+  // Reset menu immediately on venue change to prevent stale display
+  useEffect(() => {
+    menuRequestIdRef.current += 1;
+    setMenuData(null);
+    setMenuError(null);
+    setMenuSearchQuery('');
+    setMenuSelectedGroup(null);
+    setLoadingMoreMenu(false);
+    setLoadingMoreOptionsDishId(null);
+  }, [displayDetailVenue?.id]);
+
+  // Full Menu Fetch with Strict Identity & Auth Guards
+  useEffect(() => {
+    const venueId = displayDetailVenue?.id;
+    const effectiveSessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
+    const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
+
+    if (!venueId || !effectiveSessionId) {
+      setMenuData(null);
+      setMenuError(null);
+      setMenuLoading(false);
+      return;
+    }
+
+    const currentReqId = ++menuRequestIdRef.current;
+    setMenuLoading(true);
+    setMenuError(null);
+
+    fetchVenueMenu(
+      effectiveSessionId,
+      venueId,
+      {
+        offset: 0,
+        limit: 25,
+        q: menuSearchQuery,
+        group: menuSelectedGroup
+      },
+      effectiveToken
+    )
+      .then((data) => {
+        if (
+          menuRequestIdRef.current === currentReqId &&
+          displayDetailVenue?.id === venueId &&
+          (latestSessionRef.current?.sessionId === effectiveSessionId || sessionId === effectiveSessionId)
+        ) {
+          setMenuData(data);
+          setMenuLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (
+          menuRequestIdRef.current === currentReqId &&
+          displayDetailVenue?.id === venueId
+        ) {
+          setMenuError(err.message || 'Không thể tải thực đơn chi tiết.');
+          setMenuLoading(false);
+        }
+      });
+  }, [displayDetailVenue?.id, sessionId, sessionToken, menuSelectedGroup]);
+
+  const handleMenuSearchSubmit = (e) => {
+    if (e && e.preventDefault) e.preventDefault();
+    const venueId = displayDetailVenue?.id;
+    const effectiveSessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
+    const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
+    if (!venueId || !effectiveSessionId) return;
+
+    const currentReqId = ++menuRequestIdRef.current;
+    setMenuLoading(true);
+    setMenuError(null);
+
+    fetchVenueMenu(
+      effectiveSessionId,
+      venueId,
+      {
+        offset: 0,
+        limit: 25,
+        q: menuSearchQuery,
+        group: menuSelectedGroup
+      },
+      effectiveToken
+    )
+      .then((data) => {
+        if (
+          menuRequestIdRef.current === currentReqId &&
+          displayDetailVenue?.id === venueId
+        ) {
+          setMenuData(data);
+          setMenuLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (
+          menuRequestIdRef.current === currentReqId &&
+          displayDetailVenue?.id === venueId
+        ) {
+          setMenuError(err.message || 'Không thể tìm kiếm thực đơn.');
+          setMenuLoading(false);
+        }
+      });
+  };
+
+  const handleLoadMoreMenu = async () => {
+    const venueId = displayDetailVenue?.id;
+    const effectiveSessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
+    const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
+    if (!menuData || !menuData.has_more || loadingMoreMenu || !venueId || !effectiveSessionId) return;
+
+    const currentReqId = ++menuRequestIdRef.current;
+    setLoadingMoreMenu(true);
+    try {
+      const nextOffset = menuData.offset + menuData.limit;
+      const res = await fetchVenueMenu(
+        effectiveSessionId,
+        venueId,
+        {
+          offset: nextOffset,
+          limit: menuData.limit,
+          q: menuSearchQuery,
+          group: menuSelectedGroup
+        },
+        effectiveToken
+      );
+      if (
+        menuRequestIdRef.current === currentReqId &&
+        displayDetailVenue?.id === venueId
+      ) {
+        setMenuData((prev) => ({
+          ...res,
+          items: [...(prev?.items || []), ...(res.items || [])]
+        }));
+      }
+    } catch (err) {
+      if (displayDetailVenue?.id === venueId) {
+        setErrorBanner(err.message);
+      }
+    } finally {
+      setLoadingMoreMenu(false);
+    }
+  };
+
+  const handleLoadMoreOptions = async (dish) => {
+    const venueId = displayDetailVenue?.id;
+    const effectiveSessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
+    const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
+    if (loadingMoreOptionsDishId || !venueId || !effectiveSessionId) return;
+
+    // Cumulative unique count from merged option groups
+    const currentTotalOptions = (dish.option_groups || []).reduce(
+      (acc, g) => acc + (Array.isArray(g.options) ? g.options.length : 0),
+      0
+    );
+    const nextOptionOffset = currentTotalOptions;
+
+    setLoadingMoreOptionsDishId(dish.id);
+    try {
+      const res = await fetchVenueMenu(
+        effectiveSessionId,
+        venueId,
+        {
+          dishId: dish.id,
+          optionOffset: nextOptionOffset,
+          optionLimit: 100
+        },
+        effectiveToken
+      );
+
+      if (displayDetailVenue?.id !== venueId) return;
+
+      const incoming = (res.items || []).find((d) => String(d.id) === String(dish.id));
+      if (incoming) {
+        setMenuData((prev) => {
+          if (!prev || displayDetailVenue?.id !== venueId) return prev;
+          const newItems = prev.items.map((it) => {
+            if (String(it.id) !== String(dish.id)) return it;
+            const mergedGroups = (it.option_groups || []).map((g) => ({
+              ...g,
+              options: [...(g.options || [])]
+            }));
+
+            (incoming.option_groups || []).forEach((incG) => {
+              const existingG = mergedGroups.find((g) => g.id === incG.id);
+              if (existingG) {
+                const exIds = new Set(existingG.options.map((o) => o.id));
+                const added = (incG.options || []).filter((o) => !exIds.has(o.id));
+                existingG.options = [...existingG.options, ...added];
+              } else {
+                mergedGroups.push({
+                  ...incG,
+                  options: [...(incG.options || [])]
+                });
+              }
+            });
+
+            const totalCumulative = mergedGroups.reduce(
+              (acc, g) => acc + (Array.isArray(g.options) ? g.options.length : 0),
+              0
+            );
+
+            return {
+              ...it,
+              option_groups: mergedGroups,
+              options_returned: totalCumulative,
+              options_complete: totalCumulative >= incoming.options_total
+            };
+          });
+          return { ...prev, items: newItems };
+        });
+      }
+    } catch (err) {
+      if (displayDetailVenue?.id === venueId) {
+        setErrorBanner(err.message);
+      }
+    } finally {
+      setLoadingMoreOptionsDishId(null);
     }
   };
 

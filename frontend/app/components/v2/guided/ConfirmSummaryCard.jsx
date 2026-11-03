@@ -203,7 +203,7 @@ export default function ConfirmSummaryCard({
             fontStyle: 'italic'
           }}
         >
-          Lưu ý: Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá tham khảo theo nguồn, không bảo đảm tổng chi phí món ăn theo người.
+          Lưu ý: Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá theo nguồn dữ liệu, không bảo đảm tổng chi phí món ăn theo người.
         </div>
 
         {/* Conditional / Warnings / Missing Info in Peach Box (Q02) */}
