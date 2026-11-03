@@ -19,6 +19,13 @@ from backend.tests.discovery.test_food_intent_matrix import matrix_data
 class UpgradeTests(unittest.TestCase):
     def tools(self,state=None):return Tools(state or State(),matrix_data(),StraightLineEstimator())
 
+    def test_dish_words_are_not_removed_as_generic_modifiers(self):
+        for dish in ('phô mai','pho mai','bánh ngọt','mì cay','bánh ít','bánh bột lọc'):
+            with self.subTest(dish=dish):
+                self.assertEqual(food_intent('tôi muốn ăn '+dish),[dish])
+        self.assertEqual(food_intent('tôi muốn ăn phở vào tối mai'),['phở'])
+        self.assertEqual(food_intent('tôi muốn ăn phở ít cay'),['phở'])
+
     def test_pho_soup_contrasts_accents_tokens_and_specific_phrases(self):
         negatives=['phô mai','pho mai','phố Huế','pho Hue','tào phớ','tao pho',
                    'phở cuốn','pho cuon','trà sữa phô mai','phở xào','phởgà']

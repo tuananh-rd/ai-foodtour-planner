@@ -32,7 +32,8 @@ class FoodRefinementTests(unittest.TestCase):
         data, state = refinement_data(), State()
         first, _ = handle('tôi muốn ăn phở', self.tools(state, data))
         self.assertIsNone(state.profile.origin)
-        self.assertIsNotNone(first['question'])
+        self.assertTrue(state.results)  # Area/food discovery no longer requires origin.
+        self.assertTrue(all(self.tools(state,data).restaurant(i)['distance_m'] is None for i in state.results))
         location_action(state, self.tools(state, data), {'operation':'coordinates',
             'source':'coordinates','lat':21.02,'lon':105.83})
         self.assertTrue(state.results)

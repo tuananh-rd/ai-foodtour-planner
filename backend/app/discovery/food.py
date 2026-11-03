@@ -14,9 +14,9 @@ _REQUEST = re.compile(r'\b(?:(?:muon|thich|them|can)\s+(?:di\s+)?(?:an|uong|thu)
                       r'(?:tim|kiem)(?!\s+hieu)(?:\s+(?:quan|mon))?|goi y(?:\s+(?:mon|quan))?|'
                       r'doi\s+(?:mon(?:\s+sang)?|sang)|cho\s+(?:toi|minh)\s+(?:an|uong))\b|^(?:an|uong)\b')
 _STOP = {'o','tai','quanh','gan','khu','quan','duoi','gia','ngan','sach','toi','nay',
-         'hom','mai','sang','trua','chieu','luc','vao','cho','nguoi','khong','tranh',
+         'hom','sang','trua','chieu','luc','vao','cho','nguoi','khong','tranh',
          'tru','nhung','di','nhe','nha','a','co','thoi','giup','minh','diung',
-         'it','bot','nhieu','ngon','re','ngot','cay'}
+         'ngon','re'}
 
 
 def _request_tokens(text):
@@ -47,6 +47,12 @@ def food_intent(text):
             word = tokens[index].group()
             folded_word = fold_uncached(word)
             if index > start and re.search(r'[,;.!?]', text[tokens[index-1].end():tokens[index].start()]):
+                break
+            # Individual words such as ít, bột, cay, ngọt and mai can be part
+            # of a dish. Only an explicit quantity+taste modifier ends its
+            # noun phrase; never reduce an unknown compound to a broad family.
+            if (folded_word in ('it','bot','nhieu') and index+1<len(tokens)
+                    and fold_uncached(tokens[index+1].group()) in ('cay','ngot','dau','muoi','beo')):
                 break
             if folded_word in _STOP or folded_word.isdigit():
                 break
