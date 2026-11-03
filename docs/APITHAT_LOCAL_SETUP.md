@@ -1,38 +1,67 @@
 # API Thật: current app readiness and local operation
 
-## Current state — accepted direct chat, native tools unverified
+## Current state - daily200/session30, reviewed native Luna Responses
 
 Serving UI: **http://127.0.0.1:3350**, API: **http://127.0.0.1:8250**.
-Source: `992d8ae`. The official OpenAI Python SDK3.42.1 has produced a real completed
-Responses answer from `gpt-6-luna`. At **2026-11-03 10:41:21 Vietnam time**, the
-short greeting/advice request returned **HTTP200**, response model `gpt-6-luna`,
-latency **11,997ms**, usage **327 input +70 output =397 tokens**, reasoning tokens0.
-Provider did not return a cost, so charged cost is unknown rather than inferred.
-Its public answer recommended bún chả and explained it naturally. No tools were used.
-Evidence: `docs/reports/APITHAT_60S_LAST_GREETING.json`.
+Code: `1644e48` (approved limits) and `5fdb85c` (native tools/grounding).
+The user explicitly approved daily200 calls and session30, with reserve3,
+max_output_tokens512, a two-request/six-tool turn bound, Responses60s and client75s.
+The original shared ledger was retained at used20; no reset/new ledger, account-key
+money limit/group/model change, billing action or retry/failover was performed.
+Lower explicitly configured limits still win. Existing session counters remain used;
+only a new disposable session starts with the full30-call allowance.
 
-The local provider is now **enabled1 for reviewed direct chat only**. Catalog:
-`direct_chat_verified:true`, `native_tools_verified:false`, `selectable:true`,
-`available:false`, `reason:quota`. Native tools are omitted from actual direct-chat
-requests; unexpected provider function calls are rejected. Searching/confirming a
-tour with model-led native tools has **not** passed live acceptance. The app explains
-this direct-only limitation. Gemini remains an option and the existing default;
-user sessions are not silently switched.
+API Thật is enabled1 for **gpt-6-luna / Responses using the official OpenAI Python
+SDK3.42.1**. Gemini remains an option/default; existing sessions keep their model.
+Catalog distinguishes configured, selectable, available, direct-chat proof and
+native-tool proof. Selection itself consumes no model call and never resets quota.
 
-Current shared ledger: **used20/daily20, remaining0**. The user explicitly approved
-18→20 for two additional QA calls; no ledger reset or new budget was created.
-Session cap6 and runtime reserve3 remain unchanged. The ordinary reset is
-**2026-11-03T08:00:00Z /15:00 Vietnam time**. No generation allowance remains.
-Model selection is a zero-generation settings action; choosing it does not refill
-session or daily budgets. Actual chat still enforces daily/session admission and
-reserve. Until ordinary admission is available, the app truthfully reports the limit.
+Real native QA: two public search/continuation journeys, **four HTTP attempts**,
+all HTTP200/completed with response model `gpt-6-luna`. Each model initiated native
+`search_restaurants`; real menu6 backend results contained5 venues and12 matching
+menu rows. Each second request included the actual function_call_output under its
+original call_id, preserving native reasoning items. Selection/tour stayed unchanged.
+The original responses were withheld by the output privacy guard: a verified
+currency range was mistaken for GPS. The fix masks only independently evidence-backed
+currency spans/ranges during output checking, rejects unsupported amounts/ranges,
+and retains coordinate/contact/key/allergy/authority checks. The captured real
+continuation then passed offline revalidation with **zero new HTTP attempts**.
+Raw venue records, answers and native opaque items remain private outside Git.
 
-UI acceptance:9 actual browser settings-only checks passed at1440 and390px. They
-verified API Thật selection, direct-only disclosure, retained Gemini, exhausted-quota
-copy, unchanged session allowance, and unchanged20/20 ledger/reserve3. A CDP request
-guard blocked any potential text POST; none occurred. Build exited0. Evidence:
-`docs/reports/apithat-settings-ui/private-evidence.json`. OSM/data/session flows were
-preserved; no unrelated broad suites were repeated and user Word files were untouched.
+Evidence: `APITHAT_NATIVE200_PROOF.json`, `APITHAT_NATIVE200_GROUNDING.json`,
+`APITHAT_GROUNDING_DIAGNOSTIC.json`, `APITHAT_GROUNDING_REVALIDATION.json` under
+`docs/reports/`. Provider did not return cost; charged cost is unknown. Final rendered app acceptance and current ledger are recorded in the checkpoint
+below after the bounded browser journey; no further automatic calls beyond six QA
+HTTP attempts are authorized. Concurrent user app calls share the same ledger and
+are reported separately rather than being attributed to QA.
+
+Historical direct-chat proof remains valid: Nov3 10:41:21 Vietnam, HTTP200/completed,
+11,997ms,327 input+70 output=397 tokens. Earlier20/20 quota and direct-only UI evidence
+were historical snapshots, superseded by this approved200/30 native integration.
+This is not blanket acceptance of every model answer or the whole application.
+
+## Final bounded QA checkpoint - partial acceptance, not a full chat-quality pass
+
+Code/build `5fdb85c`; configured private3350/API8250 build exited0.33 affected
+backend regressions and client75s/backend60s timeout contract passed. The actual
+browser typed a public food request, selected API Thật and used real backend data:
+**10/11 checks passed** at1440/390. Search returned5 venues/15 matching menu rows;
+selection/tour stayed unchanged. Its two-call native flow finished in49,804ms but
+final reply_source remained **tools**, reason **safe_answer_rejected**, no provider
+failure. Therefore this actual app grounded-answer check **failed**. Native wire
+capability is proven; general natural conversation quality is not fully accepted.
+Do not hide this failure behind HTTP200 or the earlier offline revalidation pass.
+
+This QA episode used **exactly6 HTTP generation attempts** (four diagnostic/proof,
+two browser), no retries/failover. No further automatic generation is being made.
+The shared ledger also includes concurrent ordinary user app traffic; see timestamped
+`docs/reports/APITHAT_200_30_CHECKPOINT.json` for the current count/remaining and
+`docs/reports/apithat-native200-ui/private-evidence.json` for the failed check.
+The model remains selectable for the user's explicitly approved ordinary app use;
+existing budgets/session counters continue enforcing admission. Follow-up work must
+capture sanitized rejection diagnostics or retain the output privately for offline
+analysis before another explicitly bounded QA episode. No key/account change or
+blind extra generation is required to explain this local output-guard failure.
 
 ## Exact configuration and deadlines
 
@@ -50,9 +79,9 @@ FOODTOUR_APITHAT_ENABLED=1
 ```
 
 The launcher allowlists these five variables; process environment takes precedence.
-`backend/.env` now has the user-approved `FOODTOUR_LLM_DAILY_BUDGET=20`; prior bytes
+`backend/.env` now has the user-approved `FOODTOUR_LLM_DAILY_BUDGET=200`; prior bytes
 are backed up privately outside Git. The existing ledger path/session namespace
-remain in use. No other caps or account funds were changed by code.
+remain in use. Session cap is now30; reserve3/output512/tool bounds/account funds are unchanged.
 
 Only API Thật Responses has a bounded60second backend turn/SDK deadline. Frontend
 chat waits75seconds for this mode. Gemini and legacy Chat deadlines are unchanged;

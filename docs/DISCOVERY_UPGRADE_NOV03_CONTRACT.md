@@ -1,34 +1,39 @@
 # November03 discovery upgrade contract
 
-## Latest accepted runtime update — official SDK direct chat
+## Latest authority - native Luna and approved daily200/session30
 
-Source992d8ae uses provider-documented OpenAI Python SDK3.42.1 with default identity,
-retries0, verified TLS/trust_envfalse and bounded Responses60s turn deadline. Its
-frontend waits75s; Gemini/legacy Chat and Photon deadlines remain unchanged.
-Luna low reasoning is documented; output512 is unchanged. Existing JSON/CAS flow
-is retained instead of adding partial SSE mutation semantics.
+User explicitly approves daily200/session30, original used ledger retained,
+reserve3/output512/two-model-call/six-tool bounds unchanged. Official SDK Responses
+uses the verified gpt-6-luna/base https://apithat.dev/v1,60s total turn and75s client,
+no retries/failover. Six HTTP generation attempts maximum for this QA episode;
+ordinary user app traffic remains accounted in the same ledger. No billing/key
+money limit/group/model changes or new ledger are authorized.
 
-The user approved daily18→20, same ledger/session cap6. Two new attempts: native
-request timed out at12,922ms before a tool response; final simple60s-bounded greeting
-returned200/completed, modelgpt-6-luna,327input+70output=397tokens in11,997ms. Cost
-not supplied. Runtime reserve3 is restored/unchanged; daily now20/20 and no further
-generation allowance remains. APIThật enabled1 applies only to reviewed direct chat.
+Native search and real function_call_output continuation succeeded over SDK HTTP200.
+Actual menu6 supplied5 venues/12 matching rows. Captured final answers initially
+hit a false GPS rejection on a grounded currency range; the narrowly scoped output
+fix passed offline revalidation and33 affected regressions. Input GPS/health filtering,
+ID/auth/CAS/mutation/explicit confirmation/allergy authority remain unchanged.
+Only reviewed Luna Responses gains native capability; unverified models/protocols
+retain gates. Raw private records/opaque reasoning are not persisted in reports.
+See APITHAT_LOCAL_SETUP.md and per-attempt/native/UI evidence for current acceptance,
+remaining quota and limitations. This supersedes prior direct-only/20-of20 snapshots;
+no blanket whole-app or Gemini quality acceptance is implied.
 
-Catalog separates direct_chat_verifiedtrue from native_tools_verifiedfalse. Direct
-requests omit tools and reject unexpected function calls. Model selection is a
-zero-generation settings change: selectabletrue may coexist with availablefalse/
-reasonquota; actual generation admission and session use are never reset/bypassed.
-Gemini remains an option/default, existing sessions retain explicit choices. The UI
-labels direct-only limitations and exhausted quota. Nine actual settings-only
-browser checks at1440/390PASS with text POSTs guarded; ledger20/20 unchanged.
+Codex backend/data/integration; Antigravity frontend/mechanical QA; Claude rests.
+No additional scraping, paid activation, private publication, push or deploy.
 
-Native search→real tool result→continuation remains pending actual proof and new
-explicit allowance/ordinary admission. Earlier prepared-native and zero-attempt
-paragraphs below are historical decisions, superseded only by this reviewed direct
-mode. No full model-led food-search acceptance is asserted.
+### Rendered acceptance boundary
 
-Latest user authority: Codex backend/data/contracts/integration; Antigravity frontend/mechanical
-QA; Claude rests. No AI generation allowance, ledger/cap changes, paid activation or publication.
+Final actual app search used two HTTP calls, returned5 results/15 matching menu rows,
+but its final grounded model answer was rejected locally (safe_answer_rejected;
+reply_source tools).10/11 browser checks passed, one failed. Six QA calls are spent;
+no further automated generation is authorized in this episode. Native protocol proof
+and offline captured-answer revalidation do not replace this failed rendered check.
+Current runtime remains usable at3350/API8250 with honest source metadata; whole-app
+chat quality is not declared complete. See APITHAT_200_30_CHECKPOINT.json and native
+UI evidence. Freeze source after task-owned commit for root's authorized safety
+review/push; no self-push or runtime restart for publishing.
 
 ## Model-first API Thật decision (latest user authority)
 

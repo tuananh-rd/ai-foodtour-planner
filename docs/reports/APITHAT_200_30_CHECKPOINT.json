@@ -1,0 +1,38 @@
+{
+  "source": "5fdb85c",
+  "timestamp_vn": "2026-11-03T11:09:16+07:00",
+  "ui_http": 200,
+  "api_http": 200,
+  "budget": {
+    "limit": 200,
+    "remaining": 168,
+    "exhausted": false,
+    "session_cap": 30,
+    "reserve": 3,
+    "used": 32,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "qa_generation_attempts": 6,
+  "qa_breakdown": {
+    "native_probe": 2,
+    "grounding_diagnostic_probe": 2,
+    "actual_browser_turn": 2
+  },
+  "original_ledger_used": 20,
+  "observed_other_app_calls": 6,
+  "session_ledger_reset": false,
+  "reserve_changed": false,
+  "billing_changed": false,
+  "native_protocol_verified": true,
+  "captured_grounded_continuation_offline_revalidated": true,
+  "rendered_app_grounded_reply_accepted": false,
+  "rendered_app_reason": "safe_answer_rejected",
+  "browser_checks": {
+    "pass": 10,
+    "fail": 1
+  },
+  "cost": "not returned by provider; unknown",
+  "further_automatic_generation": "none authorized by this six-request QA episode",
+  "key_or_private_records_exported": false
+}
