@@ -1601,6 +1601,16 @@
   cursor: pointer;
 }
 
+.nn-venue-menu-search-clear-btn {
+  padding: 6px 10px;
+  font-size: 11px;
+  background: #F3ECE2;
+  color: #7A625A;
+  border: 1px solid #D9C2B0;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
 .nn-venue-menu-groups {
   display: flex;
   gap: 6px;

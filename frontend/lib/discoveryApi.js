@@ -1249,3 +1249,60 @@ export async function fetchVenueMenu(sessionId, venueId, options = {}, sessionTo
   }
   return body;
 }
+
+/**
+ * Merges newly fetched option groups into a dish, preserving uniqueness of option IDs.
+ * Recomputes options_returned and options_complete deterministically.
+ */
+export function mergeDishOptions(existingDish, incomingDish) {
+  if (!existingDish || !incomingDish) return existingDish;
+
+  const mergedGroups = (existingDish.option_groups || []).map((g) => ({
+    ...g,
+    options: [...(g.options || [])]
+  }));
+
+  (incomingDish.option_groups || []).forEach((incG) => {
+    const existingG = mergedGroups.find((g) => g.id === incG.id);
+    if (existingG) {
+      const exIds = new Set(existingG.options.map((o) => o.id));
+      const added = (incG.options || []).filter((o) => !exIds.has(o.id));
+      existingG.options = [...existingG.options, ...added];
+    } else {
+      mergedGroups.push({
+        ...incG,
+        options: [...(incG.options || [])]
+      });
+    }
+  });
+
+  const totalCumulative = mergedGroups.reduce(
+    (acc, g) => acc + (Array.isArray(g.options) ? g.options.length : 0),
+    0
+  );
+
+  const targetTotal = incomingDish.options_total ?? existingDish.options_total ?? totalCumulative;
+
+  return {
+    ...existingDish,
+    option_groups: mergedGroups,
+    options_returned: totalCumulative,
+    options_complete: totalCumulative >= targetTotal
+  };
+}
+
+/**
+ * Applies merged options to a dish inside menuData items immutably.
+ */
+export function applyDishOptionsToMenu(menuData, incomingDish, dishId) {
+  if (!menuData || !Array.isArray(menuData.items) || !incomingDish) return menuData;
+  const targetIdStr = String(dishId ?? incomingDish.id);
+  const updatedItems = menuData.items.map((item) => {
+    if (String(item.id) !== targetIdStr) return item;
+    return mergeDishOptions(item, incomingDish);
+  });
+  return {
+    ...menuData,
+    items: updatedItems
+  };
+}

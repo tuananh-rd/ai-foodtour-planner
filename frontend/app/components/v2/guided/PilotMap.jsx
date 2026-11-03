@@ -524,7 +524,6 @@ export default function PilotMap({
           maxZoom: 19,
           cooperativeGestures: true,
           attributionControl: false,
-          prefetchZoomDelta: 0,
           cancelPendingTileRequestsWhileZooming: true,
           refreshExpiredTiles: false
         });

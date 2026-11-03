@@ -194,17 +194,7 @@ export default function ConfirmSummaryCard({
           <b>Phương tiện:</b> {vehicleLabel}{isDefaultVehicle ? ' (mặc định)' : ''}
         </div>
 
-        {/* Budget distinction note (Q02) */}
-        <div
-          style={{
-            fontSize: 12,
-            color: 'var(--nn-mute, #62736D)',
-            marginTop: 4,
-            fontStyle: 'italic'
-          }}
-        >
-          Lưu ý: Ngân sách là mức trần mong muốn của bạn; giá theo quán là khoảng giá theo nguồn dữ liệu, không bảo đảm tổng chi phí món ăn theo người.
-        </div>
+        
 
         {/* Conditional / Warnings / Missing Info in Peach Box (Q02) */}
         {((Array.isArray(summary?.warnings) && summary.warnings.length > 0) ||

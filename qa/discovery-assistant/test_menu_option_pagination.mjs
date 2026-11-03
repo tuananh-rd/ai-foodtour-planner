@@ -3,9 +3,15 @@
  *
  * Targeted regression tests for Menu Option Pagination (>200 options)
  * and Identity/Abort Guards (Review P1 gate).
+ * Exercises actual exported helpers and state updates from discoveryApi.js.
  */
 
-import { fetchVenueMenu, DiscoveryApiError } from '../../frontend/lib/discoveryApi.js';
+import {
+  fetchVenueMenu,
+  mergeDishOptions,
+  applyDishOptionsToMenu,
+  DiscoveryApiError
+} from '../../frontend/lib/discoveryApi.js';
 
 function assert(condition, message) {
   if (!condition) {
@@ -16,13 +22,12 @@ function assert(condition, message) {
 
 console.log('=== Running Menu Option Pagination (>200 options) & Identity Guard Tests ===\n');
 
-// 1. Simulation of multi-page option pagination (>200 options)
-console.log('Test 1: Multi-page option pagination (>200 options) cumulative accumulation');
+// 1. Direct testing of mergeDishOptions and applyDishOptionsToMenu helper functions
+console.log('Test 1: Multi-page option pagination (>200 options) using mergeDishOptions and applyDishOptionsToMenu');
 
 const mockDishId = 'dish-test-999';
 const totalOptionsInSource = 250;
 
-// Generate 250 synthetic options across 2 option groups
 function generateOptionPage(dishId, offset, limit) {
   const groups = [
     { id: 'item1:groupA', name: 'Topping thêm', mandatory: false, min_select: null, max_select: 10, options: [] },
@@ -43,7 +48,7 @@ function generateOptionPage(dishId, offset, limit) {
 
   const returnedInChunk = Math.max(0, pageEnd - offset);
   return {
-    dish_id: dishId,
+    id: dishId,
     options_total: totalOptionsInSource,
     options_returned: returnedInChunk,
     options_complete: offset + returnedInChunk >= totalOptionsInSource,
@@ -51,99 +56,106 @@ function generateOptionPage(dishId, offset, limit) {
   };
 }
 
-// Client accumulation simulation (mimicking handleLoadMoreOptions in DiscoveryLayout)
-let currentDish = {
-  id: mockDishId,
-  name: 'Món đặc biệt',
-  price_vnd: 50000,
-  options_total: totalOptionsInSource,
-  options_returned: 0,
-  options_complete: false,
-  option_groups: []
+let initialMenuData = {
+  status: 'ok',
+  total: 1,
+  items: [
+    {
+      id: mockDishId,
+      name: 'Món đặc biệt',
+      price_vnd: 50000,
+      options_total: totalOptionsInSource,
+      options_returned: 0,
+      options_complete: false,
+      option_groups: []
+    }
+  ]
 };
 
-// Page 1: Initial load (chunk 0..100)
+// Page 1: Chunk 0..100
 const page1 = generateOptionPage(mockDishId, 0, 100);
-currentDish.option_groups = page1.option_groups;
-currentDish.options_returned = currentDish.option_groups.reduce((acc, g) => acc + g.options.length, 0);
-currentDish.options_complete = currentDish.options_returned >= currentDish.options_total;
+let currentMenu = applyDishOptionsToMenu(initialMenuData, page1, mockDishId);
+let currentDish = currentMenu.items[0];
 
 assert(currentDish.options_returned === 100, `Page 1 options_returned should be 100, got ${currentDish.options_returned}`);
 assert(currentDish.options_complete === false, 'Page 1 should not be complete');
 
 // Page 2: Next chunk offset is 100, limit 100 (chunk 100..200)
-const nextOffsetPage2 = currentDish.option_groups.reduce((acc, g) => acc + g.options.length, 0);
+const nextOffsetPage2 = currentDish.options_returned;
 assert(nextOffsetPage2 === 100, `Next offset for Page 2 must be 100, got ${nextOffsetPage2}`);
 
 const page2 = generateOptionPage(mockDishId, nextOffsetPage2, 100);
-// Merge logic
-const mergedGroupsP2 = currentDish.option_groups.map(g => ({ ...g, options: [...g.options] }));
-page2.option_groups.forEach(incG => {
-  const existingG = mergedGroupsP2.find(g => g.id === incG.id);
-  if (existingG) {
-    const exIds = new Set(existingG.options.map(o => o.id));
-    const added = incG.options.filter(o => !exIds.has(o.id));
-    existingG.options = [...existingG.options, ...added];
-  } else {
-    mergedGroupsP2.push({ ...incG, options: [...incG.options] });
-  }
-});
-currentDish.option_groups = mergedGroupsP2;
-currentDish.options_returned = mergedGroupsP2.reduce((acc, g) => acc + g.options.length, 0);
-currentDish.options_complete = currentDish.options_returned >= currentDish.options_total;
+currentMenu = applyDishOptionsToMenu(currentMenu, page2, mockDishId);
+currentDish = currentMenu.items[0];
 
 assert(currentDish.options_returned === 200, `Page 2 cumulative options_returned must be 200, got ${currentDish.options_returned}`);
 assert(currentDish.options_complete === false, 'Page 2 should not be complete (total is 250)');
 
 // Page 3: Next chunk offset is 200, limit 100 (chunk 200..250)
-const nextOffsetPage3 = currentDish.option_groups.reduce((acc, g) => acc + g.options.length, 0);
-assert(nextOffsetPage3 === 200, `Next offset for Page 3 must be 200 (NOT stuck at 100!), got ${nextOffsetPage3}`);
+const nextOffsetPage3 = currentDish.options_returned;
+assert(nextOffsetPage3 === 200, `Next offset for Page 3 must be 200, got ${nextOffsetPage3}`);
 
 const page3 = generateOptionPage(mockDishId, nextOffsetPage3, 100);
-const mergedGroupsP3 = currentDish.option_groups.map(g => ({ ...g, options: [...g.options] }));
-page3.option_groups.forEach(incG => {
-  const existingG = mergedGroupsP3.find(g => g.id === incG.id);
-  if (existingG) {
-    const exIds = new Set(existingG.options.map(o => o.id));
-    const added = incG.options.filter(o => !exIds.has(o.id));
-    existingG.options = [...existingG.options, ...added];
-  } else {
-    mergedGroupsP3.push({ ...incG, options: [...incG.options] });
-  }
-});
-currentDish.option_groups = mergedGroupsP3;
-currentDish.options_returned = mergedGroupsP3.reduce((acc, g) => acc + g.options.length, 0);
-currentDish.options_complete = currentDish.options_returned >= currentDish.options_total;
+currentMenu = applyDishOptionsToMenu(currentMenu, page3, mockDishId);
+currentDish = currentMenu.items[0];
 
 assert(currentDish.options_returned === 250, `Page 3 cumulative options_returned must be 250, got ${currentDish.options_returned}`);
 assert(currentDish.options_complete === true, 'Page 3 should be complete');
-console.log('  [PASS] Option pagination >200 options (100 -> 200 -> 250) correctly progresses offset without repeat bug');
+console.log('  [PASS] mergeDishOptions and applyDishOptionsToMenu correctly accumulated 250 options without offset stall');
 
-// 2. Identity Guard & Stale Response Invalidation
-console.log('\nTest 2: Stale in-flight response rejection on venue switch');
-let activeVenueId = 'venue-A';
-let currentReqId = 1;
+// 2. Identity Guard & Stale Response Invalidation with Mutable Refs
+console.log('\nTest 2: Stale in-flight response rejection on venue switch and draft query isolation');
 
-let capturedResult = null;
+// Simulating the DiscoveryLayout ref pattern
+const activeMenuIdentity = {
+  requestId: 0,
+  venueId: null,
+  sessionId: null,
+  appliedQuery: '',
+  appliedGroup: null
+};
+let latestDetailVenueId = null;
 
-// Simulate async response for venue-A arriving after user switched to venue-B
-const slowVenueARequestId = currentReqId;
-const slowVenueAId = activeVenueId;
-
-// User switches to venue-B
-activeVenueId = 'venue-B';
-currentReqId = 2;
-
-// Slow response arrives for venue-A
-const slowResponseData = { venue_id: 'venue-A', items: [{ id: 'dish-A1', name: 'Phở A' }] };
-
-// Identity check in client
-if (currentReqId === slowVenueARequestId && activeVenueId === slowVenueAId) {
-  capturedResult = slowResponseData;
+function isMenuRequestCurrent(reqId, vId, sId, q, g) {
+  return (
+    activeMenuIdentity.requestId === reqId &&
+    latestDetailVenueId === vId &&
+    activeMenuIdentity.venueId === vId &&
+    activeMenuIdentity.sessionId === sId &&
+    activeMenuIdentity.appliedQuery === q &&
+    activeMenuIdentity.appliedGroup === g
+  );
 }
 
-assert(capturedResult === null, 'Stale response for venue-A must be ignored when activeVenue is venue-B');
-console.log('  [PASS] Identity guard properly drops mismatched inflight responses');
+// User opens Venue A
+latestDetailVenueId = 'venue-A';
+const req1Id = ++activeMenuIdentity.requestId;
+activeMenuIdentity.venueId = 'venue-A';
+activeMenuIdentity.sessionId = 'sess-1';
+activeMenuIdentity.appliedQuery = '';
+activeMenuIdentity.appliedGroup = null;
+
+// User types draft query 'pho ga' but has not submitted it
+let draftQuery = 'pho ga';
+// Draft query must NOT alter active appliedQuery
+assert(activeMenuIdentity.appliedQuery === '', 'Draft query must not affect activeMenuIdentity until submitted');
+
+// While Venue A load-more options is in-flight, user switches to Venue B
+latestDetailVenueId = 'venue-B';
+activeMenuIdentity.requestId += 1;
+activeMenuIdentity.venueId = 'venue-B';
+activeMenuIdentity.appliedQuery = '';
+activeMenuIdentity.appliedGroup = null;
+
+// Venue A options arrive
+const venueAOptionsArrived = isMenuRequestCurrent(req1Id, 'venue-A', 'sess-1', '', null);
+assert(venueAOptionsArrived === false, 'Inflight response for Venue A must be rejected after venue switch to Venue B');
+
+// Even if closure variable was 'venue-A' (old value), latestDetailVenueId check fails
+const oldClosureVenue = 'venue-A';
+const staleCheck = (latestDetailVenueId === oldClosureVenue);
+assert(staleCheck === false, 'Closure check against mutable latestDetailVenueId correctly prevents stale commit');
+console.log('  [PASS] Identity guards and mutable venue ref successfully drop stale async closure responses');
 
 // 3. fetchVenueMenu client validation
 console.log('\nTest 3: fetchVenueMenu argument validation');

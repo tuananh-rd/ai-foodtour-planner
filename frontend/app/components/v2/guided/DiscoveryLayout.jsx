@@ -24,6 +24,7 @@ import {
   setLabelLocationAction,
   clearLocationAction,
   fetchVenueMenu,
+  applyDishOptionsToMenu,
   formatDistanceDisplay,
   formatMenuReferencePrice,
   formatMenuMinimum,
@@ -262,6 +263,7 @@ export default function DiscoveryLayout({
   const [menuLoading, setMenuLoading] = useState(false);
   const [menuError, setMenuError] = useState(null);
   const [menuSearchQuery, setMenuSearchQuery] = useState('');
+  const [menuAppliedQuery, setMenuAppliedQuery] = useState('');
   const [menuSelectedGroup, setMenuSelectedGroup] = useState(null);
   const [loadingMoreMenu, setLoadingMoreMenu] = useState(false);
   const [loadingMoreOptionsDishId, setLoadingMoreOptionsDishId] = useState(null);
@@ -888,19 +890,50 @@ export default function DiscoveryLayout({
     }
   }, [sessionReady, busy, handleDispatchAction]);
 
-  // Full Menu Identity Ref & State Guards
-  const menuRequestIdRef = useRef(0);
+  // Track active detail venue ref for async closure safety
+  const latestDetailVenueRef = useRef(displayDetailVenue?.id);
+  useEffect(() => {
+    latestDetailVenueRef.current = displayDetailVenue?.id;
+  }, [displayDetailVenue?.id]);
+
+  // Active Menu Request Identity Ref
+  const activeMenuIdentityRef = useRef({
+    requestId: 0,
+    venueId: null,
+    sessionId: null,
+    appliedQuery: '',
+    appliedGroup: null
+  });
 
   // Reset menu immediately on venue change to prevent stale display
   useEffect(() => {
-    menuRequestIdRef.current += 1;
+    activeMenuIdentityRef.current.requestId += 1;
+    activeMenuIdentityRef.current.venueId = displayDetailVenue?.id || null;
+    activeMenuIdentityRef.current.sessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
+    activeMenuIdentityRef.current.appliedQuery = '';
+    activeMenuIdentityRef.current.appliedGroup = null;
+
     setMenuData(null);
     setMenuError(null);
     setMenuSearchQuery('');
+    setMenuAppliedQuery('');
     setMenuSelectedGroup(null);
     setLoadingMoreMenu(false);
     setLoadingMoreOptionsDishId(null);
   }, [displayDetailVenue?.id]);
+
+  // Helper: check if a response or callback belongs to the current active identity
+  const isMenuRequestCurrent = (reqId, vId, sId, q, g) => {
+    const act = activeMenuIdentityRef.current;
+    return (
+      act.requestId === reqId &&
+      latestDetailVenueRef.current === vId &&
+      act.venueId === vId &&
+      (latestSessionRef.current?.sessionId === sId || sessionId === sId) &&
+      act.appliedQuery === q &&
+      act.appliedGroup === g
+    );
+  };
 
   // Full Menu Fetch with Strict Identity & Auth Guards
   useEffect(() => {
@@ -915,7 +948,12 @@ export default function DiscoveryLayout({
       return;
     }
 
-    const currentReqId = ++menuRequestIdRef.current;
+    const currentReqId = ++activeMenuIdentityRef.current.requestId;
+    activeMenuIdentityRef.current.venueId = venueId;
+    activeMenuIdentityRef.current.sessionId = effectiveSessionId;
+    activeMenuIdentityRef.current.appliedQuery = menuAppliedQuery;
+    activeMenuIdentityRef.current.appliedGroup = menuSelectedGroup;
+
     setMenuLoading(true);
     setMenuError(null);
 
@@ -925,72 +963,31 @@ export default function DiscoveryLayout({
       {
         offset: 0,
         limit: 25,
-        q: menuSearchQuery,
-        group: menuSelectedGroup
+        q: menuAppliedQuery || undefined,
+        group: menuSelectedGroup || undefined
       },
       effectiveToken
     )
       .then((data) => {
-        if (
-          menuRequestIdRef.current === currentReqId &&
-          displayDetailVenue?.id === venueId &&
-          (latestSessionRef.current?.sessionId === effectiveSessionId || sessionId === effectiveSessionId)
-        ) {
+        if (isMenuRequestCurrent(currentReqId, venueId, effectiveSessionId, menuAppliedQuery, menuSelectedGroup)) {
           setMenuData(data);
           setMenuLoading(false);
         }
       })
       .catch((err) => {
-        if (
-          menuRequestIdRef.current === currentReqId &&
-          displayDetailVenue?.id === venueId
-        ) {
+        if (isMenuRequestCurrent(currentReqId, venueId, effectiveSessionId, menuAppliedQuery, menuSelectedGroup)) {
           setMenuError(err.message || 'Không thể tải thực đơn chi tiết.');
           setMenuLoading(false);
         }
       });
-  }, [displayDetailVenue?.id, sessionId, sessionToken, menuSelectedGroup]);
+  }, [displayDetailVenue?.id, sessionId, sessionToken, menuAppliedQuery, menuSelectedGroup]);
 
   const handleMenuSearchSubmit = (e) => {
     if (e && e.preventDefault) e.preventDefault();
-    const venueId = displayDetailVenue?.id;
-    const effectiveSessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
-    const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
-    if (!venueId || !effectiveSessionId) return;
-
-    const currentReqId = ++menuRequestIdRef.current;
-    setMenuLoading(true);
-    setMenuError(null);
-
-    fetchVenueMenu(
-      effectiveSessionId,
-      venueId,
-      {
-        offset: 0,
-        limit: 25,
-        q: menuSearchQuery,
-        group: menuSelectedGroup
-      },
-      effectiveToken
-    )
-      .then((data) => {
-        if (
-          menuRequestIdRef.current === currentReqId &&
-          displayDetailVenue?.id === venueId
-        ) {
-          setMenuData(data);
-          setMenuLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (
-          menuRequestIdRef.current === currentReqId &&
-          displayDetailVenue?.id === venueId
-        ) {
-          setMenuError(err.message || 'Không thể tìm kiếm thực đơn.');
-          setMenuLoading(false);
-        }
-      });
+    const trimmed = menuSearchQuery.trim();
+    if (trimmed !== menuAppliedQuery) {
+      setMenuAppliedQuery(trimmed);
+    }
   };
 
   const handleLoadMoreMenu = async () => {
@@ -999,7 +996,12 @@ export default function DiscoveryLayout({
     const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
     if (!menuData || !menuData.has_more || loadingMoreMenu || !venueId || !effectiveSessionId) return;
 
-    const currentReqId = ++menuRequestIdRef.current;
+    const currentReqId = ++activeMenuIdentityRef.current.requestId;
+    activeMenuIdentityRef.current.venueId = venueId;
+    activeMenuIdentityRef.current.sessionId = effectiveSessionId;
+    activeMenuIdentityRef.current.appliedQuery = menuAppliedQuery;
+    activeMenuIdentityRef.current.appliedGroup = menuSelectedGroup;
+
     setLoadingMoreMenu(true);
     try {
       const nextOffset = menuData.offset + menuData.limit;
@@ -1009,26 +1011,25 @@ export default function DiscoveryLayout({
         {
           offset: nextOffset,
           limit: menuData.limit,
-          q: menuSearchQuery,
-          group: menuSelectedGroup
+          q: menuAppliedQuery || undefined,
+          group: menuSelectedGroup || undefined
         },
         effectiveToken
       );
-      if (
-        menuRequestIdRef.current === currentReqId &&
-        displayDetailVenue?.id === venueId
-      ) {
+      if (isMenuRequestCurrent(currentReqId, venueId, effectiveSessionId, menuAppliedQuery, menuSelectedGroup)) {
         setMenuData((prev) => ({
           ...res,
           items: [...(prev?.items || []), ...(res.items || [])]
         }));
       }
     } catch (err) {
-      if (displayDetailVenue?.id === venueId) {
-        setErrorBanner(err.message);
+      if (isMenuRequestCurrent(currentReqId, venueId, effectiveSessionId, menuAppliedQuery, menuSelectedGroup)) {
+        setErrorBanner(err.message || 'Không thể tải thêm món.');
       }
     } finally {
-      setLoadingMoreMenu(false);
+      if (latestDetailVenueRef.current === venueId) {
+        setLoadingMoreMenu(false);
+      }
     }
   };
 
@@ -1036,7 +1037,7 @@ export default function DiscoveryLayout({
     const venueId = displayDetailVenue?.id;
     const effectiveSessionId = sessionId || displayView?.session_id || latestSessionRef.current?.sessionId;
     const effectiveToken = sessionToken || latestSessionRef.current?.sessionToken;
-    if (loadingMoreOptionsDishId || !venueId || !effectiveSessionId) return;
+    if (loadingMoreOptionsDishId || !venueId || !effectiveSessionId || !dish) return;
 
     // Cumulative unique count from merged option groups
     const currentTotalOptions = (dish.option_groups || []).reduce(
@@ -1044,6 +1045,12 @@ export default function DiscoveryLayout({
       0
     );
     const nextOptionOffset = currentTotalOptions;
+
+    const currentReqId = ++activeMenuIdentityRef.current.requestId;
+    activeMenuIdentityRef.current.venueId = venueId;
+    activeMenuIdentityRef.current.sessionId = effectiveSessionId;
+    activeMenuIdentityRef.current.appliedQuery = menuAppliedQuery;
+    activeMenuIdentityRef.current.appliedGroup = menuSelectedGroup;
 
     setLoadingMoreOptionsDishId(dish.id);
     try {
@@ -1058,54 +1065,28 @@ export default function DiscoveryLayout({
         effectiveToken
       );
 
-      if (displayDetailVenue?.id !== venueId) return;
-
-      const incoming = (res.items || []).find((d) => String(d.id) === String(dish.id));
-      if (incoming) {
-        setMenuData((prev) => {
-          if (!prev || displayDetailVenue?.id !== venueId) return prev;
-          const newItems = prev.items.map((it) => {
-            if (String(it.id) !== String(dish.id)) return it;
-            const mergedGroups = (it.option_groups || []).map((g) => ({
-              ...g,
-              options: [...(g.options || [])]
-            }));
-
-            (incoming.option_groups || []).forEach((incG) => {
-              const existingG = mergedGroups.find((g) => g.id === incG.id);
-              if (existingG) {
-                const exIds = new Set(existingG.options.map((o) => o.id));
-                const added = (incG.options || []).filter((o) => !exIds.has(o.id));
-                existingG.options = [...existingG.options, ...added];
-              } else {
-                mergedGroups.push({
-                  ...incG,
-                  options: [...(incG.options || [])]
-                });
-              }
-            });
-
-            const totalCumulative = mergedGroups.reduce(
-              (acc, g) => acc + (Array.isArray(g.options) ? g.options.length : 0),
-              0
-            );
-
-            return {
-              ...it,
-              option_groups: mergedGroups,
-              options_returned: totalCumulative,
-              options_complete: totalCumulative >= incoming.options_total
-            };
-          });
-          return { ...prev, items: newItems };
-        });
+      if (
+        activeMenuIdentityRef.current.requestId === currentReqId &&
+        latestDetailVenueRef.current === venueId &&
+        activeMenuIdentityRef.current.venueId === venueId
+      ) {
+        const incoming = (res.items || []).find((d) => String(d.id) === String(dish.id));
+        if (incoming) {
+          setMenuData((prev) => applyDishOptionsToMenu(prev, incoming, dish.id));
+        }
       }
     } catch (err) {
-      if (displayDetailVenue?.id === venueId) {
-        setErrorBanner(err.message);
+      if (
+        activeMenuIdentityRef.current.requestId === currentReqId &&
+        latestDetailVenueRef.current === venueId &&
+        activeMenuIdentityRef.current.venueId === venueId
+      ) {
+        setErrorBanner(err.message || 'Không thể tải thêm tùy chọn món.');
       }
     } finally {
-      setLoadingMoreOptionsDishId(null);
+      if (latestDetailVenueRef.current === venueId) {
+        setLoadingMoreOptionsDishId(null);
+      }
     }
   };
 
@@ -2174,7 +2155,7 @@ export default function DiscoveryLayout({
                             {Array.isArray(r.matching_menu) && r.matching_menu.length > 0 && (
                               <div className="nn-menu-ref" data-testid={`menu-ref-${r.id}`}>
                                 <div className="nn-menu-ref-title">
-                                  Món khớp trên thực đơn giao hàng (ShopeeFood) — giá tham khảo, không phải giá tại quán:
+                                  Món khớp:
                                 </div>
                                 {r.matching_menu.slice(0, 3).map((mref, mIdx) => {
                                   const minLabel = formatMenuMinimum(mref);
@@ -2191,9 +2172,17 @@ export default function DiscoveryLayout({
                                     </div>
                                   );
                                 })}
-                                <div className="nn-menu-ref-note">
-                                  Giá tham khảo từ kênh giao hàng ShopeeFood; giá món tối thiểu gồm tùy chọn bắt buộc khi xác định, chưa gồm phí giao hàng/phí khác; không bảo đảm giá, giờ mở cửa hay an toàn dị ứng tại quán.
+                                <div className="nn-source-entry" data-testid={`menu-source-${r.id}`}>
+                                  Nguồn: {r.matching_menu?.[0]?.source_channel || 'ShopeeFood'}
                                 </div>
+                                <button
+                                  type="button"
+                                  className="nn-view-full-menu-btn"
+                                  data-testid={`view-full-menu-${r.id}`}
+                                  onClick={() => setDetailVenue(r)}
+                                >
+                                  Xem thực đơn đầy đủ & chi tiết
+                                </button>
                               </div>
                             )}
 
@@ -2202,7 +2191,7 @@ export default function DiscoveryLayout({
                               {r.price && (r.price.min_vnd || r.price.max_vnd) ? (
                                 <span className="nn-restaurant-meta-item" title="Khoảng giá quán">
                                   Giá: {Number(r.price.min_vnd || 0).toLocaleString('vi-VN')} – {Number(r.price.max_vnd || 0).toLocaleString('vi-VN')} đ
-                                  <span style={{ fontSize: '10.5px', color: '#8C7872' }}> (khoảng giá quán)</span>
+                                  
                                 </span>
                               ) : (
                                 <span className="nn-restaurant-meta-item" style={{ color: '#8C7872' }}>
@@ -2869,7 +2858,9 @@ export default function DiscoveryLayout({
               boxShadow: '0 16px 40px rgba(0,0,0,0.18)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '12px'
+              gap: '12px',
+              maxHeight: '88vh',
+              overflowY: 'auto'
             }}
             onClick={(e) => e.stopPropagation()}
           >
@@ -2938,6 +2929,200 @@ export default function DiscoveryLayout({
                   <span style={{ display: 'block', fontSize: '11px', color: '#8C7872', marginTop: '2px' }}>
                     (Mô tả nguồn gốc địa điểm thực tế, không phải kết quả tra cứu web thời gian thực)
                   </span>
+                </div>
+              )}
+            </div>
+
+            {/* Full Menu Section */}
+            <div className="nn-venue-menu-section" data-testid="venue-menu-section">
+              <div className="nn-venue-menu-header">
+                <div className="nn-venue-menu-title" data-testid="venue-menu-title">
+                  Thực đơn {menuData ? `(${menuData.total ?? menuData.total_menu ?? menuData.items?.length ?? 0} món)` : ''}
+                </div>
+                {menuData?.source_channel && (
+                  <div className="nn-venue-menu-source" data-testid="venue-menu-source">
+                    Nguồn: {menuData.source_channel === 'shopeefood_delivery' ? 'ShopeeFood' : menuData.source_channel}
+                  </div>
+                )}
+              </div>
+
+              {/* Menu Search Form */}
+              <form
+                className="nn-venue-menu-search-form"
+                data-testid="venue-menu-search-form"
+                onSubmit={handleMenuSearchSubmit}
+              >
+                <input
+                  type="text"
+                  className="nn-venue-menu-search-input"
+                  data-testid="venue-menu-search-input"
+                  placeholder="Tìm kiếm món trong thực đơn…"
+                  value={menuSearchQuery}
+                  onChange={(e) => setMenuSearchQuery(e.target.value)}
+                  aria-label="Tìm kiếm món ăn"
+                />
+                <button
+                  type="submit"
+                  className="nn-venue-menu-search-btn"
+                  data-testid="venue-menu-search-submit"
+                >
+                  Tìm
+                </button>
+                {menuAppliedQuery && (
+                  <button
+                    type="button"
+                    className="nn-venue-menu-search-clear-btn"
+                    data-testid="venue-menu-search-clear"
+                    onClick={() => {
+                      setMenuSearchQuery('');
+                      setMenuAppliedQuery('');
+                    }}
+                  >
+                    Xóa lọc
+                  </button>
+                )}
+              </form>
+
+              {/* Menu Groups Chips */}
+              {Array.isArray(menuData?.groups) && menuData.groups.length > 0 && (
+                <div className="nn-venue-menu-groups" data-testid="venue-menu-groups">
+                  <button
+                    type="button"
+                    className={`nn-venue-menu-group-chip${menuSelectedGroup === null ? ' active' : ''}`}
+                    data-testid="venue-menu-group-all"
+                    onClick={() => setMenuSelectedGroup(null)}
+                  >
+                    Tất cả ({menuData.total_menu ?? menuData.total})
+                  </button>
+                  {menuData.groups.map((grp) => (
+                    <button
+                      key={grp.id}
+                      type="button"
+                      className={`nn-venue-menu-group-chip${menuSelectedGroup === grp.id ? ' active' : ''}`}
+                      data-testid={`venue-menu-group-${grp.id}`}
+                      onClick={() => setMenuSelectedGroup(menuSelectedGroup === grp.id ? null : grp.id)}
+                    >
+                      {grp.name} {typeof grp.count === 'number' ? `(${grp.count})` : ''}
+                    </button>
+                  ))}
+                </div>
+              )}
+
+              {/* Menu Content: Loading / Error / Unavailable / Empty / Items List */}
+              {menuLoading && !menuData && (
+                <div className="nn-venue-menu-status" data-testid="venue-menu-loading" style={{ fontSize: '12px', color: '#8C7872', padding: '8px 0' }}>
+                  Đang tải thực đơn…
+                </div>
+              )}
+
+              {menuError && (
+                <div className="nn-venue-menu-status error" data-testid="venue-menu-error" style={{ fontSize: '12px', color: '#B91C1C', padding: '8px 0' }}>
+                  {menuError}
+                </div>
+              )}
+
+              {menuData && menuData.status === 'unavailable' && (
+                <div className="nn-venue-menu-status" data-testid="venue-menu-unavailable" style={{ fontSize: '12px', color: '#8C7872', padding: '8px 0' }}>
+                  Chưa có dữ liệu thực đơn chi tiết cho quán này.
+                </div>
+              )}
+
+              {menuData && menuData.status === 'ok' && (!menuData.items || menuData.items.length === 0) && (
+                <div className="nn-venue-menu-status" data-testid="venue-menu-empty" style={{ fontSize: '12px', color: '#8C7872', padding: '8px 0' }}>
+                  {menuAppliedQuery ? 'Không tìm thấy món phù hợp với từ khóa.' : 'Thực đơn chưa có món khả dụng.'}
+                </div>
+              )}
+
+              {menuData && menuData.items && menuData.items.length > 0 && (
+                <div className="nn-venue-menu-items-list" data-testid="venue-menu-items-list">
+                  {menuData.items.map((dish) => {
+                    const dishPriceFormatted = dish.price_vnd != null
+                      ? `${Number(dish.price_vnd).toLocaleString('vi-VN')} đ`
+                      : (dish.price_text || (dish.price_status === 'quarantined' ? 'Giá chưa xác minh' : 'Chưa rõ giá'));
+
+                    return (
+                      <div key={dish.id} className="nn-venue-menu-dish-card" data-testid={`venue-menu-dish-${dish.id}`}>
+                        <div className="nn-venue-menu-dish-header">
+                          <span className="nn-venue-menu-dish-name" data-testid={`dish-name-${dish.id}`}>
+                            {dish.name}
+                          </span>
+                          <span className="nn-venue-menu-dish-price" data-testid={`dish-price-${dish.id}`}>
+                            {dishPriceFormatted}
+                          </span>
+                        </div>
+                        {dish.description && (
+                          <div className="nn-venue-menu-dish-desc">{dish.description}</div>
+                        )}
+                        {Array.isArray(dish.groups) && dish.groups.length > 0 && (
+                          <div className="nn-venue-menu-dish-groups">
+                            {dish.groups.map((g) => (
+                              <span key={g.id} className="nn-venue-menu-dish-group-tag">
+                                {g.name}
+                              </span>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Option groups */}
+                        {Array.isArray(dish.option_groups) && dish.option_groups.length > 0 && (
+                          <div className="nn-dish-option-groups" data-testid={`dish-options-${dish.id}`}>
+                            {dish.option_groups.map((og) => (
+                              <div key={og.id} className="nn-dish-option-group-item">
+                                <div className="nn-dish-option-group-title">
+                                  {og.name}
+                                  <span className={`nn-dish-option-group-badge ${og.mandatory || og.min_select > 0 ? 'mandatory' : 'optional'}`}>
+                                    {og.mandatory || og.min_select > 0 ? 'Bắt buộc' : 'Tùy chọn'}
+                                    {(og.min_select > 0 || og.max_select > 0) ? ` (chọn ${og.min_select ?? 0}–${og.max_select ?? 'nhiều'})` : ''}
+                                  </span>
+                                </div>
+                                {Array.isArray(og.options) && og.options.length > 0 && (
+                                  <div className="nn-dish-options-list">
+                                    {og.options.map((opt) => (
+                                      <span key={opt.id} className="nn-dish-option-chip">
+                                        {opt.name}
+                                        {opt.price_vnd ? ` (+${Number(opt.price_vnd).toLocaleString('vi-VN')} đ)` : ''}
+                                        {opt.is_default ? ' [Mặc định]' : ''}
+                                      </span>
+                                    ))}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Load more options button if options incomplete */}
+                        {!dish.options_complete && dish.options_returned < dish.options_total && (
+                          <button
+                            type="button"
+                            className="nn-dish-load-more-options-btn"
+                            data-testid={`load-more-options-${dish.id}`}
+                            onClick={() => handleLoadMoreOptions(dish)}
+                            disabled={loadingMoreOptionsDishId === dish.id}
+                          >
+                            {loadingMoreOptionsDishId === dish.id
+                              ? 'Đang tải thêm tùy chọn…'
+                              : `Tải thêm tùy chọn (${dish.options_returned}/${dish.options_total})`}
+                          </button>
+                        )}
+                      </div>
+                    );
+                  })}
+
+                  {/* Load more menu items button */}
+                  {menuData.has_more && (
+                    <button
+                      type="button"
+                      className="nn-venue-menu-load-more-btn"
+                      data-testid="venue-menu-load-more-btn"
+                      onClick={handleLoadMoreMenu}
+                      disabled={loadingMoreMenu}
+                    >
+                      {loadingMoreMenu
+                        ? 'Đang tải thêm món…'
+                        : `Xem thêm món (${menuData.items.length}/${menuData.total})`}
+                    </button>
+                  )}
                 </div>
               )}
             </div>

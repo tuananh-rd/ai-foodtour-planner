@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-03T00:42:33.592Z",
+  "timestamp": "2026-11-03T01:01:26.769Z",
   "api": "http://127.0.0.1:8250",
   "web": "http://127.0.0.1:3350",
   "checks": [
@@ -110,7 +110,7 @@
       "details": {
         "status": "chosen",
         "source": "map",
-        "label": "Phố Trần Nguyên Hãn, Hoàn Kiếm, Hà Nội"
+        "label": "Vị trí ghim chưa có địa chỉ"
       }
     },
     {
