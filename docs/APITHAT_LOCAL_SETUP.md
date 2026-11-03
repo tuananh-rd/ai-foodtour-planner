@@ -4,6 +4,8 @@ Status: offline implementation prepared; **no live request made**. Gemini remain
 
 Implementation: `b6935c2`. Final targeted run:12 adapter tests and3 existing model/session tests PASS (15 total); no project-wide suite was repeated. The earlier endpoint test used a relative fixture path and returned a data-source503; an absolute synthetic fixture path corrected that test setup. Current serving API remains952eb77 so interactive3350 testing is not interrupted; the new adapter/config catalog loads on a later owned restart after the key/setup checkpoint.
 
+Resume update: both local listeners were found stopped and restored without replacing sessions or ledger. API now serves `6e4afeb`; read-only capabilities confirm `apithat:gpt-6-luna` is unavailable with `provider_disabled` and `native_tools_verified: false`. Web3350 returns HTTP200. Gemini remains default. The local API Thật key is still absent and enabled remains0; no generation was used for this verification.
+
 ## Local configuration
 
 The ignored file already exists at:
