@@ -1234,7 +1234,7 @@ export async function fetchVenueMenu(sessionId, venueId, options = {}, sessionTo
     headers['X-Session-Token'] = sessionToken;
   }
 
-  const res = await fetchWithTimeout(url, { method: 'GET', headers }, options.timeoutMs || 10000);
+  const res = await fetchWithTimeout(url, { method: 'GET', headers }, options.timeoutMs || 25000);
   let body = null;
   try {
     body = await res.json();
