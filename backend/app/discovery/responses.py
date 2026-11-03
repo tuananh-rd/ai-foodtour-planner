@@ -95,3 +95,13 @@ class ApiThatDirectResponsesTools(ApiThatResponsesTools):
     """Reviewed real greeting proof only; native tool proof remains absent."""
     expose_tools=False
     direct_chat_verified=True
+
+
+class ApiThatLunaResponsesTools(ApiThatResponsesTools):
+    """Reviewed Luna native search/continuation and captured grounded answer proof.
+
+    Evidence: APITHAT_NATIVE200_GROUNDING + APITHAT_GROUNDING_REVALIDATION.
+    Other models/protocols retain their independent unverified gates.
+    """
+    direct_chat_verified=True
+    native_tools_verified=True

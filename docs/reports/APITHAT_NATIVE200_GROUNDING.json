@@ -1,0 +1,104 @@
+{
+  "protocol": "responses",
+  "model": "gpt-6-luna",
+  "transport": "official OpenAI SDK default identity",
+  "preflight": {
+    "limit": 200,
+    "used": 26,
+    "remaining": 174,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "attempts": 2,
+  "requests": [
+    {
+      "tool_result_items": 0,
+      "max_output_tokens": 512,
+      "ordinal": 1,
+      "time_vn": "2026-11-03T10:59:41+07:00",
+      "response_model": "gpt-6-luna",
+      "status": "completed",
+      "usage": {
+        "input_tokens": 1724,
+        "output_tokens": 29,
+        "total_tokens": 1753
+      },
+      "native_tools": [
+        "search_restaurants"
+      ],
+      "diagnostics": {
+        "http_status": 200,
+        "content_type": "application/json",
+        "cf-ray": "a54877bf98d014fd-SIN"
+      },
+      "latency_ms": 11448
+    },
+    {
+      "tool_result_items": 1,
+      "max_output_tokens": 512,
+      "ordinal": 2,
+      "time_vn": "2026-11-03T10:59:52+07:00",
+      "response_model": "gpt-6-luna",
+      "status": "completed",
+      "usage": {
+        "input_tokens": 4190,
+        "output_tokens": 394,
+        "total_tokens": 4584
+      },
+      "native_tools": [],
+      "diagnostics": {
+        "http_status": 200,
+        "content_type": "application/json",
+        "cf-ray": "a54878051fbcfe1e-SIN"
+      },
+      "latency_ms": 21623
+    }
+  ],
+  "tools": [
+    {
+      "name": "search_restaurants",
+      "status": "ok",
+      "count": 5,
+      "menu_matches": 12,
+      "code": null
+    }
+  ],
+  "checks": {
+    "native_search_completed": true,
+    "actual_tool_result_continuation": true,
+    "final_model_answer": false,
+    "selection_tour_unchanged": true,
+    "response_model_exact": true,
+    "native_search_requested_by_model": true,
+    "actual_menu_evidence": true
+  },
+  "native_tools_verified": false,
+  "observed_app_calls_since_initial20": 2,
+  "prior_qa_attempts": 2,
+  "current_probe_cap": 2,
+  "daily_limit_authorized": 200,
+  "session_cap": 30,
+  "temporary_probe_reserve": 3,
+  "runtime_reserve_unchanged": true,
+  "lane": "disposable in-memory public preferences, real local menu6 bounded public tool evidence",
+  "provider": {
+    "mode": "apithat",
+    "calls": 2,
+    "configured_model": "gpt-6-luna",
+    "reply_source": "tools",
+    "response_model": "gpt-6-luna",
+    "reason": "safe_answer_rejected"
+  },
+  "answer_status": "ok",
+  "has_answer": true,
+  "blocker": "native_tool_continuation_not_proven_within_two_attempts",
+  "postflight": {
+    "limit": 200,
+    "used": 28,
+    "remaining": 172,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  }
+}

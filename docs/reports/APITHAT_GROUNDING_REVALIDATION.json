@@ -1,0 +1,9 @@
+{
+  "captured_actual_sdk_continuation": true,
+  "offline_revalidation_only": true,
+  "new_http_attempts": 0,
+  "grounded_answer_passes_after_fix": true,
+  "raw_answer_exported": false,
+  "root_cause": "evidence-backed currency range misidentified as coordinate",
+  "input_privacy_unchanged": true
+}

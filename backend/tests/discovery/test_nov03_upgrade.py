@@ -106,6 +106,22 @@ class UpgradeTests(unittest.TestCase):
         self.assertNotIn('allergies',projected);self.assertEqual(projected['distance_m'],1200)
         self.assertEqual(projected['matching_menu'][0]['reference_price_vnd'],88000)
 
+    def test_verified_currency_does_not_look_like_gps_but_private_coordinates_still_reject(self):
+        tools=self.tools()
+        evidence=[{'matching_menu':[{'reference_price_vnd':21000}]}]
+        price='21.000\u0111'
+        self.assertEqual(safe_answer(price,tools,evidence),price)
+        self.assertIsNone(safe_answer(price,tools,[]))
+        self.assertIsNone(safe_answer('lat='+price,tools,evidence))
+        range_text='21.000\u201340.000\u0111'
+        range_evidence=evidence+[{'reference_price_vnd':40000}]
+        self.assertEqual(safe_answer(range_text,tools,range_evidence),range_text)
+        self.assertIsNone(safe_answer(range_text,tools,evidence))
+        self.assertIsNone(safe_answer(price+'; 21.027123, 105.8345',tools,evidence))
+        self.assertIsNone(safe_answer(price+'; lat=21.027123',tools,evidence))
+        self.assertIsNone(safe_answer(price+'; 0912345678',tools,evidence))
+        self.assertIsNone(safe_answer(price+'; sk-1234567890abcdefghij',tools,evidence))
+
     def test_native_mocked_loop_search_without_origin_preserves_grounded_menu(self):
         class Model:
             configured=True;mode='mock';calls=0

@@ -64,7 +64,7 @@ class ChatModels:
         if self.alternate is not None:
             available,reason=self.available(self.alternate.identity,reserve)
             direct=getattr(self.alternate,'direct_chat_verified',False)
-            rows.append({'id':self.alternate.identity,'label':'API Thật · '+self.alternate.client.model+(' (trò chuyện)' if direct else ' (chưa kiểm chứng)'),
+            rows.append({'id':self.alternate.identity,'label':'API Thật · '+self.alternate.client.model+('' if self.alternate.native_tools_verified else ' (trò chuyện)' if direct else ' (chưa kiểm chứng)'),
                          'provider':'apithat','available':available,'reason':reason,
                          'selectable':self.selectable(self.alternate.identity),'direct_chat_verified':direct,
                          'api_mode':self.alternate.client.api_mode,

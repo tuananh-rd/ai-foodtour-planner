@@ -1415,7 +1415,7 @@ export default function DiscoveryLayout({
                 <option value="">{capabilitiesLoading ? 'Đang tải mô hình…' : 'Không có model khả dụng / Xử lý tại máy'}</option>
               )}
             </select>
-            {capabilities?.chat_models?.find((m) => m.id === displayView.settings?.chat_model)?.direct_chat_verified && (
+            {capabilities?.chat_models?.some((m) => m.id === displayView.settings?.chat_model && m.direct_chat_verified && !m.native_tools_verified) && (
               <span data-testid="direct-chat-mode-notice" className="nn-web-status-badge">
                 Trò chuyện trực tiếp; tra cứu quán bằng model chưa được kiểm chứng.
               </span>

@@ -330,7 +330,31 @@ def safe_answer(text, tools, tool_results):
     for match in re.finditer(r'(?<!\w)(\d+(?:[.,]\d{3})*)\s*(k\b|nghin\b|ngan\b|dong\b|vnd\b|d\b)',money_text):
         amount=int(re.sub(r'[.,]','',match[1]))*(1000 if match[2] in ('k','nghin','ngan') else 1)
         if amount not in amounts:return None
-    if redact_sensitive(text) != text:
+    # A verified currency amount such as 21.000đ is not a GPS coordinate.
+    # Mask only evidence-backed currency spans for this output privacy check;
+    # incoming messages and every other coordinate/contact/secret stay guarded.
+    if re.search(r'\b(?:lat|latitude|lon|lng|longitude|coords?|coordinates?)\s*[:=]|(?:tọa\s*độ|toa\s*do)\s*[:=]', text, re.I):
+        return None
+    currency = re.compile(r'(?<!\w)(\d+(?:[.,]\d{3})*)\s*(k\b|nghìn\b|nghin\b|ngàn\b|ngan\b|đồng\b|dong\b|vnd\b|đ\b|d\b)', re.I)
+    def public_price(match):
+        amount = int(re.sub(r'[.,]', '', match[1]))
+        if match[2].casefold() in ('k', 'nghìn', 'nghin', 'ngàn', 'ngan'):
+            amount *= 1000
+        return '[verified_price]' if amount in amounts else match[0]
+    currency_range = re.compile(r'(?<!\w)(\d+(?:[.,]\d{3})*)\s*[–—-]\s*(\d+(?:[.,]\d{3})*)\s*(k\b|nghìn\b|nghin\b|ngàn\b|ngan\b|đồng\b|dong\b|vnd\b|đ\b|d\b)', re.I)
+    invalid_range = False
+    def public_range(match):
+        nonlocal invalid_range
+        factor = 1000 if match[3].casefold() in ('k', 'nghìn', 'nghin', 'ngàn', 'ngan') else 1
+        if all(int(re.sub(r'[.,]', '', match[n])) * factor in amounts for n in (1, 2)):
+            return '[verified_price_range]'
+        invalid_range = True
+        return match[0]
+    privacy_text = currency_range.sub(public_range, text)
+    if invalid_range:
+        return None
+    privacy_text = currency.sub(public_price, privacy_text)
+    if redact_sensitive(privacy_text) != privacy_text:
         return None
     return text.strip()
 

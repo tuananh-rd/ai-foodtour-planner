@@ -84,10 +84,10 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     alternate=None
     if os.getenv('APITHAT_MODEL','').strip():
         from app.discovery.openai_compatible import ApiThatClient, ApiThatTools
-        from app.discovery.responses import ApiThatResponsesTools,ApiThatDirectResponsesTools
+        from app.discovery.responses import ApiThatResponsesTools,ApiThatLunaResponsesTools
         client=ApiThatClient(gemini.budget if gemini is not None else None)
         model_class=(ApiThatTools if client.api_mode=='chat_completions' else
-                     ApiThatDirectResponsesTools if client.model=='gpt-6-luna' else ApiThatResponsesTools)
+                     ApiThatLunaResponsesTools if client.model=='gpt-6-luna' else ApiThatResponsesTools)
         alternate=model_class(client)
     app.state.chat_models = ChatModels(app.state.discovery_model,alternate)
     if llm_mode == "gemini" and gemini is not None and gemini.configured:

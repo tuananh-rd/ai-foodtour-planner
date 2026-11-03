@@ -1,0 +1,12 @@
+{
+  "RE_ALLERGY_CLEARANCE": false,
+  "RE_OPERATIONAL_CLAIM": false,
+  "RE_ETA_CLAIM": false,
+  "RE_AGENT_ROLEPLAY": false,
+  "RE_INSTRUCTION_LEAKAGE": false,
+  "chars": 1033,
+  "too_long": false,
+  "privacy_redaction": true,
+  "currency_claim_count": 8,
+  "ungrounded_currency_count": 0
+}

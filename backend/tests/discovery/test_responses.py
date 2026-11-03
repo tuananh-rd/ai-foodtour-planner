@@ -150,3 +150,17 @@ class ResponsesTests(unittest.TestCase):
         result,provider=handle('Chào bạn',tools(),model=chosen)
         self.assertEqual(provider['calls'],0);self.assertEqual(provider['failure']['source'],'daily_reserve')
         self.assertEqual(chosen.client.budget.snapshot()['used'],0)
+
+    def test_reviewed_luna_native_capability_exposes_tools_without_bypassing_quota(self):
+        from app.discovery.responses import ApiThatLunaResponsesTools
+        requests=[]
+        base=self.model(lambda url,**kwargs:requests.append(json.loads(kwargs['body'])) or output([text('Hello.')]))
+        model=ApiThatLunaResponsesTools(base.client)
+        row=ChatModels(GeminiTools(None),model).catalog(3)[-1]
+        self.assertTrue(row['native_tools_verified']);self.assertTrue(row['direct_chat_verified'])
+        self.assertTrue(row['available']);self.assertNotIn('(tr',row['label'])
+        model.generate([{'role':'user','parts':[{'text':'Hello'}]}],deadline_s=60)
+        self.assertTrue(requests[0]['tools']);self.assertFalse(requests[0]['store'])
+        self.assertEqual(base.client.budget.snapshot()['used'],1)
+        model.client.budget=DailyLLMBudget(3)
+        self.assertFalse(ChatModels(GeminiTools(None),model).catalog(3)[-1]['available'])
