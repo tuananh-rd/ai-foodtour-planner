@@ -1,0 +1,51 @@
+{
+  "web": "http://127.0.0.1:3350",
+  "api": "http://127.0.0.1:8250",
+  "lane": "private-menu (Sol-safe launcher)",
+  "privacy": "counts/booleans only; no names/ids/prices/screenshots",
+  "checks": [
+    {
+      "name": "exact screenshot typed: soup results without origin or unrelated cheese/tea",
+      "result": "PASS"
+    },
+    {
+      "name": "result cards actually rendered",
+      "result": "PASS"
+    },
+    {
+      "name": "visible repetitive price disclaimers removed",
+      "result": "PASS"
+    },
+    {
+      "name": "literal unknown: zero actual results and no stale cards",
+      "result": "PASS"
+    },
+    {
+      "name": "explicit new area and food yields matching canonical evidence",
+      "result": "PASS"
+    },
+    {
+      "name": "independent typed browser completed",
+      "result": "FAIL"
+    }
+  ],
+  "errors": [],
+  "health": {
+    "commit": "956475b8e3084a91ea7728f1ac9ad0b7b9f354fd",
+    "llm": "mock",
+    "provider": "rules",
+    "dataset": "private",
+    "menu_counts": {
+      "canonical_dishes": 18245,
+      "group_links": 18764,
+      "options": 90350,
+      "mapped_venues": 400,
+      "contact_or_invalid_excluded": 23,
+      "price_quarantined": 91,
+      "minimum_unverified": 50,
+      "linked_venues": 342,
+      "food_rows": 18222
+    }
+  },
+  "blocker": "timeout"
+}

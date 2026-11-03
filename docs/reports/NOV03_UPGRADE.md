@@ -1,6 +1,6 @@
 # Nov03 food relevance, conversation evidence and full-menu upgrade
 
-Status: backend offline acceptance passed; frontend integration and rendered acceptance pending.
+Status: backend offline acceptance passed; initial rendered checks passed; remaining menu/tour/map acceptance pending a reproduced menu-timeout fix.
 
 ## Root cause and changes
 
@@ -41,6 +41,10 @@ Backend commits: `9a18141`, `bb0050a`, `21cf811`, `4e910a2`, `5660b60`, `c0a312c
 
 ## Remaining acceptance
 
-Frontend review found missing rendered full-menu content despite implemented handlers, stale async-menu identity handling, an unsubmitted-query pagination mismatch and residual price text. AG owns these corrections. Source/API tests alone do not accept those UI requirements. The final rendered journey, outside-pilot streets, pin controls, mobile sizing and service failure remain pending until the corrected build is served and inspected.
+Configured frontend `01c1508` was reviewed and served on3350 after correcting API8250 build flags, full-menu JSX, availability enums and unknown option constraints/prices. Independent actual typed-browser checks passed the exact screenshot request, rendered result cards, absence of repeated price disclaimers, literal no-data clearing stale cards, and explicit area/food change. Evidence: `nov03-independent/initial-evidence.json`.
+
+That browser then reproduced a genuine menu failure: first-menu validation took11,509ms and returned HTTP200 after the client's10,000ms timeout. This is a failed UI journey, not a successful menu acceptance. `48fc6d5` adds one content-hashed, fully validated archive cache for subsequent pages. Three targeted cache/filter/pagination checks passed, including same-path replacement, malformed replacement rejection and rollback. The frontend menu timeout is being raised to a bounded25seconds; no provider timeout, ledger or cap is changed. QAAPI8250 now serves48fc6d5 with fresh disposable sessions; the original private session namespace remains untouched.
+
+Earlier frontend review found missing rendered full-menu content despite implemented handlers, stale async-menu identity handling, an unsubmitted-query pagination mismatch and residual price text. AG corrected the reviewed source in956475b/74d15d2/01c1508. Source/API tests alone do not accept those UI requirements. The final rendered menu/tour journey, outside-pilot streets, pin controls, mobile sizing and service failure remain pending until the timeout correction is served and inspected.
 
 No new Gemini/Tavily generation was made. Rules and native mocked-tool-loop results are not live Gemini quality acceptance; a future real-model test requires separate allowance. Original private runtime sessions, budget, caps and rollback data must be restored and fingerprint-verified after disposable QA.
