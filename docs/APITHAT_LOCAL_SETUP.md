@@ -1,55 +1,86 @@
-# API Thật local chatbot adapter
+# API Thật chatbot: current local state and403 diagnosis
 
-## Latest authorized live result
+## Current result
 
-The user authorized using the three reserved calls for this QA only, without changing
-daily18/session6 or the shared ledger. A disposable in-memory model-first probe used
-`reserve=0` only for its own handler invocation; no environment/file/runtime reserve
-was changed. Preflight used15/18, remaining3. The first actual greeting generation
-request to the configured Chat Completions route returned **HTTP403**. The probe
-stopped after **1/3 total attempts** with no retry/failover and no search/continuation.
-Postflight used16/18, remaining2; reserve remains3 and local enabled remains0.
+API Thật model-first source is implemented (`33560b8`);20 affected offline tests passed.
+The exact operator-confirmed configuration is `https://apithat.dev/v1` and `gpt-6-luna`.
+The local key is present. `FOODTOUR_APITHAT_ENABLED=0`; native-tool capability remains
+unverified and disabled. Gemini remains the app default. Two real HTTP generation
+attempts have now been made; neither produced a model answer. This supersedes all
+historical key-absent, zero-attempt and initial reserve-blocked checkpoints.
 
-No model response, token usage, grounded reply or native-tool proof was obtained.
-This is provider HTTP refusal, not proven local quota exhaustion. The transport did
-not retain/log the provider error body; the precise403 cause is unknown. The operator
-must check API Thật's request/access diagnostics and confirm key/model permissions,
-endpoint policy and any gateway access restrictions. Do not paste the key or private
-error body into chat. No further generation or automatic replay is scheduled.
+| Probe | Actual attempts | Result | Shared ledger |
+|---|---:|---|---|
+| Authorized reserved greeting/model-first probe |1|HTTP403, stopped before search/continuation|15 →16 of18|
+| Separately authorized short greeting, no tools |1|HTTP403,395ms,2026-11-03 09:22:17 +07:00|16 →17 of18|
 
-Evidence: `docs/reports/APITHAT_RESERVED_LIVE_PROBE.json`. The persistent local
-attempt guard refuses replay. Capability remains disabled/unverified; the two
-unused requests were not spent and the existing daily accounting is preserved.
+Total2/3 authorized attempts have been spent;1 remains unspent. No retry/failover,
+ledger reset, fresh live budget, purchased credit or daily/session increase occurred.
+The reserve exception applied only to the disposable probe. App reserve remains3,
+daily limit18 and session cap6. No further request is scheduled. No response model,
+input/output token usage or provider-reported cost was returned; none is inferred.
 
-Status: offline implementation prepared; **no live request made**. Gemini remains the current default. The API Thật model is disabled pending key availability, separately authorized bounded live validation and actual native-tool continuation evidence. Configuration alone is not proof of model availability or response quality.
+Evidence: `docs/reports/APITHAT_RESERVED_LIVE_PROBE.json` and
+`docs/reports/APITHAT_ONE_SHORT_LIVE_PROBE.json`. Raw error bodies and authentication
+headers are not retained. The second response supplied `Content-Type: application/json`
+and Cloudflare Ray ID `a547e9150e3e87f9-SIN`; no allowlisted request ID or error code was
+captured. A Cloudflare header identifies an intermediary, not the cause of denial.
 
-Latest model-first update: the separate API Thật flow sends permitted current text
-verbatim and bounded permitted history with original roles. Parser preferences no
-longer mutate state before the model; model-selected native tools provide evidence
-and explicit validated changes. Rules run only as a labelled fallback or backend
-authority check.20 affected offline tests passed, including original text/history,
-model clarification, preference+search continuation, privacy, grounding and denial.
+## What the diagnostic checks establish
 
-The user has now saved the key locally and authorized at most3 HTTP generation
-attempts (greeting1/search1/continuation1). Boolean check: file present, key present,
-enabled0. Live preflight is blocked by existing remaining3/reserve3 (used15/18,
-ordinary reset2026-11-03T08:00:00Z); actual attempts0. No key/body/header was logged.
-Do not change caps/reserve/ledger or activate a new budget to get around this.
-Capability stays unverified/disabled; an explicit later resume can recheck normal
-admission before consuming any of the unspent allowance. Current serving runtime
-is preserved while this unenabled source is prepared.
+- The client builds `Authorization: Bearer <key.strip()>`. Local in-memory Request
+  inspection confirms the header contains exactly the normalized effective key;
+  no token/header value was printed. This verifies construction, not remote receipt.
+- Boolean checks: key present, ASCII, no remaining BOM/whitespace/quotes, effective
+  key equals the normalized file value, and no process-environment key override.
+  The file is decoded UTF-8 with optional BOM handling. No key rewrite was necessary.
+- Base, model and final `/v1/chat/completions` endpoint match the confirmed values;
+  `/v1` is not appended twice. The HTTPS destination allowlist accepts it.
+- The transport explicitly uses `ProxyHandler({})`; no HTTP(S)/ALL_PROXY environment
+  value is present. TLS certificate/hostname verification uses the default SSL context;
+  no custom certificate environment is set. Redirects are refused rather than followed.
+- The local destination policy rejects before transport with an unavailable error;
+  it does not manufacture HTTP403. The observed403 comes from urllib's HTTPError path.
+  A redirect refusal also does not create a403 status. A TLS failure would not itself
+  be reported as this HTTP response.
+- There is no explicit User-Agent override; urllib's default client identity is used.
+  A gateway policy concerning that identity is possible but not established. A
+  transparent network intermediary or gateway/CDN/upstream policy cannot be excluded
+  from local inspection alone. No alternate headers, proxy or endpoint were tried.
 
-Implementation: `b6935c2`. Final targeted run:12 adapter tests and3 existing model/session tests PASS (15 total); no project-wide suite was repeated. The earlier endpoint test used a relative fixture path and returned a data-source503; an absolute synthetic fixture path corrected that test setup. Current serving API remains952eb77 so interactive3350 testing is not interrupted; the new adapter/config catalog loads on a later owned restart after the key/setup checkpoint.
+Conclusion: obvious local key-format/header/URL and explicit proxy/policy construction
+errors were not found. These checks do **not** prove the key has permission, identify
+the rejecting component, or establish that the provider/model itself is faulty.
 
-Resume update: both local listeners were found stopped and restored without replacing sessions or ledger. API now serves `6e4afeb`; read-only capabilities confirm `apithat:gpt-6-luna` is unavailable with `provider_disabled` and `native_tools_verified: false`. Web3350 returns HTTP200. Gemini remains default. The local API Thật key is still absent and enabled remains0; no generation was used for this verification.
+## Exact account-side checks without changing key or buying quota
 
-## Local configuration
+The public application bundle exposes `/keys` and `/usage-logs` (legacy `/console/log`
+maps to `/usage-logs`), and labels `Request ID`, `Request Model` and `Model Limits`.
+These routes/labels are verified from public assets; account-specific fields and
+permissions cannot be inspected without the operator's authenticated screen.
 
-The ignored file already exists at:
+1. Open [Usage logs](https://apithat.dev/usage-logs). Find the request at
+   **2026-11-03 09:22:17 Vietnam time** (`02:22:17Z`), model `gpt-6-luna`, route
+   `/v1/chat/completions`. Inspect its Request ID, request model, HTTP status,
+   error code/type and denial reason if the detail view exposes them. Check whether
+   input/output tokens, charged amount and routing/upstream status are present.
+   Do not share key/token, Authorization headers, full prompts or raw private bodies.
+2. Open [Keys](https://apithat.dev/keys), select the same key, and inspect its
+   enabled/status and Model Limits entry for exact `gpt-6-luna`. If the key detail
+   exposes expiration, IP allowlist, group/channel or endpoint restrictions, compare
+   those with this request. Do not modify them blindly or replace the key.
+3. If Usage logs has no matching entry, this does not prove the request was never
+   received: denied traffic may be excluded. Ask API Thật support/admin to correlate
+   the timestamp, path and Ray ID `a547e9150e3e87f9-SIN` in access/WAF logs and identify
+   whether authentication, model authorization, upstream routing or an edge rule
+   returned403. No secret is needed for that correlation.
 
-`C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-claude-coordinator/backend/.env.apithat.local`
+## Local configuration and operation
 
-Open that file locally and fill only the empty `APITHAT_API_KEY=` value. Do not paste the key in chat, terminal commands, screenshots, reports or Git. Keep these settings:
+Private ignored file:
+`C:/Users/tuana/orca/workspaces/ai-foodtour-planner/foodtour-claude-coordinator/backend/.env.apithat.local`.
+The key is already saved; do not paste or print it again. These are variable names
+and public values only, not a replacement for the existing local file:
 
 ```dotenv
 APITHAT_BASE_URL=https://apithat.dev/v1
@@ -58,30 +89,43 @@ APITHAT_API_KEY=
 FOODTOUR_APITHAT_ENABLED=0
 ```
 
-The base and model above were explicitly confirmed by the user. The adapter appends `/chat/completions` to the base, producing `https://apithat.dev/v1/chat/completions`; it never appends a second `/v1`. Only HTTPS to this explicitly configured gateway is accepted. An invalid base, absent key, disabled provider or absent existing budget fails closed.
+`tools/run_online_assistant.py` loads only these four variables from the separate
+file, with process environment taking precedence. This file cannot change caps,
+ledger paths or public client variables. It remains Git-ignored; no key is in Git,
+reports, screenshots or frontend variables. Existing private sessions and Gemini
+configuration are preserved. User Word documents are untouched.
 
-`tools/run_online_assistant.py` reads this file through a four-variable allowlist. Process environment takes precedence; the separate file cannot change model caps, ledgers, sessions or public client variables. Existing `backend/.env` and its Gemini configuration remain unchanged. `backend/.env.example` contains public placeholders only. `git check-ignore backend/.env.apithat.local` confirms exclusion.
+## Model-first and safety contract
 
-## Protocol and evidence boundary
+The API Thật path sends permitted current user text verbatim as a separate native
+user message and bounded permitted history with user/assistant roles. Public server
+context is separate data. The model leads greeting, advice and clarification; for
+venue facts it calls native tools, then explains the actual results. No keyword
+preference mutation or required-search dispatcher runs before the model. Parser
+evidence is used only to authorize a proposed mutation or labelled rules fallback.
 
-The [API Thật public homepage](https://apithat.dev/) advertises Chat/Responses routes and Bearer authentication. Its public [docs route](https://apithat.dev/docs) did not provide readable key/model-specific tool-call documentation during review. The user supplied the exact `gpt-6-luna` identifier from the key's model restriction; it was not guessed from the coordinator's model.
+The adapter maps Chat Completions `tool_calls` IDs to matching `role: tool` results
+and continuation, including parallel calls. Real IDs, session ownership/CAS,
+selection locks, allergy unknowns, factual prices, explicit confirmation and privacy
+remain server-owned. Exact GPS/health/private-location disclosures and entire menus
+are excluded from model requests. HTTP errors remain honest failures; rules/tools
+answers are never called model success. No automatic Responses-route fallback exists.
 
-The adapter implements the documented [OpenAI function-calling message contract](https://developers.openai.com/api/docs/guides/function-calling): assistant `tool_calls` carry opaque IDs, each local result uses `role: tool` with the same `tool_call_id`, and continuation messages retain that pairing, including parallel calls. This verifies our offline mapping; it does **not** prove that this gateway/key/model supports it live. Responses API is not an automatic fallback: trying another route would create another potentially billable request.
+The gateway's [public homepage](https://apithat.dev/) advertises Chat/Responses and
+Bearer authentication. Public [docs](https://apithat.dev/docs) did not establish
+key/model-specific native-tool compatibility. The mapping follows the primary
+[Chat function-calling contract](https://developers.openai.com/api/docs/guides/function-calling),
+but offline compatibility is not live gateway proof. The model catalog remains
+unavailable/native_tools_verifiedfalse until real tool+continuation evidence exists.
 
-API Thật is represented separately as `apithat:gpt-6-luna`, with provider `apithat`, actual configured model and response-reported model kept distinct. Its catalog row reports `native_tools_verified: false`; session selection stays unavailable even when a key is present. No operator flag can falsely mark native tools verified. A later explicitly authorized live tool/result continuation must establish evidence before this catalog gate is changed in a reviewed update.
+## Verification and next step
 
-## Limits and safety
+20 model-first/adapter offline checks passed. Two additional safe-diagnostic tests
+plus the affected no-retry test pass using fake HTTP errors, without network or
+real credentials. Error diagnostics retain only status, normalized content type,
+bounded request identifiers and an allowlisted short error code; never error messages,
+cookies, Authorization or raw bodies. No new generation is needed to run these tests.
 
-- Existing LLM call ledger, session cap, reserve and turn-loop limits are reused; no new ledger or larger allowance is created. Every transport attempt is admitted before HTTP. No automatic retry, provider failover or model upgrade occurs.
-- Request/response sizes and output tokens remain bounded; transport uses the existing HTTPS allowlist, no redirects/proxies and a maximum12second provider timeout within the current turn deadline.
-- HTTP401/404/429/5xx, timeouts, malformed/truncated output and unsupported calls remain explicit errors. A gateway429 is reported as provider quota/rate failure; it does not fabricate exhaustion of the shared local daily ledger. The attempted call still counts.
-- Grounded-price checks, exact IDs, read/mutation authorization, allergy unknowns, explicit confirmation and CAS remain server-owned. Exact origin/GPS, health details and entire menus/datasets are not sent to the gateway.
-- Rules fallback remains labelled rules/tools, never relabelled as a successful API Thật answer. No key, Authorization header or raw provider error body is logged or returned to the client.
-
-## Offline verification and next operator step
-
-Targeted synthetic tests cover native search plus continuation, parallel IDs, malformed/orphan results,401/404/429/503/timeout handling without retries, shared admission, unsafe configuration, private-data projection, rejected invented prices/mutations, local-file allowlisting and disabled session selection. No external generation or real credential is used.
-
-Next: enter the key in the local ignored file, leaving `FOODTOUR_APITHAT_ENABLED=0`, then report only that it has been saved. Live validation still needs a specific bounded allowance and usable existing quota/reserve; no ledger reset, credit purchase or cap increase is implied. Until that proof exists, the adapter is prepared but not live-enabled. No frontend change or new worker is required for the current disabled catalog entry; the existing selector already renders server-provided availability and labels.
-
-See `docs/reports/APITHAT_PREPARATION.json` for sanitized configuration/test evidence. At initial QA restoration, original session/budget/cap fingerprints were unchanged. Later interactive app requests legitimately changed session bytes; those live changes were preserved rather than restoring an older snapshot. Budget and caps remain unchanged. No user Word document was modified.
+Next action is the targeted account-log correlation above, not another probe or
+blind key/quota change. Keep enabled0. The remaining1 attempt is reserved and will
+not be spent without explicit steering after the403 cause is narrowed down.

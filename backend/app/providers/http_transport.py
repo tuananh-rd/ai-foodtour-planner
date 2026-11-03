@@ -11,6 +11,8 @@ import ipaddress
 from http.client import HTTPException
 import math
 import os
+import json
+import re
 import socket
 import ssl
 import time
@@ -81,7 +83,18 @@ class NoRedirect(HTTPRedirectHandler):
         raise ProviderError('unavailable')
 
 
-def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=8192):
+def _diagnostic_headers(target,status,headers):
+    if target is None:return
+    target['http_status']=status
+    if headers is None:return
+    media=headers.get('Content-Type','').split(';',1)[0].strip().lower()
+    if re.fullmatch(r'[a-z0-9.+-]+/[a-z0-9.+-]+',media):target['content_type']=media
+    for name in ('x-request-id','request-id','cf-ray'):
+        value=headers.get(name)
+        if value and re.fullmatch(r'[a-zA-Z0-9_.:-]{1,128}',value):target[name]=value
+
+
+def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=8192, diagnostics=None):
     # Validate every final URL before opener/socket construction, including direct adapter calls.
     if not destination_allowed(url):
         raise ProviderError('unavailable')
@@ -92,6 +105,7 @@ def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=819
         opener = build_opener(ProxyHandler({}), NoRedirect(), HTTPSHandler(context=ssl.create_default_context()))
         req = Request(url, data=body, headers=headers or {}, method='POST' if body is not None else 'GET')
         with opener.open(req, timeout=min(deadline_s, 30.0)) as response:
+            _diagnostic_headers(diagnostics,response.status,response.headers)
             if response.status != 200:
                 raise ProviderError('quota' if response.status == 429 else 'unavailable')
             if response.headers.get('Content-Encoding', 'identity').lower() != 'identity':
@@ -123,6 +137,17 @@ def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=819
         raise
     except HTTPError as error:
         status = error.code
+        _diagnostic_headers(diagnostics,status,error.headers)
+        if diagnostics is not None and diagnostics.get('content_type')=='application/json':
+            try:
+                blob=error.read(4097)
+                data=json.loads(blob) if len(blob)<=4096 else {}
+                nested=data.get('error',{})
+                code=nested.get('code') if isinstance(nested,dict) else None
+                code=code or data.get('code')
+                if isinstance(code,str) and re.fullmatch(r'[a-zA-Z0-9_.:-]{1,64}',code) and not code.lower().startswith(('sk-','bearer')):
+                    diagnostics['error_code']=code
+            except (ValueError,TypeError,OSError,AttributeError):pass
         error.close()
         raise ProviderError('quota' if status == 429 else 'unavailable', status=status) from None
     except (TimeoutError, socket.timeout):

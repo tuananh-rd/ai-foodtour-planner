@@ -1,0 +1,52 @@
+{
+  "config_checks": {
+    "key_present": true,
+    "file_bom_handled": true,
+    "key_has_bom": false,
+    "key_has_whitespace": false,
+    "key_has_remaining_quotes": false,
+    "key_ascii": true,
+    "key_matches_normalized_file": true,
+    "process_key_override_present": false,
+    "bearer_attached_and_exact": true,
+    "base_exact": true,
+    "model_exact": true,
+    "endpoint_allowed": true,
+    "enabled_file_off": true,
+    "proxy_environment_present": false,
+    "transport_uses_proxyhandler_empty": true,
+    "tls_verification_enabled": true,
+    "custom_cert_environment_present": false
+  },
+  "preflight": {
+    "limit": 18,
+    "used": 16,
+    "remaining": 2,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "attempts_this_probe": 1,
+  "attempts_this_authorization_total": 2,
+  "reserve_runtime_unchanged": true,
+  "input": "public short greeting/advice; no tools or private records",
+  "retry": false,
+  "tool_proof": false,
+  "request_time_vn": "2026-11-03T09:22:17+07:00",
+  "error": "unavailable",
+  "http_status": 403,
+  "latency_ms": 395,
+  "diagnostics": {
+    "http_status": 403,
+    "content_type": "application/json",
+    "cf-ray": "a547e9150e3e87f9-SIN"
+  },
+  "postflight": {
+    "limit": 18,
+    "used": 17,
+    "remaining": 1,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  }
+}

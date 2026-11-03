@@ -55,7 +55,7 @@ class ApiThatTests(unittest.TestCase):
         self.assertEqual(len(requests),2);self.assertEqual(model.client.budget.snapshot()['used'],2)
         for url,kwargs in requests:
             self.assertEqual(url,'https://apithat.dev/v1/chat/completions')
-            self.assertTrue(kwargs['headers']['Authorization'].startswith('Bearer '))
+            self.assertEqual(kwargs['headers']['Authorization'],'Bearer synthetic-not-a-real-key')
             self.assertLessEqual(kwargs['deadline_s'],12)
         body=json.loads(requests[1][1]['body'])
         assistant=next(m for m in body['messages'] if m.get('tool_calls'))
