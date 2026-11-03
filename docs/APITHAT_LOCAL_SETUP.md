@@ -2,6 +2,8 @@
 
 Status: offline implementation prepared; **no live request made**. Gemini remains the current default. The API Thật model is disabled pending key availability, separately authorized bounded live validation and actual native-tool continuation evidence. Configuration alone is not proof of model availability or response quality.
 
+Implementation: `b6935c2`. Final targeted run:12 adapter tests and3 existing model/session tests PASS (15 total); no project-wide suite was repeated. The earlier endpoint test used a relative fixture path and returned a data-source503; an absolute synthetic fixture path corrected that test setup. Current serving API remains952eb77 so interactive3350 testing is not interrupted; the new adapter/config catalog loads on a later owned restart after the key/setup checkpoint.
+
 ## Local configuration
 
 The ignored file already exists at:
@@ -42,3 +44,5 @@ API Thật is represented separately as `apithat:gpt-6-luna`, with provider `api
 Targeted synthetic tests cover native search plus continuation, parallel IDs, malformed/orphan results,401/404/429/503/timeout handling without retries, shared admission, unsafe configuration, private-data projection, rejected invented prices/mutations, local-file allowlisting and disabled session selection. No external generation or real credential is used.
 
 Next: enter the key in the local ignored file, leaving `FOODTOUR_APITHAT_ENABLED=0`, then report only that it has been saved. Live validation still needs a specific bounded allowance and usable existing quota/reserve; no ledger reset, credit purchase or cap increase is implied. Until that proof exists, the adapter is prepared but not live-enabled. No frontend change or new worker is required for the current disabled catalog entry; the existing selector already renders server-provided availability and labels.
+
+See `docs/reports/APITHAT_PREPARATION.json` for sanitized configuration/test evidence. At initial QA restoration, original session/budget/cap fingerprints were unchanged. Later interactive app requests legitimately changed session bytes; those live changes were preserved rather than restoring an older snapshot. Budget and caps remain unchanged. No user Word document was modified.

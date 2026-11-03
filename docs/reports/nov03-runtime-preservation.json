@@ -1,5 +1,13 @@
 {
-  "original_sessions_unchanged": true,
-  "original_budget_unchanged": true,
-  "caps_unchanged": true
+  "at_initial_qa_restore": {
+    "original_sessions_unchanged": true,
+    "original_budget_unchanged": true,
+    "caps_unchanged": true
+  },
+  "later_interactive_runtime": {
+    "original_sessions_unchanged": false,
+    "original_budget_unchanged": true,
+    "caps_unchanged": true
+  },
+  "explanation": "Interactive assistant/menu requests were observed after restoration; private session bytes legitimately evolved. No old session backup was restored or rolled back. No request bodies were read for this audit."
 }

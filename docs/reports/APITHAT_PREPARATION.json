@@ -1,0 +1,27 @@
+{
+  "commit": "b6935c2",
+  "state": "offline_prepared_not_live",
+  "server_current_source": "952eb77",
+  "server_restart_deferred_to_preserve_interactive_testing": true,
+  "config_path": "backend/.env.apithat.local",
+  "key_present": false,
+  "base_matches_user_confirmed": true,
+  "model_matches_user_confirmed": true,
+  "provider_enabled": false,
+  "native_tools_live_verified": false,
+  "actual_provider_generation_requests": 0,
+  "tests": {
+    "new_adapter": 12,
+    "existing_model_session": 3,
+    "result": "PASS"
+  },
+  "gemini_default_unchanged": true,
+  "new_ledger_created": false,
+  "caps_increased": false,
+  "limitations": [
+    "Key has not been supplied to the agent; only local presence is inspected.",
+    "Public gateway Chat/Responses/Bearer documentation is insufficient key/model tool-continuation proof.",
+    "Chat Completions implemented; no automatic retry, Responses fallback, or paid activation.",
+    "Catalog remains disabled until separately authorized live proof; changing config alone does not claim verified support."
+  ]
+}
