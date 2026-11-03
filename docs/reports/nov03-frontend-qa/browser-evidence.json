@@ -1,0 +1,128 @@
+{
+  "testedAt": "2026-11-03T01:21:52.368Z",
+  "webUrl": "http://127.0.0.1:3350",
+  "apiUrl": "http://127.0.0.1:8250",
+  "cdpPort": 19795,
+  "browser": "C:/Program Files/Google/Chrome/Application/chrome.exe",
+  "checks": [
+    {
+      "name": "API 8250 accessible",
+      "result": "PASS",
+      "status": "ok"
+    },
+    {
+      "name": "Safety Guard: Offline rules/mock lane verified (no live Gemini consumed)",
+      "result": "PASS",
+      "llm": "mock",
+      "provider": "rules"
+    },
+    {
+      "name": "Browser binary located",
+      "result": "PASS",
+      "path": "C:/Program Files/Google/Chrome/Application/chrome.exe"
+    },
+    {
+      "name": "Browser loaded discovery-v1 assistant and reached idle state",
+      "result": "PASS"
+    },
+    {
+      "name": "Chat search \"tôi muốn ăn phở tại Đống Đa\" submitted successfully",
+      "result": "PASS"
+    },
+    {
+      "name": "Venue cards rendered on search results",
+      "result": "PASS",
+      "count": 5
+    },
+    {
+      "name": "Truthful distance display without origin (origin_missing note)",
+      "result": "PASS"
+    },
+    {
+      "name": "Opened detail modal on venue",
+      "result": "PASS",
+      "ok": true,
+      "venueText": "Ánh Sáng - Phở Bò, Cơm Rang, Phở Xào & Mì Xào"
+    },
+    {
+      "name": "Full menu section modal rendered with [data-testid=\"venue-menu-section\"]",
+      "result": "PASS"
+    },
+    {
+      "name": "Full menu title rendered with item count",
+      "result": "PASS",
+      "title": "Thực đơn (31 món)"
+    },
+    {
+      "name": "Unobtrusive single source badge present (Nguồn: ShopeeFood)",
+      "result": "PASS",
+      "source": "Nguồn: ShopeeFood"
+    },
+    {
+      "name": "Menu search input present",
+      "result": "PASS"
+    },
+    {
+      "name": "Repetitive price disclaimers stripped from menu modal",
+      "result": "PASS"
+    },
+    {
+      "name": "Menu items and group chips rendered",
+      "result": "PASS",
+      "items": 25,
+      "groups": 4
+    },
+    {
+      "name": "In-modal menu search submitted",
+      "result": "PASS"
+    },
+    {
+      "name": "MapLibre container rendered via pilot-map-toggle",
+      "result": "PASS"
+    },
+    {
+      "name": "OpenStreetMap visible attribution present",
+      "result": "PASS"
+    },
+    {
+      "name": "Draft draggable origin pin placed on map click",
+      "result": "PASS",
+      "draftPin": true,
+      "draftBarBtn": true
+    },
+    {
+      "name": "Used draft map pin location via explicit action (resolve_address: true)",
+      "result": "PASS"
+    },
+    {
+      "name": "Added venue to foodtour selection",
+      "result": "PASS",
+      "note": "Venue already in tour"
+    },
+    {
+      "name": "Mobile 390x844 viewport fits without horizontal overflow",
+      "result": "PASS",
+      "scrollWidth": 390,
+      "clientWidth": 390,
+      "noHorizontalOverflow": true
+    }
+  ],
+  "screenshots": [
+    {
+      "name": "browser_1440_search_results.png",
+      "path": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-claude-coordinator\\docs\\reports\\nov03-frontend-qa\\browser_1440_search_results.png"
+    },
+    {
+      "name": "browser_1440_menu_modal.png",
+      "path": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-claude-coordinator\\docs\\reports\\nov03-frontend-qa\\browser_1440_menu_modal.png"
+    },
+    {
+      "name": "browser_1440_map_origin.png",
+      "path": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-claude-coordinator\\docs\\reports\\nov03-frontend-qa\\browser_1440_map_origin.png"
+    },
+    {
+      "name": "browser_390_mobile.png",
+      "path": "C:\\Users\\tuana\\orca\\workspaces\\ai-foodtour-planner\\foodtour-claude-coordinator\\docs\\reports\\nov03-frontend-qa\\browser_390_mobile.png"
+    }
+  ]
+}
