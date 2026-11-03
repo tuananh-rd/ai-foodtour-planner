@@ -26,6 +26,16 @@ class UpgradeTests(unittest.TestCase):
         self.assertEqual(food_intent('tôi muốn ăn phở vào tối mai'),['phở'])
         self.assertEqual(food_intent('tôi muốn ăn phở ít cay'),['phở'])
 
+    def test_menu_filter_uses_same_token_accent_contract(self):
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'menu.zip'
+            menu_archive(path,['Phở bò','Hotline 0900000000','Trà sữa phô mai',
+                'Tào phớ','Phở cuốn','Phố Huế','Bánh ngọt'])
+            for query in ('phở','pho'):
+                self.assertEqual([x['name'] for x in catalog(path,'fried0',q=query)['items']],['Phở bò'])
+            self.assertEqual(catalog(path,'fried0',q='phô mai')['total'],1)
+            self.assertEqual(catalog(path,'fried0',q='bánh thiên hà')['total'],0)
+
     def test_pho_soup_contrasts_accents_tokens_and_specific_phrases(self):
         negatives=['phô mai','pho mai','phố Huế','pho Hue','tào phớ','tao pho',
                    'phở cuốn','pho cuon','trà sữa phô mai','phở xào','phởgà']

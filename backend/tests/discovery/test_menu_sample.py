@@ -13,9 +13,9 @@ from app.planner.interfaces import StraightLineEstimator
 from backend.tests.discovery.test_food_intent_matrix import matrix_data
 
 
-def menu_archive(path):
+def menu_archive(path, names=None):
     dishes=[];items=[];links=[];options=[]
-    names=['Gà rán phần thử','Hotline 0900000000','Gà rán giá lỗi','Gà rán chọn sốt',
+    names=names or ['Gà rán phần thử','Hotline 0900000000','Gà rán giá lỗi','Gà rán chọn sốt',
            'Phở gà đã hết','Gà rán thiếu option','Nước thử']
     for n,name in enumerate(names):
         identity=f'dish{n}';item=f'item{n}'

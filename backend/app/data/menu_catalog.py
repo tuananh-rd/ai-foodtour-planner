@@ -1,7 +1,7 @@
 """One visible venue's paginated canonical menu; never a model/dataset export."""
 from collections import Counter, defaultdict
+from types import SimpleNamespace
 from app.presentation import plain_text
-from app.planner.relevance import fold_uncached
 from .menu_archive import read_menu_archive
 from .menu import load_menu_archive, amount
 
@@ -12,6 +12,7 @@ def text(value,limit=1200):
 
 def catalog(path,venue_id,*,offset=0,limit=25,q='',group=None,dish_id=None,
             option_offset=0,option_limit=100):
+    from app.discovery.food import matches_food
     archive=read_menu_archive(path)
     rows,_,_=load_menu_archive(archive,{venue_id},include_ids=True)
     evidence={str(r['id']):r for r in rows.get(venue_id,[])}
@@ -36,7 +37,7 @@ def catalog(path,venue_id,*,offset=0,limit=25,q='',group=None,dish_id=None,
     total_menu=len(dishes)
     filtered=[(d,g) for d,g in dishes if (not dish_id or str(d['dish_id'])==dish_id)
         and (not group or any(x['id']==group for x in g))
-        and (not q or fold_uncached(q) in fold_uncached(str(d.get('name_norm') or d.get('name_raw') or '')))]
+        and (not q or matches_food(SimpleNamespace(dish_tags=(evidence[str(d['dish_id'])]['name'],)),q))]
     public=[]
     for dish,dish_groups in filtered[offset:offset+limit]:
         key=str(dish['dish_id']);row=evidence[key];all_options=[]
