@@ -141,7 +141,7 @@ def location_action(state, tools, arguments, reverse_address=None):
         lat, lon, label, source = candidate['lat'], candidate['lon'], candidate['label'], candidate.get('source','local')
     else:
         lat, lon, source = a.lat, a.lon, a.source
-        label = 'Vị trí hiện tại' if source == 'gps' else 'Tọa độ đã nhập'
+        label = 'Vị trí hiện tại' if source == 'gps' else 'Vị trí ghim trên bản đồ' if source=='map' else 'Tọa độ đã nhập'
     if not all(math.isfinite(v) for v in (lat, lon)) or not tools.gz.inside_hanoi(lat, lon):
         return tools.result('tool_error', 'Tọa độ chưa hợp lệ hoặc ngoài vùng Hà Nội thí điểm; chưa đổi vị trí.')
     state.patch({'origin': {'lat': lat, 'lon': lon}})
@@ -155,6 +155,8 @@ def location_action(state, tools, arguments, reverse_address=None):
     elif source in ('gps','map') and a.resolve_address:
         if reverse_address:
             state.location.update(reverse_address.resolve(lat, lon))
+            if source=='map' and state.location.get('address_status')!='resolved':
+                state.location['label']='Vị trí ghim chưa có địa chỉ'
         else:
             state.location.update(label='Vị trí GPS chưa có địa chỉ', approximate=True,
                                   address_status='unavailable', address_provider=None, address_reason='disabled')

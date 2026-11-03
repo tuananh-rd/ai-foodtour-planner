@@ -100,6 +100,8 @@ def matches_food(venue, food):
         for phrase in phrases:
             desired=re.findall(r'\w+',unicodedata.normalize('NFC',(food if phrase==wanted else phrase).casefold()))
             if not desired:continue
+            if desired[0] in INTENT_LABELS:
+                desired[0]=INTENT_LABELS[desired[0]]
             canonical=next((entry[1].lower() for entry in knowledge.DISHES
                 if entry[0]==phrase and fold_uncached(entry[1])==phrase),None)
             if canonical and all(fold_uncached(t)==t for t in desired):
