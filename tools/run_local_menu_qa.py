@@ -20,6 +20,7 @@ def main():
             os.environ[key.strip()]=value.strip().strip('"').strip("'")
     with tempfile.TemporaryDirectory(prefix='private-menu-qa-') as tmp:
         os.environ.update(FOODTOUR_LLM='mock',GEMINI_API_KEY='',TAVILY_API_KEY='',
+            APITHAT_API_KEY='',FOODTOUR_APITHAT_ENABLED='0',
             FOODTOUR_TAVILY_ENABLED='0',GOOGLE_MAPS_BROWSER_KEY='',GOOGLE_MAPS_SERVER_KEY='',
             GOOGLE_MAPS_MAP_ID='',FOODTOUR_EXPLAIN='template',FOODTOUR_ROUTING='estimate',
             FOODTOUR_GEOCODER='off',FOODTOUR_REVERSE_GEOCODER='photon' if args.address_lookup else 'off',FOODTOUR_CHAT_V2='1',

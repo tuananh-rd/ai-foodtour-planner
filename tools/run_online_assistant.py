@@ -17,14 +17,21 @@ def local_configuration():
     allowed.update({'TAVILY_API_KEY', 'FOODTOUR_TAVILY_ENABLED', 'FOODTOUR_TAVILY_FREE_ONLY',
                     'FOODTOUR_TAVILY_BUDGET_DB', 'FOODTOUR_TAVILY_DAILY_CREDITS', 'FOODTOUR_TAVILY_MONTHLY_CREDITS'})
     path = ROOT / 'backend/.env'
-    if not path.exists():
-        return
-    for line in path.read_text(encoding='utf-8-sig').splitlines():
+    for line in (path.read_text(encoding='utf-8-sig').splitlines() if path.exists() else []):
         if line.lstrip().startswith('#') or '=' not in line:
             continue
         key, value = line.split('=', 1)
         if key.strip() in allowed:
             os.environ.setdefault(key.strip(), value.strip().strip('"').strip("'"))
+    # Optional dedicated local secret file; never import executable/config-wide content.
+    private_provider = ROOT / 'backend/.env.apithat.local'
+    if private_provider.exists():
+        provider_keys={'APITHAT_BASE_URL','APITHAT_MODEL','APITHAT_API_KEY','FOODTOUR_APITHAT_ENABLED'}
+        for line in private_provider.read_text(encoding='utf-8-sig').splitlines():
+            if line.lstrip().startswith('#') or '=' not in line:continue
+            key,value=line.split('=',1)
+            if key.strip() in provider_keys:
+                os.environ.setdefault(key.strip(),value.strip().strip('"').strip("'"))
 
 
 def main():

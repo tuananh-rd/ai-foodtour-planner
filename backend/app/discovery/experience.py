@@ -19,8 +19,9 @@ VERIFIED_MODELS = {
 
 
 class ChatModels:
-    def __init__(self, base):
+    def __init__(self, base, alternate=None):
         self.base = base
+        self.alternate = alternate
 
     @property
     def default(self):
@@ -28,6 +29,12 @@ class ChatModels:
         return identity if identity in VERIFIED_MODELS else None
 
     def available(self, identity, reserve):
+        if self.alternate is not None and identity == self.alternate.identity:
+            if not self.alternate.client.enabled:return False,'provider_disabled'
+            if not self.alternate.configured:return False,'key_or_config_unavailable'
+            if not self.alternate.native_tools_verified:return False,'native_tools_unverified'
+            if self.alternate.client.budget.snapshot()['remaining']<=reserve:return False,'quota'
+            return True,None
         client = getattr(self.base, 'client', None)
         if identity not in VERIFIED_MODELS:
             return False, 'model_not_verified'
@@ -45,11 +52,21 @@ class ChatModels:
             available, reason = self.available(identity, reserve)
             rows.append({'id': identity, 'label': label, 'available': available,
                          'reason': reason, 'native_tools_verified': True})
+        if self.alternate is not None:
+            available,reason=self.available(self.alternate.identity,reserve)
+            rows.append({'id':self.alternate.identity,'label':'API Thật · '+self.alternate.client.model+' (chưa kiểm chứng)',
+                         'provider':'apithat','available':available,'reason':reason,
+                         'native_tools_verified':self.alternate.native_tools_verified})
         return rows
 
     def select(self, identity):
         if identity is None:
             return self.base
+        if self.alternate is not None and identity == self.alternate.identity:
+            if not self.alternate.native_tools_verified or not self.alternate.configured:return None
+            model=copy.copy(self.alternate)
+            model.client=copy.copy(model.client)
+            return model
         if identity not in VERIFIED_MODELS:
             return None
         # Separate model identity; same ledger/limits/transport. Never mutate the global client.

@@ -81,7 +81,11 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     from app.discovery.gemini import GeminiTools
     app.state.discovery_model = GeminiTools(gemini if llm_mode == 'gemini' else None)
     from app.discovery.experience import ChatModels
-    app.state.chat_models = ChatModels(app.state.discovery_model)
+    alternate=None
+    if os.getenv('APITHAT_MODEL','').strip():
+        from app.discovery.openai_compatible import ApiThatClient, ApiThatTools
+        alternate=ApiThatTools(ApiThatClient(gemini.budget if gemini is not None else None))
+    app.state.chat_models = ChatModels(app.state.discovery_model,alternate)
     if llm_mode == "gemini" and gemini is not None and gemini.configured:
         app.state.chat_understanding_provider = GeminiUnderstandingProvider(gemini)
     # Conversation shares the explicitly configured client and its existing budget.

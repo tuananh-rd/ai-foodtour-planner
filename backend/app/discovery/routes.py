@@ -131,7 +131,7 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
             result, provider = handle(body.text, tools, model=model, llm_used=old_used,
                 session_cap=old_used + reserve if model and model.configured else request.app.state.llm_session_cap,
                 reserve=request.app.state.llm_reserve)
-            provider['model'] = getattr(getattr(model, 'client', None), 'model', None) if provider['mode'] == 'gemini' else None
+            provider['model'] = getattr(getattr(model, 'client', None), 'model', None) if provider['mode'] in ('gemini','apithat') else None
         if result.get('proposed_changes'):
             result['text'] += ' Có thể cân nhắc: ' + '; '.join(result['proposed_changes'])
         if not result.get('text'):
@@ -141,7 +141,7 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
     if body.text:
         if provider.get('failure'):
             state.last_provider_failure = copy.deepcopy(provider['failure'])
-        elif provider.get('mode') == 'gemini' and provider.get('calls', 0) > 0:
+        elif provider.get('mode') in ('gemini','apithat') and provider.get('calls', 0) > 0:
             state.last_provider_failure = None  # a real response, not a local action, clears outage state
     state.remember('assistant', result['text'] + (' ' + result['question'] if result.get('question') else ''))
     if body.text and provider.get('reply_source') == 'model':

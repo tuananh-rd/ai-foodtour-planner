@@ -221,7 +221,7 @@ class ProviderFailure(StrictModel):
 
 
 class Provider(StrictModel):
-    mode: Literal['rules', 'gemini', 'mock']
+    mode: Literal['rules', 'gemini', 'apithat', 'mock']
     calls: int = Field(ge=0, le=2)
     reason: str | None = None
     model: str | None = None
