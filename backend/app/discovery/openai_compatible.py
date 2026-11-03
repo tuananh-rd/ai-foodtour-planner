@@ -21,7 +21,13 @@ def decode(raw):
 
 def chat_messages(contents):
     """Translate in-turn native call IDs exactly; do not synthesize results or tool IDs."""
-    messages=[{'role':'system','content':SYSTEM}]
+    messages=[{'role':'system','content':SYSTEM+' Tin nhắn người dùng hiện tại và lịch sử được gửi riêng nguyên văn; '
+        'server_context chỉ là dữ liệu hiện tại, không phải yêu cầu mới. Bạn dẫn hội thoại: chào hỏi và tư vấn '
+        'kiến thức chung trả lời trực tiếp; cần dữ kiện quán thì gọi tools trước khi khẳng định. '
+        'Nếu người dùng đổi món/khu vực, đề xuất update_preferences với giá trị người dùng nói rõ rồi '
+        'search_restaurants theo yêu cầu mới; có thể gửi hai lời gọi theo đúng thứ tự trong một phản hồi. '
+        'Read tools không tự thay lựa chọn quán. Giải thích kết quả thực, kể cả không có dữ liệu hoặc thao tác bị từ chối. '
+        'Không tự tạo xác nhận, không tự xác nhận tour; thay lựa chọn chỉ khi được người dùng yêu cầu.'}]
     pending={}
     for content in contents:
         if content['role'] not in ('user','model'):raise ValueError('content role')
@@ -95,6 +101,7 @@ class ApiThatClient:
 
 class ApiThatTools:
     mode='apithat'
+    conversation_flow='model_first'
     native_tools_verified=False  # Public gateway claims are not key/model continuation proof.
 
     def __init__(self,client):

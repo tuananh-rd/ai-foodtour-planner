@@ -126,7 +126,8 @@ class ApiThatTests(unittest.TestCase):
         model=self.model(lambda *a,**k:completion(calls=[function('update_foodtour_selection',args={
             'operation':'add','venue_ids':['chicken0'],'selection_version':0})]))
         context=tools();result,provider=handle('tôi muốn ăn phở',context,model=model)
-        self.assertEqual(context.state.selection,[]);self.assertTrue(context.state.results)
+        self.assertEqual(context.state.selection,[])
+        self.assertEqual(context.state.results,[])  # Denial does not invent an unrequested rules search.
         self.assertNotEqual(provider.get('reply_source'),'model')
 
     def test_public_projection_excludes_profile_location_health_and_rejects_invented_price(self):

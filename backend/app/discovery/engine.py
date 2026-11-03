@@ -336,6 +336,9 @@ def safe_answer(text, tools, tool_results):
 
 
 def handle(text, tools, *, model=None, llm_used=0, session_cap=6, reserve=3):
+    if getattr(model,'conversation_flow',None)=='model_first':
+        from .model_first import handle_model_first
+        return handle_model_first(text,tools,model=model,llm_used=llm_used,session_cap=session_cap,reserve=reserve)
     start = time.monotonic()
     initial_refs = references(text, tools)
     initial_results = list(tools.state.results or tools.state.comparison)

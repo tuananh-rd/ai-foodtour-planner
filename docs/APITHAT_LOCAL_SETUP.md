@@ -2,6 +2,22 @@
 
 Status: offline implementation prepared; **no live request made**. Gemini remains the current default. The API Thật model is disabled pending key availability, separately authorized bounded live validation and actual native-tool continuation evidence. Configuration alone is not proof of model availability or response quality.
 
+Latest model-first update: the separate API Thật flow sends permitted current text
+verbatim and bounded permitted history with original roles. Parser preferences no
+longer mutate state before the model; model-selected native tools provide evidence
+and explicit validated changes. Rules run only as a labelled fallback or backend
+authority check.20 affected offline tests passed, including original text/history,
+model clarification, preference+search continuation, privacy, grounding and denial.
+
+The user has now saved the key locally and authorized at most3 HTTP generation
+attempts (greeting1/search1/continuation1). Boolean check: file present, key present,
+enabled0. Live preflight is blocked by existing remaining3/reserve3 (used15/18,
+ordinary reset2026-11-03T08:00:00Z); actual attempts0. No key/body/header was logged.
+Do not change caps/reserve/ledger or activate a new budget to get around this.
+Capability stays unverified/disabled; an explicit later resume can recheck normal
+admission before consuming any of the unspent allowance. Current serving runtime
+is preserved while this unenabled source is prepared.
+
 Implementation: `b6935c2`. Final targeted run:12 adapter tests and3 existing model/session tests PASS (15 total); no project-wide suite was repeated. The earlier endpoint test used a relative fixture path and returned a data-source503; an absolute synthetic fixture path corrected that test setup. Current serving API remains952eb77 so interactive3350 testing is not interrupted; the new adapter/config catalog loads on a later owned restart after the key/setup checkpoint.
 
 Resume update: both local listeners were found stopped and restored without replacing sessions or ledger. API now serves `6e4afeb`; read-only capabilities confirm `apithat:gpt-6-luna` is unavailable with `provider_disabled` and `native_tools_verified: false`. Web3350 returns HTTP200. Gemini remains default. The local API Thật key is still absent and enabled remains0; no generation was used for this verification.

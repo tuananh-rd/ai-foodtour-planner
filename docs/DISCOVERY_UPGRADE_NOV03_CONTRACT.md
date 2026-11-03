@@ -3,6 +3,51 @@
 Latest user authority: Codex backend/data/contracts/integration; Antigravity frontend/mechanical
 QA; Claude rests. No AI generation allowance, ledger/cap changes, paid activation or publication.
 
+## Model-first API Thật decision (latest user authority)
+
+API Thật `gpt-6-luna`, base `https://apithat.dev/v1`, uses a separate model-first
+conversation path. The existing Gemini path is retained. Public current user text
+is sent verbatim as its own user message, not truncated or replaced by parsed
+intent JSON. At most eight permitted stored messages retain user/assistant roles;
+stored history already has the existing700character limit. Current text is not
+subject to that history truncation. Bounded public server context is a separate
+data message. Private/health/contact/credential/location disclosures are handled
+locally; unsafe history messages are omitted, not leaked or misrepresented as raw.
+
+The model answers greetings/general advice directly, asks clarification itself,
+and chooses native read tools for factual venue evidence. There is no keyword
+preference update, required-search dispatcher, canned greeting, or automatic
+replacement of a valid model reply before/after an otherwise successful request.
+For a literal public preference change, the model proposes `update_preferences`
+then search in order (both can be emitted in one native-tool response). A read
+tool's explicit arguments are not overwritten by a keyword-derived area/price.
+Tools still enforce food relevance, real IDs, visibility, existing filters and
+data bounds; models cannot relax these silently. Profile updates are explicit
+tools, not side effects of transmitting a user message.
+
+Backend mutation authorization may parse the current text as evidence only when
+the model proposes that mutation. It does not route the conversation. Selection,
+locks, CAS, privacy, current confirmation and allergy unknowns remain backend-owned.
+Confirmation IDs are never exposed as model tools. Grounded prices/factual output
+checks remain; tool no-data/error/deny status is retained even when the model
+explains a result. Model output does not turn no-data into successful search.
+
+Only provider failure/admission refusal/invalid output invokes local fallback,
+with `mode: rules`, `reply_source: rules` and a diagnostic reason; already completed
+tool results remain labelled tools. No additional model retry/failover occurs.
+Existing two-request turn limit, six-tool limit,12second turn deadline, daily
+ledger/session cap/reserve and request/response size bounds are unchanged.
+
+The user subsequently authorized at most3 HTTP generation attempts total:
+greeting1 plus native search1 plus continuation1, with no retries. Key presence is
+confirmed only as a boolean; enabled remains0. Read-only admission on2026-11-03
+reports used15/limit18, remaining3 and reserve3, reset2026-11-03T08:00:00Z. This
+blocks live transport: actual attempts0. Do not reset or reduce reserve, create a
+fresh budget, or claim native-tool compatibility. Capability/selection remains
+disabled until actual authorized tool+continuation evidence exists. A later
+operator resume must recheck the ordinary window and remaining allowance; no
+background retries or automatic activation are authorized.
+
 ## Food and search
 
 Soup pho excludes cheese (phô mai), street phố, tào phớ and phở cuốn/xào/chiên/trộn unless
