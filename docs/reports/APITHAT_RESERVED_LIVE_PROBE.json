@@ -1,0 +1,54 @@
+{
+  "provider": "apithat",
+  "requested_model": "gpt-6-luna",
+  "lane": "disposable in-memory state, real local menu6 bounded public evidence",
+  "authorization": "3 remaining reserve calls only; no retry/failover/daily or session limit increase",
+  "preflight": {
+    "limit": 18,
+    "used": 15,
+    "remaining": 3,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "key_present": true,
+  "enabled_file_unchanged": true,
+  "attempts": 1,
+  "responses": [
+    {
+      "ordinal": 1,
+      "tool_result_messages": 0,
+      "error": "unavailable",
+      "http_status": 403
+    }
+  ],
+  "tool_results": [],
+  "checks": {
+    "greeting_actual_model_reply": false
+  },
+  "live_native_tools_verified": false,
+  "allowance_after_prior_usage": 3,
+  "greeting_provider": {
+    "mode": "rules",
+    "calls": 1,
+    "configured_model": "gpt-6-luna",
+    "reply_source": "rules",
+    "failure": {
+      "kind": "unavailable",
+      "source": "provider_http",
+      "http_status": 403
+    },
+    "reason": "unavailable_rules_fallback"
+  },
+  "blocker": "greeting_failed_or_not_actual_model_reply",
+  "postflight": {
+    "limit": 18,
+    "used": 16,
+    "remaining": 2,
+    "exhausted": false,
+    "resets_at": "2026-11-03T08:00:00Z",
+    "window": "pacific_midnight"
+  },
+  "reserve_environment_unchanged": true,
+  "elapsed_ms": 3914
+}

@@ -1,5 +1,26 @@
 # API Thật local chatbot adapter
 
+## Latest authorized live result
+
+The user authorized using the three reserved calls for this QA only, without changing
+daily18/session6 or the shared ledger. A disposable in-memory model-first probe used
+`reserve=0` only for its own handler invocation; no environment/file/runtime reserve
+was changed. Preflight used15/18, remaining3. The first actual greeting generation
+request to the configured Chat Completions route returned **HTTP403**. The probe
+stopped after **1/3 total attempts** with no retry/failover and no search/continuation.
+Postflight used16/18, remaining2; reserve remains3 and local enabled remains0.
+
+No model response, token usage, grounded reply or native-tool proof was obtained.
+This is provider HTTP refusal, not proven local quota exhaustion. The transport did
+not retain/log the provider error body; the precise403 cause is unknown. The operator
+must check API Thật's request/access diagnostics and confirm key/model permissions,
+endpoint policy and any gateway access restrictions. Do not paste the key or private
+error body into chat. No further generation or automatic replay is scheduled.
+
+Evidence: `docs/reports/APITHAT_RESERVED_LIVE_PROBE.json`. The persistent local
+attempt guard refuses replay. Capability remains disabled/unverified; the two
+unused requests were not spent and the existing daily accounting is preserved.
+
 Status: offline implementation prepared; **no live request made**. Gemini remains the current default. The API Thật model is disabled pending key availability, separately authorized bounded live validation and actual native-tool continuation evidence. Configuration alone is not proof of model availability or response quality.
 
 Latest model-first update: the separate API Thật flow sends permitted current text

@@ -76,7 +76,7 @@ class ApiThatTests(unittest.TestCase):
         with self.assertRaises(ValueError):chat_messages(contents)
 
     def test_errors_are_one_attempt_and_never_relabelled_success(self):
-        for kind,status in [('unavailable',401),('unavailable',404),('quota',429),('unavailable',503),('timeout',None)]:
+        for kind,status in [('unavailable',401),('unavailable',403),('unavailable',404),('quota',429),('unavailable',503),('timeout',None)]:
             with self.subTest(kind=kind,status=status):
                 attempts=[]
                 def transport(*a,**k):attempts.append(1);raise ProviderError(kind,status=status)
