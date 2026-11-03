@@ -61,8 +61,12 @@ def main():
         configured_limit = int(os.environ.get('FOODTOUR_LLM_DAILY_BUDGET', '18'))
     except ValueError:
         configured_limit = 0
-    # User explicitly approved daily18->20 for the two-call SDK native-tool QA.
-    os.environ['FOODTOUR_LLM_DAILY_BUDGET'] = str(max(0, min(20, configured_limit)))
+    # User explicitly approved daily200/session30; preserve the existing ledger.
+    os.environ['FOODTOUR_LLM_DAILY_BUDGET'] = str(max(0, min(200, configured_limit)))
+    try:
+        session_limit=int(os.environ.get('FOODTOUR_LLM_SESSION_CAP','30'))
+    except ValueError:session_limit=1
+    os.environ['FOODTOUR_LLM_SESSION_CAP']=str(max(1,min(30,session_limit)))
     if args.llm == 'off':
         os.environ['FOODTOUR_LLM'] = 'mock'
     if args.dataset == 'synthetic':

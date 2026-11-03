@@ -45,7 +45,7 @@ def create_app(*, data_path=None, sessions: SessionStoreInterface | None = None,
     # the existing provider preserves free-only/null-limit/ledger admission.
     from app.providers.tavily import TavilySearch
     app.state.web_search = web_search if web_search is not None else TavilySearch.from_env()
-    app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 6)
+    app.state.llm_session_cap = setting("FOODTOUR_LLM_SESSION_CAP", 30, maximum=30)
     app.state.llm_reserve = setting("FOODTOUR_LLM_RESERVE", 3)
     app.state.venues = VenueRepository(data_path)
     llm_mode = os.getenv("FOODTOUR_LLM", "mock").strip().casefold()
