@@ -94,6 +94,35 @@ def _diagnostic_headers(target,status,headers):
         if value and re.fullmatch(r'[a-zA-Z0-9_.:-]{1,128}',value):target[name]=value
 
 
+def _diagnostic_error(target,data):
+    """Bounded known error envelopes only; never retain free-form title/detail/message."""
+    titles={'browser signature banned':'browser_signature_banned',
+            'browser_signature_banned':'browser_signature_banned',
+            'access denied':'access_denied','error 1010':'browser_signature_banned',
+            'error code: 1010':'browser_signature_banned'}
+    def visit(value,depth=0):
+        if not isinstance(value,dict) or depth>3:return
+        code=value.get('error_code',value.get('code'))
+        if type(code) is int and 0<=code<=99999:
+            target.setdefault('error_code',code)
+        elif isinstance(code,str) and re.fullmatch(r'[a-zA-Z0-9_.:-]{1,64}',code) and not code.lower().startswith(('sk-','bearer')):
+            target.setdefault('error_code',code)
+        kind=value.get('type')
+        if kind in ('browser_signature_banned','new_api_error'):
+            target.setdefault('error_type',kind)
+        title=value.get('title')
+        if isinstance(title,str) and title.strip().casefold() in titles:
+            target.setdefault('error_title',titles[title.strip().casefold()])
+        for key in ('retryable','owner_action_required'):
+            if type(value.get(key)) is bool:target.setdefault(key,value[key])
+        for key in ('error','details'):
+            visit(value.get(key),depth+1)
+        errors=value.get('errors')
+        if isinstance(errors,list):
+            for item in errors[:3]:visit(item,depth+1)
+    visit(data)
+
+
 def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=8192, diagnostics=None):
     # Validate every final URL before opener/socket construction, including direct adapter calls.
     if not destination_allowed(url):
@@ -142,11 +171,7 @@ def request_bytes(url, *, body=None, headers=None, deadline_s=8.0, max_bytes=819
             try:
                 blob=error.read(4097)
                 data=json.loads(blob) if len(blob)<=4096 else {}
-                nested=data.get('error',{})
-                code=nested.get('code') if isinstance(nested,dict) else None
-                code=code or data.get('code')
-                if isinstance(code,str) and re.fullmatch(r'[a-zA-Z0-9_.:-]{1,64}',code) and not code.lower().startswith(('sk-','bearer')):
-                    diagnostics['error_code']=code
+                _diagnostic_error(diagnostics,data)
             except (ValueError,TypeError,OSError,AttributeError):pass
         error.close()
         raise ProviderError('quota' if status == 429 else 'unavailable', status=status) from None

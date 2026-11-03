@@ -1,5 +1,47 @@
 # API Thật chatbot: current local state and403 diagnosis
 
+## Identified blocker: client-signature policy (latest evidence)
+
+The user supplied an unauthenticated public `GET /v1/models` comparison, not a
+generation. Default urllib Python User-Agent received Cloudflare403/error1010,
+`browser_signature_banned`, `retryable:false`, `owner_action_required:true` at
+2026-11-03T02:27:27Z, Ray `a547f0a28ee3fdcf`. A separate reported unauthenticated GET
+with the truthful `FoodTourPlanner/1.0` identity reached an application401
+`new_api_error`/Invalid token with a request ID. This agent did not repeat either GET.
+
+This identifies a client-signature edge policy before application authentication,
+explains why application logs can be empty, and is consistent with the earlier two
+generation403 responses. Their exact error codes cannot be reconstructed because
+their raw bodies were not retained. Neither comparison proves the saved key is
+invalid or valid, or proves the model works. The remaining generation attempt is
+not consumed. Capability remains unverified and enabled0.
+
+**Stop retries, User-Agent rotation, browser impersonation and header changes intended
+to pass the block.** The adapter's User-Agent was not changed. Searches of public
+API Thật documentation found no verifiable official SDK/User-Agent/header policy
+authorizing a client change. Generic Chat/Responses compatibility is not that permission.
+This is a documentation-search limitation, not proof that no private policy exists.
+
+Required operator action: send the administrator the two public-GET status results,
+timestamp and Ray ID above. Ask which **official API hostname and supported SDK/client
+identity/header contract** is approved for server-side clients, and request that the
+legitimate FoodTour client be permitted under that policy. Ask the administrator to
+correlate the1010 edge rule and confirm authorization before changing client headers.
+Do not replace the key, buy quota, disable local TLS checks or try more signatures.
+[Cloudflare's1010 documentation](https://developers.cloudflare.com/support/troubleshooting/http-status-codes/cloudflare-1xxx-errors/error-1010/)
+describes an owner-side browser-signature block; provider policy/owner action governs access.
+That primary document also recommends descriptive application identities for certain
+Pages/workers.dev deployments. The deployment type and API Thật's approved client
+contract are not established here; this generic documentation is not treated as
+authorization to alter the blocked client's signature. No header or hostname change
+is made without the provider-approved policy requested above.
+
+Sanitized provenance: `docs/reports/APITHAT_403_ROOT_CAUSE.json`. Offline diagnostics
+now capture bounded integer/string codes in known nested envelopes and canonical
+allowlisted titles/types, plus explicit retry/owner-action booleans. Arbitrary
+messages/details/titles, credentials and raw bodies remain excluded. Four diagnostic
+tests pass with fake HTTP errors; no new generation or endpoint test was made.
+
 ## Current result
 
 API Thật model-first source is implemented (`33560b8`);20 affected offline tests passed.
@@ -48,7 +90,7 @@ captured. A Cloudflare header identifies an intermediary, not the cause of denia
   transparent network intermediary or gateway/CDN/upstream policy cannot be excluded
   from local inspection alone. No alternate headers, proxy or endpoint were tried.
 
-Conclusion: obvious local key-format/header/URL and explicit proxy/policy construction
+Earlier local-only conclusion (before the supplied1010 comparison): obvious local key-format/header/URL and explicit proxy/policy construction
 errors were not found. These checks do **not** prove the key has permission, identify
 the rejecting component, or establish that the provider/model itself is faulty.
 
@@ -126,6 +168,6 @@ real credentials. Error diagnostics retain only status, normalized content type,
 bounded request identifiers and an allowlisted short error code; never error messages,
 cookies, Authorization or raw bodies. No new generation is needed to run these tests.
 
-Next action is the targeted account-log correlation above, not another probe or
-blind key/quota change. Keep enabled0. The remaining1 attempt is reserved and will
-not be spent without explicit steering after the403 cause is narrowed down.
+Next action is administrator approval of the API-client/hostname policy described
+at the top, not another probe or blind key/quota change. Keep enabled0. The remaining1
+attempt is preserved; no automatic continuation is scheduled.
