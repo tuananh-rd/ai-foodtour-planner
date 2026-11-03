@@ -13,6 +13,36 @@ from .experience import capabilities, settings_action, location_action, refresh_
 router = APIRouter()
 
 
+@router.get('/v1/sessions/{session_id}/venues/{venue_id}/menu')
+def venue_menu(session_id: str, venue_id: str, request: Request,
+               offset: int = 0, limit: int = 25, q: str = '', group: str | None = None,
+               dish_id: str | None = None, option_offset: int = 0, option_limit: int = 100,
+               x_session_token: str | None = Header(default=None)):
+    from app.api.errors import APIError
+    from app.data.menu_catalog import catalog
+    import os
+    if not (0<=offset<=20000 and 1<=limit<=50 and len(q)<=160 and
+            0<=option_offset<=200000 and 1<=option_limit<=500 and
+            all(x is None or len(x)<=200 for x in (group,dish_id))):
+        raise APIError(422,'validation_error','Phân trang thực đơn không hợp lệ.')
+    session=request.app.state.sessions.read_owned(session_id,x_session_token)
+    state=State.from_session(session)
+    visible=set(state.results)|set(state.comparison)|{r['id'] for r in state.selection}
+    if venue_id not in visible:
+        raise APIError(403,'venue_not_visible','Hãy tìm hoặc chọn quán trước khi xem thực đơn.')
+    data=request.app.state.venues.snapshot()
+    if venue_id not in {v.id for v in data.venues}:
+        raise APIError(409,'venue_stale','Quán không còn trong dữ liệu hiện tại; hãy tìm lại.')
+    path=os.getenv('FOODTOUR_MENU_PATH','').strip()
+    if not path:
+        return {'status':'unavailable','venue_id':venue_id,'dataset_version':data.dataset_version,
+            'menu_version':None,'source_channel':None,'total_menu':0,'total':0,'offset':offset,
+            'limit':limit,'has_more':False,'groups':[],'items':[]}
+    result=catalog(path,venue_id,offset=offset,limit=limit,q=q,group=group,dish_id=dish_id,
+                   option_offset=option_offset,option_limit=option_limit)
+    return {**result,'dataset_version':data.dataset_version}
+
+
 @router.get('/v1/assistant/capabilities')
 def assistant_capabilities(request: Request):
     return capabilities(request.app.state)
@@ -114,10 +144,11 @@ def turn(session_id: str, body: Turn, request: Request, x_session_token: str | N
         elif provider.get('mode') == 'gemini' and provider.get('calls', 0) > 0:
             state.last_provider_failure = None  # a real response, not a local action, clears outage state
     state.remember('assistant', result['text'] + (' ' + result['question'] if result.get('question') else ''))
-    if body.text and provider.get('reply_source') == 'model' and not tools.calls and not state.results and not state.selection:
+    if body.text and provider.get('reply_source') == 'model':
         from app.chat.conversation_reply import private_turn
         from app.assistant.conversation import is_health_or_allergy_disclosure
-        if not private_turn(body.text) and not is_health_or_allergy_disclosure(body.text):
+        if (not private_turn(body.text) and not is_health_or_allergy_disclosure(body.text)
+                and not private_turn(result['text']) and not is_health_or_allergy_disclosure(result['text'])):
             state.public_dialogue = (state.public_dialogue + [
                 {'role': 'user', 'text': body.text[:700]},
                 {'role': 'assistant', 'text': result['text'][:700]}])[-6:]

@@ -19,7 +19,7 @@ def amount(value, zero=False):
     return value if type(value) is int and (0 if zero else 1) <= value <= 10000000 else None
 
 
-def load_menu_archive(path, venue_ids):
+def load_menu_archive(path, venue_ids, *, include_ids=False):
     counts=Counter()
     archive=read_menu_archive(path)
     wanted=('shopeefood_dishes.json','shopeefood_menu_items.json',
@@ -81,7 +81,7 @@ def load_menu_archive(path, venue_ids):
         if minimum != dish.get('min_total_vnd'):
             minimum=None;counts['minimum_unverified']+=1
         if quarantined:counts['price_quarantined']+=1
-        result[venue].append({'name':name.strip()[:160],
+        result[venue].append({**({'id':dish['dish_id']} if include_ids else {}),'name':name.strip()[:160],
             'reference_price_vnd':None if quarantined else base,'min_total_vnd':minimum,
             'price_status':'quarantined' if quarantined else 'reference' if minimum is not None else 'minimum_unknown',
             'mandatory_options':mandatory,'price_channel':'shopeefood_delivery',

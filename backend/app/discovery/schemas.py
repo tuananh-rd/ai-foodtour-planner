@@ -85,7 +85,7 @@ class LocationInput(StrictModel):
     candidate_id: str | None = Field(default=None, min_length=1, max_length=64)
     lat: float | None = Field(default=None, ge=-90, le=90)
     lon: float | None = Field(default=None, ge=-180, le=180)
-    source: Literal['gps', 'coordinates'] | None = None
+    source: Literal['gps', 'coordinates', 'map'] | None = None
     resolve_address: bool = False
     label: str | None = Field(default=None, min_length=2, max_length=160)
 
@@ -97,8 +97,8 @@ class LocationInput(StrictModel):
         supplied = self.model_fields_set - {'operation'}
         if not expected <= supplied or supplied - expected - optional or any(getattr(self, k) is None for k in expected):
             raise ValueError('invalid location action')
-        if self.resolve_address and self.source != 'gps':
-            raise ValueError('reverse lookup requires explicit GPS action')
+        if self.resolve_address and self.source not in ('gps','map'):
+            raise ValueError('reverse lookup requires explicit location action')
         return self
 
 

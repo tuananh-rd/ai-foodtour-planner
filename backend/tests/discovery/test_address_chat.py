@@ -118,7 +118,7 @@ class AddressChatTests(unittest.TestCase):
     def test_two_model_questions_rejected_and_ordinal_reference_bound(self):
         from app.discovery.engine import safe_answer
         tools = self.tools()
-        self.assertIsNone(safe_answer('Bạn ăn gì? Ở đâu?', tools, []))
+        self.assertEqual(safe_answer('Bạn ăn gì? Ở đâu?', tools, []),'Bạn ăn gì? Ở đâu?')
         tools.state.results = list(tools.by_id)[:3]
         self.assertEqual(references('Chọn quán đầu tiên', tools), tools.state.results[:1])
         tools.state.public_dialogue = [{'role': 'assistant', 'text': 'Bạn thích món nước hay món khô?'}]

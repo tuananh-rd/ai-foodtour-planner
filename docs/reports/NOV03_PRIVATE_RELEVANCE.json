@@ -1,0 +1,20 @@
+{
+  "archive": "dd0f26c9afc15c7036348fec4aa781df23825cd607eae911d37e2444b799bdd7",
+  "old_pho_false_positive_rows": 593,
+  "new_pho_false_positive_rows": 0,
+  "matching_available_rows": {
+    "ph\u1edf": 134,
+    "pho": 134,
+    "ph\u1edf g\u00e0": 13,
+    "ph\u1edf b\u00f2": 23,
+    "ph\u1edf cu\u1ed1n": 27,
+    "ph\u00f4 mai": 593,
+    "g\u00e0 r\u00e1n": 173,
+    "b\u00e1nh thi\u00ean h\u00e0": 0
+  },
+  "full_menu_sample_canonical_total": 517,
+  "full_menu_paginated_unique_count": 517,
+  "full_menu_options_total": 1,
+  "private_records_exported": false,
+  "provider_calls": 0
+}

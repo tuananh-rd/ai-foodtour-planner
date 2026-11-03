@@ -1,5 +1,6 @@
 """Literal public dish intent and tag evidence; never infer menu items from venue names."""
 import re
+import unicodedata
 from app.planner.relevance import fold_uncached
 from app.chat import knowledge
 
@@ -95,11 +96,32 @@ def matches_food(venue, food):
     phrases=('che','kem','trang mieng','tao pho','sua chua','banh ngot') if wanted=='trang mieng' else (wanted,)
     # Source dish tags alone establish a match; name/address/ranking are not menu evidence.
     for tag in venue.dish_tags:
-        tag=fold_uncached(tag)
+        source_tokens=re.findall(r'\w+',unicodedata.normalize('NFC',tag.casefold()))
         for phrase in phrases:
-            pattern=r'(?<!\w)'+re.escape(phrase)+r'(?!\w)'
-            if phrase=='pho':
-                pattern=r'(?<!tao )(?<!\w)pho(?!\w)(?!\s+(?:cuon|xao|chien|tron)(?!\w))'
-            if re.search(pattern,tag):
+            desired=re.findall(r'\w+',unicodedata.normalize('NFC',(food if phrase==wanted else phrase).casefold()))
+            if not desired:continue
+            canonical=next((entry[1].lower() for entry in knowledge.DISHES
+                if entry[0]==phrase and fold_uncached(entry[1])==phrase),None)
+            if canonical and all(fold_uncached(t)==t for t in desired):
+                desired=re.findall(r'\w+',canonical)
+            if desired and desired[0]=='pho':
+                desired[0]='phô' if len(desired)>1 and fold_uncached(desired[1])=='mai' else 'phở'
+            if desired and desired[0]=='phở':
+                desired=[desired[0]]+[PHO_VARIANTS.get(t,t) for t in desired[1:]]
+            for start in range(len(source_tokens)-len(desired)+1):
+                actual=source_tokens[start:start+len(desired)]
+                if not all(fold_uncached(a)==fold_uncached(b) and
+                    (a==b or fold_uncached(a)==a or fold_uncached(b)==b)
+                    for a,b in zip(actual,desired)):
+                    continue
+                if desired and desired[0]=='phở':
+                    before=fold_uncached(source_tokens[start-1]) if start else None
+                    after=fold_uncached(source_tokens[start+1]) if start+1<len(source_tokens) else None
+                    if before=='tao' or after=='mai':continue
+                    if len(desired)==1 and after in ('cuon','xao','chien','tron'):continue
+                    # Unaccented source "pho ..." is ambiguous: require soup-family evidence.
+                    if actual[0]=='pho' and after and after not in (
+                        *PHO_VARIANTS,'chay','dac','truyen','ha','bat','to','nho','lon','nuoc','tron','xao','cuon','chien'):
+                        continue
                 return True
     return False

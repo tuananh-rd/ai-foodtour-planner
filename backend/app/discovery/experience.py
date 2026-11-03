@@ -106,7 +106,7 @@ def location_action(state, tools, arguments, reverse_address=None):
         seen = set()
         for table in (tools.gz.landmarks, tools.gz.streets, tools.gz.districts):
             for key, place in table.items():
-                if (query not in key and key not in query) or len(query) < 2:
+                if query not in (key,fold_uncached(place.label)) or len(query) < 2:
                     continue
                 identity = (place.label, place.lat, place.lon)
                 if identity in seen:
@@ -114,14 +114,21 @@ def location_action(state, tools, arguments, reverse_address=None):
                 seen.add(identity)
                 matches.append({'id': secrets.token_hex(10), 'label': plain_text(place.label)[:120],
                                 'lat': float(place.lat), 'lon': float(place.lon), 'kind': place.kind,
-                                'approximate': True})
+                                'approximate': True,'source':'local'})
+        lookup_status=None
+        if not matches and reverse_address:
+            found=reverse_address.search(a.query)
+            lookup_status=found['status']
+            matches=[{**c,'id':secrets.token_hex(10),'label':plain_text(c['label'])[:120]}
+                     for c in found['candidates']]
         state.location = {**state.location, 'status': 'candidates' if matches else 'not_found',
                           'candidates': matches[:5]}
         if matches:
-            return tools.result('unknown', 'Đây là các mốc/khu vực có trong danh mục local, tọa độ chỉ xấp xỉ.',
+            return tools.result('unknown', 'Chọn địa chỉ đúng trong các kết quả; các vị trí gần đúng được gắn nhãn.',
                                 'Bạn chọn vị trí nào trong danh sách?')
-        return tools.result('unknown', 'Danh mục local chưa xác định được địa chỉ này; chưa đổi vị trí đang chọn.',
-                            'Bạn muốn chọn một mốc có trong danh mục hay nhập tọa độ?')
+        return tools.result('unknown', 'Dịch vụ địa chỉ chưa phản hồi; vị trí hiện tại được giữ.' if lookup_status=='unavailable'
+                            else 'Chưa tìm được địa chỉ phù hợp; vị trí hiện tại được giữ.',
+                            'Bạn muốn đặt ghim trực tiếp trên bản đồ?')
     if a.operation == 'clear':
         state.patch({'origin': None})
         state.location = {'status': 'unset', 'label': None, 'source': None, 'approximate': False, 'candidates': []}
@@ -131,7 +138,7 @@ def location_action(state, tools, arguments, reverse_address=None):
         candidate = next((c for c in state.location.get('candidates', []) if c['id'] == a.candidate_id), None)
         if candidate is None:
             return tools.result('tool_error', 'Lựa chọn địa điểm không còn hợp lệ; hãy tìm lại, chưa đổi vị trí.')
-        lat, lon, label, source = candidate['lat'], candidate['lon'], candidate['label'], 'local'
+        lat, lon, label, source = candidate['lat'], candidate['lon'], candidate['label'], candidate.get('source','local')
     else:
         lat, lon, source = a.lat, a.lon, a.source
         label = 'Vị trí hiện tại' if source == 'gps' else 'Tọa độ đã nhập'
@@ -139,16 +146,19 @@ def location_action(state, tools, arguments, reverse_address=None):
         return tools.result('tool_error', 'Tọa độ chưa hợp lệ hoặc ngoài vùng Hà Nội thí điểm; chưa đổi vị trí.')
     state.patch({'origin': {'lat': lat, 'lon': lon}})
     state.location = {'status': 'chosen', 'label': label, 'source': source,
-                      'approximate': source == 'local', 'candidates': []}
+                      'approximate': candidate.get('approximate',True) if a.operation=='choose' else False,
+                      'candidates': []}
+    if source=='photon':
+        state.location.update(address_status='resolved',address_provider='photon',attribution='© OpenStreetMap contributors')
     if a.label:
         state.location.update(label=plain_text(a.label), approximate=True, address_status='manual')
-    elif source == 'gps' and a.resolve_address:
+    elif source in ('gps','map') and a.resolve_address:
         if reverse_address:
             state.location.update(reverse_address.resolve(lat, lon))
         else:
             state.location.update(label='Vị trí GPS chưa có địa chỉ', approximate=True,
                                   address_status='unavailable', address_provider=None, address_reason='disabled')
-    else:
+    elif source!='photon':
         state.location.update(address_status='not_requested', address_provider=None)
     tools.refresh_result_order()
     if state.pending_search or state.last_search:

@@ -124,13 +124,6 @@ class Tools:
         query = {'dish': dish, 'area': area, 'max_price_vnd': max_price_vnd}
         self.state.last_search = query
         origin = self.state.profile.origin
-        if origin is None:
-            self.state.pending_search = query
-            self.state.results, self.state.comparison = [], []
-            wanted = ' và '.join(self.state.profile.foods) or dish or 'quán ăn'
-            where = f' ở {local_tools.clean_text(area, 120)}' if area else ''
-            return self.result('unknown', f'Mình đã ghi nhận {wanted}{where}; cần vị trí bạn chọn để tìm và tính khoảng cách.',
-                               'Bạn muốn dùng vị trí hiện tại hay nhập vị trí?')
         self.state.pending_search = None
         area_key = fold_uncached(area or '')
         for prefix in ('quan ', 'huyen '):
@@ -158,7 +151,7 @@ class Tools:
                 else v.price_min_vnd is not None and v.price_min_vnd<=max_price_vnd)]
         # A requested district constrains membership, while distance/ranking always
         # uses the actual chosen origin. Street/landmark searches retain pilot radius.
-        centre = (place.lat, place.lon) if place and place.kind != 'district' else (origin.lat, origin.lon)
+        centre = (origin.lat, origin.lon) if origin else None
         found = local_tools.search(venues, centre, dish=None if foods else dish, prefs=self.preferences(),
             radius_km=100 if area and (district_filter or place is None or place.kind == 'district') else local_tools.DEFAULT_RADIUS_KM,
             allergies=self.state.profile.allergies, max_price=None, limit=len(venues))
@@ -176,9 +169,8 @@ class Tools:
         text = f'Có {len(found.venues)} quán trong dữ liệu để bạn xem và so sánh.'
         if area:
             text += f' Bộ lọc khu vực: {local_tools.clean_text(area, 120)}.'
-        text += ' Khoảng cách tính từ vị trí bạn chọn theo đường chim bay, không phải đường đi hay ETA.'
-        if max_price_vnd:
-            text += ' Giá menu là tham khảo giao hàng, tính lựa chọn bắt buộc khi đủ dữ liệu; giá ăn tại quán, phí và hóa đơn chưa rõ. Quán thiếu menu vẫn dùng khoảng giá nguồn; chưa chứng minh giá món cụ thể dưới mức bạn nêu.'
+        if origin:
+            text += ' Khoảng cách là đường chim bay từ vị trí đã chọn.'
         if self.state.profile.tastes:
             text += ' Khẩu vị đã được giữ; dữ liệu chưa chứng minh quán điều chỉnh được độ ngọt/cay.'
         if self.state.profile.allergies:
@@ -191,7 +183,7 @@ class Tools:
         if venue_id not in self.by_id:
             return self.result('no_results', 'ID quán không có trong dữ liệu hiện tại; chưa thêm hay thay đổi quán.')
         self.state.results = [venue_id]
-        return self.result('ok', 'Thông tin chi tiết theo nguồn; giá món, độ ngọt và an toàn dị ứng chưa được xác minh.',
+        return self.result('ok', 'Thông tin của quán và thực đơn hiện có.',
                            restaurant=self.restaurant(venue_id, 'A'))
 
     def compare_restaurants(self, venue_ids):

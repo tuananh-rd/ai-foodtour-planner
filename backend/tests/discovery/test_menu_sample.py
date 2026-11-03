@@ -102,7 +102,7 @@ class MenuSampleTests(unittest.TestCase):
         handle('tôi muốn ăn gà rán dưới 40k',Tools(state,data,StraightLineEstimator()))
         self.assertIn('fried0',state.results)
 
-    def test_untrusted_menu_never_enters_model_tool_projection(self):
+    def test_bounded_public_menu_enters_projection_without_gps_health(self):
         from app.discovery.engine import tool_projection
         result=tool_projection({'restaurants':[{'name':'safe bounded venue','matching_menu':[{'name':'private menu'}]}]})
-        self.assertNotIn('matching_menu',result['restaurants'][0])
+        self.assertIn('matching_menu',result['restaurants'][0])

@@ -17,9 +17,10 @@ class NoRedirect(HTTPRedirectHandler):
 
 
 class ReverseAddress:
-    def __init__(self, *, enabled=True, transport=None, clock=time.monotonic):
+    def __init__(self, *, enabled=True, transport=None, search_transport=None, clock=time.monotonic):
         self.enabled = enabled
         self.transport = transport or self._fetch
+        self.search_transport = search_transport or self._search_fetch
         self.clock = clock
         self.cache = OrderedDict()
         self.lock = threading.Lock()
@@ -94,3 +95,46 @@ class ReverseAddress:
             return result
         finally:
             self.lock.release()
+
+    @staticmethod
+    def _search_fetch(query):
+        url='https://photon.komoot.io/api/?'+urlencode({'q':query,'limit':5,
+            'bbox':'105.3,20.5,106.3,21.5'})
+        req=Request(url,headers={'User-Agent':'MamMam-FoodTour-LocalPrototype/1.0','Accept':'application/json'})
+        with build_opener(NoRedirect).open(req,timeout=2.0) as response:raw=response.read(65537)
+        if len(raw)>65536:raise ValueError('oversized response')
+        return json.loads(raw)
+
+    def search(self,query):
+        """Explicit address submit only; same shared1.1second gate/cache as reverse."""
+        import copy
+        missing={'status':'unavailable','candidates':[],'provider':'photon'}
+        if not self.enabled or not isinstance(query,str) or not 2<=len(query)<=160:return missing
+        if not self.lock.acquire(blocking=False):return {**missing,'reason':'rate_limited'}
+        try:
+            now=self.clock();key=('query',query.casefold().strip());cached=self.cache.get(key)
+            if cached and now-cached[0]<600:return copy.deepcopy(cached[1])
+            if now-self.last_request<1.1:return {**missing,'reason':'rate_limited'}
+            self.last_request=now
+            try:
+                raw=self.search_transport(query);features=raw.get('features')
+                if not isinstance(features,list):raise ValueError('bad features')
+                choices=[]
+                for feature in features[:5]:
+                    coords=feature.get('geometry',{}).get('coordinates',[])
+                    if len(coords)!=2 or any(type(v) not in (int,float) or not math.isfinite(v) for v in coords):continue
+                    lon,lat=coords
+                    if not (20.5<=lat<=21.5 and 105.3<=lon<=106.3):continue
+                    props=feature.get('properties',{})
+                    val=lambda k:plain_text(props[k])[:100] if isinstance(props.get(k),str) else ''
+                    road=' '.join(x for x in (val('housenumber'),val('street')) if x)
+                    parts=list(dict.fromkeys(x for x in (val('name'),road,val('district'),val('city')) if x))
+                    if not parts:continue
+                    choices.append({'lat':float(lat),'lon':float(lon),'label':', '.join(parts)[:240],
+                        'source':'photon','kind':val('type') or 'address','approximate':not bool(val('housenumber'))})
+                result={'status':'ok' if choices else 'not_found','candidates':choices,'provider':'photon'}
+            except Exception:return missing
+            self.cache[key]=(now,copy.deepcopy(result));self.cache.move_to_end(key)
+            while len(self.cache)>128:self.cache.popitem(last=False)
+            return result
+        finally:self.lock.release()

@@ -2,6 +2,7 @@
 import copy
 import json
 import re
+import unicodedata
 import time
 from app.assistant.conversation import (redact_sensitive, RE_ALLERGY_CLEARANCE,
     RE_OPERATIONAL_CLAIM, RE_ETA_CLAIM, RE_AGENT_ROLEPLAY, RE_INSTRUCTION_LEAKAGE)
@@ -245,12 +246,19 @@ def fallback(text, tools, patch, price_search, initial_refs=None):
             return tools.result('unknown', 'Mình chưa có dữ liệu kiểm chứng về nguồn gốc hoặc lịch sử của ' + dish[1] + '. Mình chỉ có thể mô tả món nói chung: ' + dish[2])
         return tools.result('ok', 'Kiến thức món nói chung: ' + dish[2] + ' Đây không phải xác nhận món hay nguyên liệu tại một quán cụ thể.')
     if patch:
-        return tools.result('ok', 'Đã ghi nhận phần bạn vừa sửa, các yêu cầu khác và lựa chọn vẫn được giữ.')
+        labels={'foods':'Món','area':'Khu vực','start_time':'Bắt đầu','duration_min':'Số phút',
+                'party_size':'Số người','vehicle':'Di chuyển','budget_vnd':'Ngân sách'}
+        summary=[]
+        for key,label in labels.items():
+            if key in patch:
+                value=patch[key]
+                summary.append(label+': '+(', '.join(map(str,value)) if isinstance(value,list) else str(value)))
+        return tools.result('ok', '. '.join(summary) if summary else 'Bạn muốn tìm món hay quán nào tiếp theo?')
     if dish:
         return tools.result('ok', 'Kiến thức món nói chung: ' + dish[2] + ' Đây không phải xác nhận món hay nguyên liệu tại một quán cụ thể.')
     if re.search(r'\b(?:chao|hello|hi|cam on)\b', f):
-        return tools.result('ok', 'Chào bạn! Mình có thể cùng bạn khám phá món, tìm quán, so sánh rồi chọn lịch trình khi bạn muốn; chưa cần điền thông tin chuyến đi.')
-    return tools.result('ok', 'Mình có thể giúp khám phá món, tìm và so sánh quán trong dữ liệu Hà Nội. Các yêu cầu đã biết và quán đã chọn vẫn được giữ.')
+        return tools.result('ok', 'Chào bạn! Hôm nay bạn muốn ăn món gì?')
+    return tools.result('unknown', 'Bạn muốn tìm quán, so sánh lựa chọn hay hỏi về món ăn?')
 
 
 def model_projection(tools, text):
@@ -264,17 +272,18 @@ def model_projection(tools, text):
     return {'message': safe_text[:1000], 'profile': profile,
             'recent_general_dialogue': tools.state.public_dialogue[-6:],
             'origin_selected': tools.state.profile.origin is not None, 'recent_public_user_turns': history,
-            'selection': [{'id': x['id'], 'locked': x['locked']} for x in tools.state.selection],
-            'last_results': [{'id': i, 'label': chr(65+n)} for n, i in enumerate(tools.state.results or tools.state.comparison)],
+            'selection': [tool_projection(tools.restaurant(x['id'])) for x in tools.state.selection],
+            'last_results': [tool_projection(tools.restaurant(i,chr(65+n)))
+                             for n,i in enumerate(tools.state.results or tools.state.comparison)],
             'versions': {'profile': tools.state.profile_version, 'selection': tools.state.selection_version}}
 
 
 def tool_projection(result):
     def redact(value):
         if isinstance(value, dict):
-            return {k: redact(v) for k, v in value.items() if k not in (
-                'lat', 'lon', 'origin', 'allergies', 'source_url',
-                'distance_m', 'distance_source', 'distance_reason', 'matching_menu')}
+            return {k: (round(v/100)*100 if k=='distance_m' and type(v) in (int,float)
+                        else redact(v)) for k, v in value.items() if k not in (
+                'lat', 'lon', 'origin', 'allergies', 'exclusions', 'source_url')}
         if isinstance(value, list):
             return [redact(x) for x in value[:5]]
         return redact_sensitive(value)[:500] if isinstance(value, str) else value
@@ -284,12 +293,14 @@ def tool_projection(result):
 def safe_answer(text, tools, tool_results):
     if isinstance(text, str):
         text = plain_text(text)
-    if not isinstance(text, str) or not text.strip() or len(text) > 1200 or text.count('?') > 1:
+    if not isinstance(text, str) or not text.strip() or len(text) > 1800:
         return None
     if any(pattern.search(text) for pattern in (RE_ALLERGY_CLEARANCE, RE_OPERATIONAL_CLAIM, RE_ETA_CLAIM,
                                                RE_AGENT_ROLEPLAY, RE_INSTRUCTION_LEAKAGE)):
         return None
     f = fold_uncached(text)
+    if 'an toan di ung' in f:
+        return None  # no ingredient evidence exists; positive clearance cannot be grounded
     for cue, operation in ((r'da them', 'add'), (r'da (?:bo|xoa)', 'remove'), (r'da khoa', 'lock'), (r'da mo khoa', 'unlock')):
         if re.search(cue, f) and not any(x.get('_mutation_success') and x.get('_operation') == operation for x in tool_results):
             return None
@@ -297,11 +308,22 @@ def safe_answer(text, tools, tool_results):
         return None  # no save-trip feature/tool exists
     if re.search(r'da (?:tao|chot|lap).*(?:lich|tour)', f) and not (tools.planned_tour and tools.planned_tour.stops):
         return None
-    if re.search(r'gia.*\d|\d.*(?:moi nguoi|mot suat|mot bat)|dang mo|an toan di ung', f):
-        return None
-    allowed = json.dumps([tools.state.profile.model_dump(), tool_results], ensure_ascii=False)
-    if not set(re.findall(r'\d+', text)) <= set(re.findall(r'\d+', allowed)):
-        return None
+    # Validate currency claims against supplied evidence, not every digit/year/question.
+    amounts=set()
+    def prices(value):
+        if isinstance(value,dict):
+            for key,item in value.items():
+                if key.endswith('_vnd') and type(item) is int:amounts.add(item)
+                prices(item)
+        elif isinstance(value,list):
+            for item in value:prices(item)
+    prices(tool_results)
+    prices(tools.state.profile.model_dump(exclude={'origin','allergies','exclusions'}))
+    prices([tools.restaurant(i) for i in tools.state.results])
+    money_text=''.join(c for c in unicodedata.normalize('NFD',text.casefold()) if not unicodedata.combining(c)).replace('đ','d')
+    for match in re.finditer(r'(?<!\w)(\d+(?:[.,]\d{3})*)\s*(k\b|nghin\b|ngan\b|dong\b|vnd\b|d\b)',money_text):
+        amount=int(re.sub(r'[.,]','',match[1]))*(1000 if match[2] in ('k','nghin','ngan') else 1)
+        if amount not in amounts:return None
     if redact_sensitive(text) != text:
         return None
     return text.strip()
