@@ -1,0 +1,20 @@
+{
+  "source_commit": "33560b8",
+  "flow": "model_first",
+  "provider": "apithat",
+  "model": "gpt-6-luna",
+  "offline_tests": {"model_first": 8, "adapter": 12, "result": "PASS"},
+  "config": {"file_present": true, "key_present": true, "enabled": false},
+  "live_allowance": {"maximum_http_generation_attempts": 3, "attempts_made": 0, "remaining_authorized_attempts": 3, "retry": false},
+  "admission": {"used": 15, "daily_limit": 18, "remaining": 3, "reserve": 3, "resets_at": "2026-11-03T08:00:00Z", "result": "blocked_daily_reserve"},
+  "native_tools_live_verified": false,
+  "selection_enabled": false,
+  "ledger_reset": false,
+  "caps_increased": false,
+  "notes": [
+    "No HTTP generation request reached API That; preflight health inspection only.",
+    "Exact public current text, permitted native-role history, direct model clarification, preference/search continuation, grounding, privacy and mutation denial tested offline.",
+    "The source is prepared; existing interactive runtime was preserved, not silently activated.",
+    "No secrets, exact private GPS, health records, request bodies or Authorization headers are present in this artifact."
+  ]
+}

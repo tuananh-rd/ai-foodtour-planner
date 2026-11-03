@@ -4,7 +4,7 @@
   "server_current_source": "952eb77",
   "server_restart_deferred_to_preserve_interactive_testing": true,
   "config_path": "backend/.env.apithat.local",
-  "key_present": false,
+  "key_present": true,
   "base_matches_user_confirmed": true,
   "model_matches_user_confirmed": true,
   "provider_enabled": false,
