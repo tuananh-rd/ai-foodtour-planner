@@ -37,6 +37,8 @@ Provider references reviewed before implementation: [OSM tile policy](https://op
 
 Backend commits: `9a18141`, `bb0050a`, `21cf811`, `4e910a2`, `5660b60`, `c0a312c`.
 
+`5f0aea1` applies the same token/accent contract to full-menu name filtering; seven targeted menu checks passed. An initial parenthesis typo was corrected before the passing run. The private original-session, budget-file and cap fingerprints were verified unchanged during QA. These final backend changes still require the integration runtime restart; they are not claimed as already served by the older QA process.
+
 ## Remaining acceptance
 
 Frontend review found missing rendered full-menu content despite implemented handlers, stale async-menu identity handling, an unsubmitted-query pagination mismatch and residual price text. AG owns these corrections. Source/API tests alone do not accept those UI requirements. The final rendered journey, outside-pilot streets, pin controls, mobile sizing and service failure remain pending until the corrected build is served and inspected.
