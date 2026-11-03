@@ -63,9 +63,13 @@ def parse_patch(text, tools):
     else:
         # A named area is valid preference intent even outside our local catalog.
         # In particular, "ở Hai Bà Trưng" must replace a stale Phố cổ filter.
-        m = re.search(r'(?<!\w)(?:quanh|khu vuc|gan|tai|o)\s+(?:(?:sang|thanh|la)\s+)?(.+?)(?:\s+(?:co|tim|duoi|toi nay|thi|khong)\b|[,;?.]|$)', f)
+        # Locate the preposition before accent folding: ô (in ô tô) is not ở.
+        # Folding candidate place names remains useful for catalog filtering.
+        m = re.search(r'(?i)(?<!\w)(?:quanh|khu vực|khu vuc|gần|gan|tại|tai|ở|o)\s+'
+                      r'(?:(?:sang|thành|thanh|là|la)\s+)?([^,;?.]+)', text)
         if m:
-            candidate = m.group(1).strip()
+            candidate = re.split(r'\s+(?:co|tim|duoi|toi nay|thi|khong)\b',
+                                 fold_uncached(m.group(1)),maxsplit=1)[0].strip()
             if candidate not in ('day', 'do', 'toi', 'minh') and len(candidate) > 2:
                 patch['area'] = candidate[:120]
     if district_label and not explicit_street:

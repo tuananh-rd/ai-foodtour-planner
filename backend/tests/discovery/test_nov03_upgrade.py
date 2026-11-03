@@ -19,6 +19,16 @@ from backend.tests.discovery.test_food_intent_matrix import matrix_data
 class UpgradeTests(unittest.TestCase):
     def tools(self,state=None):return Tools(state or State(),matrix_data(),StraightLineEstimator())
 
+    def test_transport_update_does_not_fold_o_to_into_location_preposition(self):
+        from app.discovery.engine import parse_patch
+        tools=self.tools();tools.state.patch({'area':'Cầu Giấy','foods':['gà rán']})
+        patch,_=parse_patch('Bắt đầu lúc 18h, tổng 240 phút, ô tô, 2 người',tools)
+        self.assertNotIn('area',patch)
+        self.assertEqual(patch['vehicle'],'car')
+        self.assertNotIn('foods',patch)
+        unknown,_=parse_patch('tôi muốn ăn phở ở khu thử nghiệm mới',tools)
+        self.assertEqual(unknown['area'],'khu thu nghiem moi')
+
     def test_dish_words_are_not_removed_as_generic_modifiers(self):
         for dish in ('phô mai','pho mai','bánh ngọt','mì cay','bánh ít','bánh bột lọc'):
             with self.subTest(dish=dish):
