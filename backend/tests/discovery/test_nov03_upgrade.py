@@ -36,6 +36,21 @@ class UpgradeTests(unittest.TestCase):
             self.assertEqual(catalog(path,'fried0',q='phô mai')['total'],1)
             self.assertEqual(catalog(path,'fried0',q='bánh thiên hà')['total'],0)
 
+    def test_menu_catalog_cache_replacement_invalid_and_rollback(self):
+        from app.data.menu_archive import MenuValidationError
+        with tempfile.TemporaryDirectory() as directory:
+            path=Path(directory)/'menu.zip';menu_archive(path);original=path.read_bytes()
+            first=catalog(path,'fried0');version=first['menu_version']
+            self.assertEqual(catalog(path,'fried0')['menu_version'],version)
+            menu_archive(path,['Phở bò','Hotline 0900000000','Trà sữa phô mai',
+                'Tào phớ','Phở cuốn','Phố Huế','Bánh ngọt'])
+            self.assertNotEqual(catalog(path,'fried0')['menu_version'],version)
+            self.assertEqual(catalog(path,'fried0')['items'][0]['name'],'Phở bò')
+            path.write_bytes(b'not a zip')
+            with self.assertRaises(MenuValidationError):catalog(path,'fried0')
+            path.write_bytes(original)
+            self.assertEqual(catalog(path,'fried0')['menu_version'],version)
+
     def test_pho_soup_contrasts_accents_tokens_and_specific_phrases(self):
         negatives=['phô mai','pho mai','phố Huế','pho Hue','tào phớ','tao pho',
                    'phở cuốn','pho cuon','trà sữa phô mai','phở xào','phởgà']
