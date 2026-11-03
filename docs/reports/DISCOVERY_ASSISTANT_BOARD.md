@@ -1,3 +1,8 @@
+## Active Nov03 upgrade — implementation/QA
+
+Codex backend/data/contracts/integration; AG frontend/mechanical QA task_714d1491a909 /ctx_40671eda9dc4 /term_da80540d-51c9-4c93-ada0-f497dc1e6e96, defaultmodel, turn_started observed. Claude rests. Ownership nonoverlap frontend/qa versus backend/tools/docsboard. Contract DISCOVERY_UPGRADE_NOV03_CONTRACT.md.
+Exact screenshot RED: pho-fold matched cheese/street. Real menu6 diagnostic:593 cheese/taupho falsepositive rows underoldmatcher ->0 undernewmatcher;134available pho rows,13phoGa,23phoBo,27phoCuon,173gaRan; literalunknown0. No raw records exported.32affected offline tests PASS beforefinal stale-restore refinement;17targeted new/matrixtests PASS afterrefinement. Fullmenu archive sample517canonical paginated unique517; sourceoptions preserved. Backend9a18141 plusstale-result fix; currentAPI8250 switchedto disposableprivate/rulesQA, originalsession/budget/cap fingerprints preserved.3350oldUI remainsuntilAGbuild. New evidence NOV03_PRIVATE_RELEVANCE.json; liveGeminivalidationblocked byallowance, no calls/probes.
+
 ## Final checkpoint — menu6 ACTIVE, OSM offline acceptance PASS (2026-11-03)
 
 Serving http://127.0.0.1:3350 / API http://127.0.0.1:8250. UI fb82e66, backend e8d62f8; final QA ce5197c. Menu6 SHA dd0f26c9 validated/staged/activated, prior12 rollback0088011f verified privately.400 attempted,338menus,18,245canonical/18,764links/90,350options;18,222foodrows after23nonfood exclusions;91pricequarantine/50minimumunverified;55noservice/2error/1review/4confirmedempty disclosed.

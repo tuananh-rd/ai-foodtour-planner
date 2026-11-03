@@ -43,6 +43,13 @@ class UpgradeTests(unittest.TestCase):
         self.assertEqual(result['status'],'no_results');self.assertEqual(state.results,[])
         self.assertEqual(food_intent('tôi muốn ăn phở gà và gà rán'),['phở gà','gà rán'])
 
+    def test_restore_hides_stale_unrelated_results_preserving_selected_lock(self):
+        state=State();state.patch({'foods':['phở']});state.results=['fried0','chicken0']
+        state.selection=[{'id':'fried0','locked':True}]
+        self.tools(state)
+        self.assertEqual(state.results,['chicken0'])
+        self.assertEqual(state.selection,[{'id':'fried0','locked':True}])
+
     def test_grounded_prices_allowed_and_fabricated_prices_mutations_health_rejected(self):
         tools=self.tools()
         evidence=[{'matching_menu':[{'name':'Món thử','reference_price_vnd':88000}]}]

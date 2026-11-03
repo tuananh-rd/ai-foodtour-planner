@@ -59,6 +59,16 @@ class Tools:
                 notice+=' Quán không còn trong dữ liệu đã được bỏ khỏi lựa chọn.'
             state.remember('assistant',notice)
         state.dataset_version = data.dataset_version
+        # Saved results created under older relevance rules are not fresh food evidence.
+        # Explicitly selected/locked venues stay selected; only stale discovery cards are hidden.
+        if state.profile.foods:
+            def relevant(identity):
+                if identity not in self.by_id:return False
+                return (bool(matching_menu(data.menu_by_venue[identity],state.profile.foods))
+                        if identity in data.menu_by_venue else
+                        any(matches_food(self.by_id[identity],food) for food in state.profile.foods))
+            state.results=[i for i in state.results if relevant(i)]
+        self.visible_ids=set(state.results)|set(state.comparison)|{x['id'] for x in state.selection}
 
     def preferences(self):
         p = self.state.profile
